@@ -12,7 +12,8 @@ use std::{
 };
 
 /// Representation of a `Condition` associated with a conditional/optional
-/// dependency.
+/// dependency from a `Cargo.toml` file - see an example here:
+/// https://source.chromium.org/chromium/chromium/src/+/main:third_party/rust/chromium_crates_io/vendor/windows-targets-v0_52/Cargo.toml;l=38;drc=5977f5edc277200b0674e8df80ba7495980d87bb
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Condition(Result<HashSet<RustTargetTriple>, String>);
 
@@ -366,13 +367,31 @@ fn cfg_key_value_pair_to_condition(key: &str, value: &str) -> Condition {
         }
     }
 
-    // `key` is not set by `rustc` (i.e. it is not documented in
-    // https://doc.rust-lang.org/reference/conditional-compilation.html and not
-    // handled above).  Therefore we assume that Chromium will never ask GN/ninja
-    // to pass `--cfg 'this_unrecognized_key="something"'` to `rustc`.  And
-    // therefore we treat this as `AlwaysFalse`.  See also
+    // `KNOWN_UNSUPPORTED_KEYS` is based on
+    //
+    // 1. Reading https://doc.rust-lang.org/reference/conditional-compilation.html
+    // 2. Looking at `rustc --print=cfg --target <some target> | grep = | grep -v
+    //    target_` (`target_...=...` keys are handled in `build/builds.rs`).
+    const KNOWN_UNSUPPORTED_KEYS: [&str; 3] = ["feature", "fmt_debug", "relocation_model"];
+    if KNOWN_UNSUPPORTED_KEYS.contains(&key) {
+        return Condition(Err(format!(
+            "Condition depends on an unsupported, compiler-provided key: `{key}`"
+        )));
+    }
+
+    // If `key` is not handled above (in particular not in the list of *known*
+    // `KNOWN_UNSUPPORTED_KEYS`) then we assume that it is not set *by* `rustc` nor
+    // `cargo`, but instead is passed via `--cfg key=value` *to* the compiler.
+    //
+    // And we also assume that Chromium will never ask GN/ninja to pass `--cfg
+    // 'unrecognized_key="something"'` to `rustc` (this is not done today by
+    // `//build/rust/*.gni` nor `BUILD.gn.hbs`).
+    //
+    // And therefore we treat this as `AlwaysFalse`.  See also
     // https://crbug.com/404598090#comment4.
-    log::warn!("Treating unrecogized `#[cfg({key} = \"{value}\")]` as `AlwaysFalse");
+    //
+    // (We used to warn about such unrecognized `key`s, but it was too noisy in
+    // practice.)
     Condition::always_false()
 }
 
@@ -415,12 +434,45 @@ fn cfg_name_to_condition(name: &str) -> Condition {
         return Condition::always_true();
     }
 
-    // `name` is not something that is documented in
-    // https://doc.rust-lang.org/reference/conditional-compilation.html.  We assume that Chromium
-    // will never ask GN/ninja to pass `--cfg this_unrecognized_name` to `rustc`.
+    // `KNOWN_UNSUPPORTED_NAMES` is based on
+    //
+    // 1. Reading https://doc.rust-lang.org/reference/conditional-compilation.html
+    // 2. Looking at `rustc --print=cfg --target <some target> | grep -v =`
+    //    (`target_...=...` keys are handled in `build/builds.rs`).
+    //
+    // TODO(https://crbug.com/402096443): Extract those in `build/build/rs`.
+    // (It seems that all of them are properties of the target platform.)
+    const KNOWN_UNSUPPORTED_NAMES: [&str; 9] = [
+        "overflow_checks",
+        "ub_checks",
+        "target_has_atomic",
+        "target_has_atomic_load_store",
+        "target_has_reliable_f128",
+        "target_has_reliable_f128_math",
+        "target_has_reliable_f16",
+        "target_has_reliable_f16_math",
+        "target_thread_local",
+    ];
+    if KNOWN_UNSUPPORTED_NAMES.contains(&name) {
+        return Condition(Err(format!(
+            "Condition depends on an unsupported, compiler-provided configuration name: `{name}`"
+        )));
+    }
+
+    // If `name` is not handled above (in particular not in the list of *known*
+    // `KNOWN_UNSUPPORTED_NAMES`) then we assume that it is not set *by* `rustc`,
+    // but instead is passed via `--cfg name` *to* the compiler.
+    //
+    // And we also assume that Chromium will never ask GN/ninja to pass `--cfg
+    // 'unrecognized_name'` to `rustc` (this is not done today by
+    // `//build/rust/*.gni` nor `BUILD.gn.hbs`).
+    //
     // And therefore we treat this as `AlwaysFalse`.  See also
     // https://crbug.com/404598090#comment4.
-    log::warn!("Treating unrecogized `#[cfg({name})]` as `AlwaysFalse");
+    //
+    // We used to warn about such unrecognized `name`s, but it was too noisy in
+    // practice.  Example of such a `name` can be found here:
+    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/rust/chromium_crates_io/vendor/zip-v2/Cargo.toml;l=258;drc=d41c4d24cd81aef76cda21e4ea84ab2ddb2c71e6
     Condition::always_false()
 }
 
