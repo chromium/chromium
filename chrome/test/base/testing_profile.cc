@@ -412,14 +412,13 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
             new syncer::FakeSyncChangeProcessor));
   }
 
-  if (prefs_.get())
+  if (prefs_.get()) {
     user_prefs::UserPrefs::Set(this, prefs_.get());
-  else if (IsOffTheRecord())
+  } else if (IsOffTheRecord()) {
     CreateIncognitoPrefService();
-  else if (is_supervised_profile)
-    CreatePrefServiceForSupervisedUser();
-  else
+  } else {
     CreateTestingPrefService();
+  }
 
   if (is_supervised_profile)
     SetIsSupervisedProfile();
@@ -778,14 +777,6 @@ TestingProfile::GetExtensionSpecialStoragePolicy() {
 }
 
 void TestingProfile::CreateTestingPrefService() {
-  DCHECK(!prefs_.get());
-  testing_prefs_ = new sync_preferences::TestingPrefServiceSyncable();
-  prefs_.reset(testing_prefs_);
-  user_prefs::UserPrefs::Set(this, prefs_.get());
-  RegisterUserProfilePrefs(testing_prefs_->registry());
-}
-
-void TestingProfile::CreatePrefServiceForSupervisedUser() {
   DCHECK(!prefs_.get());
 
   // Construct testing_prefs_ by hand to add the supervised user pref store.
