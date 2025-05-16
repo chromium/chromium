@@ -9,6 +9,8 @@
 
 #include <optional>
 
+#include "base/functional/function_ref.h"
+
 namespace ui {
 
 // A helper class to store AX-related boolean enums.
@@ -49,6 +51,36 @@ class AXBitset {
     uint64_t mask = 1ULL << index;
     // Mark as not set.
     set_bits_ &= ~mask;
+  }
+
+  // Iterates over each attribute that is currently "set" (i.e., has been
+  // explicitly set to true or false and not subsequently unset) and invokes
+  // the provided 'function' with the attribute and its boolean value.
+  // The order of iteration is from the least significant bit (lowest enum
+  // value) to the most significant bit (highest enum value) among the set
+  // attributes.
+  void ForEach(
+      base::FunctionRef<void(T attribute, bool value)> function) const {
+    uint64_t remainder = set_bits_;
+
+    while (remainder) {
+      // Find the index (0-63) of the least significant bit that is set to 1
+      // in 'remainder'. This corresponds to the enum's integer value.
+      // std::countr_zero counts trailing zeros; e.g., for 0b...1000, it
+      // returns 3.
+      uint64_t index = std::countr_zero(remainder);
+
+      T attribute = static_cast<T>(index);
+      uint64_t mask = 1ULL << index;
+      bool attribute_value = static_cast<bool>(values_ & mask);
+
+      function(attribute, attribute_value);
+
+      // Clear the least significant set bit in 'remainder' to prepare for the
+      // next iteration. This ensures that each set bit is processed exactly
+      // once.
+      remainder &= remainder - 1;
+    }
   }
 
  private:

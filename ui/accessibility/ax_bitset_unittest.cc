@@ -63,4 +63,23 @@ TEST(AXBitsetTest, TestEnum) {
   EXPECT_FALSE(map.Has(TestEnum::kMinValue));
   EXPECT_OPTIONAL_EQ(true, map.Has(TestEnum::kMiddleValue));
 }
+
+TEST(AXBitsetTest, ForEach) {
+  AXBitset<TestEnum> map;
+  map.Set(TestEnum::kMinValue, true);
+  map.Set(TestEnum::kMiddleValue, false);
+  map.Set(TestEnum::kMaxValue, true);
+
+  std::map<TestEnum, bool> collected_attributes;
+  std::map<TestEnum, bool> expected_attributes = {
+      {TestEnum::kMinValue, true},
+      {TestEnum::kMiddleValue, false},
+      {TestEnum::kMaxValue, true}};
+
+  map.ForEach([&collected_attributes](TestEnum attr, bool value) {
+    collected_attributes[attr] = value;
+  });
+
+  EXPECT_EQ(expected_attributes, collected_attributes);
+}
 }  // namespace ui
