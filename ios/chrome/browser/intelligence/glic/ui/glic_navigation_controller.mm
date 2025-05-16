@@ -14,14 +14,17 @@
 namespace {
 
 // Sheet detents.
-const CGFloat kGLICConsentPartialDetentHeight = 500.0;
-const CGFloat kGLICConsentFullDetentHeight = 700.0;
+const CGFloat kPartialDetentHeight = 500.0;
+const CGFloat kFullDetentHeight = 700.0;
 
 // Corner radius.
-const CGFloat kGLICConsentPreferredCornerRadius = 16.0;
+const CGFloat kPreferredCornerRadius = 16.0;
 
-// Logo size.
-const CGFloat kLogoPointSize = 44;
+// Logos size, spacing.
+const CGFloat kLogoPointSize = 44.0;
+const CGFloat kPromoLogoSpacing = 8.0;
+const CGFloat kPromoLogoTopGap = 16.0;
+const CGFloat kPromoLogoBottomGap = -16.0;
 
 // Logo names.
 constexpr NSString* const kSwiftLogoName = @"swift";
@@ -41,12 +44,13 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  [self configureNavigationController];
   [super viewDidLoad];
   _promoViewController = [[GLICPromoViewController alloc] init];
   _promoViewController.glicConsentDelegate = self;
   _promoViewController.mutator = self.mutator;
   [self pushViewController:_promoViewController animated:NO];
-  [self configureNavigationController];
+  [self createLogos];
 }
 
 #pragma mark - Private
@@ -68,20 +72,19 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
 // Configure the navigation controller.
 - (void)configureNavigationController {
   self.sheetPresentationController.detents = @[
-    [self customHeightDetentWithIdentifier:kGLICConsentPartialDetentIdentifier
-                                    height:kGLICConsentPartialDetentHeight],
-    [self customHeightDetentWithIdentifier:kGLICConsentFullDetentIdentifier
-                                    height:kGLICConsentFullDetentHeight]
+    [self customHeightDetentWithIdentifier:
+              kGLICPromoConsentPartialDetentIdentifier
+                                    height:kPartialDetentHeight],
+    [self customHeightDetentWithIdentifier:kGLICPromoConsentFullDetentIdentifier
+                                    height:kFullDetentHeight]
   ];
 
   self.modalPresentationStyle = UIModalPresentationPageSheet;
 
   self.sheetPresentationController.preferredCornerRadius =
-      kGLICConsentPreferredCornerRadius;
+      kPreferredCornerRadius;
   self.sheetPresentationController.prefersScrollingExpandsWhenScrolledToEdge =
       NO;
-
-  [self createLogos];
 }
 
 // Create logos and add it to the navigation bar.
@@ -90,7 +93,7 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
   logosStackView.axis = UILayoutConstraintAxisHorizontal;
   logosStackView.distribution = UIStackViewDistributionFill;
   logosStackView.alignment = UIStackViewAlignmentCenter;
-  logosStackView.spacing = 8;
+  logosStackView.spacing = kPromoLogoSpacing;
   logosStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // TODO(crbug.com/414777888): Change logo.
@@ -116,7 +119,10 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
         constraintEqualToAnchor:self.navigationBar.centerXAnchor],
     [logosStackView.topAnchor
         constraintEqualToAnchor:self.navigationBar.topAnchor
-                       constant:32]
+                       constant:kPromoLogoTopGap],
+    [logosStackView.bottomAnchor
+        constraintEqualToAnchor:self.navigationBar.bottomAnchor
+                       constant:-kPromoLogoBottomGap],
   ]];
 }
 

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/glic/ui/glic_constants.h"
 
-NSString* const kGLICConsentPartialDetentIdentifier =
+NSString* const kGLICPromoConsentPartialDetentIdentifier =
     @"GLICConsentPartialDetentIdentifier";
-NSString* const kGLICConsentFullDetentIdentifier =
+NSString* const kGLICPromoConsentFullDetentIdentifier =
     @"GLICConsentFullDetentIdentifier";
 
 NSString* const kGLICPromoPrimaryAction = @"Try it out";
@@ -17,3 +17,14 @@ NSString* const kGLIConsentSubText =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
 NSString* const kGLICPromoMainTitleText =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes.";
+
+NSString* const kGLICConsentFirstBoxTitleText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
+NSString* const kGLICConsentFirstBoxBodyText =
+    @"Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut "
+    @"enim ad minim.";
+NSString* const kGLICConsentSecondBoxTitleText = @"Lorem ipsum dolor sit amet";
+NSString* const kGLICConsentSecondBoxBodyText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do "
+    @"eiusmod tempor incididunt ut labore et dolore magna ali. eiusmod tempor "
+    @"incididunt ut labore et dolore magna ali.";

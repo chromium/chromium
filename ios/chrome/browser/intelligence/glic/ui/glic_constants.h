@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 
 // Sheet detents.
-extern NSString* const kGLICConsentPartialDetentIdentifier;
-extern NSString* const kGLICConsentFullDetentIdentifier;
+extern NSString* const kGLICPromoConsentPartialDetentIdentifier;
+extern NSString* const kGLICPromoConsentFullDetentIdentifier;
 
 // Promo style strings.
 extern NSString* const kGLICPromoPrimaryAction;
@@ -20,5 +20,10 @@ extern NSString* const kGLICPromoConsentSecondaryAction;
 // Text constants.
 extern NSString* const kGLICPromoMainTitleText;
 extern NSString* const kGLIConsentSubText;
+
+extern NSString* const kGLICConsentFirstBoxTitleText;
+extern NSString* const kGLICConsentFirstBoxBodyText;
+extern NSString* const kGLICConsentSecondBoxTitleText;
+extern NSString* const kGLICConsentSecondBoxBodyText;
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_UI_GLIC_CONSTANTS_H_
