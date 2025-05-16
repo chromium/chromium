@@ -6,9 +6,9 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=./print_preview_shared_lit.css.js
+ * #import=./print_preview_shared.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit print-preview-shared-lit
+ * #include=cr-hidden-style-lit print-preview-shared
  * #css_wrapper_metadata_end */
 
 :host {

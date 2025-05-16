@@ -23,7 +23,7 @@ import {Error, State} from '../data/state.js';
 import type {PrintPreviewDestinationDialogElement} from './destination_dialog.js';
 import type {PrintPreviewDestinationSelectElement} from './destination_select.js';
 import {getHtml} from './destination_settings.html.js';
-import {getCss as getPrintPreviewSharedLitCss} from './print_preview_shared_lit.css.js';
+import {getCss as getPrintPreviewSharedLitCss} from './print_preview_shared.css.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export enum DestinationState {

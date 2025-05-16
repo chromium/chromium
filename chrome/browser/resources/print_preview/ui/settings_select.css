@@ -4,10 +4,10 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=./print_preview_shared_lit.css.js
+ * #import=./print_preview_shared.css.js
  * #import=chrome://resources/cr_elements/md_select_lit.css.js
  * #scheme=relative
- * #include=print-preview-shared-lit md-select-lit
+ * #include=print-preview-shared md-select-lit
  * #css_wrapper_metadata_end */
 
 select.md-select {

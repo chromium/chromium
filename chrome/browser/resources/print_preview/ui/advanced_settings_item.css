@@ -8,8 +8,8 @@
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=chrome://resources/cr_elements/md_select_lit.css.js
  * #import=chrome://resources/cr_elements/search_highlight_style_lit.css.js
- * #import=./print_preview_shared_lit.css.js
- * #include=print-preview-shared-lit md-select-lit search-highlight-style-lit cr-hidden-style-lit
+ * #import=./print_preview_shared.css.js
+ * #include=print-preview-shared md-select-lit search-highlight-style-lit cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 :host {

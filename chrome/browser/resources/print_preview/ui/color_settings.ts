@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/md_select_lit.css.js';
-import './print_preview_shared_lit.css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
 import {getCss as getMdSelectLitCss} from 'chrome://resources/cr_elements/md_select_lit.css.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './color_settings.html.js';
-import {getCss as getPrintPreviewSharedLitCss} from './print_preview_shared_lit.css.js';
+import {getCss as getPrintPreviewSharedLitCss} from './print_preview_shared.css.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 

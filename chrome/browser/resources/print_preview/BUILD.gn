@@ -107,7 +107,6 @@ build_webui("build") {
     "ui/preview_area.css",
     "ui/print_preview_search_box.css",
     "ui/print_preview_shared.css",
-    "ui/print_preview_shared_lit.css",
     "ui/print_preview_vars.css",
     "ui/settings_section.css",
     "ui/settings_select.css",

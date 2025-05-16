@@ -8,9 +8,9 @@
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=chrome://resources/cr_elements/md_select_lit.css.js
- * #import=./print_preview_shared_lit.css.js
+ * #import=./print_preview_shared.css.js
  * #import=./throbber_lit.css.js
- * #include=cr-shared-style-lit print-preview-shared-lit throbber-lit md-select-lit cr-hidden-style-lit
+ * #include=cr-shared-style-lit print-preview-shared throbber-lit md-select-lit cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 :host {

@@ -13,7 +13,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Settings} from '../data/model.js';
 import {ScalingType} from '../data/scaling.js';
 
-import {getCss as getPrintPreviewSharedCss} from './print_preview_shared_lit.css.js';
+import {getCss as getPrintPreviewSharedCss} from './print_preview_shared.css.js';
 import {getHtml} from './scaling_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
