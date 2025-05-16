@@ -53,6 +53,7 @@ source_set("configs") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/privacy_sandbox",
     ]

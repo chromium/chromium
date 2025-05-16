@@ -2302,6 +2302,7 @@ if (!is_android) {
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/prefs:browser_tests",
       "//chrome/browser/ui/send_tab_to_self:browser_tests",
+      "//chrome/browser/ui/webui/app_service_internals:browser_tests",
 
       # TODO(413315837): Remove this dependency when
       # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
@@ -3509,7 +3510,6 @@ if (!is_android) {
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_browsertest.cc",
       "../browser/ui/views/webview_accessibility_browsertest.cc",
       "../browser/ui/webauthn/authenticator_dialog_browsertest.cc",
-      "../browser/ui/webui/app_service_internals/app_service_internals_browsertest.cc",
       "../browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_browsertest.cc",
       "../browser/ui/webui/chrome_content_browser_client_webui_part_browsertest.cc",
       "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",

@@ -4370,6 +4370,7 @@ static_library("browser") {
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/views/zoom:impl",
       "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/app_service_internals",
 
       # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
       # gets modularized.
