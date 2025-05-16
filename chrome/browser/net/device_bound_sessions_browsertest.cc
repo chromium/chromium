@@ -11,6 +11,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_feature_histogram_tester.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -19,6 +20,7 @@
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/session_usage.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -278,6 +280,57 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
   EXPECT_EQ(histograms.GetCount(
                 blink::mojom::WebFeature::kDeviceBoundSessionRequestInScope),
             2);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, NotDeferredLogs) {
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<SessionAccess> future;
+  DeviceBoundSessionAccessObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      future.GetRepeatingCallback<const SessionAccess&>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/resource_triggered_dbsc_registration")));
+
+  ASSERT_TRUE(future.Wait());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/ensure_authenticated")));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.RequestDeferralDecision",
+      /*sample=*/net::device_bound_sessions::SessionUsage::kInScopeNotDeferred,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, DeferredLogs) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        web_contents, future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(
+                       "/resource_triggered_dbsc_registration")));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Force a refresh.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/ensure_authenticated")));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.RequestDeferralDecision",
+      /*sample=*/net::device_bound_sessions::SessionUsage::kDeferred,
+      /*expected_count=*/1);
 }
 
 }  // namespace

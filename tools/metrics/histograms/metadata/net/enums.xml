@@ -273,6 +273,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
 
+<!-- LINT.IfChange(DeviceBoundSessionUsage) -->
+
+<enum name="DeviceBoundSessionUsage">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not in scope of any session"/>
+  <int value="2" label="In scope but not deferred"/>
+  <int value="3" label="In scope and deferred"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_usage.h:DeviceBoundSessionUsage) -->
+
 <enum name="DNS.AttemptType">
   <int value="0" label="DnsUDPAttempt"/>
   <int value="1" label="DnsTCPAttempt due to low UDP entropy"/>

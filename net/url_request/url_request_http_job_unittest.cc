@@ -1603,6 +1603,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
 TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
        DeferRequestIfNeeded) {
+  base::HistogramTester histogram_tester;
   const MockWrite writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.com\r\n"
@@ -1629,16 +1630,34 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
               device_bound_sessions::Session::Id("test"));
         }));
     EXPECT_CALL(GetMockService(), DeferRequestForRefresh)
-        .WillOnce(base::test::RunOnceClosure<3>());
+        .WillOnce(Invoke([](URLRequest* request, Unused,
+                            device_bound_sessions::SessionServiceMock::
+                                RefreshCompleteCallback restart_callback,
+                            device_bound_sessions::SessionServiceMock::
+                                RefreshCompleteCallback continue_callback) {
+          request->set_device_bound_session_usage(
+              net::device_bound_sessions::SessionUsage::kDeferred);
+          std::move(restart_callback).Run();
+        }));
+    EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
   }
 
   request_->Start();
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RequestDeferralCount",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RequestDeferralDecision",
+      /*sample=*/device_bound_sessions::SessionUsage::kDeferred,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
        DontDeferRequestIfNotNeeded) {
+  base::HistogramTester histogram_tester;
   const MockWrite writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.com\r\n"
@@ -1662,6 +1681,10 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   request_->Start();
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RequestDeferralCount",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,

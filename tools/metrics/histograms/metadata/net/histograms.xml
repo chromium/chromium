@@ -1519,7 +1519,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     This records how many times a request was deferred due to a Device Bound
     Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is
-    logged once for every network request.
+    logged once for most network requests that can add a cookie header; requests
+    that attempt to refresh but fail are omitted.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.RequestDeferralDecision"
+    enum="DeviceBoundSessionUsage" expires_after="2025-11-13">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records whether a request was deferred due to a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) and the reason
+    for that decision. This is logged once for most network requests that can
+    add a cookie header; requests that attempt to refresh but fail are omitted.
   </summary>
 </histogram>
 
