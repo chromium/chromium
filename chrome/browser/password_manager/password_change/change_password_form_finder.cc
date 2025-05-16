@@ -4,8 +4,13 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 
+#include "base/functional/bind.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
+#include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -16,6 +21,7 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
   options->on_critical_path = true;
+  options->enable_experimental_actionable_data = true;
   return options;
 }
 
@@ -75,5 +81,47 @@ void ChangePasswordFormFinder::OnPageContentReceived(
   }
   // TODO(crbug.com/407486413): Check if it's a settings page and try to find a
   // button which opens a change-pwd form.
+  optimization_guide::proto::PasswordChangeRequest request;
+  request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
+                       PasswordChangeRequest_FlowStep_OPEN_FORM_STEP);
+  *request.mutable_page_context()->mutable_annotated_page_content() =
+      std::move(content->proto);
+  optimization_guide::ExecuteModelWithLogging(
+      GetOptimizationService(),
+      optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
+      request, /*execution_timeout=*/std::nullopt,
+      base::BindOnce(&ChangePasswordFormFinder::OnExecutionResponseCallback,
+                     weak_ptr_factory_.GetMutableWeakPtr()));
+}
+
+OptimizationGuideKeyedService*
+ChangePasswordFormFinder::GetOptimizationService() {
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+}
+
+void ChangePasswordFormFinder::OnExecutionResponseCallback(
+    optimization_guide::OptimizationGuideModelExecutionResult execution_result,
+    std::unique_ptr<
+        optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+        logging_data) {
+  if (!execution_result.response.has_value()) {
+    // TODO(crbug.com/407503334): Record metrics here.
+    std::move(callback_).Run(nullptr);
+    return;
+  }
+  std::optional<optimization_guide::proto::PasswordChangeResponse> response =
+      optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::PasswordChangeResponse>(
+          execution_result.response.value());
+  if (!response) {
+    // TODO(crbug.com/407503334): Record metrics here.
+    std::move(callback_).Run(nullptr);
+    return;
+  }
+
+  // TODO (crbug.com/407485204): Get the dom node id from response and initiate
+  // a click on it.
+
   std::move(callback_).Run(nullptr);
 }

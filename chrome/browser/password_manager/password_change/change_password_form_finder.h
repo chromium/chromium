@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
@@ -48,6 +49,15 @@ class ChangePasswordFormFinder {
 
   void OnPageContentReceived(
       std::optional<optimization_guide::AIPageContentResult> content);
+
+  OptimizationGuideKeyedService* GetOptimizationService();
+
+  void OnExecutionResponseCallback(
+      optimization_guide::OptimizationGuideModelExecutionResult
+          execution_result,
+      std::unique_ptr<
+          optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+          logging_data);
 
   base::WeakPtr<content::WebContents> web_contents_;
   ChangePasswordFormWaiter::PasswordFormFoundCallback callback_;

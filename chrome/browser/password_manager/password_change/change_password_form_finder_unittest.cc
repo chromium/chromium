@@ -8,12 +8,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -33,7 +37,9 @@
 namespace {
 
 using autofill::test::CreateTestFormField;
+using testing::Invoke;
 using testing::Return;
+using testing::WithArg;
 
 class FakeChromePasswordManagerClient : public ChromePasswordManagerClient {
  public:
@@ -53,6 +59,28 @@ class FakeChromePasswordManagerClient : public ChromePasswordManagerClient {
       : ChromePasswordManagerClient(web_contents) {}
 };
 
+std::unique_ptr<KeyedService> CreateOptimizationService(
+    content::BrowserContext* context) {
+  return std::make_unique<MockOptimizationGuideKeyedService>();
+}
+
+void PostResponse(
+    optimization_guide::OptimizationGuideModelExecutionResultCallback
+        callback) {
+  optimization_guide::proto::PasswordChangeResponse response;
+  response.mutable_open_form_data()->set_dom_node_id_to_click(0);
+  response.mutable_open_form_data()->set_page_type(
+      ::optimization_guide::proto::OpenFormResponseData_PageType::
+          OpenFormResponseData_PageType_SETTINGS_PAGE);
+
+  auto result = optimization_guide::OptimizationGuideModelExecutionResult(
+      optimization_guide::AnyWrapProto(response),
+      /*execution_info=*/nullptr);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
+                                /*log_entry=*/nullptr));
+}
+
 }  // namespace
 
 class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
@@ -71,7 +99,9 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             content::BrowserContext,
                             password_manager::MockPasswordStoreInterface>));
-
+    OptimizationGuideKeyedServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&CreateOptimizationService));
     // `ChromePasswordManagerClient` observes `AutofillManager`s, so
     // `ChromeAutofillClient` needs to be set up, too.
     autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
@@ -104,6 +134,11 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
 
   base::PassKey<class ChangePasswordFormFinderTest> pass_key() {
     return base::PassKey<class ChangePasswordFormFinderTest>();
+  }
+
+  MockOptimizationGuideKeyedService* optimization_service() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile()));
   }
 
  private:
@@ -161,6 +196,8 @@ TEST_F(ChangePasswordFormFinderTest,
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
       ->DocumentOnLoadCompletedInPrimaryMainFrame();
 
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>(Invoke(&PostResponse)));
   EXPECT_CALL(capture_annotated_page_content, Run)
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
