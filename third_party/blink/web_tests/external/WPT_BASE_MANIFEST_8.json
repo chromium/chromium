@@ -303313,19 +303313,6 @@
         {}
        ]
       ],
-      "display-css-property-reftest.tentative.html": [
-       "e4288cae3b286e8d9b0d9f2ff4c857cd959a460c",
-       [
-        null,
-        [
-         [
-          "/html/semantics/permission-element/display-css-property-reftest-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "invalid-type-reftest.tentative.html": [
        "80f3e793e114fb66f968ac979b6dbd189e3b0b85",
        [
@@ -405915,10 +405902,6 @@
        "462f346edf591e8fa76b52191f00bc2bbe3bbfcc",
        []
       ],
-      "display-css-property-reftest-ref.html": [
-       "aa5ffe07a952744499c81039072e49f0a8ea59d4",
-       []
-      ],
       "invalid-type-reftest-ref.html": [
        "359872ea61358720c36fe2f0de282009b49f88ac",
        []
@@ -501306,6 +501289,13 @@
         {}
        ]
       ],
+      "content-counter-valid.html": [
+       "6de60c9f1d8bff9a38ab8863f4a59dcb85424db3",
+       [
+        null,
+        {}
+       ]
+      ],
       "content-invalid.html": [
        "efd4ea5136c489ccd38a25732864f4165a9a2b81",
        [
@@ -517723,6 +517713,13 @@
        {}
       ]
      ],
+     "snapevent-constructor.html": [
+      "a5257d77e3d2d0200c1084e060c09cba3d045990",
+      [
+       null,
+       {}
+      ]
+     ],
      "unreachable-snap-positions-001.html": [
       "ca4f6033cece748bb1b4b39c755569174a75ecb5",
       [
@@ -531230,7 +531227,7 @@
       ]
      ],
      "pseudo-get-computed-style.html": [
-      "60e032b1d98e1dc5d670f99edba85a5f8f146dd5",
+      "274e946b825951f0a941c9befe5059452568d9c4",
       [
        null,
        {}
@@ -565862,7 +565859,7 @@
      ]
     ],
     "lfedcm-identity.create-store-collect.tentative.sub.https.html": [
-     "54226aff9ae9974a9810865b6806c930b7677260",
+     "553bc40989e4c23b6e331c658734ed08a466ba5c",
      [
       null,
       {
@@ -651793,13 +651790,6 @@
       ],
       "bounded-sizes.tentative.html": [
        "7a620c2652b32c60bb461915c1734757f62392dd",
-       [
-        null,
-        {}
-       ]
-      ],
-      "display-css-property.tentative.html": [
-       "b87b6aa9e0449a969765666a18a03670e3ae3091",
        [
         null,
         {}
@@ -774682,7 +774672,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "9369fcede8da9cb4fc4862c71632696db2d5c929",
+      "70e8cab0d95ee7d2870a462621de80be95cf2e79",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
