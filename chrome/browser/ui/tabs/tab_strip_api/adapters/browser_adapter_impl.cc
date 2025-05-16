@@ -8,9 +8,14 @@
 
 namespace tabs_api {
 
-tabs::TabHandle BrowserAdapterImpl::AddTabAt(const GURL& url, int index) {
-  auto* contents = chrome::AddAndReturnTabAt(
-      browser_->GetBrowserForMigrationOnly(), url, index, true);
+// Magic number to signal new tab should be appended.
+constexpr int kAppendNewTab = -1;
+
+tabs::TabHandle BrowserAdapterImpl::AddTabAt(const GURL& url,
+                                             std::optional<int> index) {
+  auto* contents =
+      chrome::AddAndReturnTabAt(browser_->GetBrowserForMigrationOnly(), url,
+                                index.value_or(kAppendNewTab), true);
   return contents ? tabs::TabInterface::GetFromContents(contents)->GetHandle()
                   : tabs::TabHandle::Null();
 }

@@ -86,7 +86,7 @@ interface TabStripService {
   // tab-page is loaded instead.
   [Sync]
   CreateTabAt(Position? pos, url.mojom.Url? url)
-      => result<bool, mojo_base.mojom.Error>;
+      => result<Tab, mojo_base.mojom.Error>;
 
   // Closes a list of tabs. The accepted tab types are content and collection
   // types. All the provided IDs must exist. If an ID could not be found, the

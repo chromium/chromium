@@ -8,7 +8,7 @@ import {TabsObserverCallbackRouter, TabStripService} from './tab_strip_api.mojom
 import type {Position, Tab, TabId, TabsSnapshot, TabStripServiceRemote} from './tab_strip_api.mojom-webui.js';
 
 export interface TabStripApiProxy {
-  createTabAt(pos: Position|null, url: Url|null): Promise<boolean>;
+  createTabAt(pos: Position|null, url: Url|null): Promise<Tab>;
   getTabs(): Promise<TabsSnapshot>;
   getTab(id: TabId): Promise<Tab>;
   getCallbackRouter(): TabsObserverCallbackRouter;

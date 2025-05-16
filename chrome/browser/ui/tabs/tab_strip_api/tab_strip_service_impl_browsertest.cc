@@ -40,6 +40,8 @@ class MockTabsObserver : public tabs_api::mojom::TabsObserver {
 
 class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
  public:
+  using TabStripService = tabs_api::mojom::TabStripService;
+
   TabStripServiceImplBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kTabStripBrowserApi);
   }
@@ -53,16 +55,6 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     tab_strip_service_impl_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
-  }
-
-  void CreateTabAtApiCallback(
-      base::RunLoop* run_loop,
-      base::expected<bool, mojo_base::mojom::ErrorPtr>* out_result,
-      base::expected<bool, mojo_base::mojom::ErrorPtr> result) {
-    *out_result = std::move(result);
-    if (run_loop) {
-      run_loop->Quit();
-    }
   }
 
  protected:
@@ -79,31 +71,35 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
-  mojo::Remote<tabs_api::mojom::TabStripService> remote;
+  mojo::Remote<TabStripService> remote;
   tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
 
   TabStripModel* model = GetTabStripModel();
   const int expected_tab_count = model->count() + 1;
   const GURL url("http://example.com/");
 
-  base::expected<bool, mojo_base::mojom::ErrorPtr> result;
   base::RunLoop run_loop;
   tabs_api::mojom::PositionPtr position = CreatePosition(0);
 
+  TabStripService::CreateTabAtResult result;
   remote->CreateTabAt(
       std::move(position), std::make_optional(url),
-      base::BindOnce(&TabStripServiceImplBrowserTest::CreateTabAtApiCallback,
-                     base::Unretained(this), &run_loop, &result));
+      base::BindLambdaForTesting([&](TabStripService::CreateTabAtResult in) {
+        result = std::move(in);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
-  ASSERT_TRUE(result.has_value())
-      << "CreateTabAt failed: " << (result.error()->message);
+  ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result.value());
   EXPECT_EQ(model->count(), expected_tab_count);
+
+  auto handle = model->GetTabAtIndex(0)->GetHandle();
+  ASSERT_EQ(base::NumberToString(handle.raw_value()), result.value()->id.Id());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
-  mojo::Remote<tabs_api::mojom::TabStripService> remote;
+  mojo::Remote<TabStripService> remote;
   tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
   MockTabsObserver mock_observer;
   mojo::Receiver<tabs_api::mojom::TabsObserver> receiver(&mock_observer);
@@ -125,23 +121,25 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
           })))
       .Times(1);
 
-  base::expected<bool, mojo_base::mojom::ErrorPtr> result;
   base::RunLoop run_loop;
   tabs_api::mojom::PositionPtr position = CreatePosition(target_index);
 
   base::RunLoop get_tabs_loop;
-  remote->GetTabs(base::BindLambdaForTesting(
-      [&](tabs_api::mojom::TabStripService::GetTabsResult result) {
+  remote->GetTabs(
+      base::BindLambdaForTesting([&](TabStripService::GetTabsResult result) {
         ASSERT_TRUE(result.has_value());
         receiver.Bind(std::move(result.value()->stream));
         get_tabs_loop.Quit();
       }));
   get_tabs_loop.Run();
 
+  TabStripService::CreateTabAtResult result;
   remote->CreateTabAt(
       std::move(position), std::make_optional(url),
-      base::BindOnce(&TabStripServiceImplBrowserTest::CreateTabAtApiCallback,
-                     base::Unretained(this), &run_loop, &result));
+      base::BindLambdaForTesting([&](TabStripService::CreateTabAtResult in) {
+        result = std::move(in);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   ASSERT_TRUE(result.has_value())
@@ -150,19 +148,19 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
-  mojo::Remote<tabs_api::mojom::TabStripService> remote;
+  mojo::Remote<TabStripService> remote;
   tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
 
   const int starting_num_tabs = GetTabStripModel()->GetTabCount();
 
   base::RunLoop create_loop;
-  remote->CreateTabAt(
-      CreatePosition(0), std::make_optional(GURL("http://dark.web")),
-      base::BindLambdaForTesting(
-          [&](tabs_api::mojom::TabStripService::CreateTabAtResult result) {
-            ASSERT_TRUE(result.has_value());
-            create_loop.Quit();
-          }));
+  remote->CreateTabAt(CreatePosition(0),
+                      std::make_optional(GURL("http://dark.web")),
+                      base::BindLambdaForTesting(
+                          [&](TabStripService::CreateTabAtResult result) {
+                            ASSERT_TRUE(result.has_value());
+                            create_loop.Quit();
+                          }));
   create_loop.Run();
 
   // We should now have one more tab than when we first started.
@@ -174,11 +172,10 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
       {tabs_api::TabId(
           tabs_api::TabId::Type::kContent,
           base::NumberToString(interface->GetHandle().raw_value()))},
-      base::BindLambdaForTesting(
-          [&](tabs_api::mojom::TabStripService::CloseTabsResult result) {
-            ASSERT_TRUE(result.has_value());
-            close_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](TabStripService::CloseTabsResult result) {
+        ASSERT_TRUE(result.has_value());
+        close_loop.Quit();
+      }));
   close_loop.Run();
 
   // We should be back to where we started.

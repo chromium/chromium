@@ -108,7 +108,7 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
   if (url.has_value()) {
     target_url = url.value();
   }
-  int index = -1;
+  std::optional<int> index;
   if (pos) {
     index = pos->index;
   }
@@ -120,11 +120,22 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
     // internal state. This is usually because the browser is not in the
     // required state to perform the action.
     std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kFailedPrecondition,
-        "Failed to create WebContents")));
-  } else {
-    std::move(callback).Run(base::ok(true));
+        mojo_base::mojom::Code::kInternal, "Failed to create WebContents")));
+    return;
   }
+
+  auto tab_index = tab_strip_model_adapter_->GetIndexForHandle(tab_handle);
+  if (!tab_index.has_value()) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInternal,
+        "Could not find the index of the newly created tab")));
+    return;
+  }
+
+  auto renderer_data =
+      tab_strip_model_adapter_->GetTabRendererData(tab_index.value());
+  auto mojo_tab = tabs_api::converters::BuildMojoTab(tab_handle, renderer_data);
+  std::move(callback).Run(base::ok(std::move(mojo_tab)));
 }
 
 void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::TabId>& ids,
