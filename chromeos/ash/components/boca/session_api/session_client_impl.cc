@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/join_session_request.h"
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
+#include "chromeos/ash/components/boca/session_api/renotify_student_request.h"
 #include "chromeos/ash/components/boca/session_api/update_session_config_request.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
@@ -114,6 +115,11 @@ void SessionClientImpl::JoinSession(
 }
 void SessionClientImpl::StudentHeartbeat(
     std::unique_ptr<StudentHeartbeatRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
+void SessionClientImpl::RenotifyStudent(
+    std::unique_ptr<RenotifyStudentRequest> request) {
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 

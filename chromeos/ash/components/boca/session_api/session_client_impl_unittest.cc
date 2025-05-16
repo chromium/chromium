@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/renotify_student_request.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "net/http/http_status_code.h"
@@ -78,6 +79,7 @@ class SessionClientImplTest : public testing::Test {
     request->OverrideURLForTesting(test_server_.base_url().spec());
     return request;
   }
+
   net::EmbeddedTestServer test_server_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
@@ -171,4 +173,21 @@ TEST_F(SessionClientImplTest, SequentialGetSessionRequestRunInOrder) {
       /*can_skip_duplicate_request=*/true);
   EXPECT_TRUE(future_3.Wait());
 }
+
+TEST_F(SessionClientImplTest, RenotifyStudent) {
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future;
+
+  std::unique_ptr<RenotifyStudentRequest> request =
+      std::make_unique<RenotifyStudentRequest>(request_sender_, "https://test",
+                                               GaiaId("gaia_id"), "session_id",
+                                               future.GetCallback());
+
+  request->OverrideURLForTesting(test_server_.base_url().spec());
+
+  EXPECT_CALL(request_handler_, HandleRequest(_)).Times(1);
+  session_client_impl_->RenotifyStudent(std::move(request));
+  EXPECT_TRUE(future.Wait());
+}
+
 }  // namespace ash::boca

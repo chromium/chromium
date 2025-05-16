@@ -31,6 +31,7 @@ class JoinSessionRequest;
 class StudentHeartbeatRequest;
 class AddStudentsRequest;
 class UpdateSessionConfigRequest;
+class RenotifyStudentRequest;
 
 class SessionClientImpl {
  public:
@@ -60,6 +61,8 @@ class SessionClientImpl {
   virtual void JoinSession(std::unique_ptr<JoinSessionRequest> request);
   virtual void StudentHeartbeat(
       std::unique_ptr<StudentHeartbeatRequest> request);
+  virtual void RenotifyStudent(std::unique_ptr<RenotifyStudentRequest> request);
+
   google_apis::RequestSender* sender() { return sender_.get(); }
 
  private:
