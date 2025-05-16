@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 class TemplateURL;

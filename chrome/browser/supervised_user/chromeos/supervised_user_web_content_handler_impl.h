@@ -13,7 +13,6 @@
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class Profile;

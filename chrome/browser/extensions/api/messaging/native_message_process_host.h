@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
-#include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"

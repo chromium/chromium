@@ -14,8 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/resources/ui_resource_client.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/transform.h"
 
 namespace cc::slim {
 class Layer;

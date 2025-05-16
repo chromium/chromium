@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/vr_ui_export.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace vr {
 

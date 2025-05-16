@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
 namespace base {

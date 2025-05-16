@@ -11,8 +11,6 @@
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class FaviconFetcher {

@@ -24,7 +24,6 @@
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "ui/gfx/native_widget_types.h"
 
 class GURL;
 

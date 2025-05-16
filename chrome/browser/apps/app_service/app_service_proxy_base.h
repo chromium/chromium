@@ -36,7 +36,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
-#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 class GURL;

@@ -12,6 +12,7 @@
 #include "chrome/browser/vr/ui_scene.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/animation/keyframe/test/animation_utils.h"
 
 namespace vr {
 

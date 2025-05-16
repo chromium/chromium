@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_ICON_CONSTANTS_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_ICON_CONSTANTS_H_
 
-#include "ui/gfx/color_palette.h"
+#include <stdint.h>
+
+using SkColor = uint32_t;
 
 namespace app_list {
 

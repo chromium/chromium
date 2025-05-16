@@ -13,6 +13,7 @@
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/gfx/animation/keyframe/test/animation_utils.h"
 
 namespace vr {
 

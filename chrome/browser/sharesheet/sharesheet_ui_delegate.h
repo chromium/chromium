@@ -11,7 +11,6 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace sharesheet {
 

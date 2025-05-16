@@ -8,7 +8,6 @@
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "ui/gfx/range/range.h"
 
 namespace ash::input_method {
 

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "ui/gfx/geometry/point.h"
 
 namespace content {
 class WebContents;

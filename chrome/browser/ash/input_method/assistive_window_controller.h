@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/ash/input_method/undo_window.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
-#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 

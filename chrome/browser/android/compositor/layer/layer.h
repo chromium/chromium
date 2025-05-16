@@ -7,7 +7,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "cc/slim/layer.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace android {
 

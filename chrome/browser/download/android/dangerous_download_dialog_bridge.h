@@ -11,7 +11,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_item.h"
-#include "ui/gfx/native_widget_types.h"
+
+namespace ui {
+class WindowAndroid;
+}
 
 // Class for showing dialogs to asks whether user wants to download a dangerous
 // file.

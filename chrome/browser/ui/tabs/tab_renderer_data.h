@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class TabStripModel;

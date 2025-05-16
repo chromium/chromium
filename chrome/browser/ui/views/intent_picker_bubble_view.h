@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/gfx/image/image.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/scroll_view.h"
 #include "url/origin.h"

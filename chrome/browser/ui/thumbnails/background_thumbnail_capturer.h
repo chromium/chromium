@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_THUMBNAILS_BACKGROUND_THUMBNAIL_CAPTURER_H_
 
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_info.h"
-#include "ui/gfx/geometry/size.h"
 
 // Captures thumbnails from a background tab's contents.
 class BackgroundThumbnailCapturer {

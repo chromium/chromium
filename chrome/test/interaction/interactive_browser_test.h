@@ -35,7 +35,6 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view.h"

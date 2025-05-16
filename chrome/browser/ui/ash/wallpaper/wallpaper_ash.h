@@ -13,7 +13,6 @@
 #include "extensions/common/extension_id.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/image/image_skia.h"
 
 // Ash implementation of the wallpaper extension API.
 class WallpaperAsh {

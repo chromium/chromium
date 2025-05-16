@@ -12,10 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/size_f.h"
 
 namespace android {
 

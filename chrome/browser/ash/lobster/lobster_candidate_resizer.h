@@ -10,7 +10,6 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
-#include "ui/gfx/geometry/size.h"
 
 class LobsterCandidateResizer {
  public:

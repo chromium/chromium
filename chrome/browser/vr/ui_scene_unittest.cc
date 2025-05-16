@@ -18,6 +18,7 @@
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/test/animation_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 

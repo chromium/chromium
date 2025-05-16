@@ -7,7 +7,6 @@
 
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace web_app {
 struct WebAppInstallInfo;
