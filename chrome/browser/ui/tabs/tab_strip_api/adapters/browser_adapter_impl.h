@@ -20,7 +20,7 @@ class BrowserAdapterImpl : public BrowserAdapter {
   BrowserAdapterImpl operator=(const BrowserAdapterImpl&) = delete;
   ~BrowserAdapterImpl() override = default;
 
-  content::WebContents* AddTabAt(const GURL& url, int index) override;
+  tabs::TabHandle AddTabAt(const GURL& url, int index) override;
 
  private:
   raw_ptr<BrowserWindowInterface> browser_;

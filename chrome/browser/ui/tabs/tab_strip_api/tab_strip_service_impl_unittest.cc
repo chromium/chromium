@@ -61,8 +61,9 @@ class FakeBrowserAdapter : public tabs_api::BrowserAdapter {
   FakeBrowserAdapter operator=(const FakeBrowserAdapter&) = delete;
   ~FakeBrowserAdapter() override = default;
 
-  content::WebContents* AddTabAt(const GURL& url, int index) override {
-    return nullptr;
+  tabs::TabHandle AddTabAt(const GURL& url, int index) override {
+    // Hard-coded value for now to test success.
+    return tabs::TabHandle(1);
   }
 };
 
@@ -99,8 +100,8 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
   bool success = client_->CreateTabAt(nullptr, std::nullopt, &result);
 
   ASSERT_TRUE(success);
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kFailedPrecondition);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result.value());
 }
 
 TEST_F(TabStripServiceImplTest, GetTabs) {

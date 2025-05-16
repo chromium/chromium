@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_BROWSER_ADAPTER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_BROWSER_ADAPTER_H_
 
-#include "content/public/browser/web_contents.h"
+#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 namespace tabs_api {
@@ -16,7 +16,8 @@ class BrowserAdapter {
  public:
   virtual ~BrowserAdapter() {}
 
-  virtual content::WebContents* AddTabAt(const GURL& url, int index) = 0;
+  // TabHandle could potentially be null to indicate that tab creation.
+  virtual tabs::TabHandle AddTabAt(const GURL& url, int index) = 0;
 };
 
 }  // namespace tabs_api

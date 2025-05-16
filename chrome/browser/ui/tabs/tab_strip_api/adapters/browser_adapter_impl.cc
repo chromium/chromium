@@ -8,9 +8,11 @@
 
 namespace tabs_api {
 
-content::WebContents* BrowserAdapterImpl::AddTabAt(const GURL& url, int index) {
-  return chrome::AddAndReturnTabAt(browser_->GetBrowserForMigrationOnly(), url,
-                                   index, true);
+tabs::TabHandle BrowserAdapterImpl::AddTabAt(const GURL& url, int index) {
+  auto* contents = chrome::AddAndReturnTabAt(
+      browser_->GetBrowserForMigrationOnly(), url, index, true);
+  return contents ? tabs::TabInterface::GetFromContents(contents)->GetHandle()
+                  : tabs::TabHandle::Null();
 }
 
 }  // namespace tabs_api

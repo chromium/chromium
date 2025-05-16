@@ -113,8 +113,8 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
     index = pos->index;
   }
 
-  content::WebContents* content = browser_adapter_->AddTabAt(target_url, index);
-  if (!content) {
+  auto tab_handle = browser_adapter_->AddTabAt(target_url, index);
+  if (tab_handle == tabs::TabHandle::Null()) {
     // Missing content can happen for a number of reasons. i.e. If the profile
     // is shutting down or if navigation requests are blocked due to some
     // internal state. This is usually because the browser is not in the
