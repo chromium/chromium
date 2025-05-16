@@ -241,6 +241,8 @@ class DataTypeSyncBridge {
   // TODO(crbug.com/40253395): Consider changing the default to preserve unknown
   // fields at least.
   // By default, empty EntitySpecifics is returned.
+  // Refer to the following documentation before implementing this method:
+  // https://www.chromium.org/developers/design-documents/sync/old-sync-clients-data-override-protection/
   virtual sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const;
 

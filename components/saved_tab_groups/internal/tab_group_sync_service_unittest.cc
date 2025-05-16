@@ -234,6 +234,9 @@ class TabGroupSyncServiceTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     ON_CALL(shared_processor_, TrackedGaiaId())
         .WillByDefault(testing::Return(kDefaultGaiaId));
+    ON_CALL(shared_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(
+            testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     ON_CALL(*collaboration_finder_, IsCollaborationAvailable(_))
         .WillByDefault(testing::Return(true));
     ON_CALL(*decider_,

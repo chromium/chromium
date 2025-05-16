@@ -77,12 +77,24 @@ using testing::Not;
 using testing::NotNull;
 using testing::Pointee;
 using testing::Return;
+using testing::ReturnRef;
 using testing::Sequence;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
 
 constexpr GaiaId::Literal kDefaultGaiaId("1234567890");
+
+// Returns the extra (unsupported) field from `specifics` which don't have a
+// corresponding field in proto.
+std::string GetGroupExtraFieldFromSpecifics(
+    const sync_pb::SharedTabGroupDataSpecifics& specifics) {
+  sync_pb::test_utils::SharedTabGroupDataSpecifics extended_specifics;
+  bool success =
+      extended_specifics.ParseFromString(specifics.SerializeAsString());
+  CHECK(success);
+  return extended_specifics.tab_group().extra_field_for_testing();
+}
 
 // Creator is not verified for the local changes because this field is not used
 // in the processor for updates.
@@ -120,6 +132,16 @@ MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
              CollaborationId(collaboration_id);
 }
 
+MATCHER_P(EntityDataHasGroupUnsupportedFields, extra_field, "") {
+  const sync_pb::SharedTabGroupDataSpecifics& arg_specifics =
+      arg.specifics.shared_tab_group_data();
+  return GetGroupExtraFieldFromSpecifics(arg_specifics) == extra_field;
+}
+
+MATCHER_P(GroupSpecificsHasUnsupportedField, extra_field, "") {
+  return GetGroupExtraFieldFromSpecifics(arg) == extra_field;
+}
+
 MATCHER_P(HasCreationTime, time, "") {
   return arg.creation_time == time;
 }
@@ -129,6 +151,12 @@ MATCHER_P(HasGroupEntityDataWithOriginatingGroup, originating_group_guid, "") {
       arg.specifics.shared_tab_group_data().tab_group();
   return arg_tab_group.originating_tab_group_guid() ==
          originating_group_guid.AsLowercaseString();
+}
+
+MATCHER(EntityDataHasOriginatingGroup, "") {
+  const sync_pb::SharedTabGroup& arg_tab_group =
+      arg.specifics.shared_tab_group_data().tab_group();
+  return arg_tab_group.has_originating_tab_group_guid();
 }
 
 MATCHER_P3(HasTabEntityData, title, url, collaboration_id, "") {
@@ -261,6 +289,24 @@ sync_pb::SharedTabGroupDataSpecifics MakeTabGroupSpecifics(
   return specifics;
 }
 
+sync_pb::SharedTabGroupDataSpecifics MakeTabGroupSpecificsWithUnknownFields(
+    const std::string& title,
+    sync_pb::SharedTabGroup::Color color,
+    const base::Uuid& originating_group_id,
+    const std::string& extra_field) {
+  sync_pb::SharedTabGroupDataSpecifics specifics =
+      MakeTabGroupSpecifics(title, color);
+  sync_pb::test_utils::SharedTabGroupDataSpecifics extended_specifics;
+  extended_specifics.mutable_tab_group()->set_extra_field_for_testing(
+      extra_field);
+  sync_pb::SharedTabGroupDataSpecifics specifics_with_unknown_fields;
+  bool success = specifics_with_unknown_fields.ParseFromString(
+      extended_specifics.SerializeAsString());
+  CHECK(success);
+  specifics.MergeFrom(specifics_with_unknown_fields);
+  return specifics;
+}
+
 sync_pb::SharedTabGroupDataSpecifics MakeTabSpecifics(
     const std::string& title,
     const GURL& url,
@@ -370,8 +416,9 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
 
   // Creates the bridges and initializes the model. Returns true when succeeds.
   bool InitializeBridgeAndModel() {
-    ON_CALL(processor_, IsTrackingMetadata())
-        .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, IsTrackingMetadata()).WillByDefault(Return(true));
+    ON_CALL(processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
 
     CHECK(!saved_tab_group_model_) << "InitializeBridgeAndModel must not be "
                                       "called when the model is initialized";
@@ -407,7 +454,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     saved_tab_group_model_.reset();
   }
 
-  size_t GetNumEntriesInStore() {
+  size_t GetNumEntriesInStore() const {
     std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
     base::RunLoop run_loop;
     store_->ReadAllData(base::BindLambdaForTesting(
@@ -419,6 +466,29 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
         }));
     run_loop.Run();
     return entries->size();
+  }
+
+  std::vector<sync_pb::SharedTabGroupDataSpecifics> GetAllSpecificsFromStore()
+      const {
+    std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
+    base::RunLoop run_loop;
+    store_->ReadAllData(base::BindLambdaForTesting(
+        [&run_loop, &entries](
+            const std::optional<syncer::ModelError>& error,
+            std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
+          entries = std::move(data);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    std::vector<sync_pb::SharedTabGroupDataSpecifics> specifics;
+    for (const syncer::DataTypeStore::Record& record : *entries) {
+      proto::SharedTabGroupData local_proto;
+      bool success = local_proto.ParseFromString(record.value);
+      CHECK(success);
+      specifics.push_back(local_proto.specifics());
+    }
+    return specifics;
   }
 
   // Generates and mocks unique positions for all the tabs in the `group`.
@@ -2421,22 +2491,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldKeepUnknownFieldsFromRemoteTabGroupSpecifics) {
   ASSERT_TRUE(InitializeBridgeAndModel());
 
-  sync_pb::test_utils::SharedTabGroupDataSpecifics extended_tab_group_specifics;
-  extended_tab_group_specifics.set_guid("guid");
-  extended_tab_group_specifics.set_update_time_windows_epoch_micros(1234567890);
-  extended_tab_group_specifics.mutable_tab_group()->set_title("title");
-  extended_tab_group_specifics.mutable_tab_group()->set_color(
-      sync_pb::test_utils::SharedTabGroup::UNSPECIFIED);
-  extended_tab_group_specifics.mutable_tab_group()
-      ->set_originating_tab_group_guid("originating_guid");
-  extended_tab_group_specifics.mutable_tab_group()->set_extra_field_for_testing(
-      "extra_field_for_testing");
-
   // Serialize and deserialize the proto to get unknown fields.
   sync_pb::EntitySpecifics remote_tab_group_specifics;
-  ASSERT_TRUE(
-      remote_tab_group_specifics.mutable_shared_tab_group_data()
-          ->ParseFromString(extended_tab_group_specifics.SerializeAsString()));
+  *remote_tab_group_specifics.mutable_shared_tab_group_data() =
+      MakeTabGroupSpecificsWithUnknownFields(
+          "title", sync_pb::SharedTabGroup::CYAN,
+          /*originating_group_id=*/base::Uuid::GenerateRandomV4(),
+          "extra_field_for_testing");
 
   sync_pb::EntitySpecifics trimmed_specifics =
       bridge()->TrimAllSupportedFieldsFromRemoteSpecifics(
@@ -2506,6 +2567,113 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
       trimmed_specifics.shared_tab_group_data().SerializeAsString()));
   EXPECT_EQ(deserialized_extended_specifics.tab().extra_field_for_testing(),
             "extra_field_for_testing");
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldPopulateUnknownFieldsOnLocalChanges) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::EntitySpecifics remote_tab_group_specifics;
+  *remote_tab_group_specifics.mutable_shared_tab_group_data() =
+      MakeTabGroupSpecificsWithUnknownFields(
+          "title", sync_pb::SharedTabGroup::CYAN,
+          /*originating_group_id=*/base::Uuid::GenerateRandomV4(),
+          "extra_field");
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge()->TrimAllSupportedFieldsFromRemoteSpecifics(
+          remote_tab_group_specifics);
+  ON_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics(_))
+      .WillByDefault(ReturnRef(trimmed_specifics));
+
+  ApplySingleEntityChange(CreateAddEntityChange(
+      remote_tab_group_specifics.shared_tab_group_data(), kCollaborationId));
+
+  ASSERT_THAT(
+      model()->saved_tab_groups(),
+      ElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kCyan, kCollaborationId)));
+
+  // Simulate opening the group in the tab strip to make local changes.
+  const base::Uuid group_guid =
+      model()->saved_tab_groups().front().saved_guid();
+  const tab_groups::LocalTabGroupID local_tab_group_id =
+      test::GenerateRandomTabGroupID();
+  model()->OnGroupOpenedInTabStrip(group_guid, local_tab_group_id);
+
+  // Make local changes to the group. The bridge should make a local change
+  // with the unknown fields populated.
+  EXPECT_CALL(
+      mock_processor(),
+      Put(_, Pointee(EntityDataHasGroupUnsupportedFields("extra_field")), _));
+  tab_groups::TabGroupVisualData visual_data(
+      u"new title", tab_groups::TabGroupColorId::kYellow);
+  model()->UpdateVisualDataLocally(local_tab_group_id, &visual_data);
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldStoreUnsupportedFieldsInLocalStorage) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::EntitySpecifics remote_tab_group_specifics;
+  *remote_tab_group_specifics.mutable_shared_tab_group_data() =
+      MakeTabGroupSpecificsWithUnknownFields(
+          "title", sync_pb::SharedTabGroup::CYAN,
+          /*originating_group_id=*/base::Uuid::GenerateRandomV4(),
+          "extra_field");
+
+  ApplySingleEntityChange(CreateAddEntityChange(
+      remote_tab_group_specifics.shared_tab_group_data(), kCollaborationId));
+
+  std::vector<sync_pb::SharedTabGroupDataSpecifics> stored_specifics =
+      GetAllSpecificsFromStore();
+  ASSERT_THAT(stored_specifics,
+              ElementsAre(GroupSpecificsHasUnsupportedField("extra_field")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotPopulateKnownClearedFields) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  ApplySingleEntityChange(CreateAddEntityChange(
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::CYAN),
+      kCollaborationId));
+  ASSERT_THAT(
+      model()->saved_tab_groups(),
+      ElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kCyan, kCollaborationId)));
+
+  // Simulate that `originating_tab_group_guid` field was unknown on the client.
+  // But now, the field is known and needs to be cleared.
+  sync_pb::EntitySpecifics trimmed_specifics;
+  base::Uuid originating_group_guid = base::Uuid::GenerateRandomV4();
+  trimmed_specifics.mutable_shared_tab_group_data()
+      ->mutable_tab_group()
+      ->set_originating_tab_group_guid(
+          originating_group_guid.AsLowercaseString());
+  ON_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics(_))
+      .WillByDefault(ReturnRef(trimmed_specifics));
+
+  // Simulate opening the group in the tab strip to make local changes.
+  const base::Uuid group_guid =
+      model()->saved_tab_groups().front().saved_guid();
+  const tab_groups::LocalTabGroupID local_tab_group_id =
+      test::GenerateRandomTabGroupID();
+  model()->OnGroupOpenedInTabStrip(group_guid, local_tab_group_id);
+
+  ASSERT_EQ(model()->saved_tab_groups().front().GetOriginatingTabGroupGuid(
+                /*for_sync=*/true),
+            std::nullopt);
+
+  // Make local changes to the group. The bridge should make a local change
+  // without the originating group guid (which was unsupported and is stored in
+  // possibly trimmed specifics in sync metadata).
+  EXPECT_CALL(mock_processor(),
+              Put(_, Pointee(Not(EntityDataHasOriginatingGroup())), _));
+  tab_groups::TabGroupVisualData visual_data(
+      u"new title", tab_groups::TabGroupColorId::kYellow);
+  model()->UpdateVisualDataLocally(local_tab_group_id, &visual_data);
 }
 
 // The number of tabs to test the correct ordering of remote updates.

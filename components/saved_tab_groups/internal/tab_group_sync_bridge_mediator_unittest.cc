@@ -71,6 +71,9 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
         prefs::kDidEnableSharedTabGroupsInLastSession, true);
     ON_CALL(mock_shared_processor_, IsTrackingMetadata)
         .WillByDefault(Return(true));
+    ON_CALL(mock_shared_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(
+            testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     InitializeModelAndMediator();
   }
 
