@@ -614,8 +614,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.DataProtection.NavigationFinished.URLVerdictSource"
-    enum="DataProtectionURLVerdictSource" expires_after="2025-03-18">
+<histogram name="Enterprise.DataProtection.URLVerdictSource"
+    enum="DataProtectionURLVerdictSource" expires_after="2026-03-18">
   <owner>alshawwa@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
