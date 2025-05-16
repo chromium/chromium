@@ -6,16 +6,13 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -25,7 +22,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -44,9 +40,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.OnPeripheralClickListener;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -588,56 +584,5 @@ class TabGridViewBinder {
     static void setThumbnailFetcherForTesting(ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
         ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
-    }
-
-    /**
-     * An {@link OnTouchListener} to detect a click from peripherals.
-     *
-     * <p>If a {@link MotionEvent} comes from a peripheral, this listener will consume it. Then, if
-     * the event completes a click action, the {@link OnPeripheralClickRunnable} will be run.
-     *
-     * <p>If a {@link MotionEvent} doesn't come from a peripheral, this listener is a no-op. It
-     * won't consume or interpret the event.
-     */
-    @VisibleForTesting
-    static final class OnPeripheralClickListener implements OnTouchListener {
-
-        @NonNull private final GestureDetector mGestureDetector;
-
-        OnPeripheralClickListener(
-                @NonNull View view, @NonNull OnPeripheralClickRunnable onPeripheralClickRunnable) {
-            mGestureDetector =
-                    new GestureDetector(
-                            view.getContext(),
-                            new GestureDetector.SimpleOnGestureListener() {
-
-                                @Override
-                                public boolean onSingleTapUp(@NonNull MotionEvent e) {
-                                    onPeripheralClickRunnable.run(e);
-                                    return true;
-                                }
-                            });
-        }
-
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (!MotionEventUtils.isMouseEvent(event)) {
-                return false;
-            }
-
-            mGestureDetector.onTouchEvent(event);
-            return true;
-        }
-
-        interface OnPeripheralClickRunnable {
-
-            /**
-             * Called when a peripheral click is detected.
-             *
-             * @param triggeringMotionEvent {@link MotionEvent} that triggered the click.
-             */
-            void run(@NonNull MotionEvent triggeringMotionEvent);
-        }
     }
 }
