@@ -471,7 +471,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   validate_and_create_params.default_color_space =
       GetDefaultImageDataColorSpace();
 
-  if (isContextLost() || !CanCreateCanvas2dResourceProvider()) [[unlikely]] {
+  if (isContextLost()) {
     return ImageData::ValidateAndCreate(
         sw, sh, std::nullopt, image_data_settings, validate_and_create_params,
         exception_state);
@@ -564,6 +564,10 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
         image_data_rect.bottom() > snapshot->Size().height()) {
       validate_and_create_params.zero_initialize = true;
     }
+  } else {
+    // If there's no snapshot, the buffer will not be overwritten and hence must
+    // be zero-initialized.
+    validate_and_create_params.zero_initialize = true;
   }
 
   ImageData* image_data =

@@ -2141,6 +2141,35 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       GetImageDataDoesntEndHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
+  ASSERT_FALSE(handler.IsHibernating());
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden,
+      /*is_initial_state=*/false);
+
+  // Run the task that initiates hibernation, which has been posted as an idle
+  // task.
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+  ASSERT_TRUE(handler.IsHibernating());
+
+  NonThrowableExceptionState exception_state;
+  Context2D()->getImageData(0, 0, 1, 1, exception_state);
+
+  EXPECT_TRUE(handler.IsHibernating());
+}
+
 // https://crbug.com/708445: When the canvas hibernates or wakes up from
 // hibernation, the compositing reasons for the canvas element may change. In
 // these cases, the element should request a compositing update.
