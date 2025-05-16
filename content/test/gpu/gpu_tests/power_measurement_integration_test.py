@@ -23,6 +23,7 @@ This script is tested and works fine with the following video sites:
   * http://crosvideo.appspot.com
 """
 
+import dataclasses
 import logging
 import os
 import posixpath
@@ -31,16 +32,13 @@ import time
 from typing import Any
 import unittest
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+import py_utils
 
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import ipg_utils
-
-import gpu_path_util
-
-import py_utils
 
 # Waits for [x] seconds after browser launch before measuring power to
 # avoid startup tasks affecting results.

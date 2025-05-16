@@ -9,16 +9,14 @@ import sys
 from typing import Any
 import unittest
 
+from telemetry.util import image_util
+from telemetry.util import rgba_color
+
+import gpu_path_util
 from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
-
-import gpu_path_util
-
-from telemetry.util import image_util
-from telemetry.util import rgba_color
-
 
 class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   """Tests that screenshots are properly synchronized with the frame on

@@ -4,14 +4,14 @@
 """Base class for WebGL conformance tests."""
 
 from collections.abc import Mapping
+import dataclasses
 import logging
 import json
 import os
 import time
 from typing import Any
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
-
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
@@ -19,8 +19,6 @@ from gpu_tests import webgl_test_util
 from gpu_tests.util import host_information
 from gpu_tests.util import websocket_server as wss
 from gpu_tests.util import websocket_utils
-
-import gpu_path_util
 
 TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
                                  'webgl_test_page.html')

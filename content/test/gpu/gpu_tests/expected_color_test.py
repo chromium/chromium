@@ -8,16 +8,15 @@ import sys
 from typing import Any
 import unittest
 
-import gpu_path_util
+from py_utils import cloud_storage
+from telemetry.util import image_util
+from telemetry.util import rgba_color
 
+import gpu_path_util
 from gpu_tests import common_typing as ct
 from gpu_tests import expected_color_test_cases
 from gpu_tests import gpu_integration_test
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
-
-from py_utils import cloud_storage
-from telemetry.util import image_util
-from telemetry.util import rgba_color
 
 _MAPS_PERF_TEST_PATH = os.path.join(gpu_path_util.TOOLS_PERF_DIR, 'page_sets',
                                     'maps_perf_test')

@@ -67,7 +67,7 @@ class BaseParameterOptimizer:
     # TODO(skbug.com/10610): Switch away from the public instance once
     # authentication is fixed for the non-public instance.
     self._gold_url = f'https://{args.gold_instance}-public-gold.skia.org'
-    self._pool = multiprocessing.Pool()
+    self._pool = multiprocessing.Pool()  # pylint: disable=consider-using-with
     # A map of strings, denoting a resolution or trace, to a set of strings,
     # denoting images that are that dimension or belong to that trace.
     self._images: dict[str, set[str]] = collections.defaultdict(set)

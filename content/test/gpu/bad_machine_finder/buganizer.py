@@ -6,9 +6,9 @@
 import datetime
 from typing import Iterable, Set
 
-from bad_machine_finder import detection
-
 from blinkpy.w3c import buganizer
+
+from bad_machine_finder import detection
 
 _AUTOMATED_COMMENT_START = 'Automated Report Of Bad Machines'
 

@@ -5,9 +5,9 @@
 
 import unittest
 
-from gpu_tests import crop_actions as ca
-
 from telemetry.util import image_util
+
+from gpu_tests import crop_actions as ca
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)

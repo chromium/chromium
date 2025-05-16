@@ -8,10 +8,11 @@ import os
 import unittest
 from unittest import mock
 
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+
 from gpu_tests import constants
 from gpu_tests import overlay_support
-
-from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 
 rotation = overlay_support.VideoRotation
 

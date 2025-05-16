@@ -5,9 +5,9 @@
 
 from typing import Iterable, Optional
 
-from gpu_tests import gpu_integration_test
-
 from unexpected_passes_common import queries as queries_module
+
+from gpu_tests import gpu_integration_test
 
 
 # This query gets us the most recent |num_builds| CI builds from the past month

@@ -5,11 +5,11 @@
 import collections
 from collections.abc import Callable
 
+from telemetry.internal.browser import browser as browser_module
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import crop_actions as ca
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
-
-from telemetry.internal.browser import browser as browser_module
 
 coordinate_tuple = collections.namedtuple('coordinate', ['x', 'y'])
 size_tuple = collections.namedtuple('size', ['width', 'height'])

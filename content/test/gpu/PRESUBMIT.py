@@ -110,7 +110,10 @@ def CheckForNewSkipExpectations(input_api, output_api):
   expectation_file_dir = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                                 'gpu_tests',
                                                 'test_expectations')
-  file_filter = lambda f: f.AbsoluteLocalPath().startswith(expectation_file_dir)
+
+  def file_filter(f):
+    return f.AbsoluteLocalPath().startswith(expectation_file_dir)
+
   for affected_file in input_api.AffectedFiles(file_filter=file_filter):
     for _, line in affected_file.ChangedContents():
       if input_api.re.search(r'\[\s*Skip\s*\]', line):
@@ -143,7 +146,7 @@ def CheckPylint(input_api, output_api):
       output_api,
       extra_paths_list=pylint_extra_paths,
       pylintrc='pylintrc',
-      version='2.7')
+      version='3.2')
   return input_api.RunTests(pylint_checks)
 
 

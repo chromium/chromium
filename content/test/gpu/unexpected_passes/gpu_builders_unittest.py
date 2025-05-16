@@ -7,9 +7,10 @@
 
 import unittest
 
-from unexpected_passes import gpu_builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
+
+from unexpected_passes import gpu_builders
 
 
 class BuilderRunsTestOfInterestUnittest(unittest.TestCase):

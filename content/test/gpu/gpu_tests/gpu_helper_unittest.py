@@ -4,15 +4,15 @@
 # found in the LICENSE file.
 
 from collections.abc import Callable
+import dataclasses
 from typing import Any
 import unittest
 from unittest import mock
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+from telemetry.internal.platform import gpu_info
 
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
-from telemetry.internal.platform import gpu_info
 
 
 # pylint: disable=too-many-arguments

@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import datetime
 from typing import Dict
 import unittest
@@ -13,8 +11,9 @@ from unittest import mock
 # vpython-provided modules.
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
-from unexpected_passes import gpu_expectations
 from unexpected_passes_common import data_types
+
+from unexpected_passes import gpu_expectations
 
 # pylint: disable=protected-access
 

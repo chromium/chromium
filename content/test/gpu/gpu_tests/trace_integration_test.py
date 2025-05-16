@@ -7,6 +7,7 @@
 
 import collections
 from collections.abc import Generator
+import dataclasses
 import datetime
 from enum import Enum
 import gzip
@@ -20,22 +21,19 @@ import tempfile
 from typing import Any
 import unittest
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
-
 # vpython-provided modules.
 import perfetto.trace_processor as tp  # pylint: disable=import-error
 
+from telemetry.timeline import tracing_config
+from tracing.trace_data import trace_data
+
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
 from gpu_tests import trace_test_pages
 from gpu_tests.util import host_information
-
-import gpu_path_util
-
-from telemetry.timeline import tracing_config
-from tracing.trace_data import trace_data
 
 gpu_data_relative_path = gpu_path_util.GPU_DATA_RELATIVE_PATH
 

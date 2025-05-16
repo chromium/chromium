@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from collections.abc import Mapping
+import dataclasses
 import enum
 import fnmatch
 import json
@@ -11,17 +12,15 @@ import os
 import re
 import time
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+from typ import expectations_parser
 
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests.util import host_information
 from gpu_tests.util import websocket_server as wss
 from gpu_tests.util import websocket_utils as wsu
-from typ import expectations_parser
-
-import gpu_path_util
 
 SLOW_TESTS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                                'dawn', 'webgpu-cts', 'slow_tests.txt')

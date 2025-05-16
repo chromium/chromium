@@ -5,6 +5,7 @@
 # This is more akin to a .pyl/JSON file, so it's expected to be long.
 # pylint: disable=too-many-lines
 
+import dataclasses
 import functools
 from typing import Any
 
@@ -12,8 +13,6 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import pixel_test_pages
 from gpu_tests.util import host_information
-
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 
 # Can be changed to functools.cache on Python 3.9+.

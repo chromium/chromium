@@ -5,9 +5,9 @@
 
 import abc
 
-from gpu_tests import common_typing as ct
-
 from telemetry.util import image_util
+
+from gpu_tests import common_typing as ct
 
 
 class BaseCropAction(abc.ABC):

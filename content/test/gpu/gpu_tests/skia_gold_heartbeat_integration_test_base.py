@@ -2,23 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import json
 import logging
 import os
 import time
 from typing import Any
 
+# vpython-provided modules.
 import bs4  # pylint: disable=import-error
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
-
+import gpu_path_util
 from gpu_tests import common_typing as ct
 from gpu_tests import skia_gold_integration_test_base as sgitb
 from gpu_tests import webgl_test_util
 from gpu_tests.util import websocket_server as wss
 from gpu_tests.util import websocket_utils
-
-import gpu_path_util
 
 TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
                                  'pixel_test_page.html')

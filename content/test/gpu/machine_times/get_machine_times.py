@@ -19,10 +19,10 @@ import re
 import subprocess
 from typing import Dict, List, Optional, Tuple
 
-from gpu_tests import gpu_integration_test
-
-from unexpected_passes import gpu_builders
 from unexpected_passes_common import data_types
+
+from gpu_tests import gpu_integration_test
+from unexpected_passes import gpu_builders
 
 # Grabs the runtime and overhead values from strings like:
 #   [shard #0 (runtime (5m 8s) + overhead (13s): 5m 20s)]

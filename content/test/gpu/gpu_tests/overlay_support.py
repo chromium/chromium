@@ -5,19 +5,18 @@
 
 import collections
 from collections.abc import Iterable
+import dataclasses
 import enum
 import functools
 import json
 import logging
 from typing import Any
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive
+from telemetry.internal.platform import gpu_device
 
 from gpu_tests import common_typing as ct
 from gpu_tests import constants
 from gpu_tests import gpu_helper
-
-from telemetry.internal.platform import gpu_device
 
 
 # These can be changed to enum.StrEnum once Python 3.11+ is used.

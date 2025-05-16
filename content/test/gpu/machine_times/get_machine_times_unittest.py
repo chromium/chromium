@@ -7,9 +7,9 @@ import subprocess
 import unittest
 from unittest import mock
 
-from machine_times import get_machine_times
-
 from unexpected_passes_common import data_types
+
+from machine_times import get_machine_times
 
 # pylint: disable=protected-access
 

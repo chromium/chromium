@@ -6,6 +6,7 @@
 
 import collections
 from collections.abc import Generator, Iterable
+import dataclasses
 import datetime
 import fnmatch
 import functools
@@ -20,8 +21,6 @@ import types
 from typing import Any, Type
 import unittest
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
-
 from telemetry.internal.browser import browser_options as bo
 from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 from telemetry.internal.platform import system_info as si_module
@@ -32,14 +31,13 @@ from telemetry.util import screenshot
 from typ import json_results
 
 import gpu_path_util
-import validate_tag_consistency
-
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import constants
 from gpu_tests import gpu_helper
 from gpu_tests import overlay_support
 from gpu_tests.util import host_information
+import validate_tag_consistency
 
 TEST_WAS_SLOW = 'test_was_slow'
 

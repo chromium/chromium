@@ -18,14 +18,13 @@ An easy way to use the APIs are:
    5 seconds, call AnalyzeIPGLogFile(skip_in_sec=5).
 """
 
+import dataclasses
 import datetime
 import json
 import logging
 import os
 import subprocess
 from typing import Any
-
-import dataclasses  # Built-in, but Pylint 2.7 gives an ordering false positive.
 
 from gpu_tests.util import host_information
 

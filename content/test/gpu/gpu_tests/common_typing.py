@@ -4,9 +4,8 @@
 """Helper module to store class-independent, common type hinting."""
 
 from collections.abc import Callable, Generator
+import dataclasses
 from typing import Any
-
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from telemetry.internal.browser import tab
 from telemetry.internal.browser import browser
@@ -31,9 +30,13 @@ Screenshot = Any
 Tab = tab.Tab
 Browser = browser.Browser
 
+
 # Struct-like classes defined using dataclasses can't use [] or other mutable
 # for default values. The use of callables is required since reusing the same
 # object is also problematic.
+# invalid-field-call disabled since this is just more readable shorthand of a
+# valid field call.
+# pylint: disable=invalid-field-call
 def EmptyDict():
   return dataclasses.field(default_factory=dict)
 
@@ -44,3 +47,4 @@ def EmptyList():
 
 def EmptySet():
   return dataclasses.field(default_factory=set)
+# pylint: enable=invalid-field-call

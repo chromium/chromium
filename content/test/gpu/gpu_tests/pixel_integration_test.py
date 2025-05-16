@@ -10,15 +10,14 @@ import time
 from typing import Any
 import unittest
 
+from telemetry.util import image_util, screenshot
+
+import gpu_path_util
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 from gpu_tests.util import host_information
-
-import gpu_path_util
-
-from telemetry.util import image_util, screenshot
 
 # We're not sure if this is actually a fixed value or not, but it's 10 pixels
 # wide on the only device we've had issues with so far (Pixel 4), so assume

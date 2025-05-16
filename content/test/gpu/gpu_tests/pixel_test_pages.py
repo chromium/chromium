@@ -6,24 +6,22 @@
 # pylint: disable=too-many-lines
 
 from collections.abc import Callable
+from enum import Enum
 import json
 import logging
 import os
 import posixpath
 import time
 
-from enum import Enum
+from telemetry.internal.browser import browser as browser_module
 
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import crop_actions as ca
 from gpu_tests import overlay_support
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 from gpu_tests import skia_gold_matching_algorithms as algo
 from gpu_tests.util import websocket_server as wss
-
-import gpu_path_util
-
-from telemetry.internal.browser import browser as browser_module
 
 CRASH_TYPE_BROWSER = 'browser'
 CRASH_TYPE_GPU = 'gpu-process'

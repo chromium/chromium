@@ -11,9 +11,10 @@ import unittest
 from unittest import mock
 import urllib.error
 
-from flake_suppressor import gpu_expectations
-
+# vpython-provided modules.
 from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+
+from flake_suppressor import gpu_expectations
 
 
 class GetExpectationFileForSuiteUnittest(unittest.TestCase):

@@ -31,15 +31,14 @@ class WebRTCIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = itertools.chain(cls.GenerateWebRTCTests())
-    for test in tests:
-      yield test
+    yield from tests
 
   @classmethod
   def GenerateWebRTCTests(cls) -> ct.TestGenerator:
     for codec in ['H265']:
-      yield ('WebRTC_Codec_Loopback_{}'.format(codec), 'codec_loopback.html', [{
+      yield (f'WebRTC_Codec_Loopback_{codec}', 'codec_loopback.html', [{
           'codec':
-          'video/{}'.format(codec)
+          f'video/{codec}',
       }])
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:

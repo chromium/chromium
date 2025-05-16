@@ -6,10 +6,10 @@ import os
 import re
 from unittest import mock
 
+from telemetry.internal.platform import gpu_info as tgi
+
 from gpu_tests import constants
 from gpu_tests.util import host_information
-
-from telemetry.internal.platform import gpu_info as tgi
 
 # This set must be the union of the driver tags used in WebGL and WebGL2
 # expectations files.

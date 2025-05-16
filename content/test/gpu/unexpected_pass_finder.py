@@ -38,6 +38,11 @@ import argparse
 import datetime
 import os
 
+from unexpected_passes_common import argument_parsing
+from unexpected_passes_common import builders
+from unexpected_passes_common import expectations
+from unexpected_passes_common import result_output
+
 from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
 from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import
 
@@ -46,10 +51,6 @@ from gpu_tests import gpu_integration_test
 from unexpected_passes import gpu_builders
 from unexpected_passes import gpu_expectations
 from unexpected_passes import gpu_queries
-from unexpected_passes_common import argument_parsing
-from unexpected_passes_common import builders
-from unexpected_passes_common import expectations
-from unexpected_passes_common import result_output
 
 
 def ParseArgs() -> argparse.Namespace:

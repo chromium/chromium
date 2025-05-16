@@ -10,15 +10,14 @@ import time
 from typing import Any
 import unittest
 
+from telemetry.core import exceptions
+
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import gpu_helper
 from gpu_tests.util import host_information
-
-import gpu_path_util
-
-from telemetry.core import exceptions
 
 harness_script = r"""
   var domAutomationController = {};

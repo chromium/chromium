@@ -2,20 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import os
 import sys
 from typing import Any
 import unittest
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+from telemetry.internal.platform import gpu_info as gi
 
 from gpu_tests import common_typing as ct
 from gpu_tests import constants
 from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
 from gpu_tests.util import host_information
-
-from telemetry.internal.platform import gpu_info as gi
 
 
 @dataclasses.dataclass

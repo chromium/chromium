@@ -8,13 +8,16 @@ import json
 import os
 import sys
 
-import gpu_project_config
-import gpu_path_util
+# This needs to be before the Telemetry imports for importing to work correctly.
+# pylint: disable=wrong-import-order
 from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
-
+# pylint: enable=wrong-import-order
 from telemetry.testing import browser_test_runner
 from telemetry.testing import serially_executed_browser_test_case
 from py_utils import discover
+
+import gpu_project_config
+import gpu_path_util
 
 
 def PostprocessJSON(file_name, run_test_args):

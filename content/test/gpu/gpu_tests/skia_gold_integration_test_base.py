@@ -12,22 +12,19 @@ import tempfile
 from typing import Any
 import unittest
 
+from py_utils import cloud_storage
+from skia_gold_common import skia_gold_properties as sgp
+from skia_gold_common import skia_gold_session as sgs
+from skia_gold_common import skia_gold_session_manager as sgsm
+from telemetry.util import image_util
+
+import gpu_path_util
 from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import skia_gold_matching_algorithms as algo
-
-from skia_gold_common import skia_gold_properties as sgp
-from skia_gold_common import skia_gold_session as sgs
-from skia_gold_common import skia_gold_session_manager as sgsm
-
-import gpu_path_util
-
-from py_utils import cloud_storage
-
-from telemetry.util import image_util
 
 TEST_DATA_DIRS = [
     gpu_path_util.GPU_DATA_DIR,

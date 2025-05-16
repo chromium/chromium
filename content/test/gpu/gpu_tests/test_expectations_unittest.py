@@ -9,8 +9,12 @@ from typing import Type
 import unittest
 from unittest import mock
 
-import gpu_project_config
+from py_utils import discover
+from py_utils import tempfile_ext
+from typ import expectations_parser
+from typ import json_results
 
+import gpu_project_config
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
@@ -21,12 +25,6 @@ from gpu_tests import trace_test_pages
 from gpu_tests import webgl1_conformance_integration_test as webgl1_cit
 from gpu_tests import webgl2_conformance_integration_test as webgl2_cit
 from gpu_tests import webgl_test_util
-
-from py_utils import discover
-from py_utils import tempfile_ext
-
-from typ import expectations_parser
-from typ import json_results
 
 
 VALID_BUG_REGEXES = [

@@ -7,6 +7,7 @@
 
 
 import copy
+import dataclasses
 import json
 import os
 import tempfile
@@ -15,13 +16,22 @@ from typing import Any, Type
 import unittest
 from unittest import mock
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
-
-import gpu_project_config
-import run_gpu_integration_test
-
+# Needed in order for the tools/perf and Telemetry imports to work.
+# pylint: disable=unused-import,wrong-import-order
+from gpu_path_util import setup_telemetry_paths
+from gpu_path_util import setup_tools_perf_paths
+# pylint: enable=unused-import,wrong-import-order
 from chrome_telemetry_build import chromium_config
+from py_utils import tempfile_ext
+from telemetry.internal.browser import browser_options as bo
+from telemetry.internal.util import binary_manager
+from telemetry.internal.platform import system_info
+from telemetry.testing import browser_test_runner
+from telemetry.testing import fakes
+from telemetry.testing import run_browser_tests
 
+import gpu_path_util
+import gpu_project_config
 from gpu_tests import common_typing as ct
 from gpu_tests import context_lost_integration_test
 from gpu_tests import gpu_helper
@@ -30,17 +40,7 @@ from gpu_tests import trace_integration_test as trace_it
 from gpu_tests import webgl1_conformance_integration_test as webgl1_cit
 from gpu_tests import webgl2_conformance_integration_test as webgl2_cit
 from gpu_tests import webgpu_compat_cts_integration_test as webgpu_compat_cit
-
-import gpu_path_util
-
-from py_utils import tempfile_ext
-
-from telemetry.internal.browser import browser_options as bo
-from telemetry.internal.util import binary_manager
-from telemetry.internal.platform import system_info
-from telemetry.testing import browser_test_runner
-from telemetry.testing import fakes
-from telemetry.testing import run_browser_tests
+import run_gpu_integration_test
 
 # Unittest test cases are defined as public methods, so ignore complaints about
 # having too many.

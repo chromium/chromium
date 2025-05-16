@@ -8,10 +8,10 @@ from typing import Union
 import unittest
 from unittest import mock
 
+from blinkpy.w3c import buganizer as blink_buganizer
+
 from bad_machine_finder import buganizer
 from bad_machine_finder import detection
-
-from blinkpy.w3c import buganizer as blink_buganizer
 
 # pylint: disable=protected-access
 

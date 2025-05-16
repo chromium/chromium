@@ -4,18 +4,16 @@
 """GPU-specific implementation of the unexpected passes' expectations module."""
 
 import collections
+import dataclasses
 import logging
 import os
 from typing import FrozenSet, List, Optional, Set
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
-
-import validate_tag_consistency
-
-from gpu_tests import gpu_integration_test
-
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
+
+import validate_tag_consistency
+from gpu_tests import gpu_integration_test
 
 EXPECTATIONS_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
