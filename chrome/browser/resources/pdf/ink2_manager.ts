@@ -486,14 +486,12 @@ export class Ink2Manager extends EventTarget {
     this.pluginController_.finishTextAnnotation(annotation);
     this.existingAnnotationAttributes_ = null;
 
-    if (edited) {
-      // Using PluginController's event target to dispatch this event, even
-      // though it originates here, because PluginController dispatches this
-      // event for normal ink strokes and this way clients only need to listen
-      // on one instance.
-      this.pluginController_.getEventTarget().dispatchEvent(
-          new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
-    }
+    // Using PluginController's event target to dispatch this event, even
+    // though it originates here, because PluginController dispatches this
+    // event for normal Ink strokes and this way clients only need to listen
+    // on one instance.
+    this.pluginController_.getEventTarget().dispatchEvent(new CustomEvent(
+        PluginControllerEventType.FINISH_INK_STROKE, {detail: edited}));
   }
 
   textBoxFocused(textBoxRect: TextBoxRect) {

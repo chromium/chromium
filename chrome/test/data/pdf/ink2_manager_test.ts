@@ -430,25 +430,32 @@ chrome.test.runTests([
         annotationPageCoords: TextAnnotation) {
       // Listen for PluginControllerEventType.FINISH_INK_STROKE events. The
       // manager dispatches these on PluginController's eventTarget.
-      let finishInkStrokeEvents = 0;
+      let finishInkStrokeModifiedEvents = 0;
+      let finishInkStrokeUnmodifiedEvents = 0;
       PluginController.getInstance().getEventTarget().addEventListener(
-          PluginControllerEventType.FINISH_INK_STROKE, () => {
-            finishInkStrokeEvents++;
+          PluginControllerEventType.FINISH_INK_STROKE, e => {
+            if ((e as CustomEvent<boolean>).detail) {
+              finishInkStrokeModifiedEvents++;
+            } else {
+              finishInkStrokeUnmodifiedEvents++;
+            }
           });
 
-      // Committing with edited = true should fire an event.
+      // Committing with edited = true should fire a modified event.
       // Use structuredClone since the manager edits the object in place,
       // and we want to reuse this below.
       manager.commitTextAnnotation(
           structuredClone(annotationScreenCoords), true);
-      chrome.test.assertEq(1, finishInkStrokeEvents);
+      chrome.test.assertEq(1, finishInkStrokeModifiedEvents);
+      chrome.test.assertEq(0, finishInkStrokeUnmodifiedEvents);
       verifyFinishTextAnnotationMessage(annotationPageCoords);
       mockPlugin.clearMessages();
 
-      // Committing with edited = false should not fire an event.
+      // Committing with edited = false should fire an unmodified event.
       manager.commitTextAnnotation(
           structuredClone(annotationScreenCoords), false);
-      chrome.test.assertEq(1, finishInkStrokeEvents);
+      chrome.test.assertEq(1, finishInkStrokeModifiedEvents);
+      chrome.test.assertEq(1, finishInkStrokeUnmodifiedEvents);
       verifyFinishTextAnnotationMessage(annotationPageCoords);
       mockPlugin.clearMessages();
     }

@@ -134,8 +134,9 @@ class PdfInkModuleClient {
                            InkStrokeId id,
                            const ink::Stroke& stroke) {}
 
-  // Notifies the client that a stroke has finished drawing or erasing.
-  virtual void StrokeFinished() {}
+  // Notifies the client that stroking has finished. `modified` indicates
+  // whether strokes got added or erased.
+  virtual void StrokeFinished(bool modified) {}
 
   // Asks the client to change the cursor to `cursor`.
   virtual void UpdateInkCursor(const ui::Cursor& cursor) {}

@@ -782,7 +782,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
         client_->GetPageContentsRect(state.page_index), client_->GetZoom()));
   }
 
-  client_->StrokeFinished();
+  client_->StrokeFinished(/*modified=*/true);
   GenerateAndSendInkThumbnailInternal(state.page_index);
 
   bool undo_redo_success = undo_redo_model_.FinishDraw();
@@ -875,14 +875,17 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
 
   CHECK(is_erasing_stroke());
   EraserState& state = erasing_stroke_state();
-  if (!state.page_indices_with_stroke_erasures.empty() ||
-      !state.page_indices_with_partitioned_mesh_erasures.empty()) {
-    client_->StrokeFinished();
+  const bool modified =
+      !state.page_indices_with_stroke_erasures.empty() ||
+      !state.page_indices_with_partitioned_mesh_erasures.empty();
+  if (modified) {
     RequestThumbnailUpdates(
         /*ink_updates=*/state.page_indices_with_stroke_erasures,
         /*pdf_updates=*/state.page_indices_with_partitioned_mesh_erasures);
     ReportEraseStroke(tool_type);
   }
+
+  client_->StrokeFinished(modified);
 
   // Reset `state` now that the erase operation is done.
   state.erasing = false;
@@ -1050,9 +1053,8 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
       GenerateAndSendInkThumbnailInternal(page_index);
     }
 
-    if (!highlight_strokes.empty()) {
-      client_->StrokeFinished();
-
+    const bool modified = !highlight_strokes.empty();
+    if (modified) {
       if (!text_selection_click_timer_.IsRunning()) {
         ReportTextHighlight(highlighter_brush_.ink_brush(), tool_type);
       }
@@ -1064,6 +1066,10 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
     CHECK(undo_redo_success);
 
     client_->ClearSelection();
+
+    // Only call StrokeFinished() in this block, where
+    // `!state.finished_multi_click` is false.
+    client_->StrokeFinished(modified);
   }
 
   if (is_multi_click) {

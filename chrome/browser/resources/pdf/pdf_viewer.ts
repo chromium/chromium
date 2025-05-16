@@ -988,7 +988,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             'Unknown executedEditCommand data received: ' + editCommand);
       // <if expr="enable_pdf_ink2">
       case 'finishInkStroke':
-        this.handleFinishInkStroke_();
+        const modifiedData = data as unknown as {modified: boolean};
+        this.handleFinishInkStroke_(modifiedData.modified);
         return;
       // </if>
       case 'formFocusChange':
@@ -1130,11 +1131,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   // <if expr="enable_pdf_ink2">
   /** Handles a new ink stroke in annotation mode. */
-  private handleFinishInkStroke_() {
-    this.hasCommittedInk2Edits_ = true;
-    this.pluginController_.getEventTarget().dispatchEvent(
-        new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
-    this.setShowBeforeUnloadDialog_(true);
+  private handleFinishInkStroke_(modified: boolean) {
+    if (modified) {
+      this.hasCommittedInk2Edits_ = true;
+      this.setShowBeforeUnloadDialog_(true);
+    }
+    this.pluginController_.getEventTarget().dispatchEvent(new CustomEvent(
+        PluginControllerEventType.FINISH_INK_STROKE, {detail: modified}));
   }
 
   /** Handles a 'contentFocused' event in the PDF content. */

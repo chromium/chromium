@@ -85,7 +85,7 @@ chrome.test.runTests([
 
     chrome.test.assertFalse(actionMenu.open);
 
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
     await microtasksFinished();
     downloadControls.$.download.click();
 
@@ -223,7 +223,7 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     // Add another ink stroke. There should now be two ink strokes on the PDF.
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
     await microtasksFinished();
 
     const undoButton =

@@ -21,7 +21,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, toolbar.annotationMode);
 
-    finishInkStroke(PluginController.getInstance());
+    finishInkStroke(PluginController.getInstance(), true);
 
     const testProxy = getNewTestBeforeUnloadProxy();
     window.location.href = 'about:blank';

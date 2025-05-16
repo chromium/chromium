@@ -491,11 +491,12 @@ export function enterFullscreenWithUserGesture(): Promise<void> {
 // <if expr="enable_pdf_ink2">
 /**
  * Helper to simulate the PDF content sending a message to the PDF extension
- * to indicate that a new ink stroke has been drawn.
+ * to indicate that Ink stroking has occurred.
  */
-export function finishInkStroke(controller: PluginController) {
+export function finishInkStroke(
+    controller: PluginController, modified: boolean) {
   const eventTarget = controller.getEventTarget();
-  const message = {type: 'finishInkStroke'};
+  const message = {type: 'finishInkStroke', modified};
 
   eventTarget.dispatchEvent(new CustomEvent(
       PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));

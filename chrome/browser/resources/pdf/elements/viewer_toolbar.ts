@@ -491,14 +491,21 @@ export class ViewerToolbarElement extends CrLitElement {
 
   /**
    * Handles whether the undo and redo buttons should be enabled or disabled
-   * when a new ink stroke is added to the page.
+   * when a new Ink stroke is added to or erased from the page. This event
+   * fires when stroking finishes, but not all strokes (e.g. eraser strokes)
+   * actually modify the page.
    */
-  private handleFinishInkStroke_() {
+  private handleFinishInkStroke_(e: CustomEvent<boolean>) {
+    const modified = e.detail;
+    if (!modified) {
+      return;
+    }
+
     this.currentStroke++;
     this.mostRecentStroke = this.currentStroke;
 
-    // When a new stroke is added, it can always be undone. Since it's the most
-    // recent stroke, the redo action cannot be performed.
+    // When a new stroke modification occurs, it can always be undone. Since
+    // it's the most recent modification, the redo action cannot be performed.
     this.canUndoAnnotation_ = true;
     this.canRedoAnnotation_ = false;
   }

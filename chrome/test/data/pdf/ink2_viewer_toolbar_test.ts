@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, PluginController, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkTextBoxElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -264,8 +264,16 @@ chrome.test.runTests([
     chrome.test.assertTrue(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
 
+    // Perform a stroke that did not modify anything. The undo/redo state should
+    // not change.
+    finishInkStroke(controller, false);
+    await microtasksFinished();
+
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
     // Draw a stroke. The undo button should be enabled.
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
     await microtasksFinished();
 
     chrome.test.assertTrue(
@@ -275,6 +283,18 @@ chrome.test.runTests([
 
     // Undo the stroke. The redo button should be enabled.
     undoButton.click();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Perform a stroke that did not modify anything. The undo/redo state should
+    // not change.
+    finishInkStroke(controller, false);
     await microtasksFinished();
 
     chrome.test.assertTrue(
@@ -299,7 +319,7 @@ chrome.test.runTests([
     // After redo, draw a stroke and undo it after. The undo button and redo
     // button should both be enabled.
     mockPlugin.clearMessages();
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
     undoButton.click();
     await microtasksFinished();
 
@@ -312,7 +332,7 @@ chrome.test.runTests([
 
     // Draw another stroke, overriding the stroke that could've been redone. The
     // undo button should be enabled.
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
     await microtasksFinished();
 
     chrome.test.assertFalse(undoButton.disabled);
@@ -341,8 +361,8 @@ chrome.test.runTests([
 
     // Draw two strokes and undo, so that both undo and redo buttons are
     // enabled.
-    finishInkStroke(controller);
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
+    finishInkStroke(controller, true);
     await microtasksFinished();
 
     undoButton.click();
@@ -406,7 +426,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(redoButton.disabled);
 
     // Draw a stroke. The undo button should be enabled.
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
     await microtasksFinished();
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);
@@ -485,7 +505,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
 
     // Undo shortcut.
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
@@ -518,8 +538,8 @@ chrome.test.runTests([
 
     // Draw two strokes and undo, so that both undo and redo buttons are
     // enabled.
-    finishInkStroke(controller);
-    finishInkStroke(controller);
+    finishInkStroke(controller, true);
+    finishInkStroke(controller, true);
     await microtasksFinished();
 
     getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo').click();
@@ -600,8 +620,7 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
 
     // Simulate committing an edited text annotation.
-    PluginController.getInstance().getEventTarget().dispatchEvent(
-        new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+    finishInkStroke(PluginController.getInstance(), true);
 
     // Undo shortcut.
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');

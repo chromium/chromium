@@ -3352,7 +3352,8 @@ class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
 };
 
 TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInNonEditMode) {
-  plugin_->ink_module_client_for_testing()->StrokeFinished();
+  // Modify the document with an Ink stroke.
+  plugin_->ink_module_client_for_testing()->StrokeFinished(/*modified=*/true);
 
   base::Value expected_response = base::test::ParseJson(R"({
     "type": "saveData",
@@ -3375,7 +3376,8 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInNonEditMode) {
 }
 
 TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditMode) {
-  plugin_->ink_module_client_for_testing()->StrokeFinished();
+  // Modify the document with an Ink stroke.
+  plugin_->ink_module_client_for_testing()->StrokeFinished(/*modified=*/true);
 
   plugin_->EnteredEditMode();
   pdf_receiver_.FlushForTesting();
