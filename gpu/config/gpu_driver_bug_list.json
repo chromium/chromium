@@ -3376,7 +3376,12 @@
       "vendor_id": "0x8086",
       "multi_gpu_category": "any",
       "intel_gpu_series": [
+            "tigerlake",
+            "rocketlake",
+            "dg1",
             "alderlake",
+            "alchemist",
+            "raptorlake",
             "meteorlake",
             "arrowlake",
             "lunarlake",
