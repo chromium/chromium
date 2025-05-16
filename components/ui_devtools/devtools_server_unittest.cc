@@ -5,6 +5,7 @@
 #include "components/ui_devtools/devtools_server.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -32,8 +33,9 @@ class UIDevToolsServerTest : public testing::Test {
 
   void SetUp() override {
     base::RunLoop run_loop;
-    server_ =
-        UiDevToolsServer::CreateForViews(io_thread_.task_runner(), /*port=*/0);
+    server_ = UiDevToolsServer::CreateForViews(
+        io_thread_.task_runner(), /*port=*/0,
+        /*active_port_output_directory=*/base::FilePath());
     server_->SetOnSocketConnectedForTesting(run_loop.QuitClosure());
     run_loop.Run();
   }
