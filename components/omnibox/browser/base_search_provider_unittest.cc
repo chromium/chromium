@@ -782,3 +782,50 @@ TEST_F(BaseSearchProviderTest, CreateAnswerAction) {
     EXPECT_TRUE(found_matching_param_sequence);
   }
 }
+
+TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
+  TemplateURLData data;
+  data.SetURL("http://foo.com/url?bar={searchTerms}");
+  auto template_url = std::make_unique<TemplateURL>(data);
+
+  TestBaseSearchProvider::MatchMap map;
+  std::u16string query = u"Washington Wizards";
+
+  // TODO(crbug.com/417745802): Update to check if actions get populated
+  // correctly.
+  omnibox::SuggestTemplateInfo suggest_template_info;
+  suggest_template_info.set_style(omnibox::SuggestTemplateInfo::DEFAULT);
+  suggest_template_info.set_type_icon(
+      omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE);
+  suggest_template_info.mutable_primary_text()->set_text("Washington Wizards");
+  suggest_template_info.mutable_secondary_text()->set_text("MIA");
+  omnibox::SuggestTemplateInfo::Image* image =
+      suggest_template_info.mutable_image();
+  image->set_url("http://example.com/a.png");
+  image->set_dominant_color("#233875");
+  image->set_type(omnibox::SuggestTemplateInfo::Image::TYPE_LARGE);
+  (*suggest_template_info.mutable_default_search_parameters())["gs_ssp"] =
+      "abc";
+
+  SearchSuggestionParser::SuggestResult result(
+      query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_NATIVE_CHROME,
+      /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
+      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  result.SetSuggestTemplateInfo(suggest_template_info);
+  provider_->AddMatchToMap(
+      result, AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  // Match should be populated using the SuggestTemplateInfo instead of the
+  // empty EntityInfo proto. Match fields like contents (primary text) and
+  // description (secondary text) are updated in `SearchSuggestionParser` so
+  // will not be shown as updated here.
+  ASSERT_EQ(1U, map.size());
+  AutocompleteMatch match = map.begin()->second;
+  EXPECT_EQ(suggest_template_info.image().dominant_color(),
+            match.image_dominant_color);
+  EXPECT_EQ("gs_ssp=abc", match.search_terms_args->additional_query_params);
+}

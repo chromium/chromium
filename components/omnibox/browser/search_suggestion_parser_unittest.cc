@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -27,28 +28,15 @@
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/rich_suggest_template.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 namespace {
 
-std::string SerializeAndEncodeEntityInfo(
-    const omnibox::EntityInfo& entity_info) {
-  std::string serialized_entity_info;
-  entity_info.SerializeToString(&serialized_entity_info);
-  return base::Base64Encode(serialized_entity_info);
-}
-
-std::string SerializeAndEncodeGroupsInfo(
-    const omnibox::GroupsInfo& groups_info) {
-  std::string serialized_groups_info;
-  groups_info.SerializeToString(&serialized_groups_info);
-  return base::Base64Encode(serialized_groups_info);
-}
-
-std::string SerializeAndEncodeRichSuggestTemplate(
-    const omnibox::RichSuggestTemplate& suggest_template) {
-  std::string serialized_suggest_template;
-  suggest_template.SerializeToString(&serialized_suggest_template);
-  return base::Base64Encode(serialized_suggest_template);
+std::string SerializeAndEncodeProto(
+    const google::protobuf::MessageLite& proto) {
+  std::string serialized_proto_info;
+  proto.SerializeToString(&serialized_proto_info);
+  return base::Base64Encode(serialized_proto_info);
 }
 
 std::string NavigationalIntentsToJSON(
@@ -188,7 +176,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
         "google:fieldtrialtriggered": true,
         "google:suggestdetail": [{}, {
             "google:entityinfo": ")" +
-      SerializeAndEncodeEntityInfo(entity_info) +
+      SerializeAndEncodeProto(entity_info) +
       R"("
           }, {}],
         "google:suggestnavintents": )" +
@@ -449,7 +437,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
           "tlw": false
         },
         "google:groupsinfo": ")" +
-                            SerializeAndEncodeGroupsInfo(groups_info) + R"(",
+                            SerializeAndEncodeProto(groups_info) + R"(",
         "google:suggestdetail":[
           {
           },
@@ -542,7 +530,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
           "tlw": false
         },
         "google:groupsinfo": ")" +
-                            SerializeAndEncodeGroupsInfo(groups_info) + R"(",
+                            SerializeAndEncodeProto(groups_info) + R"(",
         "google:suggestdetail":[
           {
           },
@@ -664,12 +652,12 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
           {},
           {
             "google:entityinfo": ")" +
-                            SerializeAndEncodeEntityInfo(first_entity_info) +
+                            SerializeAndEncodeProto(first_entity_info) +
                             R"("
           },
           {
             "google:entityinfo": ")" +
-                            SerializeAndEncodeEntityInfo(second_entity_info) +
+                            SerializeAndEncodeProto(second_entity_info) +
                             R"("
           }
         ],
@@ -817,7 +805,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
             },
             "ansb": "8",
             "google:templateinfo": ")" +
-        SerializeAndEncodeRichSuggestTemplate(suggest_template) +
+        SerializeAndEncodeProto(suggest_template) +
         R"("
           },
           {},
@@ -1029,7 +1017,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
           {
             "ansb": "8",
             "google:templateinfo": ")" +
-        SerializeAndEncodeRichSuggestTemplate(suggest_template) +
+        SerializeAndEncodeProto(suggest_template) +
         R"("
           },
           {},
@@ -1100,7 +1088,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
             },
             "ansb": "20",
             "google:templateinfo": ")" +
-        SerializeAndEncodeRichSuggestTemplate(suggest_template) +
+        SerializeAndEncodeProto(suggest_template) +
         R"("
           },
           {},
@@ -1190,7 +1178,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfoCounterfactual) {
             },
             "ansb": "8",
             "google:templateinfo": ")" +
-        SerializeAndEncodeRichSuggestTemplate(suggest_template) +
+        SerializeAndEncodeProto(suggest_template) +
         R"("
           },
           {},
@@ -1591,7 +1579,7 @@ TEST(SearchSuggestionParserTest, ParseCalculatorSuggestion) {
         {},
         {
           "google:entityinfo": ")" +
-                                SerializeAndEncodeEntityInfo(entity_info) +
+                                SerializeAndEncodeProto(entity_info) +
                                 R"("
         }
       ],
@@ -1716,4 +1704,148 @@ TEST(SearchSuggestionParserTest, ParseTailSuggestion) {
             results.suggest_results[0].suggestion());
   ASSERT_EQ(u"in california", results.suggest_results[0].match_contents());
   ASSERT_EQ(u"… ", results.suggest_results[0].match_contents_prefix());
+}
+
+TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(
+      u"",
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+      scheme_classifier);
+
+  // Parse SuggestTemplateInfo data from properly encoded (base64) proto field.
+  {
+    omnibox::SuggestTemplateInfo suggest_template_info;
+    suggest_template_info.set_style(omnibox::SuggestTemplateInfo::DEFAULT);
+    suggest_template_info.set_type_icon(
+        omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE);
+    suggest_template_info.mutable_primary_text()->set_text(
+        "Washington Wizards");
+    suggest_template_info.mutable_secondary_text()->set_text("MIA");
+    omnibox::SuggestTemplateInfo::Image* image =
+        suggest_template_info.mutable_image();
+    image->set_url("http://example.com/a.png");
+    image->set_dominant_color("#233875");
+    image->set_type(omnibox::SuggestTemplateInfo::Image::TYPE_LARGE);
+    (*suggest_template_info.mutable_default_search_parameters())["gs_ssp"] =
+        "abc";
+    omnibox::SuggestTemplateInfo::TemplateAction* template_action =
+        suggest_template_info.add_action_suggestions();
+    template_action->set_action_uri("chrome://newtab/");
+    template_action->set_action_type(
+        omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS);
+    template_action->set_display_text("New Tab");
+    (*template_action->mutable_search_parameters())["action_param1"] =
+        "action_value1";
+
+    std::string json_data = base::StrCat({
+        R"([
+            "",
+            ["the menu", "washington wizards", "the midnight club"],
+            ["", "", ""],
+            [],
+            {
+              "google:clientdata": {
+                "bpc": false,
+                "tlw": false
+              },
+              "google:suggestdetail": [
+                {},
+                {
+                  "google:suggesttemplate": ")",
+        SerializeAndEncodeProto(suggest_template_info),
+        R"("
+                },
+                {}
+              ],
+              "google:suggestrelevance": [701, 700, 553],
+              "google:suggestsubtypes": [
+                [512, 433, 131, 355],
+                [131, 433, 512],
+                [512, 433]
+              ],
+              "google:suggesttype": ["QUERY", "ENTITY", "QUERY"],
+              "google:verbatimrelevance": 851
+            }])"});
+    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    ASSERT_TRUE(root_val);
+    ASSERT_TRUE(root_val.value().is_list());
+
+    SearchSuggestionParser::Results results;
+    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+        root_val->GetList(), input, scheme_classifier,
+        /*default_result_relevance=*/400,
+        /*is_keyword_result=*/false, &results));
+
+    ASSERT_EQ(3U, results.suggest_results.size());
+
+    // For each suggestion, verify that the JSON fields were correctly parsed.
+    // The first suggestion suggest template should not be populated.
+    ASSERT_EQ(u"the menu", results.suggest_results[0].suggestion());
+    ASSERT_EQ(u"", results.suggest_results[0].annotation());
+    ASSERT_FALSE(
+        results.suggest_results[0].suggest_template_info().has_value());
+
+    ASSERT_EQ(u"washington wizards", results.suggest_results[1].suggestion());
+    ASSERT_TRUE(ProtosAreEqual(
+        results.suggest_results[1].suggest_template_info().value(),
+        suggest_template_info));
+    // SuggestResult contents and annotation should be updated to reflect that
+    // of the SuggestTemplateInfo.
+    ASSERT_EQ(u"Washington Wizards",
+              results.suggest_results[1].match_contents());
+    ASSERT_EQ(u"MIA", results.suggest_results[1].annotation());
+  }
+  // Parse EntityInfo data from garbled proto field.
+  {
+    std::string json_data = R"([
+      "",
+      ["the menu", "the menu", "the midnight club"],
+      ["", "", ""],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {},
+          {
+            "google:suggesttemplate": "<< invalid format >>"
+          },
+          {}
+        ],
+        "google:suggestrelevance": [701, 700, 553],
+        "google:suggestsubtypes": [
+          [512, 433, 131, 355],
+          [131, 433, 512],
+          [512, 433]
+        ],
+        "google:suggesttype": ["QUERY", "ENTITY", "QUERY"],
+        "google:verbatimrelevance": 851
+      }])";
+
+    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    ASSERT_TRUE(root_val);
+    ASSERT_TRUE(root_val.value().is_list());
+
+    SearchSuggestionParser::Results results;
+    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+        root_val->GetList(), input, scheme_classifier,
+        /*default_result_relevance=*/400,
+        /*is_keyword_result=*/false, &results));
+
+    ASSERT_EQ(3U, results.suggest_results.size());
+
+    // For each suggestion, verify that the JSON fields were correctly parsed.
+    ASSERT_EQ(u"the menu", results.suggest_results[0].suggestion());
+    ASSERT_FALSE(
+        results.suggest_results[0].suggest_template_info().has_value());
+
+    // SuggestTemplateInfo should not be populated if it was not parsed
+    // correctly.
+    ASSERT_EQ(u"the menu", results.suggest_results[1].suggestion());
+    ASSERT_FALSE(
+        results.suggest_results[0].suggest_template_info().has_value());
+  }
 }
