@@ -195,6 +195,14 @@ std::vector<mojom::IdentifiedActivityPtr> SessionActivityProtoToMojom(
                             .connection_param()
                             .connection_code();
     }
+
+    // If sign in more than one device, flip status to be inactive and
+    if (item.second.devices().size() > 1) {
+      device_active = false;
+      student_status_detail =
+          mojom::StudentStatusDetail::kMultipleDeviceSignedIn;
+    }
+
     auto identity_ptr = mojom::IdentifiedActivity::New(
         item.first, mojom::StudentActivity::New(
                         student_status_detail, device_active, active_tab,

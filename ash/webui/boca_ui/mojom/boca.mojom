@@ -210,6 +210,8 @@ enum StudentStatusDetail {
   kNotAddedConfiguredAsTeacher = 7,
   // Student not added due to feature not enabled in policy.
   kNotAddedNotConfigured = 8,
+  // Student signed into multiple devices.
+  kMultipleDeviceSignedIn = 9,
 };
 
 struct StudentActivity {

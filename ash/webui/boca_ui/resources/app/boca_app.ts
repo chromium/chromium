@@ -114,6 +114,8 @@ export enum StudentStatusDetail {
   NOT_ADDED_CONFIGURED_AS_TEACHER = 7,
 
   NOT_ADDED_NOT_CONFIGURED = 8,
+
+  MULTIPLE_DEVICE_SIGNED_IN = 9,
 }
 
 /**
