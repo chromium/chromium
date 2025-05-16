@@ -1402,11 +1402,6 @@
     {
         "name": "guava",
         "group": "com.google.guava",
-        "version": "31.1-android"
-    },
-    {
-        "name": "guava",
-        "group": "com.google.guava",
         "version": "33.4.8-jre"
     },
     {

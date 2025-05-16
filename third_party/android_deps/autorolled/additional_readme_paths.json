@@ -36,7 +36,6 @@
     "committed/libs/com_google_firebase_firebase_encoders_proto",
     "committed/libs/com_google_guava_failureaccess",
     "committed/libs/com_google_guava_guava",
-    "committed/libs/com_google_guava_guava_android",
     "committed/libs/com_google_j2objc_j2objc_annotations",
     "committed/libs/com_google_protobuf_protobuf_javalite",
     "committed/libs/com_google_testparameterinjector_test_parameter_injector",
