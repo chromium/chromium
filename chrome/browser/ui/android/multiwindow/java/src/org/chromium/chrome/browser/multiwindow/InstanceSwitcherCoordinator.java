@@ -143,15 +143,24 @@ public class InstanceSwitcherCoordinator {
                     LayoutInflater.from(context)
                             .inflate(R.layout.instance_switcher_dialog_v2, null);
 
+            int itemVerticalSpacing =
+                    mContext.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.instance_switcher_dialog_list_item_padding);
+            var itemDecoration = new DialogListItemDecoration(itemVerticalSpacing);
+
             RecyclerView activeInstancesList = mDialogView.findViewById(R.id.active_instance_list);
             activeInstancesList.setLayoutManager(
                     new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
             activeInstancesList.setAdapter(activeListAdapter);
+            activeInstancesList.addItemDecoration(itemDecoration);
+
             RecyclerView inactiveInstancesList =
                     mDialogView.findViewById(R.id.inactive_instance_list);
             inactiveInstancesList.setLayoutManager(
                     new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
             inactiveInstancesList.setAdapter(inactiveListAdapter);
+            inactiveInstancesList.addItemDecoration(itemDecoration);
 
             mTabHeaderRow = mDialogView.findViewById(R.id.tabs);
             mTabHeaderRow.addOnTabSelectedListener(

@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/multiwindow/CloseConfirmationDialogView.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/DialogListItemDecoration.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceInfo.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemProperties.java",
@@ -54,6 +55,10 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/checkmark_24dp.xml",
     "java/res/drawable/circle_green.xml",
+    "java/res/drawable/list_item_background_bottom.xml",
+    "java/res/drawable/list_item_background_middle.xml",
+    "java/res/drawable/list_item_background_top.xml",
+    "java/res/drawable/single_list_item_background.xml",
     "java/res/layout/close_confirmation_dialog.xml",
     "java/res/layout/instance_switcher_cmd_item.xml",
     "java/res/layout/instance_switcher_dialog.xml",
