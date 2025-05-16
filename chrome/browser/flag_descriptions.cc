@@ -130,6 +130,11 @@ const char kAndroidAppIntegrationV2Description[] =
 const char kNewTabPageCustomizationName[] = "Customize the new tab page";
 const char kNewTabPageCustomizationDescription[] =
     "If enabled, allows users to customize the new tab page";
+
+const char kNewTabPageCustomizationToolbarButtonName[] =
+    "New tab page customization toolbar button";
+const char kNewTabPageCustomizationToolbarButtonDescription[] =
+    "Add the new tab page customization button on the toolbar (mobile only).";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kAndroidAppIntegrationWithFaviconName[] =

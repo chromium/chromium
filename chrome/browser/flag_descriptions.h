@@ -903,6 +903,9 @@ extern const char kNewMacNotificationAPIDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNewTabPageCustomizationName[];
 extern const char kNewTabPageCustomizationDescription[];
+
+extern const char kNewTabPageCustomizationToolbarButtonName[];
+extern const char kNewTabPageCustomizationToolbarButtonDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kEnableGenericSensorExtraClassesName[];

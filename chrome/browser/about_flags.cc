@@ -6470,6 +6470,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNewTabPageCustomizationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNewTabPageCustomization)},
 
+    {"new-tab-page-customization-toolbar-button",
+     flag_descriptions::kNewTabPageCustomizationToolbarButtonName,
+     flag_descriptions::kNewTabPageCustomizationToolbarButtonDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kNewTabPageCustomizationToolbarButton)},
+
     {"android-app-integration-with-favicon",
      flag_descriptions::kAndroidAppIntegrationWithFaviconName,
      flag_descriptions::kAndroidAppIntegrationWithFaviconDescription,

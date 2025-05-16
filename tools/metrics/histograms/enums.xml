@@ -17245,6 +17245,7 @@ from previous Chrome versions.
   <int value="1220464509" label="enable-first-run-ui-transitions"/>
   <int value="1220655015" label="kScrollableTabStripOverflow:enabled"/>
   <int value="1220920757" label="FilesTrashAutoCleanup:enabled"/>
+  <int value="1221075979" label="NewTabPageCustomizationToolbarButton:enabled"/>
   <int value="1221104166" label="ThumbnailCacheRefactor:enabled"/>
   <int value="1221370955" label="FedCmAddAccount:enabled"/>
   <int value="1221394044" label="SharingUseDeviceInfo:enabled"/>
@@ -18024,6 +18025,8 @@ from previous Chrome versions.
   <int value="1502820263" label="IPH_SupervisedUserProfileSignin:disabled"/>
   <int value="1503291145" label="ForceSigninFlowInProfilePicker:enabled"/>
   <int value="1504393761" label="AutofillEnableCardProductName:enabled"/>
+  <int value="1505028793"
+      label="NewTabPageCustomizationToolbarButton:disabled"/>
   <int value="1505194447" label="disable-transition-compositing"/>
   <int value="1506372577" label="NearbySharingSelfShare:disabled"/>
   <int value="1506384737" label="ArcExtendInputAnrTimeout:disabled"/>

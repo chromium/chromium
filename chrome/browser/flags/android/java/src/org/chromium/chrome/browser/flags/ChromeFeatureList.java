@@ -437,6 +437,8 @@ public abstract class ChromeFeatureList {
     public static final String NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2 =
             "NewTabPageAndroidTriggerForPrerender2";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION = "NewTabPageCustomization";
+    public static final String NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON =
+            "NewTabPageCustomizationToolbarButton";
     public static final String NOTIFICATION_ONE_TAP_UNSUBSCRIBE = "NotificationOneTapUnsubscribe";
     public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
             "NotificationPermissionBottomSheet";
@@ -805,6 +807,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2, true);
     public static final CachedFlag sNewTabPageCustomization =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false);
+    public static final CachedFlag sNewTabPageCustomizationToolbarButton =
+            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON, false);
     public static final CachedFlag sNotificationTrampoline =
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
@@ -966,6 +970,7 @@ public abstract class ChromeFeatureList {
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,
                     sNewTabPageCustomization,
+                    sNewTabPageCustomizationToolbarButton,
                     sNotificationTrampoline,
                     sOptimizationGuidePushNotifications,
                     sPaintPreviewDemo,
