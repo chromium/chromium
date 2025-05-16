@@ -330,7 +330,12 @@ BASE_FEATURE(kSavePasswordHashFromProfilePicker,
 
 BASE_FEATURE(kShowWarningsForSuspiciousNotifications,
              "ShowWarningsForSuspiciousNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 constexpr base::FeatureParam<int>
     kShowWarningsForSuspiciousNotificationsScoreThreshold{
