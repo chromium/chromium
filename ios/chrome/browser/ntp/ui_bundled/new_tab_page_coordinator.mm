@@ -432,9 +432,7 @@
   _discoverFeedObserverBridge.reset();
   _identityObserverBridge.reset();
   _authServiceObserverBridge.reset();
-
-  [_sharingCoordinator stop];
-  _sharingCoordinator = nil;
+  [self clearPresentedState];
 
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
@@ -577,6 +575,12 @@
 
 - (BOOL)isFeedVisible {
   return self.NTPMediator.feedHeaderVisible && self.feedViewController;
+}
+
+- (void)clearPresentedState {
+  [self stopSharingCoordinator];
+  [self stopAccountMenuCoordinator];
+  [self stopSigninCoordinator];
 }
 
 #pragma mark - Setters
@@ -1544,6 +1548,11 @@
 }
 
 #pragma mark - Private
+
+- (void)stopSharingCoordinator {
+  [_sharingCoordinator stop];
+  _sharingCoordinator = nil;
+}
 
 - (void)stopAccountMenuCoordinator {
   [_accountMenuCoordinator stop];

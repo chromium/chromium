@@ -898,11 +898,10 @@ enum class ToolbarKind {
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
-
-  [self dismissAccountMenu];
   [self dismissAutoDeletionActionSheet];
 
   [self cancelCollaborationFlows];
+  [self.NTPCoordinator clearPresentedState];
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
@@ -1002,13 +1001,6 @@ enum class ToolbarKind {
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
-}
-
-// Dismisses the account menu.
-- (void)dismissAccountMenu {
-  if (!_NTPCoordinator) {
-    return;
-  }
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
