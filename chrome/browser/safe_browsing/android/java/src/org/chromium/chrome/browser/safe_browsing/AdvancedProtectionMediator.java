@@ -68,8 +68,9 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
 
         if (mShouldShowMessageOnStartup && provider.isAdvancedProtectionRequestedByOs()) {
             enqueueMessage(provider);
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override

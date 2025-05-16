@@ -131,7 +131,7 @@ public class AdvancedProtectionMediatorTest {
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
-        coordinator.showMessageOnStartupIfNeeded();
+        assertFalse(coordinator.showMessageOnStartupIfNeeded());
         verifyDidNotEnqueueMessage();
 
         coordinator.destroy();
@@ -146,7 +146,7 @@ public class AdvancedProtectionMediatorTest {
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
-        coordinator.showMessageOnStartupIfNeeded();
+        assertTrue(coordinator.showMessageOnStartupIfNeeded());
         verifyEnqueuedMessage();
 
         coordinator.destroy();
@@ -164,7 +164,7 @@ public class AdvancedProtectionMediatorTest {
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
-        coordinator.showMessageOnStartupIfNeeded();
+        assertFalse(coordinator.showMessageOnStartupIfNeeded());
         verifyDidNotEnqueueMessage();
 
         coordinator.destroy();
@@ -203,7 +203,7 @@ public class AdvancedProtectionMediatorTest {
         setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
-        coordinator.showMessageOnStartupIfNeeded();
+        assertTrue(coordinator.showMessageOnStartupIfNeeded());
         verifyEnqueuedMessage();
 
         assertTrue(
@@ -224,7 +224,7 @@ public class AdvancedProtectionMediatorTest {
         var provider = setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
-        coordinator.showMessageOnStartupIfNeeded();
+        assertFalse(coordinator.showMessageOnStartupIfNeeded());
         verifyDidNotEnqueueMessage();
         provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ true);
         verifyEnqueuedMessage();
@@ -241,7 +241,7 @@ public class AdvancedProtectionMediatorTest {
         var provider = setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
-        coordinator.showMessageOnStartupIfNeeded();
+        assertFalse(coordinator.showMessageOnStartupIfNeeded());
         verifyDidNotEnqueueMessage();
         provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ true);
         verifyDidNotEnqueueMessage();
