@@ -47,6 +47,23 @@ namespace blink {
 namespace {
 
 template <typename T>
+T StatsConversionHelper(const T& value) {
+  return value;
+}
+String StatsConversionHelper(const std::string& value) {
+  return String::FromUTF8(value);
+}
+
+// Macro to reduce the transformation between WebRTC and v8 values
+// to a single line. Arguments are the webrtc stat and the equivalent
+// v8 setter function. Uses StatsConversionHelper to specialize for
+// std::string -> String::FromUTF8.
+#define SET_STAT(webrtc_stat, v8_setter)            \
+  if (webrtc_stat.has_value()) {                    \
+    v8_setter(StatsConversionHelper(*webrtc_stat)); \
+  }
+
+template <typename T>
 v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
                                     HashMap<String, T>&& map) {
   V8ObjectBuilder builder(script_state);
@@ -79,24 +96,12 @@ RTCCodecStats* ToV8Stat(ScriptState* script_state,
                         const webrtc::RTCCodecStats& webrtc_stat) {
   RTCCodecStats* v8_codec =
       MakeGarbageCollected<RTCCodecStats>(script_state->GetIsolate());
-  if (webrtc_stat.transport_id.has_value()) {
-    v8_codec->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
-  }
-  if (webrtc_stat.payload_type.has_value()) {
-    v8_codec->setPayloadType(*webrtc_stat.payload_type);
-  }
-  if (webrtc_stat.channels.has_value()) {
-    v8_codec->setChannels(*webrtc_stat.channels);
-  }
-  if (webrtc_stat.mime_type.has_value()) {
-    v8_codec->setMimeType(String::FromUTF8(*webrtc_stat.mime_type));
-  }
-  if (webrtc_stat.clock_rate.has_value()) {
-    v8_codec->setClockRate(*webrtc_stat.clock_rate);
-  }
-  if (webrtc_stat.sdp_fmtp_line.has_value()) {
-    v8_codec->setSdpFmtpLine(String::FromUTF8(*webrtc_stat.sdp_fmtp_line));
-  }
+  SET_STAT(webrtc_stat.transport_id, v8_codec->setTransportId)
+  SET_STAT(webrtc_stat.payload_type, v8_codec->setPayloadType);
+  SET_STAT(webrtc_stat.channels, v8_codec->setChannels);
+  SET_STAT(webrtc_stat.mime_type, v8_codec->setMimeType);
+  SET_STAT(webrtc_stat.clock_rate, v8_codec->setClockRate);
+  SET_STAT(webrtc_stat.sdp_fmtp_line, v8_codec->setSdpFmtpLine);
   return v8_codec;
 }
 
@@ -108,222 +113,100 @@ RTCInboundRtpStreamStats* ToV8Stat(
       MakeGarbageCollected<RTCInboundRtpStreamStats>(
           script_state->GetIsolate());
   // RTCRtpStreamStats
-  if (webrtc_stat.ssrc.has_value()) {
-    v8_stat->setSsrc(*webrtc_stat.ssrc);
-  }
-  if (webrtc_stat.kind.has_value()) {
-    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
-    // mediaType is a legacy alias for kind.
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
-  }
-  if (webrtc_stat.transport_id.has_value()) {
-    v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
-  }
-  if (webrtc_stat.codec_id.has_value()) {
-    v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
-  }
+  SET_STAT(webrtc_stat.ssrc, v8_stat->setSsrc);
+  SET_STAT(webrtc_stat.kind, v8_stat->setKind);
+  // mediaType is a legacy alias for kind.
+  SET_STAT(webrtc_stat.kind, v8_stat->setMediaType);
+  SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
+  SET_STAT(webrtc_stat.codec_id, v8_stat->setCodecId);
   // RTCReceivedRtpStreamStats
-  if (webrtc_stat.packets_lost.has_value()) {
-    v8_stat->setPacketsLost(*webrtc_stat.packets_lost);
-  }
-  if (webrtc_stat.jitter.has_value()) {
-    v8_stat->setJitter(*webrtc_stat.jitter);
-  }
+  SET_STAT(webrtc_stat.packets_lost, v8_stat->setPacketsLost);
+  SET_STAT(webrtc_stat.jitter, v8_stat->setJitter);
   // RTCInboundRtpStreamStats
-  if (webrtc_stat.track_identifier.has_value()) {
-    v8_stat->setTrackIdentifier(
-        String::FromUTF8(*webrtc_stat.track_identifier));
-  }
-  if (webrtc_stat.mid.has_value()) {
-    v8_stat->setMid(String::FromUTF8(*webrtc_stat.mid));
-  }
-  if (webrtc_stat.remote_id.has_value()) {
-    v8_stat->setRemoteId(String::FromUTF8(*webrtc_stat.remote_id));
-  }
-  if (webrtc_stat.frames_decoded.has_value()) {
-    v8_stat->setFramesDecoded(*webrtc_stat.frames_decoded);
-  }
-  if (webrtc_stat.key_frames_decoded.has_value()) {
-    v8_stat->setKeyFramesDecoded(*webrtc_stat.key_frames_decoded);
-  }
-  if (webrtc_stat.frames_dropped.has_value()) {
-    v8_stat->setFramesDropped(*webrtc_stat.frames_dropped);
-  }
-  if (webrtc_stat.frame_width.has_value()) {
-    v8_stat->setFrameWidth(*webrtc_stat.frame_width);
-  }
-  if (webrtc_stat.frame_height.has_value()) {
-    v8_stat->setFrameHeight(*webrtc_stat.frame_height);
-  }
-  if (webrtc_stat.frames_per_second.has_value()) {
-    v8_stat->setFramesPerSecond(*webrtc_stat.frames_per_second);
-  }
-  if (webrtc_stat.qp_sum.has_value()) {
-    v8_stat->setQpSum(*webrtc_stat.qp_sum);
-  }
-  if (webrtc_stat.total_corruption_probability.has_value()) {
-    v8_stat->setTotalCorruptionProbability(
-        *webrtc_stat.total_corruption_probability);
-  }
-  if (webrtc_stat.total_squared_corruption_probability.has_value()) {
-    v8_stat->setTotalSquaredCorruptionProbability(
-        *webrtc_stat.total_squared_corruption_probability);
-  }
-  if (webrtc_stat.corruption_measurements.has_value()) {
-    v8_stat->setCorruptionMeasurements(*webrtc_stat.corruption_measurements);
-  }
-  if (webrtc_stat.total_decode_time.has_value()) {
-    v8_stat->setTotalDecodeTime(*webrtc_stat.total_decode_time);
-  }
-  if (webrtc_stat.total_inter_frame_delay.has_value()) {
-    v8_stat->setTotalInterFrameDelay(*webrtc_stat.total_inter_frame_delay);
-  }
-  if (webrtc_stat.total_squared_inter_frame_delay.has_value()) {
-    v8_stat->setTotalSquaredInterFrameDelay(
-        *webrtc_stat.total_squared_inter_frame_delay);
-  }
-  if (webrtc_stat.pause_count.has_value()) {
-    v8_stat->setPauseCount(*webrtc_stat.pause_count);
-  }
-  if (webrtc_stat.total_pauses_duration.has_value()) {
-    v8_stat->setTotalPausesDuration(*webrtc_stat.total_pauses_duration);
-  }
-  if (webrtc_stat.freeze_count.has_value()) {
-    v8_stat->setFreezeCount(*webrtc_stat.freeze_count);
-  }
-  if (webrtc_stat.total_freezes_duration.has_value()) {
-    v8_stat->setTotalFreezesDuration(*webrtc_stat.total_freezes_duration);
-  }
-  if (webrtc_stat.last_packet_received_timestamp.has_value()) {
-    v8_stat->setLastPacketReceivedTimestamp(
-        *webrtc_stat.last_packet_received_timestamp);
-  }
-  if (webrtc_stat.header_bytes_received.has_value()) {
-    v8_stat->setHeaderBytesReceived(*webrtc_stat.header_bytes_received);
-  }
-  if (webrtc_stat.packets_discarded.has_value()) {
-    v8_stat->setPacketsDiscarded(*webrtc_stat.packets_discarded);
-  }
-  if (webrtc_stat.packets_received.has_value()) {
-    v8_stat->setPacketsReceived(*webrtc_stat.packets_received);
-  }
-  if (webrtc_stat.fec_packets_received.has_value()) {
-    v8_stat->setFecPacketsReceived(*webrtc_stat.fec_packets_received);
-  }
-  if (webrtc_stat.fec_packets_discarded.has_value()) {
-    v8_stat->setFecPacketsDiscarded(*webrtc_stat.fec_packets_discarded);
-  }
-  if (webrtc_stat.fec_bytes_received.has_value()) {
-    v8_stat->setFecBytesReceived(*webrtc_stat.fec_bytes_received);
-  }
-  if (webrtc_stat.fec_ssrc.has_value()) {
-    v8_stat->setFecSsrc(*webrtc_stat.fec_ssrc);
-  }
-  if (webrtc_stat.bytes_received.has_value()) {
-    v8_stat->setBytesReceived(*webrtc_stat.bytes_received);
-  }
-  if (webrtc_stat.nack_count.has_value()) {
-    v8_stat->setNackCount(*webrtc_stat.nack_count);
-  }
-  if (webrtc_stat.fir_count.has_value()) {
-    v8_stat->setFirCount(*webrtc_stat.fir_count);
-  }
-  if (webrtc_stat.pli_count.has_value()) {
-    v8_stat->setPliCount(*webrtc_stat.pli_count);
-  }
-  if (webrtc_stat.total_processing_delay.has_value()) {
-    v8_stat->setTotalProcessingDelay(*webrtc_stat.total_processing_delay);
-  }
-  if (webrtc_stat.estimated_playout_timestamp.has_value()) {
-    v8_stat->setEstimatedPlayoutTimestamp(
-        *webrtc_stat.estimated_playout_timestamp);
-  }
-  if (webrtc_stat.jitter_buffer_delay.has_value()) {
-    v8_stat->setJitterBufferDelay(*webrtc_stat.jitter_buffer_delay);
-  }
-  if (webrtc_stat.jitter_buffer_target_delay.has_value()) {
-    v8_stat->setJitterBufferTargetDelay(
-        *webrtc_stat.jitter_buffer_target_delay);
-  }
-  if (webrtc_stat.jitter_buffer_emitted_count.has_value()) {
-    v8_stat->setJitterBufferEmittedCount(
-        *webrtc_stat.jitter_buffer_emitted_count);
-  }
-  if (webrtc_stat.jitter_buffer_minimum_delay.has_value()) {
-    v8_stat->setJitterBufferMinimumDelay(
-        *webrtc_stat.jitter_buffer_minimum_delay);
-  }
-  if (webrtc_stat.total_samples_received.has_value()) {
-    v8_stat->setTotalSamplesReceived(*webrtc_stat.total_samples_received);
-  }
-  if (webrtc_stat.concealed_samples.has_value()) {
-    v8_stat->setConcealedSamples(*webrtc_stat.concealed_samples);
-  }
-  if (webrtc_stat.silent_concealed_samples.has_value()) {
-    v8_stat->setSilentConcealedSamples(*webrtc_stat.silent_concealed_samples);
-  }
-  if (webrtc_stat.concealment_events.has_value()) {
-    v8_stat->setConcealmentEvents(*webrtc_stat.concealment_events);
-  }
-  if (webrtc_stat.inserted_samples_for_deceleration.has_value()) {
-    v8_stat->setInsertedSamplesForDeceleration(
-        *webrtc_stat.inserted_samples_for_deceleration);
-  }
-  if (webrtc_stat.removed_samples_for_acceleration.has_value()) {
-    v8_stat->setRemovedSamplesForAcceleration(
-        *webrtc_stat.removed_samples_for_acceleration);
-  }
-  if (webrtc_stat.audio_level.has_value()) {
-    v8_stat->setAudioLevel(*webrtc_stat.audio_level);
-  }
-  if (webrtc_stat.total_audio_energy.has_value()) {
-    v8_stat->setTotalAudioEnergy(*webrtc_stat.total_audio_energy);
-  }
-  if (webrtc_stat.total_samples_duration.has_value()) {
-    v8_stat->setTotalSamplesDuration(*webrtc_stat.total_samples_duration);
-  }
-  if (webrtc_stat.frames_received.has_value()) {
-    v8_stat->setFramesReceived(*webrtc_stat.frames_received);
-  }
-  if (webrtc_stat.playout_id.has_value()) {
-    v8_stat->setPlayoutId(String::FromUTF8(*webrtc_stat.playout_id));
-  }
-  if (webrtc_stat.frames_assembled_from_multiple_packets.has_value()) {
-    v8_stat->setFramesAssembledFromMultiplePackets(
-        *webrtc_stat.frames_assembled_from_multiple_packets);
-  }
-  if (webrtc_stat.total_assembly_time.has_value()) {
-    v8_stat->setTotalAssemblyTime(*webrtc_stat.total_assembly_time);
-  }
+  SET_STAT(webrtc_stat.track_identifier, v8_stat->setTrackIdentifier);
+  SET_STAT(webrtc_stat.mid, v8_stat->setMid);
+  SET_STAT(webrtc_stat.remote_id, v8_stat->setRemoteId);
+  SET_STAT(webrtc_stat.frames_decoded, v8_stat->setFramesDecoded);
+  SET_STAT(webrtc_stat.key_frames_decoded, v8_stat->setKeyFramesDecoded);
+  SET_STAT(webrtc_stat.frames_dropped, v8_stat->setFramesDropped);
+  SET_STAT(webrtc_stat.frame_width, v8_stat->setFrameWidth);
+  SET_STAT(webrtc_stat.frame_height, v8_stat->setFrameHeight);
+  SET_STAT(webrtc_stat.frames_per_second, v8_stat->setFramesPerSecond);
+  SET_STAT(webrtc_stat.qp_sum, v8_stat->setQpSum);
+  SET_STAT(webrtc_stat.total_corruption_probability,
+           v8_stat->setTotalCorruptionProbability);
+  SET_STAT(webrtc_stat.total_squared_corruption_probability,
+           v8_stat->setTotalSquaredCorruptionProbability);
+  SET_STAT(webrtc_stat.corruption_measurements,
+           v8_stat->setCorruptionMeasurements);
+  SET_STAT(webrtc_stat.total_decode_time, v8_stat->setTotalDecodeTime);
+  SET_STAT(webrtc_stat.total_inter_frame_delay,
+           v8_stat->setTotalInterFrameDelay);
+  SET_STAT(webrtc_stat.total_squared_inter_frame_delay,
+           v8_stat->setTotalSquaredInterFrameDelay);
+  SET_STAT(webrtc_stat.pause_count, v8_stat->setPauseCount);
+  SET_STAT(webrtc_stat.total_pauses_duration, v8_stat->setTotalPausesDuration);
+  SET_STAT(webrtc_stat.freeze_count, v8_stat->setFreezeCount);
+  SET_STAT(webrtc_stat.total_freezes_duration,
+           v8_stat->setTotalFreezesDuration);
+  SET_STAT(webrtc_stat.last_packet_received_timestamp,
+           v8_stat->setLastPacketReceivedTimestamp);
+  SET_STAT(webrtc_stat.header_bytes_received, v8_stat->setHeaderBytesReceived);
+  SET_STAT(webrtc_stat.packets_discarded, v8_stat->setPacketsDiscarded);
+  SET_STAT(webrtc_stat.packets_received, v8_stat->setPacketsReceived);
+  SET_STAT(webrtc_stat.fec_packets_received, v8_stat->setFecPacketsReceived);
+  SET_STAT(webrtc_stat.fec_packets_discarded, v8_stat->setFecPacketsDiscarded);
+  SET_STAT(webrtc_stat.fec_bytes_received, v8_stat->setFecBytesReceived);
+  SET_STAT(webrtc_stat.fec_ssrc, v8_stat->setFecSsrc);
+  SET_STAT(webrtc_stat.bytes_received, v8_stat->setBytesReceived);
+  SET_STAT(webrtc_stat.nack_count, v8_stat->setNackCount);
+  SET_STAT(webrtc_stat.fir_count, v8_stat->setFirCount);
+  SET_STAT(webrtc_stat.pli_count, v8_stat->setPliCount);
+  SET_STAT(webrtc_stat.total_processing_delay,
+           v8_stat->setTotalProcessingDelay);
+  SET_STAT(webrtc_stat.estimated_playout_timestamp,
+           v8_stat->setEstimatedPlayoutTimestamp);
+  SET_STAT(webrtc_stat.jitter_buffer_delay, v8_stat->setJitterBufferDelay);
+  SET_STAT(webrtc_stat.jitter_buffer_target_delay,
+           v8_stat->setJitterBufferTargetDelay);
+  SET_STAT(webrtc_stat.jitter_buffer_emitted_count,
+           v8_stat->setJitterBufferEmittedCount);
+  SET_STAT(webrtc_stat.jitter_buffer_minimum_delay,
+           v8_stat->setJitterBufferMinimumDelay);
+  SET_STAT(webrtc_stat.total_samples_received,
+           v8_stat->setTotalSamplesReceived);
+  SET_STAT(webrtc_stat.concealed_samples, v8_stat->setConcealedSamples);
+  SET_STAT(webrtc_stat.silent_concealed_samples,
+           v8_stat->setSilentConcealedSamples);
+  SET_STAT(webrtc_stat.concealment_events, v8_stat->setConcealmentEvents);
+  SET_STAT(webrtc_stat.inserted_samples_for_deceleration,
+           v8_stat->setInsertedSamplesForDeceleration);
+  SET_STAT(webrtc_stat.removed_samples_for_acceleration,
+           v8_stat->setRemovedSamplesForAcceleration);
+  SET_STAT(webrtc_stat.audio_level, v8_stat->setAudioLevel);
+  SET_STAT(webrtc_stat.total_audio_energy, v8_stat->setTotalAudioEnergy);
+  SET_STAT(webrtc_stat.total_samples_duration,
+           v8_stat->setTotalSamplesDuration);
+  SET_STAT(webrtc_stat.frames_received, v8_stat->setFramesReceived);
+  SET_STAT(webrtc_stat.playout_id, v8_stat->setPlayoutId);
+  SET_STAT(webrtc_stat.frames_assembled_from_multiple_packets,
+           v8_stat->setFramesAssembledFromMultiplePackets);
+  SET_STAT(webrtc_stat.total_assembly_time, v8_stat->setTotalAssemblyTime);
   if (expose_hardware_caps) {
-    if (webrtc_stat.power_efficient_decoder.has_value()) {
-      v8_stat->setPowerEfficientDecoder(*webrtc_stat.power_efficient_decoder);
-    }
-    if (webrtc_stat.decoder_implementation.has_value()) {
-      v8_stat->setDecoderImplementation(
-          String::FromUTF8(*webrtc_stat.decoder_implementation));
-    }
+    SET_STAT(webrtc_stat.power_efficient_decoder,
+             v8_stat->setPowerEfficientDecoder);
+    SET_STAT(webrtc_stat.decoder_implementation,
+             v8_stat->setDecoderImplementation);
   }
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtcinboundrtpstreamstats-contenttype
-  if (webrtc_stat.content_type.has_value()) {
-    v8_stat->setContentType(String::FromUTF8(*webrtc_stat.content_type));
-  }
+  SET_STAT(webrtc_stat.content_type, v8_stat->setContentType);
   // https://github.com/w3c/webrtc-provisional-stats/issues/40
-  if (webrtc_stat.goog_timing_frame_info.has_value()) {
-    v8_stat->setGoogTimingFrameInfo(
-        String::FromUTF8(*webrtc_stat.goog_timing_frame_info));
-  }
-  if (webrtc_stat.retransmitted_packets_received.has_value()) {
-    v8_stat->setRetransmittedPacketsReceived(
-        *webrtc_stat.retransmitted_packets_received);
-  }
-  if (webrtc_stat.retransmitted_bytes_received.has_value()) {
-    v8_stat->setRetransmittedBytesReceived(
-        *webrtc_stat.retransmitted_bytes_received);
-  }
-  if (webrtc_stat.rtx_ssrc.has_value()) {
-    v8_stat->setRtxSsrc(*webrtc_stat.rtx_ssrc);
-  }
+  SET_STAT(webrtc_stat.goog_timing_frame_info, v8_stat->setGoogTimingFrameInfo);
+  SET_STAT(webrtc_stat.retransmitted_packets_received,
+           v8_stat->setRetransmittedPacketsReceived);
+  SET_STAT(webrtc_stat.retransmitted_bytes_received,
+           v8_stat->setRetransmittedBytesReceived);
+  SET_STAT(webrtc_stat.rtx_ssrc, v8_stat->setRtxSsrc);
   return v8_stat;
 }
 
@@ -334,44 +217,22 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
       MakeGarbageCollected<RTCRemoteInboundRtpStreamStats>(
           script_state->GetIsolate());
   // RTCRtpStreamStats
-  if (webrtc_stat.ssrc.has_value()) {
-    v8_stat->setSsrc(*webrtc_stat.ssrc);
-  }
-  if (webrtc_stat.kind.has_value()) {
-    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
-    // mediaType is a legacy alias for kind.
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
-  }
-  if (webrtc_stat.transport_id.has_value()) {
-    v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
-  }
-  if (webrtc_stat.codec_id.has_value()) {
-    v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
-  }
+  SET_STAT(webrtc_stat.ssrc, v8_stat->setSsrc);
+  SET_STAT(webrtc_stat.kind, v8_stat->setKind);
+  // mediaType is a legacy alias for kind.
+  SET_STAT(webrtc_stat.kind, v8_stat->setMediaType);
+  SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
+  SET_STAT(webrtc_stat.codec_id, v8_stat->setCodecId);
   // RTCReceivedRtpStreamStats
-  if (webrtc_stat.packets_lost.has_value()) {
-    v8_stat->setPacketsLost(*webrtc_stat.packets_lost);
-  }
-  if (webrtc_stat.jitter.has_value()) {
-    v8_stat->setJitter(*webrtc_stat.jitter);
-  }
+  SET_STAT(webrtc_stat.packets_lost, v8_stat->setPacketsLost);
+  SET_STAT(webrtc_stat.jitter, v8_stat->setJitter);
   // RTCRemoteInboundRtpStreamStats
-  if (webrtc_stat.local_id.has_value()) {
-    v8_stat->setLocalId(String::FromUTF8(*webrtc_stat.local_id));
-  }
-  if (webrtc_stat.round_trip_time.has_value()) {
-    v8_stat->setRoundTripTime(*webrtc_stat.round_trip_time);
-  }
-  if (webrtc_stat.total_round_trip_time.has_value()) {
-    v8_stat->setTotalRoundTripTime(*webrtc_stat.total_round_trip_time);
-  }
-  if (webrtc_stat.fraction_lost.has_value()) {
-    v8_stat->setFractionLost(*webrtc_stat.fraction_lost);
-  }
-  if (webrtc_stat.round_trip_time_measurements.has_value()) {
-    v8_stat->setRoundTripTimeMeasurements(
-        *webrtc_stat.round_trip_time_measurements);
-  }
+  SET_STAT(webrtc_stat.local_id, v8_stat->setLocalId);
+  SET_STAT(webrtc_stat.round_trip_time, v8_stat->setRoundTripTime);
+  SET_STAT(webrtc_stat.total_round_trip_time, v8_stat->setTotalRoundTripTime);
+  SET_STAT(webrtc_stat.fraction_lost, v8_stat->setFractionLost);
+  SET_STAT(webrtc_stat.round_trip_time_measurements,
+           v8_stat->setRoundTripTimeMeasurements);
   return v8_stat;
 }
 
@@ -383,97 +244,43 @@ RTCOutboundRtpStreamStats* ToV8Stat(
       MakeGarbageCollected<RTCOutboundRtpStreamStats>(
           script_state->GetIsolate());
   // RTCRtpStreamStats
-  if (webrtc_stat.ssrc.has_value()) {
-    v8_stat->setSsrc(*webrtc_stat.ssrc);
-  }
-  if (webrtc_stat.kind.has_value()) {
-    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
-    // mediaType is a legacy alias for kind.
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
-  }
-  if (webrtc_stat.transport_id.has_value()) {
-    v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
-  }
-  if (webrtc_stat.codec_id.has_value()) {
-    v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
-  }
+  SET_STAT(webrtc_stat.ssrc, v8_stat->setSsrc);
+  SET_STAT(webrtc_stat.kind, v8_stat->setKind);
+  // mediaType is a legacy alias for kind.
+  SET_STAT(webrtc_stat.kind, v8_stat->setMediaType);
+  SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
+  SET_STAT(webrtc_stat.codec_id, v8_stat->setCodecId);
   // RTCSentRtpStreamStats
-  if (webrtc_stat.packets_sent.has_value()) {
-    v8_stat->setPacketsSent(*webrtc_stat.packets_sent);
-  }
-  if (webrtc_stat.bytes_sent.has_value()) {
-    v8_stat->setBytesSent(*webrtc_stat.bytes_sent);
-  }
+  SET_STAT(webrtc_stat.packets_sent, v8_stat->setPacketsSent);
+  SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
   // RTCOutboundRtpStreamStats
-  if (webrtc_stat.mid.has_value()) {
-    v8_stat->setMid(String::FromUTF8(*webrtc_stat.mid));
-  }
-  if (webrtc_stat.media_source_id.has_value()) {
-    v8_stat->setMediaSourceId(String::FromUTF8(*webrtc_stat.media_source_id));
-  }
-  if (webrtc_stat.remote_id.has_value()) {
-    v8_stat->setRemoteId(String::FromUTF8(*webrtc_stat.remote_id));
-  }
-  if (webrtc_stat.rid.has_value()) {
-    v8_stat->setRid(String::FromUTF8(*webrtc_stat.rid));
-  }
-  if (webrtc_stat.encoding_index.has_value()) {
-    v8_stat->setEncodingIndex(*webrtc_stat.encoding_index);
-  }
-  if (webrtc_stat.header_bytes_sent.has_value()) {
-    v8_stat->setHeaderBytesSent(*webrtc_stat.header_bytes_sent);
-  }
-  if (webrtc_stat.retransmitted_packets_sent.has_value()) {
-    v8_stat->setRetransmittedPacketsSent(
-        *webrtc_stat.retransmitted_packets_sent);
-  }
-  if (webrtc_stat.retransmitted_bytes_sent.has_value()) {
-    v8_stat->setRetransmittedBytesSent(*webrtc_stat.retransmitted_bytes_sent);
-  }
-  if (webrtc_stat.rtx_ssrc.has_value()) {
-    v8_stat->setRtxSsrc(*webrtc_stat.rtx_ssrc);
-  }
-  if (webrtc_stat.target_bitrate.has_value()) {
-    v8_stat->setTargetBitrate(*webrtc_stat.target_bitrate);
-  }
-  if (webrtc_stat.total_encoded_bytes_target.has_value()) {
-    v8_stat->setTotalEncodedBytesTarget(
-        *webrtc_stat.total_encoded_bytes_target);
-  }
-  if (webrtc_stat.frame_width.has_value()) {
-    v8_stat->setFrameWidth(*webrtc_stat.frame_width);
-  }
-  if (webrtc_stat.frame_height.has_value()) {
-    v8_stat->setFrameHeight(*webrtc_stat.frame_height);
-  }
-  if (webrtc_stat.frames_per_second.has_value()) {
-    v8_stat->setFramesPerSecond(*webrtc_stat.frames_per_second);
-  }
-  if (webrtc_stat.frames_sent.has_value()) {
-    v8_stat->setFramesSent(*webrtc_stat.frames_sent);
-  }
-  if (webrtc_stat.huge_frames_sent.has_value()) {
-    v8_stat->setHugeFramesSent(*webrtc_stat.huge_frames_sent);
-  }
-  if (webrtc_stat.frames_encoded.has_value()) {
-    v8_stat->setFramesEncoded(*webrtc_stat.frames_encoded);
-  }
-  if (webrtc_stat.key_frames_encoded.has_value()) {
-    v8_stat->setKeyFramesEncoded(*webrtc_stat.key_frames_encoded);
-  }
-  if (webrtc_stat.qp_sum.has_value()) {
-    v8_stat->setQpSum(*webrtc_stat.qp_sum);
-  }
-  if (webrtc_stat.total_encode_time.has_value()) {
-    v8_stat->setTotalEncodeTime(*webrtc_stat.total_encode_time);
-  }
-  if (webrtc_stat.total_packet_send_delay.has_value()) {
-    v8_stat->setTotalPacketSendDelay(*webrtc_stat.total_packet_send_delay);
-  }
-  if (webrtc_stat.quality_limitation_reason.has_value()) {
-    v8_stat->setQualityLimitationReason(
-        String::FromUTF8(*webrtc_stat.quality_limitation_reason));
-  }
+  SET_STAT(webrtc_stat.mid, v8_stat->setMid);
+  SET_STAT(webrtc_stat.media_source_id, v8_stat->setMediaSourceId);
+  SET_STAT(webrtc_stat.remote_id, v8_stat->setRemoteId);
+  SET_STAT(webrtc_stat.rid, v8_stat->setRid);
+  SET_STAT(webrtc_stat.encoding_index, v8_stat->setEncodingIndex);
+  SET_STAT(webrtc_stat.header_bytes_sent, v8_stat->setHeaderBytesSent);
+  SET_STAT(webrtc_stat.retransmitted_packets_sent,
+           v8_stat->setRetransmittedPacketsSent);
+  SET_STAT(webrtc_stat.retransmitted_bytes_sent,
+           v8_stat->setRetransmittedBytesSent);
+  SET_STAT(webrtc_stat.rtx_ssrc, v8_stat->setRtxSsrc);
+  SET_STAT(webrtc_stat.target_bitrate, v8_stat->setTargetBitrate);
+  SET_STAT(webrtc_stat.total_encoded_bytes_target,
+           v8_stat->setTotalEncodedBytesTarget);
+  SET_STAT(webrtc_stat.frame_width, v8_stat->setFrameWidth);
+  SET_STAT(webrtc_stat.frame_height, v8_stat->setFrameHeight);
+  SET_STAT(webrtc_stat.frames_per_second, v8_stat->setFramesPerSecond);
+  SET_STAT(webrtc_stat.frames_sent, v8_stat->setFramesSent);
+  SET_STAT(webrtc_stat.huge_frames_sent, v8_stat->setHugeFramesSent);
+  SET_STAT(webrtc_stat.frames_encoded, v8_stat->setFramesEncoded);
+  SET_STAT(webrtc_stat.key_frames_encoded, v8_stat->setKeyFramesEncoded);
+  SET_STAT(webrtc_stat.qp_sum, v8_stat->setQpSum);
+  SET_STAT(webrtc_stat.total_encode_time, v8_stat->setTotalEncodeTime);
+  SET_STAT(webrtc_stat.total_packet_send_delay,
+           v8_stat->setTotalPacketSendDelay);
+  SET_STAT(webrtc_stat.quality_limitation_reason,
+           v8_stat->setQualityLimitationReason);
   if (webrtc_stat.quality_limitation_durations.has_value()) {
     Vector<std::pair<String, double>> quality_durations;
     for (const auto& [key, value] : *webrtc_stat.quality_limitation_durations) {
@@ -481,39 +288,21 @@ RTCOutboundRtpStreamStats* ToV8Stat(
     }
     v8_stat->setQualityLimitationDurations(std::move(quality_durations));
   }
-  if (webrtc_stat.quality_limitation_resolution_changes.has_value()) {
-    v8_stat->setQualityLimitationResolutionChanges(
-        *webrtc_stat.quality_limitation_resolution_changes);
-  }
-  if (webrtc_stat.nack_count.has_value()) {
-    v8_stat->setNackCount(*webrtc_stat.nack_count);
-  }
-  if (webrtc_stat.fir_count.has_value()) {
-    v8_stat->setFirCount(*webrtc_stat.fir_count);
-  }
-  if (webrtc_stat.pli_count.has_value()) {
-    v8_stat->setPliCount(*webrtc_stat.pli_count);
-  }
-  if (webrtc_stat.active.has_value()) {
-    v8_stat->setActive(*webrtc_stat.active);
-  }
-  if (webrtc_stat.scalability_mode.has_value()) {
-    v8_stat->setScalabilityMode(
-        String::FromUTF8(*webrtc_stat.scalability_mode));
-  }
+  SET_STAT(webrtc_stat.quality_limitation_resolution_changes,
+           v8_stat->setQualityLimitationResolutionChanges);
+  SET_STAT(webrtc_stat.nack_count, v8_stat->setNackCount);
+  SET_STAT(webrtc_stat.fir_count, v8_stat->setFirCount);
+  SET_STAT(webrtc_stat.pli_count, v8_stat->setPliCount);
+  SET_STAT(webrtc_stat.active, v8_stat->setActive);
+  SET_STAT(webrtc_stat.scalability_mode, v8_stat->setScalabilityMode);
   if (expose_hardware_caps) {
-    if (webrtc_stat.encoder_implementation.has_value()) {
-      v8_stat->setEncoderImplementation(
-          String::FromUTF8(*webrtc_stat.encoder_implementation));
-    }
-    if (webrtc_stat.power_efficient_encoder.has_value()) {
-      v8_stat->setPowerEfficientEncoder(*webrtc_stat.power_efficient_encoder);
-    }
+    SET_STAT(webrtc_stat.encoder_implementation,
+             v8_stat->setEncoderImplementation);
+    SET_STAT(webrtc_stat.power_efficient_encoder,
+             v8_stat->setPowerEfficientEncoder);
   }
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtcoutboundrtpstreamstats-contenttype
-  if (webrtc_stat.content_type.has_value()) {
-    v8_stat->setContentType(String::FromUTF8(*webrtc_stat.content_type));
-  }
+  SET_STAT(webrtc_stat.content_type, v8_stat->setContentType);
   return v8_stat;
 }
 
@@ -524,47 +313,23 @@ RTCRemoteOutboundRtpStreamStats* ToV8Stat(
       MakeGarbageCollected<RTCRemoteOutboundRtpStreamStats>(
           script_state->GetIsolate());
   // RTCRtpStreamStats
-  if (webrtc_stat.ssrc.has_value()) {
-    v8_stat->setSsrc(*webrtc_stat.ssrc);
-  }
-  if (webrtc_stat.kind.has_value()) {
-    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
-    // mediaType is a legacy alias for kind.
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
-  }
-  if (webrtc_stat.transport_id.has_value()) {
-    v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
-  }
-  if (webrtc_stat.codec_id.has_value()) {
-    v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
-  }
+  SET_STAT(webrtc_stat.ssrc, v8_stat->setSsrc);
+  SET_STAT(webrtc_stat.kind, v8_stat->setKind);
+  // mediaType is a legacy alias for kind.
+  SET_STAT(webrtc_stat.kind, v8_stat->setMediaType);
+  SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
+  SET_STAT(webrtc_stat.codec_id, v8_stat->setCodecId);
   // RTCSendRtpStreamStats
-  if (webrtc_stat.packets_sent.has_value()) {
-    v8_stat->setPacketsSent(*webrtc_stat.packets_sent);
-  }
-  if (webrtc_stat.bytes_sent.has_value()) {
-    v8_stat->setBytesSent(*webrtc_stat.bytes_sent);
-  }
+  SET_STAT(webrtc_stat.packets_sent, v8_stat->setPacketsSent);
+  SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
   // RTCRemoteOutboundRtpStreamStats
-  if (webrtc_stat.local_id.has_value()) {
-    v8_stat->setLocalId(String::FromUTF8(*webrtc_stat.local_id));
-  }
-  if (webrtc_stat.remote_timestamp.has_value()) {
-    v8_stat->setRemoteTimestamp(*webrtc_stat.remote_timestamp);
-  }
-  if (webrtc_stat.reports_sent.has_value()) {
-    v8_stat->setReportsSent(*webrtc_stat.reports_sent);
-  }
-  if (webrtc_stat.round_trip_time.has_value()) {
-    v8_stat->setRoundTripTime(*webrtc_stat.round_trip_time);
-  }
-  if (webrtc_stat.total_round_trip_time.has_value()) {
-    v8_stat->setTotalRoundTripTime(*webrtc_stat.total_round_trip_time);
-  }
-  if (webrtc_stat.round_trip_time_measurements.has_value()) {
-    v8_stat->setRoundTripTimeMeasurements(
-        *webrtc_stat.round_trip_time_measurements);
-  }
+  SET_STAT(webrtc_stat.local_id, v8_stat->setLocalId);
+  SET_STAT(webrtc_stat.remote_timestamp, v8_stat->setRemoteTimestamp);
+  SET_STAT(webrtc_stat.reports_sent, v8_stat->setReportsSent);
+  SET_STAT(webrtc_stat.round_trip_time, v8_stat->setRoundTripTime);
+  SET_STAT(webrtc_stat.total_round_trip_time, v8_stat->setTotalRoundTripTime);
+  SET_STAT(webrtc_stat.round_trip_time_measurements,
+           v8_stat->setRoundTripTimeMeasurements);
   return v8_stat;
 }
 
@@ -573,30 +338,16 @@ RTCAudioSourceStats* ToV8Stat(ScriptState* script_state,
   RTCAudioSourceStats* v8_stat =
       MakeGarbageCollected<RTCAudioSourceStats>(script_state->GetIsolate());
   // RTCMediaSourceStats
-  if (webrtc_stat.track_identifier.has_value()) {
-    v8_stat->setTrackIdentifier(
-        String::FromUTF8(*webrtc_stat.track_identifier));
-  }
-  if (webrtc_stat.kind.has_value()) {
-    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
-  }
+  SET_STAT(webrtc_stat.track_identifier, v8_stat->setTrackIdentifier);
+  SET_STAT(webrtc_stat.kind, v8_stat->setKind);
   // RTCAudioSourceStats
-  if (webrtc_stat.audio_level.has_value()) {
-    v8_stat->setAudioLevel(*webrtc_stat.audio_level);
-  }
-  if (webrtc_stat.total_audio_energy.has_value()) {
-    v8_stat->setTotalAudioEnergy(*webrtc_stat.total_audio_energy);
-  }
-  if (webrtc_stat.total_samples_duration.has_value()) {
-    v8_stat->setTotalSamplesDuration(*webrtc_stat.total_samples_duration);
-  }
-  if (webrtc_stat.echo_return_loss.has_value()) {
-    v8_stat->setEchoReturnLoss(*webrtc_stat.echo_return_loss);
-  }
-  if (webrtc_stat.echo_return_loss_enhancement.has_value()) {
-    v8_stat->setEchoReturnLossEnhancement(
-        *webrtc_stat.echo_return_loss_enhancement);
-  }
+  SET_STAT(webrtc_stat.audio_level, v8_stat->setAudioLevel);
+  SET_STAT(webrtc_stat.total_audio_energy, v8_stat->setTotalAudioEnergy);
+  SET_STAT(webrtc_stat.total_samples_duration,
+           v8_stat->setTotalSamplesDuration);
+  SET_STAT(webrtc_stat.echo_return_loss, v8_stat->setEchoReturnLoss);
+  SET_STAT(webrtc_stat.echo_return_loss_enhancement,
+           v8_stat->setEchoReturnLossEnhancement);
   return v8_stat;
 }
 
@@ -606,26 +357,13 @@ RTCVideoSourceStats* ToV8Stat(ScriptState* script_state,
   RTCVideoSourceStats* v8_stat =
       MakeGarbageCollected<RTCVideoSourceStats>(script_state->GetIsolate());
   // RTCMediaSourceStats
-  if (webrtc_stat.track_identifier.has_value()) {
-    v8_stat->setTrackIdentifier(
-        String::FromUTF8(*webrtc_stat.track_identifier));
-  }
-  if (webrtc_stat.kind.has_value()) {
-    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
-  }
+  SET_STAT(webrtc_stat.track_identifier, v8_stat->setTrackIdentifier);
+  SET_STAT(webrtc_stat.kind, v8_stat->setKind);
   // RTCVideoSourceStats
-  if (webrtc_stat.width.has_value()) {
-    v8_stat->setWidth(*webrtc_stat.width);
-  }
-  if (webrtc_stat.height.has_value()) {
-    v8_stat->setHeight(*webrtc_stat.height);
-  }
-  if (webrtc_stat.frames.has_value()) {
-    v8_stat->setFrames(*webrtc_stat.frames);
-  }
-  if (webrtc_stat.frames_per_second.has_value()) {
-    v8_stat->setFramesPerSecond(*webrtc_stat.frames_per_second);
-  }
+  SET_STAT(webrtc_stat.width, v8_stat->setWidth);
+  SET_STAT(webrtc_stat.height, v8_stat->setHeight);
+  SET_STAT(webrtc_stat.frames, v8_stat->setFrames);
+  SET_STAT(webrtc_stat.frames_per_second, v8_stat->setFramesPerSecond);
   return v8_stat;
 }
 
@@ -636,26 +374,19 @@ RTCAudioPlayoutStats* ToV8Stat(
   RTCAudioPlayoutStats* v8_stat =
       MakeGarbageCollected<RTCAudioPlayoutStats>(script_state->GetIsolate());
 
-  if (webrtc_stat.kind.has_value()) {
-    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
-  }
-  if (webrtc_stat.synthesized_samples_duration.has_value()) {
-    v8_stat->setSynthesizedSamplesDuration(
-        *webrtc_stat.synthesized_samples_duration);
-  }
+  SET_STAT(webrtc_stat.kind, v8_stat->setKind);
+  SET_STAT(webrtc_stat.synthesized_samples_duration,
+           v8_stat->setSynthesizedSamplesDuration);
   if (webrtc_stat.synthesized_samples_events.has_value()) {
     v8_stat->setSynthesizedSamplesEvents(base::saturated_cast<uint32_t>(
         *webrtc_stat.synthesized_samples_events));
   }
-  if (webrtc_stat.total_samples_duration.has_value()) {
-    v8_stat->setTotalSamplesDuration(*webrtc_stat.total_samples_duration);
-  }
-  if (webrtc_stat.total_playout_delay.has_value()) {
-    v8_stat->setTotalPlayoutDelay(*webrtc_stat.total_playout_delay);
-  }
-  if (webrtc_stat.total_samples_count.has_value()) {
-    v8_stat->setTotalSamplesCount(*webrtc_stat.total_samples_count);
-  }
+  SET_STAT(webrtc_stat.synthesized_samples_events,
+           v8_stat->setSynthesizedSamplesEvents);
+  SET_STAT(webrtc_stat.total_samples_duration,
+           v8_stat->setTotalSamplesDuration);
+  SET_STAT(webrtc_stat.total_playout_delay, v8_stat->setTotalPlayoutDelay);
+  SET_STAT(webrtc_stat.total_samples_count, v8_stat->setTotalSamplesCount);
   return v8_stat;
 }
 
@@ -666,12 +397,8 @@ RTCPeerConnectionStats* ToV8Stat(
   RTCPeerConnectionStats* v8_stat =
       MakeGarbageCollected<RTCPeerConnectionStats>(script_state->GetIsolate());
 
-  if (webrtc_stat.data_channels_opened.has_value()) {
-    v8_stat->setDataChannelsOpened(*webrtc_stat.data_channels_opened);
-  }
-  if (webrtc_stat.data_channels_closed.has_value()) {
-    v8_stat->setDataChannelsClosed(*webrtc_stat.data_channels_closed);
-  }
+  SET_STAT(webrtc_stat.data_channels_opened, v8_stat->setDataChannelsOpened);
+  SET_STAT(webrtc_stat.data_channels_closed, v8_stat->setDataChannelsClosed);
   return v8_stat;
 }
 
@@ -681,30 +408,15 @@ RTCDataChannelStats* ToV8Stat(ScriptState* script_state,
   RTCDataChannelStats* v8_stat =
       MakeGarbageCollected<RTCDataChannelStats>(script_state->GetIsolate());
 
-  if (webrtc_stat.label.has_value()) {
-    v8_stat->setLabel(String::FromUTF8(*webrtc_stat.label));
-  }
-  if (webrtc_stat.protocol.has_value()) {
-    v8_stat->setProtocol(String::FromUTF8(*webrtc_stat.protocol));
-  }
-  if (webrtc_stat.data_channel_identifier.has_value()) {
-    v8_stat->setDataChannelIdentifier(*webrtc_stat.data_channel_identifier);
-  }
-  if (webrtc_stat.state.has_value()) {
-    v8_stat->setState(String::FromUTF8(*webrtc_stat.state));
-  }
-  if (webrtc_stat.messages_sent.has_value()) {
-    v8_stat->setMessagesSent(*webrtc_stat.messages_sent);
-  }
-  if (webrtc_stat.bytes_sent.has_value()) {
-    v8_stat->setBytesSent(*webrtc_stat.bytes_sent);
-  }
-  if (webrtc_stat.messages_received.has_value()) {
-    v8_stat->setMessagesReceived(*webrtc_stat.messages_received);
-  }
-  if (webrtc_stat.bytes_received.has_value()) {
-    v8_stat->setBytesReceived(*webrtc_stat.bytes_received);
-  }
+  SET_STAT(webrtc_stat.label, v8_stat->setLabel);
+  SET_STAT(webrtc_stat.protocol, v8_stat->setProtocol);
+  SET_STAT(webrtc_stat.data_channel_identifier,
+           v8_stat->setDataChannelIdentifier);
+  SET_STAT(webrtc_stat.state, v8_stat->setState);
+  SET_STAT(webrtc_stat.messages_sent, v8_stat->setMessagesSent);
+  SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
+  SET_STAT(webrtc_stat.messages_received, v8_stat->setMessagesReceived);
+  SET_STAT(webrtc_stat.bytes_received, v8_stat->setBytesReceived);
   return v8_stat;
 }
 
@@ -714,64 +426,28 @@ RTCTransportStats* ToV8Stat(ScriptState* script_state,
   RTCTransportStats* v8_stat =
       MakeGarbageCollected<RTCTransportStats>(script_state->GetIsolate());
 
-  if (webrtc_stat.packets_sent.has_value()) {
-    v8_stat->setPacketsSent(*webrtc_stat.packets_sent);
-  }
-  if (webrtc_stat.packets_received.has_value()) {
-    v8_stat->setPacketsReceived(*webrtc_stat.packets_received);
-  }
-  if (webrtc_stat.bytes_sent.has_value()) {
-    v8_stat->setBytesSent(*webrtc_stat.bytes_sent);
-  }
-  if (webrtc_stat.bytes_received.has_value()) {
-    v8_stat->setBytesReceived(*webrtc_stat.bytes_received);
-  }
-  if (webrtc_stat.ice_role.has_value()) {
-    v8_stat->setIceRole(String::FromUTF8(*webrtc_stat.ice_role));
-  }
-  if (webrtc_stat.ice_local_username_fragment.has_value()) {
-    v8_stat->setIceLocalUsernameFragment(
-        String::FromUTF8(*webrtc_stat.ice_local_username_fragment));
-  }
-  if (webrtc_stat.dtls_state.has_value()) {
-    v8_stat->setDtlsState(String::FromUTF8(*webrtc_stat.dtls_state));
-  }
-  if (webrtc_stat.ice_state.has_value()) {
-    v8_stat->setIceState(String::FromUTF8(*webrtc_stat.ice_state));
-  }
-  if (webrtc_stat.selected_candidate_pair_id.has_value()) {
-    v8_stat->setSelectedCandidatePairId(
-        String::FromUTF8(*webrtc_stat.selected_candidate_pair_id));
-  }
-  if (webrtc_stat.local_certificate_id.has_value()) {
-    v8_stat->setLocalCertificateId(
-        String::FromUTF8(*webrtc_stat.local_certificate_id));
-  }
-  if (webrtc_stat.remote_certificate_id.has_value()) {
-    v8_stat->setRemoteCertificateId(
-        String::FromUTF8(*webrtc_stat.remote_certificate_id));
-  }
-  if (webrtc_stat.tls_version.has_value()) {
-    v8_stat->setTlsVersion(String::FromUTF8(*webrtc_stat.tls_version));
-  }
-  if (webrtc_stat.dtls_cipher.has_value()) {
-    v8_stat->setDtlsCipher(String::FromUTF8(*webrtc_stat.dtls_cipher));
-  }
-  if (webrtc_stat.dtls_role.has_value()) {
-    v8_stat->setDtlsRole(String::FromUTF8(*webrtc_stat.dtls_role));
-  }
-  if (webrtc_stat.srtp_cipher.has_value()) {
-    v8_stat->setSrtpCipher(String::FromUTF8(*webrtc_stat.srtp_cipher));
-  }
-  if (webrtc_stat.selected_candidate_pair_changes.has_value()) {
-    v8_stat->setSelectedCandidatePairChanges(
-        *webrtc_stat.selected_candidate_pair_changes);
-  }
+  SET_STAT(webrtc_stat.packets_sent, v8_stat->setPacketsSent);
+  SET_STAT(webrtc_stat.packets_received, v8_stat->setPacketsReceived);
+  SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
+  SET_STAT(webrtc_stat.bytes_received, v8_stat->setBytesReceived);
+  SET_STAT(webrtc_stat.ice_role, v8_stat->setIceRole);
+  SET_STAT(webrtc_stat.ice_local_username_fragment,
+           v8_stat->setIceLocalUsernameFragment);
+  SET_STAT(webrtc_stat.dtls_state, v8_stat->setDtlsState);
+  SET_STAT(webrtc_stat.ice_state, v8_stat->setIceState);
+  SET_STAT(webrtc_stat.selected_candidate_pair_id,
+           v8_stat->setSelectedCandidatePairId);
+  SET_STAT(webrtc_stat.local_certificate_id, v8_stat->setLocalCertificateId);
+  SET_STAT(webrtc_stat.remote_certificate_id, v8_stat->setRemoteCertificateId);
+  SET_STAT(webrtc_stat.tls_version, v8_stat->setTlsVersion);
+  SET_STAT(webrtc_stat.dtls_cipher, v8_stat->setDtlsCipher);
+  SET_STAT(webrtc_stat.dtls_role, v8_stat->setDtlsRole);
+  SET_STAT(webrtc_stat.srtp_cipher, v8_stat->setSrtpCipher);
+  SET_STAT(webrtc_stat.selected_candidate_pair_changes,
+           v8_stat->setSelectedCandidatePairChanges);
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtctransportstats-rtcptransportstatsid
-  if (webrtc_stat.rtcp_transport_stats_id.has_value()) {
-    v8_stat->setRtcpTransportStatsId(
-        String::FromUTF8(*webrtc_stat.rtcp_transport_stats_id));
-  }
+  SET_STAT(webrtc_stat.rtcp_transport_stats_id,
+           v8_stat->setRtcpTransportStatsId);
   return v8_stat;
 }
 
@@ -781,58 +457,25 @@ RTCIceCandidateStats* ToV8Stat(
     const webrtc::RTCIceCandidateStats& webrtc_stat) {
   RTCIceCandidateStats* v8_stat =
       MakeGarbageCollected<RTCIceCandidateStats>(script_state->GetIsolate());
-  if (webrtc_stat.transport_id.has_value()) {
-    v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
-  }
-  if (webrtc_stat.address.has_value()) {
-    v8_stat->setAddress(String::FromUTF8(*webrtc_stat.address));
-  }
-  if (webrtc_stat.port.has_value()) {
-    v8_stat->setPort(*webrtc_stat.port);
-  }
-  if (webrtc_stat.protocol.has_value()) {
-    v8_stat->setProtocol(String::FromUTF8(*webrtc_stat.protocol));
-  }
-  if (webrtc_stat.candidate_type.has_value()) {
-    v8_stat->setCandidateType(String::FromUTF8(*webrtc_stat.candidate_type));
-  }
-  if (webrtc_stat.priority.has_value()) {
-    v8_stat->setPriority(*webrtc_stat.priority);
-  }
-  if (webrtc_stat.url.has_value()) {
-    v8_stat->setUrl(String::FromUTF8(*webrtc_stat.url));
-  }
-  if (webrtc_stat.relay_protocol.has_value()) {
-    v8_stat->setRelayProtocol(String::FromUTF8(*webrtc_stat.relay_protocol));
-  }
-  if (webrtc_stat.foundation.has_value()) {
-    v8_stat->setFoundation(String::FromUTF8(*webrtc_stat.foundation));
-  }
-  if (webrtc_stat.related_address.has_value()) {
-    v8_stat->setRelatedAddress(String::FromUTF8(*webrtc_stat.related_address));
-  }
-  if (webrtc_stat.related_port.has_value()) {
-    v8_stat->setRelatedPort(*webrtc_stat.related_port);
-  }
-  if (webrtc_stat.username_fragment.has_value()) {
-    v8_stat->setUsernameFragment(
-        String::FromUTF8(*webrtc_stat.username_fragment));
-  }
-  if (webrtc_stat.tcp_type.has_value()) {
-    v8_stat->setTcpType(String::FromUTF8(*webrtc_stat.tcp_type));
-  }
+  SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
+  SET_STAT(webrtc_stat.address, v8_stat->setAddress);
+  SET_STAT(webrtc_stat.port, v8_stat->setPort);
+  SET_STAT(webrtc_stat.protocol, v8_stat->setProtocol);
+  SET_STAT(webrtc_stat.candidate_type, v8_stat->setCandidateType);
+  SET_STAT(webrtc_stat.priority, v8_stat->setPriority);
+  SET_STAT(webrtc_stat.url, v8_stat->setUrl);
+  SET_STAT(webrtc_stat.relay_protocol, v8_stat->setRelayProtocol);
+  SET_STAT(webrtc_stat.foundation, v8_stat->setFoundation);
+  SET_STAT(webrtc_stat.related_address, v8_stat->setRelatedAddress);
+  SET_STAT(webrtc_stat.related_port, v8_stat->setRelatedPort);
+  SET_STAT(webrtc_stat.username_fragment, v8_stat->setUsernameFragment);
+  SET_STAT(webrtc_stat.tcp_type, v8_stat->setTcpType);
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtcicecandidatestats-networktype
   // Note: additional work needed to reach consensus on the privacy model.
-  if (webrtc_stat.network_type.has_value()) {
-    v8_stat->setNetworkType(String::FromUTF8(*webrtc_stat.network_type));
-  }
+  SET_STAT(webrtc_stat.network_type, v8_stat->setNetworkType);
   // Non-standard and obsolete stats.
-  if (webrtc_stat.is_remote.has_value()) {
-    v8_stat->setIsRemote(*webrtc_stat.is_remote);
-  }
-  if (webrtc_stat.ip.has_value()) {
-    v8_stat->setIp(String::FromUTF8(*webrtc_stat.ip));
-  }
+  SET_STAT(webrtc_stat.is_remote, v8_stat->setIsRemote);
+  SET_STAT(webrtc_stat.ip, v8_stat->setIp);
   return v8_stat;
 }
 
@@ -843,86 +486,40 @@ RTCIceCandidatePairStats* ToV8Stat(
   RTCIceCandidatePairStats* v8_stat =
       MakeGarbageCollected<RTCIceCandidatePairStats>(
           script_state->GetIsolate());
-  if (webrtc_stat.transport_id.has_value()) {
-    v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
-  }
-  if (webrtc_stat.local_candidate_id.has_value()) {
-    v8_stat->setLocalCandidateId(
-        String::FromUTF8(*webrtc_stat.local_candidate_id));
-  }
-  if (webrtc_stat.remote_candidate_id.has_value()) {
-    v8_stat->setRemoteCandidateId(
-        String::FromUTF8(*webrtc_stat.remote_candidate_id));
-  }
-  if (webrtc_stat.state.has_value()) {
-    v8_stat->setState(String::FromUTF8(*webrtc_stat.state));
-  }
-  if (webrtc_stat.nominated.has_value()) {
-    v8_stat->setNominated(*webrtc_stat.nominated);
-  }
-  if (webrtc_stat.packets_sent.has_value()) {
-    v8_stat->setPacketsSent(*webrtc_stat.packets_sent);
-  }
-  if (webrtc_stat.packets_received.has_value()) {
-    v8_stat->setPacketsReceived(*webrtc_stat.packets_received);
-  }
-  if (webrtc_stat.bytes_sent.has_value()) {
-    v8_stat->setBytesSent(*webrtc_stat.bytes_sent);
-  }
-  if (webrtc_stat.bytes_received.has_value()) {
-    v8_stat->setBytesReceived(*webrtc_stat.bytes_received);
-  }
-  if (webrtc_stat.last_packet_sent_timestamp.has_value()) {
-    v8_stat->setLastPacketSentTimestamp(
-        *webrtc_stat.last_packet_sent_timestamp);
-  }
-  if (webrtc_stat.last_packet_received_timestamp.has_value()) {
-    v8_stat->setLastPacketReceivedTimestamp(
-        *webrtc_stat.last_packet_received_timestamp);
-  }
-  if (webrtc_stat.total_round_trip_time.has_value()) {
-    v8_stat->setTotalRoundTripTime(*webrtc_stat.total_round_trip_time);
-  }
-  if (webrtc_stat.current_round_trip_time.has_value()) {
-    v8_stat->setCurrentRoundTripTime(*webrtc_stat.current_round_trip_time);
-  }
-  if (webrtc_stat.available_outgoing_bitrate.has_value()) {
-    v8_stat->setAvailableOutgoingBitrate(
-        *webrtc_stat.available_outgoing_bitrate);
-  }
-  if (webrtc_stat.available_incoming_bitrate.has_value()) {
-    v8_stat->setAvailableIncomingBitrate(
-        *webrtc_stat.available_incoming_bitrate);
-  }
-  if (webrtc_stat.requests_received.has_value()) {
-    v8_stat->setRequestsReceived(*webrtc_stat.requests_received);
-  }
-  if (webrtc_stat.requests_sent.has_value()) {
-    v8_stat->setRequestsSent(*webrtc_stat.requests_sent);
-  }
-  if (webrtc_stat.responses_received.has_value()) {
-    v8_stat->setResponsesReceived(*webrtc_stat.responses_received);
-  }
-  if (webrtc_stat.responses_sent.has_value()) {
-    v8_stat->setResponsesSent(*webrtc_stat.responses_sent);
-  }
-  if (webrtc_stat.consent_requests_sent.has_value()) {
-    v8_stat->setConsentRequestsSent(*webrtc_stat.consent_requests_sent);
-  }
+  SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
+  SET_STAT(webrtc_stat.local_candidate_id, v8_stat->setLocalCandidateId);
+  SET_STAT(webrtc_stat.remote_candidate_id, v8_stat->setRemoteCandidateId);
+  SET_STAT(webrtc_stat.state, v8_stat->setState);
+  SET_STAT(webrtc_stat.nominated, v8_stat->setNominated);
+  SET_STAT(webrtc_stat.packets_sent, v8_stat->setPacketsSent);
+  SET_STAT(webrtc_stat.packets_received, v8_stat->setPacketsReceived);
+  SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
+  SET_STAT(webrtc_stat.bytes_received, v8_stat->setBytesReceived);
+  SET_STAT(webrtc_stat.last_packet_sent_timestamp,
+           v8_stat->setLastPacketSentTimestamp);
+  SET_STAT(webrtc_stat.last_packet_received_timestamp,
+           v8_stat->setLastPacketReceivedTimestamp);
+  SET_STAT(webrtc_stat.total_round_trip_time, v8_stat->setTotalRoundTripTime);
+  SET_STAT(webrtc_stat.current_round_trip_time,
+           v8_stat->setCurrentRoundTripTime);
+  SET_STAT(webrtc_stat.available_outgoing_bitrate,
+           v8_stat->setAvailableOutgoingBitrate);
+  SET_STAT(webrtc_stat.available_incoming_bitrate,
+           v8_stat->setAvailableIncomingBitrate);
+  SET_STAT(webrtc_stat.requests_received, v8_stat->setRequestsReceived);
+  SET_STAT(webrtc_stat.requests_sent, v8_stat->setRequestsSent);
+  SET_STAT(webrtc_stat.responses_received, v8_stat->setResponsesReceived);
+  SET_STAT(webrtc_stat.responses_sent, v8_stat->setResponsesSent);
+  SET_STAT(webrtc_stat.consent_requests_sent, v8_stat->setConsentRequestsSent);
   if (webrtc_stat.packets_discarded_on_send.has_value()) {
     v8_stat->setPacketsDiscardedOnSend(
         base::saturated_cast<uint32_t>(*webrtc_stat.packets_discarded_on_send));
   }
-  if (webrtc_stat.bytes_discarded_on_send.has_value()) {
-    v8_stat->setBytesDiscardedOnSend(*webrtc_stat.bytes_discarded_on_send);
-  }
+  SET_STAT(webrtc_stat.bytes_discarded_on_send,
+           v8_stat->setBytesDiscardedOnSend);
   // Non-standard and obsolete stats.
-  if (webrtc_stat.writable.has_value()) {
-    v8_stat->setWritable(*webrtc_stat.writable);
-  }
-  if (webrtc_stat.priority.has_value()) {
-    v8_stat->setPriority(*webrtc_stat.priority);
-  }
+  SET_STAT(webrtc_stat.writable, v8_stat->setWritable);
+  SET_STAT(webrtc_stat.priority, v8_stat->setPriority);
   return v8_stat;
 }
 
@@ -931,21 +528,10 @@ RTCCertificateStats* ToV8Stat(ScriptState* script_state,
                               const webrtc::RTCCertificateStats& webrtc_stat) {
   RTCCertificateStats* v8_stat =
       MakeGarbageCollected<RTCCertificateStats>(script_state->GetIsolate());
-  if (webrtc_stat.fingerprint.has_value()) {
-    v8_stat->setFingerprint(String::FromUTF8(*webrtc_stat.fingerprint));
-  }
-  if (webrtc_stat.fingerprint_algorithm.has_value()) {
-    v8_stat->setFingerprintAlgorithm(
-        String::FromUTF8(*webrtc_stat.fingerprint_algorithm));
-  }
-  if (webrtc_stat.base64_certificate.has_value()) {
-    v8_stat->setBase64Certificate(
-        String::FromUTF8(*webrtc_stat.base64_certificate));
-  }
-  if (webrtc_stat.issuer_certificate_id.has_value()) {
-    v8_stat->setIssuerCertificateId(
-        String::FromUTF8(*webrtc_stat.issuer_certificate_id));
-  }
+  SET_STAT(webrtc_stat.fingerprint, v8_stat->setFingerprint);
+  SET_STAT(webrtc_stat.fingerprint_algorithm, v8_stat->setFingerprintAlgorithm);
+  SET_STAT(webrtc_stat.base64_certificate, v8_stat->setBase64Certificate);
+  SET_STAT(webrtc_stat.issuer_certificate_id, v8_stat->setIssuerCertificateId);
   return v8_stat;
 }
 
