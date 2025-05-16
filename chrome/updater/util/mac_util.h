@@ -56,6 +56,9 @@ bool RemoveWakeJobFromLaunchd(UpdaterScope scope);
 // run as best as it can. Returns whether every applicable prep step succeeded.
 bool PrepareToRunBundle(const base::FilePath& bundle_path);
 
+// Recursively remove quarantine attributes on `path`. Returns false on error.
+bool RemoveQuarantineAttributes(const base::FilePath& path);
+
 std::string GetDomain(UpdaterScope scope);
 
 // Reads the value associated with `key` from the plist at `path`. Returns

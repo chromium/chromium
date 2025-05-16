@@ -28,8 +28,8 @@ InstallerResult RunApplicationInstaller(
     bool usage_stats_enabled,
     base::TimeDelta timeout,
     InstallProgressCallback /*progress_callback*/) {
-  if (!PrepareToRunBundle(app_installer)) {
-    VLOG(0) << "Prep failed -- Gatekeeper may prompt for " << app_installer;
+  if (!RemoveQuarantineAttributes(app_installer.DirName())) {
+    VLOG(2) << "Ignoring failure to remove quarantine attributes.";
   }
   VLOG(1) << "Running application install at " << app_installer;
 

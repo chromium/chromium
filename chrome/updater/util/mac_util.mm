@@ -49,24 +49,6 @@ base::FilePath ExecutableFolderPath() {
       .Append(FILE_PATH_LITERAL("MacOS"));
 }
 
-// Recursively remove quarantine attributes on the path. Emits a log message
-// if it fails.
-bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
-  bool success = base::mac::RemoveQuarantineAttribute(updater_bundle_path);
-  base::FileEnumerator file_enumerator(
-      base::FilePath(updater_bundle_path), true,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-  for (base::FilePath name = file_enumerator.Next(); !name.empty();
-       name = file_enumerator.Next()) {
-    success = base::mac::RemoveQuarantineAttribute(name) && success;
-  }
-
-  VLOG_IF(0, !success) << "Failed to remove quarantine attributes from "
-                       << updater_bundle_path;
-  return success;
-}
-
 // On supported versions of macOS, scan the specified bundle with Gatekeeper
 // so it won't pop up a user-visible "Verifying..." box for the duration of
 // the scan when an executable in the bundle is later launched for the first
@@ -99,6 +81,19 @@ int PrewarmGatekeeperIfSupported(const base::FilePath& bundle_path) {
 }
 
 }  // namespace
+
+bool RemoveQuarantineAttributes(const base::FilePath& path) {
+  bool success = base::mac::RemoveQuarantineAttribute(path);
+  base::FileEnumerator file_enumerator(
+      base::FilePath(path), true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath name = file_enumerator.Next(); !name.empty();
+       name = file_enumerator.Next()) {
+    success = base::mac::RemoveQuarantineAttribute(name) && success;
+  }
+  return success;
+}
 
 std::string GetDomain(UpdaterScope scope) {
   switch (scope) {

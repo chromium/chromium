@@ -10,5 +10,7 @@ readonly PRODUCT_NAME
 
 env
 
+/usr/bin/gktool scan "$1/${PRODUCT_NAME}.app"
+
 "$1/${PRODUCT_NAME}.app/Contents/MacOS/${PRODUCT_NAME}" \
     ${SERVER_ARGS} ${KS_kServerActionArguments}
