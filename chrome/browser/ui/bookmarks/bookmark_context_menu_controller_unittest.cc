@@ -184,7 +184,7 @@ TEST_F(BookmarkContextMenuControllerTest, SingleURL) {
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_TRUE(
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
-  EXPECT_FALSE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW));
+  EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_REMOVE));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
   EXPECT_TRUE(controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));

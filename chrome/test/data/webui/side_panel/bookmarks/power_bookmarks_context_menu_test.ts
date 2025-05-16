@@ -122,7 +122,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
   test('ShowsMenuItemsForSingleSelectUrl', async () => {
     const selection = [service.findBookmarkWithId('3')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false, false);
+        new MouseEvent('click'), selection, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -161,7 +161,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
   test('ShowsMenuItemsForSingleSelectFolder', async () => {
     const selection = [service.findBookmarkWithId('5')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false, false);
+        new MouseEvent('click'), selection, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -202,7 +202,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const selection =
         [service.findBookmarkWithId('3')!, service.findBookmarkWithId('4')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false, false);
+        new MouseEvent('click'), selection, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -238,7 +238,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
   test('ShowsMenuItemsForPriceTracking', async () => {
     const selection = [service.findBookmarkWithId('4')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, true, true, false);
+        new MouseEvent('click'), selection, true, true);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -285,7 +285,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     const selection = [service.findBookmarkWithId('5')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false, false);
+        new MouseEvent('click'), selection, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -326,7 +326,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     const selection = [service.findBookmarkWithId('3')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false, false);
+        new MouseEvent('click'), selection, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 

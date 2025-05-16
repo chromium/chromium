@@ -79,8 +79,7 @@ suite('TransportMode', () => {
     // Open the context menu.
     contextMenu.showAtPosition(
         new MouseEvent('click'),
-        [getBookmarkWithId(powerBookmarksList, bookmarkId)!], false, false,
-        false);
+        [getBookmarkWithId(powerBookmarksList, bookmarkId)!], false, false);
     await waitAfterNextRender(contextMenu);
 
     // Get the edit option in the menu.
@@ -116,7 +115,7 @@ suite('TransportMode', () => {
 
     // Open the context menu.
     contextMenu.showAtPosition(
-        new MouseEvent('click'), bookmarks, false, false, false);
+        new MouseEvent('click'), bookmarks, false, false);
     await waitAfterNextRender(contextMenu);
 
     // Get the move option in the menu.

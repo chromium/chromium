@@ -522,13 +522,6 @@ void BookmarksPageHandler::ExecuteContextMenuCommand(
   }
 }
 
-void BookmarksPageHandler::IsActiveTabInSplit(
-    IsActiveTabInSplitCallback callback) {
-  const bool is_split =
-      browser_window_interface_->GetTabStripModel()->GetActiveTab()->IsSplit();
-  std::move(callback).Run(is_split);
-}
-
 void BookmarksPageHandler::OpenBookmark(
     int64_t node_id,
     int32_t parent_folder_depth,

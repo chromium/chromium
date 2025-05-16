@@ -136,9 +136,6 @@ interface BookmarksPageHandler {
   // native bookmarks context menu.
   ExecuteDeleteCommand(array<int64> node_ids, ActionSource source);
 
-  // Returns whether or not the active tab is part of a split view.
-  IsActiveTabInSplit() => (bool is_split);
-
   // Opens the bookmark specified by node_id. Passes the parent folder
   // depth for metrics collection and the action source to identify
   // from which surface this request is made.

@@ -19,7 +19,6 @@ export interface BookmarksApiProxy {
   showUi(): void;
   getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}>;
   getActiveUrl(): Promise<string|undefined>;
-  isActiveTabInSplit(): Promise<{isSplit: boolean}>;
 
   // Side Panel display choices.
   setSortOrder(sortOrder: SortOrder): void;
@@ -164,12 +163,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
       }
       return undefined;
     });
-  }
-
-  // TODO(crbug.com/406794014): Use the extensions API for this once
-  // implemented.
-  isActiveTabInSplit() {
-    return this.handler.isActiveTabInSplit();
   }
 
   openBookmark(

@@ -71,7 +71,6 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void ExecuteContextMenuCommand(const std::vector<int64_t>& node_ids,
                                  side_panel::mojom::ActionSource source,
                                  int command_id);
-  void IsActiveTabInSplit(IsActiveTabInSplitCallback callback) override;
   void OpenBookmark(int64_t node_id,
                     int32_t parent_folder_depth,
                     ui::mojom::ClickModifiersPtr click_modifiers,

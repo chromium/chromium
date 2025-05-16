@@ -23,7 +23,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getActiveUrl',
-      'isActiveTabInSplit',
       'bookmarkCurrentTabInFolder',
       'openBookmark',
       'contextMenuOpenBookmarkInNewTab',
@@ -62,11 +61,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   getActiveUrl() {
     this.methodCalled('getActiveUrl');
     return Promise.resolve('http://www.test.com');
-  }
-
-  isActiveTabInSplit() {
-    this.methodCalled('isActiveTabInSplit');
-    return Promise.resolve({isSplit: false});
   }
 
   bookmarkCurrentTabInFolder() {

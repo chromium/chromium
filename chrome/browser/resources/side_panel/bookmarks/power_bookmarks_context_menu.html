@@ -12,8 +12,7 @@
 <cr-action-menu id="menu" on-mousedown="onMousedown_">
   <template is="dom-repeat"
       items="[[getMenuItemsForBookmarks_(
-                   bookmarks_, priceTracked_, priceTrackingEligible_,
-                   isInSplitView_)]]">
+                   bookmarks_, priceTracked_, priceTrackingEligible_)]]">
     <template is="dom-if" if="[[!showDivider_(item)]]" restamp>
       <button class="dropdown-item" on-click="onMenuItemClicked_"
           disabled="[[item.disabled]]">
