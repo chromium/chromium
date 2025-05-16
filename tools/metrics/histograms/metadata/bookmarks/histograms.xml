@@ -80,6 +80,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Android.BackendLoaded"
+    enum="JavaBookmarkBridgeBackends" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>Recorded when a bookmark bridge backend successfully loads.</summary>
+</histogram>
+
+<histogram
+    name="Bookmarks.Android.BackendLoadTime.{JavaBookmarkBackendClients}"
+    units="ms" expires_after="2025-09-14">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    How long it takes to load the given backends in the java bookmark bridge.
+    Time is measured from when the bridge singleton is instantiated to when each
+    loaded observer call comes in.
+  </summary>
+  <token key="JavaBookmarkBackendClients">
+    <variant name="AccountReadingList"
+        summary="The account reading list model."/>
+    <variant name="Bookmarks" summary="The bookmark model."/>
+    <variant name="LocalReadingList" summary="The local reading list model."/>
+    <variant name="PartnerBookmarks" summary="The partner bookmarks shim."/>
+    <variant name="ReadingListManager" summary="The reading list manager."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.Android.LoadedState"
+    enum="JavaBookmarkBridgeLoadedState" expires_after="2025-11-09">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Recorded when the aggregated BookmarkBridge loading state changes. This is
+    recorded when the java bridge is created, and again when all the different
+    bookmark backends complete loading.
+  </summary>
+</histogram>
+
 <histogram
     name="Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint"
     units="ms" expires_after="2024-01-31">

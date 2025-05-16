@@ -434,6 +434,8 @@ class BookmarkBridge : public ProfileObserver,
       identity_manager_observation_{this};
 
   bool suppress_observer_notifications_ = false;
+  base::TimeTicks load_start_time_;
+  bool loading_notification_sent_ = false;
 
   // Weak pointers for creating callbacks that won't call into a destroyed
   // object.

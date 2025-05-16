@@ -168,6 +168,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ReadingList"/>
 </enum>
 
+<enum name="JavaBookmarkBridgeBackends">
+  <int value="0" label="Bookmarks"/>
+  <int value="1" label="Partner bookmarks"/>
+  <int value="2" label="Local reading list"/>
+  <int value="3" label="Account reading list"/>
+  <int value="4" label="Reading list manager"/>
+</enum>
+
+<enum name="JavaBookmarkBridgeLoadedState">
+  <int value="0" label="Loading started"/>
+  <int value="1" label="Loading finished"/>
+</enum>
+
 <enum name="MobileBookmarkManagerBookmarkRowDisplayPref">
   <int value="0" label="Compact"/>
   <int value="1" label="Visual"/>
