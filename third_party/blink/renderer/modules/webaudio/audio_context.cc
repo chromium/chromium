@@ -1448,6 +1448,7 @@ void AudioContext::HandleRenderError() {
   // https://webaudio.github.io/web-audio-api/#error-handling-on-a-running-audio-context
   switch (ContextState()) {
     case V8AudioContextState::Enum::kRunning:
+    case V8AudioContextState::Enum::kInterrupted:
       // TODO(https://crbug.com/353641602): starting or stopping the renderer
       // should happen on the render thread, but this is the current convention.
       destination()->GetAudioDestinationHandler().StopRendering();
@@ -1460,7 +1461,6 @@ void AudioContext::HandleRenderError() {
       DispatchEvent(*Event::Create(event_type_names::kError));
       return;
     case V8AudioContextState::Enum::kClosed:
-    case V8AudioContextState::Enum::kInterrupted:
       return;
   }
   NOTREACHED();
