@@ -7137,13 +7137,13 @@
   },
   {
     "name": "omnibox-search-client-prefetch",
-    "owners": ["ryansturm@chromium.org", "chrome-brapp-loading@google.com"],
-    "expiry_milestone": 120
+    "owners": ["nhiroki@chromium.org", "chrome-prerendering@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "omnibox-search-prefetch",
-    "owners": ["ryansturm@chromium.org", "chrome-brapp-loading@google.com"],
-    "expiry_milestone": 120
+    "owners": ["nhiroki@chromium.org", "chrome-prerendering@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "omnibox-shortcut-boost",
