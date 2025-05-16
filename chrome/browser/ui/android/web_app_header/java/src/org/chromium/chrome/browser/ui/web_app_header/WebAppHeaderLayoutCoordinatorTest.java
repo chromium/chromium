@@ -9,9 +9,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
+
+import static org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayoutCoordinator.MIN_HEADER_WIDTH_DP;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -28,6 +31,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -54,6 +58,8 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.util.TokenHolder;
+
+import java.util.Locale;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -98,7 +104,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
         mShadowLooper = shadowOf(Looper.getMainLooper());
 
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
-        setupStandaloneMode();
+        setupDisplayMode(DisplayMode.STANDALONE);
 
         mScrimVisibilitySupplier = new ObservableSupplierImpl<>();
         when(mScrimManager.getScrimVisibilitySupplier()).thenReturn(mScrimVisibilitySupplier);
@@ -125,35 +131,28 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     private void setupDesktopWindowing(boolean isInDesktopWindow) {
-        mAppHeaderState =
-                new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, isInDesktopWindow);
+        setupDesktopWindowing(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, isInDesktopWindow);
+    }
+
+    private void setupDesktopWindowing(
+            Rect windowRect, Rect widestUnoccludedRect, boolean isInDesktopWindow) {
+        mAppHeaderState = new AppHeaderState(windowRect, widestUnoccludedRect, isInDesktopWindow);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
     }
 
-    private void setupStandaloneMode() {
-        mWebAppExtras =
-                new WebappExtras(
-                        "",
-                        "",
-                        "",
-                        new WebappIcon(),
-                        "",
-                        "",
-                        DisplayMode.STANDALONE,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        false,
-                        false,
-                        false);
+    private void notifyHeaderStateChanged() {
+        var headerObserverCaptor =
+                ArgumentCaptor.forClass(DesktopWindowStateManager.AppHeaderObserver.class);
+        verify(mDesktopWindowStateManager, atLeastOnce())
+                .addObserver(headerObserverCaptor.capture());
 
-        when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
-        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        for (var observer : headerObserverCaptor.getAllValues()) {
+            // Notifying all observers is closer to the truth than relying on registration order.
+            observer.onAppHeaderStateChanged(mAppHeaderState);
+        }
     }
 
-    private void setupMinUiMode() {
+    private void setupDisplayMode(@DisplayMode.EnumType int displayMode) {
         mWebAppExtras =
                 new WebappExtras(
                         "",
@@ -162,7 +161,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         new WebappIcon(),
                         "",
                         "",
-                        DisplayMode.MINIMAL_UI,
+                        displayMode,
                         0,
                         0,
                         0,
@@ -173,7 +172,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         false);
 
         when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
-        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.MINIMAL_UI);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(displayMode);
     }
 
     private void setupTab(boolean isLoading, boolean canGoBack) {
@@ -182,22 +181,36 @@ public class WebAppHeaderLayoutCoordinatorTest {
         mTabSupplier.set(mTab);
     }
 
-    private void verifyControlsEnabled() {
-        assertTrue(
-                "Refresh button should be enabled",
+    private void verifyControlsEnabledState(boolean isEnabled) {
+        assertEquals(
+                String.format(
+                        Locale.US,
+                        "Reload button should be %s",
+                        isEnabled ? "enabled" : "disabled"),
+                isEnabled,
                 mActivity.findViewById(R.id.refresh_button).isEnabled());
-        assertTrue(
-                "Back button should be enabled",
+        assertEquals(
+                String.format(
+                        Locale.US, "Back button should be %s", isEnabled ? "enabled" : "disabled"),
+                isEnabled,
                 mActivity.findViewById(R.id.back_button).isEnabled());
     }
 
-    private void verifyControlsDisabled() {
-        assertFalse(
-                "Refresh button should be disabled",
-                mActivity.findViewById(R.id.refresh_button).isEnabled());
-        assertFalse(
-                "Back button should be disabled",
-                mActivity.findViewById(R.id.back_button).isEnabled());
+    private void verifyControlsVisibility(int expectedVisibility) {
+        assertEquals(
+                String.format(
+                        Locale.US,
+                        "Reload button visibility should be %s",
+                        expectedVisibility == View.VISIBLE ? "visible" : "gone"),
+                expectedVisibility,
+                mActivity.findViewById(R.id.refresh_button).getVisibility());
+        assertEquals(
+                String.format(
+                        Locale.US,
+                        "Back button visibility should be %s",
+                        expectedVisibility == View.VISIBLE ? "visible" : "gone"),
+                expectedVisibility,
+                mActivity.findViewById(R.id.back_button).getVisibility());
     }
 
     @Test
@@ -223,21 +236,14 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Test
     public void testMinUiDisplayMode_shouldMakeMinUiVisible() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupMinUiMode();
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
 
         // Wait for animation to finish and update the view.
         mShadowLooper.idle();
 
-        assertEquals(
-                "Reload button should be visible",
-                View.VISIBLE,
-                mActivity.findViewById(R.id.refresh_button).getVisibility());
-        assertEquals(
-                "Back button should be visible",
-                View.VISIBLE,
-                mActivity.findViewById(R.id.back_button).getVisibility());
+        verifyControlsVisibility(View.VISIBLE);
         assertTrue(
                 "Reload button should be enabled",
                 mActivity.findViewById(R.id.refresh_button).isEnabled());
@@ -247,9 +253,63 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     @Test
+    public void testMinUiMinimizeWindow_ControlsDoNotFit_HideControls() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator();
+
+        // Emulate minimizing window.
+        int flexibleAreaWidth = MIN_HEADER_WIDTH_DP - 1;
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + flexibleAreaWidth + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + flexibleAreaWidth, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+
+        notifyHeaderStateChanged();
+        verifyControlsVisibility(View.GONE);
+    }
+
+    @Test
+    public void testMinUiMaximizeWindow_ControlsFit_ShowControls() {
+        // Emulate minimized window.
+        int flexibleAreaWidth = MIN_HEADER_WIDTH_DP - 1;
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + flexibleAreaWidth + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + flexibleAreaWidth, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator();
+
+        // Emulate maximizing window.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+
+        notifyHeaderStateChanged();
+        verifyControlsVisibility(View.VISIBLE);
+    }
+
+    @Test
+    public void testMinUiMinimizeWindow_MinimumWidthMatchThreshold_KeepControlsVisible() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator();
+
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + MIN_HEADER_WIDTH_DP + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + MIN_HEADER_WIDTH_DP, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+
+        notifyHeaderStateChanged();
+        verifyControlsVisibility(View.VISIBLE);
+    }
+
+    @Test
     public void testReload_shouldReloadTab() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupMinUiMode();
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
 
@@ -260,7 +320,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Test
     public void testReloadWhileReloading_shouldStopReloading() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupMinUiMode();
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ true, /* canGoBack= */ false);
         createCoordinator();
 
@@ -271,7 +331,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Test
     public void testReloadTabIgnoringCache_shouldReloadIgnoringCache() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupMinUiMode();
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
 
@@ -282,36 +342,36 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Test
     public void testDisableControls() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupMinUiMode();
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ true);
         createCoordinator();
 
         mShadowLooper.idle();
 
         mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
-        verifyControlsDisabled();
+        verifyControlsEnabledState(false);
     }
 
     @Test
     public void testEnableControls() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupMinUiMode();
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ true);
         createCoordinator();
 
         mShadowLooper.idle();
 
         int token = mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
-        verifyControlsDisabled();
+        verifyControlsEnabledState(false);
 
         mCoordinator.releaseDisabledControlsToken(token);
-        verifyControlsEnabled();
+        verifyControlsEnabledState(true);
     }
 
     @Test
     public void testDisableControlsOnManyTokens() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupMinUiMode();
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ true);
         createCoordinator();
 
@@ -319,9 +379,9 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
         int firstToken = mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
         mCoordinator.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
-        verifyControlsDisabled();
+        verifyControlsEnabledState(false);
 
         mCoordinator.releaseDisabledControlsToken(firstToken);
-        verifyControlsDisabled();
+        verifyControlsEnabledState(false);
     }
 }

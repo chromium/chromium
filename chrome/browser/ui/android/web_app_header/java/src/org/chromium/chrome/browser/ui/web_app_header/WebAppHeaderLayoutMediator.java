@@ -142,6 +142,10 @@ class WebAppHeaderLayoutMediator
                 WebAppHeaderLayoutProperties.IS_VISIBLE, mCurrentHeaderState.isInDesktopWindow());
     }
 
+    /**
+     * @return {@link ObservableSupplier} that signal current width of the flexible area in which
+     *     the header lays out controls.
+     */
     public ObservableSupplier<Integer> getUnoccludedWidthSupplier() {
         return mAppHeaderUnoccludedWidthSupplier;
     }

@@ -48,6 +48,10 @@ import java.util.List;
 @RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
 public class WebAppHeaderLayoutCoordinator
         implements DesktopWindowStateManager.AppHeaderObserver, WebAppHeaderDelegate {
+
+    // 48dp * 2 (back and reload button) + 4dp (start padding).
+    static final int MIN_HEADER_WIDTH_DP = 100;
+
     private @Nullable WebAppHeaderLayoutMediator mMediator;
     private @Nullable WebAppHeaderLayout mView;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
@@ -64,9 +68,6 @@ public class WebAppHeaderLayoutCoordinator
     private final Callback<Integer> mOnUnoccludedWidthCallback;
     private final ObservableSupplierImpl<Boolean> mControlsEnabledSupplier;
     private final TokenHolder mDisabledControlsHolder;
-
-    // 48dp * 2 (back and reload button) + 4dp (start padding).
-    private static final int MIN_HEADER_WIDTH_DP = 100;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
