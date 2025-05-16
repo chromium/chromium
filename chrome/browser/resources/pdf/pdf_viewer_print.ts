@@ -319,6 +319,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'getPassword':
       case 'metadata':
       case 'navigate':
+      case 'sendClickEvent':
       case 'setIsEditing':
         // These messages are not relevant in Print Preview.
         return;
