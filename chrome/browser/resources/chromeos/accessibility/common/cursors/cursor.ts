@@ -686,3 +686,6 @@ export class WrappingCursor extends Cursor {
 }
 
 TestImportManager.exportForTesting(Cursor);
+TestImportManager.exportForTesting(['CursorMovement', CursorMovement]);
+TestImportManager.exportForTesting(['CursorUnit', CursorUnit]);
+TestImportManager.exportForTesting(WrappingCursor);
