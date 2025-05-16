@@ -113,7 +113,10 @@ class KioskMixin : public InProcessBrowserTestMixin {
   struct IsolatedWebAppOption {
     IsolatedWebAppOption(std::string_view account_id,
                          const web_package::SignedWebBundleId& web_bundle_id,
-                         GURL update_manifest_url);
+                         GURL update_manifest_url,
+                         std::string update_channel = "",
+                         std::string pinned_version = "",
+                         bool allow_downgrades = false);
 
     IsolatedWebAppOption(const IsolatedWebAppOption&);
     IsolatedWebAppOption(IsolatedWebAppOption&&);
@@ -124,6 +127,9 @@ class KioskMixin : public InProcessBrowserTestMixin {
     std::string account_id;
     web_package::SignedWebBundleId web_bundle_id;
     GURL update_manifest_url;
+    std::string update_channel;
+    std::string pinned_version;
+    bool allow_downgrades;
   };
 
   // The account ID of the app that Kiosk should auto launch, as configured in
