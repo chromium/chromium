@@ -38,4 +38,8 @@ std::optional<int> TabStripModelAdapterImpl::GetIndexForHandle(
   return idx != TabStripModel::kNoTab ? std::make_optional(idx) : std::nullopt;
 }
 
+void TabStripModelAdapterImpl::ActivateTab(size_t index) {
+  tab_strip_model_->ActivateTabAt(index);
+}
+
 }  // namespace tabs_api

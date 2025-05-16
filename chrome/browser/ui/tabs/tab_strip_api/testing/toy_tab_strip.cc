@@ -57,4 +57,20 @@ tabs::TabHandle ToyTabStrip::AddTabAt(const GURL& url,
   return tab.tab_handle;
 }
 
+void ToyTabStrip::ActivateTab(tabs::TabHandle handle) {
+  for (auto& tab : tabs_) {
+    tab.active = tab.tab_handle == handle;
+  }
+}
+
+tabs::TabHandle ToyTabStrip::FindActiveTab() {
+  for (auto& tab : tabs_) {
+    if (tab.active) {
+      return tab.tab_handle;
+    }
+  }
+  NOTREACHED() << "toy tab strip does not guarantee one tab is always active, "
+                  "did you forget to activate a tab beforehand?";
+}
+
 }  // namespace tabs_api::testing

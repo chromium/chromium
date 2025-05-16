@@ -50,6 +50,11 @@ class FakeTabStripAdapter : public tabs_api::TabStripModelAdapter {
     return tab_strip_->GetIndexForHandle(tab_handle);
   }
 
+  void ActivateTab(size_t idx) override {
+    const auto tab = tab_strip_->GetTabs().at(idx);
+    tab_strip_->ActivateTab(tab);
+  }
+
  private:
   raw_ptr<testing::ToyTabStrip> tab_strip_;
 };
@@ -199,6 +204,64 @@ TEST_F(TabStripServiceImplTest, CloseTabs_InvalidType) {
   ASSERT_TRUE(success);
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kUnimplemented);
+}
+
+TEST_F(TabStripServiceImplTest, ActivateTab) {
+  // We start with this being active.
+  auto tab1 = testing::ToyTab{
+      GURL("1"),
+      tabs::TabHandle(1),
+  };
+
+  // And end with this one being active.
+  auto tab2 = testing::ToyTab{
+      GURL("1"),
+      tabs::TabHandle(2),
+  };
+
+  tab_strip_->AddTab(tab1);
+  tab_strip_->AddTab(tab2);
+  tab_strip_->ActivateTab(tab1.tab_handle);
+  ASSERT_EQ(tab_strip_->FindActiveTab(), tab1.tab_handle);
+
+  tabs_api::TabId tab2_id(TabId::Type::kContent,
+                          base::NumberToString(tab2.tab_handle.raw_value()));
+
+  tabs_api::mojom::TabStripService::ActivateTabResult result;
+  bool success = client_->ActivateTab(tab2_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_EQ(tab_strip_->FindActiveTab(), tab2.tab_handle);
+}
+
+TEST_F(TabStripServiceImplTest, ActivateTab_WrongType) {
+  tabs_api::TabId tab2_id(TabId::Type::kCollection, "111");
+
+  tabs_api::mojom::TabStripService::ActivateTabResult result;
+  bool success = client_->ActivateTab(tab2_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+}
+
+TEST_F(TabStripServiceImplTest, ActivateTab_Malformed) {
+  tabs_api::TabId tab2_id(TabId::Type::kContent, "aaa");
+
+  tabs_api::mojom::TabStripService::ActivateTabResult result;
+  bool success = client_->ActivateTab(tab2_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+}
+
+TEST_F(TabStripServiceImplTest, ActivateTab_NotFound) {
+  tabs_api::TabId tab2_id(TabId::Type::kContent, "111");
+
+  tabs_api::mojom::TabStripService::ActivateTabResult result;
+  bool success = client_->ActivateTab(tab2_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
 
 }  // namespace

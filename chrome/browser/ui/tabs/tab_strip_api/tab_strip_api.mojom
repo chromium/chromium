@@ -84,6 +84,7 @@ interface TabStripService {
   // empty, the new tab will be appended to the end of the Tabstrip.
   // Url specifies what is loaded in the Tab. If url is empty, then the new
   // tab-page is loaded instead.
+  // The newly created tab is immediately activated.
   [Sync]
   CreateTabAt(Position? pos, url.mojom.Url? url)
       => result<Tab, mojo_base.mojom.Error>;
@@ -94,6 +95,12 @@ interface TabStripService {
   // If the method call succeeds, all of the tabs will have been closed.
   [Sync]
   CloseTabs(array<TabId> id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Activates a tab. The only accepted id type for this method are |kContent|
+  // ids.
+  [Sync]
+  ActivateTab(TabId id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 

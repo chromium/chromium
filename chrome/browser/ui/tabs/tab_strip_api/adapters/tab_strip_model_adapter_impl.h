@@ -26,6 +26,7 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   TabRendererData GetTabRendererData(int index) override;
   void CloseTab(size_t tab_index) override;
   std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) override;
+  void ActivateTab(size_t index) override;
 
  private:
   raw_ptr<TabStripModel> tab_strip_model_;

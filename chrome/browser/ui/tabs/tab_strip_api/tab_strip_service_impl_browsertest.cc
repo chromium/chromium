@@ -96,6 +96,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
 
   auto handle = model->GetTabAtIndex(0)->GetHandle();
   ASSERT_EQ(base::NumberToString(handle.raw_value()), result.value()->id.Id());
+  // Assert that newly created tabs are also activated.
+  ASSERT_EQ(model->GetActiveTab()->GetHandle(), handle);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
@@ -180,4 +182,40 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
 
   // We should be back to where we started.
   ASSERT_EQ(starting_num_tabs, GetTabStripModel()->GetTabCount());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
+  mojo::Remote<TabStripService> remote;
+  tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
+
+  tabs_api::TabId created_id;
+  base::RunLoop create_loop;
+  // Append a new tab to the end, which will also focus it.
+  remote->CreateTabAt(nullptr, std::make_optional(GURL("http://dark.web")),
+                      base::BindLambdaForTesting(
+                          [&](TabStripService::CreateTabAtResult result) {
+                            ASSERT_TRUE(result.has_value());
+                            created_id = result.value()->id;
+                            create_loop.Quit();
+                          }));
+  create_loop.Run();
+
+  auto old_tab_handle = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+  // Creating a new tab should have caused the old tab to lose active state.
+  ASSERT_NE(GetTabStripModel()->GetActiveTab()->GetHandle(), old_tab_handle);
+
+  auto old_tab_id =
+      tabs_api::TabId(tabs_api::TabId::Type::kContent,
+                      base::NumberToString(old_tab_handle.raw_value()));
+  base::RunLoop activate_loop;
+  remote->ActivateTab(
+      old_tab_id,
+      base::BindLambdaForTesting([&](TabStripService::CloseTabsResult result) {
+        ASSERT_TRUE(result.has_value());
+        activate_loop.Quit();
+      }));
+  activate_loop.Run();
+
+  // Old tab should now be re-activated.
+  ASSERT_EQ(GetTabStripModel()->GetActiveTab()->GetHandle(), old_tab_handle);
 }

@@ -13,6 +13,7 @@ namespace tabs_api::testing {
 struct ToyTab {
   GURL gurl;
   tabs::TabHandle tab_handle;
+  bool active = false;
 };
 
 class ToyTabStrip {
@@ -27,6 +28,8 @@ class ToyTabStrip {
   void CloseTab(size_t index);
   std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle);
   tabs::TabHandle AddTabAt(const GURL& url, std::optional<int> index);
+  void ActivateTab(tabs::TabHandle handle);
+  tabs::TabHandle FindActiveTab();
 
  private:
   std::vector<ToyTab> tabs_;

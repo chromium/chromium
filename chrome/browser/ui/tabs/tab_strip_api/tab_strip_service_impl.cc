@@ -181,6 +181,34 @@ void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::TabId>& ids,
   std::move(callback).Run(mojo_base::mojom::Empty::New());
 }
 
+void TabStripServiceImpl::ActivateTab(const tabs_api::TabId& id,
+                                      ActivateTabCallback callback) {
+  if (id.Type() != tabs_api::TabId::Type::kContent) {
+    std::move(callback).Run(base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "only a content tab id can be provided")));
+    return;
+  }
+
+  int32_t handle_id;
+  if (!base::StringToInt(id.Id(), &handle_id)) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "id is malformed")));
+    return;
+  }
+
+  auto maybe_idx =
+      tab_strip_model_adapter_->GetIndexForHandle(tabs::TabHandle(handle_id));
+  if (!maybe_idx.has_value()) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kNotFound, "tab not found")));
+    return;
+  }
+
+  tab_strip_model_adapter_->ActivateTab(maybe_idx.value());
+  std::move(callback).Run(mojo_base::mojom::Empty::New());
+}
+
 void TabStripServiceImpl::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
