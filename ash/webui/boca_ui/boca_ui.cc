@@ -108,7 +108,14 @@ BocaUI::BocaUI(content::WebUI* web_ui,
 #endif  // !DCHECK_IS_ON()
 }
 
-BocaUI::~BocaUI() = default;
+BocaUI::~BocaUI() {
+  if (is_producer_) {
+    // Not handling response, if update failed, persistent notification will
+    // stay.
+    page_handler_impl_->EndSession(
+        base::BindOnce([](std::optional<mojom::UpdateSessionError>) {}));
+  }
+}
 
 void BocaUI::BindInterface(
     mojo::PendingReceiver<boca::mojom::BocaPageHandlerFactory> factory) {

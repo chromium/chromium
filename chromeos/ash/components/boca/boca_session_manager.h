@@ -230,6 +230,14 @@ class BocaSessionManager
     return session_duration_timer_;
   }
 
+  base::OnceClosure& end_session_callback_for_testing() {
+    return end_session_callback_for_testing_;
+  }
+
+  void set_end_session_callback_for_testing(base::OnceClosure cb) {
+    end_session_callback_for_testing_ = std::move(cb);
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -265,6 +273,7 @@ class BocaSessionManager
   void CloseAllCaptions();
 
   const bool is_producer_;
+  base::OnceClosure end_session_callback_for_testing_;
   base::TimeDelta in_session_polling_interval_;
   base::TimeDelta indefinite_polling_interval_;
   base::ObserverList<Observer> observers_;

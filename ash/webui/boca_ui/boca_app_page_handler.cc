@@ -12,6 +12,7 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom-data-view.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
@@ -370,11 +371,16 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
 }
 
 void BocaAppHandler::EndSession(EndSessionCallback callback) {
+  if (GetSessionManager()->end_session_callback_for_testing()) {
+    CHECK_IS_TEST();
+    std::move(GetSessionManager()->end_session_callback_for_testing()).Run();
+  }
   auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE) {
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
     return;
   }
+
   std::unique_ptr<UpdateSessionRequest> request =
       std::make_unique<UpdateSessionRequest>(
           session_client_impl_->sender(), base_url_, user_identity_,

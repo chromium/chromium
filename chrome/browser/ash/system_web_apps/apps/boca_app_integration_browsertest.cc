@@ -12,6 +12,7 @@
 #include "ash/wm/window_state.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_info.h"
@@ -26,6 +27,7 @@
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -100,6 +102,18 @@ class BocaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     return &session_observer_;
   }
 
+  std::unique_ptr<::boca::Session> GetActiveSession() {
+    ::boca::SessionConfig session_config;
+    session_config.mutable_captions_config()->set_captions_enabled(true);
+    std::unique_ptr<::boca::Session> session =
+        std::make_unique<::boca::Session>();
+    session->mutable_student_group_configs()->insert(
+        {ash::boca::kMainStudentGroupName, session_config});
+    session->set_session_id("session-id");
+    session->set_session_state(::boca::Session::ACTIVE);
+    return session;
+  }
+
   ash::boca::BocaSessionManager* boca_session_manager() {
     return ash::BocaManagerFactory::GetInstance()
         ->GetForProfile(profile())
@@ -127,6 +141,18 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
                        ShouldNotNotifyReloadOnLaunch) {
   EXPECT_CALL(*session_observer(), OnAppReloaded).Times(0);
   LaunchAndWait();
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
+                       ShouldEndSessionWhenAppClose) {
+  LaunchAndWait();
+  base::test::TestFuture<void> future;
+  boca_session_manager()->set_end_session_callback_for_testing(
+      future.GetCallback());
+  Browser* const boca_app_browser =
+      ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
+  boca_app_browser->window()->Close();
+  EXPECT_TRUE(future.Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
@@ -193,6 +219,19 @@ IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,
           ->GetNativeWindow();
   ash::WindowState* window_state = ash::WindowState::Get(window);
   EXPECT_FALSE(window_state->IsFloated());
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,
+                       ShouldNotEndSessionWhenAppClose) {
+  LaunchAndWait();
+  base::test::TestFuture<void> future;
+  boca_session_manager()->set_end_session_callback_for_testing(
+      future.GetCallback());
+  Browser* const boca_app_browser =
+      ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
+  boca_app_browser->window()->Close();
+  // Callback never executed.
+  EXPECT_TRUE(boca_session_manager()->end_session_callback_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,
