@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_type.h"
@@ -11,6 +13,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 
@@ -180,9 +183,12 @@
       if (!crurl || !crurl.gurl.is_valid()) {
         return;
       }
-      [attributedText addAttribute:NSLinkAttributeName
-                             value:crurl.nsurl
-                             range:rangeValue.rangeValue];
+      NSDictionary* linkAttributes = @{
+        NSLinkAttributeName : crurl.nsurl,
+        NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleCaption2,
+                                                        UIFontWeightSemibold)
+      };
+      [attributedText addAttributes:linkAttributes range:rangeValue.rangeValue];
     }];
   }
   return attributedText;
