@@ -627,6 +627,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, ViewportSizeChanges) {
   RunTestCase("ViewportSizeChanges");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, PointerEvents) {
+  RunTestCase("PointerEvents");
+}
+
 class PrintPreviewCustomMarginsTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

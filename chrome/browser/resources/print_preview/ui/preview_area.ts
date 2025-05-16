@@ -136,6 +136,12 @@ export class PrintPreviewPreviewAreaElement extends
     }
   }
 
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.addEventListener('pointerover', this.onPointerOver_.bind(this));
+    this.addEventListener('pointerout', this.onPointerOut_.bind(this));
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -155,37 +161,17 @@ export class PrintPreviewPreviewAreaElement extends
   /**
    * Called when the pointer moves onto the component. Shows the margin
    * controls if custom margins are being used.
-   * @param event Contains element pointer moved from.
    */
-  private onPointerOver_(event: PointerEvent) {
-    const marginControlContainer = this.$.marginControlContainer;
-    let fromElement = event.relatedTarget as HTMLElement | null;
-    while (fromElement !== null) {
-      if (fromElement === marginControlContainer) {
-        return;
-      }
-
-      fromElement = fromElement.parentElement;
-    }
-    marginControlContainer.setInvisible(false);
+  private onPointerOver_() {
+    this.$.marginControlContainer.setInvisible(false);
   }
 
   /**
    * Called when the pointer moves off of the component. Hides the margin
    * controls if they are visible.
-   * @param event Contains element pointer moved to.
    */
-  private onPointerOut_(event: PointerEvent) {
-    const marginControlContainer = this.$.marginControlContainer;
-    let toElement = event.relatedTarget as HTMLElement | null;
-    while (toElement !== null) {
-      if (toElement === marginControlContainer) {
-        return;
-      }
-
-      toElement = toElement.parentElement;
-    }
-    marginControlContainer.setInvisible(true);
+  private onPointerOut_() {
+    this.$.marginControlContainer.setInvisible(true);
   }
 
   private pluginOrDocumentStatusChanged_() {

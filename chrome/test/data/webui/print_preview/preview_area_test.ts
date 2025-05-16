@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
+
 import type {PrintPreviewPreviewAreaElement} from 'chrome://print/print_preview.js';
-import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, Error, Margins, MarginsType, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -123,5 +125,38 @@ suite('PreviewAreaTest', function() {
     // Plugin is large enough for zoom toolbar.
     pluginProxy.triggerVisualStateChange(0, 0, 500, 800, 1000);
     assertEquals('0', plugin.getAttribute('tabindex'));
+  });
+
+  test('PointerEvents', async function() {
+    const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
+    previewArea.state = State.READY;
+    previewArea.startPreview(false);
+    await whenPreviewStarted;
+    await microtasksFinished();
+
+    const marginControls =
+        previewArea.$.marginControlContainer.shadowRoot.querySelectorAll(
+            'print-preview-margin-control');
+    assertEquals(4, marginControls.length);
+
+    function assertVisible(visible: boolean) {
+      for (const control of marginControls) {
+        assertEquals(visible, !control.invisible);
+      }
+    }
+
+    assertVisible(false);
+
+    previewArea.setSetting('margins', MarginsType.CUSTOM);
+    await microtasksFinished();
+    assertVisible(true);
+
+    previewArea.dispatchEvent(new PointerEvent('pointerout', {pointerId: 1}));
+    await microtasksFinished();
+    assertVisible(false);
+
+    previewArea.dispatchEvent(new PointerEvent('pointerover', {pointerId: 1}));
+    await microtasksFinished();
+    assertVisible(true);
   });
 });
