@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -29,15 +30,22 @@
 namespace optimization_guide {
 
 class Redactor;
+class ResponseParser;
 
 // Adapts the on-device model to be used for a particular feature, based on
 // a configuration proto.
 class OnDeviceModelFeatureAdapter final
     : public base::RefCounted<OnDeviceModelFeatureAdapter> {
  public:
+  using ResponseParserFactory =
+      base::RepeatingCallback<std::unique_ptr<ResponseParser>(
+          const proto::OnDeviceModelExecutionOutputConfig&)>;
+
   // Constructs an adapter from a configuration proto.
   explicit OnDeviceModelFeatureAdapter(
-      proto::OnDeviceModelExecutionFeatureConfig config);
+      proto::OnDeviceModelExecutionFeatureConfig config,
+      // Allows dependency injection for use in tests.
+      ResponseParserFactory response_parser_factory = ResponseParserFactory());
 
   // Constructs the model input from `request`.
   std::optional<SubstitutionResult> ConstructInputString(
