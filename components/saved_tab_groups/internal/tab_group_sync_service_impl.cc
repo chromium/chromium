@@ -1790,7 +1790,7 @@ void TabGroupSyncServiceImpl::CleanUpOriginatingSavedTabGroupsIfNeeded() {
     return;
   }
 
-  std::vector<base::Uuid> group_ids;
+  std::vector<base::Uuid> group_ids_to_delete;
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     if (!group.is_hidden()) {
       continue;
@@ -1802,15 +1802,19 @@ void TabGroupSyncServiceImpl::CleanUpOriginatingSavedTabGroupsIfNeeded() {
 
     if (base::Time::Now() - group.update_time() >=
         GetOriginatingSavedGroupCleanUpTimeInterval()) {
-      group_ids.push_back(group.saved_guid());
+      group_ids_to_delete.push_back(group.saved_guid());
     }
   }
 
-  for (const auto& group_id : group_ids) {
+  // For originating tab group that are not hidden ahd shared, they need to be
+  // cleaned up after some time..
+  for (const auto& group_id : group_ids_to_delete) {
     LogTabGroupEvent(logger_, "CleanupOriginatingGroup", group_id,
                      std::optional<CollaborationId>());
     RemoveGroup(group_id);
   }
+
+  FinishTransitionToSharedIfNotCompleted();
 }
 
 void TabGroupSyncServiceImpl::LogEvent(
@@ -2043,6 +2047,50 @@ TabGroupSyncServiceImpl::FindGroupWithCollaborationId(
     }
   }
   return std::nullopt;
+}
+
+void TabGroupSyncServiceImpl::FinishTransitionToSharedIfNotCompleted() {
+  std::vector<base::Uuid> shared_group_with_visible_originating_group;
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (group.is_hidden()) {
+      continue;
+    }
+
+    if (group.saved_tabs().empty()) {
+      continue;
+    }
+
+    if (!group.is_shared_tab_group() ||
+        !group.GetOriginatingTabGroupGuid().has_value()) {
+      continue;
+    }
+
+    base::Uuid shared_group_id = group.saved_guid();
+    // If the group is waiting for sync response, let the timeout handler
+    // process it.
+    if (tab_group_sharing_timeout_info_.contains(shared_group_id)) {
+      continue;
+    }
+
+    // If the shared group has a visible originating group, clean it up later.
+    const SavedTabGroup* originating_tab_group =
+        model_->Get(group.GetOriginatingTabGroupGuid().value());
+    if (originating_tab_group && !originating_tab_group->is_hidden()) {
+      shared_group_with_visible_originating_group.push_back(shared_group_id);
+    }
+  }
+
+  // If some of the shared group is a result of unfinished migration, migrate
+  // the originating tab group now.
+  for (const auto& shared_group_id :
+       shared_group_with_visible_originating_group) {
+    const SavedTabGroup* shared_group = model_->Get(shared_group_id);
+    LogTabGroupEvent(logger_, "MigrateUnfinishedSharedGroup", shared_group_id,
+                     std::optional<CollaborationId>());
+    if (TransitionSavedToSharedTabGroupIfNeeded(*shared_group)) {
+      NotifyTabGroupMigrated(shared_group_id, TriggerSource::REMOTE);
+    }
+  }
 }
 
 }  // namespace tab_groups

@@ -362,6 +362,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const SavedTabGroup* group,
       TriggerSource source);
 
+  // Check if there are any groups that are stuck in the middle of transitioning
+  // to shared and completes the transition.
+  void FinishTransitionToSharedIfNotCompleted();
+
   THREAD_CHECKER(thread_checker_);
 
   // The in-memory model representing the currently present saved tab groups.

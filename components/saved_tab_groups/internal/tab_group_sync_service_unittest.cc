@@ -2225,6 +2225,36 @@ TEST_F(TabGroupSyncServiceTest, ShouldTimeoutOnMakeTabGroupShared) {
             tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_guid());
 }
 
+TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared_FinishMigrationOnStartup) {
+  ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
+
+  SavedTabGroup shared_group =
+      group_1_.CloneAsSharedTabGroup(CollaborationId("collab"));
+  shared_group.MarkTransitionedToShared();
+  model_->AddedLocally(shared_group);
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  WaitForPostedTasks();
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
+
+  // The originating group should be disconnected from the local tab
+  // group and become hidden.
+  std::optional<SavedTabGroup> originating_group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(originating_group.has_value());
+  EXPECT_FALSE(originating_group->is_shared_tab_group());
+  EXPECT_EQ(originating_group->local_group_id(), std::nullopt);
+  EXPECT_TRUE(originating_group->is_hidden());
+
+  std::optional<SavedTabGroup> shared_tab_group =
+      tab_group_sync_service_->GetGroup(shared_group.saved_guid());
+  EXPECT_TRUE(shared_tab_group.has_value());
+  EXPECT_TRUE(shared_tab_group->is_shared_tab_group());
+  EXPECT_EQ(shared_tab_group->local_group_id(), local_group_id_1_);
+  EXPECT_FALSE(shared_tab_group->is_hidden());
+}
+
 TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
