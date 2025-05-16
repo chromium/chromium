@@ -134,7 +134,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
     mqls_key_metrics->set_form_session_identifier(
         autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()));
     mqls_key_metrics->set_filling_readiness(data_to_fill_available);
-    mqls_key_metrics->set_filling_assistance(suggestion_filled);
+    mqls_key_metrics->set_filling_assistance(suggestions_shown);
     if (suggestions_shown) {
       mqls_key_metrics->set_filling_acceptance(suggestion_filled);
     }
@@ -152,7 +152,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
       .SetFormSessionIdentifier(
           autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()))
       .SetFillingReadiness(data_to_fill_available)
-      .SetFillingAssistance(suggestion_filled)
+      .SetFillingAssistance(suggestions_shown)
       .SetOptInStatus(opt_in_status);
   if (suggestions_shown) {
     builder.SetFillingAcceptance(suggestion_filled);
