@@ -86,7 +86,7 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
   Element* current;
   if (next) {
     DCHECK_EQ(next->OwnerSelectElement(), select_);
-    current = ElementTraversal::PreviousAbsoluteSibling(*next, &select_);
+    current = ElementTraversal::Previous(*next, &select_);
   } else {
     current = ElementTraversal::LastChild(select_);
   }
