@@ -138,9 +138,13 @@ bool IsBrowsingDataMigrationDisabledByPolicy(
     signin_metrics::AccessPoint access_point,
     NSString* gaia_id,
     PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
     policy::ProfileSeparationDataMigrationSettings
         profileSeparationDataMigrationSettings) {
-  return access_point != signin_metrics::AccessPoint::kStartPage &&
+  bool isSignedProfile =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  return !isSignedProfile &&
+         access_point != signin_metrics::AccessPoint::kStartPage &&
          !GetApplicationContext()
               ->GetAccountProfileMapper()
               ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id)) &&
@@ -609,10 +613,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
         _profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
         ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaID,
                                         prefService);
+
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile([self originalProfile]);
+
     browsingDataMigrationDisabledByPolicy =
         IsBrowsingDataMigrationDisabledByPolicy(
             _accessPoint, _identityToSignIn.gaiaID, prefService,
-            _profileSeparationDataMigrationSettings);
+            identityManager, _profileSeparationDataMigrationSettings);
 
     // Merge browsing data by default if the data migration screen is shown to
     // the user and if a policy was set by the admin to merge the browsing data

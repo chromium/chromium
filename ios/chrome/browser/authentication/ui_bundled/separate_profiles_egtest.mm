@@ -42,13 +42,18 @@ id<GREYMatcher> MergeBrowsingDataCellMatcher() {
   return grey_accessibilityID(kMergeBrowsingDataCellId);
 }
 
-id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
+id<GREYMatcher> ManagedProfileCreationSubtitleMergeByDefaultMatcher() {
   return grey_accessibilityLabel([NSString
       stringWithFormat:
           @"%@\n\n%@",
           l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
           l10n_util::GetNSString(
               IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION)]);
+}
+
+id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
+  return grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE));
 }
 
 id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
@@ -488,6 +493,10 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   // Wait for the enterprise onboarding screen.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       ManagedProfileCreationScreenMatcher()];
+
+  // Verifies that the subtitle is the right one.
+  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationSubtitleMergeByDefaultMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open the browsing data management screen.
   [[EarlGrey selectElementWithMatcher:

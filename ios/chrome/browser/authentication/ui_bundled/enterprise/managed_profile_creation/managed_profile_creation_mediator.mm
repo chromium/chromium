@@ -16,6 +16,7 @@
 
 @interface ManagedProfileCreationMediator () <
     IdentityManagerObserverBridgeDelegate> {
+  BOOL _mergeBrowsingDataByDefault;
   BOOL _canShowBrowsingDataMigration;
   BOOL _browsingDataMigrationDisabledByPolicy;
   NSString* _gaiaID;
@@ -56,6 +57,7 @@
         !skipBrowsingDataMigration &&
         AreSeparateProfilesForManagedAccountsEnabled() &&
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    _mergeBrowsingDataByDefault = mergeBrowsingDataByDefault;
     _browsingDataSeparate = !mergeBrowsingDataByDefault;
     _browsingDataMigrationDisabledByPolicy =
         browsingDataMigrationDisabledByPolicy;
@@ -81,6 +83,7 @@
     return;
   }
   _consumer = consumer;
+  _consumer.mergeBrowsingDataByDefault = _mergeBrowsingDataByDefault;
   _consumer.canShowBrowsingDataMigration = _canShowBrowsingDataMigration;
   _consumer.browsingDataMigrationDisabledByPolicy =
       _browsingDataMigrationDisabledByPolicy;

@@ -48,7 +48,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   NSLayoutConstraint* _tableViewHeightConstraint;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
 }
-
+@synthesize mergeBrowsingDataByDefault;
 @synthesize canShowBrowsingDataMigration;
 @synthesize browsingDataMigrationDisabledByPolicy;
 
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE);
-  if (self.canShowBrowsingDataMigration) {
+  if (self.canShowBrowsingDataMigration && mergeBrowsingDataByDefault) {
     self.subtitleText = [NSString
         stringWithFormat:
             @"%@\n\n%@",
