@@ -254,7 +254,13 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_;
 
-  mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>
+  // TODO(381086791): Remove the per-reason split when the regression is fixed.
+  static constexpr size_t kNumKeepActiveReasons =
+      static_cast<size_t>(
+          storage::mojom::DisallowInactiveClientReason::kMaxValue) +
+      1;
+  std::array<mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>,
+             kNumKeepActiveReasons>
       client_keep_active_remotes_;
 
   // Uniquely identifies the document or worker that owns the other side of this

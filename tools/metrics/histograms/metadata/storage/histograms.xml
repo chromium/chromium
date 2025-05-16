@@ -347,6 +347,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.ClientKeepActiveRemotesCount{Reason}" units="count"
+    expires_after="2025-10-31">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Logs the size of the `client_keep_active_remotes_` RemoteSets. Emitted every
+    time a new remote is added.
+  </summary>
+  <token key="Reason">
+    <variant name="" summary="aggregated across all reasons"/>
+    <variant name=".TransactionIsAcquiringLocks"/>
+    <variant name=".TransactionIsOngoingAndBlockingOthers"/>
+    <variant name=".TransactionIsStartingWhileBlockingOthers"/>
+    <variant name=".VersionChangeEvent"/>
+  </token>
+</histogram>
+
 <histogram name="IndexedDB.ContextShutdownDuration" units="ms"
     expires_after="2025-10-12">
   <owner>estade@chromium.org</owner>

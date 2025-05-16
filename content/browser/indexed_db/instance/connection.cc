@@ -22,8 +22,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -63,6 +65,22 @@ static int32_t g_next_indexed_db_connection_id;
 
 const char kBadTransactionMode[] = "Bad transaction mode";
 const char kTransactionAlreadyExists[] = "Transaction already exists";
+
+std::string_view DisallowInactiveClientReasonToString(
+    storage::mojom::DisallowInactiveClientReason reason) {
+  using enum storage::mojom::DisallowInactiveClientReason;
+  switch (reason) {
+    case kVersionChangeEvent:
+      return "VersionChangeEvent";
+    case kTransactionIsAcquiringLocks:
+      return "TransactionIsAcquiringLocks";
+    case kTransactionIsStartingWhileBlockingOthers:
+      return "TransactionIsStartingWhileBlockingOthers";
+    case kTransactionIsOngoingAndBlockingOthers:
+      return "TransactionIsOngoingAndBlockingOthers";
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -143,7 +161,22 @@ void Connection::DisallowInactiveClient(
   client_state_checker_->DisallowInactiveClient(
       reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
       std::move(callback));
-  client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
+  client_keep_active_remotes_[base::to_underlying(reason)].Add(
+      std::move(client_keep_active_remote));
+
+  // TODO(381086791): Remove this histogram when the regression is fixed.
+  static constexpr char kClientKeepActiveRemotesCount[] =
+      "IndexedDB.ClientKeepActiveRemotesCount";
+  size_t remotes_count = 0u;
+  for (const auto& remote : client_keep_active_remotes_) {
+    base::UmaHistogramCounts1M(
+        base::JoinString({kClientKeepActiveRemotesCount,
+                          DisallowInactiveClientReasonToString(reason)},
+                         "."),
+        remote.size());
+    remotes_count += remote.size();
+  }
+  base::UmaHistogramCounts1M(kClientKeepActiveRemotesCount, remotes_count);
 }
 
 void Connection::RemoveTransaction(int64_t id) {
@@ -179,7 +212,9 @@ void Connection::RemoveTransaction(int64_t id) {
 
   // Safe to make this client inactive.
   if (can_go_inactive) {
-    client_keep_active_remotes_.Clear();
+    for (auto& remotes : client_keep_active_remotes_) {
+      remotes.Clear();
+    }
   }
 }
 
@@ -866,7 +901,9 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
 
   std::unique_ptr<DatabaseCallbacks> callbacks = std::move(callbacks_);
   std::move(on_close_).Run(this);
-  client_keep_active_remotes_.Clear();
+  for (auto& remotes : client_keep_active_remotes_) {
+    remotes.Clear();
+  }
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
   if (!status.ok()) {
