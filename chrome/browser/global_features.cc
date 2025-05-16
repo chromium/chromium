@@ -32,7 +32,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_infobar_delegate.h"
 #endif
 
 namespace {
@@ -88,8 +90,10 @@ void GlobalFeatures::Init() {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (base::FeatureList::IsEnabled(
           installer_downloader::kInstallerDownloader)) {
-    // TODO(crbug.com/414780983): Instantiate and initialize the installer
-    // downloader controller.
+    installer_downloader_controller_ = std::make_unique<
+        installer_downloader::InstallerDownloaderController>(
+        base::BindRepeating(
+            &installer_downloader::InstallerDownloaderInfoBarDelegate::Show));
   }
 #endif
 }

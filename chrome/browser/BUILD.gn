@@ -143,7 +143,10 @@ source_set("main_extra_parts") {
 source_set("global_features") {
   sources = [ "global_features.h" ]
   deps = [ "//chrome/common:buildflags" ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
 }
 
 source_set("shell_integration") {
@@ -2602,7 +2605,10 @@ static_library("browser") {
   ]
 
   if (is_win && is_chrome_branded) {
-    deps += [ "//chrome/browser/win/installer_downloader" ]
+    deps += [
+      "//chrome/browser/win/installer_downloader:controller",
+      "//chrome/browser/win/installer_downloader:infobar",
+    ]
   }
 
   # Platforms that have a network diagnostics dialog. All others fall through

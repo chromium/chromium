@@ -8,6 +8,7 @@
 #include <memory.h>
 
 #include "base/functional/callback.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 
@@ -28,6 +29,10 @@ class GlicSyntheticTrialManager;
 #endif
 
 class ApplicationLocaleStorage;
+
+namespace installer_downloader {
+class InstallerDownloaderController;
+}
 
 // This class owns the core controllers for features that are globally
 // scoped on desktop. It can be subclassed by tests to perform
@@ -82,6 +87,13 @@ class GlobalFeatures {
     return application_locale_storage_.get();
   }
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  installer_downloader::InstallerDownloaderController*
+  installer_downloader_controller() {
+    return installer_downloader_controller_.get();
+  }
+#endif
+
  protected:
   GlobalFeatures();
 
@@ -113,6 +125,11 @@ class GlobalFeatures {
 #endif
 
   std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::unique_ptr<installer_downloader::InstallerDownloaderController>
+      installer_downloader_controller_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

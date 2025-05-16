@@ -43,6 +43,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
+#endif
+
 namespace {
 bool ShouldShowBadFlagsSecurityWarnings() {
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -174,6 +179,13 @@ void AddInfoBarsIfNecessary(Browser* browser,
         ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
       }
     }
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (auto* controller = g_browser_process->GetFeatures()
+                               ->installer_downloader_controller()) {
+      controller->MaybeShowInfoBar();
+    }
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     if (!is_web_app &&

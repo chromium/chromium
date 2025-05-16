@@ -8,6 +8,8 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback.h"
+
 namespace base {
 class FilePath;
 }
@@ -35,8 +37,24 @@ class InstallerDownloaderModel;
 // The controller is instantiated a GlobalFeature.
 class InstallerDownloaderController {
  public:
+  // A callback that will be run to show the installer download infobar in
+  // `web_contents`.  `on_accept` will be run if the user accepts the prompt.
+  // This will show the infobar on the actual tab.
+  //
+  // TODO(https://crbug.com/417709084): Make the infobar global to the browser.
+  using ShowInfobarCallback =
+      base::RepeatingCallback<void(content::WebContents* web_contents,
+                                   base::RepeatingClosure on_accept)>;
+
+  using GetActiveWebContentsCallback =
+      base::RepeatingCallback<content::WebContents*()>;
+
   explicit InstallerDownloaderController(
-      std::unique_ptr<InstallerDownloaderModel> model = nullptr);
+      ShowInfobarCallback show_infobar_callback);
+  InstallerDownloaderController(
+      ShowInfobarCallback show_infobar_callback,
+      std::unique_ptr<InstallerDownloaderModel> model);
+
   InstallerDownloaderController(const InstallerDownloaderController&) = delete;
   InstallerDownloaderController& operator=(
       const InstallerDownloaderController&) = delete;
@@ -49,13 +67,18 @@ class InstallerDownloaderController {
 
   // Trigger when user give an explicit consent through installer download
   // infobar.
-  void OnDownloadRequestAccepted(content::WebContents* web_contents);
+  void OnDownloadRequestAccepted();
+
+  void SetActiveWebContentsCallbackForTesting(
+      GetActiveWebContentsCallback callback);
 
  private:
   void OnEligibilityReady(const std::optional<base::FilePath>& destination);
   void OnDownloadCompleted();
 
+  ShowInfobarCallback show_infobar_callback_;
   std::unique_ptr<InstallerDownloaderModel> model_;
+  GetActiveWebContentsCallback get_active_web_contents_callback_;
 };
 
 }  // namespace installer_downloader

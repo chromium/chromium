@@ -1966,6 +1966,10 @@ static_library("ui") {
       deps += [ "//ui/base/ime/linux" ]
     }
 
+    if (is_win && is_chrome_branded) {
+      deps += [ "//chrome/browser/win/installer_downloader:controller" ]
+    }
+
     if (enable_dice_support) {
       deps += [
         "//chrome/browser/ui/webui/signin/signout_confirmation",

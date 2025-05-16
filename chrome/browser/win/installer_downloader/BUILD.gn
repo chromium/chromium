@@ -11,7 +11,7 @@ source_set("prefs") {
   public = [ "installer_downloader_pref_names.h" ]
 }
 
-source_set("installer_downloader") {
+source_set("controller") {
   friend = [ ":unit_tests" ]
 
   public = [
@@ -22,12 +22,8 @@ source_set("installer_downloader") {
   sources = [
     "installer_downloader_controller.cc",
     "installer_downloader_feature.cc",
-    "installer_downloader_infobar_delegate.cc",
-    "installer_downloader_infobar_delegate.h",
-    "installer_downloader_model.h",
     "installer_downloader_model_impl.cc",
     "installer_downloader_model_impl.h",
-    "system_info_provider.h",
     "system_info_provider_impl.cc",
     "system_info_provider_impl.h",
   ]
@@ -36,18 +32,31 @@ source_set("installer_downloader") {
 
   deps = [
     ":prefs",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/win:cloud_synced_folder_checker",
+    "//components/infobars/core",
+    "//components/prefs",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+}
+
+source_set("infobar") {
+  public = [ "installer_downloader_infobar_delegate.h" ]
+
+  sources = [ "installer_downloader_infobar_delegate.cc" ]
+
+  deps = [
+    "//base",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:generated_resources_grit",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ui",
-    "//chrome/browser/win:cloud_synced_folder_checker",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/omnibox/browser:vector_icons",
-    "//components/prefs",
     "//components/vector_icons",
     "//ui/base",
-    "//url",
   ]
 }
 
@@ -61,7 +70,8 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":installer_downloader",
+    ":controller",
+    ":infobar",
     ":prefs",
     "//base",
     "//base/test:test_support",
