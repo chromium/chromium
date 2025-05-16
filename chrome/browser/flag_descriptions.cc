@@ -8408,14 +8408,6 @@ const char kSupervisedProfileSubframeReauthDescription[] =
     "before accessing embedded YouTube videos or blocked sites in subframes, "
     "respectively.";
 
-const char kSupervisedProfileFilteringFallbackName[] =
-    "Supervised Profile filtering fallback";
-const char kSupervisedProfileFilteringFallbackDescription[] =
-    "Applies website filters for supervised users in the pending state, if the "
-    "Family Link website filtering setting is set to block explicit sites. "
-    "If the Family Link website filtering setting is set to another value, it "
-    "is applied in the pending regardless of this flag.";
-
 const char kSupervisedProfileCustomStringsName[] =
     "Supervised Profile custom strings";
 const char kSupervisedProfileCustomStringsDescription[] =

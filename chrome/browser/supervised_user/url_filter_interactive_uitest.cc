@@ -52,8 +52,7 @@ class UrlFilterUiTest
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
-         supervised_user::kLocalWebApprovals},
+        {supervised_user::kLocalWebApprovals},
         /*disabled_features=*/{});
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   }

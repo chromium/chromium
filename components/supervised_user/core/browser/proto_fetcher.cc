@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,11 +19,12 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/version_info/channel.h"
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "fetcher_config.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
@@ -142,7 +142,6 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
       kUrlLoaderRetryCount, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   return simple_url_loader;
 }
-
 }  // namespace
 
 FetchProcess::FetchProcess(
@@ -211,9 +210,12 @@ void FetchProcess::OnAccessTokenFetchComplete(
 void FetchProcess::OnSimpleUrlLoaderComplete(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<std::string> response_body) {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::
-              kUncredentialedFilteringFallbackForSupervisedUsers) &&
+  bool can_fallback_to_uncredentialed_access =
+      config_->access_token_config.credentials_requirement ==
+      AccessTokenConfig::CredentialsRequirement::kBestEffort;
+  // When the request has failed due to auth error, retry once in a best effort
+  // (no end user credentials) mode if that mode is available.
+  if (can_fallback_to_uncredentialed_access &&
       HasHttpAuthErrorResponse(*simple_url_loader_) &&
       !triggered_retry_on_http_auth_error_) {
     // The server has rejected our credentials.

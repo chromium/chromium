@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -40,7 +39,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -238,8 +236,6 @@ class SupervisedUserPendingStateNavigationTest
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers};
 };
 
 // Tests the blocked site main frame re-authentication interstitial.

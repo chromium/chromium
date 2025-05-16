@@ -60,14 +60,6 @@ BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
 BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 #endif
 
-// Fallback to sending un-credentialed filtering requests for supervised users
-// if they do not have a valid access token.
-BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);
-
-// Uses PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable for
-// ClassifyUrl fetches.
-BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
-
 // Manages kSupervisedUserSafeSites exclusively within managed user pref store,
 // while keeping the default value neutral.
 BASE_DECLARE_FEATURE(kAlignSafeSitesValueWithBrowserDefault);

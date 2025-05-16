@@ -113,33 +113,6 @@ BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// TODO: crbug.com/378636321 - Clean up the
-// kUncredentialedFilteringFallbackForSupervisedUsers and
-// kWaitUntilAccessTokenAvailableForClassifyUrl flags, by inlining the
-// platform #defines.
-BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,
-             "UncredentialedFilteringFallbackForSupervisedUsers",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
-             "WaitUntilAccessTokenAvailableForClassifyUrl",
-#if BUILDFLAG(IS_ANDROID)
-             // Android enforces at the OS level that supervised users must have
-             // valid sign in credentials (and triggers a reauth if not). We can
-             // therefore wait for a valid access token to be available before
-             // calling ClassifyUrl, to avoid window conditions where the access
-             // token is not yet available (eg. during startup).
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             // Other platforms don't enforce this, and we therefore cannot
-             // wait for access tokens in Chrome.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 BASE_FEATURE(kAlignSafeSitesValueWithBrowserDefault,
              "AlignSafeSitesValueWithBrowserDefault",
