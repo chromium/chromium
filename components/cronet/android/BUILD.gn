@@ -403,6 +403,15 @@ android_library("cronet_stats_log_java") {
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
+# CronetStatsLog uses `android.os.SystemProperties` which is not in the public
+# SDK, hence this separate target pointed at the system SDK.
+android_library("cronet_android_os_system_properties_java") {
+  sources = [ "java/src/org/chromium/net/impl/AndroidOsSystemProperties.java" ]
+  alternative_android_sdk_dep =
+      "//third_party/android_sdk:public_framework_system_java"
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
 cronet_impl_common_java_srcjar_deps = [
   ":effective_connection_type_java",
   ":http_cache_type_java",
@@ -547,16 +556,19 @@ cronet_impl_native_java_srcjar_deps = [
 cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
   ":request_context_config_java_proto",
+  ":cronet_android_os_system_properties_java",
   "//base/version_info/android:version_constants_java",
   "//base:base_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
   "//url:url_java",
+  "//net/log:net_log_capture_mode_java",
 ]
 
 # cronet_impl_native_java.jar - native implementation of the Cronet engine.
 android_library("cronet_impl_native_java") {
   sources = [
+    "java/src/org/chromium/net/impl/AndroidOsBuild.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
@@ -1299,6 +1311,7 @@ android_library("cronet_fake_javatests") {
 # This must not contain buildInfo as `cronet_perf_tests` APK generates
 # another buildInfo and both of them starts colliding showing buildError.
 cronet_javatests_deps_to_package = [
+  ":cronet_android_os_system_properties_java",
   ":cronet_common_javatests",
   ":cronet_test_apk_java",
   ":flags_java_proto",
@@ -1319,6 +1332,7 @@ cronet_javatests_deps_to_package = [
   "//net/android:embedded_test_server_aidl_java",
   "//net/android:net_java",
   "//net/android:net_java_test_support",
+  "//net/log:net_log_capture_mode_java",
   "//url:url_java",
   "//third_party/jni_zero:generate_jni_java",
   "//third_party/jni_zero:jni_zero_java",

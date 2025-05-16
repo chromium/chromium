@@ -24,6 +24,8 @@ namespace {
 
 // TraceLog category for NetLog events.
 constexpr const char kNetLogTracingCategory[] = "netlog";
+constexpr const char kSensitiveNetLogTracingCategory[] =
+    TRACE_DISABLED_BY_DEFAULT("netlog.sensitive");
 
 class TracedValue : public base::trace_event::ConvertableToTraceFormat {
  public:
@@ -48,7 +50,8 @@ class TracedValue : public base::trace_event::ConvertableToTraceFormat {
 }  // namespace
 
 TraceNetLogObserver::TraceNetLogObserver(Options options)
-    : capture_mode_(options.capture_mode) {}
+    : capture_mode_(options.capture_mode),
+      use_sensitive_category_(options.use_sensitive_category) {}
 
 TraceNetLogObserver::~TraceNetLogObserver() {
   DCHECK(!net_log_to_watch_);
@@ -61,26 +64,40 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
   params.Set("source_start_time",
              NetLog::TickCountToString(entry.source.start_time));
   const auto track = perfetto::Track(track_id_base_ + entry.source.id);
+
+  // The tracing category must be a compile-time constant, hence the macro to
+  // handle the sensitive vs non-sensitive categories.
+#define CALL_TRACE_EVENT(TRACE_EVENT, ...)                       \
+  do {                                                           \
+    if (use_sensitive_category_) {                               \
+      TRACE_EVENT(kSensitiveNetLogTracingCategory, __VA_ARGS__); \
+    } else {                                                     \
+      TRACE_EVENT(kNetLogTracingCategory, __VA_ARGS__);          \
+    }                                                            \
+  } while (false)
+
   switch (entry.phase) {
     case NetLogEventPhase::BEGIN:
-      TRACE_EVENT_BEGIN(
-          kNetLogTracingCategory,
+      CALL_TRACE_EVENT(
+          TRACE_EVENT_BEGIN,
           perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
           "source_type", NetLog::SourceTypeToString(entry.source.type),
           "params", std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::END:
-      TRACE_EVENT_END(kNetLogTracingCategory, track, "params",
-                      std::make_unique<TracedValue>(std::move(params)));
+      CALL_TRACE_EVENT(TRACE_EVENT_END, track, "params",
+                       std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::NONE:
-      TRACE_EVENT_INSTANT(
-          kNetLogTracingCategory,
+      CALL_TRACE_EVENT(
+          TRACE_EVENT_INSTANT,
           perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
           "source_type", NetLog::SourceTypeToString(entry.source.type),
           "params", std::make_unique<TracedValue>(std::move(params)));
       break;
   }
+
+#undef CALL_TRACE_EVENT
 }
 
 void TraceNetLogObserver::WatchForTraceStart(NetLog* netlog) {

@@ -154,7 +154,10 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("net.stream").SetDescription(
         "Includes events related to creating HTTP streams to serve requests."),
     perfetto::Category("network.scheduler"),
-    perfetto::Category("netlog").SetTags("navigation"),
+    perfetto::Category("netlog").SetTags("navigation").SetDescription(
+      "NetLog events and metadata. Describes the operation of the //net "
+      "network stack, e.g. HTTP requests, TLS, DNS, connections, sockets, "
+      "etc."),
     perfetto::Category("offline_pages"),
     perfetto::Category("omnibox"),
     perfetto::Category("oobe"),
@@ -310,6 +313,12 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("mojom")),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("navigation")),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("net")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("netlog.sensitive")).SetTags(
+      "navigation", "sensitive").SetDescription(
+      "NetLog events and metadata, including sensitive information such as "
+      "hostnames, URLs, HTTP headers and other identifiable information. "
+      "Describes the operation of the //net network stack, e.g. HTTP requests, "
+      "TLS, DNS, connections, sockets, etc."),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("network")),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("paint-worklet")),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("power")),

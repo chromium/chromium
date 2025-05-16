@@ -26,6 +26,16 @@ class NET_EXPORT TraceNetLogObserver
     static Options Default() { return {}; }
 
     NetLogCaptureMode capture_mode = NetLogCaptureMode::kDefault;
+
+    // If false, trace events will be logged under the "netlog" category.
+    // If true, trace events will be logged under the
+    // "disabled-by-default-netlog.sensitive" category.
+    //
+    // TODO(https://crbug.com/410018349): ideally this should be derived from
+    // `capture_mode`, i.e. we should treat this as true if `capture_mode` is
+    // not `kHeavilyRedacted`. We'd need to assess the consequences on current
+    // trace users, though.
+    bool use_sensitive_category = false;
   };
   explicit TraceNetLogObserver(Options options = Options::Default());
 
@@ -57,6 +67,7 @@ class NET_EXPORT TraceNetLogObserver
   const uint64_t track_id_base_ = base::RandUint64();
 
   const NetLogCaptureMode capture_mode_;
+  const bool use_sensitive_category_;
   raw_ptr<NetLog> net_log_to_watch_ = nullptr;
   base::WeakPtrFactory<TraceNetLogObserver> weak_factory_{this};
 };

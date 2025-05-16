@@ -45,6 +45,7 @@
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
 #include "net/log/net_log.h"
+#include "net/log/net_log_capture_mode.h"
 #include "net/log/trace_net_log_observer.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
@@ -79,6 +80,8 @@ std::unique_ptr<net::NetworkChangeNotifier> g_network_change_notifier;
 base::WaitableEvent g_init_thread_init_done(
     base::WaitableEvent::ResetPolicy::MANUAL,
     base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+std::optional<net::NetLogCaptureMode> g_trace_net_log_capture_mode;
 
 ::org::chromium::net::httpflags::BaseFeatureOverrides GetBaseFeatureOverrides(
     JNIEnv* env) {
@@ -212,7 +215,8 @@ void CronetOnUnLoad(JavaVM* jvm, void* reserved) {
 
 void JNI_CronetLibraryLoader_CronetInitOnInitThread(
     JNIEnv* env,
-    jboolean updateNetworkStateFromNative) {
+    jboolean updateNetworkStateFromNative,
+    net::NetLogCaptureMode trace_net_log_capture_mode) {
   // Initialize SingleThreadTaskExecutor for init thread.
   DCHECK(!base::CurrentThread::IsSet());
   DCHECK(!g_init_task_executor);
@@ -221,10 +225,12 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(
 
   static base::NoDestructor<net::TraceNetLogObserver> trace_net_log_observer(
       net::TraceNetLogObserver::Options{
-          // TODO: https://crbug.com/410018349 - make it possible to select a
-          // a different capture mode, if running in a debug scenario.
-          .capture_mode = net::NetLogCaptureMode::kHeavilyRedacted,
+          .capture_mode = trace_net_log_capture_mode,
+          .use_sensitive_category = trace_net_log_capture_mode !=
+                                    net::NetLogCaptureMode::kHeavilyRedacted,
       });
+  CHECK(!g_trace_net_log_capture_mode.has_value());
+  g_trace_net_log_capture_mode = trace_net_log_capture_mode;
   // Note we do this on the init thread, as opposed to a user thread, because
   // this eventually calls
   // base::trace_event::TraceLog::AddAsyncEnabledStateObserver(), which
@@ -246,6 +252,11 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(
   DCHECK(g_network_change_notifier);
 
   g_init_thread_init_done.Signal();
+}
+
+net::NetLogCaptureMode
+JNI_CronetLibraryLoader_GetTraceNetLogCaptureModeForTesting(JNIEnv* env) {
+  return g_trace_net_log_capture_mode.value();
 }
 
 ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(

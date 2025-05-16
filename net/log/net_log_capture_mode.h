@@ -21,7 +21,9 @@ namespace net {
 //
 // Note the numeric values are used in a bitfield (NetLogCaptureModeSet) so must
 // be sequential starting from 0, and not exceed 31.
-enum class NetLogCaptureMode : uint32_t {
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net
+enum class NetLogCaptureMode : uint8_t {
   // Logging level that only allows fields that are known to be safe from a
   // privacy perspective.
   //
@@ -66,11 +68,11 @@ enum class NetLogCaptureMode : uint32_t {
 // value "i".
 //
 // Use the NetLogCaptureModeSet*() functions to operate on it.
-using NetLogCaptureModeSet = uint32_t;
+using NetLogCaptureModeSet = uint8_t;
 
 inline NetLogCaptureModeSet NetLogCaptureModeToBit(
     NetLogCaptureMode capture_mode) {
-  return 1 << static_cast<uint32_t>(capture_mode);
+  return static_cast<uint8_t>(1 << static_cast<uint8_t>(capture_mode));
 }
 
 inline bool NetLogCaptureModeSetContains(NetLogCaptureMode capture_mode,

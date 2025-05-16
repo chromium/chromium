@@ -72,7 +72,7 @@ enum NetLogEventPhase {
 // changes.
 interface NetLogProxySource {
   // |modes| is a NetLogCaptureModeSet, a bitfield.
-  UpdateCaptureModes(uint32 modes);
+  UpdateCaptureModes(uint8 modes);
 };
 
 // Receives NetLog events from another process and inserts them into the main

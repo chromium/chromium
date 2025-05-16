@@ -38,6 +38,7 @@
 //net/dns
 //net/dns/public
 //net/http
+//net/log
 //net/third_party/quiche
 //net/third_party/uri_template
 //net/traffic_annotation
