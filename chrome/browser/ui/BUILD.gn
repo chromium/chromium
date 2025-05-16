@@ -970,6 +970,8 @@ static_library("ui") {
 
     if (enable_extensions_core) {
       sources += [
+        "android/extensions/extension_keybinding_registry_android.cc",
+        "android/extensions/extension_keybinding_registry_android.h",
         "android/toolbar/extension_actions_bridge.cc",
         "android/toolbar/extension_actions_bridge.h",
         "android/toolbar/extension_actions_bridge_factory.cc",

@@ -267,6 +267,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.extensions.ExtensionKeybindingRegistry;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -554,6 +555,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private SuggestionEventObserver mSuggestionEventObserver;
     private GroupSuggestionsPromotionCoordinator mGroupSuggestionsPromotionCoordinator;
+
+    @Nullable private ExtensionKeybindingRegistry mExtensionKeybindingRegistry;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -1343,6 +1346,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                             .getTabGroupModelFilter(false));
                 }
             }
+
+            mExtensionKeybindingRegistry =
+                    ExtensionKeybindingRegistry.maybeCreate(
+                            getProfileProviderSupplier().get().getOriginalProfile());
         }
     }
 
@@ -3871,6 +3878,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mGroupSuggestionsPromotionCoordinator = null;
         }
 
+        if (mExtensionKeybindingRegistry != null) {
+            mExtensionKeybindingRegistry.destroy();
+            mExtensionKeybindingRegistry = null;
+        }
+
         super.onDestroyInternal();
     }
 
@@ -3898,6 +3910,15 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         getFullscreenManager(),
                         /* menuOrKeyboardActionController= */ this,
                         this);
+
+        if (Boolean.TRUE.equals(result)) return result;
+
+        if (mExtensionKeybindingRegistry != null) {
+            if (mExtensionKeybindingRegistry.handleKeyEvent(event)) {
+                result = true;
+            }
+        }
+
         return result != null ? result : super.dispatchKeyEvent(event);
     }
 

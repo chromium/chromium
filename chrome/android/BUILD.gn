@@ -513,6 +513,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/edge_to_edge:factory_java",
       "//chrome/browser/ui/android/edge_to_edge:java",
       "//chrome/browser/ui/android/ephemeraltab:java",
+      "//chrome/browser/ui/android/extensions:java",
       "//chrome/browser/ui/android/fast_checkout:java",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/google_bottom_bar:java",
@@ -3247,6 +3248,10 @@ if (_is_default_toolchain) {
       "//chrome/browser/partnerbookmarks:jni_headers",
       "//chrome/browser/webid:jni_headers",
     ]
+
+    if (enable_extensions_core) {
+      public_deps += [ "//chrome/browser/ui/android/extensions:jni_headers" ]
+    }
   }
 
   source_set("chrome_test_util") {
