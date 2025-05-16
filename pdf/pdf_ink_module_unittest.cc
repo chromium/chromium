@@ -3973,11 +3973,8 @@ class PdfInkModuleTextHighlightMetricsTest
     EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   }
 
-  // Validates the number of strokes and the total counts of all relevant text
-  // highlight metrics.
-  void ValidateHighlightMetricCounts(int expected_stroke_count,
-                                     int expected_metric_count) {
-    EXPECT_EQ(expected_stroke_count, client().stroke_finished_count());
+  // Validates the the total counts of all relevant text highlight metrics.
+  void ValidateHighlightMetricCounts(int expected_metric_count) {
     histograms().ExpectTotalCount(kTextHighlightColorMetric,
                                   expected_metric_count);
     histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric,
@@ -3993,8 +3990,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest,
@@ -4024,14 +4021,14 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
        PdfInkInputData(gfx::PointF(35.0, 20.0))},
       /*expected_size=*/10.0);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 
   PerformUndo();
   PerformRedo();
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, Color) {
@@ -4112,20 +4109,20 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickDelay) {
   SetSelectionRects(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 
   // Fast forward to just one ms before the timer should fire.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 
   // Fast forward by one ms so the timer fires.
   GetPdfTestTaskEnvironment().FastForwardBy(kOneMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
@@ -4147,26 +4144,26 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 
   // Now move and release at a new position.
   MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/2);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
@@ -4182,8 +4179,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
   SetSelectionRects(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 
   // Text highlight elsewhere.
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPoint2InsidePage0,
@@ -4193,14 +4190,14 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
                                kEndPointInsidePage0);
 
   // There should be reports for the two click highlight and the new highlight.
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
-                                /*expected_metric_count=*/2);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(2);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
-                                /*expected_metric_count=*/2);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(2);
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickDelay) {
@@ -4215,26 +4212,26 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickDelay) {
   SetSelectionRects(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 
   // Fast forward to just one ms before the timer would fire.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 
   // Click the third time.
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/3);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
@@ -4249,8 +4246,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
   SetSelectionRects(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
-                                /*expected_metric_count=*/0);
+  EXPECT_EQ(1, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(0);
 
   // Click the third time, but without mouseup.
   blink::WebMouseEvent mouse_event =
@@ -4260,20 +4257,20 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 
   // Now move and release at a new position.
   MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/3);
 
-  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
-                                /*expected_metric_count=*/1);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  ValidateHighlightMetricCounts(1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
