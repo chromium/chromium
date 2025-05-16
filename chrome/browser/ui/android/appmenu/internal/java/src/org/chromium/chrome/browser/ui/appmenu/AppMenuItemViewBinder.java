@@ -20,6 +20,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
+import org.chromium.components.browser_ui.util.OnPeripheralClickListener;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -93,6 +94,16 @@ class AppMenuItemViewBinder {
             // tint the icon
             ImageViewCompat.setImageTintList(imageView, tintList);
         } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
+            view.setOnTouchListener(
+                    new OnPeripheralClickListener(
+                            view,
+                            triggeringMotionEvent -> {
+                                // TODO(crbug.com/375468032): pass "triggeringMotionEvent" to
+                                // "onItemClick()".
+                                // This way we can handle a click based on whether it's from a
+                                // peripheral.
+                                model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model);
+                            }));
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
         }

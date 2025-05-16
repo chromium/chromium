@@ -30,6 +30,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

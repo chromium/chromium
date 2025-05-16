@@ -4,9 +4,16 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import static org.junit.Assert.assertThrows;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
+import android.view.InputDevice;
+import android.view.MotionEvent;
+import android.view.MotionEvent.PointerCoords;
+import android.view.MotionEvent.PointerProperties;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -42,7 +49,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link AppMenuItemViewBinder}. */
@@ -334,8 +340,8 @@ public class AppMenuItemViewBinderTest {
     @Test
     @UiThreadTest
     @MediumTest
-    public void testStandardMenuItem() throws ExecutionException, TimeoutException {
-        PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
+    public void testStandardMenuItem_WithMenuTitle() {
+        createStandardMenuItem(MENU_ID1, TITLE_1);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
@@ -344,20 +350,12 @@ public class AppMenuItemViewBinderTest {
 
         Assert.assertEquals("Incorrect title text for item 1", TITLE_1, titleView.getText());
         Assert.assertNull("Should not have icon for item 1", itemIcon.getDrawable());
-
-        standardModel.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
-        view.performClick();
-        mClickHandler.onClickCallback.waitForCallback(0);
-        Assert.assertEquals(
-                "Incorrect clicked item id",
-                MENU_ID1,
-                mClickHandler.lastClickedModel.get(AppMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
     @UiThreadTest
     @MediumTest
-    public void testStandardMenuItem_WithMenuIcon() throws ExecutionException, TimeoutException {
+    public void testStandardMenuItem_WithMenuIcon() {
         PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
@@ -371,6 +369,132 @@ public class AppMenuItemViewBinderTest {
                         org.chromium.chrome.browser.ui.appmenu.test.R.drawable
                                 .test_ic_vintage_filter));
         Assert.assertNotNull("Should have icon for item 1", itemIcon.getDrawable());
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testStandardMenuItem_WithClickHandler_OnClickListener() throws TimeoutException {
+        PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
+        standardModel.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view =
+                mModelListAdapter.getView(/* position= */ 0, /* convertView= */ null, parentView);
+        view.performClick();
+        mClickHandler.onClickCallback.waitForCallback(/* currentCallCount= */ 0);
+
+        Assert.assertEquals(
+                "Incorrect clicked item id",
+                MENU_ID1,
+                mClickHandler.lastClickedModel.get(AppMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testStandardMenuItem_WithClickHandler_OnPeripheralClickListener_TouchScreenClick() {
+        PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
+        standardModel.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view =
+                mModelListAdapter.getView(/* position= */ 0, /* convertView= */ null, parentView);
+        simulateClickWithMotionEvents(
+                view, InputDevice.SOURCE_TOUCHSCREEN, MotionEvent.TOOL_TYPE_FINGER);
+
+        // Simulated touch screen motion events should not trigger OnPeripheralClickListener.
+        // As the motion events are simulated using dispatchTouchEvent(), the OnClickListener will
+        // not be triggered either.
+        // Therefore, the onClickCallback should not be called.
+        assertThrows(
+                TimeoutException.class,
+                () -> mClickHandler.onClickCallback.waitForCallback(/* currentCallCount= */ 0));
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testStandardMenuItem_WithClickHandler_OnPeripheralClickListener_PeripheralClick()
+            throws TimeoutException {
+        PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
+        standardModel.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view =
+                mModelListAdapter.getView(/* position= */ 0, /* convertView= */ null, parentView);
+        simulateClickWithMotionEvents(view, InputDevice.SOURCE_MOUSE, MotionEvent.TOOL_TYPE_MOUSE);
+
+        // Simulated mouse motion events should trigger OnPeripheralClickListener.
+        mClickHandler.onClickCallback.waitForCallback(/* currentCallCount= */ 0);
+        Assert.assertEquals(
+                "Incorrect clicked item id",
+                MENU_ID1,
+                mClickHandler.lastClickedModel.get(AppMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    /**
+     * Simulates a click event using {@link View#dispatchTouchEvent(MotionEvent)}.
+     *
+     * <p>This will not trigger {@link View.OnClickListener}.
+     *
+     * @param view the View to receive the click.
+     * @param motionSource see {@link MotionEvent#getSource()}.
+     * @param motionToolType see {@link MotionEvent#getToolType(int)}.
+     */
+    private static void simulateClickWithMotionEvents(
+            View view, int motionSource, int motionToolType) {
+        long downTime = SystemClock.uptimeMillis();
+        view.dispatchTouchEvent(
+                createMotionEvent(
+                        downTime,
+                        /* eventTime= */ downTime,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        motionSource,
+                        motionToolType));
+        view.dispatchTouchEvent(
+                createMotionEvent(
+                        downTime,
+                        /* eventTime= */ downTime + 50,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0,
+                        /* y= */ 0,
+                        motionSource,
+                        motionToolType));
+    }
+
+    /**
+     * Creates a {@link MotionEvent}.
+     *
+     * <p>All parameters are for {@link MotionEvent#obtain}.
+     */
+    private static MotionEvent createMotionEvent(
+            long downTime, long eventTime, int action, float x, float y, int source, int toolType) {
+        PointerProperties pointerProperties = new MotionEvent.PointerProperties();
+        pointerProperties.id = 0;
+        pointerProperties.toolType = toolType;
+
+        PointerCoords pointerCoords = new PointerCoords();
+        pointerCoords.x = x;
+        pointerCoords.y = y;
+
+        return MotionEvent.obtain(
+                downTime,
+                eventTime,
+                action,
+                /* pointerCount= */ 1,
+                new PointerProperties[] {pointerProperties},
+                new PointerCoords[] {pointerCoords},
+                /* metaState= */ 0,
+                /* buttonState= */ 0,
+                /* xPrecision= */ 1.0f,
+                /* yPrecision= */ 1.0f,
+                /* deviceId= */ 0,
+                /* edgeFlags= */ 0,
+                source,
+                /* flags= */ 0);
     }
 
     @Test
