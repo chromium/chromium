@@ -826,8 +826,13 @@ class ServiceWorkerSubScopeWorkerTrackingBrowserTest
       base::ScopedAllowBlockingForTesting allow_blocking;
       base::CreateDirectory(test_extension_dir()->UnpackedPath().Append(
           FILE_PATH_LITERAL("subscope")));
+      // NOTE: `setInterval` is used to keep the service worker alive
+      // for the duration of the test, preventing it from being stopped
+      // prematurely, which could lead to test flakiness.
+      // See crbug.com/417430921.
       test_extension_dir()->WriteFile(FILE_PATH_LITERAL("subscope/sw.js"), R"(
           console.log("subscope service worker");
+          setInterval(() => { console.log("keepalive"); }, 1000);
       )");
     }
 
