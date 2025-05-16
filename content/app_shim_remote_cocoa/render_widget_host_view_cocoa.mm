@@ -481,7 +481,7 @@ void ExtractUnderlines(NSAttributedString* string,
   NSRect textRectInViewCoordinates =
       [self convertRect:textRectInWindowCoordinates fromView:nil];
 
-  ui::TextInputType capturedTextInputType = _textInputType;
+  NSUInteger capturedChangeCounter = _availableTextChangeCounter;
 
   [self.spellChecker
       showCorrectionIndicatorOfType:NSCorrectionIndicatorTypeDefault
@@ -492,13 +492,13 @@ void ExtractUnderlines(NSAttributedString* string,
                   completionHandler:^(NSString* acceptedString) {
                     [self didAcceptReplacementString:acceptedString
                                forTextCheckingResult:candidateResult
-                                   withTextInputType:capturedTextInputType];
+                                    withChangeNumber:capturedChangeCounter];
                   }];
 }
 
 - (void)didAcceptReplacementString:(NSString*)acceptedString
              forTextCheckingResult:(NSTextCheckingResult*)correction
-                 withTextInputType:(ui::TextInputType)textInputType {
+                  withChangeNumber:(NSUInteger)changeNumber {
   // TODO: Keep NSSpellChecker up to date on the user's response via
   // -recordResponse:toCorrection:forWord:language:inSpellDocumentWithTag:.
   // Call it to report whether they initially accepted or rejected the
@@ -506,12 +506,6 @@ void ExtractUnderlines(NSAttributedString* string,
 
   if (acceptedString == nil)
     return;
-
-  // If the text input type is different now than when we set up the callback,
-  // the text replacement operation is stale and can be ignored.
-  if (textInputType != _textInputType) {
-    return;
-  }
 
   NSRange availableTextRange =
       NSMakeRange(_availableTextOffset, _availableText.length());
@@ -534,6 +528,18 @@ void ExtractUnderlines(NSAttributedString* string,
     if ([self.spellChecker preventsAutocorrectionBeforeString:trailingString
                                                      language:nil])
       return;
+
+    // Gather some info in case -doubleClickAtIndex: throws an exception.
+    // This change will eventually be reverted.
+    NSString* info = [NSString
+        stringWithFormat:@"%lu == %lu %lu %@ %@ %@ %@", changeNumber,
+                         _availableTextChangeCounter, attString.string.length,
+                         NSStringFromRange(availableTextRange),
+                         NSStringFromRange(correction.range),
+                         NSStringFromRange(trailingRange),
+                         NSStringFromRange(trailingRangeInAvailableText)];
+    SCOPED_CRASH_KEY_STRING256("RenderWidgetHostViewCocoa", "didAcceptTR",
+                               base::SysNSStringToUTF8(info));
 
     if ([attString doubleClickAtIndex:trailingRangeInAvailableText.location]
             .location < trailingRangeInAvailableText.location)
