@@ -2328,6 +2328,9 @@ void BrowserView::EnterFullscreen(const url::Origin& origin,
                                   ExclusiveAccessBubbleType bubble_type,
                                   const int64_t display_id) {
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+    if (IsInSplitView()) {
+      multi_contents_view_->CloseSplitView();
+    }
     RequestFullscreen(true, display_id);
   } else {
     auto* screen = display::Screen::GetScreen();
@@ -2337,6 +2340,9 @@ void BrowserView::EnterFullscreen(const url::Origin& origin,
     if (IsFullscreen() && !requesting_another_screen) {
       // Nothing to do.
       return;
+    }
+    if (IsInSplitView()) {
+      multi_contents_view_->CloseSplitView();
     }
     ProcessFullscreen(true, display_id);
   }
@@ -2354,6 +2360,18 @@ void BrowserView::ExitFullscreen() {
       return;  // Nothing to do.
     }
     ProcessFullscreen(false, display::kInvalidDisplayId);
+  }
+
+  const int active_index = browser_->tab_strip_model()->active_index();
+
+  // When the browser is closing when exiting fullscreen mode, the active tab
+  // might no longer exist.
+  if (browser_->tab_strip_model()->ContainsIndex(active_index)) {
+    std::optional<split_tabs::SplitTabId> split_tab_id =
+        browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
+    if (split_tab_id.has_value()) {
+      ShowSplitView(GetContentsView()->HasFocus());
+    }
   }
 }
 

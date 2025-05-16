@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -46,7 +47,9 @@ namespace {
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
-  BrowserViewTest() : ax_observer_(views::AXUpdateNotifier::Get()) {}
+  BrowserViewTest() : ax_observer_(views::AXUpdateNotifier::Get()) {
+    feature_list_.InitAndEnableFeature(features::kSideBySide);
+  }
   ~BrowserViewTest() override = default;
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
@@ -73,6 +76,7 @@ class BrowserViewTest : public InProcessBrowserTest {
 
  protected:
   views::test::AXEventCounter ax_observer_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -221,6 +225,42 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
   controller->ExitFullscreenModeForTab(web_contents);
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(browser_view->GetTabStripVisible());
+}
+
+// Test whether the split view is hidden when a tab is fullscreened.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenHideSplitView) {
+  // Add a second tab and create a split
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabLayout::kVertical);
+
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+
+  // Split view should be open
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_TRUE(browser_view->IsInSplitView());
+
+  // Enter into tab fullscreen mode.
+  FullscreenController* controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(browser_view->IsFullscreen());
+
+  // The split view should be closed.
+  EXPECT_FALSE(browser_view->IsInSplitView());
+  EXPECT_TRUE(views::test::PropertyWaiter(
+                  base::BindRepeating(&BrowserView::GetTabStripVisible,
+                                      base::Unretained(browser_view)),
+                  false)
+                  .Wait());
+
+  // After exiting the fullscreen mode, the top view should show up again.
+  controller->ExitFullscreenModeForTab(web_contents);
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_TRUE(browser_view->IsInSplitView());
 }
 
 // Test whether bookmark bar shows up or hides correctly for fullscreen modes.
