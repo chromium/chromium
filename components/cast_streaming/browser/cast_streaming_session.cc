@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/cast_message_port_converter.h"
+#include "components/cast_streaming/browser/cast_streaming_switches.h"
 #include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
 #include "components/cast_streaming/browser/control/remoting/remoting_decoder_buffer_factory.h"
 #include "components/cast_streaming/browser/frame/mirroring_decoder_buffer_factory.h"
@@ -28,6 +29,23 @@ namespace {
 
 // Timeout to stop the Session when no data is received.
 constexpr base::TimeDelta kNoDataTimeout = base::Seconds(15);
+
+// Get the receiver streaming endpoint settings.
+const openscreen::IPEndpoint GetReceiverStreamingEndpoint() {
+  const std::string port =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kCastStreamingReceiverPort);
+  if (!port.empty()) {
+    const auto ipv4_ep = openscreen::IPEndpoint::Parse("0.0.0.0:" + port);
+    if (ipv4_ep.is_value()) {
+      LOG(INFO) << "Using UDP port " << port << " for Cast streaming.";
+      return ipv4_ep.value();
+    }
+    LOG(ERROR) << "Can not parse value(" << port << ") from --"
+               << switches::kCastStreamingReceiverPort;
+  }
+  return openscreen::IPEndpoint::kAnyV4();
+}
 
 bool CreateDataPipeForStreamType(media::DemuxerStream::Type type,
                                  mojo::ScopedDataPipeProducerHandle* producer,
@@ -74,7 +92,9 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
-      environment_(&openscreen::Clock::now, task_runner_),
+      environment_(&openscreen::Clock::now,
+                   task_runner_,
+                   GetReceiverStreamingEndpoint()),
       cast_message_port_converter_(CastMessagePortConverter::Create(
           std::move(message_port_provider),
           base::BindOnce(
