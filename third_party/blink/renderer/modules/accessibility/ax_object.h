@@ -256,7 +256,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool is_initializing_ = false;
   bool is_computing_role_ = false;
   bool is_updating_cached_values_ = false;
-  bool is_initialized_ = false;
 #endif
 #if !defined(NDEBUG)
   // Keep track of what the object used to be, to make it easier to debug

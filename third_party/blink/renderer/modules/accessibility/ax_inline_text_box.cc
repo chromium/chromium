@@ -457,10 +457,6 @@ void AXInlineTextBox::Init(AXObject* parent) {
   // necessary to again recompute this part of the tree.
   parent_ = parent;
   UpdateCachedAttributeValuesIfNeeded(false);
-
-#if DCHECK_IS_ON()
-  is_initialized_ = true;
-#endif
 }
 
 void AXInlineTextBox::Detach() {

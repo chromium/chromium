@@ -728,10 +728,6 @@ void AXObject::Init(AXObject* parent) {
   // Set the parent again, this time via SetParent(), so that all related checks
   // and calls occur now that we have the role and updated cached values.
   SetParent(parent_);
-
-#if DCHECK_IS_ON()
-  is_initialized_ = true;
-#endif
 }
 
 void AXObject::Detach() {
@@ -8506,17 +8502,13 @@ String AXObject::GetNodeString(Node* node) {
 }
 
 String AXObject::ToString(bool verbose) const {
-#if DCHECK_IS_ON()
-  CHECK(is_initialized_) << "Init() must be called before ToString().";
-#endif
-
-  CHECK(!(parent_ == nullptr && role_ == ax::mojom::blink::Role::kUnknown &&
-          id_ == 0))
-      << "Calling ToString() on an AxObject before Init() is not allowed.";
-
   // Build a friendly name for debugging the object.
   // If verbose, build a longer name name in the form of:
   // CheckBox axid#28 <input.someClass#cbox1> name="checkbox"
+  if (role_ == ax::mojom::blink::Role::kUnknown && id_ == 0) {
+    return "Uninitialized object";
+  }
+
 #if !defined(NDEBUG)
   if (IsDetached() && verbose) {
     return "(detached) " + detached_object_debug_info_;
