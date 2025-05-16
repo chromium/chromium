@@ -28,7 +28,7 @@ class WKContentRuleListProvider;
 
 // A provider class associated with a single web::BrowserState object. Manages
 // the lifetime and performs setup of WKWebViewConfiguration and instances. Not
-// threadsafe. Must be used only on the main thread.
+// thread safe. Must be used only on the main thread.
 class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
  public:
   // Callbacks invoked when a new WKWebViewConfiguration is created.
@@ -93,6 +93,10 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // in debug builds).
   void Purge();
 
+  // Returns WKContentRuleListProvider associated with WKWebViewConfiguration.
+  // Callers must not retain the returned object.
+  WKContentRuleListProvider* GetContentRuleListProvider();
+
   // Registers callback to be invoked when the website data store is updated for
   // this provider.
   base::CallbackListSubscription RegisterWebSiteDataStoreUpdatedCallback(
@@ -101,6 +105,12 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
  private:
   explicit WKWebViewConfigurationProvider(BrowserState* browser_state);
   WKWebViewConfigurationProvider() = delete;
+
+  // Mark copy-constructible and copy-assignable deleted.
+  WKWebViewConfigurationProvider(const WKWebViewConfigurationProvider&) =
+      delete;
+  WKWebViewConfigurationProvider& operator=(
+      const WKWebViewConfigurationProvider&) = delete;
 
   SEQUENCE_CHECKER(_sequence_checker_);
 

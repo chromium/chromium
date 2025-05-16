@@ -283,6 +283,11 @@ void WKWebViewConfigurationProvider::Purge() {
   configuration_ = nil;
 }
 
+WKContentRuleListProvider*
+WKWebViewConfigurationProvider::GetContentRuleListProvider() {
+  return content_rule_list_provider_.get();
+}
+
 base::CallbackListSubscription
 WKWebViewConfigurationProvider::RegisterWebSiteDataStoreUpdatedCallback(
     WebSiteDataStoreUpdatedCallbackList::CallbackType callback) {
