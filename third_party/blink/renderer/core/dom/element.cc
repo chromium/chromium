@@ -1514,6 +1514,8 @@ InterestInvokerTargetData& Element::EnsureInterestInvokerTargetData() {
   return EnsureElementRareData().EnsureInterestInvokerTargetData();
 }
 InterestInvokerTargetData* Element::GetInterestInvokerTargetData() const {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetInterestInvokerTargetData();
   }
@@ -7406,11 +7408,20 @@ bool Element::IsInPartialInterestPopover() const {
 }
 
 void Element::ShowInterestNow() {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   Element* target = InterestTargetElement();
   if (!target) {
     return;
   }
   GainOrLoseInterest(this, target, InterestState::kFullInterest);
+}
+
+void Element::LoseInterestNow(Element* target) {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  DCHECK_EQ(InterestTargetElement(), target);
+  GainOrLoseInterest(this, target, InterestState::kNoInterest);
 }
 
 bool Element::IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const {
@@ -10938,6 +10949,10 @@ void Element::ScheduleInterestLostTask() {
 }
 
 Element* Element::GetInterestInvoker() const {
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    return nullptr;
+  }
   InterestInvokerTargetData* target_data = GetInterestInvokerTargetData();
   if (!target_data) {
     return nullptr;
@@ -10948,7 +10963,6 @@ Element* Element::GetInterestInvoker() const {
   }
   DCHECK_EQ(invoker->InterestTargetElement(), this);
   DCHECK_NE(invoker->GetInterestState(), InterestState::kNoInterest);
-  DCHECK_EQ(invoker->InterestTargetElement(), this);
   return invoker;
 }
 

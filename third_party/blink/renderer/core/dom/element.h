@@ -1186,8 +1186,15 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Used in some situations (e.g. mobile device context menu activation) to
   // immediately show interest in an element, ignoring any show delays that may
   // be set on the element. If the element is not an interest invoker, nothing
-  // happens.
+  // happens. If the target of the interest invoker is a popover, the popover
+  // will be shown.
   void ShowInterestNow();
+  // Used in some situations (e.g. target popover closed via other means) to
+  // immediately lose interest in an element, ignoring any hide delays that may
+  // be set on the element. Element must already be an an interest invoker that
+  // has interest in the provided target, or a DCHECK will fail. If the target
+  // of the interest invoker is a popover, the popover will be hidden.
+  void LoseInterestNow(Element* target);
 
   // Returns true if any of its (non-inclusive) flat tree descendants is
   // keyboard focusable. Note that this is quite slow, since it traverses the

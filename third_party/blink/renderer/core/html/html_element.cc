@@ -1896,6 +1896,25 @@ void HTMLElement::HidePopoverInternal(
       return;
     }
 
+    // If this is the target of an active interest invoker, closing the popover
+    // constitutes an automatic loss of interest in the invoker.
+    if (Element* upstream_invoker = GetInterestInvoker()) {
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext()));
+      DCHECK_EQ(upstream_invoker->InterestTargetElement(), this);
+      DCHECK_NE(upstream_invoker->GetInvokerData()->GetInterestState(),
+                InterestState::kNoInterest);
+      upstream_invoker->LoseInterestNow(this);
+    }
+
+    // The 'loseinterest' event handler could have changed this popover, e.g. by
+    // changing its type, removing it from the document, or calling
+    // showPopover().
+    if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
+                        /*include_event_handler_text=*/true, &document)) {
+      return;
+    }
+
     // Queue the "closing" toggle event.
     String old_state = "open";
     ToggleEvent* after_event;

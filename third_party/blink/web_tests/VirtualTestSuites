@@ -1312,7 +1312,7 @@
     "bases": [
       "external/wpt/html/semantics/the-button-element/interest-target"
     ],
-    "args": ["--enable-blink-features=HTMLInterestTargetNoPartialInterest"],
+    "args": ["--enable-blink-features=HTMLInterestTargetNoPartialInterest,HTMLInterestTargetAttribute"],
     "expires": "Dec 1, 2025"
   },
   {
