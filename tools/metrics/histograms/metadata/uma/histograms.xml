@@ -645,6 +645,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.PersistentHistograms.MountExistingCountsStorage"
+    enum="MountExistingCountsStorageResult" expires_after="2026-02-28">
+  <owner>rogerm@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Counts the success/failure outcomes of reading data from a persistent sample
+    vector.
+
+    https://issues.chromium.org/410544723
+  </summary>
+</histogram>
+
 <histogram name="UMA.PrimaryUserType" enum="UserType"
     expires_after="2025-09-14">
   <owner>michaelpg@chromium.org</owner>

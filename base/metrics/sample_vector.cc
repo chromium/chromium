@@ -610,15 +610,39 @@ PersistentSampleVector::PersistentSampleVector(
   // move any single-sample to it because sometimes the persistent memory is
   // read-only. Only non-const methods (which assume that memory is read/write)
   // can do that.
-  if (single_sample().IsDisabled() && !MountExistingCountsStorage()) {
-#if !BUILDFLAG(IS_NACL)
+  if (single_sample().IsDisabled()) {
+    const auto result = MountExistingCountsStorageImpl();
+
+    // Record the result of MountExistingCountsStorageImpl() to the
+    // kMountExistingCountsStorageResult histogram so that we can see how often
+    // the call to MountExistingCountsStorageImpl() fails.
+    //
+    // See crbug.com/410544723
+    //
+    // Recording a histogram here is safe for re-entrancy because the act of
+    // recording the histogram will either:
+    // * Create a new histogram with no pre-existing samples, so the above check
+    //   for `single_sample().IsDisabled()` will be `false` when reached; or,
+    // * Find the existing histogram, without calling this constructor.
+    RecordMountExistingCountsStorageResult(result);
+
+    // We're trying to understand how/why the call to MountExistingCountsStorage
+    // sometimes fails. We've seen enough examples of kNothingToRead to suggest
+    // that this specific failure is not strongly associated with any particular
+    // historam being recovered; so, we don't need to collect any further crash
+    // dumps for that outcome. We haven't seen many examples of kCorrupt, so we
+    // continue to collect those.
     // TODO: crbug.com/410544723 - Remove crash keys and DumpWithoutCrashing
     // once investigation is complete.
-    SCOPED_CRASH_KEY_STRING64("PSV", "name", name);
-    SCOPED_CRASH_KEY_NUMBER("PSV", "counts_ref",
-                            persistent_counts_.reference());
+    if (result != MountExistingCountsStorageResult::kSucceeded &&
+        result != MountExistingCountsStorageResult::kNothingToRead) {
+#if !BUILDFLAG(IS_NACL)
+      SCOPED_CRASH_KEY_STRING64("PSV", "name", name);
+      SCOPED_CRASH_KEY_NUMBER("PSV", "counts_ref",
+                              persistent_counts_.reference());
 #endif
-    debug::DumpWithoutCrashing();
+      debug::DumpWithoutCrashing();
+    }
   }
 }
 
@@ -629,7 +653,40 @@ bool PersistentSampleVector::IsDefinitelyEmpty() const {
   NOTREACHED();
 }
 
-bool PersistentSampleVector::MountExistingCountsStorage() const {
+// static
+constinit std::atomic_uintptr_t
+    PersistentSampleVector::atomic_histogram_pointer{0};
+
+// static
+void PersistentSampleVector::ResetMountExistingCountsStorageResultForTesting() {
+  atomic_histogram_pointer.store(0, std::memory_order_release);
+}
+
+// static
+void PersistentSampleVector::RecordMountExistingCountsStorageResult(
+    MountExistingCountsStorageResult result) {
+  static constexpr auto boundary = static_cast<base::HistogramBase::Sample32>(
+      MountExistingCountsStorageResult::kMaxValue);
+  // This method is the functional and performance equivalent of:
+  //
+  //   UMA_HISTOGRAM_ENUMERATION(kMountExistingCountsStorageResult, result);
+  //
+  // The UMA_HISTOGRAM_ENUMERATION macro hides the static pointer used to cache
+  // the histogram pointer. We need to be able to reset the cached histogram
+  // pointer for testing so we have extracted the histogram pointer to a static
+  // member and used HISTOGRAM_POINTER_USE macro to complete the implementation,
+  // which is ultimately what UMA_HISTOGRAM_ENUMERATION macro does.
+  HISTOGRAM_POINTER_USE(
+      std::addressof(atomic_histogram_pointer),
+      kMountExistingCountsStorageResult,
+      Add(static_cast<base::HistogramBase::Sample32>(result)),
+      base::LinearHistogram::FactoryGet(
+          kMountExistingCountsStorageResult, 1, boundary, boundary + 1,
+          base::HistogramBase::kUmaTargetedHistogramFlag));
+}
+
+PersistentSampleVector::MountExistingCountsStorageResult
+PersistentSampleVector::MountExistingCountsStorageImpl() const {
   // There is no early exit if counts is not yet mounted because, given that
   // this is a virtual function, it's more efficient to do that at the call-
   // site. There is no danger, however, should this get called anyway (perhaps
@@ -638,7 +695,7 @@ bool PersistentSampleVector::MountExistingCountsStorage() const {
   // with the exact same values.
 
   if (!persistent_counts_.reference()) {
-    return false;  // Nothing to mount.
+    return MountExistingCountsStorageResult::kNothingToRead;
   }
 
   // Mount the counts array in position. This shouldn't fail but can if the
@@ -646,12 +703,17 @@ bool PersistentSampleVector::MountExistingCountsStorage() const {
   span<HistogramBase::AtomicCount> mem =
       persistent_counts_.Get<HistogramBase::AtomicCount>();
   if (mem.empty()) {
-    return false;
+    return MountExistingCountsStorageResult::kCorrupt;
   }
   // Uses a span that only covers the counts the SampleVector should have
   // access to, which can be a subset of the entire persistent allocation.
   set_counts(mem.first(counts_size()));
-  return true;
+  return MountExistingCountsStorageResult::kSucceeded;
+}
+
+bool PersistentSampleVector::MountExistingCountsStorage() const {
+  return MountExistingCountsStorageImpl() ==
+         MountExistingCountsStorageResult::kSucceeded;
 }
 
 span<HistogramBase::AtomicCount>

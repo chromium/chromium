@@ -213,7 +213,38 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
   // HistogramSamples:
   bool IsDefinitelyEmpty() const override;
 
+  // Resets the histogram used to log the result of MountExistingCountsStorage.
+  // We have tests that monitor histogram creation/restoration. These tests need
+  // to be able to initialize the histogram (or more precisely, the static
+  // pointer to the histogram) to a known state.
+  static void ResetMountExistingCountsStorageResultForTesting();
+
  private:
+  // These values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
+  // "MountExistingCountsStorageResult" in
+  // src/tools/metrics/histograms/metadata/uma/enums.xml.
+  enum class MountExistingCountsStorageResult {
+    kSucceeded = 0,
+    kNothingToRead = 1,
+    kCorrupt = 2,
+    kMaxValue = kCorrupt,
+  };
+
+  // Pointer used to cache the MountExistingCountsStorageResult histogram for
+  // PersistentSampleVector. This is used to avoid creating the histogram on
+  // every MountExistingCountsStorage call. Usually, this would an
+  // implementation detail hidden in the use of the UMA_HISTOGRAM_ENUMERATION
+  // macro, but PersistentSampleVector is a special case where we need to be
+  // able to reset the histogram pointer for testing.
+  static std::atomic_uintptr_t atomic_histogram_pointer;
+
+  static void RecordMountExistingCountsStorageResult(
+      MountExistingCountsStorageResult result);
+
+  // Private implementation of MountExistingCountsStorage
+  MountExistingCountsStorageResult MountExistingCountsStorageImpl() const;
+
   // SampleVectorBase:
   bool MountExistingCountsStorage() const override;
   span<HistogramBase::Count32> CreateCountsStorageWhileLocked() override;
@@ -221,6 +252,11 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
   // Persistent storage for counts.
   DelayedPersistentAllocation persistent_counts_;
 };
+
+// Histogram name used to log the result of MountExistingCountsStorage for
+// PersistentSampleVector. Exposed here for testing.
+inline constexpr std::string_view kMountExistingCountsStorageResult =
+    "UMA.PersistentHistograms.MountExistingCountsStorageResult";
 
 }  // namespace base
 

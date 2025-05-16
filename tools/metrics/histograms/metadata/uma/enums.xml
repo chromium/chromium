@@ -303,6 +303,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Enabled successfully"/>
 </enum>
 
+<enum name="MountExistingCountsStorageResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Nothing to Read"/>
+  <int value="2" label="Corrupted Values"/>
+</enum>
+
 <enum name="NegativeSampleReason">
   <int value="0" label="Histogram had logged value but no active sample."/>
   <int value="1" label="Histogram active sample less than logged value."/>
