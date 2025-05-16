@@ -32,6 +32,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
 import org.chromium.ui.dragdrop.DropDataProviderUtils;
+import org.chromium.ui.util.XrUtils;
 
 /** Delegate for browser related functions used by Drag and Drop. */
 public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDelegate {
@@ -170,16 +171,27 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         // This invocation is wrapped in a try-catch block to allow backporting of the
         // ClipData.Item.Builder() class on pre-V devices. On pre-V devices not supporting this,
         // state will be cached on the first failure to avoid subsequent invalid attempts.
-        if (sClipDataItemBuilderNotFound) return null;
-        try {
-            return new ClipData.Item.Builder()
-                    .setText(clipDataText)
-                    .setIntentSender(pendingIntent.getIntentSender())
-                    .build();
-        } catch (NoClassDefFoundError e) {
-            Log.w(TAG, e.toString());
-            sClipDataItemBuilderNotFound = true;
+        if (!sClipDataItemBuilderNotFound) {
+            try {
+                return new ClipData.Item.Builder()
+                        .setText(clipDataText)
+                        .setIntentSender(pendingIntent.getIntentSender())
+                        .build();
+            } catch (NoClassDefFoundError e) {
+                Log.w(TAG, e.toString());
+                sClipDataItemBuilderNotFound = true;
+            }
         }
+
+        // This is to handle the pending intent on a SysUI level when the drop occurs outside of the
+        // source window. The API is available only on Android XR and should not be used on other
+        // platforms.
+        if (XrUtils.isXrDevice()) {
+            Intent wrapperIntent = new Intent();
+            wrapperIntent.putExtra("system_handled_intent", pendingIntent);
+            return new ClipData.Item(clipDataText, wrapperIntent, /* uri= */ null);
+        }
+
         return null;
     }
 

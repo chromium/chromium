@@ -549,9 +549,8 @@ public class TabDragSourceTest {
      * <pre>
      * A] drop in tab strip - source instance (ie: reorder within strip).
      * B] drop in toolbar container (but outside of tab strip) - source instance.
-     * C] drop outside of toolbar container with sub flows:
-     *  C.1] With drag as tab FF - no-op.
-     *  C.2] With drag as window FF - open new window.
+     * C] drop outside of toolbar container - not implemented. Should be handled by
+     *  {@link ChromeDragAndDropBrowserDelegateUnitTest}.
      * D] Test (A) for drop in destination instance with sub flows:
      *  D.1] drop in current model (i.e. drop incognito tab on incognito strip).
      *  D.2] drop in different model (i.e.: drop standard tab on incognito strip).
@@ -592,77 +591,6 @@ public class TabDragSourceTest {
     @Test
     public void test_onDrag_dropInToolbarContainer_source_tabGroup() {
         doTestOnDragDropInToolbarContainerSource(/* isGroupDrag= */ true);
-    }
-
-    /**
-     * Test for tab drag {@link #ONDRAG_TEST_CASES} - Scenario C.1 - XR-specific flow currently does
-     * not support moving tab groups.
-     */
-    @Test
-    public void test_onDrag_dropOutsideToolbarContainer() {
-        XrUtils.setXrDeviceForTesting(true);
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result")
-                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.Tab.Type")
-                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
-                        .build();
-        new DragEventInvoker(/* isGroupDrag= */ false, /* isGroupShared= */ false)
-                .dragExit(mSourceInstance)
-                .verifyShadowVisibility(true)
-                .end(false);
-
-        // Verify appropriate events are generated.
-        // Strip prepares for drop on drag enter.
-        verify(mSourceStripLayoutHelper, times(1))
-                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
-        // Strip clears state for drop on drag exit.
-        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
-        // Verify moveTabToNewWindow is called since drop is outside strip.
-        verify(mSourceMultiInstanceManager, times(1)).moveTabToNewWindow(mTabBeingDragged);
-        // Verify tab is not moved since drop is outside strip.
-        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
-        // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
-        // Verify destination strip not invoked.
-        verifyNoInteractions(mDestStripLayoutHelper);
-        histogramExpectation.assertExpected();
-    }
-
-    /**
-     * Test for {@link #ONDRAG_TEST_CASES} - Scenario C.2 - XR-specific flow currently does not
-     * support moving tab groups.
-     */
-    @Test
-    public void test_onDrag_dropOutsideToolbarContainer_dragAsWindow() {
-        XrUtils.setXrDeviceForTesting(true);
-        // Verify tab is successfully dropped as a window.
-        verifyDropOutsideToolbarContainerAsWindow();
-
-        // Verify the user action `TabRemovedFromGroup` is not recorded.
-        assertEquals(
-                "TabRemovedFromGroup should not be recorded as the tab being dragged is not in a"
-                        + " tab group",
-                0,
-                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
-    }
-
-    @Test
-    public void test_dragAsWindow_recordTabRemovedFromGroup() {
-        XrUtils.setXrDeviceForTesting(true);
-        // The tab being dragged is in a tab group.
-        when(mTabGroupModelFilter.isTabInTabGroup(mTabBeingDragged)).thenReturn(true);
-
-        // Verify tab is successfully dropped as a window.
-        verifyDropOutsideToolbarContainerAsWindow();
-
-        // Verify the user action`TabRemovedFromGroup` is recorded.
-        assertEquals(
-                "TabRemovedFromGroup should be recorded",
-                1,
-                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
     }
 
     @Test
@@ -1103,27 +1031,6 @@ public class TabDragSourceTest {
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify histograms.
         histogramExpectation.assertExpected();
-    }
-
-    private void verifyDropOutsideToolbarContainerAsWindow() {
-        new DragEventInvoker(/* isGroupDrag= */ false, /* isGroupShared= */ false)
-                .dragExit(mSourceInstance)
-                .verifyShadowVisibility(true)
-                .end(false);
-
-        // Verify appropriate events are generated.
-        // Strip prepares for drop on drag enter.
-        verify(mSourceStripLayoutHelper, times(1))
-                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
-        // Strip clears state for drop on drag exit.
-        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
-        // Verify Since the drop is outside the TabToolbar area the tab will be move to a new
-        // Chrome Window.
-        verify(mSourceMultiInstanceManager, times(1)).moveTabToNewWindow(mTabBeingDragged);
-        // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
-        // Verify destination strip not invoked.
-        verifyNoInteractions(mDestStripLayoutHelper);
     }
 
     private void doTestUnhandledDropOutsideWithMaxInstances(
@@ -1743,7 +1650,6 @@ public class TabDragSourceTest {
                     .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), anyInt());
         } else {
             // Verify tab is not moved.
-            verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
             verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         }
     }

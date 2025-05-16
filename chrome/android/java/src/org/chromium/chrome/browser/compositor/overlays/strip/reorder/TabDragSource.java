@@ -104,7 +104,6 @@ public class TabDragSource implements View.OnDragListener {
     // Last drag positions relative to the source view. Set when drag starts or is moved within
     // view.
     private float mLastXDp;
-    private int mLastAction;
     private boolean mHoveringInStrip;
 
     // Tracks whether the current drag has ever left the source strip.
@@ -353,7 +352,7 @@ public class TabDragSource implements View.OnDragListener {
                 res = onDragStart(dragEvent.getX(), dragEvent.getClipDescription());
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
-                res = onDragEnd(dragEvent.getResult(), mLastAction == DragEvent.ACTION_DRAG_EXITED);
+                res = onDragEnd(dragEvent.getResult());
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
                 // We'll trigger #onDragEnter when handling the following ACTION_DRAG_LOCATION so we
@@ -391,7 +390,6 @@ public class TabDragSource implements View.OnDragListener {
                 }
                 break;
         }
-        mLastAction = dragEvent.getAction();
         return res;
     }
 
@@ -568,27 +566,12 @@ public class TabDragSource implements View.OnDragListener {
         return true;
     }
 
-    private boolean onDragEnd(boolean dropHandled, boolean didExitToolbar) {
+    private boolean onDragEnd(boolean dropHandled) {
         mHoveringInStrip = false;
 
         // No-op for destination strip.
         if (!isDragSource()) {
             return false;
-        }
-
-        // If tab was dragged and dropped out of source toolbar but the drop was not handled,
-        // move to a new window.
-        Tab tabBeingDragged =
-                ChromeDragDropUtils.getTabFromGlobalState(
-                        getDragDropGlobalState(/* dragEvent= */ null));
-        // TODO(crbug.com/404149905): Update app launch using OS when XR moves to Android 15.
-        if (XrUtils.isXrDevice() && didExitToolbar && !dropHandled && tabBeingDragged != null) {
-
-            // Record user action if a grouped tab is moved to a new window.
-            recordTabRemovedFromGroupUserAction();
-
-            // Hence move the tab to a new Chrome window.
-            mMultiInstanceManager.moveTabToNewWindow(tabBeingDragged);
         }
 
         // Get the drag source Chrome instance id before it is cleared as it may be closed.
@@ -824,13 +807,11 @@ public class TabDragSource implements View.OnDragListener {
     private boolean shouldAllowGroupDragToCreateInstance(Token groupId) {
         int groupSize = mCurrentTabGroupModelFilterSupplier.get().getTabCountForGroup(groupId);
 
-        return mTabModelSelector.getTotalTabCount() > groupSize
-                && TabUiFeatureUtilities.isTabDragToCreateInstanceSupported();
+        return mTabModelSelector.getTotalTabCount() > groupSize;
     }
 
     private boolean shouldAllowTabDragToCreateInstance() {
-        return hasMultipleTabs(mTabModelSelector)
-                && TabUiFeatureUtilities.isTabDragToCreateInstanceSupported();
+        return hasMultipleTabs(mTabModelSelector);
     }
 
     private boolean hasMultipleTabs(TabModelSelector tabModelSelector) {

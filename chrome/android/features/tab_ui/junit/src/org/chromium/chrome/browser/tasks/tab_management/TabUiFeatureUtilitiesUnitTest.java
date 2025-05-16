@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.os.Build;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
@@ -82,17 +79,5 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
 
         assertFalse(TabUiFeatureUtilities.shouldUseListMode());
-    }
-
-    @Test
-    public void testTabDragToCreateInstance_withAllowlistedOEM() {
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
-        assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
-    }
-
-    @Test
-    public void testTabDragToCreateInstance_withNonAllowlistedOEM() {
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
-        assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 }

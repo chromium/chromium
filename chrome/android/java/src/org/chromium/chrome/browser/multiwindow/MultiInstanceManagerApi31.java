@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -78,6 +77,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.util.XrUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -1264,7 +1264,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // or if the app is in a desktop window, and the source instance is known.
         if (instanceId == INVALID_WINDOW_ID) return false;
 
-        return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
+        return XrUtils.isXrDevice()
                 || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get());
     }
 

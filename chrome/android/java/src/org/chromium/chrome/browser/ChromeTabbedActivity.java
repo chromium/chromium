@@ -253,7 +253,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManage
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
@@ -2374,7 +2373,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private boolean maybeLaunchDraggedTabOrGroupInWindow(Intent intent) {
-        if (!TabUiFeatureUtilities.isTabDragToCreateInstanceSupported()) return false;
         @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
         return tabGroupMetadata != null
                 ? maybeLaunchDraggedTabGroupInWindow(intent, tabGroupMetadata)
@@ -2398,7 +2396,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
             RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, false);
             return false;
         }
+        boolean isTabInGroup = tab.getTabGroupId() != null;
+
         mMultiInstanceManager.moveTabToWindow(this, tab, /* atIndex= */ 0);
+
+        if (isTabInGroup) RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
