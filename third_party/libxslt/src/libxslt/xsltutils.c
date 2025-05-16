@@ -1929,17 +1929,17 @@ xsltGetSourceNodeFlags(xmlNodePtr node) {
     switch (node->type) {
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
-            return ((xmlDocPtr) node)->extra >> XSLT_SOURCE_NODE_SHIFT;
+            return ((xmlDocPtr) node)->extra >> XSLT_SOURCE_NODE_SHIFT_32;
 
         case XML_ATTRIBUTE_NODE:
-            return ((xmlAttrPtr) node)->extra >> XSLT_SOURCE_NODE_SHIFT;
+            return ((xmlAttrPtr) node)->extra >> XSLT_SOURCE_NODE_SHIFT_32;
 
         case XML_ELEMENT_NODE:
         case XML_TEXT_NODE:
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            return node->extra >> XSLT_SOURCE_NODE_SHIFT;
+            return node->extra >> XSLT_SOURCE_NODE_SHIFT_32;
 
         default:
             return 0;
@@ -1965,12 +1965,12 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
             ((xmlDocPtr) node)->extra |=
-                ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT);
+                ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ATTRIBUTE_NODE:
             ((xmlAttrPtr) node)->extra |=
-                ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT);
+                ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ELEMENT_NODE:
@@ -1978,7 +1978,7 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            node->extra |= ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT);
+            node->extra |= ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_16);
             return 0;
 
         default:
@@ -2001,12 +2001,12 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
             ((xmlDocPtr) node)->extra &=
-                ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT);
+                ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ATTRIBUTE_NODE:
             ((xmlAttrPtr) node)->extra &=
-                ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT);
+                ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ELEMENT_NODE:
@@ -2014,7 +2014,7 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            node->extra &= ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT);
+            node->extra &= ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_16);
             return 0;
 
         default:
@@ -2038,13 +2038,6 @@ xsltGetSourceNodeValue(xmlNodePtr node) {
 
         case XML_ATTRIBUTE_NODE:
             return (((xmlAttrPtr) node)->extra & XSLT_SOURCE_NODE_VALUE_MASK);
-
-        case XML_ELEMENT_NODE:
-        case XML_TEXT_NODE:
-        case XML_CDATA_SECTION_NODE:
-        case XML_PI_NODE:
-        case XML_COMMENT_NODE:
-            return (node->extra & XSLT_SOURCE_NODE_VALUE_MASK);
 
         default:
             return 0;
@@ -2070,15 +2063,6 @@ xsltSetSourceNodeValue(xmlNodePtr node, int value) {
         case XML_ATTRIBUTE_NODE:
             ((xmlAttrPtr) node)->extra &= ~XSLT_SOURCE_NODE_VALUE_MASK;
             ((xmlAttrPtr) node)->extra |= (value & XSLT_SOURCE_NODE_VALUE_MASK);
-            return 0;
-
-        case XML_ELEMENT_NODE:
-        case XML_TEXT_NODE:
-        case XML_CDATA_SECTION_NODE:
-        case XML_PI_NODE:
-        case XML_COMMENT_NODE:
-            node->extra &= ~XSLT_SOURCE_NODE_VALUE_MASK;
-            node->extra |= (value & XSLT_SOURCE_NODE_VALUE_MASK);
             return 0;
 
         default:
@@ -2790,3 +2774,4 @@ xslDropCall(void)
 }
 
 #endif /* WITH_DEBUGGER */
+

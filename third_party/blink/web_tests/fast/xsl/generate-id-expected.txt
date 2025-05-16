@@ -1,7 +1,0 @@
-Each pair of IDs below should match, as the same ID should be generated for the same node in the current document in the current transform.
-
-Value 1 IDs: id1id1
-
-Value 2 IDs: id2id2
-
-Value 3 IDs: id3id3
