@@ -257,6 +257,33 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram
+    name="PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsOutcome"
+    enum="FrontEndHeapDebugOptionsOutcome" expires_after="2025-09-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The outcome of attempting to read the value of the HKEY_LOCAL_MACHINE :
+    Software\Microsoft\Windows NT\CurrentVersion\Image File :
+    FrontEndHeapDebugOptions registry key. Emitted when UMA requests information
+    about the current session (see
+    metrics::MetricsProvider::ProvideCurrentSessionData).
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsValue"
+    units="bitfield" expires_after="2025-09-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The value of the HKEY_LOCAL_MACHINE : Software\Microsoft\Windows
+    NT\CurrentVersion\Image File : FrontEndHeapDebugOptions registry key.
+    Emitted every time kSuccess is reported to
+    PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsOutcome.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
     units="seconds" expires_after="2025-02-16">
   <owner>anthonyvd@chromium.org</owner>
