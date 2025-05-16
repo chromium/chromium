@@ -224,11 +224,11 @@ enum class IdentityConfirmationSnackbarDecision {
   ManagementState managementState =
       GetManagementState(identityManager, authenticationService, prefService);
 
-  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
-      initWithName:systemIdentity.userGivenName
-             email:systemIdentity.userEmail
-            avatar:avatar
-           managed:managementState.is_profile_managed()];
+  MDCSnackbarMessage* snackbarTitle =
+      [[IdentitySnackbarMessage alloc] initWithName:systemIdentity.userGivenName
+                                              email:systemIdentity.userEmail
+                                             avatar:avatar
+                                    managementState:managementState];
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =

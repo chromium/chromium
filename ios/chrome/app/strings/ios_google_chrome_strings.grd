@@ -378,6 +378,9 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE" desc="Text to inform the user about the forced sign-in policy with a Learn More link that redirects to a page that gives more details. (Force Sign In) [iOS only]">
         Your organization requires you to sign in to use Chrome. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_BROWSER_WIDE_SCREEN" desc="The snackbar message subtitle to confirm the signed-in account after a successful account switch. For enterprise users, we remind them that their browser is managed by their company, school, or organization. This string does not have line break, so terminal punctuation is required for sentence fragments. [iOS only]">
+        <ph name="EMAIL">$1<ex>johndoe@acme.com</ex></ph>. Chrome is managed.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_WITH_UNO" desc="Message displayed in a prompt when saving data (like bookmarks/reading list/passwords...) is disabled due to an enterprise policy. Related with IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_UNO.">
         Your organization turned off the ability to use and save Chrome data in your Google Account. New bookmarks, passwords, and more will be saved only to this device.
       </message>

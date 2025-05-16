@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message_view.h"
 
 @interface IdentitySnackbarMessage ()
@@ -15,7 +16,7 @@
 @property(nonatomic, readwrite) UIImage* avatar;
 @property(nonatomic, readwrite) NSString* name;
 @property(nonatomic, readwrite) NSString* email;
-@property(nonatomic, readwrite) BOOL managed;
+@property(nonatomic, readwrite) ManagementState managementState;
 @end
 
 namespace {
@@ -30,7 +31,7 @@ const char kIdentitySnackbarHadUserName[] =
 - (instancetype)initWithName:(NSString*)name
                        email:(NSString*)email
                       avatar:(UIImage*)avatar
-                     managed:(BOOL)managed {
+             managementState:(ManagementState)managementState {
   self = [super init];
   if (self) {
     CHECK(avatar);
@@ -38,7 +39,7 @@ const char kIdentitySnackbarHadUserName[] =
     _avatar = avatar;
     _name = name;
     _email = email;
-    _managed = managed;
+    _managementState = managementState;
     // Ensure the absence of the standard MDCSnacbarMessage’s text.
     self.text = @"";
     // Allows snackbar to stay longer in some tests.
@@ -67,7 +68,7 @@ const char kIdentitySnackbarHadUserName[] =
   instance.avatar = _avatar;
   instance.name = _name;
   instance.email = _email;
-  instance.managed = _managed;
+  instance.managementState = _managementState;
   return instance;
 }
 

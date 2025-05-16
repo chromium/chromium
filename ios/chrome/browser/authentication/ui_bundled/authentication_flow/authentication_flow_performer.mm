@@ -207,11 +207,11 @@ void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
       GetManagementState(IdentityManagerFactory::GetForProfile(profile),
                          AuthenticationServiceFactory::GetForProfile(profile),
                          profile->GetPrefs());
-  MDCSnackbarMessage* snackbar_title = [[IdentitySnackbarMessage alloc]
-      initWithName:identity.userGivenName
-             email:identity.userEmail
-            avatar:avatar
-           managed:management_state.is_profile_managed()];
+  MDCSnackbarMessage* snackbar_title =
+      [[IdentitySnackbarMessage alloc] initWithName:identity.userGivenName
+                                              email:identity.userEmail
+                                             avatar:avatar
+                                    managementState:management_state];
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);

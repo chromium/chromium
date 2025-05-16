@@ -15,6 +15,8 @@ source_set("identity_snackbar") {
     "//base",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",

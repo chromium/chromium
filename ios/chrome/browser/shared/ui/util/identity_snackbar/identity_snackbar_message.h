@@ -7,6 +7,8 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "ios/chrome/browser/policy/model/management_state.h"
+
 // A snackbar message that contains profile information of the current logged in
 //  account.
 @interface IdentitySnackbarMessage : MDCSnackbarMessage
@@ -22,12 +24,12 @@
 @property(nonatomic, readonly) NSString* email;
 
 // True if the profile is managed by an enterprise admin.
-@property(nonatomic, readonly) BOOL managed;
+@property(nonatomic, readonly) ManagementState managementState;
 
 - (instancetype)initWithName:(NSString*)name
                        email:(NSString*)email
                       avatar:(UIImage*)avatar
-                     managed:(BOOL)managed;
+             managementState:(ManagementState)managementState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
