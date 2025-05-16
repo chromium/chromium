@@ -21,45 +21,50 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/android_info_jni/AndroidInfo_jni.h"
 
-#if __ANDROID_API__ >= 29
-// .aidl based NDK generation is only available when our min SDK level is 29 or
-// higher.
-#include "aidl/org/chromium/base/IAndroidInfo.h"
-using aidl::org::chromium::base::IAndroidInfo;
-#endif
-
 namespace base::android::android_info {
 
 namespace {
 
-#if __ANDROID_API__ < 29
-struct IAndroidInfo {
-  const std::string abiName;
-  const std::string androidBuildFp;
-  const std::string androidBuildId;
-  const std::string board;
-  const std::string brand;
-  const std::string buildType;
-  const std::string codename;
+struct AndroidInfo {
   const std::string device;
-  const std::string hardware;
-  bool isDebugAndroid;
-  const std::string manufacturer;
-  const std::string model;
-  int sdkInt;
-  // Available only on android S+. For S-, this method returns empty string.
-  const std::string socManufacturer;
-  const std::string versionIncremental;
-};
-#endif
 
-static std::optional<IAndroidInfo>& get_holder() {
-  static base::NoDestructor<std::optional<IAndroidInfo>> holder;
+  const std::string manufacturer;
+
+  const std::string model;
+
+  const std::string brand;
+
+  const std::string android_build_id;
+
+  const std::string build_type;
+
+  const std::string board;
+
+  const std::string android_build_fp;
+
+  int sdk_int;
+
+  bool is_debug_android;
+
+  const std::string version_incremental;
+
+  const std::string hardware;
+
+  const std::string codename;
+
+  // Available only on android S+. For S-, this method returns empty string.
+  const std::string soc_manufacturer;
+
+  const std::string abi_name;
+};
+
+static std::optional<AndroidInfo>& get_holder() {
+  static base::NoDestructor<std::optional<AndroidInfo>> holder;
   return *holder;
 }
 
-const IAndroidInfo& get_android_info() {
-  const std::optional<IAndroidInfo>& holder = get_holder();
+const AndroidInfo& get_android_info() {
+  const std::optional<AndroidInfo>& holder = get_holder();
   if (!holder.has_value()) {
     Java_AndroidInfo_nativeReadyForFields(AttachCurrentThread());
   }
@@ -84,24 +89,24 @@ static void JNI_AndroidInfo_FillFields(JNIEnv* env,
                                        std::string& supportedAbis,
                                        jint sdkInt,
                                        jboolean isDebugAndroid) {
-  std::optional<IAndroidInfo>& holder = get_holder();
+  std::optional<AndroidInfo>& holder = get_holder();
   DCHECK(!holder.has_value());
   holder.emplace(
-      IAndroidInfo{.abiName = supportedAbis,
-                   .androidBuildFp = androidBuildFingerprint,
-                   .androidBuildId = buildId,
-                   .board = board,
-                   .brand = brand,
-                   .buildType = type,
-                   .codename = codeName,
-                   .device = device,
-                   .hardware = hardware,
-                   .isDebugAndroid = static_cast<bool>(isDebugAndroid),
-                   .manufacturer = manufacturer,
-                   .model = model,
-                   .sdkInt = sdkInt,
-                   .socManufacturer = socManufacturer,
-                   .versionIncremental = versionIncremental});
+      AndroidInfo{.device = device,
+                  .manufacturer = manufacturer,
+                  .model = model,
+                  .brand = brand,
+                  .android_build_id = buildId,
+                  .build_type = type,
+                  .board = board,
+                  .android_build_fp = androidBuildFingerprint,
+                  .sdk_int = sdkInt,
+                  .is_debug_android = static_cast<bool>(isDebugAndroid),
+                  .version_incremental = versionIncremental,
+                  .hardware = hardware,
+                  .codename = codeName,
+                  .soc_manufacturer = socManufacturer,
+                  .abi_name = supportedAbis});
 }
 
 const std::string& device() {
@@ -121,11 +126,11 @@ const std::string& brand() {
 }
 
 const std::string& android_build_id() {
-  return get_android_info().androidBuildId;
+  return get_android_info().android_build_id;
 }
 
 const std::string& build_type() {
-  return get_android_info().buildType;
+  return get_android_info().build_type;
 }
 
 const std::string& board() {
@@ -133,19 +138,19 @@ const std::string& board() {
 }
 
 const std::string& android_build_fp() {
-  return get_android_info().androidBuildFp;
+  return get_android_info().android_build_fp;
 }
 
 int sdk_int() {
-  return get_android_info().sdkInt;
+  return get_android_info().sdk_int;
 }
 
 bool is_debug_android() {
-  return get_android_info().isDebugAndroid;
+  return get_android_info().is_debug_android;
 }
 
 const std::string& version_incremental() {
-  return get_android_info().versionIncremental;
+  return get_android_info().version_incremental;
 }
 
 const std::string& hardware() {
@@ -158,11 +163,11 @@ const std::string& codename() {
 
 // Available only on android S+. For S-, this method returns empty string.
 const std::string& soc_manufacturer() {
-  return get_android_info().socManufacturer;
+  return get_android_info().soc_manufacturer;
 }
 
 const std::string& abi_name() {
-  return get_android_info().abiName;
+  return get_android_info().abi_name;
 }
 
 }  // namespace base::android::android_info

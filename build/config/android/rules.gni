@@ -3945,9 +3945,10 @@ if (!is_robolectric && enable_java_templates) {
   #   }
   template("android_aidl") {
     _aidl_target = target_name
-    if (android_ndk_api_level >= 29 && defined(invoker.cpp_root_names)) {
+    if (enable_javaless_renderers && defined(invoker.cpp_root_names)) {
       _do_cpp_gen = true
-      _header_output_folder = "$target_gen_dir/aidl/" + invoker.cpp_package_name
+      _header_output_folder =
+          "$target_gen_dir/gen/aidl/" + invoker.cpp_package_name
       _cpp_outputs = []
       _header_outputs = []
       foreach(_cpp_root_name, invoker.cpp_root_names) {
@@ -3960,11 +3961,6 @@ if (!is_robolectric && enable_java_templates) {
       }
     } else {
       _do_cpp_gen = false
-      not_needed(invoker,
-                 [
-                   "cpp_root_names",
-                   "cpp_package_name",
-                 ])
     }
     action_with_pydeps(_aidl_target) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
@@ -4003,7 +3999,7 @@ if (!is_robolectric && enable_java_templates) {
           # folders wherever it's told to output headers, but outputs the cpp
           # files exactly where it's told. So, we assume (in
           # _header_output_folder) that aidl is going to do this on our behalf.
-          rebase_path("$target_gen_dir/", root_build_dir),
+          rebase_path("$target_gen_dir/gen", root_build_dir),
         ]
         foreach(_cpp_output, _cpp_outputs) {
           args += [
@@ -4025,18 +4021,11 @@ if (!is_robolectric && enable_java_templates) {
       args += rebase_path(sources, root_build_dir)
     }
     if (_do_cpp_gen) {
-      _aidl_config = "${_aidl_target}_include_config"
-      config(_aidl_config) {
-        include_dirs = [ "$target_gen_dir" ]
-      }
       source_set("${_aidl_target}_native") {
         sources = _cpp_outputs + _header_outputs
         deps = [ ":$_aidl_target" ]
         libs = [ "binder_ndk" ]
-        public_configs = [
-          "//third_party/android_sdk:libbinder_include",
-          ":$_aidl_config",
-        ]
+        public_configs = [ "//third_party/android_sdk:libbinder_include" ]
       }
     }
   }
