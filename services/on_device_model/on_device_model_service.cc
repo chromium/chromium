@@ -453,9 +453,22 @@ void OnDeviceModelService::GetCapabilities(ModelFile model_file,
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
-  base::ElapsedTimer timer;
-  std::move(callback).Run(ml::GetEstimatedPerformanceClass(*chrome_ml_));
-  base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration", timer.Elapsed());
+  // This is expected to take awhile in some cases, so run on a background
+  // thread to avoid blocking the main thread.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](const ml::ChromeML& chrome_ml) {
+            base::ElapsedTimer timer;
+            on_device_model::mojom::PerformanceClass perf_class =
+                ml::GetEstimatedPerformanceClass(chrome_ml);
+            base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration",
+                                    timer.Elapsed());
+            return perf_class;
+          },
+          // base::Unretained is safe since chrome_ml_ refers to a global.
+          base::Unretained(chrome_ml_)),
+      std::move(callback));
 }
 
 void OnDeviceModelService::LoadTextSafetyModel(
