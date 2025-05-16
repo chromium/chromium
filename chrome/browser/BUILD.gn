@@ -1857,7 +1857,7 @@ static_library("browser") {
 
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
     # from //chrome/browser/ui/webui, which are not modularized yet.
-    "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/about:impl",
   ]
 
   public_deps = [
@@ -2060,6 +2060,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/about:impl",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",

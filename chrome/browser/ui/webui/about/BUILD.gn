@@ -5,18 +5,24 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("about") {
-  sources = [
-    "about_ui.cc",
-    "about_ui.h",
-  ]
+  sources = [ "about_ui.h" ]
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//content/public/browser",
   ]
+}
+
+# TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
+# from //chrome/browser/ui/webui, which are not modularized yet. Merge this
+# to "about" source set when the dependencies are modularized.
+source_set("impl") {
+  sources = [ "about_ui.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    ":about",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//components/language/core/common",

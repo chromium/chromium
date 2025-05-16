@@ -415,6 +415,7 @@ static_library("ui") {
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/about:impl",
     "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/zoom",
@@ -746,7 +747,7 @@ static_library("ui") {
 
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
     # from //chrome/browser/ui/webui, which are not modularized yet.
-    "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/about:impl",
   ]
 
   if (enable_vr && is_win) {
