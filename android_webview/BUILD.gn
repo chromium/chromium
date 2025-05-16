@@ -1216,7 +1216,7 @@ generate_jni("crash_client_jni") {
   sources = [ "java/src/org/chromium/android_webview/common/crash/AwCrashReporterClient.java" ]
 }
 
-component("android_webview") {
+group("android_webview") {
   public_deps = [
     "//android_webview/lib",
     "//android_webview/nonembedded",
