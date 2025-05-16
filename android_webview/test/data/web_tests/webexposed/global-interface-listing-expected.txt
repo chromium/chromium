@@ -5526,31 +5526,6 @@ interface LanguageDetector
     method destroy
     method detect
     method measureInputUsage
-interface LanguageModel : EventTarget
-    static method availability
-    static method create
-    static method params
-    attribute @@toStringTag
-    getter inputQuota
-    getter inputUsage
-    getter onquotaoverflow
-    getter temperature
-    getter topK
-    method append
-    method clone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method prompt
-    method promptStreaming
-    setter onquotaoverflow
-interface LanguageModelParams
-    attribute @@toStringTag
-    getter defaultTemperature
-    getter defaultTopK
-    getter maxTemperature
-    getter maxTopK
-    method constructor
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
@@ -7783,23 +7758,6 @@ interface Response
     method formData
     method json
     method text
-interface Rewriter
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method rewrite
-    method rewriteStreaming
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
@@ -9400,23 +9358,6 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
-interface Summarizer
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter type
-    method constructor
-    method destroy
-    method measureInputUsage
-    method summarize
-    method summarizeStreaming
 interface SuppressedError : Error
     attribute message
     attribute name
@@ -9675,18 +9616,6 @@ interface TransitionEvent : Event
     getter propertyName
     getter pseudoElement
     method constructor
-interface Translator
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter inputQuota
-    getter sourceLanguage
-    getter targetLanguage
-    method constructor
-    method destroy
-    method measureInputUsage
-    method translate
-    method translateStreaming
 interface TreeWalker
     attribute @@toStringTag
     getter currentNode
@@ -11544,23 +11473,6 @@ interface WritableStreamDefaultWriter
     method constructor
     method releaseLock
     method write
-interface Writer
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method write
-    method writeStreaming
 interface XMLDocument : Document
     attribute @@toStringTag
     method constructor

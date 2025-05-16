@@ -323,7 +323,12 @@
       // OriginTrialContext::CanEnableTrialFromName limits access to extensions.
       origin_trial_feature_name: "AIPromptAPIForExtension",
       origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
       implied_by: ["AIPromptAPIMultimodalInput", "AIPromptAPIForExtension"],
@@ -333,7 +338,12 @@
       name: "AIPromptAPIForExtension",
       origin_trial_feature_name: "AIPromptAPIForExtension",
       origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
@@ -343,13 +353,23 @@
     },
     {
       name: "AIPromptAPIMultimodalInput",
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
     },
     {
       name: "AIPromptAPIStructuredOutput",
       origin_trial_feature_name: "AIPromptAPIForExtension",
       origin_trial_allows_third_party: true,
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
       implied_by: ["AIPromptAPI"],
@@ -360,7 +380,12 @@
     },
     {
       name: "AIRewriterAPI",
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       origin_trial_feature_name: "AIRewriterAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
@@ -372,7 +397,12 @@
     },
     {
       name: "AISummarizationAPI",
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       origin_trial_feature_name: "AISummarizationAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
@@ -384,7 +414,12 @@
     },
     {
       name: "AIWriterAPI",
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       origin_trial_feature_name: "AIWriterAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
@@ -4862,7 +4897,12 @@
     },
     {
       name: "TranslationAPI",
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       origin_trial_feature_name: "TranslationAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
@@ -4875,7 +4915,12 @@
     },
     {
       name: "TranslationAPIV1",
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "default": "",
+      },
       copied_from_base_feature_if: "overridden",
     },
     {
