@@ -25,8 +25,12 @@ class PermissionResolver {
   // `PromptParameters` are returned when the UI queries the resolver to
   // determine what to prompt the user for.
   struct PromptParameters {
+    PromptParameters();
+    ~PromptParameters();
     base::Value missing_options;
     std::u16string prompt_text;
+    std::vector<std::u16string> radio_button_labels;
+    int preselected_radio_button_index = -1;  // -1 represents no preselection
   };
 
   virtual ~PermissionResolver() = default;

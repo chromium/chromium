@@ -19,4 +19,7 @@ PermissionResolver::PermissionResolver(RequestType request_type)
     : content_settings_type_(RequestTypeToContentSettingsType(request_type)),
       request_type_(request_type) {}
 
+PermissionResolver::PromptParameters::PromptParameters() = default;
+PermissionResolver::PromptParameters::~PromptParameters() = default;
+
 }  // namespace permissions
