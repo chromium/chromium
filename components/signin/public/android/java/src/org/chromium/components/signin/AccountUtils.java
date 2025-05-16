@@ -41,10 +41,6 @@ public class AccountUtils {
         return new Account(email, GOOGLE_ACCOUNT_TYPE);
     }
 
-    public static Account createAccountFromName(String email) {
-        return createAccountFromEmail(email);
-    }
-
     /** Converts a list of {@link AccountInfo}s to a list of account emails. */
     public static List<String> toAccountEmails(final List<AccountInfo> accounts) {
         int size = accounts.size();
