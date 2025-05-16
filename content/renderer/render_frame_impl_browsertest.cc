@@ -550,7 +550,6 @@ struct SourceAnnotation {
     return document_url == rhs.document_url &&
            render_frame_event == rhs.render_frame_event;
   }
-  bool operator!=(const SourceAnnotation& rhs) const { return !(*this == rhs); }
 };
 
 std::ostream& operator<<(std::ostream& out, const SourceAnnotation& s) {
