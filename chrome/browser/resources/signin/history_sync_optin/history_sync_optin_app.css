@@ -11,9 +11,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  border-radius: 12px;
   color: var(--cr-primary-text-color);
   display: block;
-  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -30,14 +30,14 @@
   border: solid var(--md-background-color);
   border-radius: 50%;
   height: 64px;
-  width: 64px;
   /* To place the avatar at the center of the background image,
      place it at top left point of its parent,
      then shift it back by half its width and height. */
+  left: 50%;
   position: absolute;
   top: 50%;
-  left: 50%;
   transform: translate(-50%, -50%);
+  width: 64px;
 }
 
 .dialog-illustration {
@@ -48,6 +48,9 @@
 #imageContainer {
   align-self: center;
   display: flex;
+  /* The height must be set so that the height of this relatively positioned
+  container is taken into account in the height calculator of the entire screen. */
+  height: 162px;
   justify-content: center;
   /* Establishes a positioning context for absolute children. */
   position: relative;
@@ -55,26 +58,25 @@
 
 #buttonRow {
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
+  justify-content: flex-end;
 }
 
 #modalDescription {
-  /* layout */
-  padding: 12px 20px 12px 20px;
   /* colors */
-  border-top: 1px solid var(--cr-fallback-color-neutral-outline);
   background-color: var(--cr-fallback-color-neutral-container);
+  border-top: 1px solid var(--cr-fallback-color-neutral-outline);
   /* fonts */
   font-size: 11px;
   line-height: 20px;
+  /* layout */
+  padding: 12px 20px 12px 20px;
 }
 
 h1 {
   font-size: 16px;
   font-weight: 500;
 }
-
 
 @media (prefers-color-scheme: dark) {
   .dialog-illustration {

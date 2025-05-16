@@ -69,6 +69,12 @@ void HistorySyncOptinHandler::MaybeGetAccountInfo() {
   }
 }
 
+void HistorySyncOptinHandler::UpdateDialogHeight(uint32_t height) {
+  if (browser_) {
+    browser_->signin_view_controller()->SetModalSigninHeight(height);
+  }
+}
+
 void HistorySyncOptinHandler::FinishAndCloseDialog() {
   // TODO(crbug.com/404806506): Add metrics.
   if (browser_) {

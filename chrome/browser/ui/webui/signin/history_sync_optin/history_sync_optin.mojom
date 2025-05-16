@@ -29,6 +29,10 @@ interface PageHandler {
   Reject();
   // Requests the signed in user's account info.
   RequestAccountInfo();
+  // Updates the native view of the dialog based on the current `height` of the
+  // web content view measured in pixels. Height of the content view is variable
+  // based on its contents.
+  UpdateDialogHeight(uint32 height);
 };
 
 // Called from C++ side of chrome://history-sync-optin (Browser -> Renderer)

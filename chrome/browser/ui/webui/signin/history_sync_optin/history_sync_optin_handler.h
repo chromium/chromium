@@ -37,6 +37,7 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
   void Accept() override;
   void Reject() override;
   void RequestAccountInfo() override;
+  void UpdateDialogHeight(uint32_t height) override;
 
  private:
   // Gets the account info of the signed-in user if there is one, or
