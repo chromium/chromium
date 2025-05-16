@@ -266,6 +266,19 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
+    public void testBackNavigationBetweenPanesOnEscapeKeyPressNotTriggered() {
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+        assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+        assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
     public void testBackNavigationWithNullTab() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
         assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
@@ -279,6 +292,19 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
+    public void testBackNavigationWithNullTabOnEscapeKeyPress() {
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+
+        mTabSupplier.set(mTab);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+        mTabSupplier.set(null);
+
+        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+        verify(mHubLayoutController, never()).selectTabAndHideHubLayout(anyInt());
+    }
+
+    @Test
     public void testBackNavigationWithTab() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
         assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
@@ -287,6 +313,18 @@ public class HubCoordinatorUnitTest {
         assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
         assertEquals(BackPressResult.SUCCESS, mHubCoordinator.handleBackPress());
+        verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
+    }
+
+    @Test
+    public void testBackNavigationWithTabOnEscapeKeyPress() {
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+
+        mTabSupplier.set(mTab);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        assertEquals(Boolean.TRUE, mHubCoordinator.handleEscPress());
         verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
     }
 

@@ -190,6 +190,29 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         return BackPressResult.FAILURE;
     }
 
+    @Nullable
+    @Override
+    public Boolean handleEscPress() {
+        if (Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
+                && assumeNonNull(getFocusedPane()).handleBackPress() == BackPressResult.SUCCESS) {
+            return Boolean.TRUE;
+        }
+
+        Tab tab = mCurrentTabSupplier.get();
+        if (tab != null) {
+            mHubLayoutController.selectTabAndHideHubLayout(tab.getId());
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    @Override
+    public boolean invokeBackActionOnEscape() {
+        // We want a slightly different flow for Escape presses. Escape will close dialogs, and
+        // close the Hub, but will not navigate back in Hub pane history like Back presses.
+        return false;
+    }
+
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressSupplier;
