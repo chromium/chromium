@@ -762,8 +762,14 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   }
 }
 
+// TODO(crbug.com/394710875): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NoLinkCapturePopupNavigation DISABLED_NoLinkCapturePopupNavigation
+#else
+#define MAYBE_NoLinkCapturePopupNavigation NoLinkCapturePopupNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
-                       NoLinkCapturePopupNavigation) {
+                       MAYBE_NoLinkCapturePopupNavigation) {
   const auto [app_id, in_scope, _, scope] =
       InstallTestApp("/web_apps/basic.html");
 
