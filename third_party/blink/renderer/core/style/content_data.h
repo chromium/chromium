@@ -45,6 +45,7 @@ class ContentData : public GarbageCollected<ContentData> {
   virtual ~ContentData() = default;
 
   virtual bool IsCounter() const { return false; }
+  virtual bool IsAltCounter() const { return false; }
   virtual bool IsImage() const { return false; }
   virtual bool IsQuote() const { return false; }
   virtual bool IsText() const { return false; }
@@ -256,7 +257,9 @@ struct CounterData {
   Member<const TreeScope> tree_scope;
 };
 
-class CounterContentData final : public ContentData {
+class CounterContentData : public ContentData {
+  friend class ContentData;
+
  public:
   CounterContentData(const AtomicString& identifier,
                      const AtomicString& style,
@@ -284,6 +287,7 @@ class CounterContentData final : public ContentData {
     return MakeGarbageCollected<CounterContentData>(counter_data_);
   }
 
+ protected:
   bool Equals(const ContentData& data) const override {
     if (!data.IsCounter()) {
       return false;
@@ -303,6 +307,44 @@ template <>
 struct DowncastTraits<CounterContentData> {
   static bool AllowFrom(const ContentData& content) {
     return content.IsCounter();
+  }
+};
+
+class AltCounterContentData : public CounterContentData {
+  using CounterContentData::CounterContentData;
+
+ public:
+  bool IsAltCounter() const override { return true; }
+
+  const String& GetText() const { return counter_value_text_; }
+  void SetText(const String& text) { counter_value_text_ = text; }
+
+  String DebugString() const override { return "<alt-counter>"; }
+
+ private:
+  ContentData* CloneInternal() const override {
+    auto* data = MakeGarbageCollected<AltCounterContentData>(counter_data_);
+    data->SetText(GetText());
+    return data;
+  }
+
+  bool Equals(const ContentData& data) const override {
+    if (!data.IsAltCounter()) {
+      return false;
+    }
+    const AltCounterContentData& other =
+        static_cast<const AltCounterContentData&>(data);
+    return CounterContentData::Equals(other) && GetText() == other.GetText();
+  }
+
+  // Text value of counter() or counters() to be used in ax object.
+  String counter_value_text_;
+};
+
+template <>
+struct DowncastTraits<AltCounterContentData> {
+  static bool AllowFrom(const ContentData& content) {
+    return content.IsAltCounter();
   }
 };
 

@@ -2996,27 +2996,33 @@ const CSSValue* ParseContentValue(CSSParserTokenStream& stream,
   }
   outer_list->Append(*values);
   if (alt_text_present) {
-    CSSValueList* alt_text_values = CSSValueList::CreateSpaceSeparated();
+    CSSValueList* alt_values = CSSValueList::CreateSpaceSeparated();
     do {
       CSSParserSavePoint savepoint(stream);
-      CSSValue* alt_text = nullptr;
+      CSSValue* alt_value = nullptr;
       if (stream.Peek().FunctionId() == CSSValueID::kAttr &&
           !RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
-        alt_text = ConsumeAttr(stream, context);
+        alt_value = ConsumeAttr(stream, context);
+      } else if (RuntimeEnabledFeatures::CSSAltCounterEnabled() &&
+                 stream.Peek().FunctionId() == CSSValueID::kCounter) {
+        alt_value = ConsumeCounterContent(stream, context, false);
+      } else if (RuntimeEnabledFeatures::CSSAltCounterEnabled() &&
+                 stream.Peek().FunctionId() == CSSValueID::kCounters) {
+        alt_value = ConsumeCounterContent(stream, context, true);
       } else {
-        alt_text = css_parsing_utils::ConsumeString(stream);
+        alt_value = css_parsing_utils::ConsumeString(stream);
       }
-      if (!alt_text) {
+      if (!alt_value) {
         break;
       }
-      alt_text_values->Append(*alt_text);
+      alt_values->Append(*alt_value);
       savepoint.Release();
     } while (!stream.AtEnd());
-    if (!alt_text_values->length()) {
+    if (!alt_values->length()) {
       return nullptr;
     }
 
-    outer_list->Append(*alt_text_values);
+    outer_list->Append(*alt_values);
   }
   return outer_list;
 }
@@ -3174,8 +3180,18 @@ void Content::ApplyValue(StyleResolverState& state,
   if (outer_list.length() > 1) {
     CHECK_EQ(outer_list.length(), 2U);
     for (auto& item : To<CSSValueList>(outer_list.Item(1))) {
-      auto* alt_content = MakeGarbageCollected<AltTextContentData>(
-          GetStringFromAttributeOrStringValue(*item, state, builder));
+      ContentData* alt_content = nullptr;
+      if (const auto* counter_value =
+              DynamicTo<cssvalue::CSSCounterValue>(item.Get())) {
+        alt_content = MakeGarbageCollected<AltCounterContentData>(
+            AtomicString(counter_value->Identifier()),
+            counter_value->ListStyle(),
+            AtomicString(counter_value->Separator()),
+            counter_value->GetTreeScope());
+      } else {
+        alt_content = MakeGarbageCollected<AltTextContentData>(
+            GetStringFromAttributeOrStringValue(*item, state, builder));
+      }
       prev_content->SetNext(alt_content);
       prev_content = alt_content;
     }

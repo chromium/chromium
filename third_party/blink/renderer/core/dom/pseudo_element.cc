@@ -493,7 +493,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   DCHECK(!style.ContentPreventsBoxGeneration());
   for (const ContentData* content = style.GetContentData(); content;
        content = content->Next()) {
-    if (!content->IsAltText()) {
+    if (!content->IsAltText() && !content->IsAltCounter()) {
       LayoutObject* child = content->CreateLayoutObject(*layout_object);
       if (layout_object->IsChildAllowed(child, style)) {
         layout_object->AddChild(child);

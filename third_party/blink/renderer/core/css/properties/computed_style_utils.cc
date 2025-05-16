@@ -3208,6 +3208,21 @@ CSSValueID ValueForQuoteType(const QuoteType quote_type) {
   NOTREACHED();
 }
 
+namespace {
+
+CSSValue* CounterValueFromCounterData(const ContentData& content_data) {
+  const auto& counter = To<CounterContentData>(content_data);
+  auto* identifier =
+      MakeGarbageCollected<CSSCustomIdentValue>(counter.Identifier());
+  auto* separator = MakeGarbageCollected<CSSStringValue>(counter.Separator());
+  auto* list_style =
+      MakeGarbageCollected<CSSCustomIdentValue>(counter.ListStyle());
+  return MakeGarbageCollected<cssvalue::CSSCounterValue>(identifier, list_style,
+                                                         separator);
+}
+
+}  // namespace
+
 CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
                                                   bool allow_visited_style,
                                                   CSSValuePhase value_phase) {
@@ -3220,22 +3235,15 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
 
   CSSValueList* outer_list = CSSValueList::CreateSlashSeparated();
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-
   // Alternative text optionally specified after a forward slash appearing after
   // the last content list item.
-  CSSStringValue* alt_text = nullptr;
+  CSSValueList* alt_list = CSSValueList::CreateSpaceSeparated();
   for (const ContentData* content_data = style.GetContentData(); content_data;
        content_data = content_data->Next()) {
-    if (content_data->IsCounter()) {
-      const CounterContentData& counter = To<CounterContentData>(*content_data);
-      auto* identifier =
-          MakeGarbageCollected<CSSCustomIdentValue>(counter.Identifier());
-      auto* separator =
-          MakeGarbageCollected<CSSStringValue>(counter.Separator());
-      auto* list_style =
-          MakeGarbageCollected<CSSCustomIdentValue>(counter.ListStyle());
-      list->Append(*MakeGarbageCollected<cssvalue::CSSCounterValue>(
-          identifier, list_style, separator));
+    if (content_data->IsAltCounter()) {
+      alt_list->Append(*CounterValueFromCounterData(*content_data));
+    } else if (content_data->IsCounter()) {
+      list->Append(*CounterValueFromCounterData(*content_data));
     } else if (content_data->IsImage()) {
       const StyleImage* image = To<ImageContentData>(content_data)->GetImage();
       DCHECK(image);
@@ -3248,9 +3256,8 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
       const QuoteType quote_type = To<QuoteContentData>(content_data)->Quote();
       list->Append(*CSSIdentifierValue::Create(ValueForQuoteType(quote_type)));
     } else if (content_data->IsAltText()) {
-      alt_text = MakeGarbageCollected<CSSStringValue>(
-          To<AltTextContentData>(content_data)->ConcatenateAltText());
-      break;
+      alt_list->Append(*MakeGarbageCollected<CSSStringValue>(
+          To<AltTextContentData>(content_data)->GetText()));
     } else {
       NOTREACHED();
     }
@@ -3258,8 +3265,8 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
   DCHECK(list->length());
 
   outer_list->Append(*list);
-  if (alt_text) {
-    outer_list->Append(*alt_text);
+  if (alt_list->length()) {
+    outer_list->Append(*alt_list);
   }
   return outer_list;
 }

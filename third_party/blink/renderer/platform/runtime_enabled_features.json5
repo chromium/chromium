@@ -1123,6 +1123,11 @@
       status: "stable",
     },
     {
+      // Allows using counter() and counters() in alt text (after / in content property).
+      name: "CSSAltCounter",
+      status: "experimental",
+    },
+    {
       // Remember the scroll offset of the default anchor when initially
       // displaying an anchor-positioned element, and when it switches position
       // options (`position-try-fallbacks`), also known as an anchor
