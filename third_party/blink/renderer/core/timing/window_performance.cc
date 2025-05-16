@@ -784,17 +784,28 @@ void WindowPerformance::OnPresentationPromiseResolved(
     return;
   }
 
-  uint64_t actual_frame_source_id = presentation_details.frame_id.source_id;
-
   // We assume the presentation is for the expected source unless it's proven to
   // be wrong.
+  uint64_t actual_frame_source_id = presentation_details.frame_id.source_id;
   bool is_presentation_for_expected_source =
       !expected_frame_source_id || !actual_frame_source_id ||
       expected_frame_source_id == actual_frame_source_id;
 
   for (auto entry : event_timing_entries_) {
-    if (entry->GetEventTimingReportingInfo()->presentation_index ==
-        presentation_index) {
+    auto* timing = entry->GetEventTimingReportingInfo();
+    if (timing->presentation_index == presentation_index) {
+      timing->presentation_time =
+          presentation_details.presentation_feedback.timestamp;
+
+      if (!is_presentation_for_expected_source) {
+        if (base::FeatureList::IsEnabled(
+                features::
+                    kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource)) {
+          CHECK(!timing->commit_finish_time.is_null());
+          entry->UpdateFallbackTime(timing->commit_finish_time);
+        }
+      }
+
       // If page visibility was changed, add a fallback_time to the entry's
       // processingEnd. Because we already flush events in
       // `ReportAllPendingEventTimingsOnPageHidden`, this should only happen if
@@ -806,27 +817,19 @@ void WindowPerformance::OnPresentationPromiseResolved(
       // event timing registration time.  If the page is currently hidden (or
       // was made hidden after the event was created/enqueued), then just skip
       // asking for presentation time.
-      bool was_page_visibility_changed =
-          last_hidden_timestamp_ >
-              entry->GetEventTimingReportingInfo()->creation_time &&
-          last_hidden_timestamp_ <
-              entry->GetEventTimingReportingInfo()->presentation_time;
-
-      if ((base::FeatureList::IsEnabled(
-               features::
-                   kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource) &&
-           !is_presentation_for_expected_source) ||
-          was_page_visibility_changed) {
-        entry->UpdateFallbackTime(
-            entry->GetEventTimingReportingInfo()->processing_end_time);
-      } else {
-        entry->GetEventTimingReportingInfo()->presentation_time =
-            presentation_details.presentation_feedback.timestamp;
+      if (last_hidden_timestamp_ > timing->creation_time &&
+          last_hidden_timestamp_ < timing->presentation_time) {
+        if (!timing->commit_finish_time.is_null() &&
+            last_hidden_timestamp_ > timing->commit_finish_time) {
+          entry->UpdateFallbackTime(timing->commit_finish_time);
+        } else {
+          entry->UpdateFallbackTime(timing->processing_end_time);
+        }
       }
 
-      // A javascript synchronous modal dialog might show before the event frame
-      // got presented.  If so, we use a fallback time to the dialog showing
-      // time.
+      // A javascript synchronous modal dialog might show before the event
+      // frame got presented.  If so, we use a fallback time to the dialog
+      // showing time.
       // TODO(crbug.com/378647854): Simplify the way we measure dialogs:
       // - Replace the list of dialogs with a single timestamp
       // - When we see the first dialog per animation frame, resolve all
@@ -836,13 +839,11 @@ void WindowPerformance::OnPresentationPromiseResolved(
       // - We also don't need to fallback to dialog time after Paint is
       //    committed, since paint will show at that point.
       while (!show_modal_dialog_timestamps_.empty() &&
-             show_modal_dialog_timestamps_.front() <
-                 entry->GetEventTimingReportingInfo()->creation_time) {
+             show_modal_dialog_timestamps_.front() < timing->creation_time) {
         show_modal_dialog_timestamps_.pop_front();
       }
       if (!show_modal_dialog_timestamps_.empty() &&
-          show_modal_dialog_timestamps_.front() <
-              entry->GetEventTimingReportingInfo()->presentation_time) {
+          show_modal_dialog_timestamps_.front() < timing->presentation_time) {
         entry->UpdateFallbackTime(show_modal_dialog_timestamps_.front());
       }
     }
@@ -1114,6 +1115,8 @@ void WindowPerformance::ReportEvent(
   CHECK(!processing_start.is_null());
   CHECK(!processing_end.is_null());
   CHECK(!event_end_time.is_null());
+  CHECK(timings->fallback_time.is_null() ||
+        timings->fallback_time == event_end_time);
 
   // Round to 8ms.
   int rounded_duration =
