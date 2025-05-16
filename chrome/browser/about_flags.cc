@@ -12396,6 +12396,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kTabletTabStripAnimation)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"enable-secure-payment-confirmation-ux-refresh",
+     flag_descriptions::kSecurePaymentConfirmationUxRefreshName,
+     flag_descriptions::kSecurePaymentConfirmationUxRefreshDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kSecurePaymentConfirmationUxRefresh)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

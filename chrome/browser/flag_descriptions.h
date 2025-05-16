@@ -2127,6 +2127,9 @@ extern const char kSecurePaymentConfirmationFallbackDescription[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsName[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[];
 
+extern const char kSecurePaymentConfirmationUxRefreshName[];
+extern const char kSecurePaymentConfirmationUxRefreshDescription[];
+
 extern const char kSegmentationSurveyPageName[];
 extern const char kSegmentationSurveyPageDescription[];
 

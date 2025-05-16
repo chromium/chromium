@@ -4084,6 +4084,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-secure-payment-confirmation-ux-refresh",
+    "owners": ["darwinyang@chromium.org", "chrome-payments-eng@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-segmentation-internals-survey",
     "owners": ["ssid@chromium.org", "chrome-segmentation-team@google.com" ],
     "expiry_milestone": 132

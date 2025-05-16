@@ -3713,6 +3713,13 @@ const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[] =
     "Allow the passing in and display of card network and issuer icons for the "
     "Secure Payment Confirmation Web API.";
 
+const char kSecurePaymentConfirmationUxRefreshName[] =
+    "Secure Payment Confirmation UX Refresh";
+const char kSecurePaymentConfirmationUxRefreshDescription[] =
+    "This flag enables new UX in the secure payment confirmation dialog "
+    "including new output states, payment instrument details and payment "
+    "entities logos.";
+
 const char kSegmentationSurveyPageName[] =
     "Segmentation survey internals page and model";
 const char kSegmentationSurveyPageDescription[] =

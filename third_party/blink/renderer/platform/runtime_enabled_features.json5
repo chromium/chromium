@@ -4231,6 +4231,12 @@
       base_feature: "none",
     },
     {
+      // Implements new UX for SPC including new output states, payment
+      // instrument details and payment entities logos.
+      name: "SecurePaymentConfirmationUxRefresh",
+      status: "test",
+    },
+    {
       // Implements improved accessibility mappings for having an <input>
       // inside of a <select> by keeping the child <input> in the a11y tree at
       // the same place that its at in the DOM tree, but automatically setting
