@@ -1244,6 +1244,11 @@ template("libwebviewchromium_tmpl") {
     # so there are some Chrome-only native dependencies that sneak into WebView.
     # To fix, we can just remove any uncalled Java->Native methods.
     remove_uncalled_jni = true
+
+    if (!(defined(testonly) && testonly)) {
+      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+      configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+    }
   }
 }
 
