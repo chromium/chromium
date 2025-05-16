@@ -51,6 +51,9 @@ class WebState;
 // Refreshes the contents owned by this coordinator.
 - (void)refresh;
 
+// Stops child coordinators presenting UI.
+- (void)clearPresentedState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_COORDINATOR_H_

@@ -578,6 +578,7 @@
 }
 
 - (void)clearPresentedState {
+  [self.contentSuggestionsCoordinator clearPresentedState];
   [self stopSharingCoordinator];
   [self stopAccountMenuCoordinator];
   [self stopSigninCoordinator];

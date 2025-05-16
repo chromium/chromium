@@ -565,10 +565,7 @@ using segmentation_platform::TipIdentifier;
   self.contentSuggestionsMetricsRecorder = nil;
   self.contentSuggestionsViewController.audience = nil;
   self.contentSuggestionsViewController = nil;
-  [_defaultBrowserPromoCoordinator stop];
-  _defaultBrowserPromoCoordinator = nil;
-  [_notificationsOptInAlertCoordinator stop];
-  _notificationsOptInAlertCoordinator = nil;
+  [self clearPresentedState];
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(ContentSuggestionsCommands)];
   _started = NO;
@@ -576,6 +573,13 @@ using segmentation_platform::TipIdentifier;
 
 - (ContentSuggestionsViewController*)viewController {
   return self.contentSuggestionsViewController;
+}
+
+- (void)clearPresentedState {
+  [_defaultBrowserPromoCoordinator stop];
+  _defaultBrowserPromoCoordinator = nil;
+  [_notificationsOptInAlertCoordinator stop];
+  _notificationsOptInAlertCoordinator = nil;
 }
 
 #pragma mark - Public methods
