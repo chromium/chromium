@@ -33,6 +33,11 @@ import("//build/rust/rust_static_library.gni")
 #  library_configs/executable_configs
 #    All just as in rust_target.gni
 #
+#  enabled (optional)
+#    A boolean that controls whether the main target will be defined at all.
+#    Can be used to avoid compiling some platform-specific crates on other
+#    platforms.
+#
 #  epoch (optional)
 #    The major version of the library, which is used to differentiate between
 #    multiple versions of the same library name. This includes all leading 0s
@@ -109,6 +114,11 @@ template("cargo_crate") {
     _rustc_metadata = invoker.rustc_metadata
   } else if (defined(invoker.epoch)) {
     _rustc_metadata = "${_crate_name}-${invoker.epoch}"
+  }
+
+  _enabled = true
+  if (defined(invoker.enabled)) {
+    _enabled = invoker.enabled
   }
 
   _epochlabel = "vunknown"
@@ -226,152 +236,163 @@ template("cargo_crate") {
   }
 
   # The main target, either a Rust source set or an executable.
-  target(_target_type, target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           TESTONLY_AND_VISIBILITY + [
-                                 "build_root",
-                                 "build_deps",
-                                 "build_sources",
-                                 "build_script_inputs",
-                                 "build_script_outputs",
-                                 "epoch",
-                                 "unit_test_target",
-                                 "configs",
-                                 "executable_configs",
-                                 "library_configs",
-                                 "proc_macro_configs",
-                                 "rustenv",
-                                 "dev_deps",
-                                 "native_libs_dir",
-                               ])
+  if (_enabled) {
+    target(_target_type, target_name) {
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [
+                                   "build_root",
+                                   "build_deps",
+                                   "build_sources",
+                                   "build_script_inputs",
+                                   "build_script_outputs",
+                                   "epoch",
+                                   "unit_test_target",
+                                   "configs",
+                                   "executable_configs",
+                                   "library_configs",
+                                   "proc_macro_configs",
+                                   "rustenv",
+                                   "dev_deps",
+                                   "native_libs_dir",
+                                 ])
 
-    testonly = _testonly
-    if (defined(invoker.visibility)) {
-      visibility = invoker.visibility
-    }
-    crate_name = _crate_name
-
-    if (defined(_output_name)) {
-      output_name = _output_name
-    }
-
-    # Don't import the `chromium` crate into third-party code.
-    no_chromium_prelude = true
-
-    # Depend by default on the `//build/rust/allocator` library, but avoid this
-    # dependency in `no_std` mode.  This is desirable for two reasons:
-    # 1. It gives users of `cargo_crate` an indirect way to control presence of
-    #    this dependency.
-    # 2. More importantly, it avoid cyclic dependencies like the one below:
-    #       //build/rust/allocator:allocator ->
-    #       ...
-    #       //build/rust/std:std ->
-    #       //build/rust/std/rules:addr2line (or another stdlib crate) ->
-    #       //build/rust/allocator:allocator
-    no_allocator_crate = false
-    if (defined(invoker.no_std) && invoker.no_std) {
-      no_allocator_crate = true
-    }
-
-    rustc_metadata = _rustc_metadata
-
-    # TODO(crbug.com/40259764): don't default to true. This requires changes to
-    # third_party.toml and gnrt when generating third-party build targets.
-    allow_unsafe = true
-
-    configs = []
-    configs = _configs
-    if (_crate_type == "rlib") {
-      # Forward configs for unit tests.
-      executable_configs = invoker.executable_configs
-    }
-
-    if (!defined(rustflags)) {
-      rustflags = []
-    }
-    rustenv = _rustenv
-
-    if (!defined(build_native_rust_unit_tests)) {
-      build_native_rust_unit_tests = _crate_type != "proc-macro"
-    }
-    if (build_native_rust_unit_tests) {
-      # Unit tests in a proc-macro crate type don't make sense, you can't
-      # compile executables against the `proc_macro` crate.
-      assert(_crate_type != "proc-macro")
-    }
-
-    # The unit tests for each target, if generated, should be unique as well.
-    # a) It needs to be unique even if multiple build targets have the same
-    #    `crate_name`, but different target names.
-    # b) It needs to be unique even if multiple build targets have the same
-    #    `crate_name` and target name, but different epochs.
-    _unit_test_unique_target_name = ""
-    if (_crate_name != _orig_target_name) {
-      _unit_test_unique_target_name = "${_orig_target_name}_"
-    }
-    _unit_test_unique_epoch = ""
-    if (defined(invoker.epoch)) {
-      _epoch_str = string_replace(invoker.epoch, ".", "_")
-      _unit_test_unique_epoch = "v${_epoch_str}_"
-    }
-    if (defined(output_dir) && output_dir != "") {
-      unit_test_output_dir = output_dir
-    }
-    unit_test_target = "${_unit_test_unique_target_name}${_crate_name}_${_unit_test_unique_epoch}unittests"
-
-    if ((!defined(output_dir) || output_dir == "") && _crate_type == "rlib") {
-      # Cargo crate rlibs can be compiled differently for tests, and must not
-      # collide with the production outputs. This does *not* override the
-      # unit_test_output_dir, which is set above, as that target is not an rlib.
-      output_dir = "$target_out_dir/$_orig_target_name"
-    }
-
-    if (defined(invoker.dev_deps)) {
-      test_deps = invoker.dev_deps
-    }
-
-    if (defined(invoker.build_root)) {
-      # Uh-oh, we have a build script
-      if (!defined(deps)) {
-        deps = []
+      testonly = _testonly
+      if (defined(invoker.visibility)) {
+        visibility = invoker.visibility
       }
-      if (!defined(sources)) {
-        sources = []
-      }
-      if (!defined(inputs)) {
-        inputs = []
+      crate_name = _crate_name
+
+      if (defined(_output_name)) {
+        output_name = _output_name
       }
 
-      # This... is a bit weird. We generate a file called cargo_flags.rs which
-      # does not actually contain Rust code, but instead some flags to add
-      # to the rustc command line. We need it to end in a .rs extension so that
-      # we can include it in the 'sources' line and thus have dependency
-      # calculation done correctly. data_deps won't work because targets don't
-      # require them to be present until runtime.
-      flags_file = "$_build_script_env_out_dir/cargo_flags.rs"
-      rustflags += [ "@" + rebase_path(flags_file, root_build_dir) ]
-      sources += [ flags_file ]
-      if (defined(invoker.build_script_outputs)) {
-        # Build scripts may output arbitrary files. They are usually included in
-        # the main Rust target using include! or include_str! and therefore the
-        # filename may be .rs or may be arbitrary. We want to educate ninja
-        # about the dependency either way.
-        foreach(extra_source,
-                filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
-          sources += [ "$_build_script_env_out_dir/$extra_source" ]
+      # Don't import the `chromium` crate into third-party code.
+      no_chromium_prelude = true
+
+      # Depend by default on the `//build/rust/allocator` library, but avoid this
+      # dependency in `no_std` mode.  This is desirable for two reasons:
+      # 1. It gives users of `cargo_crate` an indirect way to control presence of
+      #    this dependency.
+      # 2. More importantly, it avoid cyclic dependencies like the one below:
+      #       //build/rust/allocator:allocator ->
+      #       ...
+      #       //build/rust/std:std ->
+      #       //build/rust/std/rules:addr2line (or another stdlib crate) ->
+      #       //build/rust/allocator:allocator
+      no_allocator_crate = false
+      if (defined(invoker.no_std) && invoker.no_std) {
+        no_allocator_crate = true
+      }
+
+      rustc_metadata = _rustc_metadata
+
+      # TODO(crbug.com/40259764): don't default to true. This requires changes to
+      # third_party.toml and gnrt when generating third-party build targets.
+      allow_unsafe = true
+
+      configs = []
+      configs = _configs
+      if (_crate_type == "rlib") {
+        # Forward configs for unit tests.
+        executable_configs = invoker.executable_configs
+      }
+
+      if (!defined(rustflags)) {
+        rustflags = []
+      }
+      rustenv = _rustenv
+
+      if (!defined(build_native_rust_unit_tests)) {
+        build_native_rust_unit_tests = _crate_type != "proc-macro"
+      }
+      if (build_native_rust_unit_tests) {
+        # Unit tests in a proc-macro crate type don't make sense, you can't
+        # compile executables against the `proc_macro` crate.
+        assert(_crate_type != "proc-macro")
+      }
+
+      # The unit tests for each target, if generated, should be unique as well.
+      # a) It needs to be unique even if multiple build targets have the same
+      #    `crate_name`, but different target names.
+      # b) It needs to be unique even if multiple build targets have the same
+      #    `crate_name` and target name, but different epochs.
+      _unit_test_unique_target_name = ""
+      if (_crate_name != _orig_target_name) {
+        _unit_test_unique_target_name = "${_orig_target_name}_"
+      }
+      _unit_test_unique_epoch = ""
+      if (defined(invoker.epoch)) {
+        _epoch_str = string_replace(invoker.epoch, ".", "_")
+        _unit_test_unique_epoch = "v${_epoch_str}_"
+      }
+      if (defined(output_dir) && output_dir != "") {
+        unit_test_output_dir = output_dir
+      }
+      unit_test_target = "${_unit_test_unique_target_name}${_crate_name}_${_unit_test_unique_epoch}unittests"
+
+      if ((!defined(output_dir) || output_dir == "") && _crate_type == "rlib") {
+        # Cargo crate rlibs can be compiled differently for tests, and must not
+        # collide with the production outputs. This does *not* override the
+        # unit_test_output_dir, which is set above, as that target is not an rlib.
+        output_dir = "$target_out_dir/$_orig_target_name"
+      }
+
+      if (defined(invoker.dev_deps)) {
+        test_deps = invoker.dev_deps
+      }
+
+      if (defined(invoker.build_root)) {
+        # Uh-oh, we have a build script
+        if (!defined(deps)) {
+          deps = []
         }
-        foreach(extra_source,
-                filter_exclude(invoker.build_script_outputs, [ "*.rs" ])) {
-          inputs += [ "$_build_script_env_out_dir/$extra_source" ]
+        if (!defined(sources)) {
+          sources = []
+        }
+        if (!defined(inputs)) {
+          inputs = []
+        }
+
+        # This... is a bit weird. We generate a file called cargo_flags.rs which
+        # does not actually contain Rust code, but instead some flags to add
+        # to the rustc command line. We need it to end in a .rs extension so that
+        # we can include it in the 'sources' line and thus have dependency
+        # calculation done correctly. data_deps won't work because targets don't
+        # require them to be present until runtime.
+        flags_file = "$_build_script_env_out_dir/cargo_flags.rs"
+        rustflags += [ "@" + rebase_path(flags_file, root_build_dir) ]
+        sources += [ flags_file ]
+        if (defined(invoker.build_script_outputs)) {
+          # Build scripts may output arbitrary files. They are usually included in
+          # the main Rust target using include! or include_str! and therefore the
+          # filename may be .rs or may be arbitrary. We want to educate ninja
+          # about the dependency either way.
+          foreach(extra_source,
+                  filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
+            sources += [ "$_build_script_env_out_dir/$extra_source" ]
+          }
+          foreach(extra_source,
+                  filter_exclude(invoker.build_script_outputs, [ "*.rs" ])) {
+            inputs += [ "$_build_script_env_out_dir/$extra_source" ]
+          }
+        }
+        deps += [ ":${_build_script_name}_output" ]
+        if (defined(_native_libs_action)) {
+          deps += [ ":${_native_libs_action}" ]
+          configs += [ ":${_native_libs_config}" ]
         }
       }
-      deps += [ ":${_build_script_name}_output" ]
-      if (defined(_native_libs_action)) {
-        deps += [ ":${_native_libs_action}" ]
-        configs += [ ":${_native_libs_config}" ]
-      }
     }
+  } else {
+    not_needed(invoker, "*", [
+                                   "build_root",
+                                   "build_deps",
+                                   "build_sources",
+                                   "build_script_inputs",
+                                   "build_script_outputs",
+               ])
+    not_needed("*")
   }
 
   if (defined(invoker.build_root)) {

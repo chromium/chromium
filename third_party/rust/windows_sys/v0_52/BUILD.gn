@@ -11,6 +11,7 @@ import("//build/rust/cargo_crate.gni")
 cargo_crate("lib") {
   crate_name = "windows_sys"
   epoch = "0.52"
+  enabled = is_win
   crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/lib.rs"
   sources = [

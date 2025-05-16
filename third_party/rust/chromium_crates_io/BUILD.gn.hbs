@@ -17,6 +17,9 @@ cargo_crate("{{this.name}}") {
   {{#if epoch}}
   epoch = "{{epoch}}"
   {{/if}}
+  {{#if cond}}
+  enabled = {{cond}}
+  {{/if}}
   crate_type = "{{crate_type}}"
   crate_root = "{{crate_root}}"
   sources = [

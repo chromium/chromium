@@ -11,6 +11,7 @@ import("//build/rust/cargo_crate.gni")
 cargo_crate("lib") {
   crate_name = "windows_interface"
   epoch = "0.59"
+  enabled = is_win
   crate_type = "proc-macro"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/windows-interface-v0_59/src/lib.rs"
   sources = [ "//third_party/rust/chromium_crates_io/vendor/windows-interface-v0_59/src/lib.rs" ]
