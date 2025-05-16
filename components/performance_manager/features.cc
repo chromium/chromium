@@ -31,32 +31,9 @@ BASE_FEATURE_PARAM(bool,
                    "restore_main_frame_state",
                    true);
 
-BASE_FEATURE(kPerformanceControlsPerformanceSurvey,
-             "PerformanceControlsPerformanceSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPerformanceControlsBatteryPerformanceSurvey,
-             "PerformanceControlsBatteryPerformanceSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The variable was renamed to "MemorySaver" but the experiment name remains as
-// "HighEfficiency" because it is already running (crbug.com/1493843).
-BASE_FEATURE(kPerformanceControlsMemorySaverOptOutSurvey,
-             "PerformanceControlsHighEfficiencyOptOutSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey,
-             "PerformanceControlsBatterySaverOptOutSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPerformanceControlsPPMSurvey,
              "PerformanceControlsPPMSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kPerformanceControlsBatterySurveyLookback{
-        &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
-        base::Days(8)};
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kPerformanceControlsPPMSurveyMinDelay,

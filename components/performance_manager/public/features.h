@@ -53,16 +53,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kBackgroundTabLoadingRestoreMainFrameState);
 BASE_DECLARE_FEATURE(kBatterySaverModeAvailable);
 
 // Flags to control HaTS surveys about Chrome performance.
-BASE_DECLARE_FEATURE(kPerformanceControlsPerformanceSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsBatteryPerformanceSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsMemorySaverOptOutSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey);
 BASE_DECLARE_FEATURE(kPerformanceControlsPPMSurvey);
-
-// Defines the time delta to look back when checking if a device has used
-// battery.
-extern const base::FeatureParam<base::TimeDelta>
-    kPerformanceControlsBatterySurveyLookback;
 
 // Defines the minimum and maximum delay before showing the PPM survey. It will
 // be shown the next time the user opens the New Tab Page after a random time in
