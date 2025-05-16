@@ -801,7 +801,11 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
 
   onRequestReceived(type: string): void {
-    this.reportRequestCountEvent(type, GlicRequestEvent.REQUEST_RECIEVED);
+    this.reportRequestCountEvent(type, GlicRequestEvent.REQUEST_RECEIVED);
+    if (document.visibilityState === 'hidden') {
+      this.reportRequestCountEvent(
+          type, GlicRequestEvent.REQUEST_RECEIVED_WHILE_HIDDEN);
+    }
   }
 
   onRequestHandlerException(type: string): void {
@@ -824,13 +828,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 }
 
-// Must match tools/metrics/histograms/metadata/glic/enums.xml.
+// LINT.IfChange(GlicRequestEvent)
 enum GlicRequestEvent {
-  REQUEST_RECIEVED = 0,
+  REQUEST_RECEIVED = 0,
   RESPONSE_SENT = 1,
   REQUEST_HANDLER_EXCEPTION = 2,
-  MAX_VALUE = REQUEST_HANDLER_EXCEPTION,
+  REQUEST_RECEIVED_WHILE_HIDDEN = 3,
+  MAX_VALUE = REQUEST_RECEIVED_WHILE_HIDDEN,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
 
 // Returns a Promise resolving after 'ms' milliseconds
 function sleep(ms: number) {

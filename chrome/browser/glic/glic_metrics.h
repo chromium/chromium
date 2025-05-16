@@ -126,6 +126,17 @@ enum class AttachChangeReason {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicAttachChangeReason)
 
+// LINT.IfChange(GlicRequestEvent)
+// Events related to requests to the Glic API from the web client.
+enum class GlicRequestEvent {
+  kRequestReceived = 0,
+  kRequestSent = 1,
+  kRequestHandlerException = 2,
+  kRequestReceivedWhileHidden = 3,
+  kMaxValue = kRequestReceivedWhileHidden,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
+
 class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicWindowController;

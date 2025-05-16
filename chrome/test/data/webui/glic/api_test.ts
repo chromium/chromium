@@ -823,6 +823,17 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(url.pathname, '/glic/test.html');
   }
 
+  async testCallingApiWhileHiddenRecordsMetrics() {
+    assertTrue(!!this.host.createTab);
+    await this.advanceToNextStep();
+    await runUntil(() => document.visibilityState === 'hidden');
+    try {
+      await this.host.createTab(
+          'https://www.google.com', {openInBackground: false});
+    } catch {
+    }
+  }
+
   private async assertCreateTabWithUnsupportedSchemeFails(url: string) {
     assertTrue(!!this.host.createTab);
     try {
@@ -1210,7 +1221,8 @@ async function waitFor<T>(value: Promise<T>, timeoutMs?: number): Promise<T> {
 // timeout is reached first. Otherwise, this returns the value returned by
 // condition.
 async function runUntil<T>(
-    condition: () => Promise<T>, timeoutMs?: number): Promise<NonNullable<T>> {
+    condition: () => T | PromiseLike<T>,
+    timeoutMs?: number): Promise<NonNullable<T>> {
   timeoutMs = getTimeout(timeoutMs);
   const sleepMs = getTimeout(timeoutMs) / 20;
   const timeout = performance.now() + timeoutMs;

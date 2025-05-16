@@ -33,6 +33,7 @@
 #include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/host.h"
@@ -1305,6 +1306,23 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value(1)});
 #endif
+}
+
+
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  ExecuteJsTest();
+  window_controller().Close();
+
+  base::HistogramTester histogram_tester;
+  ContinueJsTest();
+  histogram_tester.ExpectBucketCount("Glic.Api.RequestCounts.CreateTab",
+                                     GlicRequestEvent::kRequestReceived, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.RequestCounts.CreateTab",
+      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
 }
 
 }  // namespace

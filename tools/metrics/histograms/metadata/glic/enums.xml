@@ -174,11 +174,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:Error) -->
 
+<!-- LINT.IfChange(GlicRequestEvent) -->
+
 <enum name="GlicRequestEvent">
   <int value="0" label="Request received."/>
   <int value="1" label="Response sent."/>
   <int value="2" label="Request handling exception caught."/>
+  <int value="3"
+      label="Request received while hidden (whether or not this is expected)."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/glic_api_host.ts:GlicRequestEvent, //chrome/browser/glic/glic_metrics.h:GlicRequestEvent) -->
 
 <!-- LINT.IfChange(GlicResponseSegmentation) -->
 
