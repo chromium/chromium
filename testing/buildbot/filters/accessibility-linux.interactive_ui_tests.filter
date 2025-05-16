@@ -1,28 +1,16 @@
-# These tests still need to be triaged and either okayed to skip or fixed.
--BookmarksFocusTest.DNDManager
+# These tests require that accessibility is disabled at startup, or that there
+# is some other AXMode during the test, which will not be the case when
+# --force-renderer-accessibility is used.
 -CaptionBubbleControllerViewsTest.AccessibleTextIsSometimesFocusable
--CookieControlsInteractiveUiTest.*
--ExtensionsToolbarContainerUITest.ClickingOnASecondActionClosesTheFirst
--FeaturePromoDialogWebUITabStripTest.InvokeUi_IPH_WebUITabStrip
--HighEfficiencyChipInteractiveTest.*
--HighEfficiencyMemorySavingsReportingImprovementsTest.RenderVisualizationInDialog
--IbanBubbleViewFullFormBrowserTest.*
--FreeListingCoupon/OfferNotificationBubbleViewsInteractiveUiTest.*
--FreeListingCoupon/OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest.*
--GPayCardLinked/OfferNotificationBubbleViewsInteractiveUiTest.*
--GPayPromoCode/OfferNotificationBubbleViewsInteractiveUiTest.*
--MigrateToProfileAddressProfileTest.SaveWithEdit
--OfferNotificationIconViewInteractiveTest.IconAutoCollapse
--OfferNotificationIconViewInteractiveTest.IconCollapseAfterBubbleWidgetIsClosed
--OfferNotificationIconViewInteractiveTest.StopCollapseTimerAfterClickingIcon
--PermissionChipKombuchaTest.PermissionChipClickTest
--PopupBlockerBrowserTest.*
--PopupBlockerFencedFrameTest.BlockPopupThroughContentSettingFencedFrame
--SaveAddressProfileTest.SaveWithEdit
--TabResourceUsageTabHelperTest.MemoryUsageUpdatesAfterNavigation
--UpdateAccountAddressProfileTest.UpdateThroughEdit
--UpdateAddressProfileTest.UpdateThroughEdit
--WebUITabStripInteractiveTest.*
 
 # This test crashes due to DCHECK failed: ax_tree_id != AXTreeIDUnknown()
 -AutofillInteractiveTest/AutofillInteractiveFencedFrameTest.DeletingFrameClosesPopup/1
+
+# This test times out, but only if accessibility is enabled.
+-FeaturePromoDialogWebUITabStripTest.InvokeUi_IPH_WebUITabStrip
+
+# These tests fail because WebUITabStripContainerView is nullptr,
+# but only if accessibility is enabled.
+-WebUITabStripInteractiveTest.CanTypeInOmniboxAfterTabStripClose
+-WebUITabStripInteractiveTest.EventInContainerDoesNotClose
+-WebUITabStripInteractiveTest.EventInTabContentClosesContainer
