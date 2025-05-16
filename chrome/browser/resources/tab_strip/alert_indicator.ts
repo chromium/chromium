@@ -34,6 +34,7 @@ function getAriaLabel(alertState: TabAlertState): string {
     case TabAlertState.kAudioMuting:
       return loadTimeData.getStringF('audioMuting', '');
     case TabAlertState.kBluetoothConnected:
+    case TabAlertState.kBluetoothScanActive:
       return loadTimeData.getStringF('bluetoothConnected', '');
     case TabAlertState.kUsbConnected:
       return loadTimeData.getStringF('usbConnected', '');
@@ -60,6 +61,7 @@ const ALERT_STATE_MAP: Map<TabAlertState, string> = new Map([
   [TabAlertState.kAudioPlaying, 'audio-playing'],
   [TabAlertState.kAudioMuting, 'audio-muting'],
   [TabAlertState.kBluetoothConnected, 'bluetooth-connected'],
+  [TabAlertState.kBluetoothScanActive, 'bluetooth-connected'],
   [TabAlertState.kUsbConnected, 'usb-connected'],
   [TabAlertState.kHidConnected, 'hid-connected'],
   [TabAlertState.kSerialConnected, 'serial-connected'],

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_enum_traits.h"
+#include "chrome/browser/ui/webui/tabs/tabs_mojom_traits.h"
+
+namespace mojo {
 
 MojoTabNetworkState
-mojo::EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::ToMojom(
+EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::ToMojom(
     NativeTabNetworkState input) {
   switch (input) {
     case NativeTabNetworkState::kNone:
@@ -17,11 +19,10 @@ mojo::EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::ToMojom(
     case NativeTabNetworkState::kError:
       return MojoTabNetworkState::kError;
   }
-
   NOTREACHED();
 }
 
-bool mojo::EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::FromMojom(
+bool EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::FromMojom(
     MojoTabNetworkState in,
     NativeTabNetworkState* out) {
   switch (in) {
@@ -38,12 +39,10 @@ bool mojo::EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::FromMojom(
       *out = NativeTabNetworkState::kError;
       return true;
   }
-
   NOTREACHED();
 }
 
-MojoTabAlertState
-mojo::EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
+MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
     NativeTabAlertState input) {
   switch (input) {
     case NativeTabAlertState::MEDIA_RECORDING:
@@ -77,11 +76,10 @@ mojo::EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
     case NativeTabAlertState::GLIC_ACCESSING:
       return MojoTabAlertState::kGlicAccessing;
   }
-
   NOTREACHED();
 }
 
-bool mojo::EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
+bool EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
     MojoTabAlertState in,
     NativeTabAlertState* out) {
   switch (in) {
@@ -131,6 +129,7 @@ bool mojo::EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
       *out = NativeTabAlertState::GLIC_ACCESSING;
       return true;
   }
-
   NOTREACHED();
 }
+
+}  // namespace mojo

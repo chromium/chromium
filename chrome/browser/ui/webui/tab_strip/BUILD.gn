@@ -13,17 +13,4 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/"
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "tab_strip.mojom.TabNetworkState"
-          cpp = "::TabNetworkState"
-        },
-      ]
-      traits_headers = [ "tab_strip_mojom_traits.h" ]
-      traits_public_deps = [ "//chrome/browser/ui/tabs:tabs_public" ]
-    },
-  ]
 }

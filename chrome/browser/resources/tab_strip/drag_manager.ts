@@ -12,7 +12,7 @@ import {isTabElement} from './tab.js';
 import type {TabGroupElement} from './tab_group.js';
 import {isDragHandle, isTabGroupElement} from './tab_group.js';
 import type {Tab} from './tab_strip.mojom-webui.js';
-import {TabNetworkState} from './tab_strip.mojom-webui.js';
+import {TabNetworkState} from './tabs.mojom-webui.js';
 import type {TabsApiProxy} from './tabs_api_proxy.js';
 import {TabsApiProxyImpl} from './tabs_api_proxy.js';
 

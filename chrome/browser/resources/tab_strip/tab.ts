@@ -14,8 +14,8 @@ import {isRTL} from 'chrome://resources/js/util.js';
 import type {AlertIndicatorsElement} from './alert_indicators.js';
 import {getTemplate} from './tab.html.js';
 import type {Tab} from './tab_strip.mojom-webui.js';
-import {TabNetworkState} from './tab_strip.mojom-webui.js';
 import {TabSwiper} from './tab_swiper.js';
+import {TabNetworkState} from './tabs.mojom-webui.js';
 import type {TabsApiProxy} from './tabs_api_proxy.js';
 import {CloseTabAction, TabsApiProxyImpl} from './tabs_api_proxy.js';
 

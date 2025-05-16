@@ -4,37 +4,9 @@
 
 module tabs_api.mojom;
 
+import "chrome/browser/ui/webui/tabs/tabs.mojom";
 import "mojo/public/mojom/base/error.mojom";
 import "url/mojom/url.mojom";
-
-// In C++, this enum is typemapped to
-// "//chrome/browser/ui/tabs/tab_enums.h"
-enum TabAlertState {
-  kMediaRecording,
-  kTabCapturing,
-  kAudioPlaying,
-  kAudioMuting,
-  kBluetoothConnected,
-  kBluetoothScanActive,
-  kUsbConnected,
-  kHidConnected,
-  kSerialConnected,
-  kPipPlaying,
-  kDesktopCapturing,
-  kVrPresentingInHeadset,
-  kAudioRecording,
-  kVideoRecording,
-  kGlicAccessing,
-};
-
-// In C++, this enum is typemapped to
-// "//chrome/browser/ui/tabs/tab_network_state.h"
-enum TabNetworkState {
-  kNone,
-  kWaiting,
-  kLoading,
-  kError,
-};
 
 // References a tab object. The id can refer to different types of underlying
 // resource. The |type| field can be used to differentiate between the type
@@ -69,8 +41,8 @@ struct Tab {
   // in c++. Leave this as a data uri for now.
   url.mojom.Url favicon_url;
 
-  array<TabAlertState> alert_states;
-  TabNetworkState network_state;
+  array<tabs.mojom.TabAlertState> alert_states;
+  tabs.mojom.TabNetworkState network_state;
 };
 
 // Position is an ephemeral object that should not be saved nor act as an
