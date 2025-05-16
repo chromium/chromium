@@ -72,6 +72,8 @@ import tempfile
 
 PATCHES = [
     'xslt-locale.patch',
+    'new-unified-atype-extra.patch',
+    'fix-tracking-for-generated-IDs-for-most-XML-nodes.patch',
 ]
 
 

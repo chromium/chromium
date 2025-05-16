@@ -1,0 +1,38 @@
+From a9db6317feb0c546f32ba815e85b931d2a1ebf1e Mon Sep 17 00:00:00 2001
+From: Daniel Cheng <dcheng@chromium.org>
+Date: Thu, 15 May 2025 19:49:07 -0700
+Subject: [PATCH 1/2] Widen `extra` field in _xmlNode to an int
+
+This is not ABI-compatible but:
+- neither were the previous patches
+- this makes things a lot easier for a followup fix for generate-id()
+  in libxslt
+
+This patch will not be upstreamed.
+
+Change-Id: If218bbd6156e9dfff87828c3cbdb5a59f5ae09b7
+---
+ third_party/libxml/src/include/libxml/tree.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/third_party/libxml/src/include/libxml/tree.h b/third_party/libxml/src/include/libxml/tree.h
+index 7819d5819b427..2904a4c9d3845 100644
+--- a/third_party/libxml/src/include/libxml/tree.h
++++ b/third_party/libxml/src/include/libxml/tree.h
+@@ -515,7 +515,7 @@ struct _xmlNode {
+     xmlNs           *nsDef;     /* namespace definitions on this node */
+     void            *psvi;	/* for type/PSVI information */
+     unsigned short   line;	/* line number */
+-    unsigned short   extra;	/* extra data for XPath/XSLT */
++    unsigned int     extra;	/* extra data for XPath/XSLT */
+ };
+ 
+ /**
+@@ -1325,4 +1325,3 @@ XMLPUBFUN xmlDeregisterNodeFunc
+ #endif /* __XML_TREE_H__ */
+ 
+ #endif /* XML_TREE_INTERNALS */
+-
+-- 
+2.49.0.1112.g889b7c5bd8-goog
+
