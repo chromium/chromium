@@ -180,8 +180,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSimulateCharacteristicParameters(command.params),
         );
       case 'bluetooth.simulateCharacteristicResponse':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#bluetoothProcessor.simulateCharacteristicResponse(
+          this.#parser.parseSimulateCharacteristicResponseParameters(
+            command.params,
+          ),
         );
       case 'bluetooth.simulateDescriptor':
         return await this.#bluetoothProcessor.simulateDescriptor(

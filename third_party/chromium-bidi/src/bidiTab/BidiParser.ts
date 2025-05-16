@@ -59,6 +59,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Bluetooth.SimulateCharacteristicParameters {
     return Parser.Bluetooth.parseSimulateCharacteristicParams(params);
   }
+  parseSimulateCharacteristicResponseParameters(
+    params: unknown,
+  ): Bluetooth.SimulateCharacteristicResponseParameters {
+    return Parser.Bluetooth.parseSimulateCharacteristicResponseParams(params);
+  }
   parseSimulateDescriptorParameters(
     params: unknown,
   ): Bluetooth.SimulateDescriptorParameters {

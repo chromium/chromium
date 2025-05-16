@@ -191,6 +191,23 @@ async def remove_characteristic(websocket, context_id: str, address: str,
         })
 
 
+async def simulate_descriptor(websocket, context_id: str, address: str,
+                              service_uuid: str, characteristic_uuid: str,
+                              descriptor_uuid: str, type: str) -> None:
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateDescriptor',
+            'params': {
+                'context': context_id,
+                'address': address,
+                'serviceUuid': service_uuid,
+                'characteristicUuid': characteristic_uuid,
+                'descriptorUuid': descriptor_uuid,
+                'type': type
+            }
+        })
+
+
 async def disable_simulation(websocket, context_id: str) -> None:
     """Disables Bluetooth simulation for the given context."""
     await execute_command(

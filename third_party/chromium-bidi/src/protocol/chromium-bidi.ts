@@ -106,6 +106,7 @@ export namespace Bluetooth {
   export enum EventNames {
     RequestDevicePromptUpdated = 'bluetooth.requestDevicePromptUpdated',
     GattConnectionAttempted = 'bluetooth.gattConnectionAttempted',
+    CharacteristicEventGenerated = 'bluetooth.characteristicEventGenerated',
   }
 }
 
@@ -135,7 +136,8 @@ export type CommandResponse =
 
 export type BluetoothEvent =
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptUpdated>
-  | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.GattConnectionAttempted>;
+  | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.GattConnectionAttempted>
+  | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.CharacteristicEventGenerated>;
 export type Event = WebDriverBidi.Event | Cdp.Event | BluetoothEvent;
 
 export const EVENT_NAMES = new Set([

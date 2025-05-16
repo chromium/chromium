@@ -85,6 +85,8 @@ export class BluetoothProcessor {
   #eventManager: EventManager;
   #browsingContextStorage: BrowsingContextStorage;
   #bluetoothDevices: Map<string, BluetoothDevice>;
+  // A map from a characteristic id from CDP to its BluetoothCharacteristic object.
+  #bluetoothCharacteristics: Map<string, BluetoothCharacteristic>;
 
   constructor(
     eventManager: EventManager,
@@ -93,6 +95,7 @@ export class BluetoothProcessor {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#bluetoothDevices = new Map();
+    this.#bluetoothCharacteristics = new Map();
   }
 
   #getDevice(address: string): BluetoothDevice {
@@ -159,6 +162,7 @@ export class BluetoothProcessor {
       'BluetoothEmulation.disable',
     );
     this.#bluetoothDevices.clear();
+    this.#bluetoothCharacteristics.clear();
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.enable',
       {
@@ -177,6 +181,7 @@ export class BluetoothProcessor {
       'BluetoothEmulation.disable',
     );
     this.#bluetoothDevices.clear();
+    this.#bluetoothCharacteristics.clear();
     return {};
   }
 
@@ -245,14 +250,13 @@ export class BluetoothProcessor {
             properties: params.characteristicProperties,
           },
         );
-        service.characteristics.set(
+        const characteristic = new BluetoothCharacteristic(
+          response.characteristicId,
           params.characteristicUuid,
-          new BluetoothCharacteristic(
-            response.characteristicId,
-            params.characteristicUuid,
-            service,
-          ),
+          service,
         );
+        service.characteristics.set(params.characteristicUuid, characteristic);
+        this.#bluetoothCharacteristics.set(characteristic.id, characteristic);
         return {};
       }
       case 'remove': {
@@ -272,6 +276,7 @@ export class BluetoothProcessor {
           },
         );
         service.characteristics.delete(params.characteristicUuid);
+        this.#bluetoothCharacteristics.delete(characteristic.id);
         return {};
       }
       default:
@@ -279,6 +284,30 @@ export class BluetoothProcessor {
           `Parameter "type" of ${params.type} is not supported`,
         );
     }
+  }
+
+  async simulateCharacteristicResponse(
+    params: Bluetooth.SimulateCharacteristicResponseParameters,
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    const device = this.#getDevice(params.address);
+    const service = this.#getService(device, params.serviceUuid);
+    const characteristic = this.#getCharacteristic(
+      service,
+      params.characteristicUuid,
+    );
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulateCharacteristicOperationResponse',
+      {
+        characteristicId: characteristic.id,
+        type: params.type,
+        code: params.code,
+        ...(params.data && {
+          data: btoa(String.fromCharCode(...params.data)),
+        }),
+      },
+    );
+    return {};
   }
 
   async simulateDescriptor(
@@ -458,6 +487,46 @@ export class BluetoothProcessor {
               },
             );
         }
+      },
+    );
+    cdpTarget.browserCdpClient.on(
+      'BluetoothEmulation.characteristicOperationReceived',
+      (event) => {
+        if (!this.#bluetoothCharacteristics.has(event.characteristicId)) {
+          return;
+        }
+        let type;
+        if (event.type === 'write') {
+          // write-default-deprecated comes from
+          // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothremotegattcharacteristic-writevalue,
+          // which is deprecated so not supported.
+          if (event.writeType === 'write-default-deprecated') {
+            return;
+          }
+          type = event.writeType!;
+        } else {
+          type = event.type;
+        }
+        const characteristic = this.#bluetoothCharacteristics.get(
+          event.characteristicId,
+        )!;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: 'bluetooth.characteristicEventGenerated',
+            params: {
+              context: cdpTarget.id,
+              address: characteristic.service.device.address,
+              serviceUuid: characteristic.service.uuid,
+              characteristicUuid: characteristic.uuid,
+              type,
+              ...(event.data && {
+                data: Array.from(atob(event.data), (c) => c.charCodeAt(0)),
+              }),
+            },
+          },
+          cdpTarget.id,
+        );
       },
     );
   }

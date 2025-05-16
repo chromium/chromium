@@ -23,24 +23,7 @@ from . import (BATTERY_SERVICE_UUID,
                FAKE_DEVICE_ADDRESS, HEART_RATE_SERVICE_UUID,
                MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID, add_characteristic,
                create_gatt_connection, disable_simulation, setup_device,
-               setup_granted_device, simulate_service)
-
-
-async def simulate_descriptor(websocket, context_id: str, address: str,
-                              service_uuid: str, characteristic_uuid: str,
-                              descriptor_uuid: str, type: str) -> None:
-    await execute_command(
-        websocket, {
-            'method': 'bluetooth.simulateDescriptor',
-            'params': {
-                'context': context_id,
-                'address': address,
-                'serviceUuid': service_uuid,
-                'characteristicUuid': characteristic_uuid,
-                'descriptorUuid': descriptor_uuid,
-                'type': type
-            }
-        })
+               setup_granted_device, simulate_descriptor, simulate_service)
 
 
 async def get_descriptors(websocket, context_id: str, service_uuid: str,
