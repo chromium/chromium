@@ -19,10 +19,9 @@ import shlex
 import shutil
 import subprocess
 import sys
-from typing import List, Optional, Set, Tuple
+from typing import Iterator, List, Optional, Set, Tuple
 
-_SRC_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..',
-                                          '..'))
+_SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 sys.path.append(os.path.join(_SRC_ROOT, 'build'))
 import gn_helpers
@@ -227,6 +226,32 @@ def _process_params(params_path: str, output_dir: str,
       source_jar_set.add(source_jar_path)
 
 
+def _find_params(output_dir: str) -> Iterator[str]:
+  """Finds all .params.json files within the output directory.
+
+  It uses list_java_targets.py to enumerate .params.json files, correctly
+  ignoring stale ones in the output directory.
+
+  Args:
+    output_dir: The path to the build output directory.
+
+  Yields:
+    The paths to the .params.json files.
+  """
+  output = subprocess.check_output(
+      [
+          os.path.join(_SRC_ROOT, 'build', 'android', 'list_java_targets.py'),
+          '--output-directory=' + output_dir,
+          '--print-params-paths',
+      ],
+      cwd=_SRC_ROOT,
+      encoding='utf-8',
+  )
+  for line in output.splitlines():
+    path = line.split(': ', 1)[1]
+    yield os.path.relpath(path, _SRC_ROOT)
+
+
 def _scan_params(output_dir: str) -> Tuple[List[str], List[str], List[str]]:
   """Scans the output directory for .params.json files and processes them.
 
@@ -247,12 +272,9 @@ def _scan_params(output_dir: str) -> Tuple[List[str], List[str], List[str]]:
   class_path_set: Set[str] = set()
   source_jar_set: Set[str] = set()
 
-  for dirpath, _, filenames in os.walk(os.path.join(output_dir, 'gen')):
-    for filename in filenames:
-      params_path = os.path.join(dirpath, filename)
-      if params_path.endswith('.params.json'):
-        _process_params(params_path, output_dir, source_path_set,
-                        class_path_set, source_jar_set)
+  for params_path in _find_params(output_dir):
+    _process_params(params_path, output_dir, source_path_set, class_path_set,
+                    source_jar_set)
 
   return sorted(source_path_set), sorted(class_path_set), sorted(source_jar_set)
 
