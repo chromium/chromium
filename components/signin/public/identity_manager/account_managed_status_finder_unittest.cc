@@ -296,6 +296,35 @@ TEST_F(AccountManagedStatusFinderTest,
             AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 }
 
+TEST_F(AccountManagedStatusFinderTest,
+       KeepsWaitingOnAccountInfoUpdateBeforeTokensLoaded) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  // Simulate refresh tokens not being loaded state.
+  identity_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Outcome is pending until tokens are loaded.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get());
+  ASSERT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // The account info gets determined before the refresh tokens finish loading.
+  // AccountManagedStatusFinder should keep waiting.
+  EXPECT_CALL(outcome_determined, Run).Times(0);
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  // Once the refresh tokens are loaded, the outcome should be determined
+  // immediately, since the account info was already available.
+  EXPECT_CALL(outcome_determined, Run);
+  identity_env_.ReloadAccountsFromDisk();
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kEnterprise);
+}
+
 TEST_F(AccountManagedStatusFinderTest, ErrorOnNonExistentAccount) {
   AccountInfo account = identity_env_.MakeAccountAvailable("account@gmail.com");
 

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -548,7 +549,15 @@ void AccountManagedStatusFinder::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  // This is the relevant account! Determine its type.
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // `OnRefreshTokensLoaded()` will update the outcome.
+    return;
+  }
+
+  // This is the relevant account! Determine its type. It can't be any of the
+  // types that can be known synchronously, otherwise it would have been
+  // determined already, either in the constructor or in
+  // `OnRefreshTokensLoaded()`.
   OutcomeDeterminedAsync(info.IsManaged() ? Outcome::kEnterprise
                                           : Outcome::kConsumerNotWellKnown);
 }
@@ -573,7 +582,7 @@ void AccountManagedStatusFinder::OnErrorStateOfRefreshTokenUpdatedForAccount(
   DCHECK_EQ(outcome_, Outcome::kPending);
 
   if (!identity_manager_->AreRefreshTokensLoaded()) {
-    // `OnRefreshTokensLoaded` will update the outcome.
+    // `OnRefreshTokensLoaded()` will update the outcome.
     return;
   }
 
@@ -653,10 +662,10 @@ AccountManagedStatusFinder::DetermineOutcome() const {
                             : Outcome::kConsumerNotWellKnown;
   }
 
-  GoogleServiceAuthError authError =
+  GoogleServiceAuthError auth_error =
       identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           account_.account_id);
-  if (!ignore_persistent_auth_errors_ && authError.IsPersistentError()) {
+  if (!ignore_persistent_auth_errors_ && auth_error.IsPersistentError()) {
     return Outcome::kTimeout;
   }
 
