@@ -14,49 +14,96 @@
 
 namespace content::indexed_db {
 
-// A backing store status code and message.
-// This thin leveldb::Status wrapper aids SQLite backing store prototyping.
+// A backing store status code and optionally an error message. This status code
+// may have originated from the database engine or from the Chromium code. See
+// notes above `type_`.
 class CONTENT_EXPORT Status {
  public:
-  Status() noexcept;
-  Status(const Status& rhs) noexcept;
-  explicit Status(const leveldb::Status& status) noexcept;
+  Status();
+  Status(const Status& rhs);
+  Status(Status&& rhs) noexcept;
+  // Wraps the given LevelDB status.
+  Status(leveldb::Status&& rhs) noexcept;
   ~Status();
 
   Status& operator=(const Status& rhs);
-  Status& operator=(const leveldb::Status& rhs);
+  Status& operator=(Status&&) noexcept;
+  Status& operator=(leveldb::Status&& rhs) noexcept;
 
-  // Create a corresponding success or error status.
+  // Create a success or error status that didn't originate in the database
+  // engine.
   static Status OK();
-  static Status NotFound(const std::string& msg,
-                         const std::string& msg2 = base::EmptyString());
-  static Status Corruption(const std::string& msg,
-                           const std::string& msg2 = base::EmptyString());
-  static Status NotSupported(const std::string& msg,
-                             const std::string& msg2 = base::EmptyString());
-  static Status InvalidArgument(const std::string& msg,
-                                const std::string& msg2 = base::EmptyString());
-  static Status IOError(const std::string& msg,
-                        const std::string& msg2 = base::EmptyString());
+  static Status InvalidArgument(std::string_view msg);
+  static Status NotFound(std::string_view msg);
+  static Status IOError(std::string_view msg = {});
+  static Status Corruption(std::string_view msg);
 
   // Returns true iff the status indicates the corresponding success or error.
-  bool ok() const { return !status_ || status_->ok(); }
+  bool ok() const;
   bool IsNotFound() const;
   bool IsCorruption() const;
   bool IsIOError() const;
-  bool IsNotSupportedError() const;
   bool IsInvalidArgument() const;
 
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
   std::string ToString() const;
 
-  leveldb::Status leveldb_status() const {
-    return status_.value_or(leveldb::Status::OK());
+  const std::optional<leveldb::Status>& leveldb_status() const {
+    return leveldb_status_;
   }
 
+  bool IndicatesDiskFull() const;
+  void Log(std::string_view histogram_name) const;
+
  private:
-  std::optional<leveldb::Status> status_;
+  enum class Type {
+    kOk = 0,
+
+    // Something wasn't found.
+    kNotFound,
+
+    // The database is in an inconsistent state.
+    kCorruption,
+
+    kNotSupported,
+
+    // Generally speaking, indicates a programming error or unexpected state in
+    // Chromium. For example, an invalid object store ID is sent as a parameter
+    // over IPC.
+    kInvalidArgument,
+
+    // Possibly transient read or write error.
+    kIoError,
+
+    // An error reported by the database engine, e.g. LevelDB.
+    kDatabaseEngine,
+  };
+
+  Status(Type type, std::string_view msg);
+
+  int GetTypeForLegacyLogging() const;
+
+  // The specific type of error. Note that the treatment of this is quite
+  // inconsistent:
+  // * sometimes it has semantic value, as in code branches based on
+  //   `IsCorruption()`
+  // * sometimes it's used for logging
+  // * sometimes it's just ignored
+  // * a single error can be semantically more than one type, e.g. a piece of
+  //   metadata being "not found" could indicate "corruption".
+  // * helpers like `IsCorruption()` might return true for kCorruption or
+  //   kDatabaseEngine type errors.
+  //
+  // This is too hard to clean up for legacy code, but should be improved upon
+  // in the future, i.e. with the SQLite backend.
+  Type type_;
+
+  // Exactly one of the two statements should be true:
+  // * `leveldb_status_` is null
+  // * `msg_` is empty
+  std::optional<leveldb::Status> leveldb_status_;
+  std::string msg_;
 };
 
 }  // namespace content::indexed_db

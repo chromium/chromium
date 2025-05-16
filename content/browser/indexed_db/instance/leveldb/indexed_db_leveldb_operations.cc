@@ -158,10 +158,6 @@ Status InvalidDBKeyStatus() {
   return Status::InvalidArgument("Invalid database key ID");
 }
 
-Status IOErrorStatus() {
-  return Status::IOError("IO Error");
-}
-
 Status PutBool(TransactionalLevelDBTransaction* transaction,
                std::string_view key,
                bool value) {
@@ -492,7 +488,7 @@ bool FindGreatestKeyLessThanOrEqual(
   leveldb::Status status_out;
   std::unique_ptr<TransactionalLevelDBIterator> it =
       transaction->CreateIterator(status_out);
-  *s = status_out;
+  *s = std::move(status_out);
   if (!s->ok()) {
     INTERNAL_WRITE_ERROR(CREATE_ITERATOR);
     return false;

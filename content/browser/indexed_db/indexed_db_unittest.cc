@@ -1553,7 +1553,7 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
           [](IndexedDBContextImpl* context, storage::BucketInfo* bucket_info) {
             context->GetBucketContextForTesting(bucket_info->id)
                 ->AsyncCall(&BucketContext::OnDatabaseError)
-                .WithArgs(Status::NotSupported("operation not supported"),
+                .WithArgs(Status::InvalidArgument("operation not supported"),
                           std::string());
           },
           context(), &bucket_info),

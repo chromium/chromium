@@ -880,7 +880,7 @@ Status Transaction::CommitPhaseTwo() {
   }
 
   DatabaseError error;
-  if (leveldb_env::IndicatesDiskFull(s.leveldb_status())) {
+  if (s.IndicatesDiskFull()) {
     error =
         DatabaseError(blink::mojom::IDBException::kQuotaError,
                       "Encountered disk full while committing transaction.");

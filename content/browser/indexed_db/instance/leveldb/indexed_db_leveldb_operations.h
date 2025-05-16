@@ -53,8 +53,6 @@ Status CONTENT_EXPORT InternalInconsistencyStatus();
 
 Status InvalidDBKeyStatus();
 
-Status IOErrorStatus();
-
 template <typename Transaction>
 Status PutValue(Transaction* transaction,
                 std::string_view key,

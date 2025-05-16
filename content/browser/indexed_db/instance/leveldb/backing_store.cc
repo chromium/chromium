@@ -172,7 +172,7 @@ leveldb_env::Options GetLevelDBOptions() {
 }
 
 std::tuple<scoped_refptr<LevelDBState>,
-           Status,
+           leveldb::Status,
            /* is_disk_full= */ bool>
 CreateLevelDBState(const base::FilePath& file_name,
                    bool create_if_missing,
@@ -180,7 +180,7 @@ CreateLevelDBState(const base::FilePath& file_name,
   leveldb_env::Options options = GetLevelDBOptions();
   if (file_name.empty()) {
     if (!create_if_missing) {
-      return {nullptr, Status::NotFound("", ""), false};
+      return {nullptr, leveldb::Status::NotFound("", ""), false};
     }
 
     std::unique_ptr<leveldb::Env> in_memory_env =
@@ -189,7 +189,8 @@ CreateLevelDBState(const base::FilePath& file_name,
     in_memory_options.env = in_memory_env.get();
     in_memory_options.paranoid_checks = false;
     std::unique_ptr<leveldb::DB> db;
-    Status status(leveldb_env::OpenDB(in_memory_options, std::string(), &db));
+    leveldb::Status status =
+        leveldb_env::OpenDB(in_memory_options, std::string(), &db);
 
     if (!status.ok()) [[unlikely]] {
       LOG(ERROR) << "Failed to open in-memory LevelDB database: "
@@ -200,17 +201,18 @@ CreateLevelDBState(const base::FilePath& file_name,
     return {LevelDBState::CreateForInMemoryDB(std::move(in_memory_env),
                                               options.comparator, std::move(db),
                                               "in-memory-database"),
-            status, false};
+            leveldb::Status::OK(), false};
   }
 
   options.write_buffer_size = leveldb_env::WriteBufferSize(
       base::SysInfo::AmountOfTotalDiskSpace(file_name));
   options.create_if_missing = create_if_missing;
   std::unique_ptr<leveldb::DB> db;
-  Status status(leveldb_env::OpenDB(options, file_name.AsUTF8Unsafe(), &db));
-  if (!status.ok()) [[unlikely]] {
-    if (!create_if_missing && status.IsInvalidArgument()) {
-      return {nullptr, Status::NotFound("", ""), false};
+  leveldb::Status ldb_status =
+      leveldb_env::OpenDB(options, file_name.AsUTF8Unsafe(), &db);
+  if (!ldb_status.ok()) [[unlikely]] {
+    if (!create_if_missing && ldb_status.IsInvalidArgument()) {
+      return {nullptr, leveldb::Status::NotFound("", ""), false};
     }
     constexpr int64_t kBytesInOneKilobyte = 1024;
     int64_t free_disk_space_bytes =
@@ -221,16 +223,16 @@ CreateLevelDBState(const base::FilePath& file_name,
     // Disks with <100k of free space almost never succeed in opening a
     // leveldb database.
     bool is_disk_full =
-        below_100kb || leveldb_env::IndicatesDiskFull(status.leveldb_status());
+        below_100kb || leveldb_env::IndicatesDiskFull(ldb_status);
 
     LOG(ERROR) << "Failed to open LevelDB database from "
-               << file_name.AsUTF8Unsafe() << "," << status.ToString();
-    return {nullptr, status, is_disk_full};
+               << file_name.AsUTF8Unsafe() << "," << ldb_status.ToString();
+    return {nullptr, ldb_status, is_disk_full};
   }
 
   return {LevelDBState::CreateForDiskDB(options.comparator, std::move(db),
                                         std::move(file_name)),
-          status, false};
+          leveldb::Status::OK(), false};
 }
 
 std::tuple<bool, Status> AreSchemasKnown(TransactionalLevelDBDatabase* db) {
@@ -590,7 +592,7 @@ CreateIteratorAndGetStatus(TransactionalLevelDBTransaction& transaction) {
   leveldb::Status status_out;
   std::unique_ptr<TransactionalLevelDBIterator> iterator =
       transaction.CreateIterator(status_out);
-  return {std::move(iterator), Status(status_out)};
+  return {std::move(iterator), std::move(status_out)};
 }
 
 Status DeleteBlobsInRange(BackingStore::Transaction* transaction,
@@ -1144,7 +1146,7 @@ Status BackingStore::Initialize(bool clean_active_journal) {
     // leftover from a partially-purged previous generation of data.
     if (!in_memory() && !base::DeletePathRecursively(blob_path_)) {
       INTERNAL_WRITE_ERROR(SET_UP_METADATA);
-      return IOErrorStatus();
+      return Status::IOError();
     }
   } else {
     if (db_schema_version > kLatestKnownSchemaVersion ||
@@ -1244,8 +1246,10 @@ Status BackingStore::UpgradeBlobEntriesToV4(
     DatabaseMetadata metadata(name);
     status = ReadMetadataForDatabaseName(metadata);
     if (!metadata.id) {
-      return Status::NotFound("Metadata not found for \"%s\".",
-                              base::UTF16ToUTF8(name));
+      // This is a rather odd error message, but it's left as-is for legacy
+      // reasons.
+      return Status::NotFound(base::StrCat(
+          {"Metadata not found for \"%s\".: ", base::UTF16ToUTF8(name)}));
     }
     for (const auto& store_id_metadata_pair : metadata.object_stores) {
       leveldb::ReadOptions options;
@@ -1288,7 +1292,7 @@ Status BackingStore::UpgradeBlobEntriesToV4(
           base::File::Info info;
           if (!base::GetFileInfo(path, &info)) {
             return Status::Corruption(
-                "Unable to upgrade to database version 4.", "");
+                "Unable to upgrade to database version 4.");
           }
           object.set_size(info.size);
           object.set_last_modified(info.last_modified);
@@ -1331,8 +1335,8 @@ Status BackingStore::ValidateBlobFiles() {
     DatabaseMetadata metadata(name);
     status = ReadMetadataForDatabaseName(metadata);
     if (!metadata.id) {
-      return Status::NotFound("Metadata not found for \"%s\".",
-                              base::UTF16ToUTF8(name));
+      return Status::NotFound(base::StrCat(
+          {"Metadata not found for \"%s\".: ", base::UTF16ToUTF8(name)}));
     }
     for (const auto& store_id_metadata_pair : metadata.object_stores) {
       leveldb::ReadOptions options;
@@ -1377,7 +1381,7 @@ Status BackingStore::ValidateBlobFiles() {
           base::File::Info info;
           if (!base::GetFileInfo(path, &info)) {
             return Status::Corruption(
-                "Unable to upgrade to database version 5.", "");
+                "Unable to upgrade to database version 5.");
           }
         }
       }
@@ -1479,17 +1483,18 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
   {
     TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify.OpenLevelDB");
     base::TimeTicks begin_time = base::TimeTicks::Now();
+    leveldb::Status ldb_status;
     bool is_disk_full = false;
-    std::tie(database_state, status, is_disk_full) = CreateLevelDBState(
+    std::tie(database_state, ldb_status, is_disk_full) = CreateLevelDBState(
         database_path, create_if_missing,
         base::StringPrintf("indexedDB-bucket-%" PRId64,
                            bucket_context.bucket_info().id.GetUnsafeValue()));
-    if (!status.ok()) [[unlikely]] {
-      if (!status.IsNotFound()) {
-        ReportLevelDBError("WebCore.IndexedDB.LevelDBOpenErrors",
-                           status.leveldb_status());
+    if (!ldb_status.ok()) [[unlikely]] {
+      if (!ldb_status.IsNotFound()) {
+        ReportLevelDBError("WebCore.IndexedDB.LevelDBOpenErrors", ldb_status);
       }
-      return {nullptr, status, IndexedDBDataLossInfo(), is_disk_full};
+      return {nullptr, std::move(ldb_status), IndexedDBDataLossInfo(),
+              is_disk_full};
     }
     DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.LevelDB.OpenTime",
                                           base::TimeTicks::Now() - begin_time);
@@ -1506,7 +1511,7 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
         base::BindRepeating(
             [](base::RepeatingCallback<void(Status, const std::string&)>
                    on_fatal_error,
-               leveldb::Status s) { on_fatal_error.Run(Status(s), {}); },
+               leveldb::Status s) { on_fatal_error.Run(std::move(s), {}); },
             base::BindRepeating(&BucketContext::OnDatabaseError,
                                 bucket_context.AsWeakPtr())));
     status = scopes->Initialize();
@@ -1578,8 +1583,11 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
 
   Status& status = std::get<Status>(return_values);
   if (status.IsCorruption()) {
-    std::string sanitized_message =
-        leveldb_env::GetCorruptionMessage(status.leveldb_status());
+    std::string sanitized_message("Unknown corruption");
+    if (status.leveldb_status()) {
+      sanitized_message =
+          leveldb_env::GetCorruptionMessage(*status.leveldb_status());
+    }
     base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                        data_directory.AsUTF8Unsafe(), "...");
     LOG(ERROR) << "Got corruption for "
@@ -1604,8 +1612,8 @@ Status BackingStore::GetCompleteMetadata(
     auto metadata = std::make_unique<DatabaseMetadata>(name);
     status = ReadMetadataForDatabaseName(*metadata);
     if (!metadata->id) {
-      return Status::NotFound("Metadata not found for \"%s\".",
-                              base::UTF16ToUTF8(name));
+      return Status::NotFound(base::StrCat(
+          {"Metadata not found for \"%s\".: ", base::UTF16ToUTF8(name)}));
     }
     if (!status.ok()) {
       return status;
@@ -2675,12 +2683,12 @@ Status BackingStore::CleanUpBlobJournalEntries(
     DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
     if (blob_number == DatabaseMetaDataKey::kAllBlobsNumber) {
       if (!RemoveBlobDirectory(database_id)) {
-        return IOErrorStatus();
+        return Status::IOError();
       }
     } else {
       DCHECK(DatabaseMetaDataKey::IsValidBlobNumber(blob_number));
       if (!RemoveBlobFile(database_id, blob_number)) {
-        return IOErrorStatus();
+        return Status::IOError();
       }
     }
   }
@@ -4089,10 +4097,9 @@ Status BackingStore::MigrateToV5(LevelDBWriteBatch* write_batch) {
   // See http://crbug.com/1131151 for more details.
   const int64_t db_schema_version = 5;
   const std::string schema_version_key = SchemaVersionKey::Encode();
-  Status s;
 
   if (bucket_locator_.storage_key.origin().host() != "docs.google.com") {
-    s = ValidateBlobFiles();
+    Status s = ValidateBlobFiles();
     if (!s.ok()) {
       INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
       return InternalInconsistencyStatus();
@@ -4100,7 +4107,7 @@ Status BackingStore::MigrateToV5(LevelDBWriteBatch* write_batch) {
   }
   std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
 
-  return s;
+  return Status::OK();
 }
 
 Status BackingStore::Transaction::HandleBlobPreTransaction() {

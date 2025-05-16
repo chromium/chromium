@@ -47,7 +47,6 @@
 #include "content/browser/indexed_db/list_set.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
-#include "third_party/leveldatabase/env_chromium.h"
 
 using base::NumberToString16;
 using blink::IndexedDBDatabaseMetadata;
@@ -533,10 +532,7 @@ class ConnectionCoordinator::DeleteRequest
     if (db_->backing_store_db()) {
       saved_status_ = db_->backing_store_db()->DeleteDatabase(
           std::move(lock_receiver_.locks), std::move(on_database_deleted_));
-      base::UmaHistogramEnumeration(
-          "WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus",
-          leveldb_env::GetLevelDBStatusUMAValue(saved_status_.leveldb_status()),
-          leveldb_env::LEVELDB_STATUS_MAX);
+      saved_status_.Log("WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus");
     }
 
     if (!weak_ptr) {

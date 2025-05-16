@@ -75,7 +75,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "third_party/leveldatabase/env_chromium.h"
 #include "url/origin.h"
 
 namespace content::indexed_db {
@@ -1000,10 +999,7 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   base::UmaHistogramEnumeration(kBackingStoreActionUmaName,
                                 IndexedDBAction::kBackingStoreOpenAttempt);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "WebCore.IndexedDB.BackingStore.OpenFirstTryResult",
-      leveldb_env::GetLevelDBStatusUMAValue(first_try_status.leveldb_status()),
-      leveldb_env::LEVELDB_STATUS_MAX);
+  first_try_status.Log("WebCore.IndexedDB.BackingStore.OpenFirstTryResult");
 
   if (first_try_status.ok()) [[likely]] {
     UMA_HISTOGRAM_TIMES(
