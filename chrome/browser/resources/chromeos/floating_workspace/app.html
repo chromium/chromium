@@ -22,7 +22,7 @@ found in the LICENSE file.
   }
 </style>
 
-<oobe-adaptive-dialog id="defaultDialog" tabindex="0"
+<oobe-adaptive-dialog id="defaultDialog"
 aria-live="polite" footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">
@@ -32,7 +32,7 @@ aria-live="polite" footer-shrinkable>
   </paper-progress>
   <div slot="content" class="flex layout vertical center-justified center">
     <oobe-cr-lottie id="checkingAnimation"
-    animation-url="animations/checking_for_update.json" playing=true>
+    animation-url="animations/checking_for_update.json">
     </oobe-cr-lottie>
   </div>
   <div slot="bottom-buttons">
@@ -42,7 +42,7 @@ aria-live="polite" footer-shrinkable>
   </div>
 </oobe-adaptive-dialog>
 
-<oobe-adaptive-dialog id="networkErrorDialog" tabindex="0"
+<oobe-adaptive-dialog id="networkErrorDialog"
 aria-live="polite" footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:wifi"></iron-icon>
   <h1 slot="title">
@@ -64,7 +64,7 @@ aria-live="polite" footer-shrinkable>
   </div>
 </oobe-adaptive-dialog>
 
-<oobe-adaptive-dialog id="generalErrorDialog" tabindex="0"
+<oobe-adaptive-dialog id="generalErrorDialog"
 aria-live="polite" footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">

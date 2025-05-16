@@ -17,6 +17,7 @@ import {NetworkList} from '//resources/ash/common/network/network_list_types.js'
 import {$} from '//resources/ash/common/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {OobeAdaptiveDialog} from '/components/dialogs/oobe_adaptive_dialog.js';
+import {OobeCrLottie} from '/components/oobe_cr_lottie.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import type {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -94,6 +95,7 @@ export class FloatingWorkspace extends FloatingWorkspaceBase {
     setTimeout(this.onNoResponse.bind(this), EXPECTED_LOAD_TIME_MILLISEC);
     this.$.defaultDialog.onBeforeShow();
     this.$.defaultDialog.show();
+    this.playAnimation();
   }
 
   showNetworkScreen(): void {
@@ -174,6 +176,13 @@ export class FloatingWorkspace extends FloatingWorkspaceBase {
 
   private onCancelButtonClick_(): void {
     chrome.send('dialogClose', ['stopRestoringSession']);
+  }
+
+  private playAnimation(): void {
+    const animation = this.shadowRoot?.querySelector('#checkingAnimation');
+    if (animation instanceof OobeCrLottie) {
+      animation.playing = true;
+    }
   }
 }
 
