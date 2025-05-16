@@ -4428,10 +4428,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui/whats_new:impl",
-
-      # TODO(crbug.com/417774639): Remove this dependency when profiles_state.h
-      # get componentized.
-      "//chrome/browser/ui/search_engine_choice:impl",
       "//chrome/browser/upgrade_detector:build_state_observer",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
@@ -4560,10 +4556,6 @@ static_library("browser") {
       # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
       # gets modularized.
       "//chrome/browser/ui/privacy_sandbox:impl",
-
-      # TODO(crbug.com/417774639): Remove this circular dependency when profiles_state.h
-      # get componentized.
-      "//chrome/browser/ui/search_engine_choice:impl",
 
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/exclusive_access",
