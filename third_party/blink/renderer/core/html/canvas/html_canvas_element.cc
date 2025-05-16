@@ -132,6 +132,8 @@ namespace blink {
 
 namespace {
 
+constexpr unsigned kMaxCanvasAnimationBacklog = 2;
+
 // These two constants determine if a newly created canvas starts with
 // acceleration disabled. Specifically:
 // 1. More than `kDisableAccelerationThreshold` canvases have been created.
@@ -1648,6 +1650,28 @@ void HTMLCanvasElement::UpdatePreferred2DRasterMode() {
                             ? RasterModeHint::kPreferGPU
                             : RasterModeHint::kPreferCPU;
   SetPreferred2DRasterMode(hint);
+}
+
+SharedContextRateLimiter* HTMLCanvasElement::RateLimiter() const {
+  return rate_limiter_.get();
+}
+
+void HTMLCanvasElement::CreateRateLimiter() {
+  rate_limiter_ =
+      std::make_unique<SharedContextRateLimiter>(kMaxCanvasAnimationBacklog);
+}
+
+void HTMLCanvasElement::SetIsDisplayed(bool displayed) {
+  is_displayed_ = displayed;
+  // If the canvas is no longer being displayed, stop using the rate
+  // limiter.
+  if (!is_displayed_) {
+    frames_since_last_commit_ = 0;
+    if (rate_limiter_) {
+      rate_limiter_->Reset();
+      rate_limiter_.reset(nullptr);
+    }
+  }
 }
 
 cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerIfNeeded() {

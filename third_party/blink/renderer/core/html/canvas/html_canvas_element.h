@@ -72,6 +72,7 @@ class GraphicsContext;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
 class StaticBitmapImageToVideoFrameCopier;
+class SharedContextRateLimiter;
 
 class
     CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext;
@@ -174,6 +175,16 @@ class CORE_EXPORT HTMLCanvasElement final
   }
 
   CanvasHibernationHandler* GetHibernationHandler() const;
+
+  unsigned IncrementFramesSinceLastCommit() {
+    return ++frames_since_last_commit_;
+  }
+
+  SharedContextRateLimiter* RateLimiter() const;
+  void CreateRateLimiter();
+
+  void SetIsDisplayed(bool);
+  bool IsDisplayed() const { return is_displayed_; }
 
   cc::TextureLayer* GetOrCreateCcLayerIfNeeded();
   cc::TextureLayer* GetCcLayerForTesting() { return cc_layer_.get(); }
@@ -427,6 +438,9 @@ class CORE_EXPORT HTMLCanvasElement final
   bool ignore_reset_ = false;
   gfx::Rect dirty_rect_;
 
+  bool is_displayed_ = false;
+  unsigned frames_since_last_commit_ = 0;
+  std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   gfx::HDRMetadata hdr_metadata_;
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;

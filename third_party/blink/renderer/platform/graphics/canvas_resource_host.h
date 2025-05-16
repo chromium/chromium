@@ -21,7 +21,6 @@ class PaintCanvas;
 namespace blink {
 
 class CanvasResourceProvider;
-class SharedContextRateLimiter;
 
 // Specifies whether the provider should rasterize paint commands on the CPU
 // or GPU. This is used to support software raster with GPU compositing.
@@ -76,9 +75,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual void DiscardResourceProvider();
 
-  void SetIsDisplayed(bool);
-  bool IsDisplayed() const { return is_displayed_; }
-
   virtual bool IsPageVisible() const = 0;
 
   virtual bool IsPrinting() const { return false; }
@@ -88,12 +84,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
-  // Temporary plumbing while relocating code from Canvas2DLayerBridge.
-  SharedContextRateLimiter* RateLimiter() const;
-  void CreateRateLimiter();
-  unsigned IncrementFramesSinceLastCommit() {
-    return ++frames_since_last_commit_;
-  }
   void AlwaysEnableRasterTimersForTesting() {
     always_enable_raster_timers_for_testing_ = true;
   }
@@ -119,14 +109,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   // latter.
   scoped_refptr<cc::TextureLayer> cc_layer_;
 
-  // TODO(399587138): Determine whether these fields can be moved down into
-  // HTMLCanvasElement (or even to CanvasRenderingContext2D) post-the
-  // restructuring of `cc_layer_`.
-  unsigned frames_since_last_commit_ = 0;
-  std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
-
  private:
-  bool is_displayed_ = false;
   bool is_opaque_ = false;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;

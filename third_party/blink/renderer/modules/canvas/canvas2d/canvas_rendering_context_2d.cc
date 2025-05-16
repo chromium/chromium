@@ -782,7 +782,7 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
     }
   }
 
-  CanvasRenderingContextHost* host = Host();
+  HTMLCanvasElement* host = canvas();
   CHECK(host);
 
   host->FlushRecording(reason);

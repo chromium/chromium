@@ -6,14 +6,11 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 
 namespace blink {
 
 namespace {
-
-constexpr unsigned kMaxCanvasAnimationBacklog = 2;
 
 bool CanUseGPU() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
@@ -73,28 +70,6 @@ bool CanvasResourceHost::IsComposited() const {
 
   return resource_provider_->SupportsDirectCompositing() &&
          !LowLatencyEnabled();
-}
-
-void CanvasResourceHost::SetIsDisplayed(bool displayed) {
-  is_displayed_ = displayed;
-  // If the canvas is no longer being displayed, stop using the rate
-  // limiter.
-  if (!is_displayed_) {
-    frames_since_last_commit_ = 0;
-    if (rate_limiter_) {
-      rate_limiter_->Reset();
-      rate_limiter_.reset(nullptr);
-    }
-  }
-}
-
-SharedContextRateLimiter* CanvasResourceHost::RateLimiter() const {
-  return rate_limiter_.get();
-}
-
-void CanvasResourceHost::CreateRateLimiter() {
-  rate_limiter_ =
-      std::make_unique<SharedContextRateLimiter>(kMaxCanvasAnimationBacklog);
 }
 
 RasterMode CanvasResourceHost::GetRasterMode() const {
