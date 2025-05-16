@@ -216,6 +216,11 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
+// Enables or disables locked quiz migration to leverage the OnTask SWA.
+BASE_FEATURE(kBocaOnTaskLockedQuizMigration,
+             "BocaOnTaskLockedQuizMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Boca OnTask mute ARC audio requests on ChromeOS.
 BASE_FEATURE(kBocaOnTaskMuteArcAudio,
              "BocaOnTaskMuteArcAudio",
@@ -256,11 +261,6 @@ constexpr base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds{
         &kBocaStudentHeartbeatCustomInterval,
         "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(30)};
-
-// Enables or disables Boca extension consumer experience on ChromeOS.
-BASE_FEATURE(kBocaExtensionConsumer,
-             "BocaExtensionConsumer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables Spotlight for Boca on ChromeOS.
 BASE_FEATURE(kBocaSpotlight, "BocaSpotlight", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3477,12 +3477,12 @@ bool IsBocaConsumerEnabled() {
   return base::FeatureList::IsEnabled(kBocaConsumer);
 }
 
-bool IsBocaExtensionConsumerEnabled() {
-  return base::FeatureList::IsEnabled(kBocaExtensionConsumer);
-}
-
 bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
+}
+
+bool IsBocaOnTaskLockedQuizMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskLockedQuizMigration);
 }
 
 bool IsBocaOnTaskMuteArcAudioEnabled() {
