@@ -68,19 +68,28 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
             groupTabsViewSpec =
                     itemViewSpec(withText(String.format("Add %s to new group", tabOrTabs)));
             groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_add_tab_to_group_menu_item);
+            if (mListEditor.isAnyGroupSelected()) {
+                throw new UnsupportedOperationException(
+                        "Bottom sheet tab group merging not supported yet");
+            } else {
+                mGroupWithDialogMenuItem =
+                        items.declareItem(
+                                groupTabsViewSpec, groupTabsDataMatcher, this::doGroupTabs);
+            }
         } else {
             groupTabsViewSpec = itemViewSpec(withText("Group " + tabOrTabs));
             groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_group_menu_item);
-        }
-        if (mListEditor.isAnyGroupSelected()) {
-            mGroupWithoutDialogMenuItem =
-                    items.declareItem(
-                            groupTabsViewSpec,
-                            groupTabsDataMatcher,
-                            this::doGroupTabsWithoutDialog);
-        } else {
-            mGroupWithDialogMenuItem =
-                    items.declareItem(groupTabsViewSpec, groupTabsDataMatcher, this::doGroupTabs);
+            if (mListEditor.isAnyGroupSelected()) {
+                mGroupWithoutDialogMenuItem =
+                        items.declareItem(
+                                groupTabsViewSpec,
+                                groupTabsDataMatcher,
+                                this::doGroupTabsWithoutDialog);
+            } else {
+                mGroupWithDialogMenuItem =
+                        items.declareItem(
+                                groupTabsViewSpec, groupTabsDataMatcher, this::doGroupTabs);
+            }
         }
 
         items.declareStubItem(

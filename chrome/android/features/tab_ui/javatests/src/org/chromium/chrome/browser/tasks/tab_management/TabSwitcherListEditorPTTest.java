@@ -57,11 +57,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 // TODO(https://crbug.com/392634251): Fix line height when elegant text height is used with Roboto
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
-@DisableFeatures({
-    ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
-    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID
-})
+@DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT})
 public class TabSwitcherListEditorPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
@@ -183,6 +179,8 @@ public class TabSwitcherListEditorPTTest {
     @Test
     @MediumTest
     @RequiresRestart("crbug.com/378502216")
+    // TODO(crbug.com/417767506) New tab group's card isn't scrolled to
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testCreate10TabsAndCreateTabGroupOf4() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -206,6 +204,7 @@ public class TabSwitcherListEditorPTTest {
     @Test
     @MediumTest
     @RequiresRestart("crbug.com/378502216")
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testCreate2TabGroups() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
         pageStation =
@@ -236,6 +235,7 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testUndoCreateTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
@@ -257,7 +257,12 @@ public class TabSwitcherListEditorPTTest {
         NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
                 editor.openAppMenuWithEditor().groupTabs();
         dialog.pressDone();
-        TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId), thirdTabId);
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            TabBinningUtil.assertBinsEqual(tabModel, group(firstTabId, secondTabId), thirdTabId);
+        } else {
+            // This is the actual behavior, but it's not ideal.
+            TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId), thirdTabId);
+        }
 
         // Group all tabs; needed to bypass the New Tab Group dialog
         editor = tabSwitcher.openAppMenu().clickSelectTabs();
