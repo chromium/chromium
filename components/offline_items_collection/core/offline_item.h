@@ -38,11 +38,8 @@ struct ContentId {
 
   ~ContentId();
 
-  bool operator==(const ContentId& content_id) const;
-
-  bool operator!=(const ContentId& content_id) const;
-
-  bool operator<(const ContentId& content_id) const;
+  friend bool operator==(const ContentId&, const ContentId&) = default;
+  friend auto operator<=>(const ContentId&, const ContentId&) = default;
 };
 
 // A Java counterpart will be generated for this enum.
