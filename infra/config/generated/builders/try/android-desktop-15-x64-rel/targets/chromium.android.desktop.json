@@ -40,13 +40,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_tablet_x64",
-              "path": ".android_emulator/android_35_google_apis_tablet_x64"
+              "name": "android_35_google_apis_tablet_x64_tablet_landscape",
+              "path": ".android_emulator/android_35_google_apis_tablet_x64_tablet_landscape"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_tablet_x64"
+              "caches": "android_35_google_apis_tablet_x64_tablet_landscape"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -95,13 +95,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_tablet_x64",
-              "path": ".android_emulator/android_35_google_apis_tablet_x64"
+              "name": "android_35_google_apis_tablet_x64_tablet_landscape",
+              "path": ".android_emulator/android_35_google_apis_tablet_x64_tablet_landscape"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_tablet_x64"
+              "caches": "android_35_google_apis_tablet_x64_tablet_landscape"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -142,13 +142,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_tablet_x64",
-              "path": ".android_emulator/android_35_google_apis_tablet_x64"
+              "name": "android_35_google_apis_tablet_x64_tablet_landscape",
+              "path": ".android_emulator/android_35_google_apis_tablet_x64_tablet_landscape"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_tablet_x64"
+              "caches": "android_35_google_apis_tablet_x64_tablet_landscape"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -189,13 +189,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_tablet_x64",
-              "path": ".android_emulator/android_35_google_apis_tablet_x64"
+              "name": "android_35_google_apis_tablet_x64_tablet_landscape",
+              "path": ".android_emulator/android_35_google_apis_tablet_x64_tablet_landscape"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_tablet_x64"
+              "caches": "android_35_google_apis_tablet_x64_tablet_landscape"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
