@@ -1073,19 +1073,21 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
     return false;
   }
   // This property may suddenly become unsupported when a second compression
-  // session is created if the codec is H.265 and CPU arch is x64, so we can
-  // always check if the property is supported before setting it.
-  if (session_property_setter.IsSupported(
-          kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration)) {
-    if (!session_property_setter.Set(
-            kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 240)) {
-      NotifyErrorStatus(
-          {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-           "Failed to set max keyframe interval duration to 240 seconds"});
-      return false;
+  // session is created if the codec is H.265 and CPU arch is x64. Skip setting
+  // this property for H.265.
+  if (codec != VideoCodec::kHEVC) {
+    if (session_property_setter.IsSupported(
+            kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration)) {
+      if (!session_property_setter.Set(
+              kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 240)) {
+        NotifyErrorStatus(
+            {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+             "Failed to set max keyframe interval duration to 240 seconds"});
+        return false;
+      }
+    } else {
+      DLOG(WARNING) << "MaxKeyFrameIntervalDuration is not supported";
     }
-  } else {
-    DLOG(WARNING) << "MaxKeyFrameIntervalDuration is not supported";
   }
 
   if (session_property_setter.IsSupported(
