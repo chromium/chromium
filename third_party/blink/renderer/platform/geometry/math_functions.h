@@ -8,6 +8,7 @@
 #include <cfloat>
 #include <cmath>
 #include <optional>
+#include <type_traits>
 #include <utility>
 
 #include "base/notreached.h"
