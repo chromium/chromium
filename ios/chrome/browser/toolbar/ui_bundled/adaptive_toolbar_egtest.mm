@@ -439,9 +439,18 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
     for (UIViewController* child in topViewController.childViewControllers) {
-      [topViewController setOverrideTraitCollection:originalTraitCollection
-                             forChildViewController:child];
+      if (@available(iOS 17, *)) {
+        child.traitOverrides.horizontalSizeClass =
+            originalTraitCollection.horizontalSizeClass;
+      }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+      else {
+        [topViewController setOverrideTraitCollection:originalTraitCollection
+                               forChildViewController:child];
+      }
     }
+#endif
+
   } else {
     // Cancel the rotation.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
@@ -483,9 +492,18 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
     for (UIViewController* child in topViewController.childViewControllers) {
-      [topViewController setOverrideTraitCollection:originalTraitCollection
-                             forChildViewController:child];
+      if (@available(iOS 17, *)) {
+        child.traitOverrides.horizontalSizeClass =
+            originalTraitCollection.horizontalSizeClass;
+      }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+      else {
+        [topViewController setOverrideTraitCollection:originalTraitCollection
+                               forChildViewController:child];
+      }
     }
+#endif
+
   } else {
     // Cancel the rotation.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
@@ -649,9 +667,18 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
     for (UIViewController* child in topViewController.childViewControllers) {
-      [topViewController setOverrideTraitCollection:originalTraitCollection
-                             forChildViewController:child];
+      if (@available(iOS 17, *)) {
+        child.traitOverrides.horizontalSizeClass =
+            originalTraitCollection.horizontalSizeClass;
+      }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+      else {
+        [topViewController setOverrideTraitCollection:originalTraitCollection
+                               forChildViewController:child];
+      }
     }
+#endif
+
   } else {
     // Cancel the rotation.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
@@ -689,9 +716,18 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   // Revert the orientation/trait collection to the original.
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
+
     for (UIViewController* child in topViewController.childViewControllers) {
-      [topViewController setOverrideTraitCollection:originalTraitCollection
-                             forChildViewController:child];
+      if (@available(iOS 17, *)) {
+        child.traitOverrides.horizontalSizeClass =
+            originalTraitCollection.horizontalSizeClass;
+      }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+      else {
+        [topViewController setOverrideTraitCollection:originalTraitCollection
+                               forChildViewController:child];
+      }
+#endif
     }
   } else {
     // Cancel the rotation.
