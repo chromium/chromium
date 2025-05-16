@@ -27,6 +27,8 @@ public class TabLoadObserver extends EmptyTabObserver {
 
     private final CallbackHelper mTabLoadStartedCallback = new CallbackHelper();
     private final CallbackHelper mTabLoadFinishedCallback = new CallbackHelper();
+    private int mCurrentTabLoadStartedCallCount;
+    private int mCurrentTabLoadFinishedCallCount;
 
     private final Tab mTab;
     private final String mExpectedTitle;
@@ -84,8 +86,13 @@ public class TabLoadObserver extends EmptyTabObserver {
 
     /** Asserts the page has loaded. */
     public void assertLoaded() throws Exception {
-        mTabLoadStartedCallback.waitForCallback(mTabLoadStartedCallback.getCallCount(), 1);
-        mTabLoadFinishedCallback.waitForCallback(mTabLoadFinishedCallback.getCallCount(), 1);
+        mTabLoadStartedCallback.waitForCallback(
+                mCurrentTabLoadStartedCallCount, /* numberOfCallsToWaitFor= */ 1);
+        mCurrentTabLoadStartedCallCount = mTabLoadStartedCallback.getCallCount();
+        mTabLoadFinishedCallback.waitForCallback(
+                mCurrentTabLoadFinishedCallCount, /* numberOfCallsToWaitFor= */ 1);
+        mCurrentTabLoadFinishedCallCount = mTabLoadFinishedCallback.getCallCount();
+
         final Coordinates coord = Coordinates.createFor(mTab.getWebContents());
 
         CriteriaHelper.pollUiThread(
