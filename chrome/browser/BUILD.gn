@@ -1333,7 +1333,6 @@ static_library("browser") {
     "profiles/profile_metrics.cc",
     "profiles/profile_metrics.h",
     "profiles/profiles_state.cc",
-    "profiles/profiles_state.h",
     "profiles/renderer_updater.cc",
     "profiles/renderer_updater.h",
     "profiles/renderer_updater_factory.cc",

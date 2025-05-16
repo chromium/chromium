@@ -48,6 +48,7 @@ static_library("account_manager") {
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/net",
+    "//chrome/browser/profiles",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/components/mgs",
     "//components/user_manager",

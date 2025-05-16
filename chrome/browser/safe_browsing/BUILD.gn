@@ -218,6 +218,7 @@ static_library("safe_browsing") {
       "//chrome/browser/download",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/permissions:permissions_proto",
+      "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/safety_hub",
       "//chrome/common/safe_browsing:archive_analyzer_results",

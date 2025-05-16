@@ -310,6 +310,7 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/autofill",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",
       "//components/autofill/content/browser:test_support",

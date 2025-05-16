@@ -2246,6 +2246,7 @@ if (!is_android) {
       "//chrome/browser/preloading/search_preload:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/privacy_sandbox:browser_tests",
+      "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/promos:utils",
@@ -6637,6 +6638,7 @@ test("unit_tests") {
     "//chrome/browser/privacy_budget:unit_tests",
     "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:unit_tests",
+    "//chrome/browser/profiles",
 
     # TODO(413315837): Remove this dep when privacy_sandbox_service_impl_unittest.cc
     # gets build off of c/b/privacy_sandbox/BUILD.gn.
@@ -11579,6 +11581,7 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/views/frame/browser_window_property_manager_browsertest_win.cc",
           "../browser/ui/views/status_icons/status_tray_state_changer_interactive_uitest_win.cc",
         ]
+        deps += [ "//chrome/browser/profiles" ]
         if (use_aura) {
           sources += [ "../browser/ui/views/tooltip/tooltip_aura_interactive_uitest_win.cc" ]
         }
@@ -12028,6 +12031,7 @@ source_set("sync_integration_test_support") {
   deps = [
     "//base",
     "//chrome/browser/autofill",
+    "//chrome/browser/profiles",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//components/autofill/core/common:credit_card_number_validation",

@@ -68,6 +68,7 @@ source_set("impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/privacy_sandbox",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",

@@ -17,6 +17,7 @@ if (!is_android) {
     deps = [
       ":search_engine_choice",
       "//base",
+      "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engine_choice",
       "//components/search_engines",

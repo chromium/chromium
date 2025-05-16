@@ -24,6 +24,7 @@ source_set("profiles") {
       "profile_android.cc",
       "profile_key_android.cc",
       "profile_key_android.h",
+      "profiles_state.h",
     ]
   }
 
@@ -39,6 +40,7 @@ source_set("profiles") {
 
   public_deps = [
     ":profile",
+    "//build:chromeos_buildflags",
     "//components/leveldb_proto",
   ]
 }
@@ -160,6 +162,7 @@ source_set("profile_util_impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill",
     "//chrome/browser/prefs",
+    "//chrome/browser/profiles",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",

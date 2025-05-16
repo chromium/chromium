@@ -274,6 +274,7 @@ source_set("login_impl") {
       ":signin",
       ":signin_utils",
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
+      "//chrome/browser/profiles",
       "//chrome/browser/themes",
       "//components/password_manager/core/browser",
       "//components/signin/core/browser",
@@ -285,6 +286,7 @@ source_set("login_impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/prefs",
+      "//chrome/browser/profiles",
       "//chrome/browser/resources/gaia_auth_host:resources",
       "//ui/webui",
     ]
@@ -365,6 +367,7 @@ if (!is_chromeos) {
       "//chrome/browser:browser_process",
       "//chrome/browser:resources",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+      "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/resources/signin:resources",

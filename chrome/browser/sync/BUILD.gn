@@ -87,6 +87,7 @@ source_set("sync") {
     "//chrome/browser/autofill",
     "//chrome/browser/favicon",
     "//chrome/browser/prefs:util",
+    "//chrome/browser/profiles",
     "//chrome/browser/promos:utils",
     "//chrome/browser/reading_list",
     "//chrome/browser/search_engines",

@@ -29,6 +29,7 @@ static_library("session") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/policy:onc",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",

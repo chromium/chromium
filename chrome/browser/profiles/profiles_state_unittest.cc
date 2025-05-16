@@ -20,7 +20,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "profiles_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

@@ -42,6 +42,7 @@ source_set("impl") {
   deps = [
     ":search_engine_choice",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/search_engines",
     "//components/regional_capabilities",

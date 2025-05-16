@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/glic:glic",
+    "//chrome/browser/profiles",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",

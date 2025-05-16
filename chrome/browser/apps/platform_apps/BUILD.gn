@@ -87,7 +87,10 @@ source_set("platform_apps") {
   allow_circular_includes_from = [ "//chrome/browser/extensions" ]
 
   if (is_mac) {
-    deps += [ "//chrome/browser/apps/app_shim" ]
+    deps += [
+      "//chrome/browser/apps/app_shim",
+      "//chrome/browser/profiles",
+    ]
   }
 
   if (is_chromeos) {

@@ -438,6 +438,7 @@ source_set("extensions") {
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:util",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/safe_browsing",
