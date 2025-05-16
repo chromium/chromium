@@ -37,7 +37,6 @@ import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {PrivacyPageVisibility} from '../page_visibility.js';
 import type {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
@@ -76,11 +75,6 @@ export class SettingsPersonalizationOptionsElement extends
 
   static get properties() {
     return {
-      focusConfig: {
-        type: Object,
-        observer: 'onFocusConfigChange_',
-      },
-
       pageVisibility: Object,
 
       syncStatus: Object,
@@ -129,7 +123,6 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   declare pageVisibility: PrivacyPageVisibility;
-  declare focusConfig: FocusConfig;
   declare syncStatus: SyncStatus;
 
   // <if expr="_google_chrome and not chromeos_ash">
