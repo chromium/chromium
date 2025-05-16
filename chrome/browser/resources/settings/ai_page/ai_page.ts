@@ -34,11 +34,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   static get properties() {
     return {
-      enableAiSettingsPageRefresh_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
-      },
-
       showAutofillAiControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAutofillAiControl'),
@@ -100,7 +95,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     };
   }
 
-  declare private enableAiSettingsPageRefresh_: boolean;
   declare private showAutofillAiControl_: boolean;
   declare private showComposeControl_: boolean;
   declare private showCompareControl_: boolean;
@@ -119,7 +113,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   private maybeLogVisibilityMetrics_() {
     // Only record metrics when the user first navigates to the main AI page.
-    if (!this.shouldRecordMetrics_ || !this.enableAiSettingsPageRefresh_ ||
+    if (!this.shouldRecordMetrics_ ||
         Router.getInstance().getCurrentRoute() !== routes.AI) {
       return;
     }

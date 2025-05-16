@@ -4539,9 +4539,6 @@
   </message>
 
   <!-- Experimental settings strings -->
-  <message name="IDS_SETTINGS_AI_PAGE_TITLE" desc="Title of page holding experimental AI settings">
-    Experimental AI
-  </message>
   <message name="IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE" desc="This label is on the left Navigation sidebar in Chrome’s settings. It tells the user that they can see settings related to AI (artificial intelligence) in this section. It is a noun phrase that refers to our collection of AI settings. These settings include Help me write, Tab organizer, and more. If possible, translate this so that it closely matches the Navigation tab title at the top of this marketing page: https://www.google.com/chrome/ai-innovations.">
     AI innovations
   </message>

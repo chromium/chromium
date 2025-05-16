@@ -35,7 +35,7 @@ suite('GlicPageFocusTest', function() {
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
       showGlicSettings: true,
     });
     resetRouterForTesting();

@@ -186,38 +186,31 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
 }
 #endif
 
-class SettingsAiPageTest : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      optimization_guide::features::kAiSettingsPageRefresh};
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, ExperimentalAdvancedPage) {
-  RunTest("settings/ai_page_test.js",
-          "runMochaSuite('ExperimentalAdvancedPage')");
+IN_PROC_BROWSER_TEST_F(SettingsTest, AiPage) {
+  RunTest("settings/ai_page_test.js", "runMochaSuite('AiPage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, AiInfoCard) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, AiInfoCard) {
   RunTest("settings/ai_info_card_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, TabOrganizationSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, TabOrganizationSubpage) {
   RunTest("settings/ai_tab_organization_subpage_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, HistorySearchSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, HistorySearchSubpage) {
   RunTest("settings/ai_history_search_subpage_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, CompareSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, CompareSubpage) {
   RunTest("settings/ai_compare_subpage_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, LoggingInfoBullet) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, LoggingInfoBullet) {
   RunTest("settings/ai_logging_info_bullet_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, PolicyIndicator) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, PolicyIndicator) {
   RunTest("settings/ai_policy_indicator_test.js", "mocha.run()");
 }
 
@@ -705,9 +698,7 @@ class SettingsComposePageTest : public SettingsBrowserTest {
  public:
   SettingsComposePageTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{optimization_guide::features::
-                                  kAiSettingsPageRefresh,
-                              compose::features::kEnableComposeProactiveNudge},
+        /*enabled_features=*/{compose::features::kEnableComposeProactiveNudge},
         /*disabled_features=*/{});
   }
 
@@ -782,9 +773,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Performance) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('Performance')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, ExperimentalAdvanced) {
-  RunTest("settings/basic_page_test.js",
-          "runMochaSuite('ExperimentalAdvanced')");
+IN_PROC_BROWSER_TEST_F(SettingsTest, AiSections) {
+  RunTest("settings/basic_page_test.js", "runMochaSuite('AiSections')");
 }
 
 using SettingsClearBrowsingDataTest = SettingsBrowserTest;

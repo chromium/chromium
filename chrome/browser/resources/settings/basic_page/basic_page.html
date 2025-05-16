@@ -34,15 +34,10 @@
             </settings-people-page>
           </settings-section>
         </template>
-        <template is="dom-if" if="[[showAiInfoCard_(pageVisibility.ai)]]"
-            restamp>
+        <template is="dom-if" if="[[showAiPage_(pageVisibility.ai)]]" restamp>
           <settings-section section="aiInfoCard" nest-under-section="ai">
             <settings-ai-info-card></settings-ai-info-card>
           </settings-section>
-        </template>
-        <template is="dom-if"
-            if="[[showExperimentalAdvancedPage_(pageVisibility.ai)]]"
-            restamp>
 <if expr="enable_glic">
           <template is="dom-if" if="[[showGlicSection_]]" restamp>
             <settings-section page-title="$i18n{glicSectionTitle}"
@@ -52,7 +47,8 @@
           </template>
 </if>
           <template is="dom-if" if="[[showAiPageAiFeatureSection_]]" restamp>
-            <settings-section page-title="[[aiPageTitle_]]" section="ai">
+            <settings-section page-title="$i18n{aiInnovationsPageTitle}"
+                section="ai">
               <settings-ai-page prefs="{{prefs}}"></settings-ai-page>
             </settings-section>
           </template>

@@ -607,104 +607,64 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   }
 #endif
 
-  const bool ai_settings_refresh_enabled =
-      optimization_guide::features::IsAiSettingsPageRefreshEnabled();
+  const bool use_is_setting_visible = base::FeatureList::IsEnabled(
+      optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
 
-  if (ai_settings_refresh_enabled) {
-    const bool use_is_setting_visible = base::FeatureList::IsEnabled(
-        optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
+  const auto& autofill_client =
+      *autofill::ContentAutofillClient::FromWebContents(
+          web_ui->GetWebContents());
 
-    const auto& autofill_client =
-        *autofill::ContentAutofillClient::FromWebContents(
-            web_ui->GetWebContents());
+  std::pair<const std::string_view, bool> optimization_guide_features[] = {
+      {"showTabOrganizationControl",
+       use_is_setting_visible
+           ? TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)
+           : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
+      {"showComposeControl",
+       use_is_setting_visible ? compose_visible : compose_enabled},
+      {"showHistorySearchControl",
+       history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
+      {"showCompareControl",
+       use_is_setting_visible ? commerce::IsProductSpecificationsSettingVisible(
+                                    shopping_service->GetAccountChecker())
+                              : commerce::CanFetchProductSpecificationsData(
+                                    shopping_service->GetAccountChecker())},
+      {"showPasswordChangeControl",
+       // TODO(crbug.com/391131625): Update accordingly to enterprise
+       // requirements.
+       PasswordChangeServiceFactory::GetForProfile(profile) &&
+           PasswordChangeServiceFactory::GetForProfile(profile)
+               ->IsPasswordChangeAvailable()},
+      // The code checks only once, when setting is loaded, whether the
+      // Autofill Ai section should be shown.
+      // The code cannot dynamically check whether the Autofill Ai section
+      // should be shown, because otherwise the user could reach weird states,
+      // such as navigating to the Ai Page when the Ai Page has 0 entries.
+      {"showAutofillAiControl",
+       autofill::MayPerformAutofillAiAction(
+           autofill_client, autofill::AutofillAiAction::kOptIn) ||
+           autofill::MayPerformAutofillAiAction(
+               autofill_client,
+               autofill::AutofillAiAction::kListEntityInstancesInSettings)},
+  };
 
-    std::pair<const std::string_view, bool> optimization_guide_features[] = {
-        {"showTabOrganizationControl",
-         use_is_setting_visible
-             ? TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)
-             : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
-        {"showComposeControl",
-         use_is_setting_visible ? compose_visible : compose_enabled},
-        {"showHistorySearchControl",
-         history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
-        {"showCompareControl",
-         use_is_setting_visible
-             ? commerce::IsProductSpecificationsSettingVisible(
-                   shopping_service->GetAccountChecker())
-             : commerce::CanFetchProductSpecificationsData(
-                   shopping_service->GetAccountChecker())},
-        {"showPasswordChangeControl",
-         // TODO(crbug.com/391131625): Update accordingly to enterprise
-         // requirements.
-         PasswordChangeServiceFactory::GetForProfile(profile) &&
-             PasswordChangeServiceFactory::GetForProfile(profile)
-                 ->IsPasswordChangeAvailable()},
-        // The code checks only once, when setting is loaded, whether the
-        // Autofill Ai section should be shown.
-        // The code cannot dynamically check whether the Autofill Ai section
-        // should be shown, because otherwise the user could reach weird states,
-        // such as navigating to the Ai Page when the Ai Page has 0 entries.
-        {"showAutofillAiControl",
-         autofill::MayPerformAutofillAiAction(
-             autofill_client, autofill::AutofillAiAction::kOptIn) ||
-             autofill::MayPerformAutofillAiAction(
-                 autofill_client,
-                 autofill::AutofillAiAction::kListEntityInstancesInSettings)},
-    };
+  const bool show_ai_settings_for_testing =
+      optimization_guide::features::kShowAiSettingsForTesting.Get();
 
-    const bool show_ai_settings_for_testing =
-        optimization_guide::features::kShowAiSettingsForTesting.Get();
-    bool show_ai_features_section = show_ai_settings_for_testing;
-    for (auto [name, visible] : optimization_guide_features) {
-      html_source->AddBoolean(name, visible || show_ai_settings_for_testing);
-      show_ai_features_section |= visible;
-    }
-
-    // "showAdvancedFeaturesMainControl", despite the name, controls whether the
-    // AI subpage is shown. Within the AI subpage are separate sections for Glic
-    // and for all other AI features, the visibility of these are separately
-    // controlled but we want to show the subpage if any of the AI features or
-    // Glic are enabled.
-    // TODO(crbug.com/363968675): Rename this to be clearer.
-    html_source->AddBoolean("showAdvancedFeaturesMainControl",
-                            show_glic_section || show_ai_features_section);
-    html_source->AddBoolean("showAiPageAiFeatureSection",
-                            show_ai_features_section);
-  } else {
-    std::pair<UserVisibleFeatureKey, const std::string_view>
-        optimization_guide_features[] = {
-            {UserVisibleFeatureKey::kCompose, "showComposeControl"},
-            {UserVisibleFeatureKey::kTabOrganization,
-             "showTabOrganizationControl"},
-            {UserVisibleFeatureKey::kHistorySearch, "showHistorySearchControl"},
-        };
-    bool is_any_ai_feature_enabled = false;
-
-    auto* optimization_guide_service =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-    for (auto [key, name] : optimization_guide_features) {
-      const bool visible = optimization_guide_service &&
-                           optimization_guide_service->IsSettingVisible(key);
-      html_source->AddBoolean(name, visible);
-
-      // The main toggle is visible only if at least one of the sub toggles is
-      // visible.
-      is_any_ai_feature_enabled |= visible;
-    }
-
-    html_source->AddBoolean("showAdvancedFeaturesMainControl",
-                            is_any_ai_feature_enabled || show_glic_section);
-    html_source->AddBoolean("showAiPageAiFeatureSection",
-                            is_any_ai_feature_enabled);
-    // Compare is only shown when Synpase ("AiSettingsPageRefresh") is enabled.
-    html_source->AddBoolean("showCompareControl", false);
-    // Password change is only shown when Synpase ("AiSettingsPageRefresh") is
-    // enabled.
-    html_source->AddBoolean("showPasswordChangeControl", false);
+  // Show the AI features section in the AI page if any of the AI features are
+  // enabled.
+  bool show_ai_features_section = show_ai_settings_for_testing;
+  for (auto [name, visible] : optimization_guide_features) {
+    html_source->AddBoolean(name, visible || show_ai_settings_for_testing);
+    show_ai_features_section |= visible;
   }
 
-  html_source->AddBoolean("enableAiSettingsPageRefresh",
-                          ai_settings_refresh_enabled);
+  // Within the AI subpage are separate sections for Glic and for all other AI
+  // features, the visibility of these are separately controlled but we want to
+  // show the subpage if any of the AI features or Glic are enabled.
+  html_source->AddBoolean("showAiPage",
+                          show_glic_section || show_ai_features_section);
+  html_source->AddBoolean("showAiPageAiFeatureSection",
+                          show_ai_features_section);
   html_source->AddBoolean(
       "enableAiSettingsInPrivacyGuide",
       optimization_guide::features::IsPrivacyGuideAiSettingsEnabled());
@@ -868,7 +828,7 @@ void SettingsUI::UpdateShowGlicState() {
   update.Set("showGlicSettings", show_glic);
   update.Set("glicDisallowedByAdmin", enablement.DisallowedByAdmin());
   if (show_glic) {
-    update.Set("showAdvancedFeaturesMainControl", true);
+    update.Set("showAiPage", true);
   }
 
   content::WebUIDataSource::Update(

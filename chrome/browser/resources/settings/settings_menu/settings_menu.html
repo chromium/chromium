@@ -79,12 +79,11 @@
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" href="/ai"
-            hidden="[[!showExperimentalMenuItem_(
-                showAdvancedFeaturesMainControl_, pageVisibility.ai)]]"
+            hidden="[[!showAiPageMenuItem_(showAiPage_, pageVisibility.ai)]]"
             on-click="onAiPageClick_"
             class="cr-nav-menu-item">
-          <cr-icon icon="[[aiPageIcon_]]"></cr-icon>
-          [[aiPageTitle_]]
+          <cr-icon icon="settings20:magic"></cr-icon>
+          $i18n{aiInnovationsPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="appearance" href="/appearance"

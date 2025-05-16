@@ -34,7 +34,7 @@ suite('CompletionFragment', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isPrivacySandboxRestrictedNoticeEnabled: false,
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
     });
     resetRouterForTesting();
   });
@@ -166,7 +166,7 @@ suite('CompletionFragment', function() {
 
   test('aiRowNotShownWhenAiPageHidden', function() {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: false,
+      showAiPage: false,
     });
     createPage();
 
@@ -307,7 +307,7 @@ suite('CompletionFragmentAiSettingsInPrivacyGuideDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableAiSettingsInPrivacyGuide: false,
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
     });
     resetRouterForTesting();
   });

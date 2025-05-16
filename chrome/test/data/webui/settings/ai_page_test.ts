@@ -14,7 +14,7 @@ import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-suite('ExperimentalAdvancedPage', function() {
+suite('AiPage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let page: SettingsAiPageElement;
@@ -27,7 +27,7 @@ suite('ExperimentalAdvancedPage', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
       showAiPageAiFeatureSection: true,
     });
     settingsPrefs = document.createElement('settings-prefs');
@@ -158,7 +158,7 @@ suite('ExperimentalAdvancedPage', function() {
 
   test('historySearchRow', async () => {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
       showHistorySearchControl: true,
     });
     resetRouterForTesting();
@@ -198,7 +198,7 @@ suite('ExperimentalAdvancedPage', function() {
 
   test('compareRow', async () => {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
       showCompareControl: true,
     });
     resetRouterForTesting();
@@ -221,7 +221,7 @@ suite('ExperimentalAdvancedPage', function() {
 
   test('composeRow', async () => {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
       showComposeControl: true,
     });
     resetRouterForTesting();
@@ -244,7 +244,7 @@ suite('ExperimentalAdvancedPage', function() {
 
   test('tabOrganizationRow', async () => {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
+      showAiPage: true,
       showTabOrganizationControl: true,
     });
     resetRouterForTesting();

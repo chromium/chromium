@@ -199,32 +199,29 @@ function createRoutes(): SettingsRoutes {
 
   const visibility = pageVisibility || {};
 
-  if (visibility.ai !== false &&
-      loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
+  if (visibility.ai !== false && loadTimeData.getBoolean('showAiPage')) {
     r.AI = r.BASIC.createSection(
-        '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
-    if (loadTimeData.getBoolean('enableAiSettingsPageRefresh')) {
-      if (loadTimeData.getBoolean('showTabOrganizationControl')) {
-        r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
-      }
-      if (loadTimeData.getBoolean('showHistorySearchControl')) {
-        r.HISTORY_SEARCH = r.AI.createChild('/ai/historySearch');
-      }
-      if (loadTimeData.getBoolean('showComposeControl')) {
-        r.OFFER_WRITING_HELP = r.AI.createChild('/ai/helpMeWrite');
-      }
-      if (loadTimeData.getBoolean('showCompareControl')) {
-        r.COMPARE = r.AI.createChild('/ai/compareProducts');
-      }
-      // <if expr="enable_glic">
-      if (loadTimeData.getBoolean('showGlicSettings')) {
-        r.GLIC_SECTION = r.AI.createSection(
-            '/ai/glicSection', 'glicSection',
-            loadTimeData.getString('glicPageTitle'));
-        r.GEMINI = r.GLIC_SECTION.createChild('/ai/gemini');
-      }
-      // </if>
+        '/ai', 'ai', loadTimeData.getString('aiInnovationsPageTitle'));
+    if (loadTimeData.getBoolean('showTabOrganizationControl')) {
+      r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
     }
+    if (loadTimeData.getBoolean('showHistorySearchControl')) {
+      r.HISTORY_SEARCH = r.AI.createChild('/ai/historySearch');
+    }
+    if (loadTimeData.getBoolean('showComposeControl')) {
+      r.OFFER_WRITING_HELP = r.AI.createChild('/ai/helpMeWrite');
+    }
+    if (loadTimeData.getBoolean('showCompareControl')) {
+      r.COMPARE = r.AI.createChild('/ai/compareProducts');
+    }
+    // <if expr="enable_glic">
+    if (loadTimeData.getBoolean('showGlicSettings')) {
+      r.GLIC_SECTION = r.AI.createSection(
+          '/ai/glicSection', 'glicSection',
+          loadTimeData.getString('glicPageTitle'));
+      r.GEMINI = r.GLIC_SECTION.createChild('/ai/gemini');
+    }
+    // </if>
   }
 
   // <if expr="not chromeos_ash">

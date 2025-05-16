@@ -372,7 +372,6 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
 void AddAiStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
       {"aiInnovationsPageTitle", IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE},
       {"aiPageMainTitle", IDS_SETTINGS_AI_PAGE_MAIN_TITLE},
       {"aiPageMainSublabel1", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_1},

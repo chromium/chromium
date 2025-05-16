@@ -83,7 +83,7 @@ suite('SettingsMenu', function() {
   });
 
   test('noExperimental', async function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
+    loadTimeData.overrideValues({showAiPage: false});
     resetRouterForTesting();
     createSettingsMenu();
     await flushTasks();
@@ -94,7 +94,7 @@ suite('SettingsMenu', function() {
   });
 
   test('navigateToExperimental', async function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+    loadTimeData.overrideValues({showAiPage: true});
     resetRouterForTesting();
     createSettingsMenu();
     Router.getInstance().navigateTo(routes.AI);
@@ -156,8 +156,7 @@ suite('SettingsMenu', function() {
 
   test('aiPageMenuClick', async function() {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
-      enableAiSettingsPageRefresh: true,
+      showAiPage: true,
     });
     resetRouterForTesting();
     createSettingsMenu();
