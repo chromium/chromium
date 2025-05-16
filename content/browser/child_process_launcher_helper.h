@@ -60,6 +60,7 @@ class CommandLine;
 
 #if BUILDFLAG(IS_IOS)
 class MachPortRendezvousServerIOS;
+class ScopedTempDir;
 #endif
 }
 
@@ -350,6 +351,10 @@ class ChildProcessLauncherHelper
 #if BUILDFLAG(IS_WIN)
   // Only valid if the host process has logging enabled.
   base::win::ScopedHandle log_handle_;
+#endif
+
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
 #endif
 
   // Histogram shared memory region. Ownership of the memory region object is

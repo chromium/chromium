@@ -14,7 +14,9 @@
 #include <list>
 
 #include "base/apple/mach_port_rendezvous_ios.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
@@ -342,6 +344,28 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
       xpc_dictionary_set_value(message, "args", args_array);
       xpc_dictionary_set_fd(message, "stdout", STDOUT_FILENO);
       xpc_dictionary_set_fd(message, "stderr", STDERR_FILENO);
+
+      // We create a scoped temporary directory for the child process.
+      // In order to share this unique directory with the child process
+      // we need to create bookmark data and then pass this over XPC
+      // to the child process. The child process will then deserialize
+      // it before then assigning the TMPDIR environment variable. We
+      // do this via XPC so that it is done early enough in the process
+      // creation so TMPDIR is set before any real Chromium code runs.
+      scoped_temp_dir_ = std::make_unique<base::ScopedTempDir>();
+      CHECK(scoped_temp_dir_->CreateUniqueTempDir());
+
+      NSURL* temp_dir_url = [[NSURL alloc]
+          initFileURLWithPath:base::SysUTF8ToNSString(
+                                  scoped_temp_dir_->GetPath().value())];
+      NSData* bookmark_temp_dir = [temp_dir_url
+                 bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark
+          includingResourceValuesForKeys:nil
+                           relativeToURL:nil
+                                   error:&error];
+      xpc_dictionary_set_data(message, "tmp_dir", bookmark_temp_dir.bytes,
+                              bookmark_temp_dir.length);
+
       xpc_dictionary_set_mach_send(
           message, "port", rendezvous_server_->GetMachSendRight().get());
       xpc_connection_send_message(xpc_connection, message);

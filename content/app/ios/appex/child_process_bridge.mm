@@ -16,6 +16,8 @@
 #include "base/apple/mach_port_rendezvous_ios.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "content/app/ios/appex/child_process_sandbox.h"
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
@@ -96,6 +98,30 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
       dup2(fd, STDERR_FILENO);
       close(fd);
     }
+
+    // See child_process_launcher_helper_ios.mm for discussion of this
+    // bookmark data.
+    size_t tmp_dir_length = 0;
+    const void* tmp_dir =
+        xpc_dictionary_get_data(msg, "tmp_dir", &tmp_dir_length);
+    CHECK(tmp_dir);
+    NSData* bookmark_temp_dir = [NSData dataWithBytes:tmp_dir
+                                               length:tmp_dir_length];
+    BOOL bookmarkIsStale = NO;
+    NSError* error = nil;
+    NSURL* tmp_dir_url =
+        [NSURL URLByResolvingBookmarkData:bookmark_temp_dir
+                                  options:NSURLBookmarkResolutionWithoutUI
+                            relativeToURL:nil
+                      bookmarkDataIsStale:&bookmarkIsStale
+                                    error:&error];
+    CHECK(tmp_dir_url);
+    std::string file_path = base::SysNSStringToUTF8(tmp_dir_url.path) + "/";
+    setenv("TMPDIR", file_path.c_str(), 1);
+
+    base::FilePath assigned_path;
+    CHECK(base::GetTempDir(&assigned_path));
+    CHECK(assigned_path.value() == file_path);
 
     mach_port_t port = xpc_dictionary_copy_mach_send(msg, "port");
     base::apple::ScopedMachSendRight server_port(port);

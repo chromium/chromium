@@ -40,6 +40,7 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/apple/mach_port_rendezvous_ios.h"
+#include "base/files/scoped_temp_dir.h"
 #endif
 
 namespace content {
