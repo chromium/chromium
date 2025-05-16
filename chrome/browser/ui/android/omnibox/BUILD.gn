@@ -319,6 +319,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_wb_sunny_round.xml",
     "java/res/drawable/logo_partly_cloudy.xml",
     "java/res/drawable/logo_translate_round.xml",
+    "java/res/drawable/search_spark_black_24dp.xml",
     "java/res/drawable/switch_to_tab.xml",
     "java/res/drawable/trending_up_black_24dp.xml",
     "java/res/layout-sw600dp/location_bar.xml",

@@ -97,8 +97,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 return R.drawable.ic_suggestion_magnifier;
 
             case SuggestTemplateInfo.IconType.SEARCH_LOOP_WITH_SPARKLE_VALUE:
-                // TODO(crbug.com/417793264): add assets and update reported value.
-                return R.drawable.ic_history_googblue_24dp;
+                return R.drawable.search_spark_black_24dp;
 
             case SuggestTemplateInfo.IconType.TRENDING_VALUE:
                 return R.drawable.trending_up_black_24dp;
