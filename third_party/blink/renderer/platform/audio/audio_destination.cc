@@ -599,7 +599,7 @@ bool AudioDestination::RequestRender(size_t frames_requested,
   // FIFO contains audio at the output device sample rate.
   base::TimeDelta fifo_delay = audio_utilities::FramesToTime(
       fifo_->GetFramesAvailable(), web_audio_device_->SampleRate());
-  uma_reporter_.UpdateFifoDelay(fifo_delay);
+  uma_reporter_.AddFifoDelay(fifo_delay);
   if (has_fifo_underrun_occurred) {
     uma_reporter_.IncreaseFifoUnderrunCount();
   }
@@ -668,7 +668,7 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
 
 void AudioDestination::PullFromCallback(AudioBus* destination_bus,
                                         base::TimeDelta delay) {
-  uma_reporter_.UpdateTotalPlayoutDelay(delay);
+  uma_reporter_.AddTotalPlayoutDelay(delay);
   callback_->Render(destination_bus, render_quantum_frames_, output_position_,
                     metric_reporter_.GetMetric(), delay,
                     glitch_info_to_report_.GetAndReset());

@@ -260,10 +260,11 @@ chromium-metrics-reviews@google.com.
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
     The audio delay in milliseconds based on the number of available frames of
-    the PushPUllFIFO in AudioDestination. Measured and reported at every render
-    callback. This metric is categorized by &quot;ModeTag&quot;, which indicates
-    the rendering mode: DualThread, used when audio worklet is involved. Or
-    SingleThread, used when audio worklet is not involved.
+    the PushPUllFIFO in AudioDestination. The metric is averaged and reported at
+    every 1000 render callbacks. This metric is categorized by
+    &quot;ModeTag&quot;, which indicates the rendering mode: DualThread, used
+    when audio worklet is involved. Or SingleThread, used when audio worklet is
+    not involved.
   </summary>
   <token key="ModeTag" variants="RenderMode"/>
   <token key="LatencyTag" variants="WebAudioLatencyTag"/>
@@ -343,7 +344,8 @@ chromium-metrics-reviews@google.com.
     WebAudio graph to the speaker. This metric is categorized by
     &quot;ModeTag&quot;, which indicates the rendering mode: DualThread, used
     when audio worklet is involved. Or SingleThread, used when audio worklet is
-    not involved.
+    not involved. The metric is averaged and reported at every 1000 render
+    callbacks.
   </summary>
   <token key="ModeTag" variants="RenderMode"/>
   <token key="LatencyTag" variants="WebAudioLatencyTag"/>

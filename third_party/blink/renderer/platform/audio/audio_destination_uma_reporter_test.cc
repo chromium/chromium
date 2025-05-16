@@ -86,10 +86,10 @@ TEST_P(AudioDestinationUmaReporterTest, BasicTest) {
       fake_callback_interval * 0.1;
 
   for (int i = 0; i < 1000; i++) {
-    base::TimeDelta fifo_delay = base::Milliseconds(i % 2 ? 10 : 40);
-    uma_reporter_->UpdateFifoDelay(fifo_delay);
-    base::TimeDelta infra_delay = base::Milliseconds(i % 2 ? 1 : 10);
-    uma_reporter_->UpdateTotalPlayoutDelay(fifo_delay + infra_delay);
+    base::TimeDelta fifo_delay = base::Milliseconds(50);
+    uma_reporter_->AddFifoDelay(fifo_delay);
+    base::TimeDelta infra_delay = base::Milliseconds(20);
+    uma_reporter_->AddTotalPlayoutDelay(fifo_delay + infra_delay);
     uma_reporter_->AddRenderDuration(fake_render_duration);
     uma_reporter_->AddRequestRenderDuration(fake_request_render_duration);
     uma_reporter_->AddRequestRenderGapDuration(
@@ -98,21 +98,14 @@ TEST_P(AudioDestinationUmaReporterTest, BasicTest) {
   }
 
   histogram_tester_.ExpectBucketCount(GetExpectedHistogramName(kFifoDelayBase),
-                                      10, 500);
+                                      50, 1);
   histogram_tester_.ExpectBucketCount(
-      GetExpectedHistogramName(kFifoDelayBase) + latency_tag_, 10, 500);
-  histogram_tester_.ExpectBucketCount(GetExpectedHistogramName(kFifoDelayBase),
-                                      40, 500);
+      GetExpectedHistogramName(kFifoDelayBase) + latency_tag_, 50, 1);
+
   histogram_tester_.ExpectBucketCount(
-      GetExpectedHistogramName(kFifoDelayBase) + latency_tag_, 40, 500);
+      GetExpectedHistogramName(kTotalPlayoutDelayBase), 70, 1);
   histogram_tester_.ExpectBucketCount(
-      GetExpectedHistogramName(kTotalPlayoutDelayBase), 11, 500);
-  histogram_tester_.ExpectBucketCount(
-      GetExpectedHistogramName(kTotalPlayoutDelayBase) + latency_tag_, 11, 500);
-  histogram_tester_.ExpectBucketCount(
-      GetExpectedHistogramName(kTotalPlayoutDelayBase), 50, 500);
-  histogram_tester_.ExpectBucketCount(
-      GetExpectedHistogramName(kTotalPlayoutDelayBase) + latency_tag_, 50, 500);
+      GetExpectedHistogramName(kTotalPlayoutDelayBase) + latency_tag_, 70, 1);
 
   // Due to the static_cast<int> conversion in PercentOfCallbackInterval, the
   // floating-point part of the double result is truncated (rounded down).

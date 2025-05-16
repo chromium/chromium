@@ -26,8 +26,8 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
 
   // These methods are not thread-safe and must be called within
   // `AudioDestination::RequestRender()` method for correct instrumentation.
-  void UpdateFifoDelay(base::TimeDelta fifo_delay);
-  void UpdateTotalPlayoutDelay(base::TimeDelta total_playout_delay);
+  void AddFifoDelay(base::TimeDelta fifo_delay);
+  void AddTotalPlayoutDelay(base::TimeDelta total_playout_delay);
   void IncreaseFifoUnderrunCount();
   void UpdateMetricNameForDualThreadMode();
   void Report();
@@ -57,7 +57,7 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
 
  private:
   // Calculates the percentage of `delta` relative to the expected callback
-  // interval, scaled by kMetricsReportCycle for reporting.
+  // interval, scaled by `kMetricsReportCycle` for reporting.
   // Returns the percentage (0-100).
   int PercentOfCallbackInterval(base::TimeDelta duration);
 
@@ -71,13 +71,14 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
   bool use_audio_worklet_ = false;
 
   // The audio delay (ms) computed the number of available frames of the
-  // PushPUllFIFO in AudioDestination. Measured and reported at every audio
-  // callback.
-  base::TimeDelta fifo_delay_;
+  // PushPUllFIFO in AudioDestination. Averaged, reported and reset at every
+  // `kMetricsReportCycle` audio callbacks.
+  base::TimeDelta fifo_delay_sum_;
 
   // The audio delay (ms) covers the whole pipeline from the WebAudio graph to
-  // the speaker. Measured and reported at every audio callback.
-  base::TimeDelta total_playout_delay_;
+  // the speaker. Averaged, reported and reset at every 'kMetricsReportCycle'
+  // audio callbacks.
+  base::TimeDelta total_playout_delay_sum_;
 
   // Histogram names for metrics reported by `AudioDestinationUmaReporter`.
   // These names are constructed during initialization (or updated in

@@ -92,13 +92,13 @@ AudioDestinationUmaReporter::~AudioDestinationUmaReporter() {
   }
 }
 
-void AudioDestinationUmaReporter::UpdateFifoDelay(base::TimeDelta fifo_delay) {
-  fifo_delay_ = fifo_delay;
+void AudioDestinationUmaReporter::AddFifoDelay(base::TimeDelta fifo_delay) {
+  fifo_delay_sum_ += fifo_delay;
 }
 
-void AudioDestinationUmaReporter::UpdateTotalPlayoutDelay(
+void AudioDestinationUmaReporter::AddTotalPlayoutDelay(
     base::TimeDelta total_playout_delay) {
-  total_playout_delay_ = total_playout_delay;
+  total_playout_delay_sum_ += total_playout_delay;
 }
 
 void AudioDestinationUmaReporter::IncreaseFifoUnderrunCount() {
@@ -106,18 +106,26 @@ void AudioDestinationUmaReporter::IncreaseFifoUnderrunCount() {
 }
 
 void AudioDestinationUmaReporter::Report() {
-  base::UmaHistogramCustomCounts(fifo_delay_histogram_name_,
-                                 fifo_delay_.InMilliseconds(), 1, 1000, 50);
-  base::UmaHistogramCustomCounts(fifo_delay_histogram_name_with_latency_tag_,
-                                 fifo_delay_.InMilliseconds(), 1, 1000, 50);
-
-  base::UmaHistogramCustomCounts(total_playout_delay_histogram_name_,
-                                 total_playout_delay_.InMilliseconds(), 1, 1000,
-                                 50);
-  base::UmaHistogramCustomCounts(
-      total_playout_delay_histogram_name_with_latency_tag_,
-      total_playout_delay_.InMilliseconds(), 1, 1000, 50);
   if (++callback_count_ >= kMetricsReportCycle) {
+    base::UmaHistogramCustomCounts(
+        fifo_delay_histogram_name_,
+        fifo_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1, 1000, 50);
+    base::UmaHistogramCustomCounts(
+        fifo_delay_histogram_name_with_latency_tag_,
+        fifo_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1, 1000, 50);
+
+    base::UmaHistogramCustomCounts(
+        total_playout_delay_histogram_name_,
+        total_playout_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1,
+        1000, 50);
+    base::UmaHistogramCustomCounts(
+        total_playout_delay_histogram_name_with_latency_tag_,
+        total_playout_delay_sum_.InMilliseconds() / kMetricsReportCycle, 1,
+        1000, 50);
+
+    fifo_delay_sum_ = base::TimeDelta();
+    total_playout_delay_sum_ = base::TimeDelta();
+
     base::UmaHistogramCustomCounts(fifo_underrun_histogram_name_,
                                    fifo_underrun_count_, 1, 1000, 50);
     base::UmaHistogramCustomCounts(
