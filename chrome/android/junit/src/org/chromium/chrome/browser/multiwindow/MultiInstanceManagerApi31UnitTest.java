@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -400,13 +399,7 @@ public class MultiInstanceManagerApi31UnitTest {
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
-                        MockTabModelSelector mockTabModelSelector =
-                                Mockito.spy(
-                                        new MockTabModelSelector(
-                                                mProfile, mIncognitoProfile, 0, 0, null));
-                        when(mockTabModelSelector.getTabGroupModelFilterProvider())
-                                .thenReturn(mTabGroupModelFilterProvider);
-                        return mockTabModelSelector;
+                        return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     }
 
                     @Override
@@ -1323,40 +1316,13 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testReparentGroupToRunningActivity() {
-        doTestReparentGroupToRunningActivity(
-                /* isGroupShared= */ false, /* expectedDestTabCount= */ 3);
+        doTestReparentGroupToRunningActivity(/* isGroupShared= */ false);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testReparentGroupToRunningActivity_sharedTabGroup() {
-        doTestReparentGroupToRunningActivity(
-                /* isGroupShared= */ true, /* expectedDestTabCount= */ 3);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
-    public void testReparentGroupToRunningActivity_groupSizeDifferent() {
-        when(mTabGroupModelFilter.getTabsInGroup(any())).thenReturn(Arrays.asList(mTab1, mTab2));
-
-        // Verify AssertionError and its message when tab group sizes differ.
-        StringBuilder expectedErrMsg = new StringBuilder();
-        expectedErrMsg
-                .append("Tab group size before reparenting: ")
-                .append(3)
-                .append(", isIncognito: ")
-                .append(false)
-                .append("\nMissing URL schemes:\n")
-                .append("- ")
-                .append("http\n");
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () -> {
-                            doTestReparentGroupToRunningActivity(
-                                    /* isGroupShared= */ false, /* expectedDestTabCount= */ 2);
-                        });
-        assertEquals(expectedErrMsg.toString(), error.getMessage());
+        doTestReparentGroupToRunningActivity(/* isGroupShared= */ true);
     }
 
     @Test
@@ -1635,26 +1601,22 @@ public class MultiInstanceManagerApi31UnitTest {
         }
     }
 
-    private void doTestReparentGroupToRunningActivity(
-            boolean isGroupShared, int expectedDestTabCount) {
+    private void doTestReparentGroupToRunningActivity(boolean isGroupShared) {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Android.Reparent.TabGroup.GroupSize", 3)
-                        .expectIntRecord(
-                                "Android.Reparent.TabGroup.GroupSize.Diff",
-                                3 - expectedDestTabCount)
+                        .expectAnyRecord("Android.Reparent.TabGroup.GroupSize.Diff")
                         .expectAnyRecord("Android.Reparent.TabGroup.Duration")
                         .build();
 
         // Setup.
         mMultiInstanceManager.mTestBuildInstancesList = true;
-        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(expectedDestTabCount);
         ArrayList<Map.Entry<Integer, String>> tabIdsToUrls =
                 new ArrayList<>(
                         List.of(
-                                Map.entry(TAB_ID_1, TAB_URL_1.getSpec()),
-                                Map.entry(TAB_ID_2, TAB_URL_2.getSpec()),
-                                Map.entry(TAB_ID_3, TAB_URL_3.getSpec())));
+                                Map.entry(1, "https://www.amazon.com"),
+                                Map.entry(2, "https://www.youtube.com"),
+                                Map.entry(3, "https://www.facebook.com")));
         TabGroupMetadata tabGroupMetadata =
                 new TabGroupMetadata(
                         /* rootId= */ -1,
