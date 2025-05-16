@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -21,6 +22,7 @@ import android.os.Process;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ServiceCompat;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.Flag;
@@ -270,7 +272,15 @@ public final class DeveloperUiService extends Service {
                         .setTicker(NOTIFICATION_TICKER)
                         .build();
         try {
-            startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceCompat.startForeground(
+                        this,
+                        FLAG_OVERRIDE_NOTIFICATION_ID,
+                        notification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+            } else {
+                startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
+            }
         } catch (IllegalStateException e) {
             logSuspectedForegroundServiceStartNotAllowedException();
         }

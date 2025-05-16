@@ -145,6 +145,7 @@ android_library("services_java") {
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
   resources_package = "org.chromium.android_webview.devui"
