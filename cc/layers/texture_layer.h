@@ -97,10 +97,6 @@ class CC_EXPORT TextureLayer : public Layer {
   // Sets a UV transform to be used at draw time. Defaults to (0, 0) and (1, 1).
   void SetUV(const gfx::PointF& top_left, const gfx::PointF& bottom_right);
 
-  // Sets whether the alpha channel is premultiplied or unpremultiplied.
-  // Defaults to true.
-  void SetPremultipliedAlpha(bool premultiplied_alpha);
-
   // Sets whether the texture should be blended with the background color
   // at draw time. Defaults to false.
   void SetBlendBackgroundColor(bool blend);
@@ -153,7 +149,6 @@ class CC_EXPORT TextureLayer : public Layer {
   ProtectedSequenceReadable<gfx::PointF> uv_top_left_;
   ProtectedSequenceReadable<gfx::PointF> uv_bottom_right_;
   // [bottom left, top left, top right, bottom right]
-  ProtectedSequenceReadable<bool> premultiplied_alpha_;
   ProtectedSequenceReadable<bool> blend_background_color_;
   ProtectedSequenceReadable<bool> force_texture_to_opaque_;
 

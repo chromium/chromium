@@ -555,7 +555,6 @@ void SerializeTextureLayerExtra(TextureLayerImpl& layer,
                                 viz::mojom::TextureLayerExtraPtr& extra,
                                 viz::ClientResourceProvider& resource_provider,
                                 viz::RasterContextProvider& context_provider) {
-  extra->premultiplied_alpha = layer.premultiplied_alpha();
   extra->blend_background_color = layer.blend_background_color();
   extra->force_texture_to_opaque = layer.force_texture_to_opaque();
   extra->uv_top_left = layer.uv_top_left();

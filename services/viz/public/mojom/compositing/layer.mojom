@@ -85,7 +85,6 @@ struct SurfaceLayerExtra {
 // Extra fields in a cc::TextureLayerImpl that has been added to a tree or
 // modified in some interesting way since a prior tree update.
 struct TextureLayerExtra {
-  bool premultiplied_alpha;
   bool blend_background_color;
   bool force_texture_to_opaque;
   gfx.mojom.PointF uv_top_left;

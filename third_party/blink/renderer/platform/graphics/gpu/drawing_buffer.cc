@@ -481,6 +481,14 @@ bool DrawingBuffer::PrepareTransferableResource(
     }
   }
 
+  // If staging_texture_ exists, then premultiplication
+  // has already been handled via CopySubTextureCHROMIUM.
+  // TODO(crbug.com/410591523): Always set this field when not using
+  // `staging_texture_` under a killswitch.
+  if (!staging_texture_ && requested_alpha_type_ == kUnpremul_SkAlphaType) {
+    out_resource->alpha_type = requested_alpha_type_;
+  }
+
   return true;
 }
 
@@ -1213,12 +1221,6 @@ cc::Layer* DrawingBuffer::CcLayer() {
     layer_->SetContentsOpaque(requested_alpha_type_ == kOpaque_SkAlphaType);
     layer_->SetBlendBackgroundColor(requested_alpha_type_ !=
                                     kOpaque_SkAlphaType);
-
-    // If staging_texture_ exists, then premultiplication
-    // has already been handled via CopySubTextureCHROMIUM.
-    if (!staging_texture_ && requested_alpha_type_ == kUnpremul_SkAlphaType) {
-      layer_->SetPremultipliedAlpha(false);
-    }
   }
 
   return layer_.get();

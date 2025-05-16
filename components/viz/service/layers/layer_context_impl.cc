@@ -436,7 +436,6 @@ void UpdateMirrorLayerExtra(const mojom::MirrorLayerExtraPtr& extra,
 
 void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
                              cc::TextureLayerImpl& layer) {
-  layer.SetPremultipliedAlpha(extra->premultiplied_alpha);
   layer.SetBlendBackgroundColor(extra->blend_background_color);
   layer.SetForceTextureToOpaque(extra->force_texture_to_opaque);
   layer.SetUVTopLeft(extra->uv_top_left);

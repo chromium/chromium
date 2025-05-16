@@ -52,7 +52,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   // must explicitly invalidate if they intend to cause a visible change in the
   // layer's output.
   void SetTextureId(unsigned id);
-  void SetPremultipliedAlpha(bool premultiplied_alpha);
   void SetBlendBackgroundColor(bool blend);
   void SetForceTextureToOpaque(bool opaque);
   void SetUVTopLeft(const gfx::PointF& top_left);
@@ -70,7 +69,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   static bool MayEvictResourceInBackground(
       viz::TransferableResource::ResourceSource source);
 
-  bool premultiplied_alpha() const { return premultiplied_alpha_; }
   bool blend_background_color() const { return blend_background_color_; }
   bool force_texture_to_opaque() const { return force_texture_to_opaque_; }
   bool needs_set_resource_push() const { return needs_set_resource_push_; }
@@ -89,7 +87,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   void FreeTransferableResource();
   void OnResourceEvicted();
 
-  bool premultiplied_alpha_ = true;
   bool blend_background_color_ = false;
   bool force_texture_to_opaque_ = false;
 
