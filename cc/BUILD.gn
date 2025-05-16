@@ -493,6 +493,7 @@ cc_component("cc") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
     "//services/tracing/public/cpp:cpp",
+    "//services/viz/public/mojom",
     "//skia:skcms",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//ui/base:features",
