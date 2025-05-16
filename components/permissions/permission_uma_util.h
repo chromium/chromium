@@ -53,6 +53,7 @@ enum class PredictionModelType {
   kUnknown = 0,
   kServerSideCpssV3Model = 1,
   kOnDeviceCpssV1Model = 2,
+  kOnDeviceAiV3Model = 3,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PredictionModels)
 
@@ -798,7 +799,7 @@ class PermissionUmaUtil {
 
   static void RecordPermissionPredictionServiceHoldback(
       RequestType request_type,
-      bool is_on_device,
+      PredictionModelType model_type,
       bool is_heldback);
 
   static void RecordPageInfoDialogAccessType(
@@ -909,6 +910,11 @@ class PermissionUmaUtil {
   static void RecordActionBrowserAlwaysActive(RequestTypeForUma request_type,
                                               std::string permission_action,
                                               bool always_active);
+
+  // Records the execution time of prediction model inquiries.
+  static void RecordPredictionModelInquireTime(
+      base::TimeTicks model_inquire_start_time,
+      PredictionModelType model_type);
 
   // Records if the browser was active at the time the prompt started displaying
   static void RecordPromptShownInActiveBrowser(

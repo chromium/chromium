@@ -1456,21 +1456,14 @@ void PermissionUmaUtil::RecordPermissionPredictionSource(
 // static
 void PermissionUmaUtil::RecordPermissionPredictionServiceHoldback(
     RequestType request_type,
-    bool is_on_device,
+    PredictionModelType model_type,
     bool is_heldback) {
-  if (is_on_device) {
-    base::UmaHistogramBoolean(
-        "Permissions.OnDevicePredictionService.Response." +
-            GetPermissionRequestString(
-                PermissionUtil::GetUmaValueForRequestType(request_type)),
-        is_heldback);
-  } else {
-    base::UmaHistogramBoolean(
-        "Permissions.PredictionService.Response." +
-            GetPermissionRequestString(
-                PermissionUtil::GetUmaValueForRequestType(request_type)),
-        is_heldback);
-  }
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Permissions.", GetPredictionModelString(model_type), ".Response.",
+           GetPermissionRequestString(
+               PermissionUtil::GetUmaValueForRequestType(request_type))}),
+      is_heldback);
 }
 
 // static
@@ -1504,6 +1497,8 @@ std::string PermissionUmaUtil::GetPredictionModelString(
       return "PredictionService";
     case PredictionModelType::kOnDeviceCpssV1Model:
       return "OnDevicePredictionService";
+    case PredictionModelType::kOnDeviceAiV3Model:
+      return "AIv3";
     default:
       NOTREACHED();
   }
@@ -2053,6 +2048,17 @@ void PermissionUmaUtil::RecordActionBrowserAlwaysActive(
       {"Permissions.Prompt.", GetPermissionRequestString(request_type), ".",
        permission_action, ".WithBrowser"});
   base::UmaHistogramBoolean(histogram_name, always_active);
+}
+
+// static
+void PermissionUmaUtil::RecordPredictionModelInquireTime(
+    base::TimeTicks model_inquire_start_time,
+    PredictionModelType model_type) {
+  std::string histogram_name =
+      base::StrCat({"Permissions.", GetPredictionModelString(model_type),
+                    ".InquiryDuration"});
+  base::UmaHistogramMediumTimes(
+      histogram_name, base::TimeTicks::Now() - model_inquire_start_time);
 }
 
 }  // namespace permissions

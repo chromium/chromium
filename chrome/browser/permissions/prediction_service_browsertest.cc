@@ -93,7 +93,12 @@ constexpr std::string_view kModelExecutionSuccessHistogram =
     "OptimizationGuide.ModelExecutor.ExecutionStatus.NotificationPermissionsV3";
 constexpr std::string_view kSnapshotTakenHistogram =
     "Permissions.AIv3.SnapshotTaken";
-
+constexpr char kAIv3InquiryDurationHistogram[] =
+    "Permissions.AIv3.InquiryDuration";
+constexpr char kCpssV1InquiryDurationHistogram[] =
+    "Permissions.OnDevicePredictionService.InquiryDuration";
+constexpr char kCpssV3InquiryDurationHistogram[] =
+    "Permissions.PredictionService.InquiryDuration";
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
 // signature_model_executor to differentiate between
@@ -271,6 +276,8 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     }
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  protected:
   OptimizationGuideKeyedService* opt_guide() {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -282,6 +289,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
  private:
   std::unique_ptr<MockPermissionPromptFactory> mock_permission_prompt_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTestBase,
@@ -423,6 +431,9 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
                            GetParam().should_expect_quiet_ui,
                            /*expected_relevance=*/std::nullopt,
                            GetParam().expected_prediction_likelihood);
+
+  histogram_tester().ExpectTotalCount(kCpssV1InquiryDurationHistogram,
+                                      /*expected_count=*/1);
 }
 
 struct Aiv3ModelTestCase {
@@ -517,8 +528,6 @@ class Aiv3ModelPredictionServiceBrowserTest
 
   PredictionServiceMock& prediction_service() { return prediction_service_; }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
  private:
   PredictionModelHandlerProvider* model_handler_provider() {
     return PredictionModelHandlerProviderFactory::GetForBrowserContext(
@@ -526,7 +535,6 @@ class Aiv3ModelPredictionServiceBrowserTest
   }
 
   PredictionServiceMock prediction_service_;
-  base::HistogramTester histogram_tester_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -621,12 +629,18 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
       GetParam().prediction_service_likelihood);
 
   histogram_tester().ExpectBucketCount(
-      kModelExecutionSuccessHistogram,
-      /*sample=*/true, /*expected_count=*/
+      kModelExecutionSuccessHistogram, /*sample=*/true, /*expected_count=*/
       GetParam().success_count_model_execution);
 
   histogram_tester().ExpectBucketCount(kSnapshotTakenHistogram,
-                                       /*sample=*/true, /*expected_count=*/1);
+                                       /*sample=*/true,
+                                       /*expected_count=*/1);
+  // We should receive timing information for both, the on-device model and
+  // the server-side model.
+  histogram_tester().ExpectTotalCount(kCpssV3InquiryDurationHistogram,
+                                      /*expected_count=*/1);
+  histogram_tester().ExpectTotalCount(kAIv3InquiryDurationHistogram,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace permissions

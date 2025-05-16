@@ -51,6 +51,27 @@ constexpr char kPredServiceResponseNotificationsHistogram[] =
     "Permissions.PredictionService.Response.Notifications";
 constexpr char kPredServiceResponseGeolocationHistogram[] =
     "Permissions.PredictionService.Response.Geolocation";
+constexpr char kAIv3ResponseNotificationsHistogram[] =
+    "Permissions.AIv3.Response.Notifications";
+constexpr char kAIv3ResponseGeolocationHistogram[] =
+    "Permissions.AIv3.Response.Geolocation";
+
+std::string PredictionSourceToString(PredictionSource prediction_source) {
+  switch (prediction_source) {
+    case PredictionSource::kServerSideCpssV3Model:
+      return "ServerSideCpssV3Model";
+    case PredictionSource::kOnDeviceAiv1AndServerSideModel:
+      return "OnDeviceAiv1AndServerSideModel";
+    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
+      return "OnDeviceAiv3AndServerSideModel";
+    case PredictionSource::kOnDeviceCpssV1Model:
+      return "OnDeviceCpssV1Model";
+    case PredictionSource::kNoCpssModel:
+      [[fallthrough]];
+    default:
+      NOTREACHED();
+  }
+}
 
 }  // namespace
 
@@ -354,8 +375,9 @@ TEST_P(PredictionBasedPermissionUiExpectedPredictionSourceTest,
 
 struct HoldbackChanceTestCase {
   int holdback_chance;
-  bool is_on_device;
+  PredictionSource prediction_source;
   permissions::RequestType request_type;
+  std::vector<std::string_view> updated_histograms;
 };
 
 class PredictionBasedPermissionUiExpectedHoldbackChanceTest
@@ -377,7 +399,8 @@ class PredictionBasedPermissionUiExpectedHoldbackChanceTest
 
   // Checks for the selected histogram that is has a bucket count of 1 and
   // also ensures that no other histogram was changed.
-  void CheckHistogramsAreEmptyExcept(const std::string histogram) const {
+  void CheckHistogramsAreEmptyExcept(
+      const std::vector<std::string_view>& updated_histograms) {
     // Static list of all histogram names to check
     static const std::vector<std::string> kAllHistogramNames = {
         kOnDevPredServiceResponseNotificationsHistogram,
@@ -386,19 +409,21 @@ class PredictionBasedPermissionUiExpectedHoldbackChanceTest
         kPredServiceResponseGeolocationHistogram,
     };
 
-    // Iterate through all histogram names in the static list
     for (const auto& histogram_name : kAllHistogramNames) {
-      if (histogram_name != histogram) {
-        // If the histogram is not in the allowed set, ensure its count is 0
+      // If the histogram is not in the allowed set, ensure its count is 0
+      if (!base::Contains(updated_histograms, histogram_name)) {
         histogram_tester_.ExpectTotalCount(histogram_name, 0);
       }
     }
-    histogram_tester_.ExpectBucketCount(
-        histogram,
-        /*sample=*/GetParam().holdback_chance == 1,
-        /*expected_count=*/1);
 
-    histogram_tester_.ExpectTotalCount(histogram, /*count=*/1);
+    for (const auto& histogram_name : updated_histograms) {
+      histogram_tester_.ExpectBucketCount(
+          histogram_name,
+          /*sample=*/GetParam().holdback_chance == 1,
+          /*expected_count=*/1);
+
+      histogram_tester_.ExpectTotalCount(histogram_name, /*count=*/1);
+    }
   }
 
  private:
@@ -409,46 +434,96 @@ INSTANTIATE_TEST_SUITE_P(
     HoldbackChanceTest,
     PredictionBasedPermissionUiExpectedHoldbackChanceTest,
     testing::ValuesIn<HoldbackChanceTestCase>({
+        // ----------------------- on-device CPSSV1
         {
             /*holdback_chance=*/0,
-            /*is_on_device=*/true,
+            /*prediction_source=*/PredictionSource::kOnDeviceCpssV1Model,
             /*request_type=*/permissions::RequestType::kNotifications,
-        },
-        {
-            /*holdback_chance=*/0,
-            /*is_on_device=*/false,
-            /*request_type=*/permissions::RequestType::kNotifications,
-        },
-        {
-            /*holdback_chance=*/0,
-            /*is_on_device=*/true,
-            /*request_type=*/permissions::RequestType::kGeolocation,
-        },
-        {
-            /*holdback_chance=*/0,
-            /*is_on_device=*/false,
-            /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/
+            {kOnDevPredServiceResponseNotificationsHistogram},
         },
         {
             /*holdback_chance=*/1,
-            /*is_on_device=*/true,
+            /*prediction_source=*/PredictionSource::kOnDeviceCpssV1Model,
             /*request_type=*/permissions::RequestType::kNotifications,
+            /*updated_histograms=*/
+            {kOnDevPredServiceResponseNotificationsHistogram},
+        },
+        {
+            /*holdback_chance=*/0,
+            /*prediction_source=*/PredictionSource::kOnDeviceCpssV1Model,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/
+            {kOnDevPredServiceResponseGeolocationHistogram},
         },
         {
             /*holdback_chance=*/1,
-            /*is_on_device=*/false,
+            /*prediction_source=*/PredictionSource::kOnDeviceCpssV1Model,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/
+            {kOnDevPredServiceResponseGeolocationHistogram},
+        },
+        // ----------------------- server-side CPSSv3
+        {
+            /*holdback_chance=*/0,
+            /*prediction_source=*/PredictionSource::kServerSideCpssV3Model,
             /*request_type=*/permissions::RequestType::kNotifications,
+            /*updated_histograms=*/
+            {kPredServiceResponseNotificationsHistogram},
         },
         {
             /*holdback_chance=*/1,
-            /*is_on_device=*/true,
+            /*prediction_source=*/PredictionSource::kServerSideCpssV3Model,
+            /*request_type=*/permissions::RequestType::kNotifications,
+            /*updated_histograms=*/
+            {kPredServiceResponseNotificationsHistogram},
+        },
+        {
+            /*holdback_chance=*/0,
+            /*prediction_source=*/PredictionSource::kServerSideCpssV3Model,
             /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/
+            {kPredServiceResponseGeolocationHistogram},
         },
         {
             /*holdback_chance=*/1,
-            /*is_on_device=*/false,
+            /*prediction_source=*/PredictionSource::kServerSideCpssV3Model,
             /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/
+            {kPredServiceResponseGeolocationHistogram},
         },
+        // ----------------------- on-device AIv1 + server-side CPSSv3
+        // We don't separately analyse holdback UMA statistics for AIv1.
+        {
+            /*holdback_chance=*/0,
+            /*prediction_source=*/
+            PredictionSource::kOnDeviceAiv1AndServerSideModel,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/{kPredServiceResponseGeolocationHistogram},
+        },
+        {
+            /*holdback_chance=*/1,
+            /*prediction_source=*/
+            PredictionSource::kOnDeviceAiv1AndServerSideModel,
+            /*request_type=*/permissions::RequestType::kNotifications,
+            /*updated_histograms=*/{kPredServiceResponseNotificationsHistogram},
+        },
+        // ----------------------- on-device AIv3 + server-side CPSSv3
+        {
+            /*holdback_chance=*/0,
+            /*prediction_source=*/
+            PredictionSource::kOnDeviceAiv3AndServerSideModel,
+            /*request_type=*/permissions::RequestType::kNotifications,
+            /*updated_histograms=*/{kAIv3ResponseNotificationsHistogram},
+        },
+        {
+            /*holdback_chance=*/1,
+            /*prediction_source=*/
+            PredictionSource::kOnDeviceAiv3AndServerSideModel,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+            /*updated_histograms=*/{kAIv3ResponseGeolocationHistogram},
+        },
+
     }),
     /*name_generator=*/
     [](const testing::TestParamInfo<
@@ -457,7 +532,7 @@ INSTANTIATE_TEST_SUITE_P(
       return base::StrCat(
           {(info.param.holdback_chance == 1) ? "FullHoldbackChance"
                                              : "NoHoldbackChance",
-           "For", info.param.is_on_device ? "OnDevice" : "ServerSide",
+           "For", PredictionSourceToString(info.param.prediction_source),
            "Execution", "And",
            (info.param.request_type == permissions::RequestType::kNotifications)
                ? "Notifications"
@@ -473,24 +548,11 @@ TEST_P(PredictionBasedPermissionUiExpectedHoldbackChanceTest,
 
   // 1 means 100% holdback chance and as we only test with 0 or 1 here this is
   // basically the expected result.
-  bool is_held_back = GetParam().holdback_chance == 1;
-  EXPECT_EQ(is_held_back,
-            prediction_selector.ShouldHoldBack(GetParam().is_on_device,
-                                               GetParam().request_type));
+  bool expected_holdback = GetParam().holdback_chance == 1;
+  EXPECT_EQ(expected_holdback,
+            prediction_selector.ShouldHoldBack(
+                {.prediction_source = GetParam().prediction_source,
+                 .request_type = GetParam().request_type}));
 
-  if (GetParam().is_on_device) {
-    if (GetParam().request_type == permissions::RequestType::kNotifications) {
-      CheckHistogramsAreEmptyExcept(
-          kOnDevPredServiceResponseNotificationsHistogram);
-    } else {
-      CheckHistogramsAreEmptyExcept(
-          kOnDevPredServiceResponseGeolocationHistogram);
-    }
-  } else {
-    if (GetParam().request_type == permissions::RequestType::kNotifications) {
-      CheckHistogramsAreEmptyExcept(kPredServiceResponseNotificationsHistogram);
-    } else {
-      CheckHistogramsAreEmptyExcept(kPredServiceResponseGeolocationHistogram);
-    }
-  }
+  CheckHistogramsAreEmptyExcept(GetParam().updated_histograms);
 }

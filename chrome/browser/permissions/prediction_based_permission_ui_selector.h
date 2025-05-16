@@ -48,6 +48,15 @@ class PredictionBasedPermissionUiSelector
     kOnDeviceAiv1AndServerSideModel,
     kOnDeviceAiv3AndServerSideModel,
   };
+
+  // Contains information that are not important as features for the
+  // prediction service, but contain details about the workflow and the origin
+  // of feature data.
+  struct PredictionRequestMetadata {
+    PredictionSource prediction_source;
+    permissions::RequestType request_type;
+  };
+
   using PredictionGrantLikelihood =
       permissions::PermissionUmaUtil::PredictionGrantLikelihood;
   // Constructs an instance in the context of the given |profile|.
@@ -98,15 +107,14 @@ class PredictionBasedPermissionUiSelector
   // curryed to be used for the server side model call.
   void OnDeviceAiv1ModelExecutionCallback(
       permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type,
+      PredictionRequestMetadata request_metadata,
       std::optional<optimization_guide::proto::PermissionsAiResponse> response);
 
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
   void LookupResponseReceived(
       base::TimeTicks model_inquire_start_time,
-      bool is_on_device,
-      permissions::RequestType request_type,
+      PredictionRequestMetadata request_metadata,
       bool lookup_successful,
       bool response_from_cache,
       const std::optional<permissions::GeneratePredictionsResponse>& response);
@@ -123,14 +131,14 @@ class PredictionBasedPermissionUiSelector
   // by the server side model later.
   void OnGetInnerTextForOnDeviceModel(
       permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type,
+      PredictionRequestMetadata request_metadata,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
-  bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
+  bool ShouldHoldBack(const PredictionRequestMetadata& request_metadata) const;
 
   void InquireServerModel(
       const permissions::PredictionRequestFeatures& features,
-      permissions::RequestType request_type,
+      PredictionRequestMetadata request_metadata,
       bool record_source);
 
   // As the first part of the AIv3 model execution chain, this function triggers
@@ -141,7 +149,7 @@ class PredictionBasedPermissionUiSelector
   void InquireOnDeviceAiv1AndServerModelIfAvailable(
       content::RenderFrameHost* rfh,
       permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type);
+      PredictionRequestMetadata request_metadata);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // As the first part of the AIv3 model execution chain, this function triggers
@@ -152,7 +160,7 @@ class PredictionBasedPermissionUiSelector
   void InquireOnDeviceAiv3AndServerModelIfAvailable(
       content::RenderWidgetHostView* host_view,
       permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type);
+      PredictionRequestMetadata request_metadata);
 
   // Part of the AIv3 model execution chain; provided as a curryed callback to
   // be submitted to the logic that fetches a snapshot that serves as the input
@@ -160,20 +168,21 @@ class PredictionBasedPermissionUiSelector
   // used by the server side model later.
   void OnSnapshotTakenForOnDeviceModel(
       permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type,
+      PredictionRequestMetadata request_metadata,
       const SkBitmap& screenshot);
 
   // Callback for the Aiv3ModelHandler, with the first to parameters being
   // curryed to be used for the server side model call.
   void OnDeviceAiv3ModelExecutionCallback(
+      base::TimeTicks model_inquire_start_time,
       permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type,
+      PredictionRequestMetadata request_metadata,
       const std::optional<permissions::PermissionRequestRelevance>& relevance);
 
   // Use on device CPSSv1 tflite model.
   void InquireCpssV1OnDeviceModelIfAvailable(
       const permissions::PredictionRequestFeatures& features,
-      permissions::RequestType request_type);
+      PredictionRequestMetadata request_metadata);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   raw_ptr<Profile> profile_;
