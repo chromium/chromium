@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <optional>
@@ -63,9 +64,12 @@ class FreezingPolicy : public PageNodeObserver,
     kVoting,
     // Freezing of CPU-intensive background tabs when Battery Saver is active.
     kBatterySaver,
+    // Freezing of tabs which aren't in the set of most recently used, to
+    // scale to infinite tabs.
+    kInfiniteTabs,
   };
   using FreezingTypeSet = base::
-      EnumSet<FreezingType, FreezingType::kVoting, FreezingType::kBatterySaver>;
+      EnumSet<FreezingType, FreezingType::kVoting, FreezingType::kInfiniteTabs>;
 
   explicit FreezingPolicy(
       std::unique_ptr<freezing::Discarder> discarder,
@@ -90,6 +94,10 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Returns details about whether a page can be frozen.
   freezing::CanFreezeDetails GetCanFreezeDetails(const PageNode* page_node);
+
+  // Returns a set of `CannotFreezeReason`s applicable to `freezing_type`.
+  static freezing::CannotFreezeReasonSet CannotFreezeReasonsForType(
+      FreezingPolicy::FreezingType type);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FreezingPolicyBatterySaverTest,
@@ -166,6 +174,8 @@ class FreezingPolicy : public PageNodeObserver,
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
+  void OnTypeChanged(const PageNode* page_node,
+                     PageType previous_type) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;
@@ -225,6 +235,13 @@ class FreezingPolicy : public PageNodeObserver,
   // `browser_context_id` changes.
   void OnOptOutPolicyChanged(std::string_view browser_context_id);
 
+  // Removes the last page from the most recently used list if needed, to keep
+  // its size below the limit.
+  void MaybePopFromMostRecentlyUsedList();
+
+  // Checks that the size of the most recently used list respects the limit.
+  void CheckMostRecentlyUsedListSize();
+
   // Records freezing eligibility UKM for all pages.
   void RecordFreezingEligibilityUKM();
 
@@ -280,6 +297,14 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Used to subsample the emission of UKM events.
   base::MetricsSubSampler metrics_subsampler_;
+
+  // List of most recently used hidden tabs. A tab becomes the most recently
+  // used when it transitions from visible to hidden, or when it's created in a
+  // hidden state.
+  std::deque<raw_ptr<const PageNode>> most_recently_used_;
+
+  // Number of visible tabs.
+  int num_visible_tabs_ = 0;
 
   base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };

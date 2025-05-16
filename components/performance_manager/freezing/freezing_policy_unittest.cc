@@ -44,6 +44,7 @@ namespace performance_manager {
 
 namespace {
 
+using FreezingType = FreezingPolicy::FreezingType;
 using freezing::CannotFreezeReason;
 using freezing::CannotFreezeReasonSet;
 using ::testing::ElementsAre;
@@ -99,13 +100,15 @@ using MockDiscarder = ::testing::StrictMock<LenientMockDiscarder>;
 
 }  // namespace
 
-class FreezingPolicyTest : public GraphTestHarness {
+class FreezingPolicyTest_BaseWithNoPage : public GraphTestHarness {
  public:
-  FreezingPolicyTest()
+  FreezingPolicyTest_BaseWithNoPage()
       : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~FreezingPolicyTest() override = default;
-  FreezingPolicyTest(const FreezingPolicyTest& other) = delete;
-  FreezingPolicyTest& operator=(const FreezingPolicyTest&) = delete;
+  ~FreezingPolicyTest_BaseWithNoPage() override = default;
+  FreezingPolicyTest_BaseWithNoPage(
+      const FreezingPolicyTest_BaseWithNoPage& other) = delete;
+  FreezingPolicyTest_BaseWithNoPage& operator=(
+      const FreezingPolicyTest_BaseWithNoPage&) = delete;
 
   void OnGraphCreated(GraphImpl* graph) override {
     // The freezing logic relies on the existence of the page live state data.
@@ -120,10 +123,7 @@ class FreezingPolicyTest : public GraphTestHarness {
     freezer_ = freezer.get();
     policy_->SetFreezerForTesting(std::move(freezer));
     graph->PassToGraph(std::move(policy));
-
     process_node_ = CreateNode<ProcessNodeImpl>();
-    std::tie(page_node_, frame_node_) =
-        CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   }
 
   // Override to create an OptOutChecker for the test.
@@ -148,12 +148,51 @@ class FreezingPolicyTest : public GraphTestHarness {
     observer->OnResourceUsageUpdated(std::move(memory_result_map));
   }
 
+  // Adds CPU usage for `context` to `cpu_result_map`, with "now" as the
+  // measurement time. `cumulative_background_cpu` is used as cumulative
+  // background CPU and `cumulative_cpu` is used as cumulative CPU
+  // (`cumulative_background_cpu` is used as cumulative CPU if `cumulative_cpu`
+  // is nullopt).
+  void AddCPUMeasurement(
+      resource_attribution::QueryResultMap& cpu_result_map,
+      resource_attribution::ResourceContext context,
+      base::TimeDelta cumulative_background_cpu,
+      std::optional<base::TimeDelta> cumulative_cpu = std::nullopt) {
+    cpu_result_map[context] = resource_attribution::QueryResults{
+        .cpu_time_result = resource_attribution::CPUTimeResult{
+            .metadata = resource_attribution::ResultMetadata(
+                /* measurement_time=*/base::TimeTicks::Now(),
+                resource_attribution::MeasurementAlgorithm::kSum),
+            .start_time = base::TimeTicks(),
+            .cumulative_cpu = cumulative_cpu.has_value()
+                                  ? cumulative_cpu.value()
+                                  : cumulative_background_cpu,
+            .cumulative_background_cpu = cumulative_background_cpu}};
+  }
+
+  // Reports CPU usage for `context` to the the freezing policy, with "now" as
+  // the measurement time. `cumulative_background_cpu` is used as cumulative
+  // background CPU and `cumulative_cpu` is used as cumulative CPU
+  // (`cumulative_background_cpu` is used as cumulative CPU if `cumulative_cpu`
+  // is nullopt).
+  void ReportCumulativeCPUUsage(
+      resource_attribution::ResourceContext context,
+      base::TimeDelta cumulative_background_cpu,
+      std::optional<base::TimeDelta> cumulative_cpu = std::nullopt) {
+    resource_attribution::QueryResultMap cpu_result_map;
+    AddCPUMeasurement(cpu_result_map, context, cumulative_background_cpu,
+                      cumulative_cpu);
+    resource_attribution::QueryResultObserver* observer = policy();
+    observer->OnResourceUsageUpdated(std::move(cpu_result_map));
+  }
+
   std::pair<TestNodeWrapper<PageNodeImpl>, TestNodeWrapper<FrameNodeImpl>>
   CreatePageAndFrameWithBrowsingInstanceId(
       content::BrowsingInstanceId browsing_instance_id,
       const std::string& browsing_context_id = "") {
     auto page =
         CreateNode<PageNodeImpl>(/*web_contents=*/nullptr, browsing_context_id);
+    page->SetType(PageType::kTab);
     auto frame = CreateFrameNodeAutoId(process_node(), page.get(),
                                        /* parent_frame_node=*/nullptr,
                                        browsing_instance_id);
@@ -168,29 +207,39 @@ class FreezingPolicyTest : public GraphTestHarness {
     Mock::VerifyAndClearExpectations(discarder());
   }
 
+  // Expect that the `CannotFreezeReason`s applicable to `freezing_type` for
+  // `page_node` match `matcher`.
   template <typename MatcherType>
   void ExpectCannotFreezeReasons(
       const PageNode* page_node,
+      FreezingType freezing_type,
       MatcherType matcher,
       const base::Location& location = base::Location::Current()) {
-    EXPECT_THAT(policy()->GetCanFreezeDetails(page_node).cannot_freeze_reasons,
-                matcher)
+    EXPECT_THAT(
+        base::Intersection(
+            policy()->GetCanFreezeDetails(page_node).cannot_freeze_reasons,
+            FreezingPolicy::CannotFreezeReasonsForType(freezing_type)),
+        matcher)
         << location.ToString();
   }
 
+  // Expect that the `CannotFreezeReason`s applicable to `freezing_type` for
+  // pages connected to `page_node` match `matcher`.
   template <typename MatcherType>
   void ExpectConnectedCannotFreezeReasons(
       const PageNode* page_node,
+      FreezingType freezing_type,
       MatcherType matcher,
       const base::Location& location = base::Location::Current()) {
-    EXPECT_THAT(policy()
-                    ->GetCanFreezeDetails(page_node)
-                    .cannot_freeze_reasons_connected_pages,
+    EXPECT_THAT(base::Intersection(
+                    policy()
+                        ->GetCanFreezeDetails(page_node)
+                        .cannot_freeze_reasons_connected_pages,
+                    FreezingPolicy::CannotFreezeReasonsForType(freezing_type)),
                 matcher)
         << location.ToString();
   }
 
-  PageNodeImpl* page_node() { return page_node_.get(); }
   ProcessNodeImpl* process_node() { return process_node_.get(); }
   MockFreezingPolicy* policy() { return policy_; }
   MockFreezer* freezer() { return freezer_; }
@@ -207,11 +256,28 @@ class FreezingPolicyTest : public GraphTestHarness {
 
  private:
   TestNodeWrapper<ProcessNodeImpl> process_node_;
-  TestNodeWrapper<PageNodeImpl> page_node_;
-  TestNodeWrapper<FrameNodeImpl> frame_node_;
   raw_ptr<MockFreezer> freezer_;
   raw_ptr<MockDiscarder> discarder_;
   raw_ptr<MockFreezingPolicy> policy_;
+};
+
+class FreezingPolicyTest : public FreezingPolicyTest_BaseWithNoPage {
+ public:
+  FreezingPolicyTest() = default;
+  ~FreezingPolicyTest() override = default;
+
+  void OnGraphCreated(GraphImpl* graph) override {
+    FreezingPolicyTest_BaseWithNoPage::OnGraphCreated(graph);
+
+    std::tie(page_node_, frame_node_) =
+        CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  }
+
+  PageNodeImpl* page_node() { return page_node_.get(); }
+
+ private:
+  TestNodeWrapper<PageNodeImpl> page_node_;
+  TestNodeWrapper<FrameNodeImpl> frame_node_;
 };
 
 // A page with no `CannotFreezeReason` that is alone in its browsing instance is
@@ -220,7 +286,7 @@ TEST_F(FreezingPolicyTest, Basic) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   policy()->AddFreezeVote(page_node());
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
 }
 
 // Multiple connected pages in the same browsing instance with no
@@ -328,21 +394,25 @@ TEST_F(FreezingPolicyTest,
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page2.get()));
   policy()->AddFreezeVote(page2.get());
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page2.get(), IsEmpty());
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page2.get(), FreezingType::kVoting,
+                                     IsEmpty());
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
   EXPECT_CALL(*freezer(), UnfreezePageNode(page2.get()));
   page_node()->SetIsHoldingWebLockForTesting(true);
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page2.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page2.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
 }
 
 // Similar to AddCannotFreezeReasonToBrowsingInstanceWithManyPages, except that
@@ -364,27 +434,33 @@ TEST_F(FreezingPolicyTest, AddCannotFreezeReasonToConnectedPages) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page3.get()));
   policy()->AddFreezeVote(page3.get());
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectCannotFreezeReasons(page3.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page3.get(), IsEmpty());
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page2.get(), FreezingType::kVoting,
+                                     IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page3.get(), FreezingType::kVoting,
+                                     IsEmpty());
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
   EXPECT_CALL(*freezer(), UnfreezePageNode(page2.get()));
   EXPECT_CALL(*freezer(), UnfreezePageNode(page3.get()));
   page_node()->SetIsHoldingWebLockForTesting(true);
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectCannotFreezeReasons(page3.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page2.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page2.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
   ExpectConnectedCannotFreezeReasons(
-      page3.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page3.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
 }
 
 // A browsing instance with one page that has a `CannotFreezeReason` is not
@@ -394,12 +470,14 @@ TEST_F(FreezingPolicyTest,
   auto [page2, frame2] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   page_node()->SetIsHoldingWebLockForTesting(true);
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page2.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page2.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
 
   // Don't expect freezing.
   policy()->AddFreezeVote(page_node());
@@ -421,15 +499,18 @@ TEST_F(FreezingPolicyTest,
   auto [page3, frame3] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceB);
   page_node()->SetIsHoldingWebLockForTesting(true);
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectCannotFreezeReasons(page3.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page2.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page2.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
   ExpectConnectedCannotFreezeReasons(
-      page3.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page3.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
 
   // Don't expect freezing.
   policy()->AddFreezeVote(page_node());
@@ -453,15 +534,18 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet) {
   policy()->AddFreezeVote(page_node());
   policy()->AddFreezeVote(page2.get());
   policy()->AddFreezeVote(page3.get());
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectCannotFreezeReasons(page3.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page2.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page2.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
   ExpectConnectedCannotFreezeReasons(
-      page3.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page3.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
 
   // Deleting `frame2` puts `page_node()` in a different connected set than
   // `page2` and `page3`. `page_node()` cannot be frozen because it has a
@@ -471,13 +555,16 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page3.get()));
   frame2.reset();
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectCannotFreezeReasons(page3.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page2.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page3.get(), IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page2.get(), FreezingType::kVoting,
+                                     IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page3.get(), FreezingType::kVoting,
+                                     IsEmpty());
 }
 
 // Similar to BreakConnectedSet, but the connected set left by the page from
@@ -495,15 +582,18 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet_LeftSetIsFrozen) {
   policy()->AddFreezeVote(page_node());
   policy()->AddFreezeVote(page2.get());
   policy()->AddFreezeVote(page3.get());
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectCannotFreezeReasons(page2.get(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page3.get(), IsEmpty());
+  ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page_node(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectConnectedCannotFreezeReasons(page2.get(), IsEmpty());
+      page_node(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
+  ExpectConnectedCannotFreezeReasons(page2.get(), FreezingType::kVoting,
+                                     IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page3.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page3.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
 
   // Deleting `frame2` puts `page_node()` in a different connected set than
   // `page2` and `page3`. `page_node()` cannot be frozen because it has a
@@ -512,14 +602,17 @@ TEST_F(FreezingPolicyTest, BreakConnectedSet_LeftSetIsFrozen) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   frame2.reset();
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectCannotFreezeReasons(page2.get(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kHoldingWebLock));
-  ExpectCannotFreezeReasons(page3.get(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page_node(), IsEmpty());
-  ExpectConnectedCannotFreezeReasons(page2.get(), IsEmpty());
+  ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                                     IsEmpty());
+  ExpectConnectedCannotFreezeReasons(page2.get(), FreezingType::kVoting,
+                                     IsEmpty());
   ExpectConnectedCannotFreezeReasons(
-      page3.get(), ElementsAre(CannotFreezeReason::kHoldingWebLock));
+      page3.get(), FreezingType::kVoting,
+      ElementsAre(CannotFreezeReason::kHoldingWebLock));
 }
 
 TEST_F(FreezingPolicyTest, FreezeVoteWhenVisible) {
@@ -1253,44 +1346,6 @@ class FreezingPolicyBatterySaverTest : public FreezingPolicyTest {
  public:
   FreezingPolicyBatterySaverTest() = default;
 
-  // Adds CPU usage for `context` to `cpu_result_map`, with "now" as the
-  // measurement time. `cumulative_background_cpu` is used as cumulative
-  // background CPU and `cumulative_cpu` is used as cumulative CPU
-  // (`cumulative_background_cpu` is used as cumulative CPU if `cumulative_cpu`
-  // is nullopt).
-  void AddCPUMeasurement(
-      resource_attribution::QueryResultMap& cpu_result_map,
-      resource_attribution::ResourceContext context,
-      base::TimeDelta cumulative_background_cpu,
-      std::optional<base::TimeDelta> cumulative_cpu = std::nullopt) {
-    cpu_result_map[context] = resource_attribution::QueryResults{
-        .cpu_time_result = resource_attribution::CPUTimeResult{
-            .metadata = resource_attribution::ResultMetadata(
-                /* measurement_time=*/base::TimeTicks::Now(),
-                resource_attribution::MeasurementAlgorithm::kSum),
-            .start_time = base::TimeTicks(),
-            .cumulative_cpu = cumulative_cpu.has_value()
-                                  ? cumulative_cpu.value()
-                                  : cumulative_background_cpu,
-            .cumulative_background_cpu = cumulative_background_cpu}};
-  }
-
-  // Reports CPU usage for `context` to the the freezing policy, with "now" as
-  // the measurement time. `cumulative_background_cpu` is used as cumulative
-  // background CPU and `cumulative_cpu` is used as cumulative CPU
-  // (`cumulative_background_cpu` is used as cumulative CPU if `cumulative_cpu`
-  // is nullopt).
-  void ReportCumulativeCPUUsage(
-      resource_attribution::ResourceContext context,
-      base::TimeDelta cumulative_background_cpu,
-      std::optional<base::TimeDelta> cumulative_cpu = std::nullopt) {
-    resource_attribution::QueryResultMap cpu_result_map;
-    AddCPUMeasurement(cpu_result_map, context, cumulative_background_cpu,
-                      cumulative_cpu);
-    resource_attribution::QueryResultObserver* observer = policy();
-    observer->OnResourceUsageUpdated(std::move(cpu_result_map));
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kFreezingOnBatterySaver};
@@ -1796,6 +1851,8 @@ class FreezingPolicyOptOutTest : public FreezingPolicyTest {
   int next_navigation_id_ = 2;
 };
 
+}  // namespace
+
 TEST_F(FreezingPolicyOptOutTest, MainFrameUrlChanges) {
   ASSERT_TRUE(opt_out_checker_.get());
   opt_out_checker_->SetOptedOutUrl(kOptOutUrl1);
@@ -1804,31 +1861,31 @@ TEST_F(FreezingPolicyOptOutTest, MainFrameUrlChanges) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   policy()->AddFreezeVote(page_node());
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
 
   // Stays frozen when navigating to an URL that's not opted out.
   NavigateToUrl(page_node(), kOptOutUrl2);
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
 
   // Unfreezes when navigating to an URL that's opted out.
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
   NavigateToUrl(page_node(), kOptOutUrl1);
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kOptedOut));
 
   // Navigating to the same URL does nothing.
   NavigateToUrl(page_node(), kOptOutUrl1);
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(),
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
                             ElementsAre(CannotFreezeReason::kOptedOut));
 
   // Freezes when navigating away from the opted out URL.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   NavigateToUrl(page_node(), kOptOutUrl2);
   VerifyFreezerExpectations();
-  ExpectCannotFreezeReasons(page_node(), IsEmpty());
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
 }
 
 TEST_F(FreezingPolicyOptOutTest, OptOutPolicyChanges) {
@@ -1866,10 +1923,10 @@ TEST_F(FreezingPolicyOptOutTest, OptOutPolicyChanges) {
     policy()->AddFreezeVote(page2.get());
     policy()->AddFreezeVote(page3.get());
     VerifyFreezerExpectations();
-    ExpectCannotFreezeReasons(page1.get(),
+    ExpectCannotFreezeReasons(page1.get(), FreezingType::kVoting,
                               ElementsAre(CannotFreezeReason::kOptedOut));
-    ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-    ExpectCannotFreezeReasons(page3.get(), IsEmpty());
+    ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+    ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
   }
 
   // Change which URL is opted out. Notify kBrowsingContext1 of the change.
@@ -1879,10 +1936,10 @@ TEST_F(FreezingPolicyOptOutTest, OptOutPolicyChanges) {
     EXPECT_CALL(*freezer(), MaybeFreezePageNode(page1.get()));
     opt_out_checker_->SetOptedOutUrl(kOptOutUrl2, {kBrowsingContext1});
     VerifyFreezerExpectations();
-    ExpectCannotFreezeReasons(page1.get(), IsEmpty());
-    ExpectCannotFreezeReasons(page2.get(),
+    ExpectCannotFreezeReasons(page1.get(), FreezingType::kVoting, IsEmpty());
+    ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting,
                               ElementsAre(CannotFreezeReason::kOptedOut));
-    ExpectCannotFreezeReasons(page3.get(), IsEmpty());
+    ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
   }
 
   // Now notify kBrowsingContext2.
@@ -1891,10 +1948,10 @@ TEST_F(FreezingPolicyOptOutTest, OptOutPolicyChanges) {
     EXPECT_CALL(*freezer(), UnfreezePageNode(page3.get()));
     opt_out_checker_->SetOptedOutUrl(kOptOutUrl2, {kBrowsingContext2});
     VerifyFreezerExpectations();
-    ExpectCannotFreezeReasons(page1.get(), IsEmpty());
-    ExpectCannotFreezeReasons(page2.get(),
+    ExpectCannotFreezeReasons(page1.get(), FreezingType::kVoting, IsEmpty());
+    ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting,
                               ElementsAre(CannotFreezeReason::kOptedOut));
-    ExpectCannotFreezeReasons(page3.get(),
+    ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting,
                               ElementsAre(CannotFreezeReason::kOptedOut));
   }
 
@@ -1906,12 +1963,281 @@ TEST_F(FreezingPolicyOptOutTest, OptOutPolicyChanges) {
     opt_out_checker_->SetOptedOutUrl("",
                                      {kBrowsingContext1, kBrowsingContext2});
     VerifyFreezerExpectations();
-    ExpectCannotFreezeReasons(page1.get(), IsEmpty());
-    ExpectCannotFreezeReasons(page2.get(), IsEmpty());
-    ExpectCannotFreezeReasons(page3.get(), IsEmpty());
+    ExpectCannotFreezeReasons(page1.get(), FreezingType::kVoting, IsEmpty());
+    ExpectCannotFreezeReasons(page2.get(), FreezingType::kVoting, IsEmpty());
+    ExpectCannotFreezeReasons(page3.get(), FreezingType::kVoting, IsEmpty());
   }
 }
 
+namespace {
+
+class FreezingPolicyInfiniteTabsTest
+    : public FreezingPolicyTest_BaseWithNoPage {
+ protected:
+  FreezingPolicyInfiniteTabsTest() = default;
+
+  void OnGraphCreated(GraphImpl* graph) override {
+    FreezingPolicyTest_BaseWithNoPage::OnGraphCreated(graph);
+
+    AdvanceClock(base::Milliseconds(1));
+
+    // Create "num protected tabs" hidden pages. All pages have their own
+    // browsing instance, which is not equal to `kBrowsingInstance(A|B|C)`.
+    for (int i = 0; i < features::kInfiniteTabsFreezing_NumProtectedTabs.Get();
+         ++i) {
+      auto [page, frame] =
+          CreatePageAndFrameWithBrowsingInstanceId(content::BrowsingInstanceId(
+              kBrowsingInstanceC.GetUnsafeValue() + i + 1));
+      ASSERT_FALSE(page->IsVisible());
+      pages_.push_back(std::move(page));
+      frames_.push_back(std::move(frame));
+      AdvanceClock(base::Milliseconds(1));
+    }
+  }
+
+  // Advances the clock to a time aligned on `interval`.
+  void AdvanceToAlignedTime(base::TimeDelta interval) {
+    const base::TimeTicks now = base::TimeTicks::Now();
+    const base::TimeTicks next_aligned_time =
+        now.SnappedToNextTick(base::TimeTicks(), interval);
+    AdvanceClock(next_aligned_time - now);
+  }
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
+  std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kInfiniteTabsFreezing};
+};
+
 }  // namespace
+
+// Verify that under "Infinite Tabs Freezing", tabs are frozen if not in the
+// list of most recently used.
+TEST_F(FreezingPolicyInfiniteTabsTest, MostRecentlyUsed) {
+  // Create a new page, which takes the spot of the `pages_[0]` in the list
+  // of most recently used pages. `pages_[0]` should be frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto [page5, frame5] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  AdvanceClock(base::Milliseconds(1));
+  VerifyFreezerExpectations();
+
+  // Create a new page, which takes the spot of `pages_[1]` in the list
+  // of most recently used pages. `pages_[1]` should be frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[1].get()));
+  auto [page6, frame6] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceB);
+  AdvanceClock(base::Milliseconds(1));
+  VerifyFreezerExpectations();
+
+  // Make `pages_[1]` visible. It should take the spot of `pages_[2]` in the
+  // list of most recently used pages. `pages_[2]` should be frozen.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[1].get()));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[2].get()));
+  pages_[1]->SetIsVisible(true);
+  VerifyFreezerExpectations();
+
+  // Make `pages_[2]` visible. It should take the spot of `pages_[3]]` in the
+  // list of most recently used pages. `pages_[4]` should be frozen.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[2].get()));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[3].get()));
+  pages_[2]->SetIsVisible(true);
+  VerifyFreezerExpectations();
+
+  // Hide `pages_[3]` and `pages_[1]`. This should have no effect on freezing.
+  pages_[2]->SetIsVisible(false);
+  AdvanceClock(base::Milliseconds(1));
+  pages_[1]->SetIsVisible(false);
+  AdvanceClock(base::Milliseconds(1));
+
+  // Create new pages. At each page creation, the least recently used protected
+  // page should loose its protection and be frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[4].get()));
+  auto [page7, frame7] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(100));
+  VerifyFreezerExpectations();
+  AdvanceClock(base::Milliseconds(1));
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page5.get()));
+  auto [page8, frame8] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(101));
+  VerifyFreezerExpectations();
+  AdvanceClock(base::Milliseconds(1));
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page6.get()));
+  auto [page9, frame9] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(102));
+  VerifyFreezerExpectations();
+  AdvanceClock(base::Milliseconds(1));
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[2].get()));
+  auto [page10, frame10] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(103));
+  VerifyFreezerExpectations();
+  AdvanceClock(base::Milliseconds(1));
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[1].get()));
+  auto [page11, frame11] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(104));
+  VerifyFreezerExpectations();
+  AdvanceClock(base::Milliseconds(1));
+}
+
+// Verify that under "Infinite Tabs Freezing", a tab created visible (as opposed
+// to hidden, as in other tests) doesn't have
+// `CannotFreezeReason::kMostRecentlyUsed`, but still counts towards the limit
+// of most recently used tabs protected against "Infinite Tabs Freezing".
+TEST_F(FreezingPolicyInfiniteTabsTest, InitiallyVisible) {
+  // Create a new page, which takes the spot of the `pages_[0]` in the list
+  // of most recently used pages. `pages_[0]` should be frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto page5 = CreateNode<PageNodeImpl>(
+      /*web_contents=*/nullptr, /*browsing_context_id=*/std::string(), GURL(),
+      PagePropertyFlags{PagePropertyFlag::kIsVisible});
+  EXPECT_TRUE(page5->IsVisible());
+  page5->SetType(PageType::kTab);
+  auto frame5 =
+      CreateFrameNodeAutoId(process_node(), page5.get(),
+                            /* parent_frame_node=*/nullptr, kBrowsingInstanceA);
+  VerifyFreezerExpectations();
+}
+
+// Verify that under "Infinite Tabs Freezing", when there are more visible tabs
+// than the desired number of protected tabs and they subsequently become
+// hidden, freezing happens (as opposed to all tabs being transferred to the
+// most recently used list, exceeding the limit).
+TEST_F(FreezingPolicyInfiniteTabsTest, ManyVisibleTabs) {
+  // Create more visible tabs than the limit of protected tabs. All existing
+  // tabs are frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[1].get()));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[2].get()));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[3].get()));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[4].get()));
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> more_pages;
+  std::vector<TestNodeWrapper<FrameNodeImpl>> more_frames;
+  for (int i = 0;
+       i < features::kInfiniteTabsFreezing_NumProtectedTabs.Get() * 2; ++i) {
+    more_pages.push_back(CreateNode<PageNodeImpl>(
+        /*web_contents=*/nullptr, /*browsing_context_id=*/std::string(), GURL(),
+        PagePropertyFlags{PagePropertyFlag::kIsVisible}));
+    more_pages.back()->SetType(PageType::kTab);
+    more_frames.push_back(CreateFrameNodeAutoId(
+        process_node(), more_pages.back().get(),
+        /* parent_frame_node=*/nullptr, content::BrowsingInstanceId(100 + i)));
+  }
+
+  VerifyFreezerExpectations();
+
+  // Hide half of tabs. They should be frozen immediately, not put in the list
+  // of most recently used, as there are already more visible tabs that the
+  // limit of protected tabs.
+  for (int i = 0; i < features::kInfiniteTabsFreezing_NumProtectedTabs.Get();
+       ++i) {
+    EXPECT_CALL(*freezer(), MaybeFreezePageNode(more_pages[i].get()));
+    more_pages[i]->SetIsVisible(false);
+    VerifyFreezerExpectations();
+  }
+}
+
+// Verify that under "Infinite Tabs Freezing", a `CannotFreezeReason` that
+// applies to all types of freezing is honored.
+TEST_F(FreezingPolicyInfiniteTabsTest, UniversalCannotFreezeReason) {
+  // Create a new page, which takes the spot of the `pages_[0]` in the list
+  // of most recently used pages. `pages_[0]` should be frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto [page5, frame5] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  AdvanceClock(base::Milliseconds(1));
+  VerifyFreezerExpectations();
+
+  // Add a `CannotFreezeReason` to `pages_[0]`. It should be unfrozen.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  pages_[0]->SetIsHoldingWebLockForTesting(true);
+  VerifyFreezerExpectations();
+
+  // Add a `CannotFreezeReason` to `pages_[1]`. This has no effect since it's
+  // not frozen.
+  pages_[1]->SetIsHoldingWebLockForTesting(true);
+
+  // Create a new page, which takes the spot of `pages_[1]` in the list of most
+  // recently used pages. `pages_[1]` should not be frozen since it holds a Web
+  // Lock.
+  auto [page6, frame6] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceB);
+  AdvanceClock(base::Milliseconds(1));
+
+  // When `pages_[0]` and `pages_[1]` release their lock, they're both frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  pages_[0]->SetIsHoldingWebLockForTesting(false);
+  VerifyFreezerExpectations();
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[1].get()));
+  pages_[1]->SetIsHoldingWebLockForTesting(false);
+  VerifyFreezerExpectations();
+}
+
+// Verify that a page with a freeze vote can be frozen even if it's in the list
+// of most recently used tabs (this list only affects Infinite Tabs Freezing).
+TEST_F(FreezingPolicyInfiniteTabsTest, InteractionWithVoting) {
+  EXPECT_EQ(policy()->GetCanFreezeDetails(pages_[0].get()).can_freeze,
+            freezing::CanFreeze::kVaries);
+  ExpectCannotFreezeReasons(pages_[0].get(), FreezingType::kVoting, IsEmpty());
+  ExpectCannotFreezeReasons(pages_[0].get(), FreezingType::kInfiniteTabs,
+                            ElementsAre(CannotFreezeReason::kMostRecentlyUsed));
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->AddFreezeVote(pages_[0].get());
+  VerifyFreezerExpectations();
+}
+
+// Verify that a page which is CPU-intensive in the background while Battery
+// Saver is active can be frozen even if it's in the list of most recently
+// used tabs (this list only affects Infinite Tabs Freezing).
+TEST_F(FreezingPolicyInfiniteTabsTest, InteractionWithBatterySaver) {
+  base::test::ScopedFeatureList feature_list{features::kFreezingOnBatterySaver};
+  policy()->ToggleFreezingOnBatterySaverMode(true);
+
+  EXPECT_EQ(policy()->GetCanFreezeDetails(pages_[0].get()).can_freeze,
+            freezing::CanFreeze::kVaries);
+  ExpectCannotFreezeReasons(pages_[0].get(), FreezingType::kBatterySaver,
+                            IsEmpty());
+  ExpectCannotFreezeReasons(pages_[0].get(), FreezingType::kInfiniteTabs,
+                            ElementsAre(CannotFreezeReason::kMostRecentlyUsed));
+
+  const resource_attribution::OriginInBrowsingInstanceContext kPage0Context{
+      url::Origin(), frames_[0]->GetBrowsingInstanceId()};
+
+  ReportCumulativeCPUUsage(kPage0Context, base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  ReportCumulativeCPUUsage(kPage0Context, base::Seconds(75));
+
+  VerifyFreezerExpectations();
+}
+
+// Verify that visible pages which are not tabs don't affect Infinite Tabs
+// Freezing.
+TEST_F(FreezingPolicyInfiniteTabsTest, NonTab) {
+  // Create a new page of type `kTab` which takes the spot of the `pages_[0]` in
+  // the list of most recently used pages. `pages_[0]` should be frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto [page5, frame5] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  EXPECT_EQ(page5->GetType(), PageType::kTab);
+  AdvanceClock(base::Milliseconds(1));
+  VerifyFreezerExpectations();
+
+  // Create a new page of type `kExtension`. Unlike the previous case, this
+  // should have no effect on freezing.
+  auto non_tab_page = CreateNode<PageNodeImpl>(
+      /*web_contents=*/nullptr, /* browsing_context_id=*/std::string(), GURL(),
+      PagePropertyFlags{PagePropertyFlag::kIsVisible});
+  non_tab_page->SetType(PageType::kExtension);
+  auto non_tab_frame =
+      CreateFrameNodeAutoId(process_node(), non_tab_page.get(),
+                            /* parent_frame_node=*/nullptr, kBrowsingInstanceB);
+}
 
 }  // namespace performance_manager

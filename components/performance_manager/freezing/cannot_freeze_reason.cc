@@ -52,6 +52,8 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "has notification permission";
     case CannotFreezeReason::kOptedOut:
       return "opted out";
+    case CannotFreezeReason::kMostRecentlyUsed:
+      return "most recently used";
   }
   NOTREACHED();
 }

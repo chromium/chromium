@@ -37,7 +37,8 @@ enum class CannotFreezeReason {
   kLoading,
   kNotificationPermission,
   kOptedOut,
-  kMax = kOptedOut,  // Upper bound for EnumSet.
+  kMostRecentlyUsed,
+  kMax = kMostRecentlyUsed,  // Upper bound for EnumSet.
 };
 
 using CannotFreezeReasonSet = base::EnumSet<CannotFreezeReason,

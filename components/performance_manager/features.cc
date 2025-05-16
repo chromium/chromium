@@ -269,6 +269,16 @@ BASE_FEATURE(kRecordFreezingEligibilityUKM,
              "RecordFreezingEligibilityUKM",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInfiniteTabsFreezing,
+             "InfiniteTabsFreezing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kInfiniteTabsFreezing_NumProtectedTabs,
+                   &kInfiniteTabsFreezing,
+                   "num_protected_tabs",
+                   5);
+
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
              "ResourceAttributionIncludeOrigins",
              base::FEATURE_ENABLED_BY_DEFAULT);

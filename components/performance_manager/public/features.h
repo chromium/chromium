@@ -193,6 +193,17 @@ BASE_DECLARE_FEATURE(kFreezingFollowsDiscardOptOut);
 // When enabled, the freezing eligibility UKM event may be recorded.
 BASE_DECLARE_FEATURE(kRecordFreezingEligibilityUKM);
 
+// When enabled, eligible tabs which are not in the N most recently used are
+// frozen. This prevents CPU usage from growing proportionnally with the number
+// of tabs, and aims to make the browser support "infinite tabs" with good
+// performance. A tab is eligible if it doesn't have a `CannotFreezeReason`
+// other than `CannotFreezeReason::kRecentlyVisible`. N is configurable with
+// `kInfiniteTabsFreezing_NumProtectedTabs`.
+BASE_DECLARE_FEATURE(kInfiniteTabsFreezing);
+
+// Number of most recently visible tabs protected from "infinite tabs" freezing.
+BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezing_NumProtectedTabs);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);
