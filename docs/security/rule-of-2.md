@@ -164,8 +164,8 @@ Where possible, it's great to use a memory-safe language. The following
 memory-safe languages are approved for use in Chromium:
 * Java (on Android only)
 * Swift (on iOS only)
-* [Rust](../docs/rust.md) (for [third-party use](
-  ../docs/adding_to_third_party.md#Rust))
+* [Rust](../rust.md) (for [third-party use](
+  ../adding_to_third_party.md#Rust))
 * JavaScript or WebAssembly (although we don't currently use them in
   high-privilege processes like the browser/gpu process)
 
