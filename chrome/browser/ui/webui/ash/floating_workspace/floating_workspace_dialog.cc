@@ -140,16 +140,8 @@ void FloatingWorkspaceDialog::Show() {
   g_dialog->ShowSystemDialog();
 }
 
-std::optional<FloatingWorkspaceDialog::State>
-FloatingWorkspaceDialog::IsShown() {
-  if (!g_dialog) {
-    return std::nullopt;
-  }
-  FloatingWorkspaceDialogHandler* handler = GetHandler();
-  if (!handler) {
-    return std::nullopt;
-  }
-  return handler->state();
+bool FloatingWorkspaceDialog::IsShown() {
+  return g_dialog;
 }
 
 }  // namespace ash

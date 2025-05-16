@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
@@ -41,7 +44,6 @@
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -61,6 +63,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace {
 
@@ -79,12 +82,38 @@ bool IsFloatingSsoEnabled(Profile* profile) {
 
 namespace ash {
 
+constexpr char kNotificationForNoNetworkConnection[] =
+    "notification_no_network_connection";
+constexpr char kNotificationForSyncErrorOrTimeOut[] =
+    "notification_sync_error_or_timeout";
+constexpr char kNotificationForProgressStatus[] =
+    "notification_progress_status";
+constexpr char kSafeMode[] = "notification_safe_mode";
 // Default time without activity after which a floating workspace template is
 // considered stale and becomes a candidate for garbage collection.
 constexpr base::TimeDelta kStaleFWSThreshold = base::Days(30);
 // Minimum time to wait before we decide to show the progress status if no
 // floating workspace templates have been downloaded yet.
 constexpr base::TimeDelta kMinTimeToWait = base::Seconds(2);
+// Time interval between progress bar update.
+constexpr base::TimeDelta kProgressTimeUpdateDelay = base::Seconds(1);
+
+FloatingWorkspaceServiceNotificationType GetNotificationTypeById(
+    const std::string& id) {
+  if (id == kNotificationForNoNetworkConnection) {
+    return FloatingWorkspaceServiceNotificationType::kNoNetworkConnection;
+  }
+  if (id == kNotificationForSyncErrorOrTimeOut) {
+    return FloatingWorkspaceServiceNotificationType::kSyncErrorOrTimeOut;
+  }
+  if (id == kNotificationForProgressStatus) {
+    return FloatingWorkspaceServiceNotificationType::kProgressStatus;
+  }
+  if (id == kSafeMode) {
+    return FloatingWorkspaceServiceNotificationType::kSafeMode;
+  }
+  return FloatingWorkspaceServiceNotificationType::kUnknown;
+}
 
 FloatingWorkspaceService::FloatingWorkspaceService(
     Profile* profile,
@@ -128,9 +157,7 @@ void FloatingWorkspaceService::OnDeviceInfoShutdown() {
 
 void FloatingWorkspaceService::InitiateSigninTask() {
   if (!floating_workspace_util::IsInternetConnected()) {
-    if (should_run_restore_) {
-      FloatingWorkspaceDialog::ShowNetworkScreen();
-    }
+    SendNotification(kNotificationForNoNetworkConnection);
   } else {
     syncer::LocalDeviceInfoProviderImpl* local_device_info_provider =
         static_cast<syncer::LocalDeviceInfoProviderImpl*>(
@@ -141,10 +168,14 @@ void FloatingWorkspaceService::InitiateSigninTask() {
             base::BindRepeating(
                 &FloatingWorkspaceService::OnLocalDeviceInfoProviderReady,
                 weak_pointer_factory_.GetWeakPtr()));
-    if (should_run_restore_) {
-      FloatingWorkspaceDialog::ShowDefaultScreen();
-    }
   }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FloatingWorkspaceService::MaybeStartProgressBarNotification,
+            weak_pointer_factory_.GetWeakPtr()),
+        kMinTimeToWait);
 }
 
 // TODO(b/309137462): Clean up params to not need to be passed in.
@@ -263,7 +294,7 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
     // This state indicates that we are not permitted to upload user's workspace
     // data (see the comment above syncer::UploadState::NOT_ACTIVE for details).
     // We should treat this as if the feature is fully disabled.
-    StopRestoringSession();
+    should_run_restore_ = false;
     return;
   }
   syncer::SyncService::DataTypeDownloadStatus workspace_download_status =
@@ -305,13 +336,13 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
         // Don'h handle the error repeatedly.
         break;
       }
-      // If Sync is not expected to deliver the data, do nothing.
+      // Sync is not expected to deliver the data, let user decide.
+      // TODO: send notification to user asking if restore local.
       if (!should_run_restore_) {
         break;
       }
-      // There is nothing in particular the user can do to resolve a Sync error
-      // - show a generic error UI.
-      FloatingWorkspaceDialog::ShowErrorScreen();
+      StopProgressBarNotification();
+      HandleSyncError();
       break;
     }
   }
@@ -375,23 +406,65 @@ void FloatingWorkspaceService::NetworkConnectionStateChanged(
 }
 
 void FloatingWorkspaceService::OnNetworkStateOrSyncServiceStateChanged() {
-  // If the restore should not run, then there's no need to show any UI and it
-  // is expected to be closed elsewhere.
-  if (!should_run_restore_) {
+  if (!floating_workspace_util::IsInternetConnected() ||
+      (sync_service_ && !sync_service_->IsSyncFeatureActive())) {
+    // Only send notification if there's no notification currently or the
+    // current notification is the same one that we want to display. If the
+    // restore should not run, then there's no need to display the notification
+    // either.
+    if (should_run_restore_ &&
+        (notification_ == nullptr ||
+         notification_->id() != kNotificationForNoNetworkConnection)) {
+      StopProgressBarNotification();
+      SendNotification(kNotificationForNoNetworkConnection);
+    }
+  } else {
+    if (notification_ != nullptr &&
+        notification_->id() == kNotificationForNoNetworkConnection) {
+      MaybeCloseNotification();
+    }
+  }
+}
+void FloatingWorkspaceService::Click(
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
+  DCHECK(notification_);
+
+  switch (GetNotificationTypeById(notification_->id())) {
+    case FloatingWorkspaceServiceNotificationType::kUnknown:
+      // For unknown type of notification id, do nothing and run close logic.
+    case FloatingWorkspaceServiceNotificationType::kSyncErrorOrTimeOut:
+    case FloatingWorkspaceServiceNotificationType::kProgressStatus:
+    case FloatingWorkspaceServiceNotificationType::kSafeMode:
+      break;
+    case FloatingWorkspaceServiceNotificationType::kNoNetworkConnection:
+      if (button_index.has_value()) {
+        // Show network settings if the user clicks the show network settings
+        // button.
+        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+            profile_, chromeos::settings::mojom::kNetworkSectionPath);
+      }
+      break;
+  }
+  MaybeCloseNotification();
+}
+
+void FloatingWorkspaceService::MaybeCloseNotification() {
+  if (notification_ == nullptr) {
     return;
   }
-  if (!floating_workspace_util::IsInternetConnected()) {
-    // No need to double check if UI is already shown - the
-    // dialog is smart enough to recognize when there is no change.
-    FloatingWorkspaceDialog::ShowNetworkScreen();
-  } else if (sync_service_ && !sync_service_->IsSyncFeatureActive()) {
-    // If Sync is not active, show a generic error UI.
-    // TODO(crbug.com/411121762): write a test for this code path.
-    FloatingWorkspaceDialog::ShowErrorScreen();
-  } else {
-    // We are online and Sync is active: show the default UI state.
-    FloatingWorkspaceDialog::ShowDefaultScreen();
+  // If it's a progress bar notification and we're still waiting for chrome sync
+  // to finish downloading, don't need to close notification.
+  if (notification_->type() == message_center::NOTIFICATION_TYPE_PROGRESS &&
+      !progress_notification_id_.empty() &&
+      progress_notification_id_ == notification_->id()) {
+    return;
   }
+  auto* notification_display_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
+  notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
+                                      notification_->id());
+  notification_ = nullptr;
 }
 
 void FloatingWorkspaceService::SuspendImminent(
@@ -421,8 +494,7 @@ void FloatingWorkspaceService::InitForV2(
   // Disable floating workspace action in safe mode.
   if (floating_workspace_util::IsSafeMode()) {
     LOG(WARNING) << "Floating workspace disabled in safe mode.";
-    // TODO(crbug.com/411121762): decide if we want to display something to the
-    // user in this case with our new startup UI.
+    SendNotification(kSafeMode);
     return;
   }
   floating_workspace_metrics_util::
@@ -499,6 +571,26 @@ void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
   if (timer_.IsRunning()) {
     timer_.Stop();
   }
+}
+
+void FloatingWorkspaceService::MaybeStartProgressBarNotification() {
+  if (!should_run_restore_) {
+    return;
+  }
+  progress_timer_.Start(FROM_HERE, kProgressTimeUpdateDelay, this,
+                        &FloatingWorkspaceService::HandleProgressBarStatus);
+}
+
+void FloatingWorkspaceService::StopProgressBarNotification() {
+  progress_notification_id_ = std::string();
+  if (progress_timer_.IsRunning()) {
+    progress_timer_.Stop();
+  }
+  MaybeCloseNotification();
+}
+
+void FloatingWorkspaceService::HandleProgressBarStatus() {
+  SendNotification(kNotificationForProgressStatus);
 }
 
 bool FloatingWorkspaceService::ShouldExcludeTemplate(
@@ -584,7 +676,7 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
 }
 
 void FloatingWorkspaceService::StopProgressBarAndRestoreFloatingWorkspace() {
-  FloatingWorkspaceDialog::Close();
+  StopProgressBarNotification();
   RestoreFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
   StartCaptureAndUploadActiveDesk();
 }
@@ -865,6 +957,94 @@ FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
     }
   }
   return std::nullopt;
+}
+
+void FloatingWorkspaceService::HandleSyncError() {
+  SendNotification(kNotificationForSyncErrorOrTimeOut);
+}
+
+void FloatingWorkspaceService::SendNotification(const std::string& id) {
+  // If there is a previous notification for floating workspace, close it.
+  MaybeCloseNotification();
+
+  message_center::RichNotificationData notification_data;
+  std::u16string title, message;
+  message_center::SystemNotificationWarningLevel warning_level;
+  const base::TimeDelta time_difference =
+      base::TimeTicks::Now() - initialization_timeticks_;
+  bool is_progress_bar = false;
+  switch (GetNotificationTypeById(id)) {
+    case FloatingWorkspaceServiceNotificationType::kNoNetworkConnection:
+      title =
+          l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_NO_NETWORK_TITLE);
+      message =
+          l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_NO_NETWORK_MESSAGE);
+      warning_level =
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+      notification_data.buttons.emplace_back(
+          l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_NO_NETWORK_BUTTON));
+      break;
+    case FloatingWorkspaceServiceNotificationType::kSyncErrorOrTimeOut:
+      title = l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_ERROR_TITLE);
+      message = l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_ERROR_MESSAGE);
+      warning_level =
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+      break;
+    case FloatingWorkspaceServiceNotificationType::kProgressStatus:
+      title =
+          l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_PROGRESS_BAR_TITLE);
+      notification_data.progress_status = l10n_util::GetStringUTF16(
+          IDS_FLOATING_WORKSPACE_PROGRESS_BAR_MESSAGE);
+      warning_level = message_center::SystemNotificationWarningLevel::NORMAL;
+      notification_data.progress = std::min(
+          100.0,
+          (time_difference * 100.0) /
+              ash::features::
+                  kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
+                      .Get());
+      is_progress_bar = true;
+      break;
+    case FloatingWorkspaceServiceNotificationType::kSafeMode:
+      title = l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_SAFE_MODE_TITLE);
+      message =
+          l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_SAFE_MODE_MESSAGE);
+      warning_level = message_center::SystemNotificationWarningLevel::WARNING;
+      break;
+    case FloatingWorkspaceServiceNotificationType::kUnknown:
+      VLOG(2) << "Unknown notification type for floating workspace, skip "
+                 "sending notification";
+      return;
+  }
+  // Update the current notification with progress status if we are still
+  // showing progress status. Otherwise, make a new notification.
+  if (is_progress_bar && notification_ != nullptr &&
+      !progress_notification_id_.empty() &&
+      notification_->id() == progress_notification_id_) {
+    notification_->set_progress(notification_data.progress);
+  } else {
+    notification_ = CreateSystemNotificationPtr(
+        is_progress_bar ? message_center::NOTIFICATION_TYPE_PROGRESS
+                        : message_center::NOTIFICATION_TYPE_SIMPLE,
+        id, title, message,
+        l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_DISPLAY_SOURCE),
+        GURL(),
+        message_center::NotifierId(
+            message_center::NotifierType::SYSTEM_COMPONENT, id,
+            NotificationCatalogName::kFloatingWorkspace),
+        notification_data,
+        base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+            weak_pointer_factory_.GetWeakPtr()),
+        kFloatingWorkspaceNotificationIcon, warning_level);
+    notification_->set_priority(message_center::SYSTEM_PRIORITY);
+    if (is_progress_bar) {
+      progress_notification_id_ = notification_->id();
+    }
+  }
+  auto* notification_display_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
+  notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
+                                        *notification_,
+                                        /*metadata=*/nullptr);
 }
 
 void FloatingWorkspaceService::DoGarbageCollection(

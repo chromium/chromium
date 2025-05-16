@@ -61,15 +61,15 @@ void FloatingWorkspaceDialogHandler::RegisterMessages() {
 void FloatingWorkspaceDialogHandler::Initialize(const base::Value::List& args) {
   AllowJavascript();
   switch (state_) {
-    case FloatingWorkspaceDialog::State::kDefault:
+    case DialogState::kDefault:
       CallJavascriptFunction(std::string(kFloatingWorkspaceDialog) +
                              "showDefaultScreen");
       break;
-    case FloatingWorkspaceDialog::State::kNetwork:
+    case DialogState::kNetwork:
       CallJavascriptFunction(std::string(kFloatingWorkspaceDialog) +
                              "showNetworkScreen");
       break;
-    case FloatingWorkspaceDialog::State::kError:
+    case DialogState::kError:
       CallJavascriptFunction(std::string(kFloatingWorkspaceDialog) +
                              "showErrorScreen");
       break;
@@ -77,30 +77,27 @@ void FloatingWorkspaceDialogHandler::Initialize(const base::Value::List& args) {
 }
 
 void FloatingWorkspaceDialogHandler::ShowDefaultScreen() {
-  if (state_ != FloatingWorkspaceDialog::State::kDefault &&
-      IsJavascriptAllowed()) {
+  if (state_ != DialogState::kDefault && IsJavascriptAllowed()) {
     CallJavascriptFunction(std::string(kFloatingWorkspaceDialog) +
                            "showDefaultScreen");
   }
-  state_ = FloatingWorkspaceDialog::State::kDefault;
+  state_ = DialogState::kDefault;
 }
 
 void FloatingWorkspaceDialogHandler::ShowNetworkScreen() {
-  if (state_ != FloatingWorkspaceDialog::State::kNetwork &&
-      IsJavascriptAllowed()) {
+  if (state_ != DialogState::kNetwork && IsJavascriptAllowed()) {
     CallJavascriptFunction(std::string(kFloatingWorkspaceDialog) +
                            "showNetworkScreen");
   }
-  state_ = FloatingWorkspaceDialog::State::kNetwork;
+  state_ = DialogState::kNetwork;
 }
 
 void FloatingWorkspaceDialogHandler::ShowErrorScreen() {
-  if (state_ != FloatingWorkspaceDialog::State::kError &&
-      IsJavascriptAllowed()) {
+  if (state_ != DialogState::kError && IsJavascriptAllowed()) {
     CallJavascriptFunction(std::string(kFloatingWorkspaceDialog) +
                            "showErrorScreen");
   }
-  state_ = FloatingWorkspaceDialog::State::kError;
+  state_ = DialogState::kError;
 }
 
 void FloatingWorkspaceDialogHandler::ShowNetworkDetails(

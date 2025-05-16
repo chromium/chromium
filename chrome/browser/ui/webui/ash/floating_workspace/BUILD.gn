@@ -43,7 +43,4 @@ static_library("floating_workspace") {
     "//ui/webui",
     "//url",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/floating_workspace:floating_workspace" ]
 }

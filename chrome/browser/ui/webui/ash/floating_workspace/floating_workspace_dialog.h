@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_DIALOG_H_
 
-#include <optional>
-
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
@@ -18,9 +16,6 @@ class FloatingWorkspaceDialogHandler;
 // workspace fetches the state.
 class FloatingWorkspaceDialog : public SystemWebDialogDelegate {
  public:
-  // This dialog can be in only one of three states.
-  enum class State { kDefault, kNetwork, kError };
-
   FloatingWorkspaceDialog(const FloatingWorkspaceDialog&) = delete;
   FloatingWorkspaceDialog& operator=(const FloatingWorkspaceDialog&) = delete;
   ~FloatingWorkspaceDialog() override;
@@ -28,9 +23,7 @@ class FloatingWorkspaceDialog : public SystemWebDialogDelegate {
   static void ShowDefaultScreen();
   static void ShowNetworkScreen();
   static void ShowErrorScreen();
-  // Returns an empty optional if the dialog is not shown, otherwise returns
-  // it's current state.
-  static std::optional<State> IsShown();
+  static bool IsShown();
 
   // Closes the dialog if it's currently opened.
   static void Close();

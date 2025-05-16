@@ -7,13 +7,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash {
 
 class FloatingWorkspaceDialogHandler : public content::WebUIMessageHandler {
  public:
+  // This dialog can be in only one of three states.
+  enum class DialogState { kDefault, kNetwork, kError };
+
   FloatingWorkspaceDialogHandler();
   ~FloatingWorkspaceDialogHandler() override;
 
@@ -24,8 +26,6 @@ class FloatingWorkspaceDialogHandler : public content::WebUIMessageHandler {
   void ShowNetworkScreen();
   void ShowErrorScreen();
 
-  FloatingWorkspaceDialog::State state() { return state_; }
-
  private:
   void Initialize(const base::Value::List& args);
   void ShowNetworkDetails(const base::Value::List& args);
@@ -34,7 +34,7 @@ class FloatingWorkspaceDialogHandler : public content::WebUIMessageHandler {
   void GetHostname(const base::Value::List& args);
   void Respond(const std::string& callback_id, base::ValueView response);
 
-  FloatingWorkspaceDialog::State state_;
+  DialogState state_;
   base::WeakPtrFactory<FloatingWorkspaceDialogHandler> weak_ptr_factory_{this};
 };
 
