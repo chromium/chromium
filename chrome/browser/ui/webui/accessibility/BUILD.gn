@@ -5,27 +5,27 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("accessibility") {
-  sources = [
-    "accessibility_ui.cc",
-    "accessibility_ui.h",
-  ]
+  sources = [ "accessibility_ui.h" ]
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//content/public/browser",
     "//ui/accessibility/platform",
   ]
+}
+
+source_set("impl") {
+  sources = [ "accessibility_ui.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//base/tracing/protos:chrome_track_event_zero",
+    ":accessibility",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/accessibility:resources",
     "//chrome/common",
+    "//chrome/common:constants",
     "//components/pref_registry",
-    "//components/prefs",
-    "//ui/accessibility:ax_base",
-    "//ui/base",
   ]
 
   if (!is_android) {

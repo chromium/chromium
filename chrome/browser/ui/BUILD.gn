@@ -417,6 +417,7 @@ static_library("ui") {
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/about:impl",
     "//chrome/browser/ui/webui/accessibility",
+    "//chrome/browser/ui/webui/accessibility:impl",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updates/announcement_notification",
@@ -1946,7 +1947,7 @@ static_library("ui") {
 
       # TODO(crbug.com/364667551): It includes //c/b/ui/browser.h and
       # //c/b/ui/browser_window.h.
-      "//chrome/browser/ui/webui/accessibility",
+      "//chrome/browser/ui/webui/accessibility:impl",
     ]
 
     if (is_mac) {
