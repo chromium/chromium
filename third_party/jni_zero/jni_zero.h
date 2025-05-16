@@ -7,12 +7,14 @@
 
 #include <jni.h>
 
+// IWYU pragma: begin_exports
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_methods.h"
 #include "third_party/jni_zero/jni_wrappers.h"
 #include "third_party/jni_zero/logging.h"
 #include "third_party/jni_zero/type_conversions.h"
+// IWYU pragma: end_exports
 
 namespace jni_zero {
 
