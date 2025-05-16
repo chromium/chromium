@@ -166,13 +166,13 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
 
  private:
   void RecordBounce(
-      const GURL& url,
-      bool has_3pc_exception,
-      const GURL& final_url,
-      base::Time time,
-      bool stateful,
+      const BtmRedirectInfo& redirect,
+      const BtmRedirectChainInfo& chain,
       base::RepeatingCallback<void(const GURL&)> increment_bounce_callback) {
-    recorded_bounces_.insert(std::make_tuple(url, time, stateful));
+    bool stateful = redirect.access_type > BtmDataAccessType::kRead;
+
+    recorded_bounces_.insert(
+        std::make_tuple(redirect.redirecting_url.url, redirect.time, stateful));
     if (stateful) {
       stateful_bounce_count_++;
     }

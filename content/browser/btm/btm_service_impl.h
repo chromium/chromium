@@ -33,11 +33,8 @@ class PersistentRepeatingTimer;
 class CONTENT_EXPORT BtmServiceImpl : public BtmService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<void(
-      const GURL& url,
-      bool has_3pc_exception,
-      const GURL& final_url,
-      base::Time time,
-      bool stateful,
+      const BtmRedirectInfo& redirect,
+      const BtmRedirectChainInfo& chain,
       base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback)>;
 
   BtmServiceImpl(base::PassKey<BrowserContextImpl>, BrowserContext* context);
@@ -48,14 +45,10 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   base::SequenceBound<BtmStorage>* storage() { return &storage_; }
 
   void RecordBounceForTesting(
-      const GURL& url,
-      bool has_3pc_exception,
-      const GURL& final_url,
-      base::Time time,
-      bool stateful,
+      const BtmRedirectInfo& redirect,
+      const BtmRedirectChainInfo& chain,
       base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
-    RecordBounce(url, has_3pc_exception, final_url, time, stateful,
-                 stateful_bounce_callback);
+    RecordBounce(redirect, chain, stateful_bounce_callback);
   }
 
   BtmCookieMode GetCookieMode() const;
@@ -131,11 +124,8 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
       base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback,
       const BtmState url_state);
   void RecordBounce(
-      const GURL& url,
-      bool has_3pc_exception,
-      const GURL& final_url,
-      base::Time time,
-      bool stateful,
+      const BtmRedirectInfo& redirect,
+      const BtmRedirectChainInfo& chain,
       base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback);
   static void HandleRedirect(
       const BtmRedirectInfo& redirect,
