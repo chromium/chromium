@@ -512,12 +512,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // Sync re-downloaded the ReadingList entry into the account store, so it now
-  // exists in both.
   ASSERT_EQ(reading_list_model()->size(), 1ul);
-  ASSERT_EQ(reading_list_model()->GetStorageStateForURLForTesting(kUrl),
-            reading_list::DualReadingListModel::StorageStateForTesting::
-                kExistsInBothModels);
+
   // Verify that the URL is marked as needing upload. Most importantly, this
   // call would CHECK-crash if both models were tracking metadata, so this
   // serves as verification that the Sync-the-feature mode metadata was cleaned

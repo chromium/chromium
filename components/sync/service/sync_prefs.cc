@@ -309,27 +309,18 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         type_enabled =
             pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 #endif
-      } else if (type == UserSelectableType::kBookmarks) {
+      } else if (type == UserSelectableType::kBookmarks ||
+                 type == UserSelectableType::kReadingList) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
         type_enabled =
             base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
 #else
-        // Bookmarks require a specific explicit sign in.
+        // Bookmarks and Reading List require a specific explicit sign in.
         type_enabled = SigninPrefs(*pref_service_)
                            .GetBookmarksExplicitBrowserSignin(gaia_id) ||
                        base::FeatureList::IsEnabled(
                            kEnableBookmarksSelectedTypeOnSigninForTesting);
 #endif
-      } else if (type == UserSelectableType::kReadingList) {
-        // Consider kReadingList off by default until
-        // `kReplaceSyncPromosWithSignInPromos` is enabled. For existing clients
-        // at the time the feature transitions from disabled to enabled, the
-        // state at the time is captured as explicit value in
-        // `MaybeMigratePrefsForSyncToSigninPart1()`.
-        type_enabled =
-            base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
-            base::FeatureList::IsEnabled(
-                kEnableBookmarksSelectedTypeOnSigninForTesting);
       } else if (type == UserSelectableType::kExtensions) {
         // Extensions require a specific explicit sign in.
         type_enabled = SigninPrefs(*pref_service_)

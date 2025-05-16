@@ -222,9 +222,10 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   expected_disabled_types.Put(UserSelectableType::kThemes);
 #else
-  // On platforms other than mobile, bookmarks requires a separate pref
-  // `kBookmarksExplicitBrowserSigninEnabled`.
+  // On platforms other than mobile, bookmarks and reading list require a
+  // separate pref `kBookmarksExplicitBrowserSigninEnabled`.
   expected_disabled_types.Put(UserSelectableType::kBookmarks);
+  expected_disabled_types.Put(UserSelectableType::kReadingList);
 #endif
 
   EXPECT_EQ(selected_types,

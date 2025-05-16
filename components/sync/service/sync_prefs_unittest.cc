@@ -505,9 +505,10 @@ TEST_F(SyncPrefsTest,
   // Because `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is not set,
   // kPreferences are disabled.
   expected_types.Remove(UserSelectableType::kPreferences);
-  // Because `kBookmarksExplicitBrowserSigninEnabled` is not set, kBookmarks are
-  // disabled.
+  // Because `kBookmarksExplicitBrowserSigninEnabled` is not set, kBookmarks and
+  // kReadingList are disabled.
   expected_types.Remove(UserSelectableType::kBookmarks);
+  expected_types.Remove(UserSelectableType::kReadingList);
 #endif
 
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_), expected_types);
@@ -1350,16 +1351,17 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksNotOptedIn) {
     base::test::ScopedFeatureList enable_sync_to_signin(
         kReplaceSyncPromosWithSignInPromos);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    // `kBookmarksExplicitBrowserSigninEnabled` needs to be set to enable
+    // Bookmarks and ReadingList on Desktop.
+    SigninPrefs(pref_service_)
+        .SetBookmarksExplicitBrowserSignin(gaia_id_, true);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
     SyncPrefs prefs(&pref_service_);
 
-    // Sanity check: Without the migration, ReadingList would now
-    // be considered enabled. Bookmarks is only enabled on mobile, the opt-in
-    // pref `kBookmarksExplicitBrowserSigninEnabled` would need to be set to
-    // enable it on Desktop.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
         UserSelectableType::kBookmarks));
-#endif
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
         UserSelectableType::kReadingList));
 
@@ -1498,12 +1500,12 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
   // types may be supported and default-enabled.
   UserSelectableTypeSet default_enabled_types{
       UserSelectableType::kAutofill, UserSelectableType::kPasswords,
-      UserSelectableType::kPayments, UserSelectableType::kPreferences,
-      UserSelectableType::kReadingList};
+      UserSelectableType::kPayments, UserSelectableType::kPreferences};
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // Bookmarks is only selected by default on mobile.
+  // Bookmarks and Reading List are only selected by default on mobile.
   default_enabled_types.Put(UserSelectableType::kBookmarks);
+  default_enabled_types.Put(UserSelectableType::kReadingList);
 #endif
 
   ASSERT_TRUE(SyncPrefs(&pref_service_)
@@ -1550,12 +1552,12 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomState) {
   // flags, additional types may be supported and default-enabled.
   UserSelectableTypeSet pre_migration_selected_types{
       UserSelectableType::kAutofill, UserSelectableType::kPasswords,
-      UserSelectableType::kPayments, UserSelectableType::kPreferences,
-      UserSelectableType::kReadingList};
+      UserSelectableType::kPayments, UserSelectableType::kPreferences};
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // Bookmarks is only selected by default on mobile.
+  // Bookmarks and Reading List are only selected by default on mobile.
   pre_migration_selected_types.Put(UserSelectableType::kBookmarks);
+  pre_migration_selected_types.Put(UserSelectableType::kReadingList);
 #endif
 
   ASSERT_TRUE(SyncPrefs(&pref_service_)
@@ -1641,12 +1643,12 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomPassphrase) {
   // types may be supported and default-enabled.
   UserSelectableTypeSet default_enabled_types{
       UserSelectableType::kAutofill, UserSelectableType::kPasswords,
-      UserSelectableType::kPayments, UserSelectableType::kPreferences,
-      UserSelectableType::kReadingList};
+      UserSelectableType::kPayments, UserSelectableType::kPreferences};
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // Bookmarks is only selected by default on mobile.
+  // Bookmarks and Reading List are only selected by default on mobile.
   default_enabled_types.Put(UserSelectableType::kBookmarks);
+  default_enabled_types.Put(UserSelectableType::kReadingList);
 #endif
 
   ASSERT_TRUE(SyncPrefs(&pref_service_)
