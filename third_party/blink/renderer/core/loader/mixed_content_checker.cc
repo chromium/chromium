@@ -889,7 +889,9 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // We are currently not autoupgrading plugin loaded content, which is why
   // check_mode_for_plugin is hardcoded to kStrict.
   bool settings_restricts_mixed_content;
-  if (frame) {
+  if (frame &&
+      RuntimeEnabledFeatures::
+          MixedContentAutoupgradesUseIsMixedContentRestrictedInFrameEnabled()) {
     settings_restricts_mixed_content =
         IsMixedContentRestrictedInFrameContext(frame);
   } else {

@@ -3074,6 +3074,11 @@
       name: "MiddleClickAutoscroll",
       status: "test",
     },
+    // Killswitch for crbug.com/40062462 fix.
+    {
+      name: "MixedContentAutoupgradesUseIsMixedContentRestrictedInFrame",
+      status: "stable",
+    },
     {
       name: "MobileLayoutTheme",
     },
