@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
 
 namespace ash {
@@ -155,6 +156,10 @@ class ASH_EXPORT DeskAnimationBase
   // DeskController are tied together in production code, but may not be in a
   // test scenario.
   bool skip_notify_controller_on_animation_finished_for_testing_ = false;
+
+  // Used to pause occlusion updates while taking starting desk screenshot.
+  std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
+      pauser_for_screenshot_;
 };
 
 }  // namespace ash

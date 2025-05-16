@@ -46,6 +46,14 @@ void DeskAnimationBase::Launch() {
     throughput_tracker_->Start(GetSmoothnessReportCallback());
   }
 
+  // Pause occlusion tracking while taking starting desk screenshot.
+  //
+  // Occlusion tracking should be paused prior to PrepareForActivationAnimation
+  // since it can update the occlusion state of the starting desk windows.
+  // See crbug.com/417088506 for the context.
+  pauser_for_screenshot_ =
+      std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
+
   // This step makes sure that the containers of the target desk are shown at
   // the beginning of the animation (but not actually visible to the user yet,
   // until the desk is actually activated at a later step of the animation).
@@ -106,6 +114,9 @@ void DeskAnimationBase::OnStartingDeskScreenshotTaken(int ending_desk_index) {
     ActivateTargetDeskWithoutAnimation();
     return;
   }
+
+  // Now each display is covered by starting desk screenshot.
+  pauser_for_screenshot_.reset();
 
   // Extend the compositors' timeouts in order to prevents any repaints until
   // the desks are switched and overview mode exits.

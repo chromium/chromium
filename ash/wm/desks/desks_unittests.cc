@@ -2613,6 +2613,89 @@ TEST_P(DesksTest, AddDeskWhileExitingOverview) {
   NewDesk();
 }
 
+// Verify that the starting desk is not occluded by the ending desk when
+// activation is switching. Regression test for crbug.com/398287318.
+TEST_P(DesksTest, EndingDeskShouldNotOccludeStartingDesk) {
+  UpdateDisplay("600x400");
+
+  auto* root = Shell::GetPrimaryRootWindow();
+  auto* controller = DesksController::Get();
+
+  // Prepare two desks.
+  NewDesk();
+  ASSERT_EQ(2u, controller->desks().size());
+
+  const Desk* desk1 = controller->GetDeskAtIndex(0);
+  const Desk* desk2 = controller->GetDeskAtIndex(1);
+  auto* desk1_container = desk1->GetDeskContainerForRoot(root);
+  auto* desk2_container = desk2->GetDeskContainerForRoot(root);
+
+  // desk1 is active.
+  ASSERT_TRUE(desk1_container->IsVisible());
+  ASSERT_FALSE(desk2_container->IsVisible());
+  ASSERT_EQ(desks_util::GetActiveDeskContainerForRoot(root), desk1_container);
+
+  // Create two windows so that win2 can completely cover win1.
+  const auto win1_bounds = gfx::Rect{20, 20, 100, 100};
+  const auto win2_bounds = gfx::Rect{10, 10, 200, 200};
+  std::unique_ptr<aura::Window> win1 = CreateAppWindow(win1_bounds);
+  std::unique_ptr<aura::Window> win2 = CreateAppWindow(win2_bounds);
+  win1->TrackOcclusionState();
+  win2->TrackOcclusionState();
+  win1->Show();
+  win2->Show();
+  // Check that win1 is occluded when win2 is active.
+  wm::ActivateWindow(win2.get());
+  ASSERT_EQ(win1->GetOcclusionState(), aura::Window::OcclusionState::OCCLUDED);
+  ASSERT_EQ(win2->GetOcclusionState(), aura::Window::OcclusionState::VISIBLE);
+  wm::ActivateWindow(win1.get());
+  ASSERT_EQ(win1->GetOcclusionState(), aura::Window::OcclusionState::VISIBLE);
+  ASSERT_EQ(win2->GetOcclusionState(), aura::Window::OcclusionState::VISIBLE);
+
+  // Move win2 to desk2.
+  controller->SendToDeskAtIndex(win2.get(), 1);
+
+  // Now win1 is only visible.
+  ASSERT_EQ(win1->GetOcclusionState(), aura::Window::OcclusionState::VISIBLE);
+  ASSERT_EQ(win2->GetOcclusionState(), aura::Window::OcclusionState::HIDDEN);
+
+  // Activate desk2.
+  DeskSwitchAnimationWaiter animation_waiter;
+  controller->ActivateDesk(desk2, DesksSwitchSource::kDeskSwitchShortcut);
+
+  // `ActivateDesk` does not activate desk2 immediately.
+  // Although the fix for crbug.com/40100714 makes win2 shown (with opacity 0),
+  // win1 should not be occluded.
+  // Note: Occlusion state update is paused until the starting desk screenshot
+  // is taken.
+  EXPECT_TRUE(desk1_container->IsVisible());
+  EXPECT_TRUE(desk2_container->IsVisible());
+  EXPECT_EQ(win1->GetOcclusionState(), aura::Window::OcclusionState::VISIBLE);
+  EXPECT_EQ(win2->GetOcclusionState(), aura::Window::OcclusionState::HIDDEN);
+
+  // Wait until the starting desk screenshot has been taken.
+  base::RunLoop run_loop;
+  DeskAnimationBase* animation = DesksController::Get()->animation();
+  ASSERT_TRUE(animation);
+  auto* desk_switch_animator =
+      animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
+  ASSERT_TRUE(desk_switch_animator);
+  RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
+      .SetOnStartingScreenshotTakenCallback(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Activation is done while the ending desk screenshot is taken.
+  EXPECT_EQ(desks_util::GetActiveDeskContainerForRoot(root), desk2_container);
+  EXPECT_FALSE(desk1_container->IsVisible());
+  EXPECT_TRUE(desk2_container->IsVisible());
+  // Occlusion tracking is resumed before the ending desk screenshot is
+  // taken, so occlusion stat should be updated.
+  EXPECT_EQ(win1->GetOcclusionState(), aura::Window::OcclusionState::HIDDEN);
+  EXPECT_EQ(win2->GetOcclusionState(), aura::Window::OcclusionState::VISIBLE);
+
+  animation_waiter.Wait();
+}
+
 class DesksWithMultiDisplayOverview : public AshTestBase {
  public:
   DesksWithMultiDisplayOverview() = default;
