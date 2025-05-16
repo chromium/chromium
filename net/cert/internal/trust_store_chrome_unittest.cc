@@ -422,7 +422,7 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoAdditionalCertsAsTrustAnchors) {
       anchor->set_enforce_anchor_expiry(enforce_anchor_expiry);
       anchor->set_enforce_anchor_constraints(enforce_anchor_constraints);
       anchor->set_tls_trust_anchor(true);
-      anchor->set_trust_anchor_id("1.2.3.4");
+      anchor->set_trust_anchor_id("\x01\x02\x03\x04");
 
       std::optional<ChromeRootStoreData> root_store_data =
           ChromeRootStoreData::CreateFromRootStoreProto(root_store);
@@ -483,7 +483,7 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
   anchor->set_enforce_anchor_expiry(true);
   anchor->set_enforce_anchor_constraints(true);
   // |tls_trust_anchor| is left unset here.
-  anchor->set_trust_anchor_id("1.2.3.4");
+  anchor->set_trust_anchor_id("\x01\x02\x03\x04");
 
   std::optional<ChromeRootStoreData> root_store_data =
       ChromeRootStoreData::CreateFromRootStoreProto(root_store);

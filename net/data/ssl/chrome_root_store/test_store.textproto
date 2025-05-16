@@ -71,7 +71,7 @@ additional_certs {
 additional_certs {
   sha256_hex: "72a34ac2b424aed3f6b0b04755b88cc027dccc806fddb22b4cd7c47773973ec0"
   enforce_anchor_expiry: true
-  trust_anchor_id: "1.2.3.4"
+  trust_anchor_id: "\x01\x01\x01\x01"
   tls_trust_anchor: true
 }
 
@@ -79,7 +79,7 @@ additional_certs {
 additional_certs {
   sha256_hex: "e6fe22bf45e4f0d3b85c59e02c0f495418e1eb8d3210f788d48cd5e1cb547cd4"
   enforce_anchor_constraints: true
-  trust_anchor_id: "3.3.3.3"
+  trust_anchor_id: "\x03\x03\x03\x03"
   tls_trust_anchor: true
 }
 
@@ -88,7 +88,7 @@ additional_certs {
   sha256_hex: "973a41276ffd01e027a2aad49e34c37846d3e976ff6a620b6712e33832041aa6"
   enforce_anchor_expiry: true
   enforce_anchor_constraints: true
-  trust_anchor_id: "2.2.2.2"
+  trust_anchor_id: "\x02\x02\x02\x02"
   tls_trust_anchor: true
 }
 
@@ -97,7 +97,7 @@ additional_certs {
 # COMODO RSA Extended Validation Secure Server CA
 additional_certs {
   sha256_hex: "7e0e16c0056f41a9f4c61f571503c3bcf079e2bddb228bf2219ac31200496b5c"
-  trust_anchor_id: "1.2.3.3"
+  trust_anchor_id: "\x01\x02\x03\x03"
 }
 
 # Anchor for testing that a tls_trust_anchor cert is trusted even if it doesn't have an associated Trust Anchor ID.

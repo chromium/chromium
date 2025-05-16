@@ -197,6 +197,18 @@ void WriteTrustAnchors(
     // End struct
     *string_to_write += "};\n";
 
+    if (!anchor.trust_anchor_id().empty()) {
+      base::StringAppendF(string_to_write,
+                          "constexpr uint8_t k%sTrustAnchorID%d[] = {",
+                          cert_name_prefix, i);
+      // Convert each character to hex representation, escaped.
+      for (auto c : anchor.trust_anchor_id()) {
+        base::StringAppendF(string_to_write, "0x%02xu,",
+                            static_cast<uint8_t>(c));
+      }
+      *string_to_write += "};\n";
+    }
+
     if (anchor.constraints_size() > 0) {
       int constraint_num = 0;
       for (const auto& constraint : anchor.constraints()) {
@@ -262,23 +274,6 @@ void WriteTrustAnchors(
   }
 }
 
-// Appends |trust_anchor|'s Trust Anchor ID (or empty string, if not present) to
-// |*string_to_write|, with a preceding comma. Returns false if the Trust Anchor
-// ID is malformed.
-bool WriteTrustAnchorID(const TrustAnchor& anchor,
-                        std::string* string_to_write) {
-  if (anchor.has_trust_anchor_id()) {
-    if (anchor.trust_anchor_id().find_first_not_of("0123456789.") !=
-        std::string::npos) {
-      return false;
-    }
-    base::StringAppendF(string_to_write, ", \"%s\"", anchor.trust_anchor_id());
-  } else {
-    *string_to_write += ", \"\"";
-  }
-  return true;
-}
-
 // Returns true if file was correctly written, false otherwise.
 bool WriteRootCppFile(const RootStore& root_store,
                       const base::FilePath cpp_path) {
@@ -314,8 +309,10 @@ bool WriteRootCppFile(const RootStore& root_store,
         anchor.enforce_anchor_expiry() ? "true" : "false",
         anchor.enforce_anchor_constraints() ? "true" : "false");
 
-    if (!WriteTrustAnchorID(anchor, &string_to_write)) {
-      return false;
+    if (anchor.trust_anchor_id().empty()) {
+      string_to_write += ", {}";
+    } else {
+      base::StringAppendF(&string_to_write, ", kChromeRootTrustAnchorID%d", i);
     }
     string_to_write += "},\n";
   }
@@ -338,8 +335,10 @@ bool WriteRootCppFile(const RootStore& root_store,
         anchor.enforce_anchor_expiry() ? "true" : "false",
         anchor.enforce_anchor_constraints() ? "true" : "false");
 
-    if (!WriteTrustAnchorID(anchor, &string_to_write)) {
-      return false;
+    if (anchor.trust_anchor_id().empty()) {
+      string_to_write += ", {}";
+    } else {
+      base::StringAppendF(&string_to_write, ", kAdditionalTrustAnchorID%d", i);
     }
     string_to_write += "},\n";
   }

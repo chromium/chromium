@@ -65,12 +65,7 @@ message TrustAnchor {
   // If true, indicates that this certificate is trusted to issue QWACs.
   optional bool eutl = 6;
 
-  // A unique identifier for a trust anchor, expressed as dotted-decimal text.
-  // Specified in
-  // https://www.ietf.org/archive/id/draft-ietf-tls-trust-anchor-ids-00.html,
-  // Trust Anchor IDs are represented as relative OID suffixes of the Private
-  // Enterprise Number (PEN) OID prefix of "1.3.6.1.4.1.".
-  optional string trust_anchor_id = 7;
+  reserved 7;
 
   // When set to true, Chrome will enforce certificate expiry for this
   // TrustAnchor using the notBefore and notAfter from the corresponding
@@ -85,6 +80,13 @@ message TrustAnchor {
   // If true, indicates that this certificate is a trust anchor for TLS
   // connections.
   optional bool tls_trust_anchor = 10;
+
+  // A unique identifier for a trust anchor, in binary representation.
+  // Specified in
+  // https://www.ietf.org/archive/id/draft-ietf-tls-trust-anchor-ids-00.html,
+  // Trust Anchor IDs are represented as relative OID suffixes of the Private
+  // Enterprise Number (PEN) OID prefix of "1.3.6.1.4.1.".
+  optional bytes trust_anchor_id = 11;
 }
 
 // Message storing a complete Chrome Root Store.

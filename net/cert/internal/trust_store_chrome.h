@@ -42,12 +42,12 @@ struct ChromeRootCertInfo {
   // True if the certificate verifier should enforce X.509 constraints encoded
   // in the certificate.
   bool enforce_anchor_constraints;
-  // If non-empty, the ASCII representation of the Trust Anchor ID
+  // If non-empty, the binary representation of the Trust Anchor ID
   // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html)
   // associated with this anchor -- that is, a relative object identifier in
-  // dotted decimal form (e.g., "1234.1"). If empty, this anchor has no
-  // associated Trust Anchor ID.
-  std::string trust_anchor_id;
+  // binary representation. If empty, this anchor has no associated Trust Anchor
+  // ID.
+  base::span<const uint8_t> trust_anchor_id;
 };
 
 struct NET_EXPORT ChromeRootCertConstraints {
