@@ -59,13 +59,26 @@ TEST_F(ContentSuggestionsTileLayoutUtilTest, MostVisitedCellSize) {
 // Tests that CenteredTilesMarginForWidth works under various environment.
 TEST_F(ContentSuggestionsTileLayoutUtilTest, CenteredTilesMarginForWidth) {
   // Set up Regular size class and Large font size.
-  UITraitCollection* trait_collection =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        [UITraitCollection traitCollectionWithHorizontalSizeClass:
-                               UIUserInterfaceSizeClassRegular],
-        [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
-                               UIContentSizeCategoryLarge]
-      ]];
+  UITraitCollection* trait_collection;
+  if (@available(iOS 17, *)) {
+    trait_collection = [UITraitCollection
+        traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+          mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassRegular;
+          mutableTraits.preferredContentSizeCategory =
+              UIContentSizeCategoryLarge;
+        }];
+  }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+  else {
+    trait_collection =
+        [UITraitCollection traitCollectionWithTraitsFromCollections:@[
+          [UITraitCollection traitCollectionWithHorizontalSizeClass:
+                                 UIUserInterfaceSizeClassRegular],
+          [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                                 UIContentSizeCategoryLarge]
+        ]];
+  }
+#endif
 
   // Display 4 columns on very big screen.
   EXPECT_EQ(200, CenteredTilesMarginForWidth(
@@ -99,13 +112,25 @@ TEST_F(ContentSuggestionsTileLayoutUtilTest, CenteredTilesMarginForWidth) {
                         20 * 2));
 
   // Set up Compact size class and Accessibility Large font size.
-  trait_collection =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        [UITraitCollection traitCollectionWithHorizontalSizeClass:
-                               UIUserInterfaceSizeClassCompact],
-        [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
-                               UIContentSizeCategoryAccessibilityLarge]
-      ]];
+  if (@available(iOS 17, *)) {
+    trait_collection = [UITraitCollection
+        traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+          mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+          mutableTraits.preferredContentSizeCategory =
+              UIContentSizeCategoryAccessibilityLarge;
+        }];
+  }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+  else {
+    trait_collection =
+        [UITraitCollection traitCollectionWithTraitsFromCollections:@[
+          [UITraitCollection traitCollectionWithHorizontalSizeClass:
+                                 UIUserInterfaceSizeClassCompact],
+          [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                                 UIContentSizeCategoryAccessibilityLarge]
+        ]];
+  }
+#endif
 
   // Display 4 columns.
   EXPECT_EQ(20, CenteredTilesMarginForWidth(
