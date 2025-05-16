@@ -5,7 +5,6 @@ include_rules = [
   "+chrome/browser/ash/floating_workspace",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
-  "+chrome/browser/ui/webui/ash/internet",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
