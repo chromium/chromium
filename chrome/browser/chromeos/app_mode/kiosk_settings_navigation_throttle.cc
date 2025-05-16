@@ -79,34 +79,35 @@ void KioskSettingsNavigationThrottle::SetSettingPagesForTesting(
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
+void KioskSettingsNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Kiosk check.
   if (!IsRunningInForcedAppMode()) {
-    return nullptr;
+    return;
   }
   // If the web contents were previously marked as restricted, attach a throttle
   // to it.
-  if (handle->GetWebContents()->GetUserData(kRestrictedSettingsWindowKey)) {
-    return std::make_unique<KioskSettingsNavigationThrottle>(handle);
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (handle.GetWebContents()->GetUserData(kRestrictedSettingsWindowKey)) {
+    registry.AddThrottle(
+        std::make_unique<KioskSettingsNavigationThrottle>(registry));
   }
   // Otherwise, check whether the navigated to url is a settings page, and if
   // so, mark it.
-  if (IsSettingsPage(handle->GetURL().spec())) {
-    handle->GetWebContents()->SetUserData(
+  if (IsSettingsPage(handle.GetURL().spec())) {
+    handle.GetWebContents()->SetUserData(
         kRestrictedSettingsWindowKey,
         std::make_unique<content::WebContents::Data>());
-    return std::make_unique<KioskSettingsNavigationThrottle>(handle);
+    registry.AddThrottle(
+        std::make_unique<KioskSettingsNavigationThrottle>(registry));
   }
-  return nullptr;
 }
 
 KioskSettingsNavigationThrottle::KioskSettingsNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 KioskSettingsNavigationThrottle::ThrottleCheckResult
 KioskSettingsNavigationThrottle::WillStartRequest() {

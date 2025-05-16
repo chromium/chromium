@@ -20,24 +20,26 @@ const char kConsoleMessage[] =
 namespace safe_browsing {
 
 DelayedWarningNavigationThrottle::DelayedWarningNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 DelayedWarningNavigationThrottle::~DelayedWarningNavigationThrottle() = default;
 
-std::unique_ptr<DelayedWarningNavigationThrottle>
-DelayedWarningNavigationThrottle::MaybeCreateNavigationThrottle(
-    content::NavigationHandle* navigation_handle) {
+// static
+void DelayedWarningNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   // If the tab is being no-state prefetched, stop here before it breaks
   // metrics.
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
+  content::WebContents* web_contents =
+      registry.GetNavigationHandle().GetWebContents();
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents)) {
-    return nullptr;
+    return;
   }
 
   // Otherwise, always insert the throttle for metrics recording.
-  return std::make_unique<DelayedWarningNavigationThrottle>(navigation_handle);
+  registry.AddThrottle(
+      std::make_unique<DelayedWarningNavigationThrottle>(registry));
 }
 
 const char* DelayedWarningNavigationThrottle::GetNameForLogging() {

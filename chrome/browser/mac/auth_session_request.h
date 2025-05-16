@@ -39,8 +39,8 @@ class AuthSessionRequest
   static std::optional<std::string> CanonicalizeScheme(std::string scheme);
 
   // Create a throttle for the ongoing authentication session.
-  std::unique_ptr<content::NavigationThrottle> CreateThrottle(
-      content::NavigationHandle* handle);
+  void CreateAndAddNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
  private:
   friend class content::WebContentsUserData<AuthSessionRequest>;
@@ -100,7 +100,7 @@ class AuthSessionRequest
 
 // If there is an authentication session in progress for the given navigation
 // handle, install a throttle.
-std::unique_ptr<content::NavigationThrottle> MaybeCreateAuthSessionThrottleFor(
-    content::NavigationHandle* handle);
+void MaybeCreateAndAddAuthSessionNavigationThrottle(
+    content::NavigationThrottleRegistry& registry);
 
 #endif  // CHROME_BROWSER_MAC_AUTH_SESSION_REQUEST_H_

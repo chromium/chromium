@@ -19,8 +19,7 @@ class OnTaskLockedSessionNavigationThrottle
  public:
   // Returns a navigation throttle when the navigation is happening inside
   // a tabbed web app and the tabbed web app has a pinned home tab.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   ~OnTaskLockedSessionNavigationThrottle() override;
 
@@ -32,7 +31,7 @@ class OnTaskLockedSessionNavigationThrottle
 
  private:
   explicit OnTaskLockedSessionNavigationThrottle(
-      content::NavigationHandle* handle);
+      content::NavigationThrottleRegistry& registry);
 
   // Checks to see if the url we are currently navigating should be blocked
   // regardless of restriction levels. This includes special chrome urls, files,

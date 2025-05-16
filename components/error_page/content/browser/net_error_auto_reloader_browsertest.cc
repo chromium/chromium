@@ -175,9 +175,8 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
     content::ShellContentBrowserClient::Get()
         ->set_create_throttles_for_navigation_callback(base::BindRepeating(
             [](content::NavigationThrottleRegistry& registry) -> void {
-              registry.MaybeAddThrottle(
-                  NetErrorAutoReloader::MaybeCreateThrottleFor(
-                      &registry.GetNavigationHandle()));
+              NetErrorAutoReloader::MaybeCreateAndAddNavigationThrottle(
+                  registry);
             }));
   }
 

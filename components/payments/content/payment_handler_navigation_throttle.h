@@ -8,17 +8,13 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace payments {
 // The navigation throttle for the payment handler WebContents, used to
 // prevent the WebContents from openning pages of certain categories, e.g. pdf.
 class PaymentHandlerNavigationThrottle : public content::NavigationThrottle {
  public:
   explicit PaymentHandlerNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
   ~PaymentHandlerNavigationThrottle() override;
 
   PaymentHandlerNavigationThrottle(const PaymentHandlerNavigationThrottle&) =
@@ -30,8 +26,7 @@ class PaymentHandlerNavigationThrottle : public content::NavigationThrottle {
   // web_contents.
   static void MarkPaymentHandlerWebContents(content::WebContents* web_contents);
 
-  static std::unique_ptr<PaymentHandlerNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillProcessResponse() override;

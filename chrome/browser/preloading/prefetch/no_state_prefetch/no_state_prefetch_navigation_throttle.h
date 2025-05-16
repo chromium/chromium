@@ -14,7 +14,7 @@ namespace prerender {
 class NoStatePrefetchNavigationThrottle : public content::NavigationThrottle {
  public:
   explicit NoStatePrefetchNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
   ~NoStatePrefetchNavigationThrottle() override;
 
   NoStatePrefetchNavigationThrottle(const NoStatePrefetchNavigationThrottle&) =
@@ -30,8 +30,8 @@ class NoStatePrefetchNavigationThrottle : public content::NavigationThrottle {
 
   // Creates a navigation throttle when NoState Prefetch contents are limited to
   // same origin.
-  static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry);
 
  private:
   // Called by |WillRedirectRequest()| and |WillStartRequest()|. Cancels

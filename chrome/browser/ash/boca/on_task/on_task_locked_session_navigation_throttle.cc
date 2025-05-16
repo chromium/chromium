@@ -76,8 +76,8 @@ bool IsBocaAppHostURL(const GURL& url) {
 }  // namespace
 
 OnTaskLockedSessionNavigationThrottle::OnTaskLockedSessionNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 OnTaskLockedSessionNavigationThrottle::
     ~OnTaskLockedSessionNavigationThrottle() = default;
@@ -87,18 +87,18 @@ const char* OnTaskLockedSessionNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
+void OnTaskLockedSessionNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (!ash::boca_util::IsEnabled(
           ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-              handle->GetWebContents()->GetBrowserContext()))) {
-    return nullptr;
+              handle.GetWebContents()->GetBrowserContext()))) {
+    return;
   }
 
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
-          handle->GetWebContents()->GetBrowserContext());
+          handle.GetWebContents()->GetBrowserContext());
   // We do not need to create the throttle when we are not currently observing a
   // window that needs to be in locked mode, or if the navigation throttle is
   // not ready to start (where we are adding new tabs), or if the navigation is
@@ -107,27 +107,28 @@ OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
   // we are not navigating to a new page).
   if (!window_tracker || !window_tracker->browser() ||
       !window_tracker->can_start_navigation_throttle()) {
-    return nullptr;
+    return;
   }
 
-  if (!handle->IsInOutermostMainFrame()) {
-    return nullptr;
+  if (!handle.IsInOutermostMainFrame()) {
+    return;
   }
 
-  if (handle->IsSameDocument()) {
-    return nullptr;
+  if (handle.IsSameDocument()) {
+    return;
   }
 
   Browser* const content_browser =
-      LockedSessionWindowTracker::GetBrowserWithTab(handle->GetWebContents());
+      LockedSessionWindowTracker::GetBrowserWithTab(handle.GetWebContents());
 
   // Ensure we only apply the nav throttle on OnTask SWA navigations.
   if (content_browser && (content_browser != window_tracker->browser() &&
                           !content_browser->is_type_app_popup())) {
-    return nullptr;
+    return;
   }
-  window_tracker->ObserveWebContents(handle->GetWebContents());
-  return base::WrapUnique(new OnTaskLockedSessionNavigationThrottle(handle));
+  window_tracker->ObserveWebContents(handle.GetWebContents());
+  registry.AddThrottle(
+      base::WrapUnique(new OnTaskLockedSessionNavigationThrottle(registry)));
 }
 
 void OnTaskLockedSessionNavigationThrottle::MaybeShowBlockedURLToast() {

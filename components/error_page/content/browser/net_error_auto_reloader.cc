@@ -82,9 +82,9 @@ class IgnoreDuplicateErrorThrottle : public content::NavigationThrottle {
   using ShouldSuppressCallback =
       base::OnceCallback<bool(content::NavigationHandle*)>;
 
-  IgnoreDuplicateErrorThrottle(content::NavigationHandle* handle,
+  IgnoreDuplicateErrorThrottle(content::NavigationThrottleRegistry& registry,
                                ShouldSuppressCallback should_suppress)
-      : content::NavigationThrottle(handle),
+      : content::NavigationThrottle(registry),
         should_suppress_(std::move(should_suppress)) {
     DCHECK(should_suppress_);
   }
@@ -96,8 +96,9 @@ class IgnoreDuplicateErrorThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   content::NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
     DCHECK(should_suppress_);
-    if (std::move(should_suppress_).Run(navigation_handle()))
+    if (std::move(should_suppress_).Run(navigation_handle())) {
       return content::NavigationThrottle::ThrottleAction::CANCEL;
+    }
     return content::NavigationThrottle::ThrottleAction::PROCEED;
   }
 
@@ -135,28 +136,31 @@ NetErrorAutoReloader::NetErrorAutoReloader(content::WebContents* web_contents)
 NetErrorAutoReloader::~NetErrorAutoReloader() {
   // NOTE: Tests may call `DisableConnectionChangeObservationForTesting` to null
   // this out.
-  if (connection_tracker_)
+  if (connection_tracker_) {
     connection_tracker_->RemoveNetworkConnectionObserver(this);
+  }
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-NetErrorAutoReloader::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame())
-    return nullptr;
+void NetErrorAutoReloader::MaybeCreateAndAddNavigationThrottle(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame()) {
+    return;
+  }
 
   // Note that `CreateForWebContents` is a no-op if `contents` already has a
   // NetErrorAutoReloader. See WebContentsUserData.
-  content::WebContents* contents = handle->GetWebContents();
+  content::WebContents* contents = handle.GetWebContents();
   CreateForWebContents(contents);
-  return FromWebContents(contents)->MaybeCreateThrottle(handle);
+  FromWebContents(contents)->MaybeCreateAndAdd(registry);
 }
 
 void NetErrorAutoReloader::DidStartNavigation(
     content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame())
+  if (!handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // Suppress automatic reload as long as any navigations are pending.
   PauseAutoReloadTimerIfRunning();
@@ -165,16 +169,18 @@ void NetErrorAutoReloader::DidStartNavigation(
 
 void NetErrorAutoReloader::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame())
+  if (!handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   pending_navigations_.erase(handle);
   if (!handle->HasCommitted()) {
     // This navigation was cancelled and not committed. If there are still other
     // pending navigations, or we aren't sitting on a error page which allows
     // auto-reload, there's nothing to do.
-    if (!pending_navigations_.empty() || !current_reloadable_error_page_info_)
+    if (!pending_navigations_.empty() || !current_reloadable_error_page_info_) {
       return;
+    }
 
     // The last pending navigation was just cancelled and we're sitting on an
     // error page which allows auto-reload. Schedule the next auto-reload
@@ -208,8 +214,9 @@ void NetErrorAutoReloader::DidFinishNavigation(
   // We only schedule a reload if there are no other pending navigations.
   // If there are and they end up getting terminated without a commit, we
   // will schedule the next auto-reload at that time.
-  if (pending_navigations_.empty())
+  if (pending_navigations_.empty()) {
     ScheduleNextAutoReload();
+  }
 }
 
 void NetErrorAutoReloader::NavigationStopped() {
@@ -257,8 +264,9 @@ void NetErrorAutoReloader::SetInitialConnectionType(
     network::mojom::ConnectionType type) {
   // NOTE: Tests may call `DisableConnectionChangeObservationForTesting` to null
   // this out.
-  if (connection_tracker_)
+  if (connection_tracker_) {
     OnConnectionChanged(type);
+  }
 }
 
 bool NetErrorAutoReloader::IsWebContentsVisible() {
@@ -277,14 +285,16 @@ void NetErrorAutoReloader::PauseAutoReloadTimerIfRunning() {
 }
 
 void NetErrorAutoReloader::ResumeAutoReloadIfPaused() {
-  if (current_reloadable_error_page_info_ && !next_reload_timer_)
+  if (current_reloadable_error_page_info_ && !next_reload_timer_) {
     ScheduleNextAutoReload();
+  }
 }
 
 void NetErrorAutoReloader::ScheduleNextAutoReload() {
   DCHECK(current_reloadable_error_page_info_);
-  if (!is_online_ || !IsWebContentsVisible())
+  if (!is_online_ || !IsWebContentsVisible()) {
     return;
+  }
 
   // Note that Unretained is safe here because base::OneShotTimer will never
   // run its callback once destructed.
@@ -297,26 +307,28 @@ void NetErrorAutoReloader::ScheduleNextAutoReload() {
 
 void NetErrorAutoReloader::ReloadMainFrame() {
   DCHECK(current_reloadable_error_page_info_);
-  if (!is_online_ || !IsWebContentsVisible())
+  if (!is_online_ || !IsWebContentsVisible()) {
     return;
+  }
 
   ++num_reloads_for_current_error_;
   is_auto_reload_in_progress_ = true;
   web_contents()->GetPrimaryMainFrame()->Reload();
 }
 
-std::unique_ptr<content::NavigationThrottle>
-NetErrorAutoReloader::MaybeCreateThrottle(content::NavigationHandle* handle) {
-  DCHECK(handle->IsInPrimaryMainFrame());
+void NetErrorAutoReloader::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  DCHECK(handle.IsInPrimaryMainFrame());
   if (!current_reloadable_error_page_info_ ||
-      current_reloadable_error_page_info_->url != handle->GetURL() ||
+      current_reloadable_error_page_info_->url != handle.GetURL() ||
       !is_auto_reload_in_progress_) {
-    return nullptr;
+    return;
   }
 
-  return std::make_unique<IgnoreDuplicateErrorThrottle>(
-      handle, base::BindOnce(&NetErrorAutoReloader::ShouldSuppressErrorPage,
-                             base::Unretained(this)));
+  registry.AddThrottle(std::make_unique<IgnoreDuplicateErrorThrottle>(
+      registry, base::BindOnce(&NetErrorAutoReloader::ShouldSuppressErrorPage,
+                               base::Unretained(this))));
 }
 
 bool NetErrorAutoReloader::ShouldSuppressErrorPage(

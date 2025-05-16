@@ -19,8 +19,8 @@ constexpr char kApplicationXml[] = "application/xml";
 constexpr char kApplicationJson[] = "application/json";
 
 PaymentHandlerNavigationThrottle::PaymentHandlerNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 PaymentHandlerNavigationThrottle::~PaymentHandlerNavigationThrottle() = default;
 
@@ -31,32 +31,35 @@ const char* PaymentHandlerNavigationThrottle::GetNameForLogging() {
 // static
 void PaymentHandlerNavigationThrottle::MarkPaymentHandlerWebContents(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   web_contents->SetUserData(kPaymentHandlerWebContentsUserDataKey,
                             std::make_unique<base::SupportsUserData::Data>());
 }
 
 // static
-std::unique_ptr<PaymentHandlerNavigationThrottle>
-PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  if (!handle || !handle->GetWebContents() ||
-      !handle->GetWebContents()->GetUserData(
-          kPaymentHandlerWebContentsUserDataKey)) {
-    return nullptr;
+void PaymentHandlerNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.GetWebContents() || !handle.GetWebContents()->GetUserData(
+                                      kPaymentHandlerWebContentsUserDataKey)) {
+    return;
   }
-  return std::make_unique<PaymentHandlerNavigationThrottle>(handle);
+  registry.AddThrottle(
+      std::make_unique<PaymentHandlerNavigationThrottle>(registry));
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 PaymentHandlerNavigationThrottle::WillProcessResponse() {
-  if (!navigation_handle())
+  if (!navigation_handle()) {
     return PROCEED;
+  }
   const net::HttpResponseHeaders* response_headers =
       navigation_handle()->GetResponseHeaders();
-  if (!response_headers)
+  if (!response_headers) {
     return PROCEED;
+  }
 
   std::string mime_type;
   response_headers->GetMimeType(&mime_type);

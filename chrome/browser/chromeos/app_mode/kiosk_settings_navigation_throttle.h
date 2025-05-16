@@ -34,9 +34,9 @@ class KioskSettingsNavigationThrottle : public content::NavigationThrottle {
   // Replaces the list of allowed settings plages with the provided one.
   static void SetSettingPagesForTesting(const std::vector<SettingsPage>* pages);
 
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
-  explicit KioskSettingsNavigationThrottle(content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
+  explicit KioskSettingsNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;

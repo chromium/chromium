@@ -448,23 +448,19 @@ void CreateAndAddChromeThrottlesForNavigation(
   web_app::WebUIWebAppNavigationThrottle::MaybeCreateAndAdd(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  // TODO(https://crbug.com/412524375): Needs a NavigationThrottle ctor
-  // migration follow-up of https://crrev.com/c/6510776 below.
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // g_browser_process->safe_browsing_service() may be null in unittests.
   safe_browsing::SafeBrowsingUIManager* ui_manager =
       g_browser_process->safe_browsing_service()
           ? g_browser_process->safe_browsing_service()->ui_manager().get()
           : nullptr;
-  registry.MaybeAddThrottle(
-      safe_browsing::SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
-          &handle, ui_manager));
+  safe_browsing::SafeBrowsingNavigationThrottle::MaybeCreateAndAdd(registry,
+                                                                   ui_manager);
 
   if (base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
     registry.AddThrottle(
         std::make_unique<safe_browsing::DelayedWarningNavigationThrottle>(
-            &handle));
+            registry));
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
@@ -474,43 +470,35 @@ void CreateAndAddChromeThrottlesForNavigation(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  registry.MaybeAddThrottle(
-      chromeos::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
+  chromeos::KioskSettingsNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  registry.MaybeAddThrottle(
-      ash::OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
+  ash::OnTaskLockedSessionNavigationThrottle::MaybeCreateAndAdd(registry);
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  registry.MaybeAddThrottle(MaybeCreateAuthSessionThrottleFor(&handle));
+  MaybeCreateAndAddAuthSessionNavigationThrottle(registry);
 #endif
 
   if (profile && profile->GetPrefs()) {
-    registry.MaybeAddThrottle(
-        security_interstitials::InsecureFormNavigationThrottle::
-            MaybeCreateNavigationThrottle(
-                &handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
-                profile->GetPrefs()));
+    security_interstitials::InsecureFormNavigationThrottle::MaybeCreateAndAdd(
+        registry, std::make_unique<ChromeSecurityBlockingPageFactory>(),
+        profile->GetPrefs());
   }
 
   if (IsErrorPageAutoReloadEnabled()) {
-    registry.MaybeAddThrottle(
-        error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(&handle));
+    error_page::NetErrorAutoReloader::MaybeCreateAndAddNavigationThrottle(
+        registry);
   }
 
-  registry.MaybeAddThrottle(
-      payments::PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
+  payments::PaymentHandlerNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  registry.MaybeAddThrottle(
-      prerender::NoStatePrefetchNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
+  prerender::NoStatePrefetchNavigationThrottle::MaybeCreateAndAdd(registry);
 
 #if !BUILDFLAG(IS_ANDROID)
-  registry.MaybeAddThrottle(
-      ReadAnythingSidePanelNavigationThrottle::CreateFor(&handle));
+  ReadAnythingSidePanelNavigationThrottle::CreateAndAdd(registry);
+
+  // TODO(https://crbug.com/412524375): Needs a NavigationThrottle ctor
+  // migration follow-up of https://crrev.com/c/6510776 below.
 
   if (lens::features::IsLensOverlayEnabled()) {
     if (profile) {
