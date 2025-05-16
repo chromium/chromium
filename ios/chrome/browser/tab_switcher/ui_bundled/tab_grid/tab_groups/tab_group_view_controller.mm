@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
@@ -86,6 +87,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
       [UIBackgroundConfiguration clearConfiguration];
   background_configuration.visualEffect = [UIBlurEffect
       effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
+  background_configuration.backgroundColor =
+      [[UIColor colorNamed:kGrey200Color] colorWithAlphaComponent:0.35];
 
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
@@ -817,15 +820,23 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.accessibilityIdentifier = kTabGroupViewTitleIdentifier;
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline]
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+
   NSMutableAttributedString* boldTitle =
       [[NSMutableAttributedString alloc] initWithString:_groupTitle];
+  if (IsContainedTabGroupEnabled()) {
+    [boldTitle addAttribute:NSFontAttributeName
+                      value:PreferredFontForTextStyle(UIFontTextStyleTitle3,
+                                                      UIFontWeightBold)
+                      range:NSMakeRange(0, _groupTitle.length)];
+  } else {
+    UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
+        preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline]
+        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
 
-  [boldTitle addAttribute:NSFontAttributeName
-                    value:[UIFont fontWithDescriptor:boldDescriptor size:0.0]
-                    range:NSMakeRange(0, _groupTitle.length)];
+    [boldTitle addAttribute:NSFontAttributeName
+                      value:[UIFont fontWithDescriptor:boldDescriptor size:0.0]
+                      range:NSMakeRange(0, _groupTitle.length)];
+  }
   titleLabel.attributedText = boldTitle;
 
   return titleLabel;

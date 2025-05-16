@@ -14,6 +14,12 @@ constexpr CGFloat kColoredDotSize = 20;
   UILabel* _titleView;
   // Dot view.
   UIView* _coloredDotView;
+  // Container for the whole title.
+  UIView* _container;
+  // Constraints for regular width.
+  NSArray<NSLayoutConstraint*>* _regularWidthConstraints;
+  // Constraints for compact width.
+  NSArray<NSLayoutConstraint*>* _compactWidthConstraints;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -21,22 +27,54 @@ constexpr CGFloat kColoredDotSize = 20;
   if (self) {
     _titleView = [self titleView];
     _coloredDotView = [self coloredDotView];
+    _container = [[UIView alloc] init];
+    _container.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [self addSubview:_coloredDotView];
-    [self addSubview:_titleView];
+    [self addSubview:_container];
+    [_container addSubview:_coloredDotView];
+    [_container addSubview:_titleView];
+
+    _regularWidthConstraints = @[
+      [_container.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+      [_container.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.widthAnchor],
+    ];
+
+    _compactWidthConstraints = @[
+      [_container.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [_container.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    ];
 
     [NSLayoutConstraint activateConstraints:@[
+      [_coloredDotView.leadingAnchor
+          constraintEqualToAnchor:_container.leadingAnchor],
+      [_coloredDotView.centerYAnchor
+          constraintEqualToAnchor:_titleView.centerYAnchor],
+
       [_titleView.leadingAnchor
           constraintEqualToAnchor:_coloredDotView.trailingAnchor
                          constant:kDotTitleSeparationMargin],
-      [_coloredDotView.centerYAnchor
-          constraintEqualToAnchor:_titleView.centerYAnchor],
-      [_coloredDotView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor],
-      [_titleView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-      [_titleView.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [_titleView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+
+      [_titleView.trailingAnchor
+          constraintEqualToAnchor:_container.trailingAnchor],
+      [_titleView.topAnchor constraintEqualToAnchor:_container.topAnchor],
+      [_titleView.bottomAnchor constraintEqualToAnchor:_container.bottomAnchor],
+
+      [_container.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_container.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
     ]];
+
+    if (self.traitCollection.horizontalSizeClass ==
+        UIUserInterfaceSizeClassRegular) {
+      [NSLayoutConstraint activateConstraints:_regularWidthConstraints];
+    } else {
+      [NSLayoutConstraint activateConstraints:_compactWidthConstraints];
+    }
+
+    if (@available(iOS 17, *)) {
+      [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                         withAction:@selector(horizontalSizeClassDidChange)];
+    }
   }
   return self;
 }
@@ -90,6 +128,18 @@ constexpr CGFloat kColoredDotSize = 20;
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   return titleLabel;
+}
+
+// Called when the horizontal size class have changed.
+- (void)horizontalSizeClassDidChange {
+  if (self.traitCollection.horizontalSizeClass ==
+      UIUserInterfaceSizeClassRegular) {
+    [NSLayoutConstraint deactivateConstraints:_compactWidthConstraints];
+    [NSLayoutConstraint activateConstraints:_regularWidthConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_regularWidthConstraints];
+    [NSLayoutConstraint activateConstraints:_compactWidthConstraints];
+  }
 }
 
 @end
