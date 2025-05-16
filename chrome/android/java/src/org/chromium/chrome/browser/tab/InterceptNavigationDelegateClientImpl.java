@@ -138,6 +138,11 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
+    public boolean isTabInBrowser() {
+        return mTab.isTabInBrowser();
+    }
+
+    @Override
     public boolean isInDesktopWindowingMode() {
         if (sIsInDesktopWindowingModeForTesting != null) {
             return sIsInDesktopWindowingModeForTesting;

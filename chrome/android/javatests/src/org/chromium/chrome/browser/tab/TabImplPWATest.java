@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
@@ -74,5 +75,6 @@ public class TabImplPWATest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         assertTrue(sCustomTabActivityTestRule.getActivity().getActivityTab().isTabInPWA());
+        assertFalse(sCustomTabActivityTestRule.getActivity().getActivityTab().isTabInBrowser());
     }
 }

@@ -54,6 +54,9 @@ public interface InterceptNavigationDelegateClient {
     /* Returns true if the client hosting this tab is a PWA (WebAPK or TWA). */
     boolean isTabInPWA();
 
+    /* Returns true if the client hosting this tab is a Browser. */
+    boolean isTabInBrowser();
+
     /** Returns whether this Activity is currently in Android desktop windowing mode. */
     boolean isInDesktopWindowingMode();
 

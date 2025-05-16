@@ -341,6 +341,11 @@ public interface Tab extends TabLifecycle {
     boolean isTabInPWA();
 
     /**
+     * @return true if the {@link Tab} is in a Browser.
+     */
+    boolean isTabInBrowser();
+
+    /**
      * @return the last time this tab was shown or the time of its initialization if it wasn't yet
      *     shown.
      */

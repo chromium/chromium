@@ -95,5 +95,6 @@ public class TabImplTest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         assertFalse(sActivityTestRule.getActivity().getActivityTab().isTabInPWA());
+        assertTrue(sActivityTestRule.getActivity().getActivityTab().isTabInBrowser());
     }
 }

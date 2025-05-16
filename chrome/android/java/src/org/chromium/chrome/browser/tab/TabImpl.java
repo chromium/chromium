@@ -2251,6 +2251,14 @@ class TabImpl implements Tab {
     }
 
     @Override
+    public boolean isTabInBrowser() {
+        // TODO(crbug.com/417720713): replace deprecated getActivity with something else.
+        ChromeActivity activity = getActivity();
+        if (activity == null) return false;
+        return activity.getActivityType() == ActivityType.TABBED;
+    }
+
+    @Override
     public long getTimestampMillis() {
         return mTimestampMillis;
     }
