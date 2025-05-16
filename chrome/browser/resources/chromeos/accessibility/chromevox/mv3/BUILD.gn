@@ -12,6 +12,8 @@ import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 
 group("build") {
   deps = [
@@ -21,9 +23,6 @@ group("build") {
     "//third_party/liblouis",
   ]
 }
-
-closure_library_dir =
-    "//third_party/chromevox/third_party/closure-library/closure/goog"
 
 chromevox_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/chromevox/mv3"
@@ -36,6 +35,9 @@ tsc_out_dir = "$target_gen_dir/tsc"
 # Location of common typescript output.
 common_tsc_dir =
     "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
+
+# Messageformat third_party directory.
+messageformat_dir = "//third_party/node/node_modules/messageformat/lib/"
 
 # List of all modules that are included in one or more of the production
 # chromevox scripts.
@@ -179,22 +181,6 @@ js_modules = [
   "background/phonetic_data.js",
 ]
 
-# Closure library modules needed by chromevox.
-relative_closure_library_modules = [
-  "asserts/asserts.js",
-  "base.js",
-  "debug/error.js",
-  "dom/nodetype.js",
-  "i18n/pluralrules.js",
-  "i18n/ordinalrules.js",
-  "i18n/messageformat.js",
-  "object/object.js",
-  "string/string.js",
-]
-
-closure_library_modules =
-    rebase_path(relative_closure_library_modules, ".", closure_library_dir)
-
 # Root dir must be the parent directory so it can reach common/.
 ts_library("ts_build") {
   root_dir = "$ts_build_staging_dir"
@@ -232,8 +218,11 @@ ts_library("ts_build") {
     "../../definitions/tts.d.ts",
   ]
 
-  path_mappings =
-      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+  path_mappings = [
+    "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir),
+    "/chromevox/mv3/third_party/messageformat/messageformat.rollup.js|" +
+        rebase_path("$messageformat_dir/messageformat.d.ts", target_gen_dir),
+  ]
 
   in_files = ts_modules + js_modules
 
@@ -251,6 +240,7 @@ run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
   deps = [
+    ":minify_js_messageformat",
     ":ts_build",
     "../../common:copied_files",
     "../../common:ts_build",
@@ -270,7 +260,6 @@ run_jsbundler("copied_files") {
 
   sources = [
     "background/background.html",
-    "common/closure_loader.js",
     "earcons/chromevox_loaded.ogg",
     "earcons/chromevox_loading.ogg",
     "earcons/control.wav",
@@ -296,14 +285,11 @@ run_jsbundler("copied_files") {
     "tutorial/practice_areas/jump_commands.html",
     "tutorial/practice_areas/selects.html",
   ]
-  sources += js_modules
-  sources += closure_library_modules
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
-    rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
 }
 
@@ -400,7 +386,7 @@ action("chromevox_test_messages_js") {
 chromevox_test_modules = get_target_outputs(":chromevox_test_messages_js")
 
 generate_deps_js("chromevox_test_deps_js") {
-  sources = closure_library_modules + chromevox_test_modules
+  sources = chromevox_test_modules
   output_file = "$target_gen_dir/test_deps.js"
   rewrite_rules = [
     rebase_path("//", root_build_dir) + ":",
@@ -484,4 +470,22 @@ js2gtest("chromevox_extension_js_tests") {
   deps_js = test_deps_js_outputs[0]
   deps += [ ":chromevox_test_deps_js" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+bundle_js("bundle_js_messageformat") {
+  visibility = [ ":minify_js_messageformat" ]
+
+  host = "_ignored_"
+  input = rebase_path("$messageformat_dir", root_build_dir)
+  js_module_in_files = [ "messageformat.js" ]
+  out_folder = "$target_gen_dir/messageformat"
+}
+
+minify_js("minify_js_messageformat") {
+  visibility = [ ":copied_files" ]
+
+  deps = [ ":bundle_js_messageformat" ]
+  in_folder = "$target_gen_dir/messageformat"
+  in_files = [ "messageformat.rollup.js" ]
+  out_folder = "$chromevox_out_dir/third_party/messageformat/"
 }

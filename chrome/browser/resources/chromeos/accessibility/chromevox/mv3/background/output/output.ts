@@ -81,7 +81,7 @@ interface MessageHint {
  *     $text_sel_end').
  *
  * (@@) prefix: similar to @, used to substitute a message, but also pulls the
- *     localized string through goog.i18n.MessageFormat to support locale
+ *     localized string through MessageFormat to support locale
  *     aware plural handling.  The first argument should be a number which will
  *     be passed as a COUNT named parameter to MessageFormat.
  *     TODO(plundblad): Make subsequent arguments normal placeholder arguments

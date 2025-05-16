@@ -571,3 +571,122 @@ TEST_F('ChromeVoxBackgroundTtsTest', 'ResetTtsSettingsClearsVoice', function() {
         constants.SYSTEM_VOICE, ChromeVox.tts.ttsEngines_[0].currentVoice);
   })();
 });
+
+// Ensures that punctuation marks and symbols can be pluralized.
+AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Pluralization', function() {
+  const preprocess = tts.preprocess.bind(tts);
+
+  assertEquals('exclamation', preprocess('!'));
+  assertEquals('3 exclamations', preprocess('!!!'));
+
+  // Note that we don't cover the case for multiple spaces or tabs because
+  // preprocess will condense multiple spaces.
+  assertEquals('space', preprocess(' '));
+
+  // Backticks are omitted from pluralization logic at the preprocess layer.
+  assertEquals('backtick', preprocess('`'));
+  assertEquals('backtick backtick backtick', preprocess('```'));
+
+  // Tildes are omitted from pluralization logic at the preprocess layer.
+  assertEquals('tilde', preprocess('~'));
+  assertEquals('tilde tilde tilde', preprocess('~~~'));
+
+  assertEquals('at', preprocess('@'));
+  assertEquals('3 at signs', preprocess('@@@'));
+
+  assertEquals('pound', preprocess('#'));
+  assertEquals('3 pound signs', preprocess('###'));
+
+  assertEquals('dollar', preprocess('$'));
+  assertEquals('3 dollar signs', preprocess('$$$'));
+
+  assertEquals('percent', preprocess('%'));
+  assertEquals('3 percent signs', preprocess('%%%'));
+
+  assertEquals('caret', preprocess('^'));
+  assertEquals('3 carets', preprocess('^^^'));
+
+  assertEquals('ampersand', preprocess('&'));
+  assertEquals('3 ampersands', preprocess('&&&'));
+
+  assertEquals('asterisk', preprocess('*'));
+  assertEquals('3 asterisks', preprocess('***'));
+
+  assertEquals('open paren', preprocess('('));
+  assertEquals('3 open parens', preprocess('((('));
+
+  assertEquals('close paren', preprocess(')'));
+  assertEquals('3 close parens', preprocess(')))'));
+
+  assertEquals('dash', preprocess('-'));
+  assertEquals('3 dashes', preprocess('---'));
+
+  assertEquals('underscore', preprocess('_'));
+  assertEquals('3 underscores', preprocess('___'));
+
+  assertEquals('equal', preprocess('='));
+  assertEquals('3 equal signs', preprocess('==='));
+
+  assertEquals('plus', preprocess('+'));
+  assertEquals('3 plus signs', preprocess('+++'));
+
+  assertEquals('left bracket', preprocess('['));
+  assertEquals('3 left brackets', preprocess('[[['));
+
+  assertEquals('right bracket', preprocess(']'));
+  assertEquals('3 right brackets', preprocess(']]]'));
+
+  assertEquals('left brace', preprocess('{'));
+  assertEquals('3 left braces', preprocess('{{{'));
+
+  assertEquals('right brace', preprocess('}'));
+  assertEquals('3 right braces', preprocess('}}}'));
+
+  assertEquals('pipe', preprocess('|'));
+  assertEquals('3 vertical pipes', preprocess('|||'));
+
+  assertEquals('semicolon', preprocess(';'));
+  assertEquals('3 semicolons', preprocess(';;;'));
+
+  assertEquals('colon', preprocess(':'));
+  assertEquals('3 colons', preprocess(':::'));
+
+  // Commas are omitted from pluralization logic at the preprocess layer.
+  assertEquals('comma', preprocess(','));
+  assertEquals(',,,', preprocess(',,,'));
+
+  assertEquals('dot', preprocess('.'));
+  assertEquals('..', preprocess('..'));
+  assertEquals('ellipsis', preprocess('...'));
+  assertEquals('4 dots', preprocess('....'));
+
+  assertEquals('less than', preprocess('<'));
+  assertEquals('3 less than signs', preprocess('<<<'));
+
+  assertEquals('greater than', preprocess('>'));
+  assertEquals('3 greater than signs', preprocess('>>>'));
+
+  assertEquals('slash', preprocess('/'));
+  assertEquals('3 slashes', preprocess('///'));
+
+  assertEquals('question mark', preprocess('?'));
+  assertEquals('3 question marks', preprocess('???'));
+
+  assertEquals('quote', preprocess('"'));
+  assertEquals('3 quotes', preprocess('"""'));
+
+  assertEquals('apostrophe', preprocess('\''));
+  assertEquals('3 apostrophes', preprocess('\'\'\''));
+
+  assertEquals('backslash', preprocess('\\'));
+  assertEquals('3 backslashes', preprocess('\\\\\\'));
+
+  assertEquals('bullet', preprocess('\u2022'));
+  assertEquals('3 bullets', preprocess('\u2022\u2022\u2022'));
+
+  assertEquals('white bullet', preprocess('\u25e6'));
+  assertEquals('3 white bullets', preprocess('\u25e6\u25e6\u25e6'));
+
+  assertEquals('square bullet', preprocess('\u25a0'));
+  assertEquals('3 square bullets', preprocess('\u25a0\u25a0\u25a0'));
+});

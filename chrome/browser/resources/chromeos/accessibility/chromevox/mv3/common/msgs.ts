@@ -6,6 +6,7 @@
 /**
  * @fileoverview Defines methods related to retrieving translated messages.
  */
+import {MessageFormat} from '/chromevox/mv3/third_party/messageformat/messageformat.rollup.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export class Msgs {
@@ -47,13 +48,12 @@ export class Msgs {
   /**
    * Returns the message with the given message ID, formatted for the given
    * count.
-   * @param subs Substitution strings.
    * @return The localized and formatted message.
    */
-  static getMsgWithCount(
-    messageId: string, count: number, subs?: string[]): string {
-    return new goog.i18n.MessageFormat(Msgs.getMsg(messageId, subs))
-        .format({COUNT: count});
+  static getMsgWithCount(messageId: string, count: number): string {
+    const msg = Msgs.getMsg(messageId);
+    const formatter = new MessageFormat(chrome.i18n.getUILanguage(), msg);
+    return formatter.format({COUNT: count}, () => {});
   }
 
   /**
