@@ -42,6 +42,7 @@ const PYTEST_TOTAL_CHUNKS = argv['total-chunks'];
 const PYTEST_THIS_CHUNK = argv['this-chunk'];
 const UPDATE_SNAPSHOT = argv['update-snapshot'] === 'true';
 const REPEAT_TIMES = argv['repeat-times'];
+const RERUNS_TIMES = argv['reruns-times'];
 
 /**
  *
@@ -160,6 +161,9 @@ e2eArgs.push(
 );
 if (REPEAT_TIMES !== 1) {
   e2eArgs.push(`--count=${REPEAT_TIMES}`);
+}
+if (RERUNS_TIMES !== 0) {
+  e2eArgs.push(`--reruns=${RERUNS_TIMES}`);
 }
 if (PYTEST_TOTAL_CHUNKS !== 1) {
   e2eArgs.push(

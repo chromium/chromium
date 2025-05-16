@@ -74,6 +74,12 @@ export function parseCommandLineArgs() {
       type: 'number',
       default: Number(process.env.REPEAT_TIMES || 1),
     })
+    .option('reruns-times', {
+      describe:
+        'If set, will retry failing tests this many times. Default is 0 (no retry)',
+      type: 'number',
+      default: Number(process.env.RERUNS_TIMES || 0),
+    })
     .option('total-chunks', {
       describe: 'If provided, will split tests into this many shards.',
       type: 'number',
