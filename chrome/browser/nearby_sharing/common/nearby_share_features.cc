@@ -12,12 +12,6 @@ namespace features {
 // Enables Quick Share branding.
 BASE_FEATURE(kIsNameEnabled, "IsNameEnabled", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables UI features for Self Share to allow seamless sharing between a user's
-// own devices.
-BASE_FEATURE(kNearbySharingSelfShare,
-             "NearbySharingSelfShare",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables contact restriction when not in high-visibility mode.
 BASE_FEATURE(kNearbySharingRestrictToContacts,
              "NearbySharingRestrictToContacts",

@@ -94,8 +94,6 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
       /**
        * A list of all discovered nearby self-share targets.
-       * Used only if isSelfShareEnabled is true, otherwise only |shareTargets_|
-       * is used.
        */
       selfShareTargets_: {
         type: Array,
@@ -104,8 +102,6 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
       /**
        * A list of all discovered nearby non-self-share targets.
-       * Used only if isSelfShareEnabled is true, otherwise only |shareTargets_|
-       * is used.
        */
       nonSelfShareTargets_: {
         type: Array,

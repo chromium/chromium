@@ -13,8 +13,6 @@ BASE_DECLARE_FEATURE(kIsNameEnabled);
 bool IsNameEnabled();
 BASE_DECLARE_FEATURE(kNearbySharingRestrictToContacts);
 bool IsRestrictToContactsEnabled();
-BASE_DECLARE_FEATURE(kNearbySharingSelfShare);
-bool IsSelfShareEnabled();
 BASE_DECLARE_FEATURE(kNearbySharingVisibilityReminder);
 BASE_DECLARE_FEATURE(kNearbySharingWebRtc);
 BASE_DECLARE_FEATURE(kNearbySharingWifiLan);

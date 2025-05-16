@@ -14660,21 +14660,6 @@
             ]
         }
     ],
-    "NearbySharingSelfShare": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NearbySharingSelfShare"
-                    ]
-                }
-            ]
-        }
-    ],
     "NearbySharingWifiDirect": [
         {
             "platforms": [
