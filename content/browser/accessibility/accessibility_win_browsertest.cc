@@ -1588,7 +1588,7 @@ Option 3
   ASSERT_HRESULT_SUCCEEDED(V_UNKNOWN(selected.AsInput())
                                ->QueryInterface(IID_PPV_ARGS(&enum_variant)));
 
-  selected.Release();
+  selected.Reset();
   ASSERT_HRESULT_SUCCEEDED(enum_variant->Next(1, selected.Receive(), nullptr));
   ASSERT_EQ(VT_DISPATCH, selected.type());
 
@@ -1606,7 +1606,7 @@ Option 3
     EXPECT_STREQ(L"Option 1", option_name.Get());
   }
 
-  selected.Release();
+  selected.Reset();
   ASSERT_HRESULT_SUCCEEDED(enum_variant->Next(1, selected.Receive(), nullptr));
   ASSERT_EQ(VT_DISPATCH, selected.type());
 
