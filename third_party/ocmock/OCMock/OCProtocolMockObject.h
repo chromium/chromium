@@ -18,10 +18,9 @@
 
 @interface OCProtocolMockObject : OCMockObject
 {
-  NSArray<Protocol *> *mockedProtocols;
+    Protocol *mockedProtocol;
 }
 
 - (id)initWithProtocol:(Protocol *)aProtocol;
-- (id)initWithProtocols:(NSArray<Protocol *> *)aProtocols;
 
 @end

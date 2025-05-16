@@ -24,7 +24,3 @@ OCMPassByRefSetters rather than checking with object_getClass. See pending
 PRs here:
  - https://github.com/erikdoe/ocmock/pull/503
  - https://github.com/erikdoe/ocmock/pull/529
-
-Chromium add support for an object mocking multiple protocols.
-See pending PR here:
-- https://github.com/erikdoe/ocmock/pull/546

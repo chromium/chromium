@@ -53,11 +53,6 @@
     return [[[OCProtocolMockObject alloc] initWithProtocol:aProtocol] autorelease];
 }
 
-+ (id)mockForProtocols:(NSArray<Protocol *> *)aProtocol
-{
-    return [[[OCProtocolMockObject alloc] initWithProtocols:aProtocol] autorelease];
-}
-
 + (id)partialMockForObject:(NSObject *)anObject
 {
     return [[[OCPartialMockObject alloc] initWithObject:anObject] autorelease];
@@ -72,11 +67,6 @@
 + (id)niceMockForProtocol:(Protocol *)aProtocol
 {
     return [self _makeNice:[self mockForProtocol:aProtocol]];
-}
-
-+ (id)niceMockForProtocols:(NSArray<Protocol *> *)aProtocols
-{
-    return [self _makeNice:[self mockForProtocols:aProtocols]];
 }
 
 
