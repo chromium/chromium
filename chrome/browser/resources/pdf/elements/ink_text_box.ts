@@ -105,6 +105,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
             this.onInitializeTextBox_((e as CustomEvent<TextBoxInit>).detail));
     this.onViewportChanged_(Ink2Manager.getInstance().getViewportParams());
     this.eventTracker_.add(
+        Ink2Manager.getInstance(), 'blur-text-box',
+        () => this.onBlurTextBox_());
+    this.eventTracker_.add(
         Ink2Manager.getInstance(), 'viewport-changed',
         (e: Event) =>
             this.onViewportChanged_((e as CustomEvent<ViewportParams>).detail));
@@ -180,6 +183,19 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (this.attributes_) {
       this.$.textbox.style.fontSize = `${this.attributes_.size * this.zoom_}px`;
     }
+  }
+
+  private onBlurTextBox_() {
+    this.$.textbox.blur();
+  }
+
+  protected onTextareaFocus_() {
+    Ink2Manager.getInstance().textBoxFocused({
+      height: this.height_,
+      locationX: this.locationX_,
+      locationY: this.locationY_,
+      width: this.width_,
+    });
   }
 
   protected onTextValueInput_() {

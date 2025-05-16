@@ -138,29 +138,37 @@ export class Ink2Manager extends EventTarget {
     this.viewport_ = viewport;
   }
 
-  // Initialize a text annotation at `location` in screen coordinates.
-  // No-op if there is no PDF page at `location`.
-  initializeTextAnnotation(location: Point) {
-    assert(this.isTextInitializationComplete());
+  private isClickOnScrollbar_(location: Point): boolean {
     assert(this.viewport_);
-    // First check if the click was on a scrollbar. If so, ignore it to avoid
-    // interfering with scroll.
     const hasScrollbars = this.viewport_.documentHasScrollbars();
     if (hasScrollbars.vertical &&
             (isRTL() && location.x <= this.viewport_.scrollbarWidth) ||
         (!isRTL() &&
          location.x >=
              (this.viewport_.size.width - this.viewport_.scrollbarWidth))) {
-      return;
+      return true;
     }
-    if (hasScrollbars.horizontal &&
+    return hasScrollbars.horizontal &&
         location.y >=
-            (this.viewport_.size.height - this.viewport_.scrollbarWidth)) {
-      return;
-    }
+        (this.viewport_.size.height - this.viewport_.scrollbarWidth);
+  }
 
-    const page = this.viewport_.getPageAtPoint(location);
+  // Initialize a text annotation at `location` in screen coordinates.
+  // No-op if there is no PDF page at `location`.
+  initializeTextAnnotation(location: Point) {
+    assert(this.isTextInitializationComplete());
+    assert(this.viewport_);
+
+    // Only actually compute the page if the click isn't on a scrollbar.
+    const page = this.isClickOnScrollbar_(location) ?
+        -1 :
+        this.viewport_.getPageAtPoint(location);
     if (page === -1) {
+      // In any case where we ignore the click, blur the textbox. Otherwise,
+      // the textarea will remain in focus and will continue handling all
+      // keyboard events, which is inconsistent with how clicking on other parts
+      // of the UI (e.g. controls) work.
+      this.dispatchEvent(new CustomEvent('blur-text-box'));
       return;
     }
 
@@ -485,6 +493,32 @@ export class Ink2Manager extends EventTarget {
       // on one instance.
       this.pluginController_.getEventTarget().dispatchEvent(
           new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+    }
+  }
+
+  textBoxFocused(textBoxRect: TextBoxRect) {
+    assert(this.viewport_);
+    const viewportPosition = this.viewport_.position;
+    const viewportSize = this.viewport_.size;
+
+    let scrollX: number|undefined;
+    let scrollY: number|undefined;
+    if (textBoxRect.locationX < 0 ||
+        textBoxRect.locationX + textBoxRect.width > viewportSize.width) {
+      // Adjusting by 10% of viewport, rather than putting the text box on the
+      // exact edge of the viewport.
+      scrollX = viewportPosition.x + textBoxRect.locationX -
+          Math.floor(viewportSize.width / 10);
+    }
+
+    if (textBoxRect.locationY < 0 ||
+        textBoxRect.locationY + textBoxRect.height > viewportSize.height) {
+      scrollY = viewportPosition.y + textBoxRect.locationY -
+          Math.floor(viewportSize.height / 10);
+    }
+
+    if (scrollX !== undefined || scrollY !== undefined) {
+      this.viewport_.scrollTo({x: scrollX, y: scrollY});
     }
   }
 

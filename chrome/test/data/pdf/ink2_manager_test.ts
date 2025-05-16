@@ -306,6 +306,13 @@ chrome.test.runTests([
       initEvents++;
     });
 
+    // Should fire an event to blur any existing text box when click is on
+    // a scrollbar.
+    let blurEvents = 0;
+    manager.addEventListener('blur-text-box', () => {
+      blurEvents++;
+    });
+
     // Zoom in to 2x so that there are scrollbars in both x and y.
     let whenViewportChanged = eventToPromise('viewport-changed', manager);
     viewport.setZoom(2.0);
@@ -320,8 +327,10 @@ chrome.test.runTests([
 
     const edge = 100 - viewport.scrollbarWidth;
     Ink2Manager.getInstance().initializeTextAnnotation({x: edge, y: 20});
+    chrome.test.assertEq(1, blurEvents);
     Ink2Manager.getInstance().initializeTextAnnotation({x: 20, y: edge});
     chrome.test.assertEq(0, initEvents);
+    chrome.test.assertEq(2, blurEvents);
 
     // Reset the zoom for the next test.
     whenViewportChanged = eventToPromise('viewport-changed', manager);
@@ -666,6 +675,77 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
     Ink2Manager.getInstance().initializeTextAnnotation({x: 85, y: 0});
     verifyStartTextAnnotationMessage(false);
+
+    chrome.test.succeed();
+  },
+
+  function testTextboxFocused() {
+    // Reset viewport to position 0, 0 and 1.0 zoom.
+    viewport.setZoom(1.0);
+    rotateViewport(/* clockwiseRotations= */ 0);  // 0 rotation.
+    viewport.goToPageAndXy(0, 0, 0);
+
+    // Simulate creating a textbox at (55, 50) (near center of the viewport).
+    manager.initializeTextAnnotation({x: 55, y: 50});
+
+    // Zoom by 2x. This would cause the textbox to be out of the view, at
+    // location 110, 100.
+    viewport.setZoom(2.0);
+
+    mockPlugin.clearMessages();
+
+    // Now simulate focus moving to the textbox (e.g., because the user tabbed
+    // there). Make sure the manager sends a message to the plugin to scroll
+    // the viewport to the textbox.
+    manager.textBoxFocused({
+      locationX: 110,
+      locationY: 100,
+      height: 50,
+      width: 50,
+    });
+
+    let syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
+    chrome.test.assertTrue(syncScrollMessage !== undefined);
+    chrome.test.assertEq('syncScrollToRemote', syncScrollMessage.type);
+    // The content is 160x200 (2x page size), and the viewport is 100x100. The
+    // scrollbar is 5px wide.
+    // Max scroll is contentSize - viewportSize + scrollbarWidth.
+    // The max scroll is therefore 160 - 100 + 5 = 65 horizontally, so in the x
+    // direction scroll is clamped at 65, which is less than the desired scroll
+    // of 110 - .1 * viewportWidth = 100.
+    // Vertically, the desired y position is 100 - .1 * viewportHeight = 90,
+    // which is within the max scroll of
+    // contentWidth - viewportWidth + scrollbarWidth = 105.
+    chrome.test.assertEq(65, syncScrollMessage.x);
+    chrome.test.assertEq(90, syncScrollMessage.y);
+
+    // Focusing a textbox that is already in the view shouldn't scroll the
+    // viewport.
+    mockPlugin.clearMessages();
+    manager.textBoxFocused({
+      locationX: 45,
+      locationY: 10,
+      height: 50,
+      width: 50,
+    });
+    syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
+    chrome.test.assertEq(undefined, syncScrollMessage);
+
+    // Focus a textbox that is out of bounds the other direction.
+    manager.textBoxFocused({
+      locationX: -20,
+      locationY: -10,
+      height: 50,
+      width: 50,
+    });
+    syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
+    chrome.test.assertTrue(syncScrollMessage !== undefined);
+    chrome.test.assertEq('syncScrollToRemote', syncScrollMessage.type);
+    // Scroll x to maxScrollWidth - 20 - .1 * viewportWidth = 65 - 20 - 10 = 35.
+    // Scroll y to maxScrollHeight - 10 - .1 * viewportHeight =
+    // 90 - 10 - 10 = 70.
+    chrome.test.assertEq(35, syncScrollMessage.x);
+    chrome.test.assertEq(70, syncScrollMessage.y);
 
     chrome.test.succeed();
   },
