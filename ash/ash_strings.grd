@@ -6947,6 +6947,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SUNFISH_RESULTS_LOADED_ACCESSIBLE_NAME" desc="Text for the accessible name that is announced when the results for the Sunfish search results panel are loaded.">
         Results loaded
       </message>
+      <message name="IDS_ASH_SUNFISH_INCOGNITO_NUDGE_LABEL" desc="The label of the Sunfish nudge that informs users they must close or minimize an Incognito Chrome window before making an image search.">
+        Close or minimize Incognito windows to search your screen with Google Lens
+      </message>
 
       <!-- Scanner -->
       <message name="IDS_ASH_SCANNER_DISCLAIMER_TITLE" desc="Text shown as the title of the suggested actions when searching your screen disclaimer view.">

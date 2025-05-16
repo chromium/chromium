@@ -32,6 +32,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -47,7 +48,9 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/window_state.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -156,6 +159,10 @@ constexpr char kCanShowSunfishRegionNudge[] =
 
 // The ID for the toast shown when text is copied to clipboard.
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
+
+// The ID for the anchored nudge that shows when a user tries to perform a
+// Sunfish image search while an Incognito Chrome window is open.
+constexpr char kSunfishIncognitoNudgeId[] = "kSunfishIncognitoNudge";
 
 // An invalid IDS value used as a placeholder to not show a message in a
 // notification.
@@ -545,11 +552,15 @@ bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
          capture_type == PerformCaptureType::kScanner;
 }
 
+bool CaptureTypeIsImageSearch(PerformCaptureType capture_type) {
+  return capture_type == PerformCaptureType::kSunfish ||
+         capture_type == PerformCaptureType::kSearch;
+}
+
 // Returns true if region search should be performed on a captured image with
 // the given `capture_type`.
 bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
-  return CanShowSunfishUi() && (capture_type == PerformCaptureType::kSunfish ||
-                                capture_type == PerformCaptureType::kSearch);
+  return CanShowSunfishUi() && CaptureTypeIsImageSearch(capture_type);
 }
 
 // Returns true if the capture type requires a network connection.
@@ -603,6 +614,29 @@ gfx::Rect CalculateSearchResultPanelScreenBounds(
   }
 
   return bounds;
+}
+
+bool IsIncognitoWindow(aura::Window* window) {
+  return !Shell::Get()->saved_desk_delegate()->IsWindowPersistable(window);
+}
+
+bool IsIncognitoWindowOpen() {
+  auto windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  for (aura::Window* window : windows) {
+    if (IsIncognitoWindow(window) && !WindowState::Get(window)->IsMinimized()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void ShowSunfishIncognitoNudge() {
+  AnchoredNudgeData nudge_data(
+      kSunfishIncognitoNudgeId, NudgeCatalogName::kSunfishIncognitoNudge,
+      l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_INCOGNITO_NUDGE_LABEL));
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
 }  // namespace
@@ -1147,6 +1181,15 @@ void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
   if (!capture_params)
     return;
 
+  // If we are performing an image search and an Incognito window is open,
+  // return and let the user know it must be closed before making an image
+  // search.
+  if (CaptureTypeIsImageSearch(capture_type) && IsIncognitoWindowOpen()) {
+    Stop();
+    ShowSunfishIncognitoNudge();
+    return;
+  }
+
   DCHECK(!pending_dlp_check_);
   pending_dlp_check_ = true;
   capture_mode_session_->OnWaitingForDlpConfirmationStarted();
@@ -1563,6 +1606,14 @@ void CaptureModeController::StartInternal(
 
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
+    return;
+  }
+
+  // If we are attempting to start a standalone Sunfish session and an Incognito
+  // window is open, return and let the user know it must be closed before
+  // making an image search.
+  if (entry_type == CaptureModeEntryType::kSunfish && IsIncognitoWindowOpen()) {
+    ShowSunfishIncognitoNudge();
     return;
   }
 
