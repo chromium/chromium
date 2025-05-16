@@ -227,6 +227,62 @@
             ]
         }
     ],
+    "AccessibilityPerformanceMeasurementExperiment": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "AccessibilityPerformanceMeasurementExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithAXModeComplete",
+                    "params": {
+                        "accessibility_performance_group_name": "AXModeComplete"
+                    },
+                    "enable_features": [
+                        "AccessibilityPerformanceMeasurementExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithWebContentsOnly",
+                    "params": {
+                        "accessibility_performance_group_name": "WebContentsOnly"
+                    },
+                    "enable_features": [
+                        "AccessibilityPerformanceMeasurementExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithAXModeCompleteNoInlineTextBoxes",
+                    "params": {
+                        "accessibility_performance_group_name": "AXModeCompleteNoInlineTextBoxes"
+                    },
+                    "enable_features": [
+                        "AccessibilityPerformanceMeasurementExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithRendererSerializationOnly",
+                    "params": {
+                        "accessibility_performance_group_name": "RendererSerializationOnly"
+                    },
+                    "enable_features": [
+                        "AccessibilityPerformanceMeasurementExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilitySerializationSizeMetrics": [
         {
             "platforms": [
