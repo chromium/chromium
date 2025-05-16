@@ -33,7 +33,7 @@ namespace {
 //
 // More complex headless screen configuration (including multiple screens)
 // can be specified using the --screen-info command line switch.
-// See //components/headless/screen_info/headless_screen_info.h for details.
+// See //components/headless/screen_info/README.md for more details.
 
 // Ozone/headless display defaults.
 constexpr int64_t kHeadlessDisplayIdBase = 1;

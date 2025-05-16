@@ -33,7 +33,7 @@ const char kForcePrefersNoReducedMotion[] = "force-prefers-no-reduced-motion";
 const char kHeadless[] = "headless";
 
 // Headless screen info in the format: {0,0 800x600}{800,0 600x800}.
-// See //components/headless/screen_info/headless_screen_info.h for details.
+// See //components/headless/screen_info/README.md for more details.
 const char kScreenInfo[] = "screen-info";
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
