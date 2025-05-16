@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit.page;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 
 /** The app menu shown when pressing ("...") in a regular Tab showing a web page. */
@@ -16,6 +17,11 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
         mNewIncognitoTab =
                 declareMenuItemToStation(
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            mAddToGroup =
+                    declareMenuItemToFacility(
+                            items, ADD_TO_GROUP_ID, this::createTabGroupListBottomSheetFacility);
+        }
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID, this::handleOpenNewWindow);
 
         declareStubMenuItem(items, HISTORY_ID);

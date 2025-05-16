@@ -4,14 +4,25 @@
 
 package org.chromium.chrome.test.transit.page;
 
+import static org.junit.Assert.assertNotNull;
+
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Token;
 import org.chromium.base.test.transit.Station;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
+import org.chromium.chrome.test.transit.hub.TabGroupListBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * The app menu shown when pressing ("...") in a Tab.
@@ -32,6 +43,7 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
 
     protected Item<RegularNewTabPageStation> mNewTab;
     protected Item<IncognitoNewTabPageStation> mNewIncognitoTab;
+    protected @Nullable Item<TabGroupListBottomSheetFacility<HostPageStationT>> mAddToGroup;
     protected Item<RegularNewTabPageStation> mNewWindow;
     protected Item<SettingsStation> mSettings;
 
@@ -44,6 +56,11 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
         mNewIncognitoTab =
                 declareMenuItemToStation(
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            mAddToGroup =
+                    declareMenuItemToFacility(
+                            items, ADD_TO_GROUP_ID, this::createTabGroupListBottomSheetFacility);
+        }
         mSettings = declareMenuItemToStation(items, SETTINGS_ID, this::createSettingsStation);
     }
 
@@ -64,6 +81,15 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
         return mNewWindow.scrollToAndSelect();
     }
 
+    /**
+     * Select "Add to group" from the app menu. This opens a bottom sheet to add the current tab to
+     * a tab group.
+     */
+    public TabGroupListBottomSheetFacility<HostPageStationT> selectAddToGroupWithBottomSheet() {
+        assertNotNull(mAddToGroup);
+        return mAddToGroup.scrollToAndSelect();
+    }
+
     private TabbedAppMenuPropertiesDelegate getTabbedAppMenuPropertiesDelegate() {
         return (TabbedAppMenuPropertiesDelegate)
                 mHostStation
@@ -71,6 +97,19 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
                         .getRootUiCoordinatorForTesting()
                         .getAppMenuCoordinatorForTesting()
                         .getAppMenuPropertiesDelegate();
+    }
+
+    protected TabGroupListBottomSheetFacility<HostPageStationT>
+            createTabGroupListBottomSheetFacility() {
+        TabGroupModelFilter tabGroupModelFilter =
+                mHostStation
+                        .getActivity()
+                        .getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter();
+        Set<Token> tabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
+        return new TabGroupListBottomSheetFacility<>(
+                new ArrayList<>(tabGroupIds), /* isNewTabGroupRowVisible= */ true);
     }
 
     /** Select "Settings" from the app menu. */

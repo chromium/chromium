@@ -228,6 +228,15 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
                 doneButtonElement.getClickTrigger());
     }
 
+    /**
+     * Press "Done" to confirm the tab group name and color. This method should only be called when
+     * shown as part of a TabGroupListBottomSheet flow.
+     */
+    public void pressDoneToExit() {
+        ensureSoftKeyboardClosed();
+        mHostStation.exitFacilitySync(this, doneButtonElement.getClickTrigger());
+    }
+
     /** Press "Done" to confirm the tab group name and color, but no-op from an invalid title. */
     public NewTabGroupDialogFacility<HostStationT> pressDoneWithInvalidTitle() {
         ensureSoftKeyboardClosed();

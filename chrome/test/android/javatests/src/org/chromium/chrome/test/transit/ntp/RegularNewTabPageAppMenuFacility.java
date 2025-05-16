@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 
@@ -18,6 +19,11 @@ public class RegularNewTabPageAppMenuFacility
         mNewIncognitoTab =
                 declareMenuItemToStation(
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            mAddToGroup =
+                    declareMenuItemToFacility(
+                            items, ADD_TO_GROUP_ID, this::createTabGroupListBottomSheetFacility);
+        }
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID, this::handleOpenNewWindow);
 
         declareStubMenuItem(items, HISTORY_ID);
