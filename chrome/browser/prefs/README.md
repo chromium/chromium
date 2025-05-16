@@ -2,8 +2,8 @@
 Prefs is meant to store lightweight state that reflects user preferences (e.g.
 chrome://settings, position of windows on last exit, etc.). Browser-wide prefs
 are stored in Local State (`g_browser_process->local_state()`) and per-profile
-prefs are stored in Preferences (`Profile::GetPrefs()`). The `base::PrefService`
-API is used to read/write registered prefs. Prefs are saved as JSON and any
+prefs are stored in Preferences (`Profile::GetPrefs()`). The `PrefService` API
+is used to read/write registered prefs. Prefs are saved as JSON and any
 modification forces serialization of the entire JSON dictionary. The
 `LOSSY_PREF` flag can be used when registering a pref to indicate that
 modifications to it shouldn't schedule a write (in which case the write will be
@@ -40,11 +40,11 @@ Prefs are not for:
      [components/sync_preferences/common_syncable_prefs_database.cc].
 
 ## Querying a pref
-Use `base::PrefService::Get*()` APIs on `g_browser_process->local_state()` or
+Use `PrefService::Get*()` APIs on `g_browser_process->local_state()` or
 `Profile::GetPrefs()`, as appropriate, to read/write your pref.
 
-Reading (`GetValue()`) will query the following `base::PrefStore`'s in order,
-the first one with a value will win (implemented in `base::PrefValueStore`):
+Reading (`GetValue()`) will query the following `PrefStore`'s in order, the
+first one with a value will win (implemented in `PrefValueStore`):
 1. Managed Prefs (cloud policy)
 2. Supervised User Prefs (parental controls)
 3. Extension Prefs (extension overrides)
@@ -60,8 +60,8 @@ User Prefs, re-reading the value might not return the value you just set.
 Visually such settings are typically grayed out to prevent confusing the user
 but nothing prevents C++ from setting a user pref that doesn't take effect.
 
-To add a new `PrefStore` in the precedence order, see
-[PrefStoreType] in `PrefValueStore`.
+To add a new `PrefStore` in the precedence order, see [PrefStoreType] in
+`PrefValueStore`.
 
 ## Deleting an old pref
 _Most_ deleted prefs should be left in a delete-self state for 1 year to help
@@ -115,13 +115,13 @@ policy, you will need to mark it deprecated for a few milestones first as
 described in [add_new_policy.md].
 
 Migration code will want to read the old pref using
-`base::PrefService::GetUserPrefValue()` (as opposed to
-`base::PrefService::Get*()`). This will ensure that the user configured value is
-migrated instead of a value from a higher-priority `PrefStore` like the one
-containing Managed Prefs. It also covers a second case: If no explicit value is
-set in any `PrefStore`, `GetValue()` returns the default value. You don't want
-to write that to the target location of your migration as that would prevent
-future changes to default or recommended prefs from taking effect.
+`PrefService::GetUserPrefValue()` (as opposed to `PrefService::Get*()`). This
+will ensure that the user configured value is migrated instead of a value from a
+higher-priority `PrefStore` like the one containing Managed Prefs. It also
+covers a second case: If no explicit value is set in any `PrefStore`,
+`GetValue()` returns the default value. You don't want to write that to the
+target location of your migration as that would prevent future changes to
+default or recommended prefs from taking effect.
 
 If non-User `PrefStore`s need to keep supporting the old pref for a grace period,
 you will need to either:
@@ -129,7 +129,7 @@ you will need to either:
    should still migrate the User Prefs as described above but keep reading the
    old pref name in your code if a higher-priority store is setting the old
    value
-   (`!base::PrefService::FindPreference(old_pref_name)->IsUserModifiable()`); or
+   (`!PrefService::FindPreference(old_pref_name)->IsUserModifiable()`); or
 2. Make sure that relevant `PrefStore`s automatically map the old pref name to
    the new pref name. There are ad-hoc examples of this in the codebase but this
    is generally trickier. If you do add/find a generic way of doing this, please
