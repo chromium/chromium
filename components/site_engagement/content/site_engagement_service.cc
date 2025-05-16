@@ -28,6 +28,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
@@ -641,6 +642,13 @@ void SiteEngagementService::HandleUserInput(content::WebContents* web_contents,
   const GURL& url = web_contents->GetLastCommittedURL();
   if (!ShouldRecordEngagement(url))
     return;
+
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          web_contents);
+  if (helper && helper->IsDisplayingInterstitial()) {
+    return;
+  }
 
   double old_score = GetScore(url);
   AddPoints(url, SiteEngagementScore::GetUserInputPoints());
