@@ -108,6 +108,9 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
     // of a Boca session.
     void OnBocaSWALaunched(bool success);
 
+    void SetPinStateForActiveSWAWindowInternal(bool pinned,
+                                               base::RepeatingClosure callback);
+
     // Owned by the parent class `OnTaskSessionManager` that owns an instance of
     // the class `SystemWebAppLaunchHelper`, so there won't be UAF errors.
     raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
@@ -116,6 +119,9 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
     SEQUENCE_CHECKER(sequence_checker_);
 
     bool launch_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+    // The latest pin state of the bundle sent by provider.
+    bool latest_pin_state_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
     base::WeakPtrFactory<SystemWebAppLaunchHelper> weak_ptr_factory_{this};
   };

@@ -853,6 +853,34 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
       browser_2->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
 }
 
+IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
+                       ShouldRespectLatestPinStateOnBundleUpdated) {
+  content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Start OnTask session and spawn one tab outside the homepage tab.
+  GetOnTaskSessionManager()->OnSessionStarted(kSessionId,
+                                              ::boca::UserIdentity());
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  navigation_observer.Wait();
+
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+  ASSERT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+
+  // Pause and then unlock the boca app.
+  bundle.set_locked(true);
+  bundle.set_lock_to_app_home(true);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  bundle.set_locked(false);
+  bundle.set_lock_to_app_home(false);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+}
+
 class OnTaskSessionManagerCloseSWAOnSessionEndBrowserTest
     : public OnTaskSessionManagerBrowserTestBase {
  protected:

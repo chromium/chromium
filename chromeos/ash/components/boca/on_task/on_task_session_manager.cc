@@ -537,12 +537,27 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::
     SetPinStateForActiveSWAWindow(bool pinned,
                                   base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  latest_pin_state_ = pinned;
+  SetPinStateForActiveSWAWindowInternal(pinned, std::move(callback));
+}
+
+void OnTaskSessionManager::SystemWebAppLaunchHelper::
+    SetPinStateForActiveSWAWindowInternal(bool pinned,
+                                          base::RepeatingClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Don't set pin state if the pin state is not the latest.
+  if (pinned != latest_pin_state_) {
+    return;
+  }
+
   if (launch_in_progress_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&SystemWebAppLaunchHelper::SetPinStateForActiveSWAWindow,
-                       weak_ptr_factory_.GetWeakPtr(), pinned,
-                       std::move(callback)),
+        base::BindOnce(
+            &SystemWebAppLaunchHelper::SetPinStateForActiveSWAWindowInternal,
+            weak_ptr_factory_.GetWeakPtr(), pinned, std::move(callback)),
         kSetPinnedStateDelay);
     return;
   }
