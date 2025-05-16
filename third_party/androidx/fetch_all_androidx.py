@@ -43,6 +43,7 @@ _ANDROIDX_LATEST_SNAPSHOT_ARTIFACTS_URL = 'https://androidx.dev/snapshots/latest
 
 # When androidx roller is breaking, and a fix is not imminent, use this to pin a
 # broken library to an old known-working version.
+# * Find working versions from prior androidx roll commit descriptions.
 # * The first element of each tuple is the path to the artifact of the latest
 #   version of the library. It could change if the version is rev'ed in a new
 #   snapshot.
@@ -55,6 +56,13 @@ _OVERRIDES = [
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
 ]
+
+# Set this to the build_id to pin all libraries to a given version.
+# Useful when pinning a single library would cause issues, but you do not want
+# to pause the auto-roller because other teams want to add / remove libraries.
+# Example: '8545498'
+_LATEST_VERSION_OVERRIDE = ''
+
 
 _FILES_TO_COMMIT = [
     'additional_readme_paths.json',
@@ -116,7 +124,9 @@ def main():
         androidx_snapshot_repository_url = ('file://' +
                                             os.path.abspath(args.local_repo))
     else:
-        if args.local:
+        if _LATEST_VERSION_OVERRIDE:
+            version = _LATEST_VERSION_OVERRIDE
+        elif args.local:
             version = fetch_util.get_current_androidx_version()
         else:
             version = _get_latest_androidx_version()
