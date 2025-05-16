@@ -2249,6 +2249,7 @@ _CONFIG = [
             'third_party/blink/renderer/modules/webgpu',
         ],
         'allowed': [
+            'base::BindOnce',
             'cc::TextureLayerClient',
             'viz::ReleaseCallback',
             'viz::SharedImageFormat',

@@ -107,6 +107,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
@@ -259,6 +260,15 @@ class TransferToGPUTextureInvokedSupplement final
   bool transfer_to_gpu_texture_was_invoked_ = false;
 };
 
+// Adapter for wrapping a CanvasResourceReleaseCallback into a
+// viz::ReleaseCallback
+void ReleaseCanvasResource(CanvasResource::ReleaseCallback callback,
+                           scoped_refptr<CanvasResource> canvas_resource,
+                           const gpu::SyncToken& sync_token,
+                           bool is_lost) {
+  std::move(callback).Run(std::move(canvas_resource), sync_token, is_lost);
+}
+
 void UmaHistogramCompressionRatio(
     std::string_view histogram_name,
     const String& data_url,
@@ -343,8 +353,67 @@ HTMLCanvasElement::~HTMLCanvasElement() {
 bool HTMLCanvasElement::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
-  return PrepareTransferableResourceInternal(out_resource,
-                                             out_release_callback);
+  CHECK(cc_layer_);  // This explodes if FinalizeFrame() was not called.
+
+  frames_since_last_commit_ = 0;
+  if (rate_limiter_) {
+    rate_limiter_->Reset();
+  }
+
+  // If hibernating but not hidden, we want to wake up from hibernation.
+  if (IsHibernating() && !IsPageVisible()) {
+    return false;
+  }
+
+  if (!IsResourceValid()) {
+    return false;
+  }
+
+  // The beforeprint event listener is sometimes scheduled in the same task
+  // as BeginFrame, which means that this code may sometimes be called between
+  // the event listener and its associated FinalizeFrame call. So in order to
+  // preserve the display list for printing, FlushRecording needs to know
+  // whether any printing occurred in the current task.
+  FlushReason reason = FlushReason::kCanvasPushFrame;
+  if (PrintedInCurrentTask() || IsPrinting()) {
+    reason = FlushReason::kCanvasPushFrameWhilePrinting;
+  }
+  FlushRecording(reason);
+
+  // If the context is lost, we don't know if we should be producing GPU or
+  // software frames, until we get a new context, since the compositor will
+  // be trying to get a new context and may change modes.
+  if (!GetOrCreateCanvasResourceProvider()) {
+    return false;
+  }
+
+  scoped_refptr<CanvasResource> frame =
+      ResourceProvider()->ProduceCanvasResource(reason);
+  if (!frame || !frame->IsValid()) {
+    return false;
+  }
+
+  CanvasResource::ReleaseCallback release_callback;
+  if (!frame->PrepareTransferableResource(out_resource, &release_callback,
+                                          /*needs_verified_synctoken=*/false) ||
+      *out_resource == cc_layer_->current_transferable_resource()) {
+    // If the resource did not change, the release will be handled correctly
+    // when the callback from the previous frame is dispatched. But run the
+    // |release_callback| to release the ref acquired above.
+    std::move(release_callback)
+        .Run(std::move(frame), gpu::SyncToken(), false /* is_lost */);
+    return false;
+  }
+  // TODO(https://crbug.com/1475955): HDR metadata should be propagated to
+  // `frame`, and should be populated by the above call to
+  // CanvasResource::PrepareTransferableResource, rather than be inserted
+  // here.
+  out_resource->hdr_metadata = hdr_metadata_;
+  // Note: frame is kept alive via a reference kept in out_release_callback.
+  *out_release_callback = base::BindOnce(
+      ReleaseCanvasResource, std::move(release_callback), std::move(frame));
+
+  return true;
 }
 
 void HTMLCanvasElement::Dispose() {

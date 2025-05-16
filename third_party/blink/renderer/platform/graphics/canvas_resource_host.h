@@ -113,10 +113,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  protected:
-  bool PrepareTransferableResourceInternal(
-      viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback);
-
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
 
   bool is_opaque() { return is_opaque_; }
@@ -126,13 +122,19 @@ class PLATFORM_EXPORT CanvasResourceHost {
   // latter.
   scoped_refptr<cc::TextureLayer> cc_layer_;
 
+  // TODO(399587138): Move this field to be held by HTMLCanvasElement.
+  gfx::HDRMetadata hdr_metadata_;
+
+  // TODO(399587138): Determine whether these fields can be moved down into
+  // HTMLCanvasElement (or even to CanvasRenderingContext2D) post-the
+  // restructuring of `cc_layer_`.
+  unsigned frames_since_last_commit_ = 0;
+  std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
+
  private:
   bool is_displayed_ = false;
   bool is_opaque_ = false;
-  unsigned frames_since_last_commit_ = 0;
-  std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
-  gfx::HDRMetadata hdr_metadata_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;
   bool always_enable_raster_timers_for_testing_ = false;
