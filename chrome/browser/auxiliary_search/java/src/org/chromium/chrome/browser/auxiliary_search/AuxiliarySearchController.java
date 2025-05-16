@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -90,7 +91,8 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
     /**
      * Called by CustomTabActivity to donate CCTs.
      *
+     * @param url The url of the current Custom Tab.
      * @param beginTime The last visited timestamp of the Tab of the CustomTabActivity.
      */
-    default void donateCustomTabs(long beginTime) {}
+    default void donateCustomTabs(GURL url, long beginTime) {}
 }

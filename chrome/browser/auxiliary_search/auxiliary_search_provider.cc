@@ -174,6 +174,7 @@ void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
 
 void AuxiliarySearchProvider::GetCustomTabs(
     JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_url,
     jlong j_begin_time,
     const base::android::JavaParamRef<jobject>& j_callback_obj) const {
   CHECK(ranking_service_ != nullptr);
@@ -183,7 +184,7 @@ void AuxiliarySearchProvider::GetCustomTabs(
           base::BindOnce(
               &OnDataReady, env,
               base::android::ScopedJavaGlobalRef<jobject>(j_callback_obj)),
-          /*include_local_tab=*/false,
+          url::GURLAndroid::ToNativeGURL(env, j_url),
           base::Time::FromMillisecondsSinceUnixEpoch(j_begin_time));
 
   helper->StartFetching();

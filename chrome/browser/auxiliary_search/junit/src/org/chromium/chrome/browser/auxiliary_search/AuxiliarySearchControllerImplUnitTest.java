@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -180,17 +181,33 @@ public class AuxiliarySearchControllerImplUnitTest {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Search.AuxiliarySearch.QueryTime.CustomTabs", timeDelta)
+                        .expectIntRecords("Search.AuxiliarySearch.CustomTabFetchResults.Count", 0)
                         .build();
 
         long beginTime = 4 * TimeUtils.MILLISECONDS_PER_MINUTE;
-        mAuxiliarySearchControllerImpl.donateCustomTabs(beginTime);
+        GURL url = JUnitTestGURLs.URL_1;
+        mAuxiliarySearchControllerImpl.donateCustomTabs(url, beginTime);
         verify(mAuxiliarySearchProvider)
                 .getCustomTabsAsync(
+                        eq(url),
                         eq(beginTime - AuxiliarySearchControllerImpl.TIME_RANGE_MS),
                         mEntryReadyCallbackCaptor.capture());
 
         mFakeTime.advanceMillis(timeDelta);
         mEntryReadyCallbackCaptor.getValue().onResult(Collections.emptyList());
+        histogramWatcher.assertExpected();
+
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_CustomTabs(
+                        TimeUtils.uptimeMillis());
+        assertEquals(3, entries.size());
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Search.AuxiliarySearch.CustomTabFetchResults.Count",
+                                entries.size())
+                        .build();
+        mEntryReadyCallbackCaptor.getValue().onResult(entries);
         histogramWatcher.assertExpected();
     }
 

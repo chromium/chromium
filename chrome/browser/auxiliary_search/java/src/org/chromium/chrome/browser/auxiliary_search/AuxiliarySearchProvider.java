@@ -124,13 +124,13 @@ public class AuxiliarySearchProvider {
     }
 
     public void getCustomTabsAsync(
-            long beginTime, Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
+            GURL url, long beginTime, Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
         if (mAuxiliarySearchBridge == null) {
             callback.onResult(null);
             return;
         }
 
-        mAuxiliarySearchBridge.getCustomTabs(beginTime, callback);
+        mAuxiliarySearchBridge.getCustomTabs(url, beginTime, callback);
     }
 
     @VisibleForTesting

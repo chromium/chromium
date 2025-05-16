@@ -153,11 +153,12 @@ public class AuxiliarySearchControllerImpl
     }
 
     @Override
-    public void donateCustomTabs(long beginTime) {
+    public void donateCustomTabs(GURL url, long beginTime) {
         long startTime = TimeUtils.uptimeMillis();
         mAuxiliarySearchProvider.getCustomTabsAsync(
                 // A backward time adjustment is required due to the history visit's timestamp being
                 // earlier than that of the TabImpl's last visit timestamp.
+                url,
                 beginTime - TIME_RANGE_MS,
                 mCallbackController.makeCancelable(
                         (entries) -> onNonSensitiveCustomTabsAvailable(entries, startTime)));
@@ -207,9 +208,11 @@ public class AuxiliarySearchControllerImpl
         AuxiliarySearchMetrics.recordQueryCustomTabTime(TimeUtils.uptimeMillis() - startTimeMs);
 
         if (entries == null || entries.isEmpty()) {
+            AuxiliarySearchMetrics.recordCustomTabFetchResultsCount(0);
             return;
         }
 
+        AuxiliarySearchMetrics.recordCustomTabFetchResultsCount(entries.size());
         onNonSensitiveDataAvailable(entries, startTimeMs, /* onDonationCompleteRunnable= */ null);
     }
 

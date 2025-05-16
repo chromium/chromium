@@ -52,6 +52,7 @@ class AuxiliarySearchProvider : public KeyedService {
   // Fetches CCTs after the given begin time from the history database.
   void GetCustomTabs(
       JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_url,
       jlong j_begin_time,
       const base::android::JavaParamRef<jobject>& j_callback_obj) const;
 

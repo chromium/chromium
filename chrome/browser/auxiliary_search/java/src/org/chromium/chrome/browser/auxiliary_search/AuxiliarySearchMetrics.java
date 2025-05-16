@@ -185,6 +185,10 @@ public class AuxiliarySearchMetrics {
     private static final String HISTOGRAM_TIME_TO_CREATE_CONTROLLER_IN_CUSTOM_TAB =
             "Search.AuxiliarySearch.TimeToCreateControllerInCustomTab";
 
+    @VisibleForTesting
+    public static final String HISTOGRAM_CUSTOM_TAB_FETCH_RESULTS_COUNT =
+            "Search.AuxiliarySearch.CustomTabFetchResults.Count";
+
     /** Record the amount of time spent deleting content from the auxiliary search. */
     public static void recordDeleteTime(
             long deleteTimeInMs, @AuxiliarySearchDataType int datatype) {
@@ -403,5 +407,15 @@ public class AuxiliarySearchMetrics {
                 /* min= */ 1,
                 MAX_CONTROLLER_CREATION_DELAY_MS,
                 /* numBuckets= */ 50);
+    }
+
+    /**
+     * Records the count of entries obtained from fetching history database initiated by a Custom
+     * Tab.
+     *
+     * @param count The total number of entries returned from fetching history database.
+     */
+    public static void recordCustomTabFetchResultsCount(int count) {
+        RecordHistogram.recordCount100Histogram(HISTOGRAM_CUSTOM_TAB_FETCH_RESULTS_COUNT, count);
     }
 }

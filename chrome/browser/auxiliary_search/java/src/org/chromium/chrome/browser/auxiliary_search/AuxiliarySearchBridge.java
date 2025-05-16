@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,16 +94,17 @@ public class AuxiliarySearchBridge {
     /**
      * This method will return a list of Custom Tabs URLs.
      *
+     * @param url The current URL of the Custom Tab.
      * @param callback {@link Callback} to pass back the list of {@link AuxiliarySearchDataEntry}s.
      */
     public void getCustomTabs(
-            long timestamp, Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
+            GURL url, long timestamp, Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
         if (mNativeBridge == 0) {
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(null));
             return;
         }
 
-        AuxiliarySearchBridgeJni.get().getCustomTabs(mNativeBridge, timestamp, callback);
+        AuxiliarySearchBridgeJni.get().getCustomTabs(mNativeBridge, url, timestamp, callback);
     }
 
     /**
@@ -133,6 +135,7 @@ public class AuxiliarySearchBridge {
 
         void getCustomTabs(
                 long nativeAuxiliarySearchProvider,
+                GURL url,
                 long timestamp,
                 Callback<@Nullable List<AuxiliarySearchDataEntry>> callback);
     }

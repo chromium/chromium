@@ -336,10 +336,11 @@ public class AuxiliarySearchProviderUnitTest {
 
         long beginTime = 10;
         Callback<@Nullable List<AuxiliarySearchDataEntry>> callback = mock(Callback.class);
-        mAuxiliarySearchProvider.getCustomTabsAsync(beginTime, callback);
+        GURL url = JUnitTestGURLs.URL_1;
+        mAuxiliarySearchProvider.getCustomTabsAsync(url, beginTime, callback);
 
         verify(mMockAuxiliarySearchBridgeJni)
-                .getCustomTabs(eq(FAKE_NATIVE_PROVIDER), eq(beginTime), eq(callback));
+                .getCustomTabs(eq(FAKE_NATIVE_PROVIDER), eq(url), eq(beginTime), eq(callback));
     }
 
     private <T> void testSaveAndReadDonationMetadataAsyncImpl(

@@ -87,7 +87,7 @@ int GetMaxDonationCount() {
 
 FetchOptions CreateFetchOptionsForTabDonation(
     const URLVisitAggregate::URLTypeSet& result_sources,
-    bool include_local_tab,
+    const std::optional<GURL>& custom_tab_url,
     std::optional<base::Time> begin_time) {
   std::vector<URLVisitAggregatesTransformType> transforms{
       URLVisitAggregatesTransformType::kRecencyFilter,
@@ -108,7 +108,9 @@ FetchOptions CreateFetchOptionsForTabDonation(
   fetcher_sources.emplace(Fetcher::kHistory,
                           visited_url_ranking::FetchOptions::kOriginSources);
 
-  if (include_local_tab) {
+  // If a URL of Custom Tab is provided, the fetcher only fetches history, not
+  // open Tabs.
+  if (custom_tab_url == std::nullopt) {
     fetcher_sources.emplace(
         Fetcher::kTabModel,
         visited_url_ranking::FetchOptions::FetchSources(
@@ -142,16 +144,16 @@ FetchOptions CreateFetchOptionsForTabDonation(
                       GetMaxDonationCount());
 }
 
-FetchOptions CreateFetchOptions(bool include_local_tab,
+FetchOptions CreateFetchOptions(const std::optional<GURL>& custom_tab_url,
                                 std::optional<base::Time> begin_time) {
   URLVisitAggregate::URLTypeSet expected_types;
-  if (include_local_tab) {
+  if (custom_tab_url == std::nullopt) {
     expected_types = {URLVisitAggregate::URLType::kActiveLocalTab,
                       URLVisitAggregate::URLType::kCCTVisit};
   } else {
     expected_types = {URLVisitAggregate::URLType::kCCTVisit};
   }
-  return CreateFetchOptionsForTabDonation(expected_types, include_local_tab,
+  return CreateFetchOptionsForTabDonation(expected_types, custom_tab_url,
                                           begin_time);
 }
 
@@ -160,11 +162,12 @@ FetchOptions CreateFetchOptions(bool include_local_tab,
 FetchAndRankHelper::FetchAndRankHelper(
     VisitedURLRankingService* ranking_service,
     FetchResultCallback entries_callback,
-    bool include_local_tab,
+    const std::optional<GURL>& custom_tab_url,
     std::optional<base::Time> begin_time)
     : ranking_service_(ranking_service),
       entries_callback_(std::move(entries_callback)),
-      fetch_options_(CreateFetchOptions(include_local_tab, begin_time)),
+      custom_tab_url_(custom_tab_url),
+      fetch_options_(CreateFetchOptions(custom_tab_url, begin_time)),
       config_({.key = visited_url_ranking::kTabResumptionRankerKey}) {}
 
 void FetchAndRankHelper::StartFetching() {
@@ -229,11 +232,14 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
                   kInvalidTabId));
             },
             [&](const URLVisitAggregate::HistoryData& history_data) {
-              bool is_custom_tab = history_data.last_visited.context_annotations
-                                           .on_visit.browser_type ==
-                                       history::VisitContextAnnotations::
-                                           BrowserType::kCustomTab ||
-                                   history_data.last_app_id != std::nullopt;
+              bool is_custom_tab =
+                  history_data.last_visited.context_annotations.on_visit
+                          .browser_type == history::VisitContextAnnotations::
+                                               BrowserType::kCustomTab ||
+                  history_data.last_app_id != std::nullopt ||
+                  (custom_tab_url_ != std::nullopt &&
+                   custom_tab_url_.value() ==
+                       history_data.last_visited.url_row.url());
               if (!is_custom_tab) {
                 return;
               }
