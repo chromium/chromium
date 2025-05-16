@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -100,7 +101,7 @@ public class EdgeToEdgeUtils {
             return false;
         }
 
-        if (BuildInfo.getInstance().isAutomotive || BuildInfo.getInstance().isDesktop) {
+        if (DeviceInfo.isAutomotive() || DeviceInfo.isDesktop()) {
             return false;
         }
 

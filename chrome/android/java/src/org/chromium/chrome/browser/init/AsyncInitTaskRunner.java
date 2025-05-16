@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.init;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryPrefetcher;
@@ -80,7 +80,7 @@ public abstract class AsyncInitTaskRunner {
             }
             // TODO(crbug.com/389565104): Remove this if block when ready to move desktop to stable
             // builds.
-            if (VersionInfo.isStableBuild() && BuildInfo.getInstance().isDesktop) {
+            if (VersionInfo.isStableBuild() && DeviceInfo.isDesktop()) {
                 return "dev";
             }
             if (VersionInfo.isBetaBuild()) {
