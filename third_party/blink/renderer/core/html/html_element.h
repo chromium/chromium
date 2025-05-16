@@ -270,7 +270,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // response to clicking a button with popovershowtarget.
   virtual void ShowPopoverInternal(Element* invoker,
                                    ExceptionState* exception_state);
-  virtual void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
+  virtual void HidePopoverInternal(Element* invoker,
+                                   HidePopoverFocusBehavior focus_behavior,
                                    HidePopoverTransitionBehavior event_firing,
                                    ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded(bool immediate);

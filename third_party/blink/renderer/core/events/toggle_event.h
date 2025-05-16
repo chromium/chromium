@@ -9,6 +9,7 @@
 
 namespace blink {
 
+class Element;
 class ToggleEventInit;
 
 class ToggleEvent final : public Event {
@@ -22,9 +23,10 @@ class ToggleEvent final : public Event {
   static ToggleEvent* Create(const AtomicString& type,
                              Event::Cancelable cancelable,
                              const String& old_state,
-                             const String& new_state) {
+                             const String& new_state,
+                             Element* source) {
     auto* event = MakeGarbageCollected<ToggleEvent>(type, cancelable, old_state,
-                                                    new_state);
+                                                    new_state, source);
     DCHECK(!event->bubbles());
     return event;
   }
@@ -33,12 +35,14 @@ class ToggleEvent final : public Event {
   ToggleEvent(const AtomicString& type,
               Event::Cancelable cancelable,
               const String& old_state,
-              const String& new_state);
+              const String& new_state,
+              Element* source);
   ToggleEvent(const AtomicString& type, const ToggleEventInit* initializer);
   ~ToggleEvent() override;
 
   const String& oldState() const;
   const String& newState() const;
+  Element* source() const;
 
   const AtomicString& InterfaceName() const override;
 
@@ -47,6 +51,7 @@ class ToggleEvent final : public Event {
  private:
   String old_state_;
   String new_state_;
+  Member<Element> source_;
 };
 
 }  // namespace blink

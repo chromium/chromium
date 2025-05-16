@@ -1612,7 +1612,7 @@ bool Element::InterestLost(Element& interest_target) {
                                 /*include_event_handler_text=*/true,
                                 &GetDocument())) {
       popover->HidePopoverInternal(
-          HidePopoverFocusBehavior::kFocusPreviousElement,
+          /*invoker=*/this, HidePopoverFocusBehavior::kFocusPreviousElement,
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
     }

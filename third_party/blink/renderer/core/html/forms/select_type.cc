@@ -179,10 +179,11 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     }
   }
 
-  void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
+  void HidePopoverInternal(Element* invoker,
+                           HidePopoverFocusBehavior focus_behavior,
                            HidePopoverTransitionBehavior event_firing,
                            ExceptionState* exception_state) override {
-    HTMLDivElement::HidePopoverInternal(focus_behavior, event_firing,
+    HTMLDivElement::HidePopoverInternal(invoker, focus_behavior, event_firing,
                                         exception_state);
     if (auto* select = ParentSelect()) {
       // Focus the select when the popover is hidden.
@@ -759,7 +760,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
       // opening. Per spec, we close it in that case, to avoid circularity.
       PostChangingAppearanceConsoleWarning(*select_);
       popover_->HidePopoverInternal(
-          HidePopoverFocusBehavior::kNone,
+          /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
           HidePopoverTransitionBehavior::kNoEventsNoWaiting,
           /*exception_state=*/nullptr);
     }
@@ -824,6 +825,7 @@ void MenuListSelectType::HidePopup(SelectPopupHideBehavior behavior) {
       popover_->popoverOpen()) {
     bool normal_behavior = behavior == SelectPopupHideBehavior::kNormal;
     popover_->HidePopoverInternal(
+        /*invoker=*/nullptr,
         normal_behavior ? HidePopoverFocusBehavior::kFocusPreviousElement
                         : HidePopoverFocusBehavior::kNone,
         normal_behavior
@@ -955,7 +957,7 @@ void MenuListSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
     } else {
       autofill_popover_text_->setInnerText(g_empty_string);
       autofill_popover_->HidePopoverInternal(
-          HidePopoverFocusBehavior::kNone,
+          /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
           HidePopoverTransitionBehavior::kNoEventsNoWaiting,
           /*exception_state=*/nullptr);
     }

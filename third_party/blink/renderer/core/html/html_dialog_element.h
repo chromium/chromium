@@ -56,13 +56,14 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   // open_attribute_being_removed should only be true when `close()` is being
   // run from the attribute change steps for the `open` attribute.
   void close(const String& return_value = String(),
+             Element* invoker = nullptr,
              bool open_attribute_being_removed = false);
   void requestClose(ExceptionState& exception_state) {
     requestClose(String(), exception_state);
   }
   void requestClose(const String& return_value, ExceptionState&);
   void show(ExceptionState&);
-  void showModal(ExceptionState&);
+  void showModal(ExceptionState&, Element* invoker = nullptr);
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -121,7 +122,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();
 
-  bool DispatchToggleEvents(bool opening, bool asModal = false);
+  bool DispatchToggleEvents(bool opening,
+                            Element* source,
+                            bool asModal = false);
   void DispatchPendingToggleEvent();
 
   bool is_modal_;

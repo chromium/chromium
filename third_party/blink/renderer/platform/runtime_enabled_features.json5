@@ -4760,6 +4760,15 @@
       status: "experimental",
     },
     {
+      // Adds an "source" attribute to ToggleEvent which is set to the button
+      // that invoked the element which the toggle event was fired on, if
+      // appropriate.
+      // https://issues.chromium.org/issues/408018828
+      // https://github.com/whatwg/html/issues/9111
+      name: "ToggleEventSource",
+      status: "experimental",
+    },
+    {
       name: "TopicsAPI",
       base_feature: "none",
       public: true,

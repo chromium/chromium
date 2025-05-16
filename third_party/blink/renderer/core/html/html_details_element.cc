@@ -176,7 +176,7 @@ void HTMLDetailsElement::ParseAttribute(
     }
     pending_toggle_event_ =
         ToggleEvent::Create(event_type_names::kToggle, Event::Cancelable::kNo,
-                            old_state, new_state);
+                            old_state, new_state, /*source=*/nullptr);
     pending_event_task_ = PostCancellableTask(
         *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
         WTF::BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
@@ -358,20 +358,31 @@ bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
 
   if (command == CommandEventType::kToggle) {
     ToggleOpen();
-    return true;
   } else if (command == CommandEventType::kClose) {
     if (is_open_) {
       setAttribute(html_names::kOpenAttr, g_null_atom);
     }
-    return true;
   } else if (command == CommandEventType::kOpen) {
     if (!is_open_) {
       setAttribute(html_names::kOpenAttr, g_empty_atom);
     }
-    return true;
+  } else {
+    return false;
   }
 
-  return false;
+  if (RuntimeEnabledFeatures::ToggleEventSourceEnabled() &&
+      pending_toggle_event_) {
+    // pending_toggle_event_ is created inside the attribute handling code which
+    // we can't pass the invoker to, so we set it here instead.
+    pending_toggle_event_ = ToggleEvent::Create(
+        pending_toggle_event_->type(),
+        pending_toggle_event_->cancelable() ? Event::Cancelable::kYes
+                                            : Event::Cancelable::kNo,
+        pending_toggle_event_->oldState(), pending_toggle_event_->newState(),
+        &invoker);
+  }
+
+  return true;
 }
 
 }  // namespace blink
