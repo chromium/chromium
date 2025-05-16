@@ -151,6 +151,8 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
   void NotifyVisibilityChanged(const FrameSinkId& frame_sink_id,
                                bool is_hidden) override;
+  void ResetGestureDetection(
+      const FrameSinkId& root_widget_frame_sink_id) override;
 
   void SetupRenderInputRouterDelegateConnection(
       const base::UnguessableToken& grouping_id,

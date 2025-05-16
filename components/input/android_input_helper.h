@@ -35,6 +35,8 @@ class COMPONENT_EXPORT(INPUT) AndroidInputHelper {
 
   bool ShouldRouteEvents() const;
 
+  void ResetGestureDetection();
+
   void OnGestureEvent(const ui::GestureEventData& gesture);
   bool RequiresDoubleTapGestureEvents() const;
 

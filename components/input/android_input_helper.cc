@@ -56,6 +56,27 @@ bool AndroidInputHelper::ShouldRouteEvents() const {
          view_->GetViewRenderInputRouter()->delegate()->GetInputEventRouter();
 }
 
+void AndroidInputHelper::ResetGestureDetection() {
+  ui::FilteredGestureProvider& gesture_provider =
+      delegate_->GetGestureProvider();
+
+  const ui::MotionEvent* current_down_event =
+      gesture_provider.GetCurrentDownEvent();
+  if (!current_down_event) {
+    // A hard reset ensures prevention of any timer-based events that might fire
+    // after a touch sequence has ended.
+    gesture_provider.ResetDetection();
+    return;
+  }
+
+  std::unique_ptr<ui::MotionEvent> cancel_event = current_down_event->Cancel();
+  if (gesture_provider.OnTouchEvent(*cancel_event).succeeded) {
+    blink::WebTouchEvent web_event = ui::CreateWebTouchEventFromMotionEvent(
+        *cancel_event, false /* may_cause_scrolling */, false /* hovering */);
+    RouteOrForwardTouchEvent(web_event);
+  }
+}
+
 bool AndroidInputHelper::RequiresDoubleTapGestureEvents() const {
   return true;
 }

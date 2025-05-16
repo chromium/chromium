@@ -99,6 +99,11 @@ class MockInputTransferHandler : public InputTransferHandlerAndroid {
               OnTouchEvent,
               (const ui::MotionEventAndroid& event),
               (override));
+
+  MOCK_METHOD(bool,
+              IsTouchSequencePotentiallyActiveOnViz,
+              (),
+              (const, override));
 };
 
 class MockMojoRenderInputRouterDelegate
@@ -125,6 +130,8 @@ class MockMojoRenderInputRouterDelegate
                void(const viz::FrameSinkId& frame_sink_id));
   MOCK_METHOD2(NotifyVisibilityChanged,
                void(const viz::FrameSinkId& frame_sink_id, bool is_hidden));
+  MOCK_METHOD1(ResetGestureDetection,
+               void(const viz::FrameSinkId& frame_sink_id));
 
  private:
   mojo::Receiver<input::mojom::RenderInputRouterDelegate> receiver_{this};
@@ -476,6 +483,57 @@ TEST_F(RenderWidgetHostViewAndroidTest,
   EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(false));
   rwhva->OnTouchEvent(touch_down);
   EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
+}
+
+TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  gfx::Point point(/*x=*/100, /*y=*/100);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+  auto action = ui::MotionEvent::Action::DOWN;
+  ui::MotionEventAndroidJava touch_down(
+      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, false, &p, nullptr);
+  rwhva->OnTouchEvent(touch_down);
+
+  auto& gesture_provider = rwhva->GetGestureProvider();
+  EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
+
+  rwhva->ResetGestureDetection();
+
+  // The current down should have been reset as a result of processing cancel
+  // generated from `ResetGestureDetection` call.
+  EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
+
+  MockRenderWidgetHost* mock_widget =
+      static_cast<MockRenderWidgetHost*>(rwhva->host());
+  std::optional<blink::WebTouchEvent> touch_event =
+      mock_widget->mock_render_input_router()
+          ->GetAndResetLastForwardedTouchEvent();
+  CHECK(touch_event.has_value());
+  CHECK_EQ(touch_event->GetType(), blink::WebInputEvent::Type::kTouchCancel);
+}
+
+TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionOnViz) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  MockInputTransferHandler* handler = new MockInputTransferHandler();
+  rwhva->SetInputTransferHandlerForTesting(handler);
+
+  MockMojoRenderInputRouterDelegate rir_delegate;
+  delegate()->set_render_input_router_delegate_remote(
+      rir_delegate.GetPendingRemote());
+
+  EXPECT_CALL(*handler, IsTouchSequencePotentiallyActiveOnViz())
+      .WillOnce(Return(true));
+  EXPECT_CALL(rir_delegate, ResetGestureDetection).Times(1);
+
+  rwhva->ResetGestureDetection();
+
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests that when an input sequence is handled on browser with InputVizard,

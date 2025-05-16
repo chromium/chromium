@@ -82,6 +82,10 @@ interface RenderInputRouterDelegate {
   // Notifies RenderInputRouter on the VizCompositor thread (corresponding to
   // |frame_sink_id|) of any visibility changes to its corresponding page.
   NotifyVisibilityChanged(viz.mojom.FrameSinkId frame_sink_id, bool is_hidden);
+
+  // Generates a synthetic touch cancel, which results in touch events being
+  // dropped if there was an active touch sequence on Viz.
+  ResetGestureDetection(viz.mojom.FrameSinkId root_widget_frame_sink_id);
 };
 
 // Implemented by the browser, this interface defines methods that will be

@@ -588,6 +588,24 @@ void InputManager::NotifyVisibilityChanged(const FrameSinkId& frame_sink_id,
   itr->second.rir_delegate->SetIsHidden(is_hidden);
 }
 
+void InputManager::ResetGestureDetection(
+    const FrameSinkId& root_widget_frame_sink_id) {
+#if BUILDFLAG(IS_ANDROID)
+  auto iter = frame_sink_metadata_map_.find(root_widget_frame_sink_id);
+  if (iter == frame_sink_metadata_map_.end()) {
+    return;
+  }
+
+  RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
+  CHECK(support_base);
+  CHECK(!support_base->IsRenderInputRouterSupportChildFrame());
+
+  auto* support_android =
+      static_cast<RenderInputRouterSupportAndroid*>(support_base);
+  support_android->ResetGestureDetection();
+#endif
+}
+
 void InputManager::SetupRenderInputRouterDelegateConnection(
     const base::UnguessableToken& grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>

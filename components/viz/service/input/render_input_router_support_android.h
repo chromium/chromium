@@ -52,6 +52,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
   bool OnTouchEvent(const ui::MotionEventAndroid& event,
                     bool emit_histograms) override;
   bool ShouldRouteEvents() const;
+  void ResetGestureDetection();
 
   // RenderInputRouterSupportBase implementation.
   bool IsRenderInputRouterSupportChildFrame() const override;

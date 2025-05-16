@@ -1612,31 +1612,17 @@ int RenderWidgetHostViewAndroid::GetTouchHandleHeight() {
 }
 
 void RenderWidgetHostViewAndroid::ResetGestureDetection() {
-  const ui::MotionEvent* current_down_event =
-      gesture_provider_.GetCurrentDownEvent();
-  if (!current_down_event) {
-    // A hard reset ensures prevention of any timer-based events that might fire
-    // after a touch sequence has ended.
-    gesture_provider_.ResetDetection();
+  // TODO(crbug.com/412591209): Fix this for active fling case.
+  if (IsTouchSequencePotentiallyActiveOnViz()) {
+    if (!host()) {
+      return;
+    }
+    auto* remote = host()->delegate()->GetRenderInputRouterDelegateRemote();
+    remote->ResetGestureDetection(GetFrameSinkId());
     return;
   }
 
-  std::unique_ptr<ui::MotionEvent> cancel_event = current_down_event->Cancel();
-  if (gesture_provider_.OnTouchEvent(*cancel_event).succeeded) {
-    bool causes_scrolling = false;
-    ui::LatencyInfo latency_info;
-    latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
-    blink::WebTouchEvent web_event = ui::CreateWebTouchEventFromMotionEvent(
-        *cancel_event, causes_scrolling /* may_cause_scrolling */,
-        false /* hovering */);
-    if (ShouldRouteEvents()) {
-      host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
-          this, &web_event, latency_info);
-    } else {
-      host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
-          web_event, latency_info);
-    }
-  }
+  input_helper_->ResetGestureDetection();
 }
 
 void RenderWidgetHostViewAndroid::OnOldViewDidNavigatePreCommit() {

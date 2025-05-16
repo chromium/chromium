@@ -61,6 +61,10 @@ bool RenderInputRouterSupportAndroid::ShouldRouteEvents() const {
   return input_helper_->ShouldRouteEvents();
 }
 
+void RenderInputRouterSupportAndroid::ResetGestureDetection() {
+  input_helper_->ResetGestureDetection();
+}
+
 bool RenderInputRouterSupportAndroid::RequiresDoubleTapGestureEvents() const {
   return input_helper_->RequiresDoubleTapGestureEvents();
 }
