@@ -1213,14 +1213,11 @@ cc::Layer* DrawingBuffer::CcLayer() {
     layer_->SetContentsOpaque(requested_alpha_type_ == kOpaque_SkAlphaType);
     layer_->SetBlendBackgroundColor(requested_alpha_type_ !=
                                     kOpaque_SkAlphaType);
-    if (staging_texture_) {
-      // If staging_texture_ exists, then premultiplication
-      // has already been handled via CopySubTextureCHROMIUM.
-      DCHECK(requested_alpha_type_ == kUnpremul_SkAlphaType);
-      layer_->SetPremultipliedAlpha(true);
-    } else {
-      layer_->SetPremultipliedAlpha(requested_alpha_type_ !=
-                                    kUnpremul_SkAlphaType);
+
+    // If staging_texture_ exists, then premultiplication
+    // has already been handled via CopySubTextureCHROMIUM.
+    if (!staging_texture_ && requested_alpha_type_ == kUnpremul_SkAlphaType) {
+      layer_->SetPremultipliedAlpha(false);
     }
   }
 
