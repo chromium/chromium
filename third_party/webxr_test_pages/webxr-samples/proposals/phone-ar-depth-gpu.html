@@ -73,10 +73,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           <br/>
           <input id="matchDepthView" type="checkbox" checked>
           <label for="matchDepthView">Align Depth and XRViews</label>
+          <br/>
         </p>
       </details>
     </header>
     <div id="text-overlay">
+      <br/>
+      <br/>
       <div id="text-info"></div>
     </div>
     <script id="vertexShader" type="x-shader/x-vertex">
@@ -104,6 +107,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       // XR globals.
       let xrButton = null;
       let xrRefSpace = null;
+      let toggleDepthButton = null;
+      let requestToggleDepthActive = false;
 
       // WebGL scene globals.
       let gl = null;
@@ -138,6 +143,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           supportedSessionTypes: ['immersive-ar']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
+
+        toggleDepthButton = new XRDeviceButton({
+          onRequestSession: ()=>{}, // Invoked when we have no session, no-op.
+          onEndSession: (session)=>{
+            requestToggleDepthActive = true;
+          },
+          textEnterXRTitle: "No Active Session",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "Tap to toggle depth active",
+          supportedSessionTypes: ['immersive-ar']
+        });
+        document.querySelector('#text-overlay').appendChild(toggleDepthButton.domElement);
       }
 
       function onRequestSession() {
@@ -181,6 +198,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onSessionStarted(session) {
+        toggleDepthButton.setSession(session);
         useFrontFacing.disabled = true;
 
         session.addEventListener('end', onSessionEnded);
@@ -214,6 +232,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function onSessionEnded(event) {
         useFrontFacing.disabled = false;
         xrButton.setSession(null);
+        toggleDepthButton.setSession(null);
       }
 
       // Helper, fetches shader source code based on the passed in ID of the <script> element.
@@ -331,6 +350,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function onXRFrame(t, frame) {
         const session = frame.session;
         session.requestAnimationFrame(onXRFrame);
+
+        if (requestToggleDepthActive) {
+          session.depthActive ? session.pauseDepthSensing() : session.resumeDepthSensing();
+          requestToggleDepthActive = false;
+        }
 
         const baseLayer = session.renderState.baseLayer;
 
