@@ -75,14 +75,7 @@ class ExtensionMessagePort::ContextTracker
   ~ContextTracker() override = default;
 
   void TrackExtensionContexts() {
-    // TODO(crbug.com/417539782): Remove this checking logic once the crash is
-    // fixed.
-    auto port_browser_context = port_->browser_context_;
-    CHECK(port_browser_context);
-    CHECK(ExtensionsBrowserClient::Get()->IsValidContext(port_browser_context));
-    auto* pm = ProcessManager::Get(port_browser_context);
-    CHECK(pm);
-    pm_observation_.Observe(pm);
+    pm_observation_.Observe(ProcessManager::Get(port_->browser_context_));
   }
 
   void TrackTabFrames(content::WebContents* tab) { Observe(tab); }
