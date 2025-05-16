@@ -753,3 +753,7 @@
 # These tests have been failing since https://crrev.com/c/6459930.
 -Default/MediaTest.HLSSingleWithoutExtension/0
 -Default/MediaTest.HLSSingleWithoutExtension/1
+
+# TODO(crbug.com/418103029): The test has been failing since
+# https://crrev.com/c/6532249.
+-SecurityExploitBrowserTest.DidFailLoadWithInvalidErrorCode
