@@ -8865,7 +8865,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.JS.Behaviour"
-    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-10-26">
+    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2026-05-14">
   <owner>awillia@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
@@ -8958,7 +8958,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.WASM.Behaviour"
-    enum="SiteIsolatedCodeCacheWASMBehaviour" expires_after="2025-06-22">
+    enum="SiteIsolatedCodeCacheWASMBehaviour" expires_after="2026-05-14">
   <owner>awillia@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
