@@ -11,8 +11,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * Interface to handle browser services calls whenever the session id matched. TODO(yusufo): Add a
  * way to handle mayLaunchUrl as well.
  */
+@NullMarked
 public interface SessionHandler {
 
     /**
@@ -52,20 +53,17 @@ public interface SessionHandler {
     /**
      * @return The current tab being displayed to the user.
      */
-    @Nullable
-    Tab getCurrentTab();
+    @Nullable Tab getCurrentTab();
 
     /**
      * @return The current url being displayed to the user.
      */
-    @Nullable
-    String getCurrentUrl();
+    @Nullable String getCurrentUrl();
 
     /**
      * @return The url of a pending navigation, if any.
      */
-    @Nullable
-    String getPendingUrl();
+    @Nullable String getPendingUrl();
 
     /**
      * @return the task id the content handler is running in.

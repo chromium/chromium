@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.browserservices;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Collections;
@@ -24,6 +24,7 @@ import java.util.Set;
  * <p>Lifecycle: Most of the data used by this class modifies the underlying {@link
  * SharedPreferences} (which are global and preserved across Chrome restarts).
  */
+@NullMarked
 public class InstalledWebappDataRegister {
     /** The shared preferences file name. If you modify this you'll have to migrate old data. */
     private static final String PREFS_FILE = "trusted_web_activity_client_apps";
@@ -35,7 +36,7 @@ public class InstalledWebappDataRegister {
     private static final String UIDS_KEY = "trusted_web_activity_uids";
 
     /* Preferences unique to this class. */
-    private static SharedPreferences sPreferences;
+    private static @Nullable SharedPreferences sPreferences;
 
     private InstalledWebappDataRegister() {}
 

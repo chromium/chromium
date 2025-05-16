@@ -164,7 +164,7 @@ public class AppWebMessagePort implements MessagePort {
     }
 
     @Override
-    public void setMessageCallback(MessageCallback messageCallback, Handler handler) {
+    public void setMessageCallback(MessageCallback messageCallback, @Nullable Handler handler) {
         if (isClosed() || isTransferred()) {
             throw new IllegalStateException("Port is already closed or transferred");
         }

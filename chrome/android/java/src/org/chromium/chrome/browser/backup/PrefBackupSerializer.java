@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.backup;
 
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.Set;
  * Base class for translating entries from the PrefService to the format used by Android backups,
  * and vice-versa. Each derived class is responsible for a certain type (bool, dictionary, etc).
  */
+@NullMarked
 abstract class PrefBackupSerializer {
     private final String mUniqueEncodingPrefix;
 

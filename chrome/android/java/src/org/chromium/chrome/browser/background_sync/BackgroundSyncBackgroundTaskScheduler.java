@@ -16,6 +16,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
@@ -27,6 +29,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
  *
  * Thread model: This class is to be run on the UI thread only.
  */
+@NullMarked
 public class BackgroundSyncBackgroundTaskScheduler {
     /** An observer interface for BackgroundSyncBackgroundTaskScheduler. */
     interface Observer {
@@ -68,7 +71,7 @@ public class BackgroundSyncBackgroundTaskScheduler {
     // this task.
     public static final String SOONEST_EXPECTED_WAKETIME = "SoonestWakeupTime";
 
-    private static BackgroundSyncBackgroundTaskScheduler sInstance;
+    private static @Nullable BackgroundSyncBackgroundTaskScheduler sInstance;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 

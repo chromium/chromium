@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.browserservices.ui.splashscreen;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Delegate for {@link SplashController}. */
+@NullMarked
 public interface SplashDelegate {
     /** Builds the splash view. */
     View buildSplashView();

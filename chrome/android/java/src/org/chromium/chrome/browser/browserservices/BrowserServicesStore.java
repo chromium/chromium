@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.browserservices;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Records SharedPreferences related to the browserservices module. */
+@NullMarked
 public class BrowserServicesStore {
     private BrowserServicesStore() {}
 

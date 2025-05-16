@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Represents the permission state in service calls. */
 @IntDef({PermissionStatus.ALLOW, PermissionStatus.BLOCK, PermissionStatus.ASK})
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface PermissionStatus {
     int ALLOW = 0;
     int BLOCK = 1;

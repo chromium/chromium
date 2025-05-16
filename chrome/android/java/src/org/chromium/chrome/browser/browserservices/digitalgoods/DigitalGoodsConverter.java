@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.BillingResponseCode;
 
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ import java.util.List;
  * Ideally these classes would have no Chromium dependencies that are not from Mojo (in a *.mojom.*
  * package) to allow it to be more easily reused in ARC++.
  */
+@NullMarked
 public class DigitalGoodsConverter {
     private static final String TAG = "DigitalGoods";
 
@@ -78,7 +79,8 @@ public class DigitalGoodsConverter {
 
     /** Checks that the given field exists and is of the required type in a Bundle. */
     static <T> boolean checkField(Bundle bundle, String key, Class<T> clazz) {
-        if (bundle.containsKey(key) && clazz.isAssignableFrom(bundle.get(key).getClass())) {
+        Object field = bundle.get(key);
+        if (field != null && clazz.isAssignableFrom(field.getClass())) {
             return true;
         }
         Log.w(TAG, "Missing field " + key + " of type " + clazz.getName() + ".");
@@ -87,8 +89,7 @@ public class DigitalGoodsConverter {
 
     /** An interface for use with {@link #convertParcelableArray}. */
     interface Converter<T> {
-        @Nullable
-        T convert(Bundle bundle);
+        @Nullable T convert(Bundle bundle);
     }
 
     /**

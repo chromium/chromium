@@ -10,6 +10,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
@@ -23,6 +24,7 @@ import org.chromium.content_public.browser.BrowserStartupController;
  * Entry point for the background tasks scheduled through the native interface. This class acts as a
  * proxy, loads native, creates the task and forwards the method calls.
  */
+@NullMarked
 public final class ProxyNativeTask extends NativeBackgroundTask {
     private long mNativeProxyNativeTask;
 

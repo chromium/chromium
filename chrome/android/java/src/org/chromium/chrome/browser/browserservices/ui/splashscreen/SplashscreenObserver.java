@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.browserservices.ui.splashscreen;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Observer interface for WebApp activity splashscreen. */
+@NullMarked
 public interface SplashscreenObserver {
     /** Called when the activity's translucency is removed. */
     void onTranslucencyRemoved();

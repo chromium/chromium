@@ -59,7 +59,7 @@ public interface MessagePort {
      *
      * See {@link MessagePort.MessageCallback}
      */
-    void setMessageCallback(MessageCallback messageCallback, Handler handler);
+    void setMessageCallback(MessageCallback messageCallback, @Nullable Handler handler);
 
     /**
      * Send a postMessage request through this port to its designated receiving end.

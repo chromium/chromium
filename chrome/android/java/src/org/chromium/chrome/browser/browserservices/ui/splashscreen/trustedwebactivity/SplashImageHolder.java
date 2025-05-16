@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebac
 import android.graphics.Bitmap;
 import android.util.ArrayMap;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 
 import java.util.Collections;
@@ -21,11 +21,12 @@ import java.util.Map;
  *
  * <p>This class is thread-safe.
  */
+@NullMarked
 public class SplashImageHolder {
     private final Map<SessionHolder<?>, Bitmap> mBitmaps =
             Collections.synchronizedMap(new ArrayMap<>());
 
-    private static SplashImageHolder sInstance;
+    private static @Nullable SplashImageHolder sInstance;
 
     public static SplashImageHolder getInstance() {
         if (sInstance == null) sInstance = new SplashImageHolder();
