@@ -28,14 +28,12 @@ mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
 }
 
 std::string ToDebugString(const mojom::ActionResult& result) {
-  // NOTE: A future improvement is to map codes back to strings.
-  auto code_value = base::to_underlying(result.code);
   if (IsOk(result)) {
     return "ActionResult[OK]";
   } else if (result.message.empty()) {
-    return base::StrCat({"ActionResult[", base::ToString(code_value), "]"});
+    return base::StrCat({"ActionResult[", base::ToString(result.code), "]"});
   } else {
-    return base::StrCat({"ActionResult[", base::ToString(code_value), ": \"",
+    return base::StrCat({"ActionResult[", base::ToString(result.code), ": \"",
                          result.message, "\"]"});
   }
 }
