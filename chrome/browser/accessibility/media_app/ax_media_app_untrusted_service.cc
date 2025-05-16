@@ -994,9 +994,20 @@ void AXMediaAppUntrustedService::UpdatePageLocation(
 void AXMediaAppUntrustedService::ShowOcrServiceFailedToInitializeMessage() {
   DCHECK_EQ(ocr_status_, OcrStatus::kInitializationFailed);
   ui::AXTreeUpdate document_update;
-  document_update.nodes = CreateStatusNodesWithLandmark();
-  DCHECK_GT(document_update.nodes.size(), 0u);
-  document_update.root_id = document_update.nodes[0].id;
+  ui::AXNodeData& document_root_data = document_update.nodes.emplace_back();
+  document_root_data.id = kDocumentRootNodeId;
+  document_root_data.role = ax::mojom::Role::kPdfRoot;
+  document_update.root_id = document_root_data.id;
+
+  std::vector<ui::AXNodeData> status_nodes;
+  status_nodes = CreateStatusNodesWithLandmark();
+  DCHECK_GE(status_nodes.size(), 1u);
+  document_root_data.child_ids.push_back(status_nodes.at(0).id);
+
+  document_update.nodes.insert(std::end(document_update.nodes),
+                               std::begin(status_nodes),
+                               std::end(status_nodes));
+
   UpdateDocumentTree(document_update);
 }
 

@@ -239,21 +239,22 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   EXPECT_TRUE(service_->IsAccessibilityEnabled());
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
-      "id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
+      "id=1 pdfRoot child_ids=10000 (0, 0)-(0, 0)\n"
+      "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
       "-1)-(1, 1) text_align=left is_page_breaking_object=true "
       "is_line_breaking_object=true has_aria_attribute=true\n"
-      "  id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
+      "    id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
       "0)-(1, 1) text_align=left container_relevant=additions text "
       "container_live=polite relevant=additions text live=polite "
       "container_atomic=true container_busy=false atomic=true "
       "is_line_breaking_object=true has_aria_attribute=true\n"
-      "    id=10002 staticText name=This PDF is inaccessible. Couldn't "
+      "      id=10002 staticText name=This PDF is inaccessible. Couldn't "
       "download text extraction files. Please try again later. child_ids=10003 "
       "offset_container_id=10001 (0, 0)-(1, 1) text_align=left "
       "container_relevant=additions text container_live=polite "
       "relevant=additions text live=polite container_atomic=true "
       "container_busy=false atomic=true is_line_breaking_object=true\n"
-      "      id=10003 inlineTextBox name=This PDF is inaccessible. Couldn't "
+      "        id=10003 inlineTextBox name=This PDF is inaccessible. Couldn't "
       "download text extraction files. Please try again later. "
       "offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n",
       service_->GetDocumentTreeToStringForTesting());
@@ -271,21 +272,22 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   EXPECT_TRUE(service_->IsAccessibilityEnabled());
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
-      "id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
+      "id=1 pdfRoot child_ids=10000 (0, 0)-(0, 0)\n"
+      "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
       "-1)-(1, 1) text_align=left is_page_breaking_object=true "
       "is_line_breaking_object=true has_aria_attribute=true\n"
-      "  id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
+      "    id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
       "0)-(1, 1) text_align=left container_relevant=additions text "
       "container_live=polite relevant=additions text live=polite "
       "container_atomic=true container_busy=false atomic=true "
       "is_line_breaking_object=true has_aria_attribute=true\n"
-      "    id=10002 staticText name=This PDF is inaccessible. Couldn't "
+      "      id=10002 staticText name=This PDF is inaccessible. Couldn't "
       "download text extraction files. Please try again later. child_ids=10003 "
       "offset_container_id=10001 (0, 0)-(1, 1) text_align=left "
       "container_relevant=additions text container_live=polite "
       "relevant=additions text live=polite container_atomic=true "
       "container_busy=false atomic=true is_line_breaking_object=true\n"
-      "      id=10003 inlineTextBox name=This PDF is inaccessible. Couldn't "
+      "        id=10003 inlineTextBox name=This PDF is inaccessible. Couldn't "
       "download text extraction files. Please try again later. "
       "offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n",
       service_->GetDocumentTreeToStringForTesting());
