@@ -246,7 +246,6 @@ source_set("audio") {
       "dxguid.lib",
       "setupapi.lib",
       "winmm.lib",
-      "mmdevapi.lib",
     ]
   }
 
@@ -521,15 +520,6 @@ source_set("unit_tests") {
       "win/audio_session_event_listener_win_unittest.cc",
       "win/core_audio_util_win_unittest.cc",
       "win/device_enumeration_win_unittest.cc",
-      "win/test_support/fake_iactivate_audio_interface_async_operation.cc",
-      "win/test_support/fake_iactivate_audio_interface_async_operation.h",
-      "win/test_support/fake_iaudio_capture_client.cc",
-      "win/test_support/fake_iaudio_capture_client.h",
-      "win/test_support/fake_iaudio_client.cc",
-      "win/test_support/fake_iaudio_client.h",
-      "win/test_support/fake_win_wasapi_environment.cc",
-      "win/test_support/fake_win_wasapi_environment.h",
-      "win/test_support/wasapi_test_error_code.h",
     ]
 
     deps += [ "//media/gpu:gpu" ]
