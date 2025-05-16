@@ -7,6 +7,7 @@
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
+load("./clang_exception.star", "clang_exception")
 load("./clang_unix.star", "clang_unix")
 load("./mac_sdk.star", "mac_sdk")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
@@ -49,6 +50,8 @@ def __step_config(ctx, step_config):
             step_config["rules"].append(rule)
     elif gn.args(ctx).get("use_remoteexec") == "true":
         fail("remoteexec requires rewrapper config")
+
+    step_config = clang_exception.step_config(ctx, step_config)
     return step_config
 
 clang = module(

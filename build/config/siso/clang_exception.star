@@ -6,10 +6,11 @@
  or DeadlineExceeded.
 """
 
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 
-def __step_config(ctx, step_config):
+def __step_config(ctx, step_config, use_windows_worker = None):
     cxx_exceptions = [
         {
             # TODO: crbug.com/380755128 - Make each compile unit smaller.
@@ -57,6 +58,10 @@ def __step_config(ctx, step_config):
             "timeout": "4m",
         },
     ]
+
+    # Check if the build target is Windows.
+    is_target_windows = runtime.os == "windows" or ("args.gn" in ctx.metadata and gn.args(ctx).get("target_os") == '"win"')
+
     cc_exceptions = []
     new_rules = []
     for rule in step_config["rules"]:
@@ -72,18 +77,22 @@ def __step_config(ctx, step_config):
                 r.update(rule)
                 r["name"] += "/exception/" + ex["name"]
                 outs = ex["action_outs"]
-                if runtime.os == "windows":
+                if is_target_windows:
                     outs = [obj.removesuffix(".o") + ".obj" for obj in outs if obj.startswith("./obj/")]
                 r["action_outs"] = outs
                 if "timeout" in ex:
                     r["timeout"] = ex["timeout"]
                 if "use_large" in ex and ex["use_large"]:
-                    # use `_large` variant of platform if it doesn't use default platform,
-                    # i.e. mac/win case.
-                    if "platform_ref" in r:
-                        r["platform_ref"] = r["platform_ref"] + "_large"
+                    if use_windows_worker:
+                        # Do not run large compiles on default Windows worker.
+                        r["remote"] = False
                     else:
-                        r["platform_ref"] = "large"
+                        # use `_large` variant of platform if it doesn't use default platform,
+                        # i.e. mac/win case.
+                        if "platform_ref" in r:
+                            r["platform_ref"] = r["platform_ref"] + "_large"
+                        else:
+                            r["platform_ref"] = "large"
                 if r.get("handler") == "rewrite_rewrapper":
                     r["handler"] = "rewrite_rewrapper_large"
                 new_rules.append(r)

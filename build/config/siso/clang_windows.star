@@ -8,6 +8,7 @@ load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./clang_exception.star", "clang_exception")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
 load("./reproxy.star", "reproxy")
@@ -40,10 +41,10 @@ def __step_config(ctx, step_config):
             largePlatform[k] = v
 
         # no "action_large" Windows worker pool
-        windowsWorker = True
+        use_windows_worker = True
         if reproxy_config["platform"]["OSFamily"] != "Windows":
             largePlatform["label:action_large"] = "1"
-            windowsWorker = False
+            use_windows_worker = False
         step_config["platforms"].update({
             "clang-cl": reproxy_config["platform"],
             "clang-cl_large": largePlatform,
@@ -79,7 +80,7 @@ def __step_config(ctx, step_config):
         canonicalize_dir = not input_root_absolute_path
 
         timeout = "2m"
-        if (not reproxy.enabled(ctx)) and windowsWorker:
+        if (not reproxy.enabled(ctx)) and use_windows_worker:
             # use longer timeout for siso native
             # it takes long time for input fetch (many files in sysroot etc)
             timeout = "4m"
@@ -212,6 +213,7 @@ def __step_config(ctx, step_config):
                 "timeout": "4m",
             },
         ])
+        step_config = clang_exception.step_config(ctx, step_config, use_windows_worker)
     elif gn.args(ctx).get("use_remoteexec") == "true":
         fail("remoteexec requires rewrapper config")
     return step_config

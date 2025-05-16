@@ -7,6 +7,7 @@
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
 load("./clang_all.star", "clang_all")
+load("./clang_exception.star", "clang_exception")
 load("./clang_unix.star", "clang_unix")
 load("./fuchsia.star", "fuchsia")
 load("./win_sdk.star", "win_sdk")
@@ -121,6 +122,7 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend(clang_unix.rules(ctx))
     if win_sdk.enabled(ctx):
         win_sdk.step_config(ctx, step_config)
+    step_config = clang_exception.step_config(ctx, step_config)
     return step_config
 
 clang = module(
