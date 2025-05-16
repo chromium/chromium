@@ -9,6 +9,8 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
+#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_handler.h"
+#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -38,6 +40,21 @@ FloatingWorkspaceDialog::~FloatingWorkspaceDialog() {
   g_dialog = nullptr;
 }
 
+FloatingWorkspaceDialogHandler* FloatingWorkspaceDialog::GetHandler() {
+  if (!g_dialog) {
+    return nullptr;
+  }
+  auto* web_ui = g_dialog->webui();
+  if (!web_ui) {
+    return nullptr;
+  }
+  auto* controller = web_ui->GetController();
+  if (!controller) {
+    return nullptr;
+  }
+  return static_cast<FloatingWorkspaceUI*>(controller)->GetMainHandler();
+}
+
 void FloatingWorkspaceDialog::GetDialogSize(gfx::Size* size) const {
   *size = CalculateOobeDialogSizeForPrimaryDisplay();
 }
@@ -52,8 +69,9 @@ void FloatingWorkspaceDialog::OnDialogClosed(const std::string& json_retval) {
     CHECK(browser_context);
     FloatingWorkspaceService* service =
         FloatingWorkspaceServiceFactory::GetForProfile(browser_context);
-    CHECK(service);
-    service->StopRestoringSession();
+    if (service) {
+      service->StopRestoringSession();
+    }
   } else if (!json_retval.empty()) {
     NOTREACHED();
   }
@@ -73,6 +91,37 @@ bool FloatingWorkspaceDialog::ShouldCloseDialogOnEscape() const {
   return false;
 }
 
+gfx::NativeWindow FloatingWorkspaceDialog::GetNativeWindow() {
+  if (g_dialog) {
+    return g_dialog->dialog_window();
+  }
+  return nullptr;
+}
+
+void FloatingWorkspaceDialog::ShowDefaultScreen() {
+  FloatingWorkspaceDialog::Show();
+  FloatingWorkspaceDialogHandler* handler = GetHandler();
+  if (handler) {
+    handler->ShowDefaultScreen();
+  }
+}
+
+void FloatingWorkspaceDialog::ShowNetworkScreen() {
+  FloatingWorkspaceDialog::Show();
+  FloatingWorkspaceDialogHandler* handler = GetHandler();
+  if (handler) {
+    handler->ShowNetworkScreen();
+  }
+}
+
+void FloatingWorkspaceDialog::ShowErrorScreen() {
+  FloatingWorkspaceDialog::Show();
+  FloatingWorkspaceDialogHandler* handler = GetHandler();
+  if (handler) {
+    handler->ShowErrorScreen();
+  }
+}
+
 void FloatingWorkspaceDialog::Close() {
   if (g_dialog) {
     g_dialog->SystemWebDialogDelegate::Close();
@@ -89,6 +138,10 @@ void FloatingWorkspaceDialog::Show() {
   // Will be deleted by `SystemWebDialogDelegate::OnDialogClosed`.
   g_dialog = new FloatingWorkspaceDialog();
   g_dialog->ShowSystemDialog();
+}
+
+bool FloatingWorkspaceDialog::IsShown() {
+  return g_dialog;
 }
 
 }  // namespace ash

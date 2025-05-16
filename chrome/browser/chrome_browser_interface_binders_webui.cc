@@ -256,6 +256,7 @@
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
+#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_ui.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
@@ -870,7 +871,7 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::network_config::mojom::CrosNetworkConfig,
       ash::InternetConfigDialogUI, ash::InternetDetailDialogUI, ash::NetworkUI,
       ash::OobeUI, ash::settings::OSSettingsUI, ash::LockScreenNetworkUI,
-      ash::ShimlessRMADialogUI>(map);
+      ash::FloatingWorkspaceUI, ash::ShimlessRMADialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::connectivity::mojom::PasspointService,
