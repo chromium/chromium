@@ -583,9 +583,14 @@ void TileManager::Release(Tile* tile) {
   // is being deleted. In this case we never update the damage. So make sure
   // that NotifyTileStateChanged() does not update the damage for this tile.
   // If a tile was a solid color, there is no resource associated with it.
-  // We do need to notify about tile deletion in that case.
+  // We do need to notify about tile deletion in that case. We also need to
+  // notify
+  // about OOMed tile deletions because OOMed tiles are kept alive with no
+  // resource until its deleted.
+  CHECK(tile->deleted());
   if (FreeResourcesForTile(tile) ||
-      tile->draw_info().mode() == TileDrawInfo::SOLID_COLOR_MODE) {
+      tile->draw_info().mode() == TileDrawInfo::SOLID_COLOR_MODE ||
+      tile->draw_info().mode() == TileDrawInfo::OOM_MODE) {
     client_->NotifyTileStateChanged(tile, /*update_damage=*/false);
   }
   tiles_.erase(tile->id());
