@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -48,7 +49,7 @@ base::FilePath GetReferenceFilePath(std::string_view test_filename) {
       .AppendASCII(test_filename);
 }
 
-void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
+void CheckPdfDimensions(base::span<const uint8_t> pdf_data,
                         const ExpectedDimensions& expected_dimensions) {
   PDFiumEngineExports exports;
   int page_count;
@@ -64,7 +65,7 @@ void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
   }
 }
 
-void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
+void CheckPdfRendering(base::span<const uint8_t> pdf_data,
                        int page_number,
                        const gfx::SizeF& size_in_points,
                        std::string_view expected_png_filename) {

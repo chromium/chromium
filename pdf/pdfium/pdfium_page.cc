@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -883,7 +884,7 @@ bool PDFiumPage::IsCharInPageBounds(int char_index,
 }
 
 std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
-    const std::vector<AccessibilityTextRunInfo>& text_runs) {
+    base::span<const AccessibilityTextRunInfo> text_runs) {
   std::vector<AccessibilityLinkInfo> link_info;
   if (!available_)
     return link_info;
@@ -985,7 +986,7 @@ bool PDFiumPage::IsPageSearchified() const {
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(
-    const std::vector<AccessibilityTextRunInfo>& text_runs) {
+    base::span<const AccessibilityTextRunInfo> text_runs) {
   std::vector<AccessibilityHighlightInfo> highlight_info;
   if (!available_)
     return highlight_info;

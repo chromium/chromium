@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -115,7 +116,7 @@ class PDFiumPage {
   // For all the links on the page, get their urls, underlying text ranges and
   // bounding boxes.
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
-      const std::vector<AccessibilityTextRunInfo>& text_runs);
+      base::span<const AccessibilityTextRunInfo> text_runs);
 
   // For all the images on the page, get their alt texts and bounding boxes. If
   // the alt text is empty or unavailable, and if the user has requested that
@@ -145,7 +146,7 @@ class PDFiumPage {
   // For all the highlights on the page, get their underlying text ranges and
   // bounding boxes.
   std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
-      const std::vector<AccessibilityTextRunInfo>& text_runs);
+      base::span<const AccessibilityTextRunInfo> text_runs);
 
   // For all the text fields on the page, get their properties like name,
   // value, bounding boxes, etc.

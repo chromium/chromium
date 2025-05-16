@@ -4,8 +4,7 @@
 
 #include "pdf/pdfium/pdfium_ink_reader.h"
 
-#include <vector>
-
+#include "base/containers/span.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/ink/src/ink/geometry/point.h"
 
@@ -18,8 +17,7 @@ fuzztest::Domain<ink::Point> FiniteInkPoint() {
                                         fuzztest::Finite<float>());
 }
 
-void CreateMeshFromPolylineDoesntCrash(
-    const std::vector<ink::Point>& polyline) {
+void CreateMeshFromPolylineDoesntCrash(base::span<const ink::Point> polyline) {
   auto mesh = CreateInkMeshFromPolylineForTesting(polyline);
 }
 

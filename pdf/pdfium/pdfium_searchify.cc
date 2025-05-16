@@ -233,7 +233,7 @@ gfx::Rect GetSpaceRect(const gfx::Rect& rect1, const gfx::Rect& rect2) {
 // inserts a new word between them to represent it, and returns the vector of
 // words and spaces.
 std::vector<screen_ai::mojom::WordBox> GetWordsAndSpaces(
-    const std::vector<screen_ai::mojom::WordBoxPtr>& words) {
+    base::span<const screen_ai::mojom::WordBoxPtr> words) {
   std::vector<screen_ai::mojom::WordBox> words_and_spaces;
 
   size_t original_word_count = words.size();
@@ -398,7 +398,7 @@ gfx::Rect GetSpaceRectForTesting(const gfx::Rect& rect1,  // IN-TEST
 }
 
 std::vector<screen_ai::mojom::WordBox> GetWordsAndSpacesForTesting(  // IN-TEST
-    const std::vector<screen_ai::mojom::WordBoxPtr>& words) {
+    base::span<const screen_ai::mojom::WordBoxPtr> words) {
   return GetWordsAndSpaces(words);
 }
 
