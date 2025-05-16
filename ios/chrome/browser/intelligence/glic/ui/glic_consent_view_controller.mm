@@ -67,7 +67,7 @@ const CGFloat kLineHeightMultiple = 18.0 / 14.0;
 - (void)setupStackView {
   [self configureMainStackView];
   [_mainStackView addArrangedSubview:[self createBoxesStackView]];
-  [_mainStackView addArrangedSubview:[self createSubtextLabel]];
+  [_mainStackView addArrangedSubview:[self createFootNoteLabel]];
 }
 
 // Configure promo style properties to add buttons. Ignores header image type.
@@ -235,14 +235,15 @@ const CGFloat kLineHeightMultiple = 18.0 / 14.0;
   return boxView;
 }
 
-// Create the subtext label.
-- (UILabel*)createSubtextLabel {
-  UILabel* subText = [[UILabel alloc] init];
-  subText.text = kGLIConsentSubText;
-  subText.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
-  subText.numberOfLines = 2;
-  subText.textAlignment = NSTextAlignmentCenter;
-  return subText;
+// Create the foot note label.
+- (UILabel*)createFootNoteLabel {
+  UILabel* footNoteLabel = [[UILabel alloc] init];
+  footNoteLabel.text = kGLICConsentFootNoteText;
+  footNoteLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+  footNoteLabel.numberOfLines = 2;
+  footNoteLabel.textAlignment = NSTextAlignmentCenter;
+  return footNoteLabel;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate

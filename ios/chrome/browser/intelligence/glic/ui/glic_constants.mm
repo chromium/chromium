@@ -13,10 +13,9 @@ NSString* const kGLICPromoPrimaryAction = @"Try it out";
 NSString* const kGLICConsentPrimaryAction = @"Yes, I'm in";
 NSString* const kGLICPromoConsentSecondaryAction = @"No thanks";
 
-NSString* const kGLIConsentSubText =
-    @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
-NSString* const kGLICPromoMainTitleText =
-    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes.";
+NSString* const kGLICPromoMainTitleText = @"Lorem ipsum dolor sit amet.";
+NSString* const kGLICPromoSubTitleText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do.";
 
 NSString* const kGLICConsentFirstBoxTitleText =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
@@ -28,3 +27,5 @@ NSString* const kGLICConsentSecondBoxBodyText =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do "
     @"eiusmod tempor incididunt ut labore et dolore magna ali. eiusmod tempor "
     @"incididunt ut labore et dolore magna ali.";
+NSString* const kGLICConsentFootNoteText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";

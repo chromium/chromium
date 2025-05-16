@@ -17,10 +17,11 @@ namespace {
 // Stack view insets and spacing.
 const CGFloat kGLICConsentMainStackHorizontalInset = 20.0;
 const CGFloat kGLICConsentMainStackTopInset = 24.0;
-const CGFloat kGLICConsentMainStackSpacing = 16.0;
+const CGFloat kGLICConsentMainStackSpacing = 5.0;
 
-// Spacing the title label.
+// Spacing the title labels.
 const CGFloat kMainTitleLabelSpacing = 8.0;
+const CGFloat kSubTitleLabelSpacing = 12.0;
 
 }  // namespace
 
@@ -38,6 +39,7 @@ const CGFloat kMainTitleLabelSpacing = 8.0;
   [self configurePromoStyleProperties];
   [self configureMainStackView];
   [_mainStackView addArrangedSubview:[self createMainTitle]];
+  [_mainStackView addArrangedSubview:[self createSubTitle]];
   [super viewDidLoad];
 }
 
@@ -87,7 +89,6 @@ const CGFloat kMainTitleLabelSpacing = 8.0;
 - (UIView*)createMainTitle {
   UILabel* mainTitleLabel = [[UILabel alloc] init];
   mainTitleLabel.text = kGLICPromoMainTitleText;
-  mainTitleLabel.numberOfLines = 2;
   mainTitleLabel.textAlignment = NSTextAlignmentCenter;
   mainTitleLabel.adjustsFontSizeToFitWidth = YES;
   mainTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -111,6 +112,33 @@ const CGFloat kMainTitleLabelSpacing = 8.0;
         constraintEqualToAnchor:titleContainer.bottomAnchor],
   ]];
   return titleContainer;
+}
+
+// Create a view containing the sub title label.
+- (UIView*)createSubTitle {
+  UILabel* subTitleLabel = [[UILabel alloc] init];
+  subTitleLabel.text = kGLICPromoSubTitleText;
+  subTitleLabel.numberOfLines = 2;
+  subTitleLabel.textAlignment = NSTextAlignmentCenter;
+  subTitleLabel.adjustsFontSizeToFitWidth = YES;
+  subTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+  subTitleLabel.font = PreferredFontForTextStyle(UIFontTextStyleTitle3,
+                                                 UIFontWeightRegular, 15.0);
+
+  UIView* subTitleContainer = [[UIView alloc] init];
+  subTitleContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [subTitleContainer addSubview:subTitleLabel];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [subTitleLabel.leadingAnchor
+        constraintEqualToAnchor:subTitleContainer.leadingAnchor
+                       constant:kSubTitleLabelSpacing],
+    [subTitleLabel.trailingAnchor
+        constraintEqualToAnchor:subTitleContainer.trailingAnchor
+                       constant:-kSubTitleLabelSpacing]
+  ]];
+  return subTitleLabel;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate

@@ -19,11 +19,12 @@ extern NSString* const kGLICPromoConsentSecondaryAction;
 
 // Text constants.
 extern NSString* const kGLICPromoMainTitleText;
-extern NSString* const kGLIConsentSubText;
+extern NSString* const kGLICPromoSubTitleText;
 
 extern NSString* const kGLICConsentFirstBoxTitleText;
 extern NSString* const kGLICConsentFirstBoxBodyText;
 extern NSString* const kGLICConsentSecondBoxTitleText;
 extern NSString* const kGLICConsentSecondBoxBodyText;
+extern NSString* const kGLICConsentFootNoteText;
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_UI_GLIC_CONSTANTS_H_
