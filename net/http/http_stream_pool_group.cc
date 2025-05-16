@@ -180,7 +180,6 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
 
   if (reusable) {
     AddIdleStreamSocket(std::move(socket));
-    ProcessPendingRequest();
   } else {
     RecordNetLogClosingSocket(*socket, not_reusable_reason);
     socket.reset();
@@ -198,6 +197,7 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
+  ProcessPendingRequest();
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {

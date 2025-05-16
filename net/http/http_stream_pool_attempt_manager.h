@@ -450,9 +450,8 @@ class HttpStreamPool::AttemptManager
   // Notifies a job of preconnect completion.
   void NotifyJobOfPreconnectComplete(raw_ptr<Job> job, int rv);
 
-  // Creates a text based stream. Notifies the highest priority job if there are
-  // waiting jobs. Otherwise, `stream_socket` becomes an idle stream.
-  void CreateTextBasedStreamAndMaybeNotify(
+  // Creates a text based stream and Notifies the highest priority job.
+  void CreateTextBasedStreamAndNotify(
       std::unique_ptr<StreamSocket> stream_socket,
       StreamSocketHandle::SocketReuseType reuse_type,
       LoadTimingInfo::ConnectTiming connect_timing);
