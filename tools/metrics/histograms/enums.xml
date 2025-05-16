@@ -10109,6 +10109,7 @@ from previous Chrome versions.
   <int value="-1495973732"
       label="ResamplingScrollEventsExperimentalPrediction:disabled"/>
   <int value="-1495145881" label="ReaderModeDevEntryPoint:enabled"/>
+  <int value="-1494697633" label="EnterpriseBadgingForNtpFooter:enabled"/>
   <int value="-1493620195"
       label="kFileSystemAccessPersistentPermissions:enabled"/>
   <int value="-1493308731" label="WebIdentityDigitalCredentials:disabled"/>
@@ -14670,6 +14671,7 @@ from previous Chrome versions.
       label="FriendlierSafeBrowsingSettingsStandardProtection:disabled"/>
   <int value="240718033" label="NtpDriveModuleNoSyncRequirement:disabled"/>
   <int value="240856309" label="MimeHandlerViewInCrossProcessFrame:enabled"/>
+  <int value="241117669" label="EnterpriseBadgingForNtpFooter:disabled"/>
   <int value="241187301" label="BrowserTouchBar:disabled"/>
   <int value="242181887" label="NotificationOneTapUnsubscribe:disabled"/>
   <int value="244040049" label="DrawImmediatelyWhenInteractive:disabled"/>

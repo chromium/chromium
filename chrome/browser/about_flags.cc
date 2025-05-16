@@ -4807,7 +4807,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnterpriseBadgingForNtpFooterName,
      flag_descriptions::kEnterpriseBadgingForNtpFooterDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kEnterpriseProfileBadgingForMenu)},
+     FEATURE_VALUE_TYPE(features::kEnterpriseBadgingForNtpFooter)},
     {"enable-enterprise-updated-profile-creation-screen",
      flag_descriptions::kEnterpriseUpdatedProfileCreationScreenName,
      flag_descriptions::kEnterpriseUpdatedProfileCreationScreenDescription,
