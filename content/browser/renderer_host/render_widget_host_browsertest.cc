@@ -94,6 +94,7 @@ class RenderWidgetHostBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(
         shell(), GURL("data:text/html,<!doctype html>"
                       "<body style='background-color: magenta;'></body>")));
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
   }
 
   WebContents* web_contents() const { return shell()->web_contents(); }
@@ -606,6 +607,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/site_isolation/page-with-select.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
 
   auto* contents = static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
@@ -799,6 +801,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/site_isolation/page-with-select.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
 
   auto* contents = static_cast<WebContentsImpl*>(web_contents());
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
@@ -1062,6 +1065,7 @@ class RenderWidgetHostDelegatedInkMetadataTest
       <body> <canvas id="board" width="400" height="400"></canvas> </body>
     )HTML")));
     load_stop_observer.Wait();
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
   }
 
  protected:

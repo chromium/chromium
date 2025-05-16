@@ -1824,6 +1824,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to |url_1| and add a text input with "foo" as the value.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   EXPECT_TRUE(ExecJs(rfh_1,
                      "document.title='bfcached';"
@@ -1924,6 +1925,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 1) Navigate to |url_1| and add a text input with "foo" as the value in the
   // a.com subframe.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_subframe_a =
