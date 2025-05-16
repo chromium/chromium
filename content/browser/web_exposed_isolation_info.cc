@@ -84,11 +84,6 @@ bool WebExposedIsolationInfo::operator==(
   return true;
 }
 
-bool WebExposedIsolationInfo::operator!=(
-    const WebExposedIsolationInfo& b) const {
-  return !(operator==(b));
-}
-
 bool WebExposedIsolationInfo::operator<(
     const WebExposedIsolationInfo& b) const {
   // Nonisolated < Isolated < Isolated Application.

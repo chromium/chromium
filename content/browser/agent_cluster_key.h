@@ -43,7 +43,6 @@ class CONTENT_EXPORT AgentClusterKey {
     CrossOriginIsolationKey(const CrossOriginIsolationKey& other);
     ~CrossOriginIsolationKey();
     bool operator==(const CrossOriginIsolationKey& b) const;
-    bool operator!=(const CrossOriginIsolationKey& b) const;
     // The origin of the document which triggered cross-origin isolation. This
     // might be different from the origin returned by AgentClusterKey::GetOrigin
     // when cross-origin isolation was enabled by COOP + COEP. It should always
@@ -97,7 +96,6 @@ class CONTENT_EXPORT AgentClusterKey {
   GetCrossOriginIsolationKey() const;
 
   bool operator==(const AgentClusterKey& b) const;
-  bool operator!=(const AgentClusterKey& b) const;
 
   // Needed for tie comparisons in SiteInfo.
   bool operator<(const AgentClusterKey& b) const;

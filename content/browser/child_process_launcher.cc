@@ -416,7 +416,4 @@ base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
 bool RenderProcessPriority::operator==(
     const RenderProcessPriority& other) const = default;
 
-bool RenderProcessPriority::operator!=(
-    const RenderProcessPriority& other) const = default;
-
 }  // namespace content

@@ -598,12 +598,8 @@ bool SiteInfo::operator==(const SiteInfo& other) const {
   return IsSamePrincipalWith(other);
 }
 
-bool SiteInfo::operator!=(const SiteInfo& other) const {
-  return !IsSamePrincipalWith(other);
-}
-
-bool SiteInfo::operator<(const SiteInfo& other) const {
-  return MakeSecurityPrincipalKey(*this) < MakeSecurityPrincipalKey(other);
+std::weak_ordering SiteInfo::operator<=>(const SiteInfo& other) const {
+  return MakeSecurityPrincipalKey(*this) <=> MakeSecurityPrincipalKey(other);
 }
 
 std::string SiteInfo::GetDebugString() const {

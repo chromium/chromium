@@ -316,13 +316,12 @@ class CONTENT_EXPORT SiteInfo {
 
   // Note: equality operators are defined in terms of IsSamePrincipalWith().
   bool operator==(const SiteInfo& other) const;
-  bool operator!=(const SiteInfo& other) const;
 
   // Defined to allow this object to act as a key for std::map and std::set.
   // Note that the key is determined based on what distinguishes one security
   // principal from another (see IsSamePrincipalWith) and does not necessarily
   // include all the fields in SiteInfo.
-  bool operator<(const SiteInfo& other) const;
+  std::weak_ordering operator<=>(const SiteInfo& other) const;
 
   // Returns a string representation of this SiteInfo principal.
   std::string GetDebugString() const;
