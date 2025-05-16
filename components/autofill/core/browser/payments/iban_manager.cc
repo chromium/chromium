@@ -78,6 +78,10 @@ void IbanManager::OnSingleFieldSuggestionSelected(
   uma_recorder_.OnIbanSuggestionSelected(suggestion);
 }
 
+void IbanManager::OnIbanSuggestionsShown(FieldGlobalId field_global_id) {
+  uma_recorder_.OnIbanSuggestionsShown(field_global_id);
+}
+
 void IbanManager::UmaRecorder::OnIbanSuggestionsShown(
     FieldGlobalId field_global_id) {
   // Log metrics related to the IBAN-related suggestions in the popup.
@@ -129,7 +133,6 @@ std::vector<Suggestion> IbanManager::GetIbanSuggestions(
     return {};
   }
 
-  uma_recorder_.OnIbanSuggestionsShown(field.global_id());
   return GetSuggestionsForIbans(ibans);
 }
 

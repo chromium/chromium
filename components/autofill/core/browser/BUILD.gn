@@ -1061,6 +1061,7 @@ static_library("test_support") {
     "payments/credit_card_access_manager_test_api.h",
     "payments/credit_card_access_manager_test_base.cc",
     "payments/credit_card_access_manager_test_base.h",
+    "payments/iban_manager_test_api.h",
     "payments/mock_iban_access_manager.cc",
     "payments/mock_iban_access_manager.h",
     "payments/mock_test_payments_network_interface.cc",

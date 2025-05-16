@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/payments/iban_manager_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
@@ -660,34 +661,6 @@ TEST_P(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
       1);
 }
 
-// Test that the metrics for IBAN-related suggestions shown and shown once are
-// logged correctly.
-TEST_P(IbanManagerTest, Metrics_SuggestionsShown) {
-  base::HistogramTester histogram_tester;
-  SetUpLocalIban(test::kIbanValue, kNickname_0);
-
-  autofill_field_->set_renderer_id(test::MakeFieldRendererId());
-
-  // Simulate request for suggestions.
-  MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
-      *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.GetNewRef()));
-
-  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
-      *autofill_field_, *autofill_field_, autofill_client_,
-      mock_callback.GetNewRef()));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.Iban.Suggestions"),
-      BucketsAre(
-          base::Bucket(
-              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShown, 2),
-          base::Bucket(
-              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce,
-              1)));
-}
-
 // Test that the metrics for local IBAN suggestion selected (once and total
 // count) are logged correctly.
 TEST_P(IbanManagerTest, Metrics_LocalIbanSuggestionSelected) {
@@ -697,6 +670,8 @@ TEST_P(IbanManagerTest, Metrics_LocalIbanSuggestionSelected) {
   SetUpLocalIban(test::kIbanValue_2, "");
 
   autofill_field_->set_renderer_id(test::MakeFieldRendererId());
+  test_api(iban_manager_).set_most_recent_suggestions_shown_field_global_id(
+      autofill_field_->global_id());
 
   // Simulate request for suggestions and select one suggested IBAN.
   MockSuggestionsReturnedCallback mock_callback;
@@ -738,6 +713,8 @@ TEST_P(IbanManagerTest, Metrics_ServerIbanSuggestionSelected) {
       kNickname_0));
 
   autofill_field_->set_renderer_id(test::MakeFieldRendererId());
+  test_api(iban_manager_).set_most_recent_suggestions_shown_field_global_id(
+    autofill_field_->global_id());
 
   // Simulate request for suggestions and select one suggested IBAN.
   MockSuggestionsReturnedCallback mock_callback;
@@ -785,6 +762,8 @@ TEST_P(IbanManagerTest, Metrics_NoSuggestionShown) {
   // Input a prefix that does not have any matching IBAN value so that no IBAN
   // suggestions will be shown.
   autofill_field_->set_value(u"XY");
+  test_api(iban_manager_).set_most_recent_suggestions_shown_field_global_id(
+    autofill_field_->global_id());
 
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(mock_callback, Run(autofill_field_->global_id(), IsEmpty()));

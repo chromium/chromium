@@ -5763,6 +5763,27 @@ TEST_F(BrowserAutofillManagerTest,
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       DidShowSuggestions_LogIbanSuggestionsShownMetric) {
+  FormData form = CreateTestIbanFormData();
+  FormsSeen({form});
+
+  base::HistogramTester histogram_tester;
+  manager().DidShowSuggestions({Suggestion(SuggestionType::kIbanEntry)}, form,
+                               form.fields().back().global_id(), {});
+  manager().DidShowSuggestions({Suggestion(SuggestionType::kIbanEntry)}, form,
+                               form.fields().back().global_id(), {});
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Iban.Suggestions"),
+      BucketsAre(
+          base::Bucket(
+              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShown, 2),
+          base::Bucket(
+              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce,
+              1)));
+}
+
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   // Create a form with name and address fields.
   FormData form;

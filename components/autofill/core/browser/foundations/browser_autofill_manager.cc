@@ -2084,6 +2084,14 @@ void BrowserAutofillManager::DidShowSuggestions(
         base::UserMetricsAction("PlusAddresses.AddressFillSuggestionShown"));
   }
 
+  if (shown_suggestion_types.contains(SuggestionType::kIbanEntry) &&
+      client().GetPaymentsAutofillClient()->GetIbanManager()) {
+    client()
+        .GetPaymentsAutofillClient()
+        ->GetIbanManager()
+        ->OnIbanSuggestionsShown(field_id);
+  }
+
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   const bool has_cached_form_and_field = GetCachedFormAndField(

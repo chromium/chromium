@@ -48,7 +48,13 @@ class IbanManager : public KeyedService {
           on_suggestions_returned);
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
+  // Called when IBAN suggestions are shown; used to record metrics.
+  // `field_global_id` is the global id of the field that had suggestions shown.
+  void OnIbanSuggestionsShown(FieldGlobalId field_global_id);
+
  private:
+  friend class IbanManagerTestApi;
+
   // Records metrics related to the IBAN suggestions popup.
   class UmaRecorder {
    public:
@@ -56,6 +62,8 @@ class IbanManager : public KeyedService {
     void OnIbanSuggestionSelected(const Suggestion& suggestion);
 
    private:
+    friend class IbanManagerTestApi;
+
     // The global id of the field that most recently had IBAN suggestions shown.
     FieldGlobalId most_recent_suggestions_shown_field_global_id_;
 
