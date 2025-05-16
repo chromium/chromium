@@ -28,13 +28,6 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The Servo Project Developers"
   cargo_pkg_name = "smallvec"
   cargo_pkg_description = "'Small vector' optimization: store up to a small number of items on the stack"
-  library_configs -= [ "//build/config/coverage:default_coverage" ]
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "const_generics" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
@@ -44,4 +37,32 @@ cargo_crate("lib") {
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config and instead
+    # add `no_chromium_code` config (a few lines below).
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }

@@ -47,13 +47,6 @@ cargo_crate("{{this.name}}") {
       cargo_pkg_description = "{{gn_escape this}}"
     {{/with}}
   {{/if}}
-  library_configs -= [ "//build/config/coverage:default_coverage" ]
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   {{#each deps}}
   {{#if @first}}
   deps = [
@@ -127,24 +120,6 @@ cargo_crate("{{this.name}}") {
       ]
     {{/if}}
   {{/if}}
-  {{#if extra_kv.configs_to_remove}}
-    {{#with extra_kv.configs_to_remove}}
-      {{#each this}}
-        library_configs -= [ "{{this}}" ]
-        executable_configs -= [ "{{this}}" ]
-        proc_macro_configs -= [ "{{this}}" ]
-      {{/each}}
-    {{/with}}
-  {{/if}}
-  {{#if extra_kv.configs_to_add}}
-    {{#with extra_kv.configs_to_add}}
-      {{#each this}}
-        library_configs += [ "{{this}}" ]
-        executable_configs += [ "{{this}}" ]
-        proc_macro_configs += [ "{{this}}" ]
-      {{/each}}
-    {{/with}}
-  {{/if}}
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]
@@ -178,5 +153,45 @@ cargo_crate("{{this.name}}") {
   {{#if gn_visibility.testonly}}
   testonly = true
   {{/if}}
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config and instead
+    # add `no_chromium_code` config (a few lines below).
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += [
+    {{#if detail.extra_kv.configs_to_remove}}
+      {{#each detail.extra_kv.configs_to_remove}}
+        "{{this}}",
+      {{/each}}
+    {{/if}}
+  ]
+  _configs_to_add += [
+    {{#if detail.extra_kv.configs_to_add}}
+      {{#each detail.extra_kv.configs_to_add}}
+        "{{this}}",
+      {{/each}}
+    {{/if}}
+  ]
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }
 {{/each}}
