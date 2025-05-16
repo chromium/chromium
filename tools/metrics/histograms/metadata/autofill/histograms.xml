@@ -1145,6 +1145,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.OptInStatus" enum="Boolean"
+    expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the user is opted into the Autofill AI feature or not. This
+    metric is emitted each time a form that contains information fillable by
+    Autofill AI is submitted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.{PromptType}.AllEntities"
     enum="AutofillAiSaveOrUpdatePromptResult" expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>

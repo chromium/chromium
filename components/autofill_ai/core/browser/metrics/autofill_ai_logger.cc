@@ -85,6 +85,7 @@ void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
                                          bool opt_in_status) {
   FunnelState state = form_states_[form.global_id()];
   if (submission_state) {
+    base::UmaHistogramBoolean("Autofill.Ai.OptInStatus", opt_in_status);
     ukm_logger_.LogKeyMetrics(
         ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,
         /*suggestions_shown=*/state.suggestions_shown,
