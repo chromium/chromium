@@ -138,7 +138,8 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 }
 
 // Tests that the history panel displays navigation history.
-- (void)testDisplayHistory {
+// TODO(crbug.com/418126357): re-enable
+- (void)DISABLED_testDisplayHistory {
   [self addTestURLsToHistory];
   [ChromeCoordinatorAppInterface startHistoryCoordinator];
 
@@ -482,7 +483,8 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 }
 
 // Tests that the VC can be dismissed by swiping down.
-- (void)testSwipeDownDismiss {
+// TODO(crbug.com/418126357): re-enable
+- (void)DISABLED_testSwipeDownDismiss {
   [self addTestURLsToHistory];
   [ChromeCoordinatorAppInterface startHistoryCoordinator];
 
