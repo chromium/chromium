@@ -2938,24 +2938,6 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
                           response_.request_time, response_.response_time,
                           cache_->clock_->Now());
 
-  base::TimeDelta response_time_in_cache =
-      cache_->clock_->Now() - response_.response_time;
-
-  if (!base::FeatureList::IsEnabled(
-          features::kPrefetchFollowsNormalCacheSemantics) &&
-      !(effective_load_flags_ & LOAD_PREFETCH) &&
-      (response_time_in_cache >= base::TimeDelta())) {
-    bool reused_within_time_window =
-        response_time_in_cache < base::Minutes(kPrefetchReuseMins);
-    bool first_reuse = response_.unused_since_prefetch;
-
-    // The first use of a resource after prefetch within a short window skips
-    // validation.
-    if (first_reuse && reused_within_time_window) {
-      return VALIDATION_NONE;
-    }
-  }
-
   if (validate_flag) {
     return VALIDATION_SYNCHRONOUS;
   }

@@ -305,12 +305,6 @@ const base::FeatureParam<int> kAvoidEntryCreationForNoStoreCacheSize{
     &kAvoidEntryCreationForNoStore, "AvoidEntryCreationForNoStoreCacheSize",
     1000};
 
-// Prefetch to follow normal semantics instead of 5-minute rule
-// https://crbug.com/1345207
-BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
-             "PrefetchFollowsNormalCacheSemantics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A flag for new Kerberos feature, that suggests new UI
 // when Kerberos authentication in browser fails on ChromeOS.
 // b/260522530
