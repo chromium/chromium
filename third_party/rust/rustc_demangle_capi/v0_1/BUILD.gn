@@ -18,7 +18,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "0.1.0"
+  cargo_pkg_version = "0.1.1"
   cargo_pkg_authors = "Torste Aikio <zokier@gmail.com>"
   cargo_pkg_name = "rustc-demangle-capi"
   cargo_pkg_description = "C API for the `rustc-demangle` crate"

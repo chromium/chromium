@@ -1,6 +1,6 @@
 [package]
 name = "rustc-demangle-capi"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Torste Aikio <zokier@gmail.com>"]
 description = """
 C API for the `rustc-demangle` crate

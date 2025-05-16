@@ -1,5 +1,6 @@
 {
   "git": {
-    "sha1": "f540792067ab84d0f47164b29d7db5c7ba3b367d"
-  }
+    "sha1": "8145ea3869767f044ca63667ca17eab544f3a8ee"
+  },
+  "path_in_vcs": "crates/capi"
 }

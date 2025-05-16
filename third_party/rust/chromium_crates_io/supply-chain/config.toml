@@ -365,7 +365,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."regex-syntax:0.8.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."rustc-demangle-capi:0.1.0"]
+[policy."rustc-demangle-capi:0.1.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustc-demangle:0.1.24"]
