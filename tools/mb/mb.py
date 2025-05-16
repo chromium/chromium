@@ -181,6 +181,9 @@ class MetaBuildWrapper:
       subp.add_argument('--rts-model',
                         default=None,
                         help='which regression test selection model to use')
+      subp.add_argument('--sts-config-file',
+                        default=None,
+                        help='Input file for smart test selection')
       # TODO(crbug.com/40122201): Remove this once swarming task templates
       # support command prefixes.
       luci_auth_group = subp.add_mutually_exclusive_group()
@@ -501,21 +504,38 @@ class MetaBuildWrapper:
       self.WriteFile(expectation_file, json_s)
     return 0
 
-  def RtsSelect(self, targets: List[str]):
+  def RtsSelect(self, targets: List[str]) -> int:
     """Looks for RTS Model arg and writes filter file to isolate.
 
     Args:
         targets: List of requested target test suites.
+    Returns:
+        0 if successful, 1 if failed.
     """
+    if self.args.rts_model != 'smart-test-selection':
+      return 0
+    if not self.args.sts_config_file:
+      self.Print(
+          "Expected a sts_config_file to be passed in for test selection.")
+      return 1
+    cmd = [
+        self.PathJoin(self.chromium_src_dir, 'tools', 'test_selection',
+                      'decisiongraph_invoker.py'), '--test-targets'
+    ]
+    cmd.extend(targets)
+    cmd.extend(['--sts-config-file', self.args.sts_config_file])
+
+    ret, _, _ = self.Run(cmd, force_verbose=True, capture_output=True)
+    if ret:
+      return ret
+
     filter_data = ''
     for target in targets:
-      # TODO: crbug.com/374962112 - Support 'filegraph-selection'.
-      # TODO: crbug.com/375209059 - Add Doc Link for RTS
-      if self.args.rts_model == 'smart_test_selection':
-        # TODO: crbug.com/360881028 - Android API: GetTasksToSkip(target)
-        self.WriteFile(self.GetFilterFilePath(target=target, absolute=True),
-                       filter_data,
-                       force_verbose=False)
+      filter_file = self.GetFilterFilePath(target=target, absolute=True)
+      self.Print('Generating empty filter file for %s at path %s' %
+                 (target, filter_file))
+      self.WriteFile(filter_file, filter_data, force_verbose=False)
+    return 0
 
   def CmdGen(self):
     vals = self.Lookup()
@@ -1304,8 +1324,13 @@ class MetaBuildWrapper:
     """
     possible_rpaths = self.PossibleRuntimeDepsPaths(vals, ninja_targets,
                                                     isolate_map)
-    if self.args.rts_model:
-      self.RtsSelect(ninja_targets)
+    if self.args.rts_model and ninja_targets:
+      self.Print("ninja targets: %s" % ', '.join(ninja_targets))
+      self.Print("rts_model = %s" % self.args.rts_model)
+      self.Print("Invoking rts model")
+      ret = self.RtsSelect(ninja_targets)
+      if ret != 0:
+        return ret
 
     for target, rpaths in possible_rpaths.items():
       # TODO(crbug.com/41441724): We don't know where each .runtime_deps
