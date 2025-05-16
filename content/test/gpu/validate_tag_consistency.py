@@ -29,6 +29,7 @@ TAG_SPECIALIZATIONS = {
         'android': [
             'android-oreo',
             'android-pie',
+            'android-q',
             'android-r',
             'android-s',
             'android-t',
