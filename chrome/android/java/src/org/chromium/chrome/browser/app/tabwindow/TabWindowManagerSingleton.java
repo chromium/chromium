@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.app.tabwindow;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.DefaultTabModelSelectorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -13,13 +15,12 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.TabWindowManagerFactory;
 
 /** Glue-level singleton instance of {@link TabWindowManager}. */
+@NullMarked
 public class TabWindowManagerSingleton {
-    private static TabWindowManager sInstance;
-    private static TabModelSelectorFactory sSelectorFactoryForTesting;
+    private static @Nullable TabWindowManager sInstance;
+    private static @Nullable TabModelSelectorFactory sSelectorFactoryForTesting;
 
-    /**
-     * @return The singleton instance of {@link TabWindowManager}.
-     */
+    /** Returns the singleton instance of {@link TabWindowManager}. */
     public static TabWindowManager getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
