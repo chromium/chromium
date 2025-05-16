@@ -303,7 +303,7 @@ void AutofillProfileSyncBridge::LoadMetadata() {
 }
 
 std::string AutofillProfileSyncBridge::GetClientTag(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_profile());
   // Must equal to guid of the entry. This is to maintain compatibility with the
   // previous sync integration (Directory and SyncableService).
@@ -311,7 +311,7 @@ std::string AutofillProfileSyncBridge::GetClientTag(
 }
 
 std::string AutofillProfileSyncBridge::GetStorageKey(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_profile());
   return GetStorageKeyFromAutofillProfileSpecifics(
       entity_data.specifics.autofill_profile());

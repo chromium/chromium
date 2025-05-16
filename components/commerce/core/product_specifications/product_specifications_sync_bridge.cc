@@ -148,12 +148,12 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
 }
 
 std::string ProductSpecificationsSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.product_comparison().uuid();
 }
 
 std::string ProductSpecificationsSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 

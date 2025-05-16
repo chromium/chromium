@@ -741,7 +741,7 @@ std::unique_ptr<syncer::DataBatch> HistorySyncBridge::GetAllDataForDebugging() {
 }
 
 std::string HistorySyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_history())
       << "EntityData does not have history specifics.";
@@ -751,7 +751,7 @@ std::string HistorySyncBridge::GetClientTag(
 }
 
 std::string HistorySyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_history())
       << "EntityData does not have history specifics.";

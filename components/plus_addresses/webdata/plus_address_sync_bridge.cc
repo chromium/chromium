@@ -193,12 +193,12 @@ bool PlusAddressSyncBridge::IsEntityDataValid(
 }
 
 std::string PlusAddressSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string PlusAddressSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.plus_address().profile_id();
 }
 

@@ -175,12 +175,12 @@ SharingMessageBridgeImpl::GetAllDataForDebugging() {
 }
 
 std::string SharingMessageBridgeImpl::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string SharingMessageBridgeImpl::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_sharing_message());
   return entity_data.specifics.sharing_message().message_id();
 }

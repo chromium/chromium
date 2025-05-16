@@ -320,13 +320,13 @@ SyncableServiceBasedBridge::GetAllDataForDebugging() {
 }
 
 std::string SyncableServiceBasedBridge::GetClientTag(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   // Not supported as per SupportsGetClientTag().
   NOTREACHED();
 }
 
 std::string SyncableServiceBasedBridge::GetStorageKey(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   // Not supported as per SupportsGetStorageKey().
   NOTREACHED();
 }

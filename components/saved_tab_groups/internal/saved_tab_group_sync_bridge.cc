@@ -357,12 +357,12 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
 }
 
 std::string SavedTabGroupSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.saved_tab_group().guid();
 }
 
 std::string SavedTabGroupSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 

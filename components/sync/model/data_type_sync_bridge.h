@@ -131,7 +131,7 @@ class DataTypeSyncBridge {
   // different from GetStorageKey(). Only the hash of this value is kept.
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
-  virtual std::string GetClientTag(const EntityData& entity_data) = 0;
+  virtual std::string GetClientTag(const EntityData& entity_data) const = 0;
 
   // Must not be called unless SupportsGetStorageKey() returns true.
   //
@@ -146,7 +146,7 @@ class DataTypeSyncBridge {
   // it contains invalid data).
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
-  virtual std::string GetStorageKey(const EntityData& entity_data) = 0;
+  virtual std::string GetStorageKey(const EntityData& entity_data) const = 0;
 
   // Whether or not the bridge is capable of producing a client tag from
   // `EntityData` (usually remote changes), via GetClientTag(). Most bridges do,

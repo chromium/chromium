@@ -759,14 +759,14 @@ SharedTabGroupDataSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string SharedTabGroupDataSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   CHECK(entity_data.collaboration_metadata.has_value());
   return entity_data.specifics.shared_tab_group_data().guid() + "|" +
          entity_data.collaboration_metadata->collaboration_id().value();
 }
 
 std::string SharedTabGroupDataSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return entity_data.specifics.shared_tab_group_data().guid();
 }

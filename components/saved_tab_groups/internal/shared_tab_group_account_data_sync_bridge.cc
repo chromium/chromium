@@ -261,14 +261,14 @@ SharedTabGroupAccountDataSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string SharedTabGroupAccountDataSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetClientTagFromSpecifics(
       entity_data.specifics.shared_tab_group_account_data());
 }
 
 std::string SharedTabGroupAccountDataSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetClientTag(entity_data);
 }

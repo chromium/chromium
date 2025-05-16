@@ -184,12 +184,12 @@ OutgoingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string OutgoingPasswordSharingInvitationSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string OutgoingPasswordSharingInvitationSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetStorageKeyFromSpecifics(
       entity_data.specifics.outgoing_password_sharing_invitation());

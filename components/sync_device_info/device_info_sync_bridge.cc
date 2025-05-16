@@ -526,12 +526,14 @@ std::unique_ptr<DataBatch> DeviceInfoSyncBridge::GetAllDataForDebugging() {
   return batch;
 }
 
-std::string DeviceInfoSyncBridge::GetClientTag(const EntityData& entity_data) {
+std::string DeviceInfoSyncBridge::GetClientTag(
+    const EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_device_info());
   return DeviceInfoUtil::SpecificsToTag(entity_data.specifics.device_info());
 }
 
-std::string DeviceInfoSyncBridge::GetStorageKey(const EntityData& entity_data) {
+std::string DeviceInfoSyncBridge::GetStorageKey(
+    const EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_device_info());
   return entity_data.specifics.device_info().cache_guid();
 }

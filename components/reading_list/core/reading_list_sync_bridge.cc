@@ -299,13 +299,13 @@ void ReadingListSyncBridge::AddEntryToBatch(syncer::MutableDataBatch* batch,
 }
 
 std::string ReadingListSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetStorageKey(entity_data);
 }
 
 std::string ReadingListSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return entity_data.specifics.reading_list().entry_id();
 }

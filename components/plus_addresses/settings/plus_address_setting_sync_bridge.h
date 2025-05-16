@@ -58,8 +58,10 @@ class PlusAddressSettingSyncBridge : public syncer::DataTypeSyncBridge {
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
+  std::string GetStorageKey(
+      const syncer::EntityData& entity_data) const override;
 
  private:
   // Callbacks for various asynchronous operations of the `store_`.

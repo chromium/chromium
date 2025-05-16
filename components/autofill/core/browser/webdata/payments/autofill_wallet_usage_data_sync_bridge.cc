@@ -171,13 +171,13 @@ AutofillWalletUsageDataSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string AutofillWalletUsageDataSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet_usage());
   return entity_data.specifics.autofill_wallet_usage().guid();
 }
 
 std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet_usage());
 
   // Use client tag as the storage key.

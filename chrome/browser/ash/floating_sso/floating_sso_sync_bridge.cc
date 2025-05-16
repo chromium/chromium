@@ -168,12 +168,12 @@ FloatingSsoSyncBridge::ApplyIncrementalSyncChanges(
 }
 
 std::string FloatingSsoSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetClientTag(entity_data);
 }
 
 std::string FloatingSsoSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.cookie().unique_key();
 }
 

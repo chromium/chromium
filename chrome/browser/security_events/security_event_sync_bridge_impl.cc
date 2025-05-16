@@ -156,12 +156,12 @@ SecurityEventSyncBridgeImpl::GetAllDataForDebugging() {
 }
 
 std::string SecurityEventSyncBridgeImpl::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string SecurityEventSyncBridgeImpl::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKeyFromSpecifics(entity_data.specifics.security_event());
 }
 

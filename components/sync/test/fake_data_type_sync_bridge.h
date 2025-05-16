@@ -116,8 +116,8 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   std::unique_ptr<DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<DataBatch> GetAllDataForDebugging() override;
-  std::string GetClientTag(const EntityData& entity_data) override;
-  std::string GetStorageKey(const EntityData& entity_data) override;
+  std::string GetClientTag(const EntityData& entity_data) const override;
+  std::string GetStorageKey(const EntityData& entity_data) const override;
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
   bool SupportsUniquePositions() const override;
@@ -198,7 +198,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
 
   // Same as GetStorageKey(), but doesn't check that SupportsGetStorageKey()
   // is true.
-  std::string GetStorageKeyInternal(const EntityData& entity_data);
+  std::string GetStorageKeyInternal(const EntityData& entity_data) const;
 
   // If SupportsGetStorageKey() is true, same as GetStorageKey(). Otherwise,
   // generates and returns a new unique storage key.

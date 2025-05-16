@@ -44,12 +44,12 @@ std::unique_ptr<DataBatch> StubDataTypeSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string StubDataTypeSyncBridge::GetClientTag(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   return std::string();
 }
 
 std::string StubDataTypeSyncBridge::GetStorageKey(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   return std::string();
 }
 

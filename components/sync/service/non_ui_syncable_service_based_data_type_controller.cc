@@ -53,10 +53,10 @@ class FakeSyncableServiceBasedBridge : public DataTypeSyncBridge {
     NOTREACHED();
   }
   std::unique_ptr<DataBatch> GetAllDataForDebugging() override { NOTREACHED(); }
-  std::string GetClientTag(const EntityData& /*entity_data*/) override {
+  std::string GetClientTag(const EntityData& /*entity_data*/) const override {
     NOTREACHED();
   }
-  std::string GetStorageKey(const EntityData& /*entity_data*/) override {
+  std::string GetStorageKey(const EntityData& /*entity_data*/) const override {
     NOTREACHED();
   }
 };

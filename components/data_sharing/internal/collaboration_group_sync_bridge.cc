@@ -157,13 +157,13 @@ CollaborationGroupSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string CollaborationGroupSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetStorageKey(entity_data);
 }
 
 std::string CollaborationGroupSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_data.specifics.has_collaboration_group());
   return entity_data.specifics.collaboration_group().collaboration_id();

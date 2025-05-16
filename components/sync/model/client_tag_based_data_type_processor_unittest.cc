@@ -209,11 +209,6 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
     FakeDataTypeSyncBridge::OnSyncPaused();
   }
 
-  std::string GetStorageKey(const EntityData& entity_data) override {
-    get_storage_key_call_count_++;
-    return FakeDataTypeSyncBridge::GetStorageKey(entity_data);
-  }
-
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override {
     if (entity_specifics.has_preference()) {
@@ -239,7 +234,6 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
 
   int merge_call_count() const { return merge_call_count_; }
   int apply_call_count() const { return apply_call_count_; }
-  int get_storage_key_call_count() const { return get_storage_key_call_count_; }
   int commit_failures_count() const { return commit_failures_count_; }
 
   bool sync_started() const { return sync_started_; }
@@ -301,7 +295,6 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
   // The number of times MergeFullSyncData has been called.
   int merge_call_count_ = 0;
   int apply_call_count_ = 0;
-  int get_storage_key_call_count_ = 0;
   int commit_failures_count_ = 0;
 
   CommitAttemptFailedBehavior commit_attempt_failed_behaviour_ =
@@ -2256,7 +2249,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUpdateStorageKey) {
   const std::string storage_key1 = bridge()->GetLastGeneratedStorageKey();
   EXPECT_TRUE(db()->HasMetadata(storage_key1));
   EXPECT_EQ(1U, db()->metadata_count());
-  EXPECT_EQ(0, bridge()->get_storage_key_call_count());
 
   // Local update should affect the same entity. This ensures that storage key
   // to client tag hash mapping was updated on the previous step.
@@ -2273,7 +2265,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUpdateStorageKey) {
   EXPECT_NE(storage_key1, storage_key2);
   EXPECT_TRUE(db()->HasMetadata(storage_key2));
   EXPECT_EQ(2U, db()->metadata_count());
-  EXPECT_EQ(0, bridge()->get_storage_key_call_count());
 }
 
 // Tests that reencryption scenario works correctly for types that don't support
@@ -2314,7 +2305,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUntrackEntity) {
   // removed and no storage key got propagated to MetadataChangeList.
   EXPECT_FALSE(db()->HasMetadata(kKey1));
   EXPECT_EQ(0U, db()->metadata_count());
-  EXPECT_EQ(0, bridge()->get_storage_key_call_count());
 }
 
 // Tests that UntrackEntityForStorage won't propagate storage key to

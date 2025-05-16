@@ -274,12 +274,12 @@ ProfileAuthServersSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string ProfileAuthServersSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string ProfileAuthServersSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_printers_authorization_server());
   return entity_data.specifics.printers_authorization_server().uri();
 }

@@ -295,7 +295,7 @@ AutofillWalletSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string AutofillWalletSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet());
 
   return syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(
@@ -303,7 +303,7 @@ std::string AutofillWalletSyncBridge::GetClientTag(
 }
 
 std::string AutofillWalletSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet());
   return GetStorageKeyForWalletDataClientTag(
       syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(

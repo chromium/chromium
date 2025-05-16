@@ -120,14 +120,14 @@ AutofillWalletOfferSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string AutofillWalletOfferSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_autofill_offer());
   return GetClientTagFromSpecifics(entity_data.specifics.autofill_offer());
 }
 
 std::string AutofillWalletOfferSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_autofill_offer());
   return GetStorageKeyFromSpecifics(entity_data.specifics.autofill_offer());

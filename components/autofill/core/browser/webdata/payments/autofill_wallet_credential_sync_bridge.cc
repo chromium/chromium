@@ -190,7 +190,7 @@ AutofillWalletCredentialSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string AutofillWalletCredentialSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   CHECK(IsEntityDataValid(entity_data));
   const sync_pb::AutofillWalletCredentialSpecifics&
       autofill_wallet_credential_data =
@@ -200,7 +200,7 @@ std::string AutofillWalletCredentialSyncBridge::GetClientTag(
 }
 
 std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   // Storage key and client tag are equivalent for this DataType.
   return GetClientTag(entity_data);
 }

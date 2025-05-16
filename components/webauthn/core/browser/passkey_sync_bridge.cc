@@ -211,12 +211,12 @@ bool PasskeySyncBridge::IsEntityDataValid(
 }
 
 std::string PasskeySyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string PasskeySyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_webauthn_credential());
   return entity_data.specifics.webauthn_credential().sync_id();
 }

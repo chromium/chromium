@@ -286,12 +286,12 @@ WifiConfigurationBridge::GetAllDataForDebugging() {
 }
 
 std::string WifiConfigurationBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string WifiConfigurationBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return NetworkIdentifier::FromProto(
              entity_data.specifics.wifi_configuration())
       .SerializeToString();

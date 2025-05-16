@@ -143,12 +143,13 @@ ConsentSyncBridgeImpl::GetAllDataForDebugging() {
   return batch;
 }
 
-std::string ConsentSyncBridgeImpl::GetClientTag(const EntityData& entity_data) {
+std::string ConsentSyncBridgeImpl::GetClientTag(
+    const EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string ConsentSyncBridgeImpl::GetStorageKey(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   return GetStorageKeyFromSpecifics(entity_data.specifics.user_consent());
 }
 

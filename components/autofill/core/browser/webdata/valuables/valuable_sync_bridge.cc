@@ -154,12 +154,12 @@ bool ValuableSyncBridge::IsEntityDataValid(
 }
 
 std::string ValuableSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string ValuableSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(IsEntityDataValid(entity_data));
   return entity_data.specifics.autofill_valuable().id();
 }

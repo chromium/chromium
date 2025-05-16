@@ -279,7 +279,7 @@ std::unique_ptr<syncer::DataBatch> SessionSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string SessionSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   if (!SessionStore::AreValidSpecifics(entity_data.specifics.session())) {
     return std::string();
   }
@@ -287,7 +287,7 @@ std::string SessionSyncBridge::GetClientTag(
 }
 
 std::string SessionSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   if (!SessionStore::AreValidSpecifics(entity_data.specifics.session())) {
     return std::string();
   }

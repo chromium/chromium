@@ -265,12 +265,12 @@ std::unique_ptr<syncer::DataBatch> DeskSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string DeskSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string DeskSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.workspace_desk().uuid();
 }
 
