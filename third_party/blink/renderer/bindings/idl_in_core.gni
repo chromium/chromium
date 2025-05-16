@@ -577,6 +577,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/scheduler/window_or_worker_global_scope_timers.idl",
   "//third_party/blink/renderer/core/scheduler/window_or_worker_scheduler.idl",
   "//third_party/blink/renderer/core/scroll/snap_event.idl",
+  "//third_party/blink/renderer/core/scroll/snap_event_init.idl",
   "//third_party/blink/renderer/core/shadow_realm/shadow_realm_global_scope.idl",
   "//third_party/blink/renderer/core/streams/byte_length_queuing_strategy.idl",
   "//third_party/blink/renderer/core/streams/count_queuing_strategy.idl",

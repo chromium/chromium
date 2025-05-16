@@ -6,6 +6,7 @@
     Exposed=Window,
     RuntimeEnabled=CSSScrollSnapEvents
 ] interface SnapEvent : Event {
+    [RuntimeEnabled=CSSScrollSnapEventConstructorExposed] constructor(DOMString type, optional SnapEventInit eventInitDict = {});
     readonly attribute Node snapTargetBlock;
     readonly attribute Node snapTargetInline;
 };
