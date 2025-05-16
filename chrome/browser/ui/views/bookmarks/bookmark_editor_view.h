@@ -161,7 +161,9 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // Expands all the nodes in the tree and selects the parent node of the
   // url we're editing or the most recent parent if the url being editted isn't
-  // starred.
+  // starred. If the feature flag `SyncEnableBookmarksInTransportMode`, this
+  // only expands the nodes leading up to the parent node. All others remain
+  // collapsed.
   void ExpandAndSelect();
 
   // Returns true if a bookmark folder is currently selected.

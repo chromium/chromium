@@ -24,7 +24,9 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
@@ -916,6 +918,45 @@ TEST_P(BookmarkEditorViewTest,
             tree_view()->GetSelectedNode()->GetTitle());
   EXPECT_FALSE(editor()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   EXPECT_FALSE(editor()->IsNewFolderButtonEnabledForTesting());
+}
+
+TEST_P(BookmarkEditorViewTest,
+       OnlyExpandTrackedNodesWithoutFeatureFlagEnabled) {
+  // Configure the local bookmarks bar to be tracked as expanded.
+  ScopedListPrefUpdate update(profile_->GetPrefs(),
+                              bookmarks::prefs::kBookmarkEditorExpandedNodes);
+  base::Value::List& initial_expanded_nodes_list = update.Get();
+  initial_expanded_nodes_list.Append(
+      base::NumberToString(model()->bookmark_bar_node()->id()));
+
+  // Open the editor with a node saved under the local other bookmarks folder.
+  CreateEditor(profile_.get(),
+               BookmarkEditor::EditDetails::EditNode(GetNode("oa")),
+               BookmarkEditorView::SHOW_TREE);
+  ExpandAndSelect();
+
+  // The node being edited should always be visible.
+  EXPECT_TRUE(GetNode("oa")->IsVisible());
+
+  if (!SyncEnableBookmarksInTransportModeEnabled()) {
+    // The local bookmarks bar should still be open in the tree view.
+    EXPECT_TRUE(tree_view()->IsExpanded(local_bookmark_bar_editor_node()));
+    return;
+  }
+
+  // The local bookmarks bar should no longer be open in the tree view.
+  EXPECT_FALSE(tree_view()->IsExpanded(local_bookmark_bar_editor_node()));
+
+  // The same behavior is expected with account nodes.
+  initial_expanded_nodes_list.Append(
+      base::NumberToString(model()->account_bookmark_bar_node()->id()));
+  ApplyEdits();
+  CreateEditor(profile_.get(),
+               BookmarkEditor::EditDetails::EditNode(GetNode("acc_oa")),
+               BookmarkEditorView::SHOW_TREE);
+  ExpandAndSelect();
+  EXPECT_TRUE(GetNode("acc_oa")->IsVisible());
+  EXPECT_FALSE(tree_view()->IsExpanded(account_bookmark_bar_editor_node()));
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BookmarkEditorViewTest);

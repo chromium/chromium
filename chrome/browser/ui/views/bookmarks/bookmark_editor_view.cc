@@ -30,6 +30,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
@@ -488,13 +489,19 @@ void BookmarkEditorView::AddLabels() {
 }
 
 void BookmarkEditorView::ExpandAndSelect() {
-  BookmarkExpandedStateTracker::Nodes expanded_nodes =
-      expanded_state_tracker_->GetExpandedNodes();
-  for (const BookmarkNode* node : expanded_nodes) {
-    EditorNode* editor_node =
-        FindNodeWithID(tree_model_->GetRoot(), node->id());
-    if (editor_node) {
-      tree_view_->Expand(editor_node);
+  // Only expand tracked nodes if the feature flag is disabled. With the flag
+  // enabled, only the nodes leading up to the selected node's parent should be
+  // expanded.
+  if (!base::FeatureList::IsEnabled(
+          switches::kSyncEnableBookmarksInTransportMode)) {
+    BookmarkExpandedStateTracker::Nodes expanded_nodes =
+        expanded_state_tracker_->GetExpandedNodes();
+    for (const BookmarkNode* node : expanded_nodes) {
+      EditorNode* editor_node =
+          FindNodeWithID(tree_model_->GetRoot(), node->id());
+      if (editor_node) {
+        tree_view_->Expand(editor_node);
+      }
     }
   }
 
