@@ -126,7 +126,9 @@ public class SigninFirstRunFragment extends Fragment
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mFragmentView = new FrameLayout(getActivity());
         mMainView = inflateFragmentView(inflater, getActivity());
         mFragmentView.addView(mMainView);

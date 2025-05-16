@@ -15,6 +15,7 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
@@ -47,7 +48,7 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
     private CheckBoxPreference mSelectAllPreference;
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         PreferenceScreen preferenceScreen =
                 getPreferenceManager().createPreferenceScreen(getStyledContext());
         preferenceScreen.setOrderingAsAdded(true);
