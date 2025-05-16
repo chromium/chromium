@@ -29,6 +29,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/coreml/buffer_content_coreml.h"
@@ -79,6 +80,7 @@ namespace {
 // compilation process.
 struct ScopedModelPaths {
   ~ScopedModelPaths() {
+#if BUILDFLAG(IS_MAC)
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kWebNNCoreMlDumpModel)) {
       const auto dump_directory =
@@ -100,6 +102,7 @@ struct ScopedModelPaths {
         }
       }
     }
+#endif
     // Though the destructors of ScopedTempDir will delete these directories.
     // Explicitly delete them here to check for success.
     if (model_file_dir.IsValid()) {

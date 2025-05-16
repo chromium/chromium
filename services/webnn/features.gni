@@ -5,9 +5,11 @@
 import("//build/config/features.gni")
 import("//services/on_device_model/on_device_model.gni")
 
+assert(use_blink)
+
 declare_args() {
-  # TFLite is used as a fallback option on macOS and Windows.
-  webnn_use_tflite = is_android || is_chromeos || is_linux || is_mac || is_win
+  # TFLite is used as a fallback option on Apple and Windows.
+  webnn_use_tflite = is_android || is_chromeos || is_linux || is_apple || is_win
 
   # Enable the GPU delegate provided by the Optimization Guide library.
   webnn_use_chrome_ml_api = enable_ml_internal

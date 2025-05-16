@@ -18,10 +18,19 @@ feature kExperimentalWebMachineLearningNeuralNetwork {
 };
 
 // Enables the Core ML backend for WebNN.
-[EnableIf=is_mac]
+[EnableIf=is_apple]
 feature kWebNNCoreML {
   const string name = "WebNNCoreML";
+
+  // macOS default state is enabled.
+  [EnableIf=is_mac]
   const bool default_state = true;
+
+  // iOS default state is disabled since there are sandbox issues
+  // with using CoreML in the GPU process, we are waiting to hear back
+  // from Apple. https://crbug.com/417496826
+  [EnableIf=is_ios]
+  const bool default_state = false;
 };
 
 // Enables the DirectML backend for WebNN.
