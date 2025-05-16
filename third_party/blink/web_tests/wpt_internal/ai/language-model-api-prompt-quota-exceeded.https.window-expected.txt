@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Language Model Prompt Quota Exceeded
+  promise_rejects_dom: function "function() { throw e; }" threw object "QuotaExceededError: The input is too large." that is not a DOMException QuotaExceededError: property "code" is equal to 0, expected 22
+Harness: the test ran to completion.
+

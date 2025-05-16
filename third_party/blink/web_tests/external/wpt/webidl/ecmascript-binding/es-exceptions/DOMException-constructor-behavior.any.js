@@ -107,6 +107,7 @@ test(function() {
   {name: "NetworkError", code: 19},
   {name: "AbortError", code: 20},
   {name: "URLMismatchError", code: 21},
+  {name: "QuotaExceededError", code: 22},
   {name: "TimeoutError", code: 23},
   {name: "InvalidNodeTypeError", code: 24},
   {name: "DataCloneError", code: 25},
@@ -127,9 +128,7 @@ test(function() {
   {name: "ReadOnlyError", code: 0},
   {name: "VersionError", code: 0},
   {name: "OperationError", code: 0},
-  {name: "NotAllowedError", code: 0},
-  // See https://github.com/whatwg/webidl/pull/1465.
-  {name: "QuotaExceededError", code: 0}
+  {name: "NotAllowedError", code: 0}
 ].forEach(function(test_case) {
   test(function() {
     var ex = new DOMException("msg", test_case.name);

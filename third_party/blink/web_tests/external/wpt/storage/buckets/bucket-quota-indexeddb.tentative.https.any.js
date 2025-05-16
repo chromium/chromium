@@ -34,11 +34,8 @@ promise_test(async t => {
     type: 'binary/random'
   }), 2);
 
-  try {
-    await transactionPromise(txn);
-  } catch (e) {
-    assert_equals(e.name, 'QuotaExceededError');
-  }
+  await promise_rejects_dom(
+      t, 'QuotaExceededError', transactionPromise(txn));
 
   db.close();
 }, 'IDB respects bucket quota');

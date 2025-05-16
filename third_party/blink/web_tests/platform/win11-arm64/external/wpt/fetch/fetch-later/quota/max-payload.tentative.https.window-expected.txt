@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] fetchLater() rejects max+1 payload in a POST request body of String.
+  assert_throws_dom: function "() => fetchLater(requestUrl, {\n        activateAfter: 0,\n        method: 'POST',\n        body: generatePayload(\n            getRemainingQuota(QUOTA_PER_ORIGIN, requestUrl, headers) + 1,\n            dataType),\n      })" threw object "QuotaExceededError: Failed to execute 'fetchLater' on 'Window': fetchLater exceeds its quota for the origin: got 65549 bytes, expected less than 65536 bytes." that is not a DOMException QuotaExceededError: property "code" is equal to 0, expected 22
+Harness: the test ran to completion.
+

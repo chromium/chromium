@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] new DOMexception("msg", "QuotaExceededError")
+  assert_equals: Should have matching legacy code from error names table expected 22 but got 0
+Harness: the test ran to completion.
+

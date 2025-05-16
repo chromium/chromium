@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] IDB respects bucket quota
+  promise_rejects_dom: function "function() { throw e; }" threw object "QuotaExceededError" that is not a DOMException QuotaExceededError: property "code" is equal to 0, expected 22
+Harness: the test ran to completion.
+
