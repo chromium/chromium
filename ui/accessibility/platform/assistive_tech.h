@@ -16,11 +16,11 @@ namespace ui {
 //
 // LINT.IfChange(AssistiveTech)
 enum class AssistiveTech {
-  // Use kUnknown if still waiting for the assistive tech to be computed,
+  // Use kUninitialized if still waiting for the assistive tech to be computed,
   // because some platforms need to scan modules/processes which is done
   // off-thread.
   kNone = 0,
-  kUnknown = 1,
+  kUninitialized = 1,
   kChromeVox = 2,
   kJaws = 3,
   kNarrator = 4,

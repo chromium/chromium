@@ -226,7 +226,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
   // Keeps track of the active AssistiveTech.
   AssistiveTech active_assistive_tech_ GUARDED_BY_CONTEXT(thread_checker_) =
-      AssistiveTech::kUnknown;
+      AssistiveTech::kUninitialized;
 
   // Keeps track of whether caret browsing is enabled.
   bool caret_browsing_enabled_ GUARDED_BY_CONTEXT(thread_checker_) = false;

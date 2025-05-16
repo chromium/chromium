@@ -10,7 +10,7 @@ namespace ui {
 
 namespace {
 static constexpr std::string_view kNoneString{"None"};
-static constexpr std::string_view kUnknownString{"Unknown"};
+static constexpr std::string_view kUninitializedString{"Uninitialized"};
 static constexpr std::string_view kChromeVoxString{"ChromeVox"};
 static constexpr std::string_view kJawsString{"Jaws"};
 static constexpr std::string_view kNarratorString{"Narrator"};
@@ -32,7 +32,7 @@ bool IsScreenReader(AssistiveTech assistive_tech) {
     // until some expensive operations are performed off-thread.
     // assume there is a not screen reader in this case, as this is generally
     // the most appropriate for most call sites.
-    case AssistiveTech::kUnknown:
+    case AssistiveTech::kUninitialized:
     case AssistiveTech::kNone:
       return false;
     case AssistiveTech::kChromeVox:
@@ -57,8 +57,8 @@ std::string_view GetAssistiveTechString(AssistiveTech assistive_tech) {
   switch (assistive_tech) {
     case AssistiveTech::kNone:
       return kNoneString;
-    case AssistiveTech::kUnknown:
-      return kUnknownString;
+    case AssistiveTech::kUninitialized:
+      return kUninitializedString;
     case AssistiveTech::kChromeVox:
       return kChromeVoxString;
     case AssistiveTech::kJaws:

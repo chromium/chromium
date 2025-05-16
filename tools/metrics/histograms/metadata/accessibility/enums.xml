@@ -1185,7 +1185,7 @@ Unknown properties are collapsed to zero. -->
     technologies such as screen readers.
   </summary>
   <int value="0" label="None"/>
-  <int value="1" label="Unknown"/>
+  <int value="1" label="Uninitialized"/>
   <int value="2" label="ChromeVox"/>
   <int value="3" label="JAWS"/>
   <int value="4" label="Narrator"/>
