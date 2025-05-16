@@ -2,9 +2,6 @@
 # context, especially for desktop:
 file://chrome/browser/follow/OWNERS
 
-# For Android:
-wenyufu@chromium.org
-
 # For iOS:
 # kalettuce@chromium.org - pending committership
 sczs@chromium.org
