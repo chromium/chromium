@@ -4591,6 +4591,7 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureVariation
     kAISummarizationAPIWithAdaptationVaration[] = {
         {"With Adaptation", nullptr, 0, "3389300"},
+        {"With EE Adaptation", nullptr, 0, "3389532"},
 };
 
 // RECORDING USER METRICS FOR FLAGS:
