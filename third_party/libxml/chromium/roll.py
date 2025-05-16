@@ -74,6 +74,8 @@ import tempfile
 PATCHES = [
     'undo-sax-deprecation.patch',
     'remove-getentropy.patch',
+    'xml-attr-extra.patch',
+    'widen-extra-field-in-_xmlNode-to-an-int.patch',
 ]
 
 
