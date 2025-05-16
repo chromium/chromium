@@ -16961,25 +16961,6 @@
             ]
         }
     ],
-    "PermissionSiteSettingsRadioButton": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "windows",
-                "mac",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PermissionSiteSettingsRadioButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionsAIv1": [
         {
             "platforms": [
