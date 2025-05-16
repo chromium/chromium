@@ -56,8 +56,6 @@ component("shell_dialogs") {
     sources += [
       "select_file_dialog_linux.cc",
       "select_file_dialog_linux.h",
-      "select_file_dialog_linux_kde.cc",
-      "select_file_dialog_linux_kde.h",
       "shell_dialog_linux.cc",
       "shell_dialog_linux.h",
     ]
