@@ -2512,8 +2512,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     RenderFrameHostImpl* host_impl = static_cast<RenderFrameHostImpl*>(
         render_frame_host().GetOutermostMainFrame());
     host_impl->GetAssociatedLocalFrame()->GetScrollPosition(
-        base::BindOnce(&FedCmMetrics::RecordAccountSelectionScrollPosition,
-                       base::Unretained(fedcm_metrics_.get())));
+        base::BindOnce(&RecordAccountSelectionScrollPosition,
+                       render_frame_host().GetPageUkmSourceId(),
+                       fedcm_metrics_->GetSessionID()));
   }
 
   fedcm_metrics_->RecordIsSignInUser(is_sign_in);

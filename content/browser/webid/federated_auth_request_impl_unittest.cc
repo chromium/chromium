@@ -8250,4 +8250,48 @@ TEST_F(FederatedAuthRequestImplTest, DisconnectWithPendingRequest) {
   CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
 }
 
+class FakeLocalFrameWithDelayedCallback : public FakeLocalFrame {
+ public:
+  FakeLocalFrameWithDelayedCallback(RenderFrameHost* rfh) {
+    TestRenderFrameHost* test_rfh = static_cast<TestRenderFrameHost*>(rfh);
+    test_rfh->ResetLocalFrame();
+    Init(test_rfh->GetRemoteAssociatedInterfaces());
+  }
+
+  void RunCallback() {
+    if (!callback_) {
+      return;
+    }
+
+    std::move(callback_).Run(gfx::Point(0, 0));
+  }
+
+  // FakeLocalFrame:
+  void GetScrollPosition(GetScrollPositionCallback callback) override {
+    callback_ = std::move(callback);
+  }
+
+ private:
+  GetScrollPositionCallback callback_;
+};
+
+// Tests that we record the scroll position when an account is selected, even
+// when `GetScrollPosition` runs its callback after the FederatedAuthRequestImpl
+// object is destroyed.
+TEST_F(FederatedAuthRequestImplTest,
+       MetricsForAccountSelectionScrollPositionDelayedCallback) {
+  // Mock the `GetScrollPosition` call.
+  FakeLocalFrameWithDelayedCallback frame(
+      web_contents()->GetPrimaryMainFrame());
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  frame.RunCallback();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectUkmValueInEntry("AccountSelectionScrollPosition",
+                        FedCmEntry::kEntryName, 0);
+}
+
 }  // namespace content

@@ -47,16 +47,17 @@ int GetNewSessionID() {
 }  // namespace
 
 FedCmMetrics::FedCmMetrics(ukm::SourceId page_source_id)
-    : page_source_id_(page_source_id) {}
+    : page_source_id_(page_source_id) {
+  session_id_ = GetNewSessionID();
+}
 
 FedCmMetrics::~FedCmMetrics() {
-  int session_id = GetNewSessionID();
   if (fedcm_builder_) {
-    fedcm_builder_->SetFedCmSessionID(session_id)
+    fedcm_builder_->SetFedCmSessionID(session_id_)
         .Record(ukm::UkmRecorder::Get());
   }
   for (auto& [_, builder] : provider_to_fedcm_idp_builder_) {
-    builder->SetFedCmSessionID(session_id).Record(ukm::UkmRecorder::Get());
+    builder->SetFedCmSessionID(session_id_).Record(ukm::UkmRecorder::Get());
   }
 }
 
@@ -726,16 +727,6 @@ void FedCmMetrics::RecordRpUrlHasPath(bool rp_url_has_path) {
   SetUkm(GetOrCreateFedCmBuilder());
 }
 
-void FedCmMetrics::RecordAccountSelectionScrollPosition(
-    const gfx::Point& scroll_position) {
-  auto SetUkm = [&](auto ukm_builder) {
-    ukm_builder->SetAccountSelectionScrollPosition(ukm::GetExponentialBucketMin(
-        scroll_position.y(), /*bucket_spacing=*/1.15));
-  };
-
-  SetUkm(GetOrCreateFedCmBuilder());
-}
-
 void FedCmMetrics::RecordIdentityProvidersCount(int count) {
   CHECK_GT(count, 0);
   base::UmaHistogramCounts100("Blink.FedCm.IdentityProvidersCount", count);
@@ -759,6 +750,10 @@ ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   return source_id;
 }
 
+int FedCmMetrics::GetSessionID() const {
+  return session_id_;
+}
+
 void RecordPreventSilentAccess(
     const FedCmRequesterFrameType& requester_frame_type,
     int source_id) {
@@ -768,6 +763,16 @@ void RecordPreventSilentAccess(
   ukm::builders::Blink_FedCm ukm_builder(source_id);
   ukm_builder.SetPreventSilentAccessFrameType(
       static_cast<int>(requester_frame_type));
+  ukm_builder.Record(ukm::UkmRecorder::Get());
+}
+
+void RecordAccountSelectionScrollPosition(int source_id,
+                                          int session_id,
+                                          const gfx::Point& scroll_position) {
+  ukm::builders::Blink_FedCm ukm_builder(source_id);
+  ukm_builder.SetAccountSelectionScrollPosition(ukm::GetExponentialBucketMin(
+      scroll_position.y(), /*bucket_spacing=*/1.15));
+  ukm_builder.SetFedCmSessionID(session_id);
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
