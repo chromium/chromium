@@ -2249,10 +2249,13 @@ _CONFIG = [
             'third_party/blink/renderer/modules/webgpu',
         ],
         'allowed': [
+            'cc::TextureLayerClient',
+            'viz::ReleaseCallback',
             'viz::SharedImageFormat',
             'viz::SinglePlaneFormat',
             'viz::SkColorTypeToSinglePlaneSharedImageFormat',
             'viz::ToClosestSkColorType',
+            'viz::TransferableResource',
         ],
     },
     {

@@ -151,7 +151,7 @@ void ReleaseCanvasResource(CanvasResource::ReleaseCallback callback,
 
 }  // unnamed namespace
 
-bool CanvasResourceHost::PrepareTransferableResource(
+bool CanvasResourceHost::PrepareTransferableResourceInternal(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   CHECK(cc_layer_);  // This explodes if FinalizeFrame() was not called.

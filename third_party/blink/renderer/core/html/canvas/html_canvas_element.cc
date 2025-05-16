@@ -340,6 +340,13 @@ HTMLCanvasElement::~HTMLCanvasElement() {
   }
 }
 
+bool HTMLCanvasElement::PrepareTransferableResource(
+    viz::TransferableResource* out_resource,
+    viz::ReleaseCallback* out_release_callback) {
+  return PrepareTransferableResourceInternal(out_resource,
+                                             out_release_callback);
+}
+
 void HTMLCanvasElement::Dispose() {
   disposing_ = true;
   // We need to record metrics before we dispose of anything

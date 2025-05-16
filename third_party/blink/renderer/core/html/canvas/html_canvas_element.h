@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "cc/layers/texture_layer_client.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -87,6 +88,7 @@ class CORE_EXPORT HTMLCanvasElement final
       public ExecutionContextLifecycleObserver,
       public PageVisibilityObserver,
       public CanvasRenderingContextHost,
+      public cc::TextureLayerClient,
       public WebSurfaceLayerBridgeObserver,
       public OffscreenCanvasPlaceholder {
   DEFINE_WRAPPERTYPEINFO();
@@ -97,6 +99,11 @@ class CORE_EXPORT HTMLCanvasElement final
 
   explicit HTMLCanvasElement(Document&);
   ~HTMLCanvasElement() override;
+
+  // cc::TextureLayerClient implementation.
+  bool PrepareTransferableResource(
+      viz::TransferableResource* out_resource,
+      viz::ReleaseCallback* out_release_callback) override;
 
   // Attributes and functions exposed to script
   unsigned width() const { return Size().width(); }

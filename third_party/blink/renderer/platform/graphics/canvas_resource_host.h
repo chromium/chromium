@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "cc/layers/texture_layer.h"
-#include "cc/layers/texture_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -36,15 +35,10 @@ enum class RasterModeHint {
   kPreferCPU,
 };
 
-class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
+class PLATFORM_EXPORT CanvasResourceHost {
  public:
   explicit CanvasResourceHost(gfx::Size size);
-  ~CanvasResourceHost() override;
-
-  // cc::TextureLayerClient implementation.
-  bool PrepareTransferableResource(
-      viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback) override;
+  virtual ~CanvasResourceHost();
 
   virtual void NotifyGpuContextLost() = 0;
   // TODO(crbug.com/399587138): Delete once `cc::Layer` related code is moved to
@@ -119,6 +113,10 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  protected:
+  bool PrepareTransferableResourceInternal(
+      viz::TransferableResource* out_resource,
+      viz::ReleaseCallback* out_release_callback);
+
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
 
   bool is_opaque() { return is_opaque_; }
