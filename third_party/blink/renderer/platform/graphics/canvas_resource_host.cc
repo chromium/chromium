@@ -134,10 +134,6 @@ void CanvasResourceHost::SetNeedsPushProperties() {
   }
 }
 
-void CanvasResourceHost::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
-  hdr_metadata_ = hdr_metadata;
-}
-
 void CanvasResourceHost::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
   if (cc_layer_ && IsComposited()) {
     cc_layer_->SetNeedsDisplayRect(dirty_rect);

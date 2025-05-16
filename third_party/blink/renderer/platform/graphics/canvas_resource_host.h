@@ -63,9 +63,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 
-  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
-  const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
-
   virtual bool LowLatencyEnabled() const { return false; }
 
   CanvasResourceProvider* ResourceProvider() const {
@@ -121,9 +118,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   // eventually by CanvasRenderingContext2D, as it's only instantiated by the
   // latter.
   scoped_refptr<cc::TextureLayer> cc_layer_;
-
-  // TODO(399587138): Move this field to be held by HTMLCanvasElement.
-  gfx::HDRMetadata hdr_metadata_;
 
   // TODO(399587138): Determine whether these fields can be moved down into
   // HTMLCanvasElement (or even to CanvasRenderingContext2D) post-the

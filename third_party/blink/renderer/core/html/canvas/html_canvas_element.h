@@ -427,6 +427,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool ignore_reset_ = false;
   gfx::Rect dirty_rect_;
 
+  gfx::HDRMetadata hdr_metadata_;
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
