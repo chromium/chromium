@@ -9399,6 +9399,10 @@ crbug.com/412321937 [ Mac ] media/controls/closed-captions-switch-track.html [ C
 crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?cpu [ Failure Pass ]
 crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.sharedworker.html?cpu [ Failure Pass ]
 
+# Gardener 2025-05-16
+crbug.com/418169805 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.serviceworker.html?cpu [ Failure Pass ]
+crbug.com/418173365 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Failure Pass ]
+
 # Gardener 2025-04-28
 crbug.com/414234413 [ Mac13-arm64 ] http/tests/devtools/elements/styles-1/edit-value-with-trimmed-url.js [ Failure Pass ]
 
