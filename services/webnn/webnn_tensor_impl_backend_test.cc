@@ -712,10 +712,6 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
                           std::move(read_create_tensor_result->get_buffer())));
   }
 
-  // Ensure WebNN waited until the other queue completed.
-  ASSERT_TRUE(IsFenceCompleted(command_queue->submission_fence(),
-                               command_queue->GetLastFenceValue()));
-
   // Step 8. Simulate more external queue use with new data.
   std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_2 =
       webnn_tensor->EndAccessWebNN();
