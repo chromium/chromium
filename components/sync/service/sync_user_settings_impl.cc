@@ -105,6 +105,7 @@ void SyncUserSettingsImpl::SetInitialSyncFeatureSetupComplete(
   }
   UMA_HISTOGRAM_ENUMERATION("Signin.SyncFirstSetupCompleteSource", source);
   prefs_->SetInitialSyncFeatureSetupComplete();
+  delegate_->OnInitialSyncFeatureSetupCompleted();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -470,15 +471,6 @@ bool SyncUserSettingsImpl::IsSyncClientDisabledByPolicy() const {
 void SyncUserSettingsImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   delegate_->OnSyncClientDisabledByPolicyChanged();
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void SyncUserSettingsImpl::OnFirstSetupCompletePrefChange(
-    bool is_initial_sync_feature_setup_complete) {
-  if (is_initial_sync_feature_setup_complete) {
-    delegate_->OnInitialSyncFeatureSetupCompleted();
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void SyncUserSettingsImpl::OnSelectedTypesPrefChange() {
   delegate_->OnSelectedTypesChanged();

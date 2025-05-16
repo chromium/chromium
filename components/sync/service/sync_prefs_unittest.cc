@@ -199,9 +199,6 @@ TEST_F(SyncPrefsTest, CachedTrustedVaultAutoUpgradeExperimentGroupCorrupt) {
 class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
-#if !BUILDFLAG(IS_CHROMEOS)
-  MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void, OnSelectedTypesPrefChange, (), (override));
 };
 
@@ -225,22 +222,13 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
-  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  InSequence in_sequence;
-
-  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(true));
-  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));
-
   ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-
-  sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
   sync_prefs_->SetInitialSyncFeatureSetupComplete();
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+
   sync_prefs_->ClearInitialSyncFeatureSetupComplete();
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-
-  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

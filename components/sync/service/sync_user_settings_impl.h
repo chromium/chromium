@@ -118,10 +118,6 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
 
   // SyncPrefObserver implementation.
   void OnSyncManagedPrefChange(bool is_sync_managed) override;
-#if !BUILDFLAG(IS_CHROMEOS)
-  void OnFirstSetupCompletePrefChange(
-      bool is_initial_sync_feature_setup_complete) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   void OnSelectedTypesPrefChange() override;
 
  private:

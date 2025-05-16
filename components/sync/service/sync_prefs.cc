@@ -128,13 +128,6 @@ SyncPrefs::SyncPrefs(PrefService* pref_service)
       prefs::internal::kSelectedTypesPerAccount,
       base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
                           base::Unretained(this)));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  pref_initial_sync_feature_setup_complete_.Init(
-      prefs::internal::kSyncInitialSyncFeatureSetupComplete, pref_service_,
-      base::BindRepeating(&SyncPrefs::OnFirstSetupCompletePrefChange,
-                          base::Unretained(this)));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 SyncPrefs::~SyncPrefs() {
@@ -835,16 +828,6 @@ void SyncPrefs::OnSelectedTypesPrefChanged(const std::string& pref_name) {
     observer.OnSelectedTypesPrefChange();
   }
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void SyncPrefs::OnFirstSetupCompletePrefChange() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnFirstSetupCompletePrefChange(
-        *pref_initial_sync_feature_setup_complete_);
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // static
 void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,

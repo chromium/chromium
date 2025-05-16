@@ -33,13 +33,6 @@ namespace syncer {
 class SyncPrefObserver {
  public:
   virtual void OnSyncManagedPrefChange(bool is_sync_managed) = 0;
-  // TODO(crbug.com/40772592): Reconsider if the below observer notifications
-  // are needed, if all writes are triggered by SyncUserSettingsImpl and the
-  // only observer is SyncServiceImpl.
-#if !BUILDFLAG(IS_CHROMEOS)
-  virtual void OnFirstSetupCompletePrefChange(
-      bool is_initial_sync_feature_setup_complete) = 0;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   // Called when any of the prefs related to the user's selected data types has
   // changed.
   virtual void OnSelectedTypesPrefChange() = 0;
@@ -312,10 +305,6 @@ class SyncPrefs {
 
   void OnSelectedTypesPrefChanged(const std::string& pref_name);
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  void OnFirstSetupCompletePrefChange();
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
   // Never null.
   const raw_ptr<PrefService> pref_service_;
 
@@ -330,10 +319,6 @@ class SyncPrefs {
   bool batch_updating_selected_types_ = false;
 
   bool password_sync_allowed_ = true;
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  BooleanPrefMember pref_initial_sync_feature_setup_complete_;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Caches the value of the kEnableLocalSyncBackend pref to avoid it flipping
   // during the lifetime of the service.
