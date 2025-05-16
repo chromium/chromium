@@ -149,51 +149,6 @@ suite('PrivacyPage', function() {
     assertFalse(!!page.shadowRoot!.querySelector('settings-security-page'));
   });
 
-  test('cookiesLinkRowSublabel', function() {
-    page.set(
-        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
-    const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#thirdPartyCookiesLinkRow');
-    assertTrue(!!thirdPartyCookiesLinkRow);
-    assertEquals(
-        page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
-        thirdPartyCookiesLinkRow.subLabel);
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.INCOGNITO_ONLY);
-    assertEquals(
-        page.i18n('thirdPartyCookiesLinkRowSublabelDisabledIncognito'),
-        thirdPartyCookiesLinkRow.subLabel);
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.BLOCK_THIRD_PARTY);
-    assertEquals(
-        page.i18n('thirdPartyCookiesLinkRowSublabelDisabled'),
-        thirdPartyCookiesLinkRow.subLabel);
-  });
-
-  test('cookiesLinkRowSublabelAlwaysBlock3pcsIncognito', async function() {
-    loadTimeData.overrideValues({
-      isAlwaysBlock3pcsIncognitoEnabled: true,
-    });
-    resetRouterForTesting();
-    await createPage();
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.INCOGNITO_ONLY);
-    const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#thirdPartyCookiesLinkRow');
-    assertTrue(!!thirdPartyCookiesLinkRow);
-    assertEquals(
-        page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
-        thirdPartyCookiesLinkRow.subLabel);
-  });
-
   test('NotificationPage', async function() {
     await createPage();
 
@@ -492,8 +447,84 @@ suite(`CookiesSubpage`, function() {
     thirdPartyCookiesLinkRow.click();
     // Check that the correct page was navigated to.
     await flushTasks();
+    assertEquals(routes.COOKIES, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('CookiesSubpageRedesignDisabled', function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+
+    return flushTasks();
+  }
+
+  test(
+      'cookiesLinkRowSublabelAlwaysBlock3pcsIncognitoDisabled',
+      async function() {
+        loadTimeData.overrideValues({
+          is3pcdCookieSettingsRedesignEnabled: false,
+          isAlwaysBlock3pcsIncognitoEnabled: false,
+        });
+        resetRouterForTesting();
+
+        await createPage();
+
+        page.set(
+            'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
+        const thirdPartyCookiesLinkRow =
+            page.shadowRoot!.querySelector<CrLinkRowElement>(
+                '#thirdPartyCookiesLinkRow');
+        assertTrue(!!thirdPartyCookiesLinkRow);
+        assertEquals(
+            page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
+            thirdPartyCookiesLinkRow.subLabel);
+
+        page.set(
+            'prefs.profile.cookie_controls_mode.value',
+            CookieControlsMode.INCOGNITO_ONLY);
+        assertEquals(
+            page.i18n('thirdPartyCookiesLinkRowSublabelDisabledIncognito'),
+            thirdPartyCookiesLinkRow.subLabel,
+        );
+
+        page.set(
+            'prefs.profile.cookie_controls_mode.value',
+            CookieControlsMode.BLOCK_THIRD_PARTY);
+        assertEquals(
+            page.i18n('thirdPartyCookiesLinkRowSublabelDisabled'),
+            thirdPartyCookiesLinkRow.subLabel);
+      });
+
+  test('cookiesLinkRowSublabel', async function() {
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+      isAlwaysBlock3pcsIncognitoEnabled: true,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.INCOGNITO_ONLY);
+    const thirdPartyCookiesLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#thirdPartyCookiesLinkRow');
+    assertTrue(!!thirdPartyCookiesLinkRow);
     assertEquals(
-        routes.COOKIES, Router.getInstance().getCurrentRoute());
+        page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
+        thirdPartyCookiesLinkRow.subLabel);
   });
 });
 

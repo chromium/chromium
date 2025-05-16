@@ -1157,28 +1157,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list2_;
 };
 
-// TODO(crbug.com/40285326): This fails with the field trial testing config.
-class SettingsPrivacyPageTestNoTestingConfig : public SettingsPrivacyPageTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SettingsPrivacyPageTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-
- protected:
-  SettingsPrivacyPageTestNoTestingConfig() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kAutomaticFullscreenContentSetting,
-            permissions::features::kPermissionSiteSettingsRadioButton,
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that the content settings page for Web Printing is not shown by
 // default.
 class SettingsPrivacyPageTestWithoutWebPrinting : public SettingsBrowserTest {};
@@ -1189,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestWithoutWebPrinting,
           "runMochaSuite('WebPrintingNotShown')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig, PrivacyPage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyPage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
 }
 
@@ -1208,6 +1186,12 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CertificateManagementV2) {
           "runMochaSuite('CertificateManagementV2')");
 }
 #endif  // BUILDFLAG(USE_NSS_CERTS)
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       CookiesSubpageRedesignDisabled) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('CookiesSubpageRedesignDisabled')");
+}
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CookiesSubpage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('CookiesSubpage')");
