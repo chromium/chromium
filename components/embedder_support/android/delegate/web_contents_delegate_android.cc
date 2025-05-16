@@ -47,6 +47,15 @@ using content::RenderWidgetHostView;
 using content::WebContents;
 using content::WebContentsDelegate;
 
+namespace {
+
+// The amount of time to disallow repeated pointer lock calls after the user
+// successfully escapes from one lock request.
+constexpr base::TimeDelta kEffectiveUserEscapeDuration =
+    base::Milliseconds(1250);
+
+}  // namespace
+
 namespace web_contents_delegate_android {
 
 WebContentsDelegateAndroid::WebContentsDelegateAndroid(
@@ -290,6 +299,22 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
       env, obj, url::GURLAndroid::FromNativeGURL(env, source->GetVisibleURL()));
 }
 
+content::KeyboardEventProcessingResult
+WebContentsDelegateAndroid::PreHandleKeyboardEvent(
+    WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.native_key_code == AKEYCODE_ESCAPE) {
+    auto* rwhva = source->GetTopLevelRenderWidgetHostView();
+    if (rwhva && rwhva->IsPointerLocked()) {
+      rwhva->UnlockPointer();
+      pointer_lock_last_user_escape_time_ = base::TimeTicks::Now();
+      return content::KeyboardEventProcessingResult::HANDLED;
+    }
+  }
+
+  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+}
+
 bool WebContentsDelegateAndroid::HandleKeyboardEvent(
     WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
@@ -374,8 +399,23 @@ void WebContentsDelegateAndroid::RequestPointerLock(
                                                    last_unlocked_by_target);
   }
 
-  // TODO(crbug.com/397609822): add checks on user_gesture & reuse the
-  // ExclusiveAccessManager
+  // TODO(https://crbug.com/415732870): reuse the ExclusiveAccessManager
+  // This part is taken from PointerLockController, See
+  // `PointerLockController::RequestToLockPointer()` for more info.
+  if (!last_unlocked_by_target && !web_contents->IsFullscreen()) {
+    if (!user_gesture) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kRequiresUserGesture);
+      return;
+    }
+    if (base::TimeTicks::Now() <
+        pointer_lock_last_user_escape_time_ + kEffectiveUserEscapeDuration) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kUserRejected);
+      return;
+    }
+  }
+
   web_contents->GotResponseToPointerLockRequest(
       blink::mojom::PointerLockResult::kSuccess);
 }
