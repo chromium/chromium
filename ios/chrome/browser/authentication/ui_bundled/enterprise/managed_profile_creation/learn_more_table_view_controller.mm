@@ -25,7 +25,8 @@
 namespace {
 CGFloat constexpr kTableViewSeparatorInsetHide = 10000;
 CGFloat constexpr kSymbolImagePointSize = 24.;
-CGFloat constexpr kTextMarginTop = 6.0;
+CGFloat constexpr kTextMarginTop = 8.0;
+CGFloat constexpr kTextLabelSpacing = 10.0;
 
 // Section identifiers in the browsing data page table view.
 enum SectionIdentifier : NSInteger {
@@ -116,9 +117,14 @@ enum ItemIdentifier : NSInteger {
 
   cell.accessoryType = UITableViewCellAccessoryNone;
   cell.textLabel.text = title;
+  cell.textLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   [cell setDetailText:details];
   cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
   [cell setTextLabelMarginTop:kTextMarginTop];
+  if (title) {
+    [cell setTextLabelSpacing:kTextLabelSpacing];
+  }
   cell.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   cell.iconCenteredVertically = NO;
   cell.detailTextNumberOfLines = 0;

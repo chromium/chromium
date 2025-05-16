@@ -91,6 +91,9 @@ enum class BadgeType {
 // Margin on top of `textLabel`. This is 0 by default.
 @property(nonatomic, assign) CGFloat textLabelMarginTop;
 
+// Spacing between the text labels when no notification dot is present.
+@property(nonatomic, assign) CGFloat textLabelSpacing;
+
 // Sets the `image` that should be displayed at the leading edge of the cell
 // with a `tintColor`. If set to nil, the icon will be hidden and the text
 // labels will expand to fill the full width of the cell. The image view will be
