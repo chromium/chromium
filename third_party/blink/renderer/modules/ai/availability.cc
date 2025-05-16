@@ -17,33 +17,49 @@ namespace blink {
 
 using mojom::blink::ModelAvailabilityCheckResult;
 
+Availability ConvertModelAvailabilityCheckResult(
+    ModelAvailabilityCheckResult result) {
+  switch (result) {
+    case ModelAvailabilityCheckResult::kAvailable:
+      return Availability::kAvailable;
+    case ModelAvailabilityCheckResult::kDownloadable:
+      return Availability::kDownloadable;
+    case ModelAvailabilityCheckResult::kDownloading:
+      return Availability::kDownloading;
+    case ModelAvailabilityCheckResult::kUnavailableServiceNotRunning:
+    case ModelAvailabilityCheckResult::kUnavailableUnsupportedLanguage:
+    case ModelAvailabilityCheckResult::kUnavailableUnknown:
+    case ModelAvailabilityCheckResult::kUnavailableFeatureNotEnabled:
+    case ModelAvailabilityCheckResult::kUnavailableConfigNotAvailableForFeature:
+    case ModelAvailabilityCheckResult::kUnavailableGpuBlocked:
+    case ModelAvailabilityCheckResult::kUnavailableTooManyRecentCrashes:
+    case ModelAvailabilityCheckResult::kUnavailableSafetyModelNotAvailable:
+    case ModelAvailabilityCheckResult::
+        kUnavailableSafetyConfigNotAvailableForFeature:
+    case ModelAvailabilityCheckResult::
+        kUnavailableLanguageDetectionModelNotAvailable:
+    case ModelAvailabilityCheckResult::kUnavailableFeatureExecutionNotEnabled:
+    case ModelAvailabilityCheckResult::kUnavailableModelAdaptationNotAvailable:
+    case ModelAvailabilityCheckResult::kUnavailableValidationPending:
+    case ModelAvailabilityCheckResult::kUnavailableValidationFailed:
+    case ModelAvailabilityCheckResult::kUnavailableModelNotEligible:
+    case ModelAvailabilityCheckResult::kUnavailableInsufficientDiskSpace:
+    case ModelAvailabilityCheckResult::kUnavailableTranslationNotEligible:
+    case ModelAvailabilityCheckResult::kUnavailableEnterprisePolicyDisabled:
+      return Availability::kUnavailable;
+  }
+}
+
 Availability HandleModelAvailabilityCheckResult(
     ExecutionContext* execution_context,
     AIMetrics::AISessionType session_type,
     ModelAvailabilityCheckResult result) {
-  Availability availability = Availability::kUnavailable;
-  switch (result) {
-    case ModelAvailabilityCheckResult::kAvailable: {
-      availability = Availability::kAvailable;
-      break;
-    }
-    case ModelAvailabilityCheckResult::kDownloadable: {
-      availability = Availability::kDownloadable;
-      break;
-    }
-    case ModelAvailabilityCheckResult::kDownloading: {
-      availability = Availability::kDownloading;
-      break;
-    }
-    default: {
-      // If the text session cannot be created, logs the error message to
-      // the console.
-      availability = Availability::kUnavailable;
-      execution_context->AddConsoleMessage(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          ConvertModelAvailabilityCheckResultToDebugString(result));
-    }
+  Availability availability = ConvertModelAvailabilityCheckResult(result);
+  if (availability == Availability::kUnavailable) {
+    execution_context->AddConsoleMessage(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        ConvertModelAvailabilityCheckResultToDebugString(result));
   }
   base::UmaHistogramEnumeration(
       AIMetrics::GetAvailabilityMetricName(session_type), availability);

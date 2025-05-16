@@ -117,6 +117,10 @@ std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
     v8::Isolate* isolate,
     const Vector<String>& languages);
 
+// Returns whether model availability status requires user activation for
+// creating a client.
+bool RequiresUserActivation(Availability availability);
+
 // Runs `callback` on destruction unless `Reset` is called.
 class RunOnDestruction {
  public:

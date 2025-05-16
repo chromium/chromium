@@ -128,8 +128,7 @@ class LanguageDetectorCreateTask
         !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
       GetResolver()->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
-          "Requires handling a user gesture when availability is "
-          "\"downloadable\".");
+          kExceptionMessageUserActivationRequired);
       Cleanup();
       return;
     }

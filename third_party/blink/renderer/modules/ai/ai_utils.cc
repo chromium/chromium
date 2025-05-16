@@ -296,6 +296,11 @@ std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
   return canonicalized_languages;
 }
 
+bool RequiresUserActivation(Availability availability) {
+  return availability == Availability::kDownloadable ||
+         availability == Availability::kDownloading;
+}
+
 RunOnDestruction::RunOnDestruction(base::OnceClosure callback)
     : callback_(std::move(callback)) {}
 

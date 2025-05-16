@@ -70,6 +70,9 @@ const char kExceptionMessageInvalidResponseJsonSchema[] =
     "stringified into a JSON string.";
 const char kExceptionMessagePermissionPolicy[] =
     "Access denied because the Permission Policy is not enabled.";
+const char kExceptionMessageUserActivationRequired[] =
+    "Requires a user gesture when availability is \"downloading\" or "
+    "\"downloadable\".";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

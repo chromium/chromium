@@ -29,6 +29,7 @@ extern const char kExceptionMessageSystemPromptIsNotTheFirst[];
 extern const char kExceptionMessageUnsupportedLanguages[];
 extern const char kExceptionMessageInvalidResponseJsonSchema[];
 extern const char kExceptionMessagePermissionPolicy[];
+extern const char kExceptionMessageUserActivationRequired[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);
 void ThrowDocumentNotActiveException(ExceptionState& exception_state);

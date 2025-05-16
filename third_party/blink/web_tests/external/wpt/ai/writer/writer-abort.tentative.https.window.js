@@ -1,4 +1,5 @@
 // META: title=Writer Abort
+// META: script=/resources/testdriver.js
 // META: script=../resources/util.js
 // META: timeout=long
 
@@ -6,31 +7,31 @@
 
 promise_test(async t => {
   await testAbortPromise(t, signal => {
-    return Writer.create({ signal: signal });
+    return createWriter({signal: signal});
   });
-}, "Aborting Writer.create().");
+}, 'Aborting Writer.create().');
 
 promise_test(async t => {
-  const writer = await Writer.create();
+  const writer = await createWriter();
   await testAbortPromise(t, signal => {
     return writer.write(kTestPrompt, { signal: signal });
   });
-}, "Aborting Writer.write().");
+}, 'Aborting Writer.write().');
 
 promise_test(async t => {
-  const writer = await Writer.create();
+  const writer = await createWriter();
   await testAbortReadableStream(t, signal => {
     return writer.writeStreaming(kTestPrompt, { signal: signal });
   });
-}, "Aborting Writer.writeStreaming().");
+}, 'Aborting Writer.writeStreaming().');
 
 promise_test(async (t) => {
-  const writer = await Writer.create();
+  const writer = await createWriter();
   const controller = new AbortController();
   const streamingResponse = writer.writeStreaming(kTestPrompt, {
     signal: controller.signal,
     context: kTestContext,
   });
-  for await (const chunk of streamingResponse) { /* Do nothing */}
+  for await (const chunk of streamingResponse);  // Do nothing
   controller.abort();
 }, 'Aborting Writer.writeStreaming() after finished reading.');

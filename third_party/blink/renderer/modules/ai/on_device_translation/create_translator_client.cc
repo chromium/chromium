@@ -171,8 +171,7 @@ void CreateTranslatorClient::OnGotAvailability(
       !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
     GetResolver()->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "Requires handling a user gesture when availability is "
-        "\"after-download\".");
+        kExceptionMessageUserActivationRequired);
     return;
   }
   mojo::PendingRemote<mojom::blink::TranslationManagerCreateTranslatorClient>

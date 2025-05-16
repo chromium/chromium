@@ -29,6 +29,9 @@ enum class Availability {
 
 V8Availability AvailabilityToV8(Availability availability);
 
+Availability ConvertModelAvailabilityCheckResult(
+    mojom::blink::ModelAvailabilityCheckResult result);
+
 Availability HandleModelAvailabilityCheckResult(
     ExecutionContext* execution_context,
     AIMetrics::AISessionType session_type,
