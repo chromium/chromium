@@ -11,6 +11,7 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/common_types.proto";
 import "components/optimization_guide/proto/descriptors.proto";
+import "components/optimization_guide/proto/fieldwise_parser_config.proto";
 import "components/optimization_guide/proto/redaction.proto";
 import "components/optimization_guide/proto/substitution.proto";
 import "components/optimization_guide/proto/model_execution.proto";
@@ -119,7 +120,8 @@ message OnDeviceModelExecutionOutputConfig {
   // The proto type to use for the response metadata.
   optional string proto_type = 1;
 
-  // The proto field to populate the output string with.
+  // The proto field to populate the output string with. Applies for
+  // PARSER_KIND_SIMPLE only.
   optional ProtoField proto_field = 2;
 
   // Rules that result in redacting the output.
@@ -128,7 +130,8 @@ message OnDeviceModelExecutionOutputConfig {
   // Which output parsing implementation to use.
   optional ParserKind parser_kind = 4;
 
-  reserved 8;  // FieldWiseParserConfig
+  // A config for specifying parsing logic for the fieldwise parser.
+  optional FieldwiseParserConfig fieldwise_parser_config = 8;
 
   // Whether to suppress parsing incomplete output.
   optional bool suppress_parsing_incomplete_output = 5;

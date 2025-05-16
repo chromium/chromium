@@ -46,6 +46,7 @@ proto_library("optimization_guide_proto") {
     "features/wallpaper_search.proto",
     "features/writing_assistance_api.proto",
     "features/zero_state_suggestions.proto",
+    "fieldwise_parser_config.proto",
     "glic_page_context_eligibility_metadata.proto",
     "hint_cache.proto",
     "hints.proto",

@@ -15,6 +15,9 @@ enum ParserKind {
   // Model output is placed in the field specified by
   // OnDeviceModelExecutionOutputConfig::proto_field with no transformation.
   PARSER_KIND_SIMPLE = 1;
+  // Model output is parsed and placed into the specified fields according to
+  // OnDeviceModelExecutionOutputConfig::fieldwise_parser_config.
+  PARSER_KIND_FIELDWISE = 4;
   // Model output is parsed as JSON then converted to the response proto.
   PARSER_KIND_JSON = 2;
   // Model output is parsed as answers from an AQA model.
