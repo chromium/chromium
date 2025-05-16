@@ -1321,8 +1321,6 @@ public class ExternalNavigationHandler {
      * performing a navigation when it's actually a background tab doing the navigation.
      */
     private boolean isHiddenCrossFrameRenavigation(ExternalNavigationParams params) {
-        if (!ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS.isEnabled()) return false;
-
         if (params.getRedirectHandler().navigationChainPerformedHiddenCrossFrameNavigation()) {
             if (debug()) Log.i(TAG, "Navigation chain used cross-frame re-navigation.");
             return true;

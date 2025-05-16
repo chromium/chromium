@@ -13,15 +13,13 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Java accessor for base/feature_list.h state.
  *
- * This class provides methods to access values of feature flags registered in
+ * <p>This class provides methods to access values of feature flags registered in
  * |kFeaturesExposedToJava| in components/external_intents/android/external_intents_features.cc.
- *
  */
 @JNINamespace("external_intents")
 @NullMarked
 public class ExternalIntentsFeatures extends Features {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
-    public static final String BLOCK_FRAME_RENAVIGATIONS_NAME = "BlockFrameRenavigations3";
     public static final String BLOCK_INTENTS_TO_SELF_NAME = "BlockIntentsToSelf";
     public static final String NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME =
             "NavigationCaptureRefactorAndroid";
@@ -29,14 +27,11 @@ public class ExternalIntentsFeatures extends Features {
     public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeatures(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
 
-    public static final ExternalIntentsFeatures BLOCK_FRAME_RENAVIGATIONS =
-            new ExternalIntentsFeatures(1, BLOCK_FRAME_RENAVIGATIONS_NAME);
-
     public static final ExternalIntentsFeatures BLOCK_INTENTS_TO_SELF =
-            new ExternalIntentsFeatures(2, BLOCK_INTENTS_TO_SELF_NAME);
+            new ExternalIntentsFeatures(1, BLOCK_INTENTS_TO_SELF_NAME);
 
     public static final ExternalIntentsFeatures NAVIGATION_CAPTURE_REFACTOR_ANDROID =
-            new ExternalIntentsFeatures(3, NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME);
+            new ExternalIntentsFeatures(2, NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME);
 
     private final int mOrdinal;
 

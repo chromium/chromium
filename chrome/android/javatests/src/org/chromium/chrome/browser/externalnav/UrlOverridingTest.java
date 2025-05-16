@@ -1959,7 +1959,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigation() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1975,7 +1974,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigationServerRedirect() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1995,7 +1993,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowServerRedirect() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestParams params =
