@@ -49,10 +49,6 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
       return ContentSuggestionsModuleType::kSetUpListAllSet;
     case SetUpListItemType::kNotifications:
       return ContentSuggestionsModuleType::kSetUpListNotifications;
-    case SetUpListItemType::kDocking:
-      return ContentSuggestionsModuleType::kSetUpListDocking;
-    case SetUpListItemType::kAddressBar:
-      return ContentSuggestionsModuleType::kSetUpListAddressBar;
     default:
       NOTREACHED();
   }

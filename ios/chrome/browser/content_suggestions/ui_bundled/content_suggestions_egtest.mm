@@ -133,13 +133,6 @@ void TapMagicStackEditButton() {
     config.features_disabled.push_back(
         set_up_list::kSetUpListWithoutSignInItem);
   }
-  if ([self isRunningTest:@selector
-            (testMagicStackCompactedSetUpListCompleteAllItems_v2)]) {
-    config.features_enabled.push_back(set_up_list::kSetUpListInFirstRun);
-    config.additional_args.push_back("--SetUpListInFirstRunParam=1");
-    config.features_disabled.push_back(
-        set_up_list::kSetUpListWithoutSignInItem);
-  }
   return config;
 }
 
@@ -372,95 +365,6 @@ void TapMagicStackEditButton() {
       assertWithMatcher:grey_notNil()];
   // Dismiss Notification opt-in screen.
   TapPromoStyleSecondaryActionButton();
-
-  // Verify the All Set item is shown.
-  condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                set_up_list::kAllSetItemID),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for the All Set Module to show expired.");
-}
-
-// Attempts to complete the Set Up List through the Compacted Magic Stack
-// module. Tests the version of the Set Up List with the Docking, Address Bar,
-// Autofill, and Default Browser items.
-- (void)testMagicStackCompactedSetUpListCompleteAllItems_v2 {
-  [self prepareToTestSetUpListInMagicStack];
-
-  // Tap the Docking item.
-  TapView(set_up_list::kDockingItemID);
-  // Ensure the Docking promo is displayed.
-  id<GREYMatcher> dockingPromoView =
-      grey_accessibilityID(@"kDockingPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:dockingPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the Docking promo view.
-  TapSecondaryActionButton();
-
-  ConditionBlock condition = ^{
-    return [NewTabPageAppInterface setUpListItemDockingInMagicStackIsComplete];
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"SetUpList item Docking item not completed.");
-
-  // Tap the Address Bar item.
-  TapView(set_up_list::kAddressBarItemID);
-  id<GREYMatcher> addressBarPromoView = grey_accessibilityID(
-      first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:addressBarPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the Address Bar promo view.
-  TapPromoStyleSecondaryActionButton();
-
-  condition = ^{
-    return
-        [NewTabPageAppInterface setUpListItemAddressBarInMagicStackIsComplete];
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"SetUpList item Address Bar item not completed.");
-
-  // Completed Set Up List items last one impression
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-
-  // Tap the default browser item.
-  TapView(set_up_list::kDefaultBrowserItemID);
-  // Ensure the Default Browser Promo is displayed.
-  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
-      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss Default Browser Promo.
-  TapPromoStyleSecondaryActionButton();
-
-  condition = ^{
-    return [NewTabPageAppInterface
-        setUpListItemDefaultBrowserInMagicStackIsComplete];
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"SetUpList item Default Browser not completed.");
-
-  // Tap the autofill item.
-  TapView(set_up_list::kAutofillItemID);
-  id<GREYMatcher> CPEPromoView =
-      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:CPEPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the CPE promo.
-  TapSecondaryActionButton();
 
   // Verify the All Set item is shown.
   condition = ^{

@@ -5828,15 +5828,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTING_OPENED_IN_ANOTHER_WINDOW" desc="Generic status label displayed in Settings to show that a setting cannot be edited because it is currently being opened for edit in another window. [Length: keep it short.] [iOS only]" meaning="The setting is opened for edit in another window.">
         Opened elsewhere
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_LONG_DESCRIPTION" desc="The description for the Set Up List item that encourages users to select the position of their address bar.">
-        Pick the position of your address bar that works best for you.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_SHORT_DESCRIPTION" desc="The description for the Set Up List item that encourages users to select the position of their address bar (used when the Set Up List is in compact mode).">
-        Select the position that works best for you.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_TITLE" desc="The title of the Set Up List item that encourages users to select the position of their address bar.">
-        Choose Address Bar Position
-      </message>
       <message name="IDS_IOS_SET_UP_LIST_ALL_SET_TITLE" desc="Title for the Set Up List item that tells the user they have completed all tasks.">
         You're all set
       </message>
@@ -5851,9 +5842,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set Chrome as their default browser.">
         Easily open links in other apps.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_DOCK_CHROME_LONG_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to add Chrome to their iOS dock.">
-        Get faster access from your Home Screen.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_EXPAND" desc="Accessibility label for the button to expand the Set Up List.">
         Expand list

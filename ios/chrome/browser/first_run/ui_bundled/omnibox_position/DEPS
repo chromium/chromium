@@ -1,6 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/tips_manager/model",
-  "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/promos_manager/ui_bundled",
   "+ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_option_item_view.h",
   "+ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h",

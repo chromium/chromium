@@ -20,8 +20,6 @@ extern const char kDefaultBrowserItemState[];
 extern const char kAutofillItemState[];
 extern const char kFollowItemState[];
 extern const char kNotificationsItemState[];
-extern const char kDockingItemState[];
-extern const char kAddressBarItemState[];
 extern const char kAllItemsComplete[];
 extern const char kDisabled[];
 

@@ -11,13 +11,9 @@ source_set("omnibox_position") {
   ]
   deps = [
     ":omnibox_position_ui",
-    "//components/feature_engagement/public",
+    "//base",
     "//components/prefs",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
-    "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
-    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
-    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",

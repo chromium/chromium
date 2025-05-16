@@ -161,12 +161,6 @@ bool DefaultBrowserPromoCompleted() {
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kFeaturePushNotificationPermissions, &_prefChangeRegistrar);
 
-    if (set_up_list::GetSetUpListInFirstRunVariation() !=
-        set_up_list::FirstRunVariationType::kDisabled) {
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kBottomOmnibox, &_localStatePrefChangeRegistrar);
-    }
-
     if (CredentialProviderPromoDismissed(_localState)) {
       set_up_list_prefs::MarkItemComplete(_localState,
                                           SetUpListItemType::kAutofill);
@@ -383,8 +377,6 @@ bool DefaultBrowserPromoCompleted() {
              !_prefService->GetBoolean(
                  prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
     [self hideSetUpList];
-  } else if (preferenceName == prefs::kBottomOmnibox) {
-    [self markSetUpListItemPrefComplete:SetUpListItemType::kAddressBar];
   }
 }
 

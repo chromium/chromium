@@ -254,11 +254,8 @@
   ProceduralBlock completion = nil;
   if (_markItemComplete) {
     __weak __typeof(self) weakSelf = self;
-    PrefService* localState = GetApplicationContext()->GetLocalState();
     completion = ^{
       DockingPromoCoordinator* strongSelf = weakSelf;
-      set_up_list_prefs::MarkItemComplete(localState,
-                                          SetUpListItemType::kDocking);
       if (strongSelf) {
         strongSelf->_markItemComplete = NO;
       }

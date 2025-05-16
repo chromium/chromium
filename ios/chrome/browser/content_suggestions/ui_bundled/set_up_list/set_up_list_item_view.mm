@@ -344,10 +344,6 @@ struct ViewConfig {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
     case SetUpListItemType::kNotifications:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE);
-    case SetUpListItemType::kDocking:
-      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DOCK_CHROME_TITLE);
-    case SetUpListItemType::kAddressBar:
-      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ADDRESS_BAR_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
@@ -367,12 +363,6 @@ struct ViewConfig {
       return l10n_util::GetNSString(_config.autofill_description);
     case SetUpListItemType::kNotifications:
       return l10n_util::GetNSString(_config.notifications_description);
-    case SetUpListItemType::kDocking:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_DOCK_CHROME_LONG_DESCRIPTION);
-    case SetUpListItemType::kAddressBar:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_ADDRESS_BAR_SHORT_DESCRIPTION);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
     case SetUpListItemType::kFollow:
@@ -391,10 +381,6 @@ struct ViewConfig {
       return set_up_list::kAutofillItemID;
     case SetUpListItemType::kNotifications:
       return set_up_list::kContentNotificationItemID;
-    case SetUpListItemType::kDocking:
-      return set_up_list::kDockingItemID;
-    case SetUpListItemType::kAddressBar:
-      return set_up_list::kAddressBarItemID;
     case SetUpListItemType::kAllSet:
       return set_up_list::kAllSetItemID;
     case SetUpListItemType::kFollow:

@@ -74,10 +74,6 @@ using set_up_list_prefs::SetUpListItemState;
                                   unknown);
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kNotifications,
                                   unknown);
-  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kDocking,
-                                  unknown);
-  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kAddressBar,
-                                  unknown);
 }
 
 + (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete {
@@ -90,18 +86,6 @@ using set_up_list_prefs::SetUpListItemState;
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete {
   return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
              set_up_list::kAutofillItemID)
-      .complete;
-}
-
-+ (BOOL)setUpListItemDockingInMagicStackIsComplete {
-  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
-             set_up_list::kDockingItemID)
-      .complete;
-}
-
-+ (BOOL)setUpListItemAddressBarInMagicStackIsComplete {
-  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
-             set_up_list::kAddressBarItemID)
       .complete;
 }
 

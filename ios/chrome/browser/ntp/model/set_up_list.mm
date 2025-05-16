@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
@@ -61,10 +60,6 @@ bool GetIsItemComplete(SetUpListItemType type,
           IsMobileNotificationsEnabledForAnyClient(GaiaId(identity.gaiaID),
                                                    prefs);
     }
-    case SetUpListItemType::kDocking:
-      return false;
-    case SetUpListItemType::kAddressBar:
-      return local_state->GetUserPrefValue(prefs::kBottomOmnibox);
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       NOTREACHED();
@@ -134,56 +129,19 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
     AuthenticationService* auth_service,
     bool is_content_notification_enabled) {
   std::vector<SetUpListItemType> items;
+  items.push_back(SetUpListItemType::kDefaultBrowser);
+  items.push_back(SetUpListItemType::kAutofill);
+  items.push_back(SetUpListItemType::kNotifications);
 
-  // Add items depending on 1) the state of feature `kSetUpListInFirstRun` and
-  // 2) if this is the First Run.
-  BOOL isFirstRun = IsFirstRun();
-  switch (set_up_list::GetSetUpListInFirstRunVariation()) {
-    // The `kSetUpListInFirstRun` feature is disabled.
-    case set_up_list::FirstRunVariationType::kDisabled: {
-      items.push_back(SetUpListItemType::kDefaultBrowser);
-      items.push_back(SetUpListItemType::kAutofill);
-      items.push_back(SetUpListItemType::kNotifications);
-
-      if (IsSigninEnabled(auth_service) &&
-          !sync_service->HasDisableReason(
-              syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
-          !HasManagedSyncDataType(sync_service) &&
-          !base::FeatureList::IsEnabled(
-              set_up_list::kSetUpListWithoutSignInItem)) {
-        items.push_back(SetUpListItemType::kSignInSync);
-      }
-
-      return items;
-    }
-    case set_up_list::FirstRunVariationType::kDockingAndAddressBar: {
-      items.push_back(SetUpListItemType::kDocking);
-      items.push_back(SetUpListItemType::kAddressBar);
-      items.push_back(SetUpListItemType::kAutofill);
-      if (!isFirstRun) {
-        items.push_back(SetUpListItemType::kDefaultBrowser);
-      }
-      return items;
-    }
-    case set_up_list::FirstRunVariationType::kDocking: {
-      items.push_back(SetUpListItemType::kDocking);
-      items.push_back(SetUpListItemType::kAutofill);
-      if (!isFirstRun) {
-        items.push_back(SetUpListItemType::kDefaultBrowser);
-      }
-      return items;
-    }
-    case set_up_list::FirstRunVariationType::kAddressBar: {
-      items.push_back(SetUpListItemType::kAddressBar);
-      items.push_back(SetUpListItemType::kAutofill);
-      if (!isFirstRun) {
-        items.push_back(SetUpListItemType::kDefaultBrowser);
-      }
-      return items;
-    }
-    default:
-      NOTREACHED();
+  if (IsSigninEnabled(auth_service) &&
+      !sync_service->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
+      !HasManagedSyncDataType(sync_service) &&
+      !base::FeatureList::IsEnabled(set_up_list::kSetUpListWithoutSignInItem)) {
+    items.push_back(SetUpListItemType::kSignInSync);
   }
+
+  return items;
 }
 
 }  // namespace
@@ -253,10 +211,6 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
         set_up_list_prefs::kFollowItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        set_up_list_prefs::kDockingItemState, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        set_up_list_prefs::kAddressBarItemState, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -275,28 +229,10 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
   NSMutableArray* itemTypes = [[NSMutableArray alloc]
       initWithObjects:@(int(SetUpListItemType::kDefaultBrowser)),
                       @(int(SetUpListItemType::kAutofill)), nil];
-
-  switch (set_up_list::GetSetUpListInFirstRunVariation()) {
-    case set_up_list::FirstRunVariationType::kDisabled:
-      if (!base::FeatureList::IsEnabled(
-              set_up_list::kSetUpListWithoutSignInItem)) {
-        [itemTypes addObject:@(int(SetUpListItemType::kSignInSync))];
-      }
-      [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
-      break;
-    case set_up_list::FirstRunVariationType::kDockingAndAddressBar:
-      [itemTypes addObject:@(int(SetUpListItemType::kDocking))];
-      [itemTypes addObject:@(int(SetUpListItemType::kAddressBar))];
-      break;
-    case set_up_list::FirstRunVariationType::kDocking:
-      [itemTypes addObject:@(int(SetUpListItemType::kDocking))];
-      break;
-    case set_up_list::FirstRunVariationType::kAddressBar:
-      [itemTypes addObject:@(int(SetUpListItemType::kAddressBar))];
-      break;
-    default:
-      NOTREACHED();
+  if (!base::FeatureList::IsEnabled(set_up_list::kSetUpListWithoutSignInItem)) {
+    [itemTypes addObject:@(int(SetUpListItemType::kSignInSync))];
   }
+  [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
 
   for (SetUpListItem* item in _items) {
     [itemTypes removeObject:@(int(item.type))];

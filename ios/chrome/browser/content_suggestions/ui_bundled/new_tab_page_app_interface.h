@@ -46,14 +46,6 @@
 // complete.
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete;
 
-// Returns YES if the Docking SetUpListItemView item in the Magic Stack
-// is complete.
-+ (BOOL)setUpListItemDockingInMagicStackIsComplete;
-
-// Returns YES if the Address Bar SetUpListItemView item in the Magic Stack is
-// complete.
-+ (BOOL)setUpListItemAddressBarInMagicStackIsComplete;
-
 // Returns the title of the Set Up List.
 + (NSString*)setUpListTitle;
 

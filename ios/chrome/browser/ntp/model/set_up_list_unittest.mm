@@ -276,57 +276,6 @@ TEST_F(SetUpListTest, BuildListWithNotifications_Content) {
 }
 
 // Tests that the SetUpList uses the correct criteria when including the
-// Docking item.
-TEST_F(SetUpListTest, BuildListWithDocking) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      set_up_list::kSetUpListInFirstRun,
-      {{set_up_list::kSetUpListInFirstRunParam, "1"}});
-  SetItemState(SetUpListItemType::kDocking, SetUpListItemState::kNotComplete);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kDocking, NO);
-
-  SetItemState(SetUpListItemType::kDocking,
-               SetUpListItemState::kCompleteInList);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kDocking, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kDocking),
-            SetUpListItemState::kCompleteInList);
-
-  SetItemState(SetUpListItemType::kDocking,
-               SetUpListItemState::kCompleteNotInList);
-  BuildSetUpList();
-  ExpectListToNotInclude(SetUpListItemType::kDocking);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kDocking),
-            SetUpListItemState::kCompleteNotInList);
-}
-
-// Tests that the SetUpList uses the correct criteria when including the
-// Address Bar item.
-TEST_F(SetUpListTest, BuildListWithAddressBar) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      set_up_list::kSetUpListInFirstRun,
-      {{set_up_list::kSetUpListInFirstRunParam, "1"}});
-  SetItemState(SetUpListItemType::kAddressBar,
-               SetUpListItemState::kNotComplete);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kAddressBar, NO);
-
-  SetItemState(SetUpListItemType::kAddressBar,
-               SetUpListItemState::kCompleteInList);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kAddressBar, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kAddressBar),
-            SetUpListItemState::kCompleteInList);
-
-  SetItemState(SetUpListItemType::kAddressBar,
-               SetUpListItemState::kCompleteNotInList);
-  BuildSetUpList();
-  ExpectListToNotInclude(SetUpListItemType::kAddressBar);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kAddressBar),
-            SetUpListItemState::kCompleteNotInList);
-}
-
-// Tests that the SetUpList uses the correct criteria when including the
 // Follow item.
 TEST_F(SetUpListTest, BuildListWithFollow) {
   BuildSetUpList();

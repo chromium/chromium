@@ -14,8 +14,6 @@ extern NSString* const kSignInItemID;
 extern NSString* const kDefaultBrowserItemID;
 extern NSString* const kAutofillItemID;
 extern NSString* const kContentNotificationItemID;
-extern NSString* const kDockingItemID;
-extern NSString* const kAddressBarItemID;
 extern NSString* const kAllSetItemID;
 extern NSString* const kFollowItemID;
 extern NSString* const kAccessibilityID;

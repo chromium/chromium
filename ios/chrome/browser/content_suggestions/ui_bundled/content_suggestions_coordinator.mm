@@ -1160,12 +1160,6 @@ using segmentation_platform::TipIdentifier;
       [self
           showNotificationsOptInView:NotificationOptInAccessPoint::kSetUpList];
       break;
-    case SetUpListItemType::kDocking:
-      [self showDockingPromo];
-      break;
-    case SetUpListItemType::kAddressBar:
-      [self showAddressBarPromo];
-      break;
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
@@ -1247,19 +1241,6 @@ using segmentation_platform::TipIdentifier;
   _notificationsOptInCoordinator.accessPoint = accessPoint;
   _notificationsOptInCoordinator.delegate = self;
   [_notificationsOptInCoordinator start];
-}
-
-// Shows the Docking promo.
-- (void)showDockingPromo {
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                      DockingPromoCommands)
-      showDockingPromoWithTrigger:DockingPromoTrigger::kSetUpList];
-}
-
-// Shows the Address Bar promo.
-- (void)showAddressBarPromo {
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands) showOmniboxPositionChoice];
 }
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate

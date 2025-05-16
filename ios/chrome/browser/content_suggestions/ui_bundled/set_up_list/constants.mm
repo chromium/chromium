@@ -12,8 +12,6 @@ constexpr NSString* const kDefaultBrowserItemID =
 constexpr NSString* const kAutofillItemID = @"set_up_list::kAutofillItemID";
 constexpr NSString* const kContentNotificationItemID =
     @"set_up_list::kContentNotificationItemID";
-constexpr NSString* const kDockingItemID = @"set_up_list::kDockingItemID";
-constexpr NSString* const kAddressBarItemID = @"set_up_list::kAddressBarItemID";
 constexpr NSString* const kAllSetItemID = @"set_up_list:kAllSetItemID";
 constexpr NSString* const kFollowItemID = @"set_up_list::kFollowItemID";
 constexpr NSString* const kAccessibilityID = @"set_up_list::kAccessibilityID";
