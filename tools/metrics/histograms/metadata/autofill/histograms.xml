@@ -1085,6 +1085,54 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.EditedAutofilledFieldAtSubmission"
+    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    On submission time, this metric emits for every field that was autofilled
+    with Autofill AI, if the filling was accepted or subsequently corrected.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Ai.Funnel.{SubmissionState}.{FunnelStage}"
+    enum="Boolean" expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records various stages of the Autofill AI funnel. The same metric is logged
+    for submitted and for abandoned forms, with an additional metric aggregating
+    both. The metric is recorded once per form per submission/abandonment.
+
+    {FunnelStage}
+  </summary>
+  <token key="SubmissionState">
+    <variant name="Abandoned"/>
+    <variant name="Aggregate"/>
+    <variant name="Submitted"/>
+  </token>
+  <token key="FunnelStage">
+    <variant name="CorrectionAfterFill"
+        summary="Given a form where the user filled an Autofill AI
+                 suggestion, records whether the filling was corrected or
+                 not."/>
+    <variant name="Eligibility"
+        summary="This metric records whether a parsed form is eligible for
+                 Autofill AI filling or not."/>
+    <variant name="FillAfterSuggestion"
+        summary="Given a form where the user saw Autofill AI filling
+                 suggestions, records whether the suggestion was filled or
+                 not."/>
+    <variant name="ReadinessAfterEligibility"
+        summary="Given an Autofill-AI-eligible form, this metric records
+                 whether the user has stored data to fill the form."/>
+    <variant name="SuggestionAfterReadiness"
+        summary="Given an Autofill-AI-eligible form where the user has data
+                 stored to fill it, this metric records whether the user saw
+                 an Autofill AI suggestion or not."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"
     expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
@@ -3286,52 +3334,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     FormForest::UpdateTreeOfRendererForm() that actually does an entire tree
     traversal.
   </summary>
-</histogram>
-
-<histogram name="Autofill.FormsAI.EditedAutofilledFieldAtSubmission"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-12">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    On submission time, this metric emits for every field that was autofilled
-    with FormsAI, if the filling was accepted or subsequently corrected.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FormsAI.Funnel.{SubmissionState}.{FunnelStage}"
-    enum="Boolean" expires_after="2025-12-12">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records various stages of the FormsAI funnel. The same metric is logged for
-    submitted and for abandoned forms, with an additional metric aggregating
-    both. The metric is recorded once per form per submission/abandonment.
-
-    {FunnelStage}
-  </summary>
-  <token key="SubmissionState">
-    <variant name="Abandoned"/>
-    <variant name="Aggregate"/>
-    <variant name="Submitted"/>
-  </token>
-  <token key="FunnelStage">
-    <variant name="CorrectionAfterFill"
-        summary="Given a form where the user filled a FormsAI suggestion,
-                 records whether the filling was corrected or not."/>
-    <variant name="Eligibility"
-        summary="This metric records whether a parsed form is eligible for
-                 FormsAI filling or not."/>
-    <variant name="FillAfterSuggestion"
-        summary="Given a form where the user saw FormsAI filling suggestions,
-                 records whether the suggestion was filled or not."/>
-    <variant name="ReadinessAfterEligibility"
-        summary="Given a FormsAI-eligible form, this metric records whether
-                 the user has stored data to fill the form."/>
-    <variant name="SuggestionAfterReadiness"
-        summary="Given a FormsAI-eligible form where the user has data stored
-                 to fill it, this metric records whether the user saw a
-                 FormsAI suggestion or not."/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.FormSubmission.PerProfileType"

@@ -50,13 +50,13 @@ using ::testing::ReturnRef;
 
 constexpr char submitted_str[] = "Submitted";
 constexpr char abandoned_str[] = "Abandoned";
-constexpr char eligibility[] = "Autofill.FormsAI.Funnel.%s.Eligibility";
+constexpr char eligibility[] = "Autofill.Ai.Funnel.%s.Eligibility";
 constexpr char readiness_after_eligibility[] =
-    "Autofill.FormsAI.Funnel.%s.ReadinessAfterEligibility";
+    "Autofill.Ai.Funnel.%s.ReadinessAfterEligibility";
 constexpr char fill_after_suggestion[] =
-    "Autofill.FormsAI.Funnel.%s.FillAfterSuggestion";
+    "Autofill.Ai.Funnel.%s.FillAfterSuggestion";
 constexpr char correction_after_fill[] =
-    "Autofill.FormsAI.Funnel.%s.CorrectionAfterFill";
+    "Autofill.Ai.Funnel.%s.CorrectionAfterFill";
 
 std::string GetEligibilityHistogram() {
   return base::StringPrintf(eligibility, "Aggregate");

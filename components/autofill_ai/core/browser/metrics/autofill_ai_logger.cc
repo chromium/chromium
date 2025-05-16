@@ -16,7 +16,7 @@ namespace autofill_ai {
 
 namespace {
 
-constexpr char funnel_histogram_prefix[] = "Autofill.FormsAI.Funnel.";
+constexpr char funnel_histogram_prefix[] = "Autofill.Ai.Funnel.";
 
 void LogFunnelMetric(std::string_view funnel_metric_name,
                      bool submission_state,

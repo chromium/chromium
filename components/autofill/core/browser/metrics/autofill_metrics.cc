@@ -563,10 +563,10 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
       GetFieldTypeUserEditStatusMetric(field.Type().GetStorableType(),
                                        editing_metric));
 
-  // Record the metric for FormsAI specific fields.
+  // Record the metric for Autofill AI specific fields.
   if (field.filling_product() == FillingProduct::kAutofillAi) {
     base::UmaHistogramEnumeration(
-        "Autofill.FormsAI.EditedAutofilledFieldAtSubmission", editing_metric);
+        "Autofill.Ai.EditedAutofilledFieldAtSubmission", editing_metric);
   }
 
   // Record the UMA statistics spliced by the autocomplete attribute value.
