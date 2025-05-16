@@ -607,7 +607,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketUnknownEmptyMessageLowRelevance) {
   EXPECT_EQ("", config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
@@ -670,7 +670,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketLowLowPriceMessageHighRelevance) {
             config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
             config->relevance);
@@ -732,7 +732,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketLowGoodDealMessageHighRelevance) {
             config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
             config->relevance);
@@ -845,7 +845,7 @@ TEST_F(PriceInsightsModelTest,
   EXPECT_EQ("", config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
@@ -902,7 +902,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketHighSubscribedLowRelevance) {
   EXPECT_EQ("", config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kUpTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
@@ -959,7 +959,7 @@ TEST_F(PriceInsightsModelTest,
   EXPECT_EQ("", config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kUpTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
@@ -1021,7 +1021,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketHighHighRelevance) {
       config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kUpTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
             config->relevance);
@@ -1080,7 +1080,7 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketLowNoHistoryLowRelevance) {
   EXPECT_EQ("", config->entrypoint_message);
   EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
             config->entrypoint_image_name);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
   EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,

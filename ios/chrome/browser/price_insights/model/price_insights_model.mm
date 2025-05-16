@@ -203,7 +203,7 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   execution_it->second->config->entrypoint_image_name =
       base::SysNSStringToUTF8(kDownTrendSymbol);
   execution_it->second->config->image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
+      ContextualPanelItemConfiguration::EntrypointImageType::Image;
   execution_it->second->config->accessibility_label =
       l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY);
   execution_it->second->config->iph_feature =
