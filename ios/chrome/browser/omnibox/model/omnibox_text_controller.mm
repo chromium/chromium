@@ -253,7 +253,7 @@
   }
 
   if (_omniboxEditModel) {
-    _omniboxEditModel->OnSetFocus(/*control_down=*/false);
+    _omniboxEditModel->OnSetFocus();
 
     if (_inLensOverlay && textField.userText.length) {
       _omniboxEditModel->SetUserText(textField.userText.cr_UTF16String);

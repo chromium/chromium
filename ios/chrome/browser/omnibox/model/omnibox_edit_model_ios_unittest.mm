@@ -76,7 +76,7 @@ void OpenUrlFromEditBox(OmniboxControllerIOS* controller,
   } else {
     model->SetUserText(url_text);
   }
-  model->OnSetFocus(false);
+  model->OnSetFocus();
   model->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
                              std::u16string(), 0);
 }
@@ -299,7 +299,7 @@ TEST_F(OmniboxEditModelIOSTest, AlternateNavHasHTTP) {
               OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
       .WillOnce(SaveArg<10>(&alternate_nav_match));
 
-  model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
+  model()->OnSetFocus();  // Avoids DCHECK in OpenMatch().
   model()->SetUserText(u"http://abcd");
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                alternate_nav_url, std::u16string(), 0);
@@ -370,67 +370,6 @@ TEST_F(OmniboxEditModelIOSTest, DisplayText) {
 
   EXPECT_EQ(u"https://www.example.com/", view()->GetText());
   EXPECT_TRUE(model()->CurrentTextIsURL());
-}
-
-// Tests ConsumeCtrlKey() consumes ctrl key when down, but does not affect ctrl
-// state otherwise.
-TEST_F(OmniboxEditModelIOSTest, ConsumeCtrlKey) {
-  model()->control_key_state_ = TestOmniboxEditModelIOS::UP;
-  model()->ConsumeCtrlKey();
-  EXPECT_EQ(model()->control_key_state_, TestOmniboxEditModelIOS::UP);
-  model()->control_key_state_ = TestOmniboxEditModelIOS::DOWN;
-  model()->ConsumeCtrlKey();
-  EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModelIOS::DOWN_AND_CONSUMED);
-  model()->ConsumeCtrlKey();
-  EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModelIOS::DOWN_AND_CONSUMED);
-}
-
-// Tests ctrl_key_state_ is set consumed if the ctrl key is down on focus.
-TEST_F(OmniboxEditModelIOSTest, ConsumeCtrlKeyOnRequestFocus) {
-  model()->control_key_state_ = TestOmniboxEditModelIOS::DOWN;
-  model()->OnSetFocus(false);
-  EXPECT_EQ(model()->control_key_state_, TestOmniboxEditModelIOS::UP);
-  model()->OnSetFocus(true);
-  EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModelIOS::DOWN_AND_CONSUMED);
-}
-
-// Tests the ctrl key is consumed on a ctrl-action (e.g. ctrl-c to copy)
-TEST_F(OmniboxEditModelIOSTest, ConsumeCtrlKeyOnCtrlAction) {
-  model()->control_key_state_ = TestOmniboxEditModelIOS::DOWN;
-  OmniboxViewBase::StateChanges state_changes{nullptr, nullptr, 0,    0,
-                                              false,   false,   false};
-  model()->OnAfterPossibleChange(state_changes);
-  EXPECT_EQ(model()->control_key_state_,
-            TestOmniboxEditModelIOS::DOWN_AND_CONSUMED);
-}
-
-TEST_F(OmniboxEditModelIOSTest, CtrlEnterNavigatesToDesiredTLD) {
-  // Set the edit model into an inline autocomplete state.
-  view()->SetUserText(u"foo");
-  model()->StartAutocomplete(false, false);
-  view()->OnInlineAutocompleteTextMaybeChanged(u"foo", u"bar");
-
-  model()->OnControlKeyChanged(true);
-  model()->OpenSelection();
-  EXPECT_EQ(GURL("http://www.foo.com/"),
-            model()->GetInputForTesting().canonicalized_url());
-}
-
-TEST_F(OmniboxEditModelIOSTest,
-       CtrlEnterNavigatesToDesiredTLDSteadyStateElisions) {
-  location_bar_model()->set_url(GURL("https://www.example.com/"));
-  location_bar_model()->set_url_for_display(u"example.com");
-
-  EXPECT_TRUE(model()->ResetDisplayTexts());
-  model()->Revert();
-
-  model()->OnControlKeyChanged(true);
-  model()->OpenSelection();
-  EXPECT_EQ(GURL("https://www.example.com/"),
-            model()->GetInputForTesting().canonicalized_url());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

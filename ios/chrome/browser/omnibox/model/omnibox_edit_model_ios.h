@@ -170,9 +170,8 @@ class OmniboxEditModelIOS {
   // Clears additional text.
   void ClearAdditionalText();
 
-  // Called when the view is gaining focus.  `control_down` is whether the
-  // control key is down (at the time we're gaining focus).
-  void OnSetFocus(bool control_down);
+  // Called when the view is gaining focus.
+  void OnSetFocus();
 
   // Starts a request for zero-prefix suggestions if no query is currently
   // running and the popup is closed. This can be called multiple times without
@@ -192,19 +191,11 @@ class OmniboxEditModelIOS {
   // switching tabs.
   void SetCaretVisibility(bool visible);
 
-  // If the ctrl key is down, marks it as consumed to prevent it from triggering
-  // ctrl-enter behavior unless it is released and re-pressed.
-  void ConsumeCtrlKey();
-
   // Sent before `OnKillFocus` and before the popup is closed.
   void OnWillKillFocus();
 
   // Called when the view is losing focus.  Resets some state.
   void OnKillFocus();
-
-  // Called when the user presses or releases the control key.  Changes state as
-  // necessary.
-  void OnControlKeyChanged(bool pressed);
 
   // Called when the user pastes in text.
   void OnPaste();
@@ -293,10 +284,6 @@ class OmniboxEditModelIOS {
  private:
   friend class OmniboxControllerIOSTest;
   friend class TestOmniboxEditModelIOS;
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelIOSTest, ConsumeCtrlKey);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelIOSTest,
-                           ConsumeCtrlKeyOnRequestFocus);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelIOSTest, ConsumeCtrlKeyOnCtrlAction);
 
   enum PasteState {
     NONE,     // Most recent edit was not a paste.
@@ -307,17 +294,6 @@ class OmniboxEditModelIOS {
               // `OnAfterPossibleChange()` wouldn't know whether that
               // represented the current edit or a past one.
     PASTED,   // Most recent edit was a paste.
-  };
-
-  enum ControlKeyState {
-    UP,                // The control key is not depressed.
-    DOWN,              // The control key is depressed and should trigger the
-                       // "ctrl-enter" behavior when the user hits enter.
-    DOWN_AND_CONSUMED  // The control key is depressed, but has been consumed
-                       // and should not trigger the "ctrl-enter" behavior.
-                       // The control key becomes consumed if it has been used
-                       // for another action such as focusing the location bar
-                       // with ctrl-l or copying the selected text with ctrl-c.
   };
 
   AutocompleteController* autocomplete_controller() const;
@@ -461,11 +437,6 @@ class OmniboxEditModelIOS {
   // (on the theory that the user is trying to paste in a new URL or part of
   // one, and in either case inline autocomplete would get in the way).
   PasteState paste_state_;
-
-  // Whether the control key is depressed.  We track this to avoid calling
-  // UpdatePopup() repeatedly if the user holds down the key, and to know
-  // whether to trigger "ctrl-enter" behavior.
-  ControlKeyState control_key_state_;
 
   // This is needed to properly update the SearchModel state when the user
   // presses escape.
