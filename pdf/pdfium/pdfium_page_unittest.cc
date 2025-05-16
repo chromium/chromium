@@ -81,16 +81,6 @@ void CompareTextRuns(const AccessibilityTextRunInfo& expected_text_run,
   EXPECT_EQ(expected_style.is_bold, actual_style.is_bold);
 }
 
-template <typename T>
-void PopulateTextObjects(const std::vector<gfx::Range>& ranges,
-                         std::vector<T>* text_objects) {
-  text_objects->resize(ranges.size());
-  for (size_t i = 0; i < ranges.size(); ++i) {
-    (*text_objects)[i].start_char_index = ranges[i].start();
-    (*text_objects)[i].char_count = ranges[i].end() - ranges[i].start();
-  }
-}
-
 // Returns the page size for a `PDFiumPage`. The caller must make sure that
 // `pdfium_page` is available.
 gfx::SizeF GetPageSizeHelper(PDFiumPage& pdfium_page) {
