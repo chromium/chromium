@@ -23,6 +23,7 @@ import {getCss} from './appearance.css.js';
 import {getHtml} from './appearance.html.js';
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import {NewTabPageType} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface AppearanceElement {
@@ -78,7 +79,7 @@ export class AppearanceElement extends AppearanceElementBase {
       showSearchedImageButton_: {type: Boolean},
       showManagedDialog_: {type: Boolean},
       showEditTheme_: {type: Boolean},
-      isSourceTabFirstPartyNtp_: {type: Boolean},
+      newTabPageType_: {type: NewTabPageType},
 
       wallpaperSearchButtonEnabled_: {
         type: Boolean,
@@ -105,7 +106,8 @@ export class AppearanceElement extends AppearanceElementBase {
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
   private accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected accessor isSourceTabFirstPartyNtp_: boolean = true;
+  protected accessor newTabPageType_: NewTabPageType =
+      NewTabPageType.kFirstPartyWebUI;
   protected accessor showEditTheme_: boolean = true;
   protected ntpManagedByName_: string = '';
   private setThemeEditableId_: number|null = null;
@@ -134,8 +136,8 @@ export class AppearanceElement extends AppearanceElementBase {
     this.attachedTabStateUpdatedId_ =
         CustomizeChromeApiProxy.getInstance()
             .callbackRouter.attachedTabStateUpdated.addListener(
-                (isSourceTabFirstPartyNtp: boolean) => {
-                  this.isSourceTabFirstPartyNtp_ = isSourceTabFirstPartyNtp;
+                (newTabPageType: NewTabPageType) => {
+                  this.newTabPageType_ = newTabPageType;
                 });
     this.pageHandler_.updateAttachedTabState();
 
@@ -178,7 +180,7 @@ export class AppearanceElement extends AppearanceElementBase {
     this.editThemeButtonText_ = this.computeEditThemeButtonText_();
 
     if (changedPrivateProperties.has('theme_') ||
-        changedPrivateProperties.has('isSourceTabFirstPartyNtp_')) {
+        changedPrivateProperties.has('newTabPageType_')) {
       this.thirdPartyThemeId_ = this.computeThirdPartyThemeId_();
       this.thirdPartyThemeName_ = this.computeThirdPartyThemeName_();
       this.showClassicChromeButton_ = this.computeShowClassicChromeButton_();
@@ -259,7 +261,7 @@ export class AppearanceElement extends AppearanceElementBase {
            this.theme_.backgroundImage.isUploadedImage)) &&
         // TODO(crbug.com/404247286) Enable snapshots for extension NTP with 1P
         // theme.
-        this.isSourceTabFirstPartyNtp_;
+        this.isSourceTabFirstPartyNtp_();
   }
 
   private computeShowUploadedImageButton_(): boolean {
@@ -273,6 +275,10 @@ export class AppearanceElement extends AppearanceElementBase {
     return !!(
         this.theme_ && this.theme_.backgroundImage &&
         this.theme_.backgroundImage.localBackgroundId);
+  }
+
+  protected isSourceTabFirstPartyNtp_(): boolean {
+    return this.newTabPageType_ === NewTabPageType.kFirstPartyWebUI;
   }
 
   protected onEditThemeClicked_() {
