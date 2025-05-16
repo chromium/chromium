@@ -119,6 +119,39 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
 }
 
 TEST_F(TabStripServiceImplTest, GetTab) {
+  fake_tab_strip_model_->tabs.push_back(tabs::TabHandle(666));
+
+  tabs_api::mojom::TabStripService::GetTabResult result;
+  tabs_api::TabId tab_id(TabId::Type::kContent, "666");
+  bool success = client_->GetTab(tab_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result.value()->id.Id(), "666");
+  ASSERT_EQ(result.value()->id.Type(), TabId::Type::kContent);
+}
+
+TEST_F(TabStripServiceImplTest, GetTab_NotFound) {
+  tabs_api::mojom::TabStripService::GetTabResult result;
+  tabs_api::TabId tab_id(TabId::Type::kContent, "666");
+  bool success = client_->GetTab(tab_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
+}
+
+TEST_F(TabStripServiceImplTest, GetTab_MalformedId) {
+  tabs_api::mojom::TabStripService::GetTabResult result;
+  tabs_api::TabId tab_id(TabId::Type::kContent, /* I know my */ "abc");
+  bool success = client_->GetTab(tab_id, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+}
+
+TEST_F(TabStripServiceImplTest, GetTab_InvalidType) {
   tabs_api::mojom::TabStripService::GetTabResult result;
   tabs_api::TabId tab_id;
   bool success = client_->GetTab(tab_id, &result);
