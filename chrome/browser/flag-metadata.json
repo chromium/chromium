@@ -6101,6 +6101,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-overlay-omnibox-entry-point",
+    "owners": ["khalidpeer@chromium.org", "mercerd@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-prewarm-hard-stickiness-in-input-selection",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 140

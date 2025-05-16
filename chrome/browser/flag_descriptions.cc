@@ -2543,6 +2543,11 @@ const char kLensOverlayImageContextMenuActionsName[] =
 const char kLensOverlayImageContextMenuActionsDescription[] =
     "Enables image context menu actions in the Lens overlay.";
 
+const char kLensOverlayOmniboxEntryPointName[] =
+    "Lens Overlay Omnibox entrypoint";
+const char kLensOverlayOmniboxEntryPointDescription[] =
+    "Enables icon button for Lens entrypoint in the Omnibox.";
+
 const char kLensOverlaySidePanelOpenInNewTabName[] =
     "Lens overlay side panel open in new tab";
 const char kLensOverlaySidePanelOpenInNewTabDescription[] =

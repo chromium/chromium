@@ -6660,6 +6660,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
                             kOmniboxContextualSuggestions)},
 
+    {"lens-overlay-omnibox-entry-point",
+     flag_descriptions::kLensOverlayOmniboxEntryPointName,
+     flag_descriptions::kLensOverlayOmniboxEntryPointDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayOmniboxEntryPoint)},
+
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
