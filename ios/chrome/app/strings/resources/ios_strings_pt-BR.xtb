@@ -820,7 +820,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4473608001744970767">Ocultar o recurso "Monitorar preço"</translation>
 <translation id="4474142134969976028">Nenhum resultado correspondente</translation>
 <translation id="4474494258097106883">Criado para o iPhone</translation>
-<translation id="4488754974567924717">Vamos avisar você se as senhas forem comprometidas</translation>
+<translation id="4488754974567924717">Vamos avisar você se esse problema acontecer</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à Lista de leitura na sua conta {email}}one{Página adicionada à Lista de leitura na sua conta {email}}other{Páginas adicionadas à Lista de leitura na sua conta {email}}}</translation>
 <translation id="4490794477009017910">Ir para a guia anterior</translation>
 <translation id="4493604894403585654">Você fez login como <ph name="USER_EMAIL" />. Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
@@ -1149,7 +1149,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
 <translation id="5804012843049740908">Dicas para ajudar você a aproveitar o Chrome ao máximo</translation>
 <translation id="5804241973901381774">Permissões</translation>
-<translation id="5817176759448082654">Check-up de senha</translation>
+<translation id="5817176759448082654">Check-up de Senha</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
 <translation id="583923961930319521">Usar senhas em todos seus dispositivos</translation>

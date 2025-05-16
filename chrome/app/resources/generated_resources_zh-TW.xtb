@@ -11504,7 +11504,7 @@
 <translation id="9101691533782776290">啟動應用程式</translation>
 <translation id="9102610709270966160">啟用擴充功能</translation>
 <translation id="9102864637938129124">網站和廣告主可以瞭解廣告成效。這項設定已開啟。</translation>
-<translation id="9103341231213089378">如要投放，請前往「<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />」&gt;「本機網路」&gt;「Chrome」，將存取權授予 Chrome</translation>
+<translation id="9103341231213089378">如要投放，請前往「<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />」&gt;「區域網路」&gt;「Chrome」並授予 Chrome 權限</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9107096627210171112">翻譯(&amp;R)...</translation>
 <translation id="9107624673674616016">彩色鉛筆</translation>
