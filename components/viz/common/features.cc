@@ -585,12 +585,11 @@ bool IsCrosContentAdjustedRefreshRateEnabled() {
 
 #if BUILDFLAG(IS_WIN)
 bool ShouldRemoveRedirectionBitmap() {
-  // Windows.UI.Composition DesktopWindowTarget is supported on on Win10 version
-  // 1511 and higher, therefore limit the bitmap removal to those versions or
-  // higher so that an appropriate background replacement is available.
-  // Software GL in tests can take the Swiftshader rendering path, which also
-  // needs the Redirection Bitmap.
-  return base::win::GetVersion() >= base::win::Version::WIN10_RS4 &&
+  // Limit to Win11 because there are a high number of D3D9 users on Win10;
+  // which requires the Redirection Bitmap. Additionally, software GL in tests
+  // can take the Swiftshader rendering path, which also needs the Redirection
+  // Bitmap.
+  return base::win::GetVersion() >= base::win::Version::WIN11 &&
          base::FeatureList::IsEnabled(kRemoveRedirectionBitmap) &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kOverrideUseSoftwareGLForTests);
