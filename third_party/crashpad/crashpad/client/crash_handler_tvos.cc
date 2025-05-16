@@ -57,7 +57,6 @@ bool CrashHandler::DoInitialize() {
   if (!Signals::InstallCrashHandlers(CatchAndReraiseSignal,
                                      /*flags=*/0,
                                      &old_actions_)) {
-    LOG(ERROR) << "Unable to install crash handlers";
     return false;
   }
 
