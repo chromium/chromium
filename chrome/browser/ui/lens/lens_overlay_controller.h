@@ -49,7 +49,6 @@
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -303,12 +302,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Whether it's possible to capture a screenshot. virtual for testing.
   virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
-  // Waits for the handshake with the Lens backend to complete and then invokes
-  // the callback with the LensOverlaySuggestInputs. Callback will be invoked
-  // immediately if the handshake is already complete.
-  base::CallbackListSubscription GetLensSuggestInputsWhenReady(
-      LensOverlaySuggestInputsCallback callback);
-
   // Called before the lens results panel begins hiding. This is called before
   // any side panel closing animations begin.
   void OnSidePanelWillHide(SidePanelEntryHideReason reason);
@@ -347,9 +340,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Updates the metrics related to navigations for the current page.
   void UpdateNavigationMetrics();
-
-  // Returns whether the handshake with the Lens backend is complete.
-  bool IsHandshakeComplete();
 
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
@@ -603,12 +593,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Handles the text response to the Lens interaction request.
   void HandleInteractionResponse(lens::mojom::TextPtr text);
 
-  // Handles an update to the suggest inputs. This will be called whenever
-  // any part of the suggest inputs changes, such as when a new objects
-  // request is sent, or when an interaction data response is received.
-  void HandleSuggestInputsResponse(
-      lens::proto::LensOverlaySuggestInputs suggest_inputs);
-
   // Handles the progress of the page content upload. Notifies the side panel
   // to update the progress bar.
   void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
@@ -680,9 +664,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
-
-    // The latest suggest inputs from the query controller.
-    lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 
     // The selected region. Stored so that it can be used for multiple
     // requests, such as if the user changes the text query without changing
@@ -883,8 +864,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Gets the page classification from the searchbox controller.
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
-
-  const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs() const;
 
   // Adds a callback to be called when the Lens backend handshake is finished.
   // If the handshake is already finished, the callback will be called
@@ -1114,12 +1093,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // until the overlay is closed.
   raw_ptr<lens::LensOverlayQueryController> lens_overlay_query_controller_;
 
-  // The callbacks pending the handshake to complete so the Lens suggest inputs
-  // can be retrieved.
-  base::OnceCallbackList<void(
-      std::optional<lens::proto::LensOverlaySuggestInputs>)>
-      pending_suggest_inputs_callbacks_;
-
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;
 
@@ -1166,15 +1139,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // dependent on whether the page is context eligible or not.
   bool should_send_screenshot_on_init_ = false;
 
-  // TODO(384778180): The three `pre_initialization_*` fields below are used to
+  // TODO(384778180): The two `pre_initialization_*` fields below are used to
   // store data that came back before the initialization data was ready. This
   // should be refactored into one struct to make it cleaner.
   //
-  // The stored suggest inputs to be attached to the initialization data if
-  // suggest inputs were updated before the initialization data was ready.
-  std::optional<lens::proto::LensOverlaySuggestInputs>
-      pre_initialization_suggest_inputs_;
-
   // The stored objects response to be attached to the initialization data
   // if the object response came back before the initialization data was ready.
   std::optional<std::vector<lens::mojom::OverlayObjectPtr>>

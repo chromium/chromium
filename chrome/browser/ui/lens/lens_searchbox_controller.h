@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -71,6 +72,12 @@ class LensSearchboxController : public LensSearchboxClient {
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);
 
+  // Handles an update to the suggest inputs. This will be called whenever
+  // any part of the suggest inputs changes, such as when a new objects
+  // request is sent, or when an interaction data response is received.
+  void HandleSuggestInputsResponse(
+      lens::proto::LensOverlaySuggestInputs suggest_inputs);
+
   // Cleans up internal state associated with the searchbox.
   void CloseUI();
 
@@ -84,6 +91,12 @@ class LensSearchboxController : public LensSearchboxClient {
   // Returns whether the searchbox is in contextual mode by passing the result
   // of IsContextualSearchbox() to the callback.
   void GetIsContextualSearchbox(GetIsContextualSearchboxCallback callback);
+
+  // Waits for the handshake with the Lens backend to complete and then invokes
+  // the callback with the LensOverlaySuggestInputs. Callback will be invoked
+  // immediately if the handshake is already complete.
+  base::CallbackListSubscription GetLensSuggestInputsWhenReady(
+    ::LensOverlaySuggestInputsCallback callback);
 
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
@@ -117,6 +130,9 @@ class LensSearchboxController : public LensSearchboxClient {
 
     // The URI of the thumbnail in the searchbox.
     std::string thumbnail_uri = "";
+
+    // The latest suggest inputs from the query controller.
+    lens::proto::LensOverlaySuggestInputs suggest_inputs_;
   };
 
   // Returns the WebContents associated with the tab this instance of Lens is
@@ -125,6 +141,12 @@ class LensSearchboxController : public LensSearchboxClient {
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
+
+  // The callbacks pending the handshake to complete so the Lens suggest inputs
+  // can be retrieved.
+  base::OnceCallbackList<void(
+      std::optional<lens::proto::LensOverlaySuggestInputs>)>
+      pending_suggest_inputs_callbacks_;
 
   // Searchbox handler for passing in image and text selections. The handler is
   // null if the WebUI containing the searchbox has not been initialized yet,

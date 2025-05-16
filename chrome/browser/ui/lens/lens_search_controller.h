@@ -143,6 +143,9 @@ class LensSearchController {
   // this tab will soon be off.
   bool IsClosing();
 
+  // Returns whether the handshake with the Lens backend is complete.
+  bool IsHandshakeComplete();
+
   // Returns the tab interface that owns this controller.
   tabs::TabInterface* GetTabInterface();
 

@@ -307,6 +307,11 @@ bool LensSearchController::IsClosing() {
   return state_ == State::kClosing || state_ == State::kClosingSidePanel;
 }
 
+bool LensSearchController::IsHandshakeComplete() {
+  const auto& suggest_inputs = lens_searchbox_controller_->GetLensSuggestInputs();
+  return AreLensSuggestInputsReady(suggest_inputs);
+}
+
 tabs::TabInterface* LensSearchController::GetTabInterface() {
   return tab_;
 }
@@ -608,7 +613,7 @@ void LensSearchController::HandleInteractionResponse(
 
 void LensSearchController::HandleSuggestInputsResponse(
     lens::proto::LensOverlaySuggestInputs suggest_inputs) {
-  lens_overlay_controller_->HandleSuggestInputsResponse(suggest_inputs);
+  lens_searchbox_controller_->HandleSuggestInputsResponse(suggest_inputs);
 }
 
 void LensSearchController::HandlePageContentUploadProgress(uint64_t position,
