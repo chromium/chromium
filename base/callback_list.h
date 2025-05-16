@@ -63,7 +63,7 @@
 //
 // UNSUPPORTED:
 //
-// * Destroying the CallbackList during callback notification.
+// * Destroying or clearing the CallbackList during callback notification.
 //
 // This is possible to support, but not currently necessary.
 
@@ -143,6 +143,21 @@ class CallbackListBase {
   ~CallbackListBase() {
     // Destroying the list during iteration is unsupported and will cause a UAF.
     CHECK(!iterating_);
+  }
+
+  // Remove all callbacks. Must not be called while iterating.
+  void Clear() {
+    CHECK(!iterating_);
+    if (empty()) {
+      return;
+    }
+    // Invalidate `Subscription` callbacks, because they reference iterators
+    // that are about to be invalid.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    callbacks_.clear();
+    if (removal_callback_) {
+      removal_callback_.Run();  // May delete |this|!
+    }
   }
 
   // Registers |cb| for future notifications. Returns a CallbackListSubscription
