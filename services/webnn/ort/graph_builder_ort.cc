@@ -3595,7 +3595,7 @@ GraphBuilderOrt::AddMatMulOperation(
     attributes.push_back(model_editor_.CreateAttribute(
         /*name=*/"block_size", base::checked_cast<int64_t>(block_size)));
     model_editor_.AddNode(kOpTypeMatMulNBits, node, inputs, outputs,
-                          std::move(attributes), kMSDomainName);
+                          std::move(attributes), kMSDomain);
 
   } else {
     std::array<const char*, 2> inputs = {input_a.c_str(), input_b.c_str()};

@@ -56,6 +56,33 @@ constexpr char kOVDeviceGPU[] = "GPU";
 constexpr char kOVDeviceCPU[] = "CPU";
 constexpr char kOVDeviceNPU[] = "NPU";
 
+// If the user did not specify a graph optimization level, or if the specified
+// level is not recognized, return the default graph optimization level.
+GraphOptimizationLevel GetUserGraphOptimizationLevelOr(
+    GraphOptimizationLevel default_graph_optimization_level) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtGraphOptimizationLevel)) {
+    std::string user_graph_optimization_level =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kWebNNOrtGraphOptimizationLevel);
+    if (user_graph_optimization_level == "DISABLE_ALL") {
+      return ORT_DISABLE_ALL;
+    } else if (user_graph_optimization_level == "BASIC") {
+      return ORT_ENABLE_BASIC;
+    } else if (user_graph_optimization_level == "EXTENDED") {
+      return ORT_ENABLE_EXTENDED;
+    } else if (user_graph_optimization_level == "ALL") {
+      return ORT_ENABLE_ALL;
+    }
+
+    LOG(WARNING) << "[WebNN] Unrecognized graph optimization level: "
+                 << user_graph_optimization_level
+                 << ". Default level will be used.";
+  }
+
+  return default_graph_optimization_level;
+}
+
 }  // namespace
 
 // static
@@ -165,7 +192,8 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
     // backend.
     // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options.get(), GraphOptimizationLevel::ORT_DISABLE_ALL));
+        session_options.get(),
+        GetUserGraphOptimizationLevelOr(ORT_DISABLE_ALL)));
 
     scoped_trace.AddStep("Append OpenVINO execution provider");
     // OpenVINO related dlls are loaded by this call.
@@ -193,7 +221,8 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
     // 2 (extended optimization).
     // https://github.com/microsoft/onnxruntime/blob/89f8206ba4f1c22c39e0297fb55272e8ce8cd7d0/onnxruntime/core/session/inference_session.cc#L2003
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_ALL));
+        session_options.get(),
+        GetUserGraphOptimizationLevelOr(ORT_ENABLE_ALL)));
     const OrtDmlApi* ort_dml_api = GetOrtDmlApi();
     CHECK(ort_dml_api);
     // Currently use the default device_id=0, which is typically the primary
@@ -225,7 +254,8 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
     // to apply layout optimizations (ORT_ENABLE_ALL).
     // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));
+        session_options.get(),
+        GetUserGraphOptimizationLevelOr(ORT_ENABLE_BASIC)));
   }
 
   return base::WrapRefCounted(new SessionOptions(std::move(session_options)));

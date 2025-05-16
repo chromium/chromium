@@ -332,6 +332,7 @@ static const char* const kSwitchNames[] = {
     switches::kWebNNOrtUseOVModelCache,
     switches::kWebNNOrtLoggingLevel,
     switches::kWebNNOrtLibraryPath,
+    switches::kWebNNOrtGraphOptimizationLevel,
 #endif
 };
 

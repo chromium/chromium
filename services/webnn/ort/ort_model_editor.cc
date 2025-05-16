@@ -221,11 +221,12 @@ OrtModelEditor::BuildAndTakeModelInfo() {
   CHECK(IsSuccess(GetOrtModelEditorApi()->SetGraphOutputs(
       graph_.get(), graph_outputs.data(), graph_outputs.size())));
 
-  std::vector<const char*> domain_names = {kOrtDomainName, kMSDomainName};
-  std::vector<int32_t> opset_versions = {kOrtOpsetVersion,
-                                         kEPContextOpsetVersion};
+  std::vector<const char*> domain_names = {kOrtDomain, kMSDomain,
+                                           kMSNchwcDomain};
+  std::vector<int32_t> opset_versions = {
+      kOrtOpsetVersion, kEPContextOpsetVersion, kMSNchwcDomainOpsetVersion};
   if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtDml)) {
-    domain_names.push_back(kMSDmlDomainName);
+    domain_names.push_back(kMSDmlDomain);
     opset_versions.push_back(kMSDmlDomainOpsetVersion);
   }
 

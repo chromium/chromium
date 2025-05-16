@@ -19,10 +19,11 @@ namespace webnn {
 namespace ort {
 
 // Domains
-constexpr char kOrtDomainName[] = "";
-constexpr char kMSDomainName[] = "com.microsoft";
+constexpr char kOrtDomain[] = "";
+constexpr char kMSDomain[] = "com.microsoft";
+constexpr char kMSNchwcDomain[] = "com.microsoft.nchwc";
 // DML fused operators.
-constexpr char kMSDmlDomainName[] = "com.microsoft.dml";
+constexpr char kMSDmlDomain[] = "com.microsoft.dml";
 // WebGPU EP needs NHWC layout.
 constexpr char kMSInternalNhwcDomain[] = "com.ms.internal.nhwc";
 
@@ -31,6 +32,7 @@ constexpr int32_t kOrtOpsetVersion = 21;
 // EPContext op is used for exporting the EP context cache model.
 // https://onnxruntime.ai/docs/execution-providers/EP-Context-Design.html#onnxruntime-ep-context-cache-feature-design
 constexpr int32_t kEPContextOpsetVersion = 1;
+constexpr int32_t kMSNchwcDomainOpsetVersion = 1;
 constexpr int32_t kMSDmlDomainOpsetVersion = 1;
 constexpr int32_t kMSInternalNhwcDomainOpsetVersion = 1;
 
@@ -100,7 +102,7 @@ class OrtModelEditor {
                base::span<const char*> input,
                base::span<const char*> output,
                std::vector<ScopedOrtOpAttr> attributes = {},
-               std::string_view domain_name = kOrtDomainName);
+               std::string_view domain_name = kOrtDomain);
 
   std::unique_ptr<ModelInfo> BuildAndTakeModelInfo();
 

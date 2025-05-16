@@ -57,6 +57,12 @@ inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
 // Usage: --webnn-ort-library-path="C:\Program Files\ONNXRuntime-OVEP"
 // --allow-third-party-modules
 inline constexpr char kWebNNOrtLibraryPath[] = "webnn-ort-library-path";
+
+// Configure the ort graph optimization level of ONNX Runtime.
+// Usage: --webnn-ort-graph-optimization-level=ALL
+// Other levels could be "DISABLE_ALL", "BASIC" and "EXTENDED".
+inline constexpr char kWebNNOrtGraphOptimizationLevel[] =
+    "webnn-ort-graph-optimization-level";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches
