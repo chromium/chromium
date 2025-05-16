@@ -25,8 +25,8 @@ declare_args() {
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
   enable_openxr = checkout_openxr &&
-                  (is_win || ((_is_xr_supported_android &&
-                               current_cpu == "arm") || current_cpu == "arm64"))
+                  (is_win || (_is_xr_supported_android &&
+                              (current_cpu == "arm" || current_cpu == "arm64")))
 }
 
 declare_args() {
