@@ -179,7 +179,7 @@ message Snippet {
 }
 
 // Information about the triggered rule.
-// Next ID: 14
+// Next ID: 15
 message TriggeredRuleInfo {
   // The unique identifier for this rule.
   int64 rule_id = 1;
@@ -233,6 +233,9 @@ message TriggeredRuleInfo {
 
   // Whether the rule has screenshot protection enabled.
   bool has_screenshot_protection = 13;
+
+  // URL categories in the iframes.
+  repeated string iframe_url_categories = 14;
 }
 
 // Risk level for a url/ip/file
@@ -424,7 +427,7 @@ message SafeBrowsingPasswordChangedEvent {
 }
 
 // A message for reporting dangerous download events.
-// Next ID: 40.
+// Next ID: 41.
 message SafeBrowsingDangerousDownloadEvent {
   reserved 5, 11, 12, 13, 14, 15, 16;
 
@@ -558,6 +561,15 @@ message SafeBrowsingDangerousDownloadEvent {
 
   // Whether the content is encrypted.
   bool is_encrypted = 39;
+
+  // URLs in the iframes.
+  repeated string iframe_urls = 40
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
 }
 
 // Types of data transferring operations that may have triggered the event to
@@ -653,7 +665,7 @@ message SafeBrowsingInterstitialEvent {
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 34.
+// Next ID: 35.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -753,6 +765,15 @@ message DlpSensitiveDataEvent {
   // The referrers of the webpage that sent the user to the url that triggered
   // the event.
   repeated UrlInfo referrers = 33;
+
+  // URLs in the iframes.
+  repeated string iframe_urls = 34
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
 }
 
 // Event where a large file could not be scanned for analysis e.g. malware or
@@ -846,7 +867,7 @@ message UnscannedFileEvent {
 
 // Event that indicates that content was transferred.
 //
-// Next ID: 23.
+// Next ID: 24.
 message ContentTransferEvent {
   // The id of the scan. This will be shared by all events that are triggered
   // from a single scan.
@@ -947,6 +968,15 @@ message ContentTransferEvent {
 
   // Evidence locker filepath in Google Cloud Storage.
   string evidence_locker_filepath = 22;
+
+  // URLs in the iframes.
+  repeated string iframe_urls = 23
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
 }
 
 // Event sent when a user successfully logs in to a website, as determined by
