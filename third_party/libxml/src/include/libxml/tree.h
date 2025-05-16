@@ -515,7 +515,7 @@ struct _xmlNode {
     xmlNs           *nsDef;     /* namespace definitions on this node */
     void            *psvi;	/* for type/PSVI information */
     unsigned short   line;	/* line number */
-    unsigned short   extra;	/* extra data for XPath/XSLT */
+    unsigned int     extra;	/* extra data for XPath/XSLT */
 };
 
 /**
@@ -1325,4 +1325,3 @@ XMLPUBFUN xmlDeregisterNodeFunc
 #endif /* __XML_TREE_H__ */
 
 #endif /* XML_TREE_INTERNALS */
-
