@@ -857,7 +857,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     TAB_STRIP_INCOGNITO_MIGRATION,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sTabStripLayoutOptimization =
             newCachedFlag(
                     TAB_STRIP_LAYOUT_OPTIMIZATION,

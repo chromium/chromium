@@ -23353,21 +23353,6 @@
             ]
         }
     ],
-    "TabStripIncognitoMigration": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStripIncognitoMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabStripLayoutOptimization": [
         {
             "platforms": [

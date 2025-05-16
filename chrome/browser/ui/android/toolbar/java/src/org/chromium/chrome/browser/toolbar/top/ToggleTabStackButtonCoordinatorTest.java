@@ -35,6 +35,8 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
@@ -319,6 +321,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
     public void testSwitchToIncognitoIphIsShown() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(
