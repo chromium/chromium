@@ -33,6 +33,9 @@ namespace syncer {
 class SyncPrefObserver {
  public:
   virtual void OnSyncManagedPrefChange(bool is_sync_managed) = 0;
+  // TODO(crbug.com/40772592): Reconsider if the below observer notifications
+  // are needed, if all writes are triggered by SyncUserSettingsImpl and the
+  // only observer is SyncServiceImpl.
 #if !BUILDFLAG(IS_CHROMEOS)
   virtual void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) = 0;

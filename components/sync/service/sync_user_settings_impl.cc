@@ -88,6 +88,7 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(Delegate* delegate,
   CHECK(delegate_);
   CHECK(crypto_);
   CHECK(prefs_);
+  prefs_observation_.Observe(prefs_);
 }
 
 SyncUserSettingsImpl::~SyncUserSettingsImpl() = default;
@@ -460,6 +461,27 @@ void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     return;
   }
   prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id);
+}
+
+bool SyncUserSettingsImpl::IsSyncClientDisabledByPolicy() const {
+  return prefs_->IsSyncClientDisabledByPolicy();
+}
+
+void SyncUserSettingsImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
+  delegate_->OnSyncClientDisabledByPolicyChanged();
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void SyncUserSettingsImpl::OnFirstSetupCompletePrefChange(
+    bool is_initial_sync_feature_setup_complete) {
+  if (is_initial_sync_feature_setup_complete) {
+    delegate_->OnInitialSyncFeatureSetupCompleted();
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+void SyncUserSettingsImpl::OnSelectedTypesPrefChange() {
+  delegate_->OnSelectedTypesChanged();
 }
 
 }  // namespace syncer

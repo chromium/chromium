@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
@@ -30,6 +31,10 @@
 namespace syncer {
 
 namespace {
+
+using testing::Return;
+
+constexpr GaiaId::Literal kTestGaiaId("1111");
 
 DataTypeSet GetUserTypes() {
   DataTypeSet user_types = UserTypes();
@@ -67,8 +72,30 @@ class MockSyncServiceCryptoDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
 };
 
-class SyncUserSettingsImplTest : public testing::Test,
-                                 public SyncUserSettingsImpl::Delegate {
+class MockDelegate : public SyncUserSettingsImpl::Delegate {
+ public:
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
+
+  MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (const override));
+  MOCK_METHOD(SyncPrefs::SyncAccountState,
+              GetSyncAccountStateForPrefs,
+              (),
+              (const override));
+  MOCK_METHOD(CoreAccountInfo,
+              GetSyncAccountInfoForPrefs,
+              (),
+              (const override));
+  MOCK_METHOD(void, OnSyncClientDisabledByPolicyChanged, (), (override));
+  MOCK_METHOD(void, OnSelectedTypesChanged, (), (override));
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD(void, OnSyncFeatureDisabledViaDashboardCleared, (), (override));
+#else   // BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD(void, OnInitialSyncFeatureSetupCompleted, (), (override));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+class SyncUserSettingsImplTest : public testing::Test {
  protected:
   SyncUserSettingsImplTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -84,25 +111,22 @@ class SyncUserSettingsImplTest : public testing::Test,
 
     sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(
         &sync_service_crypto_delegate_, &trusted_vault_client_);
-  }
 
-  // SyncUserSettingsImpl::Delegate implementation.
-  bool IsCustomPassphraseAllowed() const override { return true; }
-
-  SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const override {
-    return sync_account_state_;
-  }
-
-  CoreAccountInfo GetSyncAccountInfoForPrefs() const override {
-    CoreAccountInfo account;
-    account.email = "name@account.com";
-    account.gaia = GaiaId("name");
-    account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-    return account;
+    ON_CALL(delegate_, IsCustomPassphraseAllowed).WillByDefault(Return(true));
+    ON_CALL(delegate_, GetSyncAccountStateForPrefs)
+        .WillByDefault(Return(SyncPrefs::SyncAccountState::kSyncing));
+    ON_CALL(delegate_, GetSyncAccountInfoForPrefs).WillByDefault([]() {
+      CoreAccountInfo account;
+      account.email = "name@account.com";
+      account.gaia = kTestGaiaId;
+      account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+      return account;
+    });
   }
 
   void SetSyncAccountState(SyncPrefs::SyncAccountState sync_account_state) {
-    sync_account_state_ = sync_account_state;
+    ON_CALL(delegate_, GetSyncAccountStateForPrefs)
+        .WillByDefault(Return(sync_account_state));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     if (sync_account_state ==
         SyncPrefs::SyncAccountState::kSignedInNotSyncing) {
@@ -111,32 +135,23 @@ class SyncUserSettingsImplTest : public testing::Test,
 #endif
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnSyncFeatureDisabledViaDashboardCleared() override {
-    ++on_sync_feature_disabled_via_dashboard_cleared_count_;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
       DataTypeSet registered_types) {
     return std::make_unique<SyncUserSettingsImpl>(
-        /*delegate=*/this, sync_service_crypto_.get(), sync_prefs_.get(),
+        &delegate_, sync_service_crypto_.get(), sync_prefs_.get(),
         registered_types);
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   // The order of fields matters because it determines destruction order and
   // fields are dependent.
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
   testing::NiceMock<MockSyncServiceCryptoDelegate>
       sync_service_crypto_delegate_;
+  testing::NiceMock<MockDelegate> delegate_;
   trusted_vault::FakeTrustedVaultClient trusted_vault_client_;
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
-  SyncPrefs::SyncAccountState sync_account_state_ =
-      SyncPrefs::SyncAccountState::kSyncing;
-#if BUILDFLAG(IS_CHROMEOS)
-  int on_sync_feature_disabled_via_dashboard_cleared_count_ = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
@@ -242,6 +257,7 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
   EXPECT_EQ(sync_user_settings->GetSelectedTypes(),
             Difference(default_types, {UserSelectableType::kPayments}));
 
+  EXPECT_CALL(delegate_, OnSelectedTypesChanged());
   sync_user_settings->SetSelectedType(UserSelectableType::kPayments, true);
 
   EXPECT_EQ(sync_user_settings->GetSelectedTypes(), default_types);
@@ -264,15 +280,20 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
 
   // Disable the sync-everything toggle first, which is required to change
   // individual toggles.
+  EXPECT_CALL(delegate_, OnSelectedTypesChanged());
   sync_user_settings->SetSelectedTypes(/*sync_everything=*/false,
                                        /*types=*/registered_types);
   ASSERT_EQ(sync_user_settings->GetSelectedTypes(), registered_types);
   ASSERT_FALSE(sync_user_settings->IsSyncEverythingEnabled());
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
 
+  EXPECT_CALL(delegate_, OnSelectedTypesChanged());
   sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, false);
   EXPECT_EQ(sync_user_settings->GetSelectedTypes(),
             registered_types_except_passwords);
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
 
+  EXPECT_CALL(delegate_, OnSelectedTypesChanged());
   sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, true);
   EXPECT_EQ(sync_user_settings->GetSelectedTypes(), registered_types);
 }
@@ -580,10 +601,8 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenForSyncingUser) {
   sync_user_settings->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
   EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
-            sync_prefs_->GetEncryptionBootstrapTokenForAccount(
-                GetSyncAccountInfoForPrefs().gaia));
-  sync_prefs_->ClearEncryptionBootstrapTokenForAccount(
-      GetSyncAccountInfoForPrefs().gaia);
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(kTestGaiaId));
+  sync_prefs_->ClearEncryptionBootstrapTokenForAccount(kTestGaiaId);
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
 }
 
@@ -602,8 +621,7 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccount) {
   sync_user_settings->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
   EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
-            sync_prefs_->GetEncryptionBootstrapTokenForAccount(
-                GetSyncAccountInfoForPrefs().gaia));
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(kTestGaiaId));
 }
 
 TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
@@ -612,8 +630,7 @@ TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
       MakeSyncUserSettings(GetUserTypes());
   ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
   sync_user_settings->SetEncryptionBootstrapToken("token");
-  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers(
-      {GetSyncAccountInfoForPrefs().gaia});
+  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({kTestGaiaId});
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
   sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({});
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
@@ -625,20 +642,32 @@ TEST_F(SyncUserSettingsImplTest, SyncFeatureDisabledViaDashboard) {
       MakeSyncUserSettings(GetUserTypes());
 
   ASSERT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
-  ASSERT_EQ(0, on_sync_feature_disabled_via_dashboard_cleared_count_);
 
+  EXPECT_CALL(delegate_, OnSyncFeatureDisabledViaDashboardCleared).Times(0);
   sync_user_settings->SetSyncFeatureDisabledViaDashboard();
   EXPECT_TRUE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
-  EXPECT_EQ(0, on_sync_feature_disabled_via_dashboard_cleared_count_);
 
+  EXPECT_CALL(delegate_, OnSyncFeatureDisabledViaDashboardCleared);
   sync_user_settings->ClearSyncFeatureDisabledViaDashboard();
   EXPECT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
-  EXPECT_EQ(1, on_sync_feature_disabled_via_dashboard_cleared_count_);
 
   // Calling it for the second time should be harmless (no-op).
+  EXPECT_CALL(delegate_, OnSyncFeatureDisabledViaDashboardCleared).Times(0);
   sync_user_settings->ClearSyncFeatureDisabledViaDashboard();
   EXPECT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
-  EXPECT_EQ(1, on_sync_feature_disabled_via_dashboard_cleared_count_);
+}
+#else   // BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncUserSettingsImplTest, SetInitialSyncFeatureSetupComplete) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  ASSERT_FALSE(sync_user_settings->IsInitialSyncFeatureSetupComplete());
+
+  EXPECT_CALL(delegate_, OnInitialSyncFeatureSetupCompleted());
+  sync_user_settings->SetInitialSyncFeatureSetupComplete(
+      SyncFirstSetupCompleteSource::BASIC_FLOW);
+
+  EXPECT_TRUE(sync_user_settings->IsInitialSyncFeatureSetupComplete());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
