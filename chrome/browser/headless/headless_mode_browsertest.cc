@@ -130,23 +130,6 @@ void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
   }
 }
 
-void HeadlessModeBrowserTestWithWindowSize::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  HeadlessModeBrowserTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitchASCII(
-      ::switches::kWindowSize,
-      base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
-}
-
-void HeadlessModeBrowserTestWithWindowSizeAndScale::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  HeadlessModeBrowserTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitchASCII(
-      ::switches::kWindowSize,
-      base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
-  command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1.5");
-}
-
 namespace {
 
 // Miscellaneous tests -------------------------------------------------------

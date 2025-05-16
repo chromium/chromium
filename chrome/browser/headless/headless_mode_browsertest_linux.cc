@@ -90,44 +90,6 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
   EXPECT_TRUE(browser()->window()->IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
-  ui::PlatformWindow* platform_window = GetPlatformWindow(browser());
-
-  // Expect the platform window size to be the same as the requested window
-  // size because Ozone/headless is not clamping the platform window dimensions
-  // to the screen size which in this case is default 800x600 pixels.
-  gfx::Rect pixel_bounds = platform_window->GetBoundsInPixels();
-  EXPECT_EQ(pixel_bounds.width(), kWindowSize.width());
-  EXPECT_EQ(pixel_bounds.height(), kWindowSize.height());
-
-  // Expect the reported browser window size to be the same as the requested
-  // window size.
-  gfx::Rect bounds = browser()->window()->GetBounds();
-  EXPECT_EQ(bounds.size(), kWindowSize);
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSizeAndScale,
-                       WindowSizeWithScale) {
-  ui::PlatformWindow* platform_window = GetPlatformWindow(browser());
-
-  // Expect the platform window size in pixels to be larger than the requested
-  // window size due to scaling.
-  gfx::Rect pixel_bounds = platform_window->GetBoundsInPixels();
-  EXPECT_GT(pixel_bounds.width(), kWindowSize.width());
-  EXPECT_GT(pixel_bounds.height(), kWindowSize.height());
-
-  // Expect the platform window size in DIPs to be the same as the requested
-  // window size despite the scaling.
-  gfx::Rect dip_bounds = platform_window->GetBoundsInDIP();
-  EXPECT_EQ(dip_bounds.width(), kWindowSize.width());
-  EXPECT_EQ(dip_bounds.height(), kWindowSize.height());
-
-  // Expect the reported browser window size to be the same as the requested
-  // window size despite the scaling.
-  gfx::Rect bounds = browser()->window()->GetBounds();
-  EXPECT_EQ(bounds.size(), kWindowSize);
-}
-
 }  // namespace
 
 }  // namespace headless

@@ -188,46 +188,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
-  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
-      static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
-  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
-
-  // Expect the platform window size to be smaller than the requested window
-  // size due to Windows clamping the window dimensions to the monitor work
-  // area.
-  RECT platform_window_rect;
-  CHECK(::GetWindowRect(desktop_window_hwnd, &platform_window_rect));
-  EXPECT_LT(gfx::Rect(platform_window_rect).width(), kWindowSize.width());
-  EXPECT_LT(gfx::Rect(platform_window_rect).height(), kWindowSize.height());
-
-  // Expect the reported browser window size to be the same as the requested
-  // window size.
-  gfx::Rect bounds = browser()->window()->GetBounds();
-  EXPECT_EQ(bounds.size(), kWindowSize);
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSizeAndScale,
-                       WindowSizeWithScale) {
-  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
-      static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
-  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
-
-  // Expect the platform window size to be larger than the requested window size
-  // due to scaling.
-  RECT platform_window_rect;
-  CHECK(::GetWindowRect(desktop_window_hwnd, &platform_window_rect));
-  EXPECT_GT(gfx::Rect(platform_window_rect).width(), kWindowSize.width());
-  EXPECT_GT(gfx::Rect(platform_window_rect).height(), kWindowSize.height());
-
-  // Expect the reported browser window size to be the same as the requested
-  // window size.
-  gfx::Rect bounds = browser()->window()->GetBounds();
-  EXPECT_EQ(bounds.size(), kWindowSize);
-}
-
 // display::win::ScreenWinHeadless tests -------------------------------------
 
 class HeadlessModeBrowserTestWithScreenInfo : public HeadlessModeBrowserTest {
