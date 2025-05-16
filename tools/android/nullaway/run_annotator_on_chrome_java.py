@@ -40,7 +40,7 @@ def _find_unmarked(java_files):
         data = _read_file(path)
         if '@NullUnmarked' in data or '@SuppressWarnings("NullAway' in data:
             ret.add(path)
-    return sorted(ret)
+    return ret
 
 
 def _read_build_config_value(path, key):
@@ -152,6 +152,8 @@ def main():
                  len(java_files))
     logging.info('This will probably take 3-5 minutes 🐢🐢🐢')
 
+    unmarked_files_before = _find_unmarked(java_files)
+
     outdir = os.path.abspath('annotator-out')
     if os.path.exists(outdir):
         shutil.rmtree(outdir)
@@ -188,8 +190,9 @@ echo -e "\n\n============= START OF COMPILE =============" >> {compile_logs}
         print('😰 Command failed.')
         sys.exit(result)
 
-    unmarked_files = _find_unmarked(java_files)
+    unmarked_files_after = _find_unmarked(java_files)
 
+    unmarked_files = sorted(unmarked_files_after - unmarked_files_before)
     if unmarked_files:
         for path in unmarked_files:
             data = _read_file(path)
