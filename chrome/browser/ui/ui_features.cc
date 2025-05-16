@@ -455,7 +455,7 @@ static std::string GetCountryCode() {
 
 bool IsTabSearchMoving() {
   static const bool is_tab_search_moving = [] {
-    if (GetCountryCode() == "US" &&
+    if (GetCountryCode() == "us" &&
         features::kLaunchedTabSearchToolbarButton.Get()) {
       return true;
     }

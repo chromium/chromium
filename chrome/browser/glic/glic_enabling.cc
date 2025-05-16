@@ -98,7 +98,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
 bool GlicEnabling::IsEnabledByFlags() {
   // Check that the feature flags are enabled.
   return base::FeatureList::IsEnabled(features::kGlic) &&
-         base::FeatureList::IsEnabled(features::kTabstripComboButton);
+         features::IsTabSearchMoving();
 }
 
 bool GlicEnabling::IsProfileEligible(const Profile* profile) {
