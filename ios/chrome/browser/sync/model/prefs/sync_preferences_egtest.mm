@@ -358,8 +358,9 @@ void WaitForPreferenceValue(int pref_value) {
 
   // Restart with MigrateAccountPrefs flag enabled.
   [self restartWithMigrateAccountPrefsEnabled:fakeIdentity];
-  GREYAssertEqual([ChromeEarlGrey userIntegerPref:kTestSyncablePref],
-                  kTestPrefValue1, @"Incorrect local pref value.");
+  // The account values are loaded upon sync initialization, thus wait for the
+  // pref value to be set.
+  WaitForPreferenceValue(kTestPrefValue1);
 
   // Sign out and validate that the pref is not set locally.
   [SigninEarlGrey signOut];
