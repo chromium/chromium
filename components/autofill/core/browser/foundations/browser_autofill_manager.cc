@@ -3127,6 +3127,17 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       suggestions = GetProfileSuggestions(
           form, *form_structure, field, *autofill_field, trigger_source,
           std::move(plus_address_email_override));
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
+          autofill_field->Type().GetStorableType() ==
+              EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
+        if (ValuablesDataManager* valuables_manager =
+                client().GetValuablesDataManager()) {
+          ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
+              suggestions, *valuables_manager,
+              client().GetLastCommittedPrimaryMainFrameURL());
+        }
+      }
       break;
     case FillingProduct::kCreditCard:
       suggestions = GetCreditCardSuggestions(form, *form_structure, field,

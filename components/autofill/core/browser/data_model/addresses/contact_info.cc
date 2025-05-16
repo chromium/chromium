@@ -225,8 +225,9 @@ std::u16string EmailInfo::GetInfo(const AutofillType& type,
 }
 
 std::u16string EmailInfo::GetRawInfo(FieldType type) const {
-  if (type == EMAIL_ADDRESS)
+  if (type == EMAIL_ADDRESS || type == EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
     return email_;
+  }
 
   return std::u16string();
 }

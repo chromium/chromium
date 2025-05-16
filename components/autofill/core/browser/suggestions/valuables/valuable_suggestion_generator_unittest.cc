@@ -264,6 +264,43 @@ TEST_F(ValuableSuggestionGeneratorTest,
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
+       ExtendEmailSuggestionsWithLoyaltyCardSuggestions_NoEmails) {
+  const std::vector<LoyaltyCard> loyalty_cards = {LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL("https://empty.url.com"),
+      /*loyalty_card_number=*/"987654321987654321",
+      {GURL("https://domain1.example"),
+       GURL("https://common-domain.example")})};
+
+  test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
+
+  std::vector<Suggestion> email_suggestions;
+
+  ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
+      email_suggestions, valuables_data_manager(),
+      GURL("https://common-domain.example/test"));
+
+  EXPECT_THAT(email_suggestions,
+              testing::ElementsAre(
+                  EqualsSuggestion(
+                      SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
+                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
+                      {{Suggestion::Text(u"CVS Pharmacy")}},
+                      Suggestion::Guid("loyalty_card_id_1")),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
+                                   l10n_util::GetStringUTF16(
+                                       IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+                                   Suggestion::Icon::kSettings)));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_THAT(email_suggestions.back(),
+              HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
+#endif
+}
+
+TEST_F(ValuableSuggestionGeneratorTest,
        ExtendEmailSuggestionsWithLoyaltyCardSuggestions_NoLoyaltyCards) {
   test_api(valuables_data_manager()).SetLoyaltyCards({});
 

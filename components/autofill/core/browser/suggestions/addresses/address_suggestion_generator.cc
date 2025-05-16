@@ -655,23 +655,23 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   // Field types we are interested in showing suggestions for.
   // TODO(crbug.com/381994105): Add a finch parameter to easily experiment with
   // adding and removing field types.
-  static constexpr FieldTypeSet kTypes = {
-      NAME_FULL,
-      NAME_LAST,
-      NAME_LAST_SECOND,
-      COMPANY_NAME,
-      ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_LINE2,
-      ADDRESS_HOME_LINE3,
-      ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STATE,
-      ADDRESS_HOME_COUNTRY,
-      ADDRESS_HOME_STREET_NAME,
-      EMAIL_ADDRESS,
-      PHONE_HOME_CITY_AND_NUMBER,
-      PHONE_HOME_WHOLE_NUMBER,
-      ADDRESS_HOME_ZIP};
+  static constexpr FieldTypeSet kTypes = {NAME_FULL,
+                                          NAME_LAST,
+                                          NAME_LAST_SECOND,
+                                          COMPANY_NAME,
+                                          ADDRESS_HOME_LINE1,
+                                          ADDRESS_HOME_LINE2,
+                                          ADDRESS_HOME_LINE3,
+                                          ADDRESS_HOME_STREET_ADDRESS,
+                                          ADDRESS_HOME_CITY,
+                                          ADDRESS_HOME_STATE,
+                                          ADDRESS_HOME_COUNTRY,
+                                          ADDRESS_HOME_STREET_NAME,
+                                          EMAIL_ADDRESS,
+                                          EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+                                          PHONE_HOME_CITY_AND_NUMBER,
+                                          PHONE_HOME_WHOLE_NUMBER,
+                                          ADDRESS_HOME_ZIP};
   // Some field types require only `kMinNumberCharactersToMatch - 1` matching
   // characters for a suggestion to be shown. The assumption is that these field
   // types do not need the same matching prefix length to produce less false

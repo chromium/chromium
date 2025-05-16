@@ -86,6 +86,10 @@ FormFieldData CreateFieldByRole(FieldType role) {
       field.set_label(u"Frequent Flyer Number");
       field.set_name(u"frequentflyer");
       break;
+    case FieldType::EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+      field.set_label(u"Email or Frequent Flyer Number");
+      field.set_name(u"email_or_frequentflyer");
+      break;
     case FieldType::EMPTY_TYPE:
       break;
     default:

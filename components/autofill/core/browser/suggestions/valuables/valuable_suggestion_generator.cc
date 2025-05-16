@@ -140,6 +140,13 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
   if (loyalty_card_suggestions.empty()) {
     return;
   }
+  if (email_suggestions.empty()) {
+    email_suggestions.insert(
+        email_suggestions.end(),
+        std::make_move_iterator(loyalty_card_suggestions.begin()),
+        std::make_move_iterator(loyalty_card_suggestions.end()));
+    return;
+  }
 
   Suggestion submenu_suggestion = Suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE),
