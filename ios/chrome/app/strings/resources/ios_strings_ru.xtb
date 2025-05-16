@@ -134,7 +134,7 @@
 <translation id="1509486075633541495">Войдите в аккаунт</translation>
 <translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
 <translation id="1513858653616922153">Удалить пароль</translation>
-<translation id="1517166097004694782">Скрыть карточку "Продолжить просмотр"</translation>
+<translation id="1517166097004694782">Скрыть "Снова открыть эту вкладку"</translation>
 <translation id="1520027731907768768">Уведомления о скидках на отслеживаемые товары</translation>
 <translation id="1521366073263497277">Перейдите на страницу вкладок.</translation>
 <translation id="1521774566618522728">Последние действия: сегодня</translation>
@@ -356,7 +356,7 @@
 <translation id="2403129868389095715">Недоступно</translation>
 <translation id="2410754283952462441">Выберите аккаунт</translation>
 <translation id="2422174748424038845">Тогда группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
-<translation id="2424805048070062787">Продолжить просмотр</translation>
+<translation id="2424805048070062787">Снова открыть эту вкладку</translation>
 <translation id="2426805022920575512">Сменить аккаунт</translation>
 <translation id="243275146591958220">Отменить скачивание</translation>
 <translation id="2434405374328098816">Пароль пользователя <ph name="USERNAME" /> для сайта <ph name="WEBSITE" /> уже сохранен.</translation>
