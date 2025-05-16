@@ -79,6 +79,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         value: false,
       },
+      enableBorderGlow: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableBorderGlow'),
+      },
       forceHideSearchBox: {
         type: Boolean,
         value: false,
@@ -202,6 +206,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     };
   }
 
+  // Whether the border glow is enabled via feature flag.
+  declare enableBorderGlow: boolean;
   // Whether the user is currently focused into the searchbox.
   declare isSearchboxFocused: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
@@ -610,7 +616,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   // The user finished making their selection on the selection overlay.
   private handleSelectionFinished() {
-    this.$.initialGradient.triggerHideScrimAnimation();
+    if (!this.enableBorderGlow) {
+      this.$.initialGradient.triggerHideScrimAnimation();
+    }
     this.$.cursorTooltip.setPauseTooltipChanges(false);
     this.isPointerDown = false;
   }
@@ -621,7 +629,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private onInitialFlashAnimationEnd() {
     this.initialFlashAnimationHasEnded = true;
-    this.$.initialGradient.setScrimVisible();
+    if (!this.enableBorderGlow) {
+      this.$.initialGradient.setScrimVisible();
+    }
     // The searchbox is not focusable until the animation has ended.
     if (this.autoFocusSearchbox &&
         this.isLensOverlayContextualSearchboxVisible) {

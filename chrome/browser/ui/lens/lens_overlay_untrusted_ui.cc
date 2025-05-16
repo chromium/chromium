@@ -240,6 +240,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       lens::features::GetLensOverlayTranslateRecentLanguagesAmount());
   html_source->AddBoolean("simplifiedSelectionEnabled",
                           lens::features::IsSimplifiedSelectionEnabled());
+  html_source->AddBoolean(
+      "enableBorderGlow",
+      lens::features::GetVisualSelectionUpdatesEnableBorderGlow());
   html_source->AddBoolean("autoFocusSearchbox",
                           lens::features::ShouldAutoFocusSearchbox());
   html_source->AddBoolean("cornerSlidersEnabled",

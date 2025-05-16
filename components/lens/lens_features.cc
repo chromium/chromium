@@ -63,6 +63,10 @@ BASE_FEATURE(kLensOverlaySimplifiedSelection,
              "LensOverlaySimplifiedSelection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayVisualSelectionUpdates,
+             "LensOverlayVisualSelectionUpdates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayUpdatedClientContext,
              "LensOverlayUpdatedClientContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -465,6 +469,10 @@ constexpr base::FeatureParam<bool>
     kLensOverlaySimplifiedSelectionShouldCopyAsImage{
         &kLensOverlaySimplifiedSelection, "copy-command-copies-as-image",
         false};
+
+constexpr base::FeatureParam<bool>
+    kLensOverlayVisualSelectionUpdatesEnableBorderGlow{
+        &kLensOverlayVisualSelectionUpdates, "enable-border-glow", true};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -980,6 +988,15 @@ int GetTranslateTextReceivedTimeout() {
 
 bool GetShouldCopyAsImage() {
   return kLensOverlaySimplifiedSelectionShouldCopyAsImage.Get();
+}
+
+bool IsLensOverlayVisualSelectionUpdatesEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates);
+}
+
+bool GetVisualSelectionUpdatesEnableBorderGlow() {
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+         kLensOverlayVisualSelectionUpdatesEnableBorderGlow.Get();
 }
 
 bool PageContentUploadRequestIdFixEnabled() {

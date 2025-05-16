@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="//resources/css/text_defaults_md.css">
+<link rel="stylesheet" href="//resources/css/text_defaults_md.css" />
 <style>
   :host {
     --cursor-img-url: url("lens.svg");
@@ -29,9 +29,10 @@
   }
 
   :host([is-initial-size]) #backgroundImageCanvas {
-    animation: initial-blur-animation 700ms cubic-bezier(0.2, 0.0, 0, 1.0),
-               initial-inset-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
-               initial-scale-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1.0);
+    animation:
+      initial-blur-animation 700ms cubic-bezier(0.2, 0, 0, 1),
+      initial-inset-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1),
+      initial-scale-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1);
     position: relative;
   }
 
@@ -59,8 +60,7 @@
   :host([suppress-copy-and-save-as-image]) .save-as-image-context-menu-item,
   :host(:not([enable-copy-as-image])) .copy-as-image-context-menu-item,
   :host(:not([enable-save-as-image])) .save-as-image-context-menu-item,
-  :host(:not([show-detected-text-context-menu-options]))
-      .detected-text-context-menu-option,
+  :host(:not([show-detected-text-context-menu-options])) .detected-text-context-menu-option,
   :host(:not([show-translate-context-menu-item])) .translate-context-menu-item,
   :host([disable-shimmer]) #overlayShimmerCanvas,
   :host([disable-shimmer]) #overlayShimmer {
@@ -69,9 +69,8 @@
 
   :host([shimmer-on-segmentation]) #objectSelectionLayer,
   :host([shimmer-on-segmentation]) #overlayShimmer,
-  :host([shimmer-on-segmentation][shimmer-fade-out-complete])
-      #overlayShimmerCanvas  {
-    z-index: 4;  /* Position above words but below selection corners. */
+  :host([shimmer-on-segmentation][shimmer-fade-out-complete]) #overlayShimmerCanvas {
+    z-index: 4; /* Position above words but below selection corners. */
   }
 
   :host([translate-mode-enabled]) #objectSelectionLayer {
@@ -100,7 +99,7 @@
   }
 
   #selectionElements {
-    background-color: rgba(var(--color-scrim-rgb), .05);
+    background-color: rgba(var(--color-scrim-rgb), 0.05);
   }
 
   :host([translate-mode-enabled]) #selectionElements {
@@ -116,9 +115,10 @@
   }
 
   :host([is-initial-size]) #initialFlashScrim {
-    animation: initial-inset-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
-               initial-scale-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
-               initial-flash-animation 700ms cubic-bezier(0.2, 0.0, 0, 1.0);
+    animation:
+      initial-inset-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1),
+      initial-scale-animation 400ms cubic-bezier(0.05, 0.7, 0.1, 1),
+      initial-flash-animation 700ms cubic-bezier(0.2, 0, 0, 1);
     background-color: rgb(255, 255, 255);
     height: 100%;
     max-height: 100vh;
@@ -190,7 +190,7 @@
 
   .context-menu {
     align-items: flex-start;
-    animation: scale-out 150ms cubic-bezier(0.2, 0.0, 0, 1.0);
+    animation: scale-out 150ms cubic-bezier(0.2, 0, 0, 1);
     background: var(--color-selection-element);
     border-radius: 8px;
     box-shadow: 0px 2px 6px 0px rgba(60, 64, 67, 0.16);
@@ -203,7 +203,9 @@
     pointer-events: auto;
     position: absolute;
     visibility: hidden;
-    transition: opacity 150ms, visibility 150ms;
+    transition:
+      opacity 150ms,
+      visibility 150ms;
     z-index: 6;
   }
 
@@ -213,7 +215,7 @@
 
   :host([show-selected-text-context-menu]) #selectedTextContextMenu,
   :host([show-selected-region-context-menu]) #selectedRegionContextMenu {
-    animation: scale-in 250ms cubic-bezier(0.2, 0.0, 0, 1.0);
+    animation: scale-in 250ms cubic-bezier(0.2, 0, 0, 1);
     opacity: 1;
     visibility: visible;
   }
@@ -232,7 +234,7 @@
   }
 
   .context-menu-item:active {
-    background-color: rgba(var(--color-scrim-rgb), 0.10);
+    background-color: rgba(var(--color-scrim-rgb), 0.1);
   }
 
   .menu-item-icon {
@@ -246,23 +248,23 @@
   }
 
   .menu-item-icon.copy {
-    mask-image: url('copy.svg');
+    mask-image: url("copy.svg");
   }
 
   .menu-item-icon.copy-image {
-    mask-image: url('copy_image.svg');
+    mask-image: url("copy_image.svg");
   }
 
   .menu-item-icon.download {
-    mask-image: url('download.svg');
+    mask-image: url("download.svg");
   }
 
   .menu-item-icon.translate {
-    mask-image: url('translate.svg');
+    mask-image: url("translate.svg");
   }
 
   .menu-item-icon.text {
-    mask-image: url('text.svg');
+    mask-image: url("text.svg");
   }
 
   .menu-item-label {
@@ -293,7 +295,7 @@
 
   @keyframes initial-inset-animation {
     50% {
-      animation-timing-function: cubic-bezier(0.2, 0.0, 0, 1.0);
+      animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
       border-radius: 8px;
     }
 
@@ -305,7 +307,7 @@
   @keyframes initial-blur-animation {
     /* 2/7 of the way through the animation. */
     28.6% {
-      filter: blur(2.5px)
+      filter: blur(2.5px);
     }
 
     to {
@@ -353,90 +355,134 @@
     }
   }
 </style>
-<div id="selectionOverlay" on-pointerenter="handlePointerEnter"
-    on-pointerleave="handlePointerLeave">
-  <canvas id="backgroundImageCanvas"
-      style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
+<div
+  id="selectionOverlay"
+  on-pointerenter="handlePointerEnter"
+  on-pointerleave="handlePointerLeave"
+>
+  <canvas
+    id="backgroundImageCanvas"
+    style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
+  ></canvas>
   <!-- Wrapper div is needed to stack the selection elements on top of
   background image. -->
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
     <div id="extraScrim"></div>
-    <overlay-shimmer-canvas hidden$="[[disableShimmer]]" theme="[[theme]]"
-        id="overlayShimmerCanvas"></overlay-shimmer-canvas>
-    <post-selection-renderer id="postSelectionRenderer"
-        selection-overlay-rect="[[selectionOverlayRect]]">
+    <overlay-shimmer-canvas
+      hidden$="[[disableShimmer || enableBorderGlow]]"
+      theme="[[theme]]"
+      id="overlayShimmerCanvas"
+    ></overlay-shimmer-canvas>
+    <template is="dom-if" if="[[enableBorderGlow]]">
+      <overlay-border-glow id="overlayBorderGlowCanvas"></overlay-border-glow>
+    </template>
+    <post-selection-renderer
+      id="postSelectionRenderer"
+      selection-overlay-rect="[[selectionOverlayRect]]"
+    >
     </post-selection-renderer>
-    <lens-object-layer id="objectSelectionLayer"
-        screenshot-data-uri="[[screenshotDataUri]]" theme="[[theme]]">
+    <lens-object-layer
+      id="objectSelectionLayer"
+      screenshot-data-uri="[[screenshotDataUri]]"
+      theme="[[theme]]"
+    >
     </lens-object-layer>
-    <region-selection id="regionSelectionLayer" theme="[[theme]]"
-        screenshot-data-uri="[[screenshotDataUri]]"
-        selection-overlay-rect="[[selectionOverlayRect]]"></region-selection>
+    <region-selection
+      id="regionSelectionLayer"
+      theme="[[theme]]"
+      screenshot-data-uri="[[screenshotDataUri]]"
+      selection-overlay-rect="[[selectionOverlayRect]]"
+    ></region-selection>
     <template is="dom-if" if="[[!simplifiedSelectionEnabled]]">
-      <lens-text-layer id="textSelectionLayer"
-          selection-overlay-rect="[[selectionOverlayRect]]"></lens-text-layer>
+      <lens-text-layer
+        id="textSelectionLayer"
+        selection-overlay-rect="[[selectionOverlayRect]]"
+      ></lens-text-layer>
     </template>
     <template is="dom-if" if="[[simplifiedSelectionEnabled]]">
-      <lens-simplified-text-layer
-          selection-overlay-rect="[[selectionOverlayRect]]">
+      <lens-simplified-text-layer selection-overlay-rect="[[selectionOverlayRect]]">
       </lens-simplified-text-layer>
     </template>
   </div>
   <div id="initialFlashScrim"></div>
   <div id="contextMenuOverlay">
-    <div id="selectedTextContextMenu" class="context-menu" role="menu"
-        style$="[[getContextMenuStyle(selectedTextContextMenuX,
+    <div
+      id="selectedTextContextMenu"
+      class="context-menu"
+      role="menu"
+      style$="[[getContextMenuStyle(selectedTextContextMenuX,
                                       selectedTextContextMenuY)]]"
-        on-pointerenter="handlePointerEnterContextMenu"
-        on-pointerleave="handlePointerLeaveContextMenu">
+      on-pointerenter="handlePointerEnterContextMenu"
+      on-pointerleave="handlePointerLeaveContextMenu"
+    >
       <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
         <span class="menu-item-icon copy"></span>
         <span class="menu-item-label">$i18n{copy}</span>
       </div>
-      <div class="context-menu-item translate-context-menu-item" role="menuitem"
-          on-pointerup="handleTranslate">
+      <div
+        class="context-menu-item translate-context-menu-item"
+        role="menuitem"
+        on-pointerup="handleTranslate"
+      >
         <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>
       </div>
     </div>
-    <div id="selectedRegionContextMenu" class="context-menu" role="menu"
-        style$="[[selectedRegionContextMenuHorizontalStyle]]
+    <div
+      id="selectedRegionContextMenu"
+      class="context-menu"
+      role="menu"
+      style$="[[selectedRegionContextMenuHorizontalStyle]]
                 [[selectedRegionContextMenuVerticalStyle]]"
-        on-pointerenter="handlePointerEnterContextMenu"
-        on-pointerleave="handlePointerLeaveContextMenu">
-      <div id="copyDetectedTextContextMenuItem"
-          class="context-menu-item detected-text-context-menu-option"
-          role="menuitem" on-pointerup="handleCopyDetectedText">
+      on-pointerenter="handlePointerEnterContextMenu"
+      on-pointerleave="handlePointerLeaveContextMenu"
+    >
+      <div
+        id="copyDetectedTextContextMenuItem"
+        class="context-menu-item detected-text-context-menu-option"
+        role="menuitem"
+        on-pointerup="handleCopyDetectedText"
+      >
         <span class="menu-item-icon copy"></span>
         <span class="menu-item-label">$i18n{copyText}</span>
       </div>
-      <div id="selectTextContextMenuItem"
-          class="context-menu-item detected-text-context-menu-option"
-          role="menuitem" on-pointerup="handleSelectText">
+      <div
+        id="selectTextContextMenuItem"
+        class="context-menu-item detected-text-context-menu-option"
+        role="menuitem"
+        on-pointerup="handleSelectText"
+      >
         <span class="menu-item-icon text"></span>
         <span class="menu-item-label">$i18n{selectText}</span>
       </div>
-      <div class="context-menu-item translate-context-menu-item
-          detected-text-context-menu-option" role="menuitem"
-          on-pointerup="handleTranslateDetectedText">
+      <div
+        class="context-menu-item translate-context-menu-item detected-text-context-menu-option"
+        role="menuitem"
+        on-pointerup="handleTranslateDetectedText"
+      >
         <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>
       </div>
-      <div class="context-menu-item copy-as-image-context-menu-item"
-          role="menuitem" on-pointerup="handleCopyAsImage">
+      <div
+        class="context-menu-item copy-as-image-context-menu-item"
+        role="menuitem"
+        on-pointerup="handleCopyAsImage"
+      >
         <span class="menu-item-icon copy-image"></span>
         <span class="menu-item-label">$i18n{copyAsImage}</span>
       </div>
-      <div class="context-menu-item save-as-image-context-menu-item"
-          role="menuitem" on-pointerup="handleSaveAsImage">
+      <div
+        class="context-menu-item save-as-image-context-menu-item"
+        role="menuitem"
+        on-pointerup="handleSaveAsImage"
+      >
         <span class="menu-item-icon download"></span>
         <span class="menu-item-label">$i18n{saveAsImage}</span>
       </div>
     </div>
   </div>
 </div>
-<div id="cursor"
-    class$="[[getHiddenCursorClass(isPointerInside, currentGesture.state)]]">
+<div id="cursor" class$="[[getHiddenCursorClass(isPointerInside, currentGesture.state)]]">
   <div id="cursorImg"></div>
 </div>

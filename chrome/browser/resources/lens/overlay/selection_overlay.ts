@@ -7,6 +7,7 @@ import './simplified_text_layer.js';
 import './text_layer.js';
 import './region_selection.js';
 import './post_selection_renderer.js';
+import './overlay_border_glow.js';
 import './overlay_shimmer_canvas.js';
 import '/strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -178,6 +179,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         readOnly: true,
         value: !loadTimeData.getBoolean('enableShimmer'),
       },
+      enableBorderGlow: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableBorderGlow'),
+      },
       enableCopyAsImage: {
         type: Boolean,
         reflectToAttribute: true,
@@ -282,6 +287,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // gesture has started.
   declare private currentGesture: GestureEvent;
   declare private disableShimmer: boolean;
+  declare private enableBorderGlow: boolean;
   declare private enableCopyAsImage: boolean;
   declare private enableSaveAsImage: boolean;
   declare private suppressCopyAndSaveAsImage: boolean;
@@ -1242,7 +1248,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     // Don't start the shimmer animation until the initial flash animation is
     // finished.
-    if (!this.disableShimmer) {
+    if (!this.disableShimmer && !this.enableBorderGlow) {
       this.$.overlayShimmerCanvas.startAnimation();
     }
   }

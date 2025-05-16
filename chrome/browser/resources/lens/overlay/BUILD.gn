@@ -75,6 +75,8 @@ build_webui("build_overlay") {
     "screenshot_utils.ts",
     "searchbox_utils.ts",
     "selection_utils.ts",
+    "overlay_border_glow.ts",
+    "overlay_border_glow.html.ts",
     "side_panel/side_panel_browser_proxy.ts",
     "side_panel/side_panel_error_page.ts",
     "side_panel/feedback_toast.ts",
@@ -94,6 +96,7 @@ build_webui("build_overlay") {
     "simplified_text_layer.css",
     "side_panel/side_panel_error_page.css",
     "side_panel/feedback_toast.css",
+    "overlay_border_glow.css",
   ]
 
   ts_deps = [
