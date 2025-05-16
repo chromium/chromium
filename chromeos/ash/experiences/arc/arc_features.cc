@@ -57,12 +57,6 @@ BASE_FEATURE(kBootCompletedBroadcastFeature,
              "ArcBootCompletedBroadcast",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether independent ARC container app killer is enabled to replace
-// the ARC container app killing in TabManagerDelegate.
-BASE_FEATURE(kContainerAppKiller,
-             "ContainerAppKiller",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls experimental Custom Tabs feature for ARC.
 BASE_FEATURE(kCustomTabsExperimentFeature,
              "ArcCustomTabsExperiment",

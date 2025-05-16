@@ -1504,8 +1504,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 
   // ARCVM defers to Android's LMK to kill apps in low memory situations because
   // memory can't be reclaimed directly to ChromeOS.
-  if (!arc::IsArcVmEnabled() &&
-      base::FeatureList::IsEnabled(arc::kContainerAppKiller)) {
+  if (!arc::IsArcVmEnabled()) {
     arc_container_app_killer_ = std::make_unique<arc::ContainerAppKiller>();
   }
 
