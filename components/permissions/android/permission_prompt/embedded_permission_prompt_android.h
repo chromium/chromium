@@ -65,6 +65,10 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
   base::android::ScopedJavaLocalRef<jstring> GetPositiveEphemeralButtonText(
       JNIEnv* env,
       bool is_one_time) const override;
+  base::android::ScopedJavaLocalRef<jobjectArray> GetRadioButtonTexts(
+      JNIEnv* env,
+      bool is_one_time) const override;
+
   bool ShouldUseRequestingOriginFavicon() const override;
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;

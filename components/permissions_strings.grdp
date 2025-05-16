@@ -213,6 +213,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_PERMISSION_NEVER_ALLOW" desc="(Alternative label, to compare) label on button to permanent deny in a one-time granting use case.">
     Never allow
   </message>
+   <message name="IDS_PERMISSION_ALLOW_APPROXIMATE_GEO" desc="Label on a radio button to select approximate geolocation permission for a site." translateable="false">
+    approximate
+  </message>
+  <message name="IDS_PERMISSION_ALLOW_PRECISE_GEO" desc="Label on a radio button to select precise geolocation permission for a site." translateable="false">
+    precise
+  </message>
   <!-- Device Chooser -->
   <if expr="not is_android">
     <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT" desc="The label that is used to introduce Bluetooth chooser details to the user in a popup.">

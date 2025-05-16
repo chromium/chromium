@@ -4,6 +4,7 @@
 
 #include "components/permissions/android/permission_prompt/embedded_permission_prompt_android.h"
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 #include "components/permissions/features.h"
@@ -287,6 +288,12 @@ EmbeddedPermissionPromptAndroid::GetPositiveEphemeralButtonText(
 
   return ConvertUTF16ToJavaString(
       env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
+}
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+EmbeddedPermissionPromptAndroid::GetRadioButtonTexts(JNIEnv* env,
+                                                     bool is_one_time) const {
+  return base::android::ToJavaArrayOfStrings(env, base::span<std::string>());
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {

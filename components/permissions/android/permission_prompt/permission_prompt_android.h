@@ -73,6 +73,9 @@ class PermissionPromptAndroid : public PermissionPrompt {
       bool is_one_time) const;
   virtual base::android::ScopedJavaLocalRef<jstring>
   GetPositiveEphemeralButtonText(JNIEnv* env, bool is_one_time) const;
+  virtual base::android::ScopedJavaLocalRef<jobjectArray> GetRadioButtonTexts(
+      JNIEnv* env,
+      bool is_one_time) const;
 
   // We show one permission at a time except for grouped mic+camera, for which
   // we still have a single icon and message text.

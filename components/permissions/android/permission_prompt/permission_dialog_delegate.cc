@@ -53,6 +53,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
       permission_prompt_->GetNegativeButtonText(env, is_one_time),
       permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
       /*showPositiveNonEphemeralAsFirstButton=*/is_one_time,
+      permission_prompt_->GetRadioButtonTexts(env, is_one_time),
       static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant())));
 }
 
@@ -134,6 +135,7 @@ void PermissionDialogJavaDelegate::UpdateDialog() {
       permission_prompt_->GetNegativeButtonText(env, is_one_time),
       permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
       /*showPositiveNonEphemeralAsFirstButton=*/is_one_time,
+      permission_prompt_->GetRadioButtonTexts(env, is_one_time),
       static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant()));
 }
 
