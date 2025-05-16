@@ -23230,6 +23230,24 @@
             ]
         }
     ],
+    "TabCaptureInfobarLinks": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabCaptureInfobarLinks"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGroupParityAndroidV2": [
         {
             "platforms": [
