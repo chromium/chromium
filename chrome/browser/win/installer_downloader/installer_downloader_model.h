@@ -15,9 +15,13 @@ namespace base {
 class FilePath;
 }
 
+namespace content {
+class DownloadManager;
+}
+
 namespace installer_downloader {
 
-using CompletionCallback = base::OnceCallback<void()>;
+using CompletionCallback = base::OnceCallback<void(bool succeeded)>;
 
 class InstallerDownloaderModel {
  public:
@@ -36,6 +40,7 @@ class InstallerDownloaderModel {
   // TODO(crbug.com/412976021): Download payload.
   virtual void StartDownload(const GURL& url,
                              const base::FilePath& destination,
+                             content::DownloadManager& download_manager,
                              CompletionCallback completion_callback) = 0;
 
   // Returns true if the infobar has been displayed the maximum number of times,

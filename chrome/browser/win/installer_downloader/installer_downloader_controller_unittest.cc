@@ -35,7 +35,10 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
  public:
   MOCK_METHOD(void,
               StartDownload,
-              (const GURL&, const base::FilePath&, CompletionCallback),
+              (const GURL&,
+               const base::FilePath&,
+               content::DownloadManager&,
+               CompletionCallback),
               (override));
   MOCK_METHOD(void,
               CheckEligibility,

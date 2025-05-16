@@ -8,18 +8,28 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/win/cloud_synced_folder_checker.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
 #include "chrome/browser/win/installer_downloader/system_info_provider.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_url_parameters.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/fake_download_item.h"
+#include "content/public/test/mock_download_manager.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
+using ::download::DownloadInterruptReason;
+using ::testing::_;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -49,10 +59,11 @@ class InstallerDownloaderModelTest : public testing::Test {
 
   TestingPrefServiceSimple& GetLocalState() { return *local_state_.Get(); }
 
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<InstallerDownloaderModelImpl> model_;
   raw_ptr<MockSystemInfoProvider> mock_system_info_provider_;
+  content::MockDownloadManager mock_download_manager_;
 };
 
 TEST_F(InstallerDownloaderModelTest, MaxShowCountNotExceeded) {
@@ -175,6 +186,88 @@ TEST_F(InstallerDownloaderModelTest, OsUpgradeNotEligibleWhenOnlyRootPathSet) {
         EXPECT_EQ(destination, status.one_drive_path);
         run_loop.Quit();
       }));
+  run_loop.Run();
+}
+
+TEST_F(InstallerDownloaderModelTest, StartDownloadFailureInvokesCallback) {
+  const base::FilePath destination(
+      FILE_PATH_LITERAL("C:\\temp\\installer.exe"));
+  const GURL url("https://example.com/installer.exe");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_download_manager_, DownloadUrlMock(_))
+      .WillOnce([&](download::DownloadUrlParameters* params) {
+        std::move(params->callback())
+            .Run(nullptr, DownloadInterruptReason::
+                              DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED);
+      });
+
+  model_->StartDownload(url, destination, mock_download_manager_,
+                        base::BindLambdaForTesting([&](bool succeeded) {
+                          EXPECT_FALSE(succeeded);
+                          run_loop.Quit();
+                        }));
+
+  run_loop.Run();
+}
+
+TEST_F(InstallerDownloaderModelTest, CompleteDownloadSuccessInvokesCallback) {
+  const base::FilePath destination(
+      FILE_PATH_LITERAL("C:\\temp\\installer.exe"));
+  const GURL url("https://example.com/installer.exe");
+
+  content::FakeDownloadItem fake_download_item;
+  fake_download_item.SetDummyFilePath(destination);
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_download_manager_, DownloadUrlMock(_))
+      .WillOnce([&](download::DownloadUrlParameters* params) {
+        std::move(params->callback())
+            .Run(&fake_download_item,
+                 DownloadInterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE);
+      });
+
+  model_->StartDownload(url, destination, mock_download_manager_,
+                        base::BindLambdaForTesting([&](bool succeeded) {
+                          EXPECT_TRUE(succeeded);
+                          run_loop.Quit();
+                        }));
+
+  fake_download_item.SetIsDone(true);
+  fake_download_item.SetState(download::DownloadItem::COMPLETE);
+  fake_download_item.NotifyDownloadUpdated();
+
+  run_loop.Run();
+}
+
+TEST_F(InstallerDownloaderModelTest, CompleteDownloadFailureInvokesCallback) {
+  const base::FilePath destination(
+      FILE_PATH_LITERAL("C:\\temp\\installer.exe"));
+  const GURL url("https://example.com/installer.exe");
+
+  content::FakeDownloadItem fake_download_item;
+  fake_download_item.SetDummyFilePath(destination);
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_download_manager_, DownloadUrlMock(_))
+      .WillOnce([&](download::DownloadUrlParameters* params) {
+        std::move(params->callback())
+            .Run(&fake_download_item,
+                 DownloadInterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE);
+      });
+
+  model_->StartDownload(url, destination, mock_download_manager_,
+                        base::BindLambdaForTesting([&](bool succeeded) {
+                          EXPECT_FALSE(succeeded);
+                          run_loop.Quit();
+                        }));
+
+  fake_download_item.SetIsDone(true);
+  fake_download_item.SetState(download::DownloadItem::CANCELLED);
+  fake_download_item.NotifyDownloadUpdated();
+
   run_loop.Run();
 }
 

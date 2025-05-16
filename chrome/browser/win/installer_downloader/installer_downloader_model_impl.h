@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
+#include "components/download/public/common/download_interrupt_reasons.h"
 
 class GURL;
 
@@ -17,9 +18,18 @@ namespace base {
 class FilePath;
 }
 
+namespace content {
+class DownloadManager;
+}
+
+namespace download {
+class DownloadItem;
+}
+
 namespace installer_downloader {
 
 class SystemInfoProvider;
+class InstallerDownloaderObserver;
 
 // Non-UI service that:
 //   •  Checks whether the current machine is a Win 10 device **not**
@@ -51,13 +61,27 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
       override;
   void StartDownload(const GURL& url,
                      const base::FilePath& destination,
+                     content::DownloadManager& download_manager,
                      CompletionCallback completion_callback) override;
   bool IsMaxShowCountReached() const override;
 
  private:
   std::optional<base::FilePath> GetInstallerDestination() const;
 
-  std::unique_ptr<SystemInfoProvider> system_info_provider_;
+  // Invoked when the installer download started.
+  void OnInstallerDownloadCreated(CompletionCallback completion_callback,
+                                  download::DownloadItem* item,
+                                  download::DownloadInterruptReason reason);
+
+  void OnInstallerDownloadFinished(CompletionCallback completion_callback,
+                                   bool succeeded);
+
+  const std::unique_ptr<SystemInfoProvider> system_info_provider_;
+
+  // This is instantiated when a download start and is reset when the
+  // download is finished or stopped. It should be null at any point when no
+  // download is in progress.
+  std::unique_ptr<InstallerDownloaderObserver> installer_downloader_observer_;
 };
 
 }  // namespace installer_downloader

@@ -99,6 +99,9 @@ void InstallerDownloaderController::OnEligibilityReady(
 void InstallerDownloaderController::OnDownloadRequestAccepted() {
   // User have explicitly gave download consent. Therefore, a background
   // download should be issued.
+  //
+  // TODO(https://crbug.com/417784931): Ensure that profile is not destroyed
+  // during download.
 }
 
 void InstallerDownloaderController::OnDownloadCompleted() {

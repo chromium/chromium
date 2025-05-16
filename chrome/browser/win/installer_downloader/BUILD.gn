@@ -35,6 +35,7 @@ source_set("controller") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/win:cloud_synced_folder_checker",
+    "//components/download/public/common:public",
     "//components/infobars/core",
     "//components/prefs",
     "//components/tabs:public",
