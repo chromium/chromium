@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_CACHE_UTIL_H_
 #define NET_HTTP_HTTP_CACHE_UTIL_H_
 
+#include <array>
 #include <optional>
 #include <string_view>
 
