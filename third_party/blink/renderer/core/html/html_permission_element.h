@@ -86,6 +86,7 @@ class CORE_EXPORT HTMLPermissionElement final
 
   bool HasInvalidStyle() const;
   bool IsOccluded() const;
+  bool IsRenderered() const;
   bool granted() const { return PermissionsGranted(); }
 
   // Given an input type, return permissions list. This method is for testing
@@ -136,6 +137,8 @@ class CORE_EXPORT HTMLPermissionElement final
                            FontSizeCanDisableElement);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementSimTest,
                            MovePEPCToAnotherDocument);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementSimTest,
+                           RegisterAfterBeingVisible);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementLayoutChangeTest,
                            InvalidatePEPCAfterMove);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementLayoutChangeTest,
@@ -308,6 +311,9 @@ class CORE_EXPORT HTMLPermissionElement final
   // otherwise, return true and might trigger registration IPC call to browser
   // process.
   bool MaybeRegisterPageEmbeddedPermissionControl();
+
+  // Ensure we reset the PEPC IPC endpoint.
+  void EnsureUnregisterPageEmbeddedPermissionControl();
 
   // blink::Element implements
   void AttributeChanged(const AttributeModificationParams& params) override;

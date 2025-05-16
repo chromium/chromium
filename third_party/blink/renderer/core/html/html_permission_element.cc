@@ -417,21 +417,6 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
       document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();
-  intersection_observer_ = IntersectionObserver::Create(
-      GetDocument(),
-      WTF::BindRepeating(&HTMLPermissionElement::OnIntersectionChanged,
-                         WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kPermissionElementIntersectionObserver,
-      IntersectionObserver::Params{
-          .thresholds = {kIntersectionThreshold},
-          .semantics = IntersectionObserver::kFractionOfTarget,
-          .behavior = IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-          .delay = base::Milliseconds(100),
-          .track_visibility = true,
-          .expose_occluder_id = true,
-      });
-
-  intersection_observer_->observe(this);
   EnsureUserAgentShadowRoot();
   UseCounter::Count(document, WebFeature::kHTMLPermissionElement);
 }
@@ -479,16 +464,39 @@ void HTMLPermissionElement::OnPermissionStatusInitialized(
 Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
-  MaybeRegisterPageEmbeddedPermissionControl();
+  if (!permission_descriptors_.empty()) {
+    CachedPermissionStatus::From(GetDocument().domWindow())
+        ->RegisterClient(this, permission_descriptors_);
+  }
   return kInsertionDone;
 }
 
 void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
   Element::AttachLayoutTree(context);
+  if (fallback_mode_) {
+    return;
+  }
   DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
                              kDefaultDisableTimeout);
   CHECK(GetDocument().View());
   GetDocument().View()->RegisterForLifecycleNotifications(this);
+  if (!intersection_observer_) {
+    intersection_observer_ = IntersectionObserver::Create(
+        GetDocument(),
+        WTF::BindRepeating(&HTMLPermissionElement::OnIntersectionChanged,
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kPermissionElementIntersectionObserver,
+        IntersectionObserver::Params{
+            .thresholds = {kIntersectionThreshold},
+            .semantics = IntersectionObserver::kFractionOfTarget,
+            .behavior = IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+            .delay = base::Milliseconds(100),
+            .track_visibility = true,
+            .expose_occluder_id = true,
+        });
+
+    intersection_observer_->observe(this);
+  }
 }
 
 void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
@@ -507,15 +515,11 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
     disable_reason_expire_timer_.Stop();
   }
   intersection_rect_ = std::nullopt;
-  if (embedded_permission_control_receiver_.is_bound()) {
-    embedded_permission_control_receiver_.reset();
-  }
-
-  is_registered_in_browser_process_ = false;
   if (LocalDOMWindow* window = GetDocument().domWindow()) {
     CachedPermissionStatus::From(window)->UnregisterClient(
         this, permission_descriptors_);
   }
+  EnsureUnregisterPageEmbeddedPermissionControl();
 }
 
 void HTMLPermissionElement::Focus(const FocusParams& params) {
@@ -570,6 +574,14 @@ bool HTMLPermissionElement::IsOccluded() const {
   return !GetRecentlyAttachedTimeoutRemaining() &&
          IsClickingDisabledIndefinitely(
              DisableReason::kIntersectionVisibilityOccludedOrDistorted);
+}
+
+bool HTMLPermissionElement::IsRenderered() const {
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+  return layout_object->StyleRef().Visibility() == EVisibility::kVisible;
 }
 
 // static
@@ -697,14 +709,25 @@ bool HTMLPermissionElement::MaybeRegisterPageEmbeddedPermissionControl() {
     }
   }
 
-  CachedPermissionStatus::From(GetDocument().domWindow())
-      ->RegisterClient(this, permission_descriptors_);
+  if (!IsRenderered()) {
+    return false;
+  }
+
   mojo::PendingRemote<EmbeddedPermissionControlClient> client;
   embedded_permission_control_receiver_.Bind(
       client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
+  CHECK(embedded_permission_control_receiver_.is_bound());
   GetPermissionService()->RegisterPageEmbeddedPermissionControl(
       mojo::Clone(permission_descriptors_), std::move(client));
   return true;
+}
+
+void HTMLPermissionElement::EnsureUnregisterPageEmbeddedPermissionControl() {
+  if (embedded_permission_control_receiver_.is_bound()) {
+    embedded_permission_control_receiver_.reset();
+  }
+
+  is_registered_in_browser_process_ = false;
 }
 
 void HTMLPermissionElement::LangAttributeChanged() {
@@ -1164,6 +1187,12 @@ bool HTMLPermissionElement::IsClickingEnabled() {
     return false;
   }
 
+  // Do not check click-disabling reasons if the PEPC validation feature is
+  // disabled. This should only occur in testing scenarios.
+  if (RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
+    return true;
+  }
+
   if (!is_registered_in_browser_process()) {
     AddConsoleError(
         WTF::StrCat({"The permission element '", GetType(),
@@ -1173,12 +1202,6 @@ bool HTMLPermissionElement::IsClickingEnabled() {
         "Blink.PermissionElement.UserInteractionDeniedReason",
         UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
     return false;
-  }
-
-  // Do not check click-disabling reasons if the PEPC validation feature is
-  // disabled. This should only occur in testing scenarios.
-  if (RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
-    return true;
   }
 
   // Remove expired reasons. If the remaining map is not empty, clicking is
@@ -1645,6 +1668,12 @@ void HTMLPermissionElement::DidFinishLifecycleUpdate(
                                kDefaultDisableTimeout);
   }
   intersection_rect_ = intersection_rect;
+
+  if (IsRenderered()) {
+    MaybeRegisterPageEmbeddedPermissionControl();
+  } else {
+    EnsureUnregisterPageEmbeddedPermissionControl();
+  }
 }
 
 gfx::Rect HTMLPermissionElement::ComputeIntersectionRectWithViewport(
@@ -1678,8 +1707,9 @@ HTMLPermissionElement::GetRecentlyAttachedTimeoutRemaining() const {
 void HTMLPermissionElement::EnableFallbackMode() {
   CHECK(!fallback_mode_);
   fallback_mode_ = true;
-  intersection_observer_->unobserve(this);
-
+  if (intersection_observer_) {
+    intersection_observer_->unobserve(this);
+  }
   // Adding this slot element will make all children of the permission element
   // render, the permission element's built-in elements are removed at the same
   // time.
