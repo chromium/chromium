@@ -4231,6 +4231,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.DocumentLoadInterval" units="ms"
+    expires_after="2025-09-14">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the elapsed time between two pdf document loads. Recorded when the
+    pdf load starts. Used to evaluate the threshold to keep PdfDocumentService
+    running after the last client unbinds.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.DocumentLoadResult.Detail"
     enum="AndroidPdfLoadResult" expires_after="2025-11-09">
   <owner>shuyng@google.com</owner>

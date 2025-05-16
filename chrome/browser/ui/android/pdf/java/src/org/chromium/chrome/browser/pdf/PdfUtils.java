@@ -346,6 +346,10 @@ public class PdfUtils {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime.FirstPaired", duration);
     }
 
+    static void recordPdfLoadInterval(long duration) {
+        RecordHistogram.recordMediumTimesHistogram("Android.Pdf.DocumentLoadInterval", duration);
+    }
+
     static void recordPdfTransientDownloadTime(long duration) {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DownloadTime.Transient", duration);
     }

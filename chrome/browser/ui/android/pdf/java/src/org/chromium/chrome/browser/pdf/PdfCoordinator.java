@@ -45,6 +45,13 @@ import org.chromium.ui.base.MimeTypeUtils;
 @NullMarked
 public class PdfCoordinator {
     private static final String TAG = "PdfCoordinator";
+
+    /**
+     * The timestamp when the last pdf document starts to load. Used to calculate the elapsed time
+     * between two pdf loads.
+     */
+    private static long sLastPdfLoadTimestamp;
+
     private static boolean sSkipLoadPdfForTesting;
     private final View mView;
     private final FragmentManager mFragmentManager;
@@ -230,17 +237,22 @@ public class PdfCoordinator {
         }
         mUri = PdfUtils.getUriFromFilePath(mPdfFilePath);
         if (mUri != null) {
+            // TODO(crbug.com/418075119): Minimize the try catch block.
             try {
                 if (!sSkipLoadPdfForTesting) {
                     // Committing the fragment
-                    // TODO(b/360717802): Reuse fragment from savedInstance.
+                    // TODO(crbug.com/360717802): Reuse fragment from savedInstance.
                     FragmentTransaction transaction = mFragmentManager.beginTransaction();
                     transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment, mTabId);
                     transaction.commitAllowingStateLoss();
                     mFragmentManager.executePendingTransactions();
                     PdfUtils.recordPdfLoad();
-                    mChromePdfViewerFragment.mDocumentLoadStartTimestamp =
-                            SystemClock.elapsedRealtime();
+                    long currentTime = SystemClock.elapsedRealtime();
+                    mChromePdfViewerFragment.mDocumentLoadStartTimestamp = currentTime;
+                    if (sLastPdfLoadTimestamp > 0) {
+                        PdfUtils.recordPdfLoadInterval(currentTime - sLastPdfLoadTimestamp);
+                    }
+                    sLastPdfLoadTimestamp = currentTime;
                     mProgressBar.setVisibility(View.GONE);
                     mChromePdfViewerFragment.setDocumentUri(mUri);
                 }
@@ -250,7 +262,7 @@ public class PdfCoordinator {
                 mIsPdfLoaded = true;
             }
         } else {
-            // TODO(b/348712628): show some error UI when content URI is null.
+            // TODO(crbug.com/348712628): show some error UI when content URI is null.
             Log.e(TAG, "Uri is null.");
         }
     }
