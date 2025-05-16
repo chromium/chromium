@@ -6194,6 +6194,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.CacheQuotaSize" units="KiB"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the result of `StorageManager.getCacheQuotaBytes()` after WebView
+    startup. The value denotes the amount of cache quota that was allocated to
+    the app by the framework.
+
+    This is logged only once per session in a delayed background task
+    approximately 5 seconds after WebView completes its main startup tasks. The
+    measurement may be expensive, so it is only performed if the
+    WebViewRecordAppCacheHistograms feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.CacheSize" units="KiB"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the result of `StorageManager.getCacheSizeBytes()` after WebView
+    startup. The value denotes the amount of cache that the app is currently
+    using.
+
+    This is logged only once per session in a delayed background task
+    approximately 5 seconds after WebView completes its main startup tasks. The
+    measurement may be expensive, so it is only performed if the
+    WebViewRecordAppCacheHistograms feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
     expires_after="2025-09-14">
   <owner>ntfschr@chromium.org</owner>
@@ -6716,6 +6748,32 @@ chromium-metrics-reviews@google.com.
 
     This histogram is emitted when the app calls the result callback for the
     permission prompt if the retain value is true.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.GetCacheQuotaSizeTime" units="ms"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time taken to measure Android.WebView.CacheQuotaSize using
+    `StorageManager.getCacheQuotaBytes()` in milliseconds.
+
+    This may be logged even if the measurement for
+    Android.WebView.CacheQuotaSize fails.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.GetCacheSizeTime" units="ms"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time taken to measure Android.WebView.CacheSize using
+    `StorageManager.getCacheSizeBytes()` in milliseconds.
+
+    This may be logged even if the measurement for Android.WebView.CacheSize
+    fails.
   </summary>
 </histogram>
 
