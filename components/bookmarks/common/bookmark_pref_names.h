@@ -14,6 +14,7 @@ namespace bookmarks::prefs {
 inline constexpr char kBookmarkEditorExpandedNodes[] =
     "bookmark_editor.expanded_nodes";
 // Modifying bookmarks is completely disabled when this is set to false.
+// This includes uploading bookmarks to a sync-ing account.
 inline constexpr char kEditBookmarksEnabled[] = "bookmarks.editing_enabled";
 // A list of bookmarks to include in a Managed Bookmarks root node. Each
 // list item is a dictionary containing a "name" and an "url" entry, detailing
