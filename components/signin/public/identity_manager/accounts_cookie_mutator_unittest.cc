@@ -97,6 +97,14 @@ class AccountsCookieMutatorTest
   void PrepareURLLoaderResponsesForAction(AccountsCookiesMutatorAction action) {
     switch (action) {
       case AccountsCookiesMutatorAction::kSetAccountsInCookie:
+        // Simulate GetCheckConnectionInfo response to avoid triggering
+        // timeouts.
+        GetTestURLLoaderFactory()->AddResponse(
+            GaiaUrls::GetInstance()
+                ->GetCheckConnectionInfoURLWithSource(
+                    GaiaConstants::kChromeSource)
+                .spec(),
+            "cc_result");
         GetTestURLLoaderFactory()->AddResponse(
             GaiaUrls::GetInstance()
                 ->oauth_multilogin_url()
