@@ -48,14 +48,25 @@ class ProbabilisticRevealTokenTestIssuer {
       int32_t num_tokens_with_signal,
       std::string epoch_id);
 
+  // Create a response proto type for a given set of arguments. Tokens in
+  // response will contain ECPoints obtained by hashing `plaintexts` to group.
+  // Updates `tokens_` to new ones. `tokens_` is set to empty in case of
+  // failure, already existing ones (if any) are cleared.
+  base::expected<GetProbabilisticRevealTokenResponse, absl::Status>
+  IssueByHashingToPoint(std::vector<std::string> plaintexts,
+                        base::Time expiration,
+                        base::Time next_epoch_start,
+                        int32_t num_tokens_with_signal,
+                        std::string epoch_id);
+
   // Decrypt a given `token` and return resulting string. `RevealToken()` will
   // return `plaintexts[i]` corresponding to the given `token`. See `Issue()`.
   base::expected<std::string, absl::Status> RevealToken(
       const ProbabilisticRevealToken& token) const;
 
-  // PRTs produced by the `Issue()` call. These are encrypted
-  // `ECGroup::GetPointByPaddingX(plaintexts[i])`. `RevealToken(Tokens()[i])`
-  // should yield `plaintexts[i]`.
+  // PRTs produced by the `Issue()` call are encrypted plaintexts mapped to
+  // points using `ECGroup::GetPointByPaddingX(plaintexts[i])`.
+  // `RevealToken(Tokens()[i])` should yield `plaintexts[i]`.
   const std::vector<ProbabilisticRevealToken>& Tokens() const {
     return tokens_;
   }
@@ -77,8 +88,20 @@ class ProbabilisticRevealTokenTestIssuer {
       std::unique_ptr<private_join_and_compute::ElGamalDecrypter> decrypter,
       std::string serialized_public_key);
 
-  base::expected<ProbabilisticRevealToken, absl::Status> IssueInternal(
-      const std::string& plaintext) const;
+  base::expected<GetProbabilisticRevealTokenResponse, absl::Status>
+  IssueFromPoints(
+      std::vector<private_join_and_compute::ECPoint> plaintext_points,
+      base::Time expiration,
+      base::Time next_epoch_start,
+      int32_t num_tokens_with_signal,
+      std::string epoch_id);
+
+  base::expected<private_join_and_compute::ECPoint, absl::Status>
+  GetPointByPadding(std::string plaintext) const;
+  base::expected<private_join_and_compute::ECPoint, absl::Status>
+  GetPointByHashing(std::string message) const;
+  base::expected<ProbabilisticRevealToken, absl::Status> Encrypt(
+      const private_join_and_compute::ECPoint& point) const;
 
   base::expected<private_join_and_compute::ECPoint, absl::Status> Decrypt(
       const ProbabilisticRevealToken& token) const;

@@ -95,6 +95,48 @@ TEST(ProbabilisticRevealTokenTestIssuerTest, IssueSuccess) {
   EXPECT_EQ(response.epoch_id(), epoch_id);
 }
 
+TEST(ProbabilisticRevealTokenTestIssuerTest, IssueByHashingSuccess) {
+  base::expected<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>,
+                 absl::Status>
+      maybe_issuer =
+          ProbabilisticRevealTokenTestIssuer::Create(/*private_key=*/34);
+  ASSERT_TRUE(maybe_issuer.has_value());
+  auto issuer = std::move(maybe_issuer.value());
+  EXPECT_THAT(issuer->Tokens(), testing::SizeIs(0));
+  std::vector<std::string> plaintexts = {
+      "arbitrary-string-with-arbitrary-size---",
+      "",
+      "a-bit-longer-for-testing-----------------------------------------------"
+      "-long-long-long--------",
+  };
+  std::string another_str;
+  base::Base64Decode("/////52dlv///38HB5YAAAAAAAJ/EJaWlpaWlpY=", &another_str);
+  plaintexts.push_back(another_str);
+  const auto expiration_time = base::Time::Now() + base::Hours(10);
+  const auto next_epoch_start_time = base::Time::Now() + base::Hours(12);
+  const int32_t num_tokens_with_signal = 2;
+  const std::string epoch_id = "epoch-id";
+  base::expected<GetProbabilisticRevealTokenResponse, absl::Status>
+      maybe_response = issuer->IssueByHashingToPoint(
+          plaintexts, expiration_time, next_epoch_start_time,
+          num_tokens_with_signal, epoch_id);
+  ASSERT_TRUE(maybe_response.has_value())
+      << "Issue() returned error " << maybe_response.error();
+  auto const& response = maybe_response.value();
+  ASSERT_THAT(response.tokens(), testing::SizeIs(plaintexts.size()));
+  ASSERT_THAT(issuer->Tokens(), testing::SizeIs(plaintexts.size()));
+
+  EXPECT_EQ(response.public_key().y(), issuer->GetSerializedPublicKey());
+  int64_t expiration_time_seconds = expiration_time.InSecondsFSinceUnixEpoch();
+  EXPECT_EQ(response.expiration_time().seconds(), expiration_time_seconds);
+  int64_t next_epoch_start_time_seconds =
+      next_epoch_start_time.InSecondsFSinceUnixEpoch();
+  EXPECT_EQ(response.next_epoch_start_time().seconds(),
+            next_epoch_start_time_seconds);
+  EXPECT_EQ(response.num_tokens_with_signal(), num_tokens_with_signal);
+  EXPECT_EQ(response.epoch_id(), epoch_id);
+}
+
 }  // namespace
 
 }  // namespace ip_protection

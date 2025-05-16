@@ -96,12 +96,55 @@ ProbabilisticRevealTokenTestIssuer::Issue(std::vector<std::string> plaintexts,
                                           int32_t num_tokens_with_signal,
                                           std::string epoch_id) {
   tokens_.clear();
-  GetProbabilisticRevealTokenResponse response_proto;
+  std::vector<ECPoint> plaintext_points;
+  plaintext_points.reserve(plaintexts.size());
   for (const auto& pi : plaintexts) {
+    base::expected<ECPoint, absl::Status> maybe_plaintext_point =
+        GetPointByPadding(pi);
+    if (!maybe_plaintext_point.has_value()) {
+      return base::unexpected(maybe_plaintext_point.error());
+    }
+    plaintext_points.push_back(std::move(maybe_plaintext_point).value());
+  }
+  return IssueFromPoints(std::move(plaintext_points), expiration,
+                         next_epoch_start, num_tokens_with_signal, epoch_id);
+}
+
+base::expected<GetProbabilisticRevealTokenResponse, absl::Status>
+ProbabilisticRevealTokenTestIssuer::IssueByHashingToPoint(
+    std::vector<std::string> plaintexts,
+    base::Time expiration,
+    base::Time next_epoch_start,
+    int32_t num_tokens_with_signal,
+    std::string epoch_id) {
+  tokens_.clear();
+  std::vector<ECPoint> plaintext_points;
+  plaintext_points.reserve(plaintexts.size());
+  for (const auto& pi : plaintexts) {
+    base::expected<ECPoint, absl::Status> maybe_plaintext_point =
+        GetPointByHashing(pi);
+    if (!maybe_plaintext_point.has_value()) {
+      return base::unexpected(maybe_plaintext_point.error());
+    }
+    plaintext_points.push_back(std::move(maybe_plaintext_point).value());
+  }
+  return IssueFromPoints(std::move(plaintext_points), expiration,
+                         next_epoch_start, num_tokens_with_signal, epoch_id);
+}
+
+base::expected<GetProbabilisticRevealTokenResponse, absl::Status>
+ProbabilisticRevealTokenTestIssuer::IssueFromPoints(
+    std::vector<private_join_and_compute::ECPoint> plaintext_points,
+    base::Time expiration,
+    base::Time next_epoch_start,
+    int32_t num_tokens_with_signal,
+    std::string epoch_id) {
+  GetProbabilisticRevealTokenResponse response_proto;
+  for (const auto& pi : plaintext_points) {
     GetProbabilisticRevealTokenResponse_ProbabilisticRevealToken* token =
         response_proto.add_tokens();
     base::expected<ProbabilisticRevealToken, absl::Status> maybe_token =
-        IssueInternal(pi);
+        Encrypt(pi);
     if (!maybe_token.has_value()) {
       return base::unexpected(maybe_token.error());
     }
@@ -137,22 +180,10 @@ ProbabilisticRevealTokenTestIssuer::RevealToken(
 }
 
 base::expected<ProbabilisticRevealToken, absl::Status>
-ProbabilisticRevealTokenTestIssuer::IssueInternal(
-    const std::string& plaintext) const {
-  if (plaintext.size() != kPlaintextSize) {
-    return base::unexpected(
-        absl::InvalidArgumentError("plaintext size must be kPlaintextSize"));
-  }
-  absl::StatusOr<ECPoint> maybe_plaintext_point = group_->GetPointByPaddingX(
-      context_->CreateBigNum(plaintext),
-      /*padding_bit_count=*/kPaddingSize * kBitsPerByte);
-  if (!maybe_plaintext_point.ok()) {
-    return base::unexpected(maybe_plaintext_point.status());
-  }
-  absl::StatusOr<Ciphertext> maybe_ciphertext =
-      encrypter_->Encrypt(maybe_plaintext_point.value());
+ProbabilisticRevealTokenTestIssuer::Encrypt(const ECPoint& point) const {
+  absl::StatusOr<Ciphertext> maybe_ciphertext = encrypter_->Encrypt(point);
   if (!maybe_ciphertext.ok()) {
-    return base::unexpected(maybe_plaintext_point.status());
+    return base::unexpected(maybe_ciphertext.status());
   }
   const auto& ciphertext = maybe_ciphertext.value();
 
@@ -170,6 +201,33 @@ ProbabilisticRevealTokenTestIssuer::IssueInternal(
 
   return ProbabilisticRevealToken(1, std::move(maybe_u_compressed).value(),
                                   std::move(maybe_e_compressed).value());
+}
+
+base::expected<ECPoint, absl::Status>
+ProbabilisticRevealTokenTestIssuer::GetPointByPadding(
+    std::string plaintext) const {
+  if (plaintext.size() != kPlaintextSize) {
+    return base::unexpected(
+        absl::InvalidArgumentError("plaintext size must be kPlaintextSize"));
+  }
+  absl::StatusOr<ECPoint> maybe_plaintext_point = group_->GetPointByPaddingX(
+      context_->CreateBigNum(plaintext),
+      /*padding_bit_count=*/kPaddingSize * kBitsPerByte);
+  if (!maybe_plaintext_point.ok()) {
+    return base::unexpected(maybe_plaintext_point.status());
+  }
+  return std::move(maybe_plaintext_point).value();
+}
+
+base::expected<ECPoint, absl::Status>
+ProbabilisticRevealTokenTestIssuer::GetPointByHashing(
+    std::string message) const {
+  absl::StatusOr<ECPoint> maybe_plaintext_point =
+      group_->GetPointByHashingToCurveSha256(message);
+  if (!maybe_plaintext_point.ok()) {
+    return base::unexpected(maybe_plaintext_point.status());
+  }
+  return std::move(maybe_plaintext_point).value();
 }
 
 base::expected<std::string, absl::Status>
