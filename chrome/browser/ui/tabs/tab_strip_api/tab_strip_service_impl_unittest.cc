@@ -33,12 +33,25 @@ class FakeTabStripAdapter : public tabs_api::TabStripModelAdapter {
   ~FakeTabStripAdapter() override = default;
   void AddObserver(TabStripModelObserver*) override {}
   void RemoveObserver(TabStripModelObserver*) override {}
-  std::vector<tabs::TabHandle> GetTabs() override {
-    return {tabs::TabHandle(888)};
-  }
+  std::vector<tabs::TabHandle> GetTabs() override { return tabs; }
   TabRendererData GetTabRendererData(int index) override {
     return TabRendererData();
   }
+  void CloseTab(size_t idx) override {
+    CHECK_LT(idx, tabs.size())
+        << "invalid idx passed in: " << idx << ", tab size is: " << tabs.size();
+    tabs.erase(tabs.begin() + idx);
+  }
+  std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) override {
+    for (size_t i = 0; i < tabs.size(); ++i) {
+      if (tabs.at(i) == tab_handle) {
+        return i;
+      }
+    }
+    return std::nullopt;
+  }
+
+  std::vector<tabs::TabHandle> tabs;
 };
 
 class FakeBrowserAdapter : public tabs_api::BrowserAdapter {
@@ -61,13 +74,20 @@ class TabStripServiceImplTest : public testing::Test {
   ~TabStripServiceImplTest() override = default;
 
   void SetUp() override {
+    auto fake_tab_strip_model = std::make_unique<FakeTabStripAdapter>();
+    fake_tab_strip_model_ = fake_tab_strip_model.get();
     impl_ = std::make_unique<TabStripServiceImpl>(
         std::make_unique<FakeBrowserAdapter>(),
-        std::make_unique<FakeTabStripAdapter>());
+        std::move(fake_tab_strip_model));
     impl_->Accept(client_.BindNewPipeAndPassReceiver());
   }
 
+  void TearDown() override { fake_tab_strip_model_ = nullptr; }
+
   mojo::Remote<tabs_api::mojom::TabStripService> client_;
+
+ protected:
+  raw_ptr<FakeTabStripAdapter> fake_tab_strip_model_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -84,6 +104,8 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
 }
 
 TEST_F(TabStripServiceImplTest, GetTabs) {
+  fake_tab_strip_model_->tabs.push_back(tabs::TabHandle(888));
+
   tabs_api::mojom::TabStripService::GetTabsResult result;
   bool success = client_->GetTabs(&result);
 
@@ -104,6 +126,34 @@ TEST_F(TabStripServiceImplTest, GetTab) {
   ASSERT_TRUE(success);
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+}
+
+TEST_F(TabStripServiceImplTest, CloseTabs) {
+  tabs_api::TabId tab_id1(TabId::Type::kContent, "123");
+  tabs_api::TabId tab_id2(TabId::Type::kContent, "321");
+
+  // insert fake tab entries.
+  fake_tab_strip_model_->tabs.push_back(tabs::TabHandle(123));
+  fake_tab_strip_model_->tabs.push_back(tabs::TabHandle(321));
+
+  tabs_api::mojom::TabStripService::CloseTabsResult result;
+  bool success = client_->CloseTabs({tab_id1, tab_id2}, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_TRUE(result.has_value());
+  // tab entries should be removed.
+  ASSERT_EQ(0ul, fake_tab_strip_model_->tabs.size());
+}
+
+TEST_F(TabStripServiceImplTest, CloseTabs_InvalidType) {
+  tabs_api::TabId collection_id(TabId::Type::kCollection, "321");
+
+  tabs_api::mojom::TabStripService::CloseTabsResult result;
+  bool success = client_->CloseTabs({collection_id}, &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kUnimplemented);
 }
 
 }  // namespace

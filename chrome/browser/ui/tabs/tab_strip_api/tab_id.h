@@ -17,6 +17,8 @@ class TabId {
  public:
   enum class Type {
     kInvalid,
+    // kContent ids are mapped to TabHandle::Handle, which represents an
+    // int32_t number.
     kContent,
     kCollection,
   };

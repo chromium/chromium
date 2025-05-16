@@ -24,6 +24,8 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   void RemoveObserver(TabStripModelObserver* observer) override;
   std::vector<tabs::TabHandle> GetTabs() override;
   TabRendererData GetTabRendererData(int index) override;
+  void CloseTab(size_t tab_index) override;
+  std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) override;
 
  private:
   raw_ptr<TabStripModel> tab_strip_model_;

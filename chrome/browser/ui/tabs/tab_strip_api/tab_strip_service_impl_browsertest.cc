@@ -148,3 +148,39 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
       << "CreateTabAt failed: " << (result.error()->message);
   EXPECT_TRUE(result.value());
 }
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
+  mojo::Remote<tabs_api::mojom::TabStripService> remote;
+  tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
+
+  const int starting_num_tabs = GetTabStripModel()->GetTabCount();
+
+  base::RunLoop create_loop;
+  remote->CreateTabAt(
+      CreatePosition(0), std::make_optional(GURL("http://dark.web")),
+      base::BindLambdaForTesting(
+          [&](tabs_api::mojom::TabStripService::CreateTabAtResult result) {
+            ASSERT_TRUE(result.has_value());
+            create_loop.Quit();
+          }));
+  create_loop.Run();
+
+  // We should now have one more tab than when we first started.
+  ASSERT_EQ(starting_num_tabs + 1, GetTabStripModel()->GetTabCount());
+  const auto* interface = GetTabStripModel()->GetTabAtIndex(0);
+
+  base::RunLoop close_loop;
+  remote->CloseTabs(
+      {tabs_api::TabId(
+          tabs_api::TabId::Type::kContent,
+          base::NumberToString(interface->GetHandle().raw_value()))},
+      base::BindLambdaForTesting(
+          [&](tabs_api::mojom::TabStripService::CloseTabsResult result) {
+            ASSERT_TRUE(result.has_value());
+            close_loop.Quit();
+          }));
+  close_loop.Run();
+
+  // We should be back to where we started.
+  ASSERT_EQ(starting_num_tabs, GetTabStripModel()->GetTabCount());
+}

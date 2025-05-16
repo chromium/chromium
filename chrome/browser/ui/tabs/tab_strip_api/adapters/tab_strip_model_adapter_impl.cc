@@ -28,4 +28,14 @@ TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) {
   return TabRendererData::FromTabInModel(tab_strip_model_, index);
 }
 
+void TabStripModelAdapterImpl::CloseTab(size_t tab_index) {
+  tab_strip_model_->CloseWebContentsAt(tab_index, TabCloseTypes::CLOSE_NONE);
+}
+
+std::optional<int> TabStripModelAdapterImpl::GetIndexForHandle(
+    tabs::TabHandle tab_handle) {
+  auto idx = tab_strip_model_->GetIndexOfTab(tab_handle.Get());
+  return idx != TabStripModel::kNoTab ? std::make_optional(idx) : std::nullopt;
+}
+
 }  // namespace tabs_api
