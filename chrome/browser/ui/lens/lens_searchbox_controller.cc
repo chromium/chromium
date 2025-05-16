@@ -28,6 +28,11 @@ LensSearchboxController::LensSearchboxController(
     : lens_search_controller_(lens_search_controller) {}
 LensSearchboxController::~LensSearchboxController() = default;
 
+void LensSearchboxController::OnSessionStart() {
+  // Initialize any data needed for the searchbox.
+  init_data_ = std::make_unique<LensSearchboxInitializationData>();
+}
+
 void LensSearchboxController::SetSidePanelSearchboxHandler(
     std::unique_ptr<LensSearchboxHandler> handler) {
   side_panel_searchbox_handler_ = std::move(handler);
@@ -49,6 +54,7 @@ void LensSearchboxController::ResetSidePanelSearchboxHandler() {
 void LensSearchboxController::SetSearchboxInputText(const std::string& text) {
   if (side_panel_searchbox_handler_ &&
       side_panel_searchbox_handler_->IsRemoteBound()) {
+    init_data_->text_query = text;
     side_panel_searchbox_handler_->SetInputText(text);
   } else {
     // If the side panel was not bound at the time of request, we store the
@@ -61,8 +67,8 @@ void LensSearchboxController::SetSearchboxThumbnail(
     const std::string& thumbnail_uri) {
   if (side_panel_searchbox_handler_ &&
       side_panel_searchbox_handler_->IsRemoteBound()) {
+    init_data_->thumbnail_uri = thumbnail_uri;
     side_panel_searchbox_handler_->SetThumbnail(thumbnail_uri);
-    selected_region_thumbnail_uri_ = thumbnail_uri;
   } else {
     // If the side panel was not bound at the time of request, we store the
     // thumbnail as pending to send it to the searchbox on bind.
@@ -72,15 +78,15 @@ void LensSearchboxController::SetSearchboxThumbnail(
 
 void LensSearchboxController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes) {
-  selected_region_thumbnail_uri_ =
+  init_data_->thumbnail_uri =
       webui::MakeDataURIForImage(base::as_byte_span(thumbnail_bytes), "jpeg");
-  SetSearchboxThumbnail(selected_region_thumbnail_uri_);
+  SetSearchboxThumbnail(init_data_->thumbnail_uri);
 }
 
 void LensSearchboxController::CloseUI() {
   overlay_searchbox_handler_.reset();
   side_panel_searchbox_handler_.reset();
-  selected_region_thumbnail_uri_ = "";
+  init_data_ = std::make_unique<LensSearchboxInitializationData>();
   pending_text_query_ = std::nullopt;
   pending_thumbnail_uri_ = std::nullopt;
 }
@@ -122,13 +128,13 @@ LensSearchboxController::GetPageClassification() const {
       state == LensOverlayController::State::kOverlay) {
     return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
   }
-  return selected_region_thumbnail_uri_.empty()
+  return init_data_->thumbnail_uri.empty()
              ? metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX
              : metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
 }
 
 std::string& LensSearchboxController::GetThumbnail() {
-  return selected_region_thumbnail_uri_;
+  return init_data_->thumbnail_uri;
 }
 
 const lens::proto::LensOverlaySuggestInputs&
@@ -216,13 +222,13 @@ void LensSearchboxController::OnZeroSuggestShown() {
       /*is_initial_query=*/!IsSidePanelSearchbox());
 }
 
-content::WebContents* LensSearchboxController::GetTabWebContents() const {
-  return lens_search_controller_->GetTabInterface()->GetContents();
-}
-
 void LensSearchboxController::AddSearchboxStateToSearchQuery(
     lens::SearchQuery& search_query) {
-  search_query.selected_region_thumbnail_uri_ = selected_region_thumbnail_uri_;
+  search_query.selected_region_thumbnail_uri_ = init_data_->thumbnail_uri;
+}
+
+content::WebContents* LensSearchboxController::GetTabWebContents() const {
+  return lens_search_controller_->GetTabInterface()->GetContents();
 }
 
 }  // namespace lens

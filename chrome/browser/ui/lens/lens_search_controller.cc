@@ -492,6 +492,10 @@ void LensSearchController::StartLensSession(
   lens_session_metrics_logger_->OnSessionStart(invocation_source,
                                                tab_->GetContents());
 
+  // Let the searchbox controller know that a new session has started so it can
+  // initialize any data needed for the searchbox.
+  lens_searchbox_controller_->OnSessionStart();
+
   // Reset session state.
   hats_triggered_in_session_ = false;
 }

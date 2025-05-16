@@ -32,6 +32,10 @@ class LensSearchboxController : public LensSearchboxClient {
       LensSearchController* lens_search_controller);
   ~LensSearchboxController() override;
 
+  // Must be called at the start of a session so the proper state is
+  // initialized.
+  void OnSessionStart();
+
   // This method is used to set up communication between this instance and the
   // searchbox WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and has bound the handler. Takes ownership of
@@ -102,6 +106,19 @@ class LensSearchboxController : public LensSearchboxClient {
   // Adds searchbox related state to the search query.
   void AddSearchboxStateToSearchQuery(lens::SearchQuery& search_query);
 
+ private:
+  // Data class for storing state for the searchbox.
+  struct LensSearchboxInitializationData {
+   public:
+    LensSearchboxInitializationData() = default;
+    ~LensSearchboxInitializationData() = default;
+    // The text query in the searchbox.
+    std::string text_query = "";
+
+    // The URI of the thumbnail in the searchbox.
+    std::string thumbnail_uri = "";
+  };
+
   // Returns the WebContents associated with the tab this instance of Lens is
   // invoked on.
   content::WebContents* GetTabWebContents() const;
@@ -130,10 +147,8 @@ class LensSearchboxController : public LensSearchboxClient {
   // currently unused.
   std::unique_ptr<LensSearchboxHandler> overlay_searchbox_handler_;
 
-  // Thumbnail URI referencing the data defined by the user image selection on
-  // the overlay. If the user hasn't made any selection or has made a text
-  // selection this will contain an empty string. Returned by GetThumbnail().
-  std::string selected_region_thumbnail_uri_;
+  // The assembly data needed for the side panel entry to be created and shown.
+  std::unique_ptr<LensSearchboxInitializationData> init_data_;
 
   // A pending text query to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.
