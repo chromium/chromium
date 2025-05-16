@@ -93,6 +93,7 @@ source_set("unit_tests") {
     ":impl",
     ":tab_strip_api",
     "converters:unit_tests",
+    "testing",
     "//base/test:test_support",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

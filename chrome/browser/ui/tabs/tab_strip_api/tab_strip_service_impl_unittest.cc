@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/tab_interface.h"
@@ -27,8 +28,8 @@ namespace {
 
 class FakeTabStripAdapter : public tabs_api::TabStripModelAdapter {
  public:
-  explicit FakeTabStripAdapter(std::vector<tabs::TabHandle>* tabs)
-      : tabs_(tabs) {}
+  explicit FakeTabStripAdapter(testing::ToyTabStrip* tab_strip)
+      : tab_strip_(tab_strip) {}
   FakeTabStripAdapter(const FakeTabStripAdapter&) = delete;
   FakeTabStripAdapter operator=(const FakeTabStripAdapter&) = delete;
   ~FakeTabStripAdapter() override = default;
@@ -36,54 +37,40 @@ class FakeTabStripAdapter : public tabs_api::TabStripModelAdapter {
   void RemoveObserver(TabStripModelObserver*) override {}
 
   std::vector<tabs::TabHandle> GetTabs() override {
-    std::vector<tabs::TabHandle> result;
-    for (auto& entry : *tabs_) {
-      result.push_back(entry);
-    }
-    return result;
+    return tab_strip_->GetTabs();
   }
 
   TabRendererData GetTabRendererData(int index) override {
     return TabRendererData();
   }
-  void CloseTab(size_t idx) override {
-    CHECK_LT(idx, tabs_->size()) << "invalid idx passed in: " << idx
-                                 << ", tab size is: " << tabs_->size();
-    tabs_->erase(tabs_->begin() + idx);
-  }
+
+  void CloseTab(size_t idx) override { tab_strip_->CloseTab(idx); }
+
   std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) override {
-    for (size_t i = 0; i < tabs_->size(); ++i) {
-      if (tabs_->at(i) == tab_handle) {
-        return i;
-      }
-    }
-    return std::nullopt;
+    return tab_strip_->GetIndexForHandle(tab_handle);
   }
 
  private:
-  raw_ptr<std::vector<tabs::TabHandle>> tabs_;
+  raw_ptr<testing::ToyTabStrip> tab_strip_;
 };
 
 class FakeBrowserAdapter : public tabs_api::BrowserAdapter {
  public:
-  explicit FakeBrowserAdapter(std::vector<tabs::TabHandle>* tabs)
-      : tabs_(tabs) {}
+  explicit FakeBrowserAdapter(testing::ToyTabStrip* tab_strip)
+      : tab_strip_(tab_strip) {}
   FakeBrowserAdapter(const FakeBrowserAdapter&) = delete;
   FakeBrowserAdapter operator=(const FakeBrowserAdapter&) = delete;
   ~FakeBrowserAdapter() override = default;
 
   tabs::TabHandle AddTabAt(const GURL& url, std::optional<int> index) override {
-    tabs::TabHandle handle(tabs_->size() + 1);
-    tabs_->push_back(handle);
-    // Hard-coded value for now to test success.
-    return handle;
+    return tab_strip_->AddTabAt(url, index);
   }
 
  private:
-  raw_ptr<std::vector<tabs::TabHandle>> tabs_;
+  raw_ptr<testing::ToyTabStrip> tab_strip_;
 };
 
-class TabStripServiceImplTest : public testing::Test {
+class TabStripServiceImplTest : public ::testing::Test {
  protected:
   TabStripServiceImplTest() = default;
   TabStripServiceImplTest(const TabStripServiceImplTest&) = delete;
@@ -91,11 +78,10 @@ class TabStripServiceImplTest : public testing::Test {
   ~TabStripServiceImplTest() override = default;
 
   void SetUp() override {
-    auto fake_tab_strip_model = std::make_unique<FakeTabStripAdapter>(&tabs_);
-    fake_tab_strip_model_ = fake_tab_strip_model.get();
+    tab_strip_ = std::make_unique<testing::ToyTabStrip>();
     impl_ = std::make_unique<TabStripServiceImpl>(
-        std::make_unique<FakeBrowserAdapter>(&tabs_),
-        std::move(fake_tab_strip_model));
+        std::make_unique<FakeBrowserAdapter>(tab_strip_.get()),
+        std::make_unique<FakeTabStripAdapter>(tab_strip_.get()));
     impl_->Accept(client_.BindNewPipeAndPassReceiver());
   }
 
@@ -104,7 +90,7 @@ class TabStripServiceImplTest : public testing::Test {
   mojo::Remote<tabs_api::mojom::TabStripService> client_;
 
  protected:
-  std::vector<tabs::TabHandle> tabs_;
+  std::unique_ptr<testing::ToyTabStrip> tab_strip_;
   raw_ptr<FakeTabStripAdapter> fake_tab_strip_model_;
 
  private:
@@ -115,7 +101,7 @@ class TabStripServiceImplTest : public testing::Test {
 TEST_F(TabStripServiceImplTest, CreateNewTab) {
   tabs_api::mojom::TabStripService::CreateTabAtResult result;
   // We should start with nothing.
-  ASSERT_EQ(0ul, tabs_.size());
+  ASSERT_EQ(0ul, tab_strip_->GetTabs().size());
 
   bool success = client_->CreateTabAt(nullptr, std::nullopt, &result);
 
@@ -123,14 +109,14 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
   ASSERT_TRUE(result.has_value());
 
   // One tab should have been created. Now we assert its shape.
-  ASSERT_EQ(1ul, tabs_.size());
-  auto created = tabs_.at(0);
+  ASSERT_EQ(1ul, tab_strip_->GetTabs().size());
+  auto created = tab_strip_->GetTabs().at(0);
   ASSERT_EQ(base::NumberToString(created.raw_value()), result.value()->id.Id());
   ASSERT_EQ(TabId::Type::kContent, result.value()->id.Type());
 }
 
 TEST_F(TabStripServiceImplTest, GetTabs) {
-  tabs_.push_back(tabs::TabHandle(888));
+  tab_strip_->AddTab({GURL("hihi"), tabs::TabHandle(888)});
 
   tabs_api::mojom::TabStripService::GetTabsResult result;
   bool success = client_->GetTabs(&result);
@@ -145,7 +131,7 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
 }
 
 TEST_F(TabStripServiceImplTest, GetTab) {
-  tabs_.push_back(tabs::TabHandle(666));
+  tab_strip_->AddTab({GURL("hihi"), tabs::TabHandle(666)});
 
   tabs_api::mojom::TabStripService::GetTabResult result;
   tabs_api::TabId tab_id(TabId::Type::kContent, "666");
@@ -192,8 +178,8 @@ TEST_F(TabStripServiceImplTest, CloseTabs) {
   tabs_api::TabId tab_id2(TabId::Type::kContent, "321");
 
   // insert fake tab entries.
-  tabs_.push_back(tabs::TabHandle(123));
-  tabs_.push_back(tabs::TabHandle(321));
+  tab_strip_->AddTab({GURL("1"), tabs::TabHandle(123)});
+  tab_strip_->AddTab({GURL("2"), tabs::TabHandle(321)});
 
   tabs_api::mojom::TabStripService::CloseTabsResult result;
   bool success = client_->CloseTabs({tab_id1, tab_id2}, &result);
@@ -201,7 +187,7 @@ TEST_F(TabStripServiceImplTest, CloseTabs) {
   ASSERT_TRUE(success);
   ASSERT_TRUE(result.has_value());
   // tab entries should be removed.
-  ASSERT_EQ(0ul, tabs_.size());
+  ASSERT_EQ(0ul, tab_strip_->GetTabs().size());
 }
 
 TEST_F(TabStripServiceImplTest, CloseTabs_InvalidType) {
