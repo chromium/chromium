@@ -348,6 +348,13 @@ export namespace Bluetooth {
     }),
   );
 }
+export const BluetoothEventSchema = z.lazy(() =>
+  z.union([
+    Bluetooth.RequestDevicePromptUpdatedSchema,
+    Bluetooth.GattConnectionAttemptedSchema,
+    z.object({}),
+  ]),
+);
 export namespace Bluetooth {
   export const RequestDevicePromptUpdatedSchema = z.lazy(() =>
     z.object({

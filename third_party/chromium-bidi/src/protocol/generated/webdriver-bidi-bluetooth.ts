@@ -270,6 +270,10 @@ export namespace Bluetooth {
     data?: [...number[]];
   };
 }
+export type BluetoothEvent =
+  | Bluetooth.RequestDevicePromptUpdated
+  | Bluetooth.GattConnectionAttempted
+  | Record<string, never>;
 export namespace Bluetooth {
   export type RequestDevicePromptUpdated = {
     method: 'bluetooth.requestDevicePromptUpdated';
