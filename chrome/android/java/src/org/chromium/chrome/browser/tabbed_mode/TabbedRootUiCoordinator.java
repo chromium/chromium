@@ -937,6 +937,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity,
                 mActivityLifecycleDispatcher,
                 mTabCreatorManagerSupplier,
+                mTabBookmarkerSupplier,
+                mBookmarkModelSupplier,
                 mActivityTabProvider,
                 () -> addVoiceSearchAdaptiveButton(trackerSupplier));
     }

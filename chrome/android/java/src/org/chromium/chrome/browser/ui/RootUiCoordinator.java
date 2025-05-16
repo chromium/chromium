@@ -277,7 +277,7 @@ public class RootUiCoordinator
             new ObservableSupplierImpl<>();
     protected final ObservableSupplier<Profile> mProfileSupplier;
     protected final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    protected final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mBottomSheetObserver;
     protected final CallbackController mCallbackController;

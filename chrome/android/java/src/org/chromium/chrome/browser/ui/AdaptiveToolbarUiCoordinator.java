@@ -15,7 +15,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.ai.PageSummaryButtonController;
-import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
@@ -175,14 +174,6 @@ public class AdaptiveToolbarUiCoordinator {
                         AppCompatResources.getDrawable(mContext, R.drawable.ic_translate),
                         mContext.getString(R.string.menu_translate),
                         trackerSupplier);
-        AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
-                new AddToBookmarksToolbarButtonController(
-                        mActivityTabProvider,
-                        mContext,
-                        activityLifecycleDispatcher,
-                        tabBookmarkerSupplier,
-                        trackerSupplier,
-                        bookmarkModelSupplier);
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                 new AdaptiveToolbarButtonController(
                         mContext,
@@ -213,9 +204,6 @@ public class AdaptiveToolbarUiCoordinator {
 
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
-        adaptiveToolbarButtonController.addButtonVariant(
-                AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
-                addToBookmarksToolbarButtonController);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.TRANSLATE, translateToolbarButtonController);
         adaptiveToolbarButtonController.addButtonVariant(

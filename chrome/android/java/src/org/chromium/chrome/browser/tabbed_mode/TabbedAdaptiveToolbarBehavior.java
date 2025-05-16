@@ -8,9 +8,13 @@ import android.content.Context;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
@@ -28,6 +32,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Context mContext;
     private final ActivityTabProvider mActivityTabProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
     private final Runnable mRegisterVoiceSearchRunnable;
 
@@ -35,11 +41,15 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
+            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             ActivityTabProvider activityTabProvider,
             Runnable registerVoiceSearchRunnable) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
+        mTabBookmarkerSupplier = tabBookmarkerSupplier;
+        mBookmarkModelSupplier = bookmarkModelSupplier;
         mActivityTabProvider = activityTabProvider;
         mRegisterVoiceSearchRunnable = registerVoiceSearchRunnable;
     }
@@ -56,6 +66,15 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                         mActivityTabProvider,
                         trackerSupplier);
         controller.addButtonVariant(AdaptiveToolbarButtonVariant.NEW_TAB, newTabButton);
+        var addToBookmarks =
+                new AddToBookmarksToolbarButtonController(
+                        mActivityTabProvider,
+                        mContext,
+                        mActivityLifecycleDispatcher,
+                        mTabBookmarkerSupplier,
+                        trackerSupplier,
+                        mBookmarkModelSupplier);
+        controller.addButtonVariant(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS, addToBookmarks);
 
         mRegisterVoiceSearchRunnable.run();
     }
