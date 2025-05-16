@@ -20,10 +20,9 @@ TEST(SimpleResponseParserTest, Valid) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("optimization_guide.proto.ComposeResponse");
   cfg.mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
-  auto parser = SimpleResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync("output", response_future.GetCallback());
+  SimpleResponseParser(cfg).ParseAsync("output", response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   ASSERT_TRUE(maybe_metadata.has_value());
@@ -36,10 +35,9 @@ TEST(SimpleResponseParserTest, BadProtoType) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("garbage type");
   cfg.mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
-  auto parser = SimpleResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync("output", response_future.GetCallback());
+  SimpleResponseParser(cfg).ParseAsync("output", response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());
@@ -51,10 +49,9 @@ TEST(SimpleResponseParserTest, NotStringField) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("optimization_guide.proto.ComposeResponse");
   cfg.mutable_proto_field()->add_proto_descriptors()->set_tag_number(7);
-  auto parser = SimpleResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync("output", response_future.GetCallback());
+  SimpleResponseParser(cfg).ParseAsync("output", response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());

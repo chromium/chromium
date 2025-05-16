@@ -32,8 +32,11 @@ class ResponseParserRegistry {
       const proto::OnDeviceModelExecutionOutputConfig& config) const;
 
  private:
-  std::map<proto::ParserKind, std::unique_ptr<ResponseParserFactory>>
-      factories_;
+  using ResponseParserFactory =
+      base::RepeatingCallback<std::unique_ptr<ResponseParser>(
+          const proto::OnDeviceModelExecutionOutputConfig&)>;
+
+  std::map<proto::ParserKind, ResponseParserFactory> factories_;
 };
 
 }  // namespace optimization_guide

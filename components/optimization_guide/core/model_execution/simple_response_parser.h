@@ -32,17 +32,6 @@ class SimpleResponseParser final : public ResponseParser {
   proto::OnDeviceModelExecutionOutputConfig config_;
 };
 
-// Constructs SimpleResponseParsers based on a config.
-class SimpleResponseParserFactory : public ResponseParserFactory {
- public:
-  SimpleResponseParserFactory();
-  ~SimpleResponseParserFactory() override;
-
-  // Constructs a parser for the given config.
-  std::unique_ptr<ResponseParser> CreateParser(
-      const proto::OnDeviceModelExecutionOutputConfig& config) override;
-};
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SIMPLE_RESPONSE_PARSER_H_

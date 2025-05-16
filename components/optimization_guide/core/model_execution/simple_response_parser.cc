@@ -34,12 +34,4 @@ bool SimpleResponseParser::SuppressParsingIncompleteResponse() const {
   return config_.suppress_parsing_incomplete_output();
 }
 
-SimpleResponseParserFactory::SimpleResponseParserFactory() = default;
-SimpleResponseParserFactory::~SimpleResponseParserFactory() = default;
-
-std::unique_ptr<ResponseParser> SimpleResponseParserFactory::CreateParser(
-    const proto::OnDeviceModelExecutionOutputConfig& config) {
-  return std::make_unique<SimpleResponseParser>(config);
-}
-
 }  // namespace optimization_guide

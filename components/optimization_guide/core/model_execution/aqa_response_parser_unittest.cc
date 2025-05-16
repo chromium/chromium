@@ -20,10 +20,9 @@ using ParseResponseFuture =
 TEST(AqaResponseParserTest, Valid) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync(
+  AqaResponseParser(cfg).ParseAsync(
       "0001,0003 has the answer. The answer is The fox jumps over the dog",
       response_future.GetCallback());
   auto maybe_response = response_future.Get();
@@ -39,10 +38,10 @@ TEST(AqaResponseParserTest, Valid) {
 TEST(AqaResponseParserTest, Unanswerable) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync("unanswerable.", response_future.GetCallback());
+  AqaResponseParser(cfg).ParseAsync("unanswerable.",
+                                    response_future.GetCallback());
   auto maybe_response = response_future.Get();
 
   ASSERT_TRUE(maybe_response.has_value());
@@ -54,10 +53,9 @@ TEST(AqaResponseParserTest, Unanswerable) {
 TEST(AqaResponseParserTest, RecursiveAnswer) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync(
+  AqaResponseParser(cfg).ParseAsync(
       "0001,0003 has the answer. The answer is ID:0002 has the answer. The "
       "answer is the fox jumps over the dog.",
       response_future.GetCallback());
@@ -70,11 +68,11 @@ TEST(AqaResponseParserTest, RecursiveAnswer) {
 TEST(AqaResponseParserTest, RecursiveUnanswerable) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
 
   ParseResponseFuture response_future;
-  parser->ParseAsync("0001,0003 has the answer. The answer is unanswerable.",
-                     response_future.GetCallback());
+  AqaResponseParser(cfg).ParseAsync(
+      "0001,0003 has the answer. The answer is unanswerable.",
+      response_future.GetCallback());
   auto maybe_response = response_future.Get();
 
   ASSERT_TRUE(maybe_response.has_value());
@@ -87,9 +85,8 @@ TEST(AqaResponseParserTest, SuppressParsingIncompleteResponseAlwaysTrue) {
   proto::OnDeviceModelExecutionOutputConfig cfg;
   cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
   cfg.set_suppress_parsing_incomplete_output(false);
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
 
-  EXPECT_TRUE(parser->SuppressParsingIncompleteResponse());
+  EXPECT_TRUE(AqaResponseParser(cfg).SuppressParsingIncompleteResponse());
 }
 
 }  // namespace optimization_guide

@@ -33,17 +33,6 @@ class JsonResponseParser final : public ResponseParser {
   proto::OnDeviceModelExecutionOutputConfig config_;
 };
 
-// Constructs JsonResponseParsers based on a config.
-class JsonResponseParserFactory : public ResponseParserFactory {
- public:
-  JsonResponseParserFactory();
-  ~JsonResponseParserFactory() override;
-
-  // Constructs a parser for the given config.
-  std::unique_ptr<ResponseParser> CreateParser(
-      const proto::OnDeviceModelExecutionOutputConfig& config) override;
-};
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_JSON_RESPONSE_PARSER_H_

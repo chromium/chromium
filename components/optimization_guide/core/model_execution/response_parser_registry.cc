@@ -15,15 +15,36 @@
 namespace optimization_guide {
 
 ResponseParserRegistry::ResponseParserRegistry() {
+  const auto simple_response_parser_factory = base::BindRepeating(
+      [](const proto::OnDeviceModelExecutionOutputConfig& config)
+          -> std::unique_ptr<ResponseParser> {
+        return std::make_unique<SimpleResponseParser>(config);
+      });
+
   factories_.emplace(proto::PARSER_KIND_UNSPECIFIED,
-                     std::make_unique<SimpleResponseParserFactory>());
-  factories_.emplace(proto::PARSER_KIND_SIMPLE,
-                     std::make_unique<SimpleResponseParserFactory>());
-  factories_.emplace(proto::PARSER_KIND_JSON,
-                     std::make_unique<JsonResponseParserFactory>());
-  factories_.emplace(proto::PARSER_KIND_AQA,
-                     std::make_unique<AqaResponseParserFactory>());
+                     simple_response_parser_factory);
+  factories_.emplace(proto::PARSER_KIND_SIMPLE, simple_response_parser_factory);
+
+  factories_.emplace(
+      proto::PARSER_KIND_JSON,
+      base::BindRepeating(
+          [](const proto::OnDeviceModelExecutionOutputConfig& config)
+              -> std::unique_ptr<ResponseParser> {
+            return std::make_unique<JsonResponseParser>(config);
+          }));
+
+  factories_.emplace(
+      proto::PARSER_KIND_AQA,
+      base::BindRepeating(
+          [](const proto::OnDeviceModelExecutionOutputConfig& config)
+              -> std::unique_ptr<ResponseParser> {
+            if (!AqaResponseParser::CanParse(config.proto_type())) {
+              return nullptr;
+            }
+            return std::make_unique<AqaResponseParser>(config);
+          }));
 }
+
 ResponseParserRegistry::~ResponseParserRegistry() = default;
 
 const ResponseParserRegistry& ResponseParserRegistry::Get() {
@@ -37,7 +58,7 @@ std::unique_ptr<ResponseParser> ResponseParserRegistry::CreateParser(
   if (it == factories_.end()) {
     return nullptr;
   }
-  return it->second->CreateParser(config);
+  return it->second.Run(config);
 }
 
 }  // namespace optimization_guide

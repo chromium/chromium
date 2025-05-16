@@ -50,12 +50,4 @@ bool JsonResponseParser::SuppressParsingIncompleteResponse() const {
   return true;
 }
 
-JsonResponseParserFactory::JsonResponseParserFactory() = default;
-JsonResponseParserFactory::~JsonResponseParserFactory() = default;
-
-std::unique_ptr<ResponseParser> JsonResponseParserFactory::CreateParser(
-    const proto::OnDeviceModelExecutionOutputConfig& config) {
-  return std::make_unique<JsonResponseParser>(config);
-}
-
 }  // namespace optimization_guide
