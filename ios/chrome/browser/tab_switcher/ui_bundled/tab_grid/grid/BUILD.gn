@@ -310,8 +310,10 @@ source_set("tab_group_grid_ui") {
     ":grid_view_delegate",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

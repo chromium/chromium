@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_grid_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_view_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_activity_summary_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_header.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
 
 @interface TabGroupGridViewController () <TabGroupActivitySummaryCellDelegate>
 @end
@@ -67,6 +69,20 @@
 }
 
 #pragma mark - Parent's functions
+
+- (LegacyGridTransitionLayout*)transitionLayout {
+  LegacyGridTransitionLayout* transitionLayout = [super transitionLayout];
+  if (IsContainedTabGroupEnabled()) {
+    // When the user is entering the TabGrid from a Tab in a group, the
+    // non-selected tabs should not animate otherwise they will be
+    // displayed outside of the container.
+    transitionLayout = [LegacyGridTransitionLayout
+        layoutWithInactiveItems:@[]
+                     activeItem:transitionLayout.activeItem
+                  selectionItem:transitionLayout.selectionItem];
+  }
+  return transitionLayout;
+}
 
 // Returns a configured header for the given index path.
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
