@@ -126,8 +126,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   cell.accessoryType = UITableViewCellAccessoryNone;
   cell.textLabel.text = title;
   cell.detailTextLabel.text = details;
-  cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-  cell.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = selected
+                             ? [UIColor colorNamed:kBlueHaloColor]
+                             : [UIColor colorNamed:kPrimaryBackgroundColor];
   cell.separatorInset =
       UIEdgeInsetsMake(0.f, kTableViewSeparatorInsetHide, 0.f, 0.f);
   cell.accessibilityIdentifier = accessibilityIdentifier;
