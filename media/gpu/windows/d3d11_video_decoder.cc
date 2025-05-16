@@ -1115,6 +1115,12 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
       continue;
 
     const auto& resolution_range = kv.second;
+
+    // TODO(crbug.com/415370683): This should be handled elsewhere.
+    if (resolution_range.min_resolution.IsEmpty()) {
+      continue;
+    }
+
     configs.emplace_back(profile, profile, resolution_range.min_resolution,
                          resolution_range.max_landscape_resolution,
                          /*allow_encrypted=*/false,
