@@ -171,6 +171,7 @@ class CONTENT_EXPORT PrefetchScheduler {
   // explicitly call `Progress()`.
   //
   // If `should_progress` is false, doesn't call `ProgressAsync()`.
+  void PushAndProgress(PrefetchContainer& prefetch_container);
   void PushAndProgressAsync(PrefetchContainer& prefetch_container);
   // Note that this doesn't call `PrefetchService::ResetPrefetchContainer()`.
   void RemoveAndProgressAsync(PrefetchContainer& prefetch_container,

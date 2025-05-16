@@ -194,6 +194,20 @@ PrefetchPriority PrefetchScheduler::CalculatePriority(
   return CalculatePriorityImpl(prefetch_container);
 }
 
+void PrefetchScheduler::PushAndProgress(PrefetchContainer& prefetch_container) {
+  // Precondition: Pushing already registered one is not allowed.
+  for (auto& it : active_set_) {
+    if (it.get() == &prefetch_container) {
+      NOTREACHED();
+    }
+  }
+
+  PrefetchPriority priority = CalculatePriority(prefetch_container);
+  queue_.Push(prefetch_container.GetWeakPtr(), priority);
+
+  Progress();
+}
+
 void PrefetchScheduler::PushAndProgressAsync(
     PrefetchContainer& prefetch_container) {
   // Precondition: Pushing already registered one is not allowed.

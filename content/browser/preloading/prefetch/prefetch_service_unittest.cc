@@ -130,11 +130,12 @@ struct PrefetchServiceRearchParam {
   static PrefetchServiceRearchParam CreateFromIndex(int index);
 
   bool prefetch_scheduler;
+  bool prefetch_scheduler_progress_sync_best_effort;
 };
 
 // static
 std::vector<int> PrefetchServiceRearchParam::Params() {
-  return {0, 1};
+  return {0, 1, 2};
 }
 
 // static
@@ -143,9 +144,15 @@ PrefetchServiceRearchParam PrefetchServiceRearchParam::CreateFromIndex(
   std::vector<PrefetchServiceRearchParam> params = {
       PrefetchServiceRearchParam{
           .prefetch_scheduler = false,
+          .prefetch_scheduler_progress_sync_best_effort = false,
       },
       PrefetchServiceRearchParam{
           .prefetch_scheduler = true,
+          .prefetch_scheduler_progress_sync_best_effort = false,
+      },
+      PrefetchServiceRearchParam{
+          .prefetch_scheduler = true,
+          .prefetch_scheduler_progress_sync_best_effort = true,
       },
   };
   return params[index];
@@ -169,7 +176,15 @@ class WithPrefetchServiceRearchParam {
 void WithPrefetchServiceRearchParam::InitRearchFeatures() {
   if (param_.prefetch_scheduler) {
     feature_list_prefetch_scheduler_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchScheduler, {}}}, {});
+        {{
+            features::kPrefetchScheduler,
+            {
+                {"kPrefetchSchedulerProgressSyncBestEffort",
+                 param_.prefetch_scheduler_progress_sync_best_effort ? "true"
+                                                                     : "false"},
+            },
+        }},
+        {});
   }
 }
 
@@ -7663,12 +7678,94 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_RunsTwoConcurrentPrefetches) {
 //
 // Scenario:
 //
-// - A prefetch is triggered.
+// - Two prefetches are triggered.
 // - A prefetch is triggered with high priority.
 // - `PrefetchScheduler` starts the later one.
 TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize) {
-  if (!UsePrefetchScheduler()) {
-    GTEST_SKIP() << "Assume PrefetchScheduler";
+  if (!(UsePrefetchScheduler() &&
+        features::kPrefetchSchedulerProgressSyncBestEffort.Get())) {
+    GTEST_SKIP() << "Assume PrefetchScheduler and "
+                    "PrefetchSchedulerProgressSyncBestEffort";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kPrefetchSchedulerTesting,
+        {{"kPrefetchSchedulerTestingActiveSetSizeLimitForBase", "1"},
+         {"kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", "1"}}}},
+      {});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/0));
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+
+  prefetch_service->GetPrefetchSchedulerForTesting()
+      .SetCalculatePriorityForTesting(
+          base::BindRepeating([](const PrefetchContainer& prefetch_container) {
+            if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
+                    "?prioritize=1")) {
+              return PrefetchPriority::kHighTest;
+            }
+
+            return PrefetchPriority::kBase;
+          }));
+
+  const auto url_1 = GURL("https://example.com/one");
+  const auto url_2 = GURL("https://example.com/two");
+  const auto url_3 = GURL("https://example.com/two?prioritize=1");
+  auto handle_1 =
+      MakePrefetchFromBrowserContext(url_1, std::nullopt, {}, nullptr);
+  auto handle_2 =
+      MakePrefetchFromBrowserContext(url_2, std::nullopt, {}, nullptr);
+  auto handle_3 =
+      MakePrefetchFromBrowserContext(url_3, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
+      prefetch_container3;
+  std::tie(std::ignore, prefetch_container1) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_1))[0];
+  std::tie(std::ignore, prefetch_container2) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_2))[0];
+  std::tie(std::ignore, prefetch_container3) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_3))[0];
+
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+
+  handle_1.reset();
+  EXPECT_FALSE(prefetch_container1);
+  // Resolve `PrefetchScheduler::ProgressAsync()`.
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+}
+
+// Tests prioritizing behavior.
+//
+// Scenario:
+//
+// - A prefetch is triggered.
+// - A prefetch is triggered with high priority.
+// - `PrefetchScheduler` starts the later one.
+TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize_Async) {
+  if (!(UsePrefetchScheduler() &&
+        !features::kPrefetchSchedulerProgressSyncBestEffort.Get())) {
+    GTEST_SKIP() << "Assume PrefetchScheduler and not "
+                    "PrefetchSchedulerProgressSyncBestEffort";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -7825,13 +7922,122 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_Burst) {
 //
 // - Two prefetches are triggered.
 // - Two prefetches are triggered with burst.
+// - `PrefetchScheduler` starts the first and third one.
+// - The third one ended.
+// - `PrefetchScheduler` starts the forth one.
+// - The first one ended.
+// - `PrefetchScheduler` doesn't start the second one as
+//   `ActiveSetSizeLimitForBase` is 1.
+TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority) {
+  if (!(UsePrefetchScheduler() &&
+        features::kPrefetchSchedulerProgressSyncBestEffort.Get())) {
+    GTEST_SKIP() << "Assume PrefetchScheduler and "
+                    "PrefetchSchedulerProgressSyncBestEffort";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {
+          {features::kPrefetchSchedulerTesting,
+           {{"kPrefetchSchedulerTestingActiveSetSizeLimitForBase", "1"},
+            {"kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", "2"}}},
+      },
+      {});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/0));
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+
+  prefetch_service->GetPrefetchSchedulerForTesting()
+      .SetCalculatePriorityForTesting(
+          base::BindRepeating([](const PrefetchContainer& prefetch_container) {
+            if (prefetch_container.GetURL().possibly_invalid_spec().ends_with(
+                    "?burst=1")) {
+              return PrefetchPriority::kBurstTest;
+            }
+
+            return PrefetchPriority::kBase;
+          }));
+
+  const auto url_1 = GURL("https://example.com/one");
+  const auto url_2 = GURL("https://example.com/two");
+  const auto url_3 = GURL("https://example.com/three?burst=1");
+  const auto url_4 = GURL("https://example.com/four?burst=1");
+  auto handle_1 =
+      MakePrefetchFromBrowserContext(url_1, std::nullopt, {}, nullptr);
+  auto handle_2 =
+      MakePrefetchFromBrowserContext(url_2, std::nullopt, {}, nullptr);
+  auto handle_3 =
+      MakePrefetchFromBrowserContext(url_3, std::nullopt, {}, nullptr);
+  auto handle_4 =
+      MakePrefetchFromBrowserContext(url_4, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
+      prefetch_container3, prefetch_container4;
+  std::tie(std::ignore, prefetch_container1) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_1))[0];
+  std::tie(std::ignore, prefetch_container2) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_2))[0];
+  std::tie(std::ignore, prefetch_container3) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_3))[0];
+  std::tie(std::ignore, prefetch_container4) =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(std::nullopt, url_4))[0];
+
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container4->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+
+  handle_3.reset();
+  EXPECT_FALSE(prefetch_container3);
+  // Resolve `PrefetchScheduler::ProgressAsync()`.
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container4->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+
+  handle_1.reset();
+  EXPECT_FALSE(prefetch_container1);
+  // Resolve `PrefetchScheduler::ProgressAsync()`.
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container4->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+}
+
+// Tests bursting behavior.
+//
+// Scenario:
+//
+// - Two prefetches are triggered.
+// - Two prefetches are triggered with burst.
 // - `PrefetchScheduler` starts the third and fourth one.
 // - The third one ended.
 // - `PrefetchScheduler` doesn't start the first/second one as
 //   `ActiveSetSizeLimitForBase` is 1.
-TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority) {
-  if (!UsePrefetchScheduler()) {
-    GTEST_SKIP() << "Assume PrefetchScheduler";
+TEST_P(PrefetchServiceTest, PrefetchScheduler_BurstTakesPriority_Async) {
+  if (!(UsePrefetchScheduler() &&
+        !features::kPrefetchSchedulerProgressSyncBestEffort.Get())) {
+    GTEST_SKIP() << "Assume PrefetchScheduler and not "
+                    "PrefetchSchedulerProgressSyncBestEffort";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
