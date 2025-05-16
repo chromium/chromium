@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 
 import android.content.Context;
@@ -15,8 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
@@ -24,6 +23,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
@@ -48,10 +49,12 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.plus_addresses.PlusAddressesUserActions;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
 /** Autofill profiles fragment, which allows the user to edit autofill profiles. */
+@NullMarked
 public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManager.PersonalDataManagerObserver {
     private final Delegate mAddressEditorDelegate =
@@ -90,7 +93,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     }
                 }
             };
-    private static EditorObserverForTest sObserverForTest;
+    private static @Nullable EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
     static final String MANAGE_PLUS_ADDRESSES = "manage_plus_addresses";
 
@@ -103,7 +106,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.autofill_addresses_settings_title));
         setHasOptionsMenu(true);
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
@@ -120,7 +123,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (mAddressEditor != null) {
             mAddressEditor.onConfigurationChanged();
@@ -195,7 +198,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     new AutofillProfileEditorPreference(getStyledContext());
             pref.setTitle(profile.getInfo(FieldType.NAME_FULL));
             pref.setSummary(profile.getLabel());
-            pref.setKey(pref.getTitle().toString()); // For testing.
+            pref.setKey(String.valueOf(pref.getTitle())); // For testing.
 
             // Conditionally show local profile icon for address profiles that are neither synced,
             // nor saved in the account.
@@ -246,7 +249,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         PersonalDataManagerFactory.getForProfile(getProfile()).registerDataObserver(this);
     }
@@ -330,9 +333,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     private boolean shouldShowLocalProfileIcon(AutofillProfile profile) {
-        if (!IdentityServicesProvider.get()
-                .getIdentityManager(getProfile())
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        IdentityManager identityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()));
+        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return false;
         }
         if (profile.getRecordType() == RecordType.ACCOUNT) {
@@ -348,7 +351,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     EditorDialogView getEditorDialogForTest() {
-        return mAddressEditor.getEditorDialogForTesting();
+        return assumeNonNull(mAddressEditor).getEditorDialogForTesting();
     }
 
     private void openHomeAndWorkLink(String url) {

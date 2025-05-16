@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -20,6 +21,7 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog that confirms whether the user wishes to unenroll their card from Virtual Cards. */
+@NullMarked
 public class AutofillVirtualCardUnenrollmentDialog {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;

@@ -18,6 +18,8 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -28,12 +30,13 @@ import org.chromium.components.payments.AndroidPaymentAppFactory;
 import java.util.Map;
 
 /** Preference fragment to allow users to control use of the Android payment apps on device. */
+@NullMarked
 public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
         implements EmbeddableSettingsPage {
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.payment_apps_title));
 
         // Create blank preference screen.
@@ -47,7 +50,7 @@ public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes (crbug.com/986241).

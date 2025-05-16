@@ -11,13 +11,15 @@ import android.view.View;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /**
  * A {@link Preference} that provides a clickable edit link as a widget.
  *
- * {@link OnPreferenceClickListener} is called when the link is clicked.
+ * <p>{@link OnPreferenceClickListener} is called when the link is clicked.
  */
+@NullMarked
 public class AutofillEditLinkPreference extends Preference {
     /** Constructor for inflating from XML. */
     public AutofillEditLinkPreference(Context context, AttributeSet attrs) {

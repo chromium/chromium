@@ -25,7 +25,7 @@ public class CardWithButtonPreference extends ChromeBasePreference {
      * @param context The context of the preference.
      * @param attrs The attributes of the preference.
      */
-    public CardWithButtonPreference(Context context, AttributeSet attrs) {
+    public CardWithButtonPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.card_with_button_preference_layout);
     }

@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -22,6 +23,7 @@ import java.util.Set;
  * A wrapper for the credit card scanner used to help log additional metrics about its use and its
  * effect on saving payment information.
  */
+@NullMarked
 public class CreditCardScannerManager implements CreditCardScanner.Delegate {
     static final String SCAN_CARD_CLICKED_USER_ACTION =
             "Autofill.PaymentMethodsSettingsPage.ScanCardClicked";

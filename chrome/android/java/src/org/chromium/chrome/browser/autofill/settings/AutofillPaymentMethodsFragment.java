@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -16,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -27,6 +29,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
@@ -62,6 +66,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * Autofill credit cards fragment, which allows the user to edit credit cards and control payment
  * apps.
  */
+@NullMarked
 public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManager.PersonalDataManagerObserver {
     // The Fido pref is used as a key on the settings toggle. This key helps in the retrieval of the
@@ -87,14 +92,14 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String MANDATORY_REAUTH_OPT_OUT_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptOut";
 
-    @Nullable private ReauthenticatorBridge mReauthenticatorBridge;
-    @Nullable private AutofillPaymentMethodsDelegate mAutofillPaymentMethodsDelegate;
+    private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
+    private @Nullable AutofillPaymentMethodsDelegate mAutofillPaymentMethodsDelegate;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
     private Callback<String> mServerIbanManageLinkOpenerCallback =
             url -> CustomTabActivity.showInfoPage(getActivity(), url);
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.autofill_payment_methods));
         setHasOptionsMenu(true);
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
@@ -418,7 +423,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         // `ONLY_LSKF_AVAILABLE` if it is.
         boolean enableReauthSwitch =
                 personalDataManager.isAutofillPaymentMethodsEnabled()
-                        && (mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                        && (assumeNonNull(mReauthenticatorBridge).getBiometricAvailabilityStatus()
                                 != BiometricStatus.UNAVAILABLE);
         mandatoryReauthSwitch.setEnabled(enableReauthSwitch);
         mandatoryReauthSwitch.setOnPreferenceChangeListener(this::onMandatoryReauthSwitchToggled);
@@ -487,6 +492,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
         // We require user authentication every time user tries to change this
         // preference. Set useLastValidAuth=false to skip the grace period.
+        assertNonNull(mReauthenticatorBridge);
         mReauthenticatorBridge.reauthenticate(
                 success -> {
                     if (success) {
@@ -495,7 +501,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         PersonalDataManagerFactory.getForProfile(getProfile())
                                 .setAutofillPaymentMethodsMandatoryReauth((boolean) newValue);
 
-                        // When the preference is updated, the page is expected to refresh and show
+                        // When the preference is updated, the page is expected to refresh
+                        // and show
                         // the updated preference. Fallback if the page does not load.
                         mandatoryReauthSwitch.setChecked(userIntendedState);
                         RecordHistogram.recordEnumeratedHistogram(
@@ -639,7 +646,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     private boolean showOtherFinancialAccountsFragment(Preference preference) {
         Bundle args = preference.getExtras();
         args.putString(
-                FinancialAccountsManagementFragment.TITLE_KEY, preference.getTitle().toString());
+                FinancialAccountsManagementFragment.TITLE_KEY,
+                String.valueOf(preference.getTitle()));
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(
@@ -657,7 +665,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         PersonalDataManagerFactory.getForProfile(getProfile()).registerDataObserver(this);
     }

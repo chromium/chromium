@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -26,6 +29,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -43,6 +48,7 @@ import org.chromium.url.GURL;
 import java.util.HashSet;
 
 /** Preferences fragment to allow users to manage card benefits linked to their credit cards. */
+@NullMarked
 public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManager.PersonalDataManagerObserver,
                 Preference.OnPreferenceClickListener,
@@ -62,14 +68,14 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     @VisibleForTesting static final String PREF_KEY_LEARN_ABOUT = "learn_about";
     @VisibleForTesting static final String PREF_KEY_CARD_BENEFIT_TERM = "card_benefit_term";
 
-    private static Callback<Fragment> sObserverForTest;
+    private static @Nullable Callback<Fragment> sObserverForTest;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private PersonalDataManager mPersonalDataManager;
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.autofill_card_benefits_settings_page_title));
 
         // Create blank preference screen.
@@ -85,7 +91,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         return mPageTitle;
     }
 
-    // ChromeBaseSettingsFramgent override.
+    // ChromeBaseSettingsFragment override.
     @Override
     public void onResume() {
         super.onResume();
@@ -211,7 +217,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        openUrlInCct(preference.getExtras().getString(PREF_LIST_TERMS_URL));
+        openUrlInCct(assumeNonNull(preference.getExtras().getString(PREF_LIST_TERMS_URL)));
         RecordUserAction.record(CARD_BENEFITS_TERMS_CLICKED_USER_ACTION);
         return true;
     }
@@ -228,7 +234,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mPersonalDataManager = PersonalDataManagerFactory.getForProfile(getProfile());
         mPersonalDataManager.registerDataObserver(this);
@@ -247,7 +253,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
         public BottomDividerItemDecoration(Context context) {
             final TypedArray a = context.obtainStyledAttributes(ATTRS);
-            mDivider = a.getDrawable(0);
+            mDivider = assertNonNull(a.getDrawable(0));
             a.recycle();
         }
 

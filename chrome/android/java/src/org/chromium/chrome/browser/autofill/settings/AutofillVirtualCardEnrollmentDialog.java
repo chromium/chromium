@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
@@ -23,6 +24,7 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog shown to the user to enroll a credit card into the virtual card feature. */
+@NullMarked
 public class AutofillVirtualCardEnrollmentDialog {
     /** The interface that implements the action to be performed when links are clicked. */
     @FunctionalInterface
@@ -38,7 +40,6 @@ public class AutofillVirtualCardEnrollmentDialog {
     private final String mDeclineButtonText;
     private final LinkClickCallback mOnLinkClicked;
     private final Callback<Integer> mResultHandler;
-    private PropertyModel mDialogModel;
 
     public AutofillVirtualCardEnrollmentDialog(
             Context context,
@@ -73,8 +74,8 @@ public class AutofillVirtualCardEnrollmentDialog {
                                 ModalDialogProperties.CONTROLLER,
                                 new SimpleModalDialogController(
                                         mModalDialogManager, mResultHandler));
-        mDialogModel = builder.build();
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+        PropertyModel dialogModel = builder.build();
+        mModalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     private View getCustomViewForModalDialog() {

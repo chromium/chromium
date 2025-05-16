@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -18,6 +20,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -33,9 +37,10 @@ import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
 /** Fragment showing management options for financial accounts like Pix, e-Wallets etc. */
+@NullMarked
 public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManagerObserver, Preference.OnPreferenceChangeListener {
-    private static Callback<Fragment> sObserverForTest;
+    private static @Nullable Callback<Fragment> sObserverForTest;
 
     // Histograms
     @VisibleForTesting
@@ -57,15 +62,15 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     static final String TITLE_KEY = "financial_accounts_management_title";
 
     private PersonalDataManager mPersonalDataManager;
-    private Ewallet[] mEwallets;
-    private BankAccount[] mBankAccounts;
+    private Ewallet @Nullable [] mEwallets;
+    private BankAccount @Nullable [] mBankAccounts;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
     private Callback<String> mFinancialAccountManageLinkOpenerCallback =
             url -> CustomTabActivity.showInfoPage(getActivity(), url);
 
-    // ChromeBaseSettingsFramgent override.
+    // ChromeBaseSettingsFragment override.
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         Bundle extras = getArguments();
         String title = "";
         if (extras != null) {
@@ -91,7 +96,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         return mPageTitle;
     }
 
-    // ChromeBaseSettingsFramgent override.
+    // ChromeBaseSettingsFragment override.
     @Override
     public void onResume() {
         super.onResume();
@@ -100,15 +105,15 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         rebuildPage();
     }
 
-    // ChromeBaseSettingsFramgent override.
+    // ChromeBaseSettingsFragment override.
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mPersonalDataManager = PersonalDataManagerFactory.getForProfile(getProfile());
         mPersonalDataManager.registerDataObserver(this);
     }
 
-    // ChromeBaseSettingsFramgent override.
+    // ChromeBaseSettingsFragment override.
     @Override
     public void onDestroyView() {
         mPersonalDataManager.unregisterDataObserver(this);
@@ -159,13 +164,13 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     }
 
     private void addPixAccountPreferences() {
-        for (BankAccount bankAccount : mBankAccounts) {
+        for (BankAccount bankAccount : assumeNonNull(mBankAccounts)) {
             getPreferenceScreen().addPreference(getPreferenceForBankAccount(bankAccount));
         }
     }
 
     private void addEwalletRowItems() {
-        for (Ewallet eWallet : mEwallets) {
+        for (Ewallet eWallet : assumeNonNull(mEwallets)) {
             getPreferenceScreen().addPreference(getEwalletRowItem(eWallet));
         }
     }

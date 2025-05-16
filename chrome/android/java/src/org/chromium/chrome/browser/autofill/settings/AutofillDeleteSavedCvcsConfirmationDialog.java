@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -15,6 +16,7 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog that confirms whether the user wishes to delete all saved CVCs. */
+@NullMarked
 public class AutofillDeleteSavedCvcsConfirmationDialog {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;

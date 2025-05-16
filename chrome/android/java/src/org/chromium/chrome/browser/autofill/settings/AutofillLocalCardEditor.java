@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
@@ -32,6 +34,9 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -51,9 +56,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Local credit card settings. */
+@NullMarked
 public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         implements CreditCardScannerManager.Delegate {
-    private static Callback<Fragment> sObserverForTest;
+    private static @Nullable Callback<Fragment> sObserverForTest;
     private static final String EXPIRATION_DATE_SEPARATOR = "/";
     private static final String EXPIRATION_DATE_REGEX = "^(0[1-9]|1[0-2])\\/(\\d{2})$";
     // TODO(crbug.com/40945216): Leverage the value from C++ code to have a single source of truth.
@@ -74,15 +80,15 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     protected EditText mNicknameText;
     private TextInputLayout mNumberLabel;
     protected EditText mNumberText;
-    protected Spinner mExpirationMonth;
-    protected Spinner mExpirationYear;
+    protected @MonotonicNonNull Spinner mExpirationMonth;
+    protected @MonotonicNonNull Spinner mExpirationYear;
     // Since the nickname field is optional, an empty nickname is a valid nickname.
     private boolean mIsValidNickname = true;
     private boolean mIsCvcStorageEnabled;
     private int mInitialExpirationMonthPos;
-    protected EditText mExpirationDate;
-    protected EditText mCvc;
-    protected ImageView mCvcHintImage;
+    protected @MonotonicNonNull EditText mExpirationDate;
+    protected @MonotonicNonNull EditText mCvc;
+    protected @MonotonicNonNull ImageView mCvcHintImage;
     private boolean mIsValidExpirationDate;
     private int mInitialExpirationYearPos;
     protected Button mScanButton;
@@ -93,7 +99,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         // Allow screenshots of the credit card number in Canary, Dev, and developer builds.
         if (VersionInfo.isBetaBuild() || VersionInfo.isStableBuild()) {
             WindowManager.LayoutParams attributes = getActivity().getWindow().getAttributes();
@@ -248,7 +256,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             adapter.add(formatter.format(calendar.getTime()));
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mExpirationMonth.setAdapter(adapter);
+        assumeNonNull(mExpirationMonth).setAdapter(adapter);
 
         // Populate the year dropdown.
         adapter =
@@ -258,7 +266,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             adapter.add(Integer.toString(year));
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mExpirationYear.setAdapter(adapter);
+        assumeNonNull(mExpirationYear).setAdapter(adapter);
     }
 
     private void addCardDataToEditFields() {
@@ -275,16 +283,18 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         }
 
         if (!TextUtils.isEmpty(mCard.getName())) {
-            mNameLabel.getEditText().setText(mCard.getName());
+            assumeNonNull(mNameLabel.getEditText()).setText(mCard.getName());
         }
         if (!TextUtils.isEmpty(mCard.getNumber())) {
-            mNumberLabel.getEditText().setText(mCard.getNumber());
+            assumeNonNull(mNumberLabel.getEditText()).setText(mCard.getNumber());
         }
 
         // Make the name label focusable in touch mode so that mNameText doesn't get focused.
         mNameLabel.setFocusableInTouchMode(true);
 
         if (mIsCvcStorageEnabled) {
+            assumeNonNull(mExpirationDate);
+            assumeNonNull(mCvc);
             if (!mCard.getMonth().isEmpty() && !mCard.getYear().isEmpty()) {
                 mExpirationDate.setText(
                         String.format("%s/%s", mCard.getMonth(), mCard.getYear().substring(2)));
@@ -294,6 +304,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                 mCvc.setText(mCard.getCvc());
             }
         } else {
+            assumeNonNull(mExpirationMonth);
+            assumeNonNull(mExpirationYear);
             int monthAsInt = 1;
             if (!mCard.getMonth().isEmpty()) {
                 monthAsInt = Integer.parseInt(mCard.getMonth());
@@ -348,6 +360,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         card.setName(mNameText.getText().toString().trim());
 
         if (mIsCvcStorageEnabled) {
+            assumeNonNull(mExpirationDate);
+            assumeNonNull(mCvc);
             String expirationDate = mExpirationDate.getText().toString().trim();
             if (TextUtils.isEmpty(expirationDate)) {
                 mExpirationDate.setError(
@@ -391,6 +405,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                 }
             }
         } else {
+            assumeNonNull(mExpirationMonth);
+            assumeNonNull(mExpirationYear);
             card.setMonth(String.valueOf(mExpirationMonth.getSelectedItemPosition() + 1));
             card.setYear((String) mExpirationYear.getSelectedItem());
         }
@@ -435,11 +451,11 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         mNumberText.addTextChangedListener(this);
 
         if (mIsCvcStorageEnabled) {
-            mExpirationDate.addTextChangedListener(this);
-            mCvc.addTextChangedListener(this);
+            assumeNonNull(mExpirationDate).addTextChangedListener(this);
+            assumeNonNull(mCvc).addTextChangedListener(this);
         } else {
-            mExpirationMonth.setOnItemSelectedListener(this);
-            mExpirationYear.setOnItemSelectedListener(this);
+            assumeNonNull(mExpirationMonth).setOnItemSelectedListener(this);
+            assumeNonNull(mExpirationYear).setOnItemSelectedListener(this);
             // Listen for touch events for drop down menus. We clear the keyboard when user touches
             // any of these fields.
             mExpirationMonth.setOnTouchListener(this);
@@ -514,6 +530,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     }
 
     private TextWatcher expirationDateTextWatcher() {
+        assumeNonNull(mExpirationDate);
         return new EmptyTextWatcher() {
             private static final int SEPARATOR_INDEX = 2;
             private static final int VALID_DATE_LENGTH = 5;
@@ -552,6 +569,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     }
 
     private TextWatcher creditCardNumberTextWatcherForCvc() {
+        assumeNonNull(mCvcHintImage);
         return new EmptyTextWatcher() {
             private boolean mUsingAmExCvcHintImage;
 

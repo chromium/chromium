@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +19,6 @@ import android.widget.EditText;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -26,6 +28,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
@@ -38,24 +42,27 @@ import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Objects;
+
 /**
  * This class creates a view for adding, editing, and deleting a local IBAN. A local IBAN gets saved
  * to the user's device only.
  */
+@NullMarked
 public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
     @VisibleForTesting
     static final String SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM =
             "Autofill.SettingsPage.LocalIbanActions";
 
-    private static Callback<Fragment> sObserverForTest;
+    private static @Nullable Callback<Fragment> sObserverForTest;
 
     protected Button mDoneButton;
     protected EditText mNickname;
     private TextInputLayout mNicknameLabel;
     protected EditText mValue;
     private Iban mIban;
-    private Profile mProfile;
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Profile mProfile;
+    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -84,7 +91,9 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
 
         PersonalDataManager personalDataManager =
@@ -155,7 +164,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         } else {
             boolean ibanChanged =
                     !mIban.getNickname().equals(iban.getNickname())
-                            || !mIban.getValue().equals(iban.getValue());
+                            || !Objects.equals(mIban.getValue(), iban.getValue());
 
             RecordHistogram.recordEnumeratedHistogram(
                     SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
@@ -213,7 +222,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
 
     /** Return the {@link Profile} associated with the IBAN being edited. */
     public Profile getProfile() {
-        return mProfile;
+        return assertNonNull(mProfile);
     }
 
     @VisibleForTesting
@@ -229,7 +238,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         if (!mIban.getNickname().isEmpty()) {
             mNickname.setText(mIban.getNickname());
         }
-        if (!mIban.getValue().isEmpty()) {
+        if (!TextUtils.isEmpty(mIban.getValue())) {
             mValue.setText(mIban.getValue());
         }
     }
@@ -246,7 +255,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
      * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

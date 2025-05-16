@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
@@ -39,11 +43,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Server credit card settings. */
+@NullMarked
 public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private static final String SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT =
             "Autofill.VirtualCard.SettingsPageEnrollment";
 
-    private TextView mVirtualCardEnrollmentButton;
+    private @MonotonicNonNull TextView mVirtualCardEnrollmentButton;
     private boolean mVirtualCardEnrollmentButtonShowsUnenroll;
     private AutofillPaymentMethodsDelegate mDelegate;
     private boolean mAwaitingUpdateVirtualCardEnrollmentResponse;
@@ -134,7 +139,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                         } else {
                             // If update was not successful, enable the button so users can try
                             // again.
-                            mVirtualCardEnrollmentButton.setEnabled(true);
+                            assumeNonNull(mVirtualCardEnrollmentButton).setEnabled(true);
                         }
                     }
                 };
@@ -142,7 +147,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         final View v = super.onCreateView(inflater, container, savedInstanceState);
         if (mCard == null) {
             SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
@@ -258,7 +265,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                         logSettingsPageEnrollmentDialogUserSelection(false);
                         // Since the user canceled the enrollment dialog, enable the button
                         // again to allow for enrollment.
-                        mVirtualCardEnrollmentButton.setEnabled(true);
+                        assumeNonNull(mVirtualCardEnrollmentButton).setEnabled(true);
                     }
                 };
         AutofillVirtualCardEnrollmentDialog dialog =
@@ -291,7 +298,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                                 // progress.
                                 mAwaitingUpdateVirtualCardEnrollmentResponse = true;
                             } else {
-                                mVirtualCardEnrollmentButton.setEnabled(true);
+                                assumeNonNull(mVirtualCardEnrollmentButton).setEnabled(true);
                             }
                         });
         dialog.show();
@@ -306,6 +313,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     /** Updates the Virtual Card Enrollment button label. */
     private void setVirtualCardEnrollmentButtonLabel(boolean isEnrolled) {
         mVirtualCardEnrollmentButtonShowsUnenroll = isEnrolled;
+        assumeNonNull(mVirtualCardEnrollmentButton);
         mVirtualCardEnrollmentButton.setEnabled(true);
         mVirtualCardEnrollmentButton.setText(
                 mVirtualCardEnrollmentButtonShowsUnenroll
@@ -326,7 +334,8 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (parent == mBillingAddress && position != mInitialBillingAddressPos) {
-            ((Button) getView().findViewById(R.id.button_primary)).setEnabled(true);
+            Button button = assumeNonNull(getView()).findViewById(R.id.button_primary);
+            button.setEnabled(true);
         }
     }
 

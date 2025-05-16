@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -19,6 +21,7 @@ import org.chromium.components.autofill.RecordType;
 import java.util.OptionalInt;
 
 /** Launches the UI to edit, create or delete an Autofill profile entry. */
+@NullMarked
 public class AutofillProfileEditorPreference extends DialogPreference {
 
     private boolean mShouldShowLocalProfileIcon;
@@ -31,7 +34,7 @@ public class AutofillProfileEditorPreference extends DialogPreference {
     /**
      * @return ID of the profile to edit when this preference is selected.
      */
-    public String getGUID() {
+    public @Nullable String getGUID() {
         return getExtras().getString(AutofillEditorBase.AUTOFILL_GUID);
     }
 
