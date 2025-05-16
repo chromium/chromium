@@ -75562,6 +75562,19 @@
        {}
       ]
      ],
+     "position-visibility-no-overflow-without-anchor.html": [
+      "01f4d97947bc68ca09d6691f1a43fb98a57ea98d",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-visibility-no-overflow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-visibility-no-overflow.html": [
       "0569a9d179c02501eb747d66c830da96da14ae3b",
       [
@@ -201684,6 +201697,19 @@
         ],
         {}
        ]
+      ],
+      "empty-span-001.html": [
+       "4709f34abd543249a19b730a88f02249f4ad46d4",
+       [
+        null,
+        [
+         [
+          "/css/css-text/bidi/empty-span-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "boundary-shaping": {
@@ -282616,6 +282642,19 @@
       ],
       "has-pseudo-element.html": [
        "0dfd602e511fbca18f1c54de5ff04719f5935e3a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "has-with-nth-child-sibling-remove.html": [
+       "2c3e83f2bd9c83f02bfaa7ee12a217f2236aafbc",
        [
         null,
         [
@@ -364416,6 +364455,10 @@
       ]
      },
      "bidi": {
+      "empty-span-001-ref.html": [
+       "ce987d65bf4820f67bb72095faca47bf58907f91",
+       []
+      ],
       "reference": {
        "bidi-lines-001-ref.html": [
         "ab13fef116c4eba70a09e01558425bb508173d90",
@@ -412888,7 +412931,7 @@
     }
    },
    "lint.ignore": [
-    "955e5df49077cab63e762988714e1319d551089d",
+    "b39180815c2c6138dedcec0e40ee392d657cdb60",
     []
    ],
    "loading": {
@@ -477290,6 +477333,15 @@
       }
      ]
     ],
+    "async-navigator-clipboard-change-event.tentative.https.html": [
+     "37e2e6a7bde3ef85de09691e5fa4fba4a644b310",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "async-navigator-clipboard-read-resource-load.https.html": [
      "aed115231c4c9f5ba504ae62455e23a0341f6436",
      [
@@ -516724,7 +516776,7 @@
       ]
      },
      "resnap-on-snap-alignment-change.html": [
-      "e4648b1d79813548c763bf08e002b485ff291f56",
+      "760d9afbe2e913ebfef2e4d6d24c59d57ef4e834",
       [
        null,
        {}
@@ -517121,7 +517173,7 @@
       ]
      ],
      "smooth-anchor-scroll-in-snap-container.html": [
-      "c01420b2ee4a00aa2ec143a68b30fb3c0ddb465b",
+      "4892ae3efb5f4f841e83bf2d44e9d848bca002ab",
       [
        null,
        {}
@@ -538944,7 +538996,7 @@
      ]
     ],
     "get.tentative.https.html": [
-     "b04a6e3a713e26f759cc62d81a6a439ea69e189e",
+     "8c0c33c2fa195ac25ef026645f8d3ca95f227c4e",
      [
       null,
       {
@@ -713083,6 +713135,15 @@
       ],
       "dom.html": [
        "66d23b22788c4749d7b990b89b0cef612872f5f4",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "task-attribution.html": [
+       "8f6f93c8daf6c089efd0eee7fefdc1a8ffa704f1",
        [
         null,
         {
