@@ -178,6 +178,14 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
           mojom::Error::New(mojom::Error::Code::kUnknownError,
                             "OnnxRuntime OpenVINO EP is not supported."));
     }
+  } else if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtWebGPU) &&
+             device_type == mojom::CreateContextOptions::Device::kGpu) {
+    // The WebGPU EP is enabled via the generic
+    // `SessionOptionsAppendExecutionProvider` method.
+    CALL_ORT_FUNC(ort_api->SessionOptionsAppendExecutionProvider(
+        session_options.get(), /*provider_name*/ "WebGPU",
+        /*provider_options_keys*/ nullptr, /*provider_options_values*/ nullptr,
+        /*num_keys*/ 0));
 #if BUILDFLAG(IS_WIN)
   } else if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtDml) &&
              device_type == mojom::CreateContextOptions::Device::kGpu) {

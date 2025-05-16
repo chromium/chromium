@@ -1506,6 +1506,9 @@ extern const char kWebNNOrtOpenVinoDescription[];
 
 extern const char kWebNNOrtDmlName[];
 extern const char kWebNNOrtDmlDescription[];
+
+extern const char kWebNNOrtWebGPUName[];
+extern const char kWebNNOrtWebGPUDescription[];
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 #if BUILDFLAG(IS_ANDROID)

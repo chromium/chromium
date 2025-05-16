@@ -60,3 +60,10 @@ feature kWebNNOrtDml {
   const string name = "WebNNOrtDml";
   const bool default_state = false;
 };
+
+// Enables the WebGPU EP for ONNX Runtime backend for WebNN.
+[EnableIf=webnn_use_ort]
+feature kWebNNOrtWebGPU {
+  const string name = "WebNNOrtWebGPU";
+  const bool default_state = false;
+};

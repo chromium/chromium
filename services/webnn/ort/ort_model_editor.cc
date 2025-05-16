@@ -229,6 +229,11 @@ OrtModelEditor::BuildAndTakeModelInfo() {
     opset_versions.push_back(kMSDmlDomainOpsetVersion);
   }
 
+  if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtWebGPU)) {
+    domain_names.push_back(kMSInternalNhwcDomain);
+    opset_versions.push_back(kMSInternalNhwcDomainOpsetVersion);
+  }
+
   CHECK(IsSuccess(GetOrtModelEditorApi()->CreateModel(
       domain_names.data(), opset_versions.data(), domain_names.size(),
       ScopedOrtModel::Receiver(model_info_->model).get())));

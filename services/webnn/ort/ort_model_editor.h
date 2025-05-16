@@ -23,6 +23,8 @@ constexpr char kOrtDomainName[] = "";
 constexpr char kMSDomainName[] = "com.microsoft";
 // DML fused operators.
 constexpr char kMSDmlDomainName[] = "com.microsoft.dml";
+// WebGPU EP needs NHWC layout.
+constexpr char kMSInternalNhwcDomain[] = "com.ms.internal.nhwc";
 
 // Opsets
 constexpr int32_t kOrtOpsetVersion = 21;
@@ -30,6 +32,7 @@ constexpr int32_t kOrtOpsetVersion = 21;
 // https://onnxruntime.ai/docs/execution-providers/EP-Context-Design.html#onnxruntime-ep-context-cache-feature-design
 constexpr int32_t kEPContextOpsetVersion = 1;
 constexpr int32_t kMSDmlDomainOpsetVersion = 1;
+constexpr int32_t kMSInternalNhwcDomainOpsetVersion = 1;
 
 // Define the minimum size(in bytes) to use external data.
 constexpr size_t kMinExternalDataSize = 128;

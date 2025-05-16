@@ -2605,6 +2605,12 @@ const char kWebNNOrtDmlDescription[] =
     "Enables using ONNX Runtime DirectML EP for GPU inference with the WebNN "
     "API. Requires the \"ONNX Runtime backend for WebNN\" flag "
     "to be enabled.";
+
+const char kWebNNOrtWebGPUName[] = "ONNX Runtime backend WebGPU EP for WebNN";
+const char kWebNNOrtWebGPUDescription[] =
+    "Enables using ONNX Runtime WebGPU EP for GPU inference with the WebNN "
+    "API. Requires the \"ONNX Runtime backend for WebNN\" flag "
+    "to be enabled.";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 const char kSystemProxyForSystemServicesName[] =

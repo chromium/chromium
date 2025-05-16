@@ -8454,6 +8454,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebNNOrtDmlDescription, kOsWin,
      FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNOrtDml)},
 
+    {"webnn-ort-webgpu", flag_descriptions::kWebNNOrtWebGPUName,
+     flag_descriptions::kWebNNOrtWebGPUDescription, kOsWin,
+     FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNOrtWebGPU)},
+
     {"webnn-ort-cpu-fallback", flag_descriptions::kWebNNOrtCpuFallbackName,
      flag_descriptions::kWebNNOrtCpuFallbackDescription, kOsWin,
      FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNOrtCpuFallback)},
