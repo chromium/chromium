@@ -486,7 +486,7 @@ public class FeedSurfaceCoordinator
         // above the RecyclerView.
         if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
             mNtpCustomizationButton = new ImageButton(mActivity);
-            mNtpCustomizationButton.setImageResource(R.drawable.edit_icon);
+            mNtpCustomizationButton.setImageResource(R.drawable.bookmark_edit_active);
             mNtpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
             ImageViewCompat.setImageTintList(
                     mNtpCustomizationButton,
@@ -495,8 +495,14 @@ public class FeedSurfaceCoordinator
                                     mActivity, R.color.ntp_customization_edit_icon_fill_color)));
             FrameLayout.LayoutParams layoutParams =
                     new FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                            mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.ntp_customization_edit_icon_background_size),
+                            mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.ntp_customization_edit_icon_background_size));
             layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
             int margin =
                     mActivity
