@@ -17,12 +17,11 @@ struct TileResource {
   bool is_checkered;
 };
 
-// For tiles that are missing due to OOM, deleted or otherwise not ready to
-// draw, this is the reason why.
+// For tiles that are missing or otherwise not ready to draw, this is the
+// reason why.
 enum MissingTileReason {
   kOutOfMemory,
   kResourceNotReady,
-  kTileDeleted,
 };
 
 // Describes the visual contents of a tile.

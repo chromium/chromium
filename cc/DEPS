@@ -35,7 +35,6 @@ include_rules = [
   "+skia/ext",
   "+services/metrics/public/cpp",
   "+services/tracing/public/cpp",
-  "+services/viz/public/mojom/compositing/tiling.mojom.h",
   "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/dawn/include",
   "+third_party/khronos/GLES2/gl2.h",

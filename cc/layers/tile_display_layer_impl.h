@@ -20,7 +20,6 @@
 #include "cc/tiles/tiling_coverage_iterator.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "services/viz/public/mojom/compositing/tiling.mojom.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,13 +31,7 @@ namespace cc {
 // layer down to Viz, and this layer uses that information to draw tile quads.
 class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
  public:
-  struct NoContents {
-    viz::mojom::MissingTileReason reason =
-        viz::mojom::MissingTileReason::kResourceNotReady;
-
-    NoContents() = default;
-    explicit NoContents(viz::mojom::MissingTileReason r) : reason(r) {}
-  };
+  struct NoContents {};
 
   struct CC_EXPORT TileResource {
     TileResource(const viz::TransferableResource& resource,

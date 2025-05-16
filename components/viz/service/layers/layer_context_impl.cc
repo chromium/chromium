@@ -743,7 +743,7 @@ DeserializeTileContents(mojom::TileContents& wire) {
   switch (wire.which()) {
     case mojom::TileContents::Tag::kMissingReason:
       return cc::TileDisplayLayerImpl::TileContents(
-          cc::TileDisplayLayerImpl::NoContents(wire.get_missing_reason()));
+          cc::TileDisplayLayerImpl::NoContents());
 
     case mojom::TileContents::Tag::kResource:
       return DeserializeTileResource(*wire.get_resource());
