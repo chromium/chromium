@@ -167,7 +167,7 @@ class LensOverlayMediatorTest : public PlatformTest {
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
     OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
     OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
-
+    ExpectOmniboxDefocus();
     fake_chrome_lens_overlay_.resultURL = resultURL;
     [mediator_ omniboxDidAcceptText:omniboxText
                      destinationURL:omniboxURL
@@ -183,6 +183,7 @@ class LensOverlayMediatorTest : public PlatformTest {
   /// Simulates new lens selection and returns the generated result.
   id<ChromeLensOverlayResult> UpdateLensSelection(const GURL& resultURL,
                                                   BOOL expectCanGoBack) {
+    ExpectOmniboxDefocus();
     OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
@@ -236,6 +237,7 @@ class LensOverlayMediatorTest : public PlatformTest {
               BOOL expectCanGoBack,
               id<ChromeLensOverlayResult> expectedResultReload) {
     // Expect UI update when starting to go back and on navigation start.
+    ExpectOmniboxDefocus();
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);

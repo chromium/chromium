@@ -228,6 +228,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self.resultConsumer handleSearchRequestStarted];
   _lensStartSearchRequestTime = base::ElapsedTimer();
   [self.toolbarConsumer setOmniboxEnabled:YES];
+  [self defocusOmnibox];
 
   // If the filter is still unknown it means this is the first request, so
   // nothing needs to be done, as the selection area in the zero state is
