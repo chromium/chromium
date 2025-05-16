@@ -1,14 +1,4 @@
 # These tests still need to be triaged and either okayed to skip or fixed.
--AutofillInteractiveDisableAutofillSelectListTest.DisableSelectListAutofilling
--AutofillInteractiveTest/AutofillInteractiveFencedFrameTest.*
--AutofillInteractiveTest_ClearForm.*
--AutofillInteractiveTest.*
--AutofillInteractiveTestBase.*
--AutofillInteractiveTestDynamicForm.*
--AutofillInteractiveFormSubmissionClearFormTest.*
--AutofillInteractiveFormSubmissionTest.*
--AutofillInteractiveTest/AutofillInteractiveTestShadowDom.*
--AutofillInteractiveTest_UndoAutofill.BasicUndoAutofill
 -BookmarksFocusTest.DNDManager
 -CaptionBubbleControllerViewsTest.AccessibleTextIsSometimesFocusable
 -CookieControlsInteractiveUiTest.*
@@ -33,3 +23,6 @@
 -UpdateAccountAddressProfileTest.UpdateThroughEdit
 -UpdateAddressProfileTest.UpdateThroughEdit
 -WebUITabStripInteractiveTest.*
+
+# This test crashes due to DCHECK failed: ax_tree_id != AXTreeIDUnknown()
+-AutofillInteractiveTest/AutofillInteractiveFencedFrameTest.DeletingFrameClosesPopup/1

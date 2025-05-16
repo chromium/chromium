@@ -24,6 +24,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -134,6 +135,7 @@ struct ShowAutofillSuggestionsParams {
     ShowAutofillSuggestionsParams p) {
   constexpr auto kSuggest = ObservedUiEvents::kSuggestionsShown;
   constexpr auto kPreview = ObservedUiEvents::kPreviewFormData;
+  constexpr auto kHide = ObservedUiEvents::kSuggestionsHidden;
 
   content::ToRenderFrameHost execution_target =
       p.execution_target.value_or(test->GetWebContents());
@@ -162,6 +164,11 @@ struct ShowAutofillSuggestionsParams {
     content::SimulateMouseClickAt(test->GetWebContents(), 0,
                                   blink::WebMouseEvent::Button::kLeft, point);
     return test->test_delegate()->Wait();
+  };
+
+  auto Escape = [&](std::list<ObservedUiEvents> exp) {
+    return test->SendKeyToPopupAndWait(ui::DomKey::ESCAPE, std::move(exp),
+                                       view->GetRenderWidgetHost(), p.timeout);
   };
 
   // It seems that due to race conditions with Blink's layouting
@@ -202,6 +209,20 @@ struct ShowAutofillSuggestionsParams {
     // -- namely when a screen reader is enabled. We therefore wait the throttle
     // period out.
     test->DoNothingAndWaitAndIgnoreEvents(base::Milliseconds(200));
+
+    // `AutofillAgent::HandleFocusChangeComplete` shows the suggestions
+    // immediately after the field is focused if a screen reader is enabled
+    // or --force-renderer-accessibility is set. This breaks the logic that
+    // follows, which expects the popup to not yet be showing.
+    if (content::BrowserAccessibilityState::GetInstance()
+            ->GetAccessibilityMode()
+            .has_mode(ui::AXMode::kScreenReader)) {
+      if (Escape({kHide})) {
+        m << "Closed existing Autofill popup. ";
+      } else {
+        m << "No existing Autofill popup to close. ";
+      }
+    }
 
     bool has_preview = 0 < p.num_profile_suggestions;
     if (p.show_method.arrow) {
