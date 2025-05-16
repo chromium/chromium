@@ -22315,35 +22315,6 @@
             ]
         }
     ],
-    "ShowWarningsForSuspiciousNotifications": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithDefaultButtonPlacement",
-                    "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
-                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
-                    },
-                    "enable_features": [
-                        "ShowWarningsForSuspiciousNotifications"
-                    ]
-                },
-                {
-                    "name": "EnabledWithButtonSwap",
-                    "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
-                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "true"
-                    },
-                    "enable_features": [
-                        "ShowWarningsForSuspiciousNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "SidePanelCompanionDesktopM116Plus": [
         {
             "platforms": [
