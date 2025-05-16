@@ -325,7 +325,7 @@ public class BottomAttachedUiObserver
         }
         if (mOverlayPanelVisible
                 && (mOverlayPanelStateProvider.isFullWidthSizePanel()
-                        || !EdgeToEdgeUtils.isEnabled())) {
+                        || !EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled())) {
             // Return null if the overlay panel is visible but not peeked - the overlay panel's
             // content will be "bottom attached".
             return mOverlayPanelState == PanelState.PEEKED ? mOverlayPanelColor : null;
@@ -347,7 +347,7 @@ public class BottomAttachedUiObserver
         if (shouldMatchBottomSheetColor()) {
             return !mBottomSheetController.isFullWidth();
         }
-        if (mOverlayPanelVisible && !EdgeToEdgeUtils.isEnabled()) {
+        if (mOverlayPanelVisible && !EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled()) {
             return !mOverlayPanelStateProvider.isFullWidthSizePanel();
         }
         if (mSnackbarVisible) {

@@ -24,7 +24,7 @@ import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
  * Station represent an page that has viewport-fit=cover. It expects an {@link
  * org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController} to be ready when the page
  * loads, so it requires the test to have corresponding test flag setup to make {@link
- * EdgeToEdgeUtils#isEnabled()}
+ * EdgeToEdgeUtils#isChromeEdgeToEdgeFeatureEnabled()}
  */
 public class ViewportFitCoverPageStation extends WebPageStation {
     /** Page opt-in edge-to-edge with sub frames. */

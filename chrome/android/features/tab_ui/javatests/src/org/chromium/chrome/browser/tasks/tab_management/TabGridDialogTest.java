@@ -2092,7 +2092,7 @@ public class TabGridDialogTest {
             return;
         }
 
-        if (!EdgeToEdgeUtils.isEnabled()) {
+        if (!EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled()) {
             @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
             @ColorInt int navigationBarColor = SemanticColorUtils.getBottomSystemNavColor(cta);
             @ColorInt

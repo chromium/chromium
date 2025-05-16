@@ -99,8 +99,14 @@ public class EdgeToEdgeUtils {
     /**
      * Whether the draw edge to edge infrastructure is on. When this is enabled, Chrome will start
      * drawing edge to edge on start up.
+     *
+     * <p>To check if Chrome is aware of edge-to-edge, use {@link
+     * org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider#get()}
+     *
+     * @deprecated Avoid new usage. Check corresponding feature flags inline.
      */
-    public static boolean isEnabled() {
+    @Deprecated
+    public static boolean isChromeEdgeToEdgeFeatureEnabled() {
         return isEdgeToEdgeBottomChinEnabled() || isEdgeToEdgeEverywhereEnabled();
     }
 
