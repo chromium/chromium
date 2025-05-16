@@ -1960,6 +1960,9 @@ void ContainerNode::CheckSoftNavigationHeuristicsTracking(
   if (!document.IsTrackingSoftNavigationHeuristics()) {
     return;
   }
+  if (!inserted_node.isConnected()) {
+    return;
+  }
   LocalDOMWindow* window = document.domWindow();
   if (!window) {
     return;
