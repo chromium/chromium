@@ -40,6 +40,8 @@ struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
 
 struct BLINK_COMMON_EXPORT IndexedDBObjectStoreMetadata {
   static const int64_t kInvalidId = -1;
+  // TODO(crbug.com/40253999): Move this to LevelDB-specific code if it is only
+  // relevant there.
   static const int64_t kMinimumIndexId = 30;
 
   IndexedDBObjectStoreMetadata();

@@ -6,20 +6,35 @@
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_BACKING_STORE_TRANSACTION_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
-#include "sql/transaction.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
+
+namespace sql {
+class Transaction;
+}
 
 namespace content::indexed_db::sqlite {
 
+class DatabaseConnection;
+
 class BackingStoreTransactionImpl : public BackingStore::Transaction {
  public:
-  explicit BackingStoreTransactionImpl(
-      base::WeakPtr<BackingStoreDatabaseImpl> db);
+  using PassKey = base::PassKey<BackingStoreTransactionImpl>;
+
+  BackingStoreTransactionImpl(base::WeakPtr<DatabaseConnection> db,
+                              std::unique_ptr<sql::Transaction> transaction,
+                              blink::mojom::IDBTransactionDurability durability,
+                              blink::mojom::IDBTransactionMode mode);
   BackingStoreTransactionImpl(const BackingStoreTransactionImpl&) = delete;
   BackingStoreTransactionImpl& operator=(const BackingStoreTransactionImpl&) =
       delete;
   ~BackingStoreTransactionImpl() override;
+
+  blink::mojom::IDBTransactionDurability durability() const {
+    return durability_;
+  }
+  blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
   // BackingStore::Transaction:
   void Begin(std::vector<PartitionedLock> locks) override;
@@ -101,29 +116,12 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
       blink::mojom::IDBCursorDirection) override;
 
  protected:
-  base::WeakPtr<BackingStoreDatabaseImpl> db_;
-  sql::Transaction transaction_;
-};
-
-class BackingStoreVersionChangeTransaction
-    : public BackingStoreTransactionImpl {
- public:
-  BackingStoreVersionChangeTransaction(
-      base::WeakPtr<BackingStoreDatabaseImpl> db,
-      BackingStoreDatabaseImpl::UpgradePassKey pass_key);
-  BackingStoreVersionChangeTransaction(
-      const BackingStoreVersionChangeTransaction&) = delete;
-  BackingStoreVersionChangeTransaction& operator=(
-      const BackingStoreVersionChangeTransaction&) = delete;
-  ~BackingStoreVersionChangeTransaction() override;
-
-  // BackingStore::Transaction:
-  void Rollback() override;
-  Status SetDatabaseVersion(int64_t version) override;
-  // TODO(crbug.com/40253999): Implement the other relevant methods.
+  base::WeakPtr<DatabaseConnection> db_;
 
  private:
-  BackingStoreDatabaseImpl::UpgradePassKey pass_key_;
+  std::unique_ptr<sql::Transaction> transaction_;
+  blink::mojom::IDBTransactionDurability durability_;
+  blink::mojom::IDBTransactionMode mode_;
 };
 
 }  // namespace content::indexed_db::sqlite

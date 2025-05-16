@@ -6,21 +6,28 @@
 
 #include "base/check.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
-#include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
+#include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
 #include "sql/transaction.h"
 
 namespace content::indexed_db::sqlite {
 
 BackingStoreTransactionImpl::BackingStoreTransactionImpl(
-    base::WeakPtr<BackingStoreDatabaseImpl> db)
-    : db_(db), transaction_(db_->db()) {}
+    base::WeakPtr<DatabaseConnection> db,
+    std::unique_ptr<sql::Transaction> transaction,
+    blink::mojom::IDBTransactionDurability durability,
+    blink::mojom::IDBTransactionMode mode)
+    : db_(std::move(db)),
+      transaction_(std::move(transaction)),
+      durability_(durability),
+      mode_(mode) {}
 
 BackingStoreTransactionImpl::~BackingStoreTransactionImpl() = default;
 
 void BackingStoreTransactionImpl::Begin(std::vector<PartitionedLock> locks) {
-  CHECK(transaction_.Begin());
+  // TODO(crbug.com/40253999): How do we surface the error if this call fails?
+  CHECK(transaction_->Begin());
+  db_->OnTransactionBegin(PassKey(), *this);
 }
 
 Status BackingStoreTransactionImpl::CommitPhaseOne(BlobWriteCallback callback) {
@@ -30,16 +37,19 @@ Status BackingStoreTransactionImpl::CommitPhaseOne(BlobWriteCallback callback) {
 }
 
 Status BackingStoreTransactionImpl::CommitPhaseTwo() {
-  transaction_.Commit();
+  db_->OnBeforeTransactionCommit(PassKey(), *this);
+  transaction_->Commit();
+  db_->OnTransactionCommit(PassKey(), *this);
   return Status::OK();
 }
 
 void BackingStoreTransactionImpl::Rollback() {
-  transaction_.Rollback();
+  transaction_->Rollback();
+  db_->OnTransactionRollback(PassKey(), *this);
 }
 
 Status BackingStoreTransactionImpl::SetDatabaseVersion(int64_t version) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  return db_->SetDatabaseVersion(PassKey(), version);
 }
 
 Status BackingStoreTransactionImpl::CreateObjectStore(
@@ -47,21 +57,25 @@ Status BackingStoreTransactionImpl::CreateObjectStore(
     const std::u16string& name,
     blink::IndexedDBKeyPath key_path,
     bool auto_increment) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  return db_->CreateObjectStore(PassKey(), object_store_id, name,
+                                std::move(key_path), auto_increment);
 }
 
 Status BackingStoreTransactionImpl::DeleteObjectStore(int64_t object_store_id) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  NOTIMPLEMENTED();
+  return Status::OK();
 }
 
 Status BackingStoreTransactionImpl::RenameObjectStore(
     int64_t object_store_id,
     const std::u16string& new_name) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  NOTIMPLEMENTED();
+  return Status::OK();
 }
 
 Status BackingStoreTransactionImpl::ClearObjectStore(int64_t object_store_id) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  NOTIMPLEMENTED();
+  return Status::OK();
 }
 
 Status BackingStoreTransactionImpl::CreateIndex(
@@ -71,19 +85,22 @@ Status BackingStoreTransactionImpl::CreateIndex(
     blink::IndexedDBKeyPath key_path,
     bool is_unique,
     bool is_multi_entry) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  NOTIMPLEMENTED();
+  return Status::OK();
 }
 
 Status BackingStoreTransactionImpl::DeleteIndex(int64_t object_store_id,
                                                 int64_t index_id) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  NOTIMPLEMENTED();
+  return Status::OK();
 }
 
 Status BackingStoreTransactionImpl::RenameIndex(
     int64_t object_store_id,
     int64_t index_id,
     const std::u16string& new_name) {
-  NOTREACHED() << "Implemented by BackingStoreVersionChangeTransaction";
+  NOTIMPLEMENTED();
+  return Status::OK();
 }
 
 Status BackingStoreTransactionImpl::GetRecord(int64_t object_store_id,
@@ -197,24 +214,6 @@ BackingStoreTransactionImpl::OpenIndexCursor(
     blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
   return nullptr;
-}
-
-BackingStoreVersionChangeTransaction::BackingStoreVersionChangeTransaction(
-    base::WeakPtr<BackingStoreDatabaseImpl> db,
-    BackingStoreDatabaseImpl::UpgradePassKey pass_key)
-    : BackingStoreTransactionImpl(db), pass_key_(std::move(pass_key)) {}
-
-BackingStoreVersionChangeTransaction::~BackingStoreVersionChangeTransaction() =
-    default;
-
-void BackingStoreVersionChangeTransaction::Rollback() {
-  BackingStoreTransactionImpl::Rollback();
-  db_->RollbackUpgrade(pass_key_);
-}
-
-Status BackingStoreVersionChangeTransaction::SetDatabaseVersion(
-    int64_t version) {
-  return db_->SetDatabaseVersion(pass_key_, version);
 }
 
 }  // namespace content::indexed_db::sqlite

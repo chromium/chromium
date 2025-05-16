@@ -78,6 +78,8 @@ source_set("indexed_db") {
     "instance/sqlite/backing_store_impl.h",
     "instance/sqlite/backing_store_transaction_impl.cc",
     "instance/sqlite/backing_store_transaction_impl.h",
+    "instance/sqlite/database_connection.cc",
+    "instance/sqlite/database_connection.h",
     "instance/transaction.cc",
     "instance/transaction.h",
     "list_set.h",

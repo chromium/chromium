@@ -10,13 +10,7 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
-
-namespace sql {
-class Database;
-class MetaTable;
-}  // namespace sql
 
 namespace content::indexed_db {
 
@@ -24,25 +18,7 @@ struct IndexedDBDataLossInfo;
 
 namespace sqlite {
 
-// Owns an open connection to a SQLite database and supports weak pointer
-// semantics.
-class DatabaseConnection {
- public:
-  explicit DatabaseConnection(std::unique_ptr<sql::Database> db);
-  DatabaseConnection(const DatabaseConnection&) = delete;
-  DatabaseConnection& operator=(const DatabaseConnection&) = delete;
-  ~DatabaseConnection();
-
-  sql::Database* db() const { return db_.get(); }
-  sql::MetaTable* meta_table() const { return meta_table_.get(); }
-
-  base::WeakPtr<DatabaseConnection> GetWeakPtr();
-
- private:
-  std::unique_ptr<sql::Database> db_;
-  std::unique_ptr<sql::MetaTable> meta_table_;
-  base::WeakPtrFactory<DatabaseConnection> weak_factory_{this};
-};
+class DatabaseConnection;
 
 class BackingStoreImpl : public BackingStore {
  public:
@@ -74,7 +50,8 @@ class BackingStoreImpl : public BackingStore {
 
  private:
   const base::FilePath data_path_;
-  std::unordered_map<std::u16string, DatabaseConnection> open_connections_;
+  std::unordered_map<std::u16string, std::unique_ptr<DatabaseConnection>>
+      open_connections_;
 };
 
 }  // namespace sqlite
