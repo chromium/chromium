@@ -228,6 +228,7 @@ std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
             TipsNotificationType::kDefaultBrowser,
             TipsNotificationType::kDocking,
             TipsNotificationType::kSignin,
+            TipsNotificationType::kCPE,
         });
   }
   return {

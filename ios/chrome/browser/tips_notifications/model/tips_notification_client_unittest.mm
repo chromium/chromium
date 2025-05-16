@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
@@ -775,4 +776,47 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
   EXPECT_EQ(order[0], TipsNotificationType::kSetUpListContinuation);
   EXPECT_EQ(order[1], TipsNotificationType::kDocking);
   EXPECT_EQ(order[2], TipsNotificationType::kOmniboxPosition);
+}
+
+// Tests that the client can register a CPE Promo notification.
+TEST_F(TipsNotificationClientTest, CPERequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSExpandedTips);
+  WriteFirstRunSentinel();
+  StubGetPendingRequests(nil);
+  SetSentNotifications({
+      TipsNotificationType::kEnhancedSafeBrowsing,
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kLens,
+      TipsNotificationType::kOmniboxPosition,
+      TipsNotificationType::kSetUpListContinuation,
+      TipsNotificationType::kDefaultBrowser,
+      TipsNotificationType::kDocking,
+      TipsNotificationType::kSignin,
+  });
+  ExpectNotificationRequest(TipsNotificationType::kCPE);
+
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
+                                       TipsNotificationType::kCPE, 1);
+}
+
+// Tests that the client handles a CPE Promo notification response.
+TEST_F(TipsNotificationClientTest, CPEHandle) {
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(CredentialProviderPromoCommands));
+  OCMExpect(
+      [mock_handler showCredentialProviderPromoWithTrigger:
+                        CredentialProviderPromoTrigger::TipsNotification]);
+
+  id mock_response = MockRequestResponse(TipsNotificationType::kCPE);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
+                                       TipsNotificationType::kCPE, 1);
 }
