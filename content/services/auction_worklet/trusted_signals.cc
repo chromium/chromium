@@ -20,7 +20,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"

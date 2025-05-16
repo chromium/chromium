@@ -24,10 +24,6 @@
 #include "net/server/http_server_request_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace ui_devtools {
 
 class TracingAgent;
@@ -53,7 +49,7 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer {
   static std::unique_ptr<UiDevToolsServer> CreateForViews(
       scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
       int port,
-      const base::FilePath& active_port_output_directory);
+      const base::FilePath& active_port_output_directory = base::FilePath());
 
   // Returns a list of attached UiDevToolsClient name + URL
   using NameUrlPair = std::pair<std::string, std::string>;

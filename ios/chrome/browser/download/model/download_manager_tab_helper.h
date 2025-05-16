@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
