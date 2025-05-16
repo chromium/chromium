@@ -2102,6 +2102,15 @@ config("default_warnings") {
           # recognize the new warning. Remove this during the clang roll.
           "-Wno-unknown-warning-option",
         ]
+
+        cflags_objcc = [
+          # TODO(crbug.com/417996267): Fix and re-enable
+          "-Wno-character-conversion",
+
+          # Rust bindgen gets these flags, but uses pinned clang, so it doesn't
+          # recognize the new warning. Remove this during the clang roll.
+          "-Wno-unknown-warning-option",
+        ]
       }
     }
 
