@@ -22,5 +22,5 @@ proto_library("launcher_app_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "launcher_app.descriptor"
-  proto_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+  deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }
