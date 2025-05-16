@@ -757,3 +757,9 @@
 # TODO(crbug.com/418103029): The test has been failing since
 # https://crrev.com/c/6532249.
 -SecurityExploitBrowserTest.DidFailLoadWithInvalidErrorCode
+
+# TODO(crbug.com/418125309): These tests have been failing since
+# https://crrev.com/c/6391357.
+-All/SitePerProcessWithMainFrameThresholdAndSiteRestrictionTest.RestrictedToURLWithContentClient/0
+-All/SitePerProcessWithMainFrameThresholdAndSiteRestrictionTest.RestrictedToURLWithContentClient/1
+-RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest.ReuseEmptyAvailableRenderForMainFrame
