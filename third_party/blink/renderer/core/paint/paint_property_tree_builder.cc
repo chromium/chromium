@@ -3730,6 +3730,9 @@ static bool NeedsRootElementGroupForViewBackground(const LayoutObject& object) {
       if (NeedsClipPathClipOrMask(*root_object)) {
         return true;
       }
+      if (root_object->StyleRef().HasFilter()) {
+        return true;
+      }
     }
   }
   return false;
