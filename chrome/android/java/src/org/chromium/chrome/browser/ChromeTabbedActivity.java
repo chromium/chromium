@@ -1635,6 +1635,17 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                             Tab.INVALID_TAB_ID,
                             intent);
+            if (tab == null) {
+                StringBuilder errMsg = new StringBuilder();
+                Uri uri = Uri.parse(url);
+                errMsg.append("Tab creation failed in destination window:\n")
+                        .append("  - Incognito: ")
+                        .append(tabGroupMetadata.isIncognito)
+                        .append("  - Scheme: ")
+                        .append(uri.getScheme())
+                        .append("\n");
+                assert false : errMsg.toString();
+            }
             // Restores the correct tab order by adding the tab to the front. `tabIdsToUrls` were
             // stored in reverse to preserve open positions (see {@link
             // TabGroupMetadataExtractor#extractTabGroupMetadata}).

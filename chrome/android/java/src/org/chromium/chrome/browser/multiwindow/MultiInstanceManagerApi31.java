@@ -11,6 +11,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -83,6 +84,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
@@ -327,10 +329,44 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                                     destWindowId, tabGroupMetadata.isIncognito);
                     int tabGroupSizeAfterReparent =
                             destWindowModelFilter.getTabCountForGroup(tabGroupMetadata.tabGroupId);
+                    int tabGroupSizeDiff = tabGroupSizeBeforeReparent - tabGroupSizeAfterReparent;
                     RecordHistogram.recordCount1000Histogram(
-                            "Android.Reparent.TabGroup.GroupSize.Diff",
-                            tabGroupSizeBeforeReparent - tabGroupSizeAfterReparent);
+                            "Android.Reparent.TabGroup.GroupSize.Diff", tabGroupSizeDiff);
+
+                    // Log any missing URLs when the tab group size changes during reparenting.
+                    if (tabGroupSizeDiff != 0) {
+                        handleGroupSizeDiff(
+                                tabGroupMetadata.tabIdsToUrls,
+                                destWindowModelFilter.getTabsInGroup(tabGroupMetadata.tabGroupId),
+                                tabGroupMetadata.isIncognito);
+                    }
                 });
+    }
+
+    private void handleGroupSizeDiff(
+            List<Map.Entry<Integer, String>> tabsToUrlsList,
+            List<Tab> destGroupedTabs,
+            boolean isIncognito) {
+        Set<Integer> destTabIds = new HashSet<>();
+        for (Tab tab : destGroupedTabs) {
+            destTabIds.add(tab.getId());
+        }
+
+        StringBuilder errMsg = new StringBuilder();
+        errMsg.append("Tab group size before reparenting: ")
+                .append(tabsToUrlsList.size())
+                .append(", isIncognito: ")
+                .append(isIncognito)
+                .append("\nMissing URL schemes:\n");
+        for (Entry<Integer, String> entry : tabsToUrlsList) {
+            int tabId = entry.getKey();
+            String url = entry.getValue();
+            if (!destTabIds.contains(tabId)) {
+                Uri uri = Uri.parse(url);
+                errMsg.append("- ").append(uri.getScheme()).append("\n");
+            }
+        }
+        assert false : errMsg.toString();
     }
 
     private Intent createIntentForGeneralReparenting(
