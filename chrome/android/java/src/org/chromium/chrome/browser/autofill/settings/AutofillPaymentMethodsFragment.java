@@ -642,7 +642,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         return getResources().getString(R.string.settings_manage_pix_description);
     }
 
-    /** Show the page for managing other finiancial accounts. */
+    /** Show the page for managing other financial accounts. */
     private boolean showOtherFinancialAccountsFragment(Preference preference) {
         Bundle args = preference.getExtras();
         args.putString(
