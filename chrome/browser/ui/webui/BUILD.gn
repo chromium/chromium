@@ -40,6 +40,7 @@ source_set("configs") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/accessibility",
+    "//chrome/browser/ui/webui/autofill_and_password_manager_internals",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",

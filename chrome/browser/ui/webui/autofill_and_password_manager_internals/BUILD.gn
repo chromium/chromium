@@ -1,0 +1,68 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_fuchsia)
+
+source_set("autofill_and_password_manager_internals") {
+  sources = [
+    "autofill_internals_ui.cc",
+    "autofill_internals_ui.h",
+    "internals_ui_handler.cc",
+    "internals_ui_handler.h",
+    "password_manager_internals_ui.cc",
+    "password_manager_internals_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/autofill",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//components/autofill/core/browser/autofill_and_password_manager_internals:resources",
+    "//components/autofill/core/common:features",
+    "//components/embedder_support:user_agent",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/version_info",
+    "//components/webui/version",
+    "//services/network/public/mojom:mojom_content_security_policy",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/password_manager/android:utils" ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/autofill/content/browser",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "autofill_internals_ui_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":autofill_and_password_manager_internals",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  }
+}
