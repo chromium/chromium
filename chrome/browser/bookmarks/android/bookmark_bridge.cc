@@ -1729,10 +1729,6 @@ void BookmarkBridge::PartnerShimChanged(PartnerBookmarksShim* shim) {
 
 void BookmarkBridge::PartnerShimLoaded(PartnerBookmarksShim* shim) {
   RecordBackendLoaded(load_start_time_, BookmarksBackend::kPartnerBookmarks);
-  if (suppress_observer_notifications_) {
-    return;
-  }
-
   NotifyIfDoneLoading();
 }
 
