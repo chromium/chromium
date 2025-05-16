@@ -43,6 +43,7 @@ source_set("coordinator") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/commerce/model/push_notification",

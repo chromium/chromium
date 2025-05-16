@@ -64,4 +64,5 @@ include_rules = [
   "+ios/chrome/browser/tips_notifications/ui",
   "+ios/chrome/browser/content_notification/model/content_notification_util.h",
   "+ios/chrome/browser/page_image/model/page_image_service_factory.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
 ]
