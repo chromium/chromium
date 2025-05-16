@@ -94,7 +94,7 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
                             is_split ? split_size_info : size_info);
   }
 
-  return CalculateTabBounds(tab_states, test_case.tabstrip_width);
+  return CalculateTabBounds(tab_states, test_case.tabstrip_width).first;
 }
 
 void ExpectTabsNarrowerThanTabStrip(const std::vector<gfx::Rect>& bounds,

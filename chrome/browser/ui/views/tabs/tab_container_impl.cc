@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
@@ -234,7 +235,8 @@ void TabContainerImpl::SetActiveTab(std::optional<size_t> prev_active_index,
 
   layout_helper_->SetActiveTab(prev_active_index, new_active_index);
 
-  if (GetActiveTabWidth() == GetInactiveTabWidth()) {
+  if (layout_helper_->layout_domain() ==
+      LayoutDomain::kInactiveWidthEqualsActiveWidth) {
     // When tabs are wide enough, selecting a new tab cannot change the
     // ideal bounds, so only a repaint is necessary.
     SchedulePaint();
@@ -1449,8 +1451,8 @@ void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
   // removed from the container is really the current width of whichever
   // inactive tab will be made active.
   if (was_active && !tab_being_removed->data().pinned &&
-      layout_helper_->active_tab_width() >
-          layout_helper_->inactive_tab_width()) {
+      layout_helper_->layout_domain() ==
+          LayoutDomain::kInactiveWidthBelowActiveWidth) {
     const std::optional<int> next_active_viewmodel_index =
         controller_->GetActiveIndex();
     // The next active tab may not be in this TabContainer.

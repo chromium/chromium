@@ -31,6 +31,8 @@ class TabSizer {
 
   bool IsAlreadyPreferredWidth() const;
 
+  LayoutDomain domain() { return domain_; }
+
  private:
   LayoutDomain domain_;
 
@@ -51,7 +53,7 @@ struct TabWidthOverride {
 // width to use for tab layout. This never sizes the tabs smaller then the
 // minimum widths in TabSizeInfo, and as a result the calculated bounds may go
 // beyond `width`.
-std::vector<gfx::Rect> CalculateTabBounds(
+std::pair<std::vector<gfx::Rect>, LayoutDomain> CalculateTabBounds(
     const std::vector<TabWidthConstraints>& tabs,
     std::optional<int> width);
 

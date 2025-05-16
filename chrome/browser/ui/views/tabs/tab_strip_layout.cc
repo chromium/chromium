@@ -11,6 +11,7 @@
 #include <set>
 
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
@@ -137,11 +138,12 @@ void AllocateExtraSpace(std::vector<gfx::Rect>* bounds,
   }
 }
 
-std::vector<gfx::Rect> CalculateTabBounds(
+std::pair<std::vector<gfx::Rect>, LayoutDomain> CalculateTabBounds(
     const std::vector<TabWidthConstraints>& tabs,
     std::optional<int> width) {
   if (tabs.empty()) {
-    return std::vector<gfx::Rect>();
+    return {std::vector<gfx::Rect>(),
+            LayoutDomain::kInactiveWidthEqualsActiveWidth};
   }
 
   TabSizer tab_sizer = CalculateSpaceFractionAvailable(tabs, width);
@@ -162,5 +164,5 @@ std::vector<gfx::Rect> CalculateTabBounds(
   const std::optional<int> extra_space = calculated_extra_space;
   AllocateExtraSpace(&bounds, tabs, extra_space, tab_sizer);
 
-  return bounds;
+  return {bounds, tab_sizer.domain()};
 }

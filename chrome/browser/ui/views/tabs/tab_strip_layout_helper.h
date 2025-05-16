@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_model.h"
@@ -50,6 +51,7 @@ class TabStripLayoutHelper {
 
   int active_tab_width() { return active_tab_width_; }
   int inactive_tab_width() { return inactive_tab_width_; }
+  LayoutDomain layout_domain() { return tab_strip_layout_domain_; }
 
   // Returns the number of pinned tabs in the tabstrip.
   size_t GetPinnedTabCount() const;
@@ -111,7 +113,7 @@ class TabStripLayoutHelper {
 
   // Calculates the bounds each tab should occupy, subject to the provided
   // width constraint.
-  std::vector<gfx::Rect> CalculateIdealBounds(
+  std::pair<std::vector<gfx::Rect>, LayoutDomain> CalculateIdealBounds(
       std::optional<int> available_width);
 
   // Given `model_index` for a tab already present in `slots_`, return
@@ -171,6 +173,8 @@ class TabStripLayoutHelper {
   // into these widths, the initial tabs in the strip will be 1 px larger.
   int active_tab_width_;
   int inactive_tab_width_;
+
+  LayoutDomain tab_strip_layout_domain_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_

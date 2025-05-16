@@ -49,7 +49,8 @@ TabStripLayoutHelper::TabStripLayoutHelper(
       get_tabs_callback_(get_tabs_callback),
       active_tab_width_(TabStyle::Get()->GetStandardWidth(/*is_split=*/false)),
       inactive_tab_width_(
-          TabStyle::Get()->GetStandardWidth(/*is_split=*/false)) {}
+          TabStyle::Get()->GetStandardWidth(/*is_split=*/false)),
+      tab_strip_layout_domain_(LayoutDomain::kInactiveWidthEqualsActiveWidth) {}
 
 TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 
@@ -190,20 +191,21 @@ void TabStripLayoutHelper::SetActiveTab(
 }
 
 int TabStripLayoutHelper::CalculateMinimumWidth() {
-  const std::vector<gfx::Rect> bounds = CalculateIdealBounds(0);
+  auto [bounds, layout_domain] = CalculateIdealBounds(0);
 
   return bounds.empty() ? 0 : bounds.back().right();
 }
 
 int TabStripLayoutHelper::CalculatePreferredWidth() {
-  const std::vector<gfx::Rect> bounds = CalculateIdealBounds(std::nullopt);
+  auto [bounds, layout_domain] = CalculateIdealBounds(std::nullopt);
 
   return bounds.empty() ? 0 : bounds.back().right();
 }
 
 int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
-  const std::vector<gfx::Rect> bounds = CalculateIdealBounds(available_width);
+  auto [bounds, layout_domain] = CalculateIdealBounds(available_width);
   DCHECK_EQ(slots_.size(), bounds.size());
+  tab_strip_layout_domain_ = layout_domain;
 
   views::ViewModelT<Tab>* tabs = get_tabs_callback_.Run();
   const std::optional<int> active_tab_model_index =
@@ -249,8 +251,8 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
   return bounds.back().right();
 }
 
-std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
-    std::optional<int> available_width) {
+std::pair<std::vector<gfx::Rect>, LayoutDomain>
+TabStripLayoutHelper::CalculateIdealBounds(std::optional<int> available_width) {
   const std::optional<int> active_tab_model_index =
       controller_->GetActiveIndex();
   const std::optional<int> active_tab_slot_index =
