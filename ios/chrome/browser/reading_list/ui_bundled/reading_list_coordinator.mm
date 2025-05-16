@@ -84,7 +84,8 @@
                                       ReadingListListViewControllerAudience,
                                       ReadingListListViewControllerDelegate,
                                       SigninPresenter,
-                                      SigninPromoViewConsumer>
+                                      SigninPromoViewConsumer,
+                                      UIAdaptivePresentationControllerDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -183,8 +184,7 @@
 
   [self.navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
-  self.navigationController.presentationController.delegate =
-      self.tableViewController;
+  self.navigationController.presentationController.delegate = self;
 
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
@@ -283,8 +283,7 @@
 
 - (void)dismissReadingListListViewController:(UIViewController*)viewController {
   DCHECK_EQ(self.tableViewController, viewController);
-  [self.tableViewController willBeDismissed];
-  [_delegate closeReadingList];
+  [self dismissReadingList];
 }
 
 - (void)readingListListViewController:(UIViewController*)viewController
@@ -335,6 +334,10 @@
                             promoConfigurator:promoConfigurator
                                 promoDelegate:_signinPromoViewMediator
                                     promoText:[self promoTextForPromoAction]];
+}
+
+- (BOOL)canDismiss {
+  return !_signinPromoViewMediator.signinInProgress;
 }
 
 #pragma mark - URL Loading Helpers
@@ -542,7 +545,7 @@
 
 - (void)showSignin:(ShowSigninCommand*)command {
   [_applicationCommandsHandler showSignin:command
-                       baseViewController:self.tableViewController];
+                       baseViewController:self.navigationController];
 }
 
 #pragma mark - AccountSettingsPresenter
@@ -599,6 +602,12 @@
 }
 
 #pragma mark - Private
+
+- (void)dismissReadingList {
+  CHECK([self canDismiss], base::NotFatalUntil::M145);
+  [self.tableViewController willBeDismissed];
+  [_delegate closeReadingList];
+}
 
 // Computes whether the sign-in promo should be visible in the reading list and
 // updates the view accordingly.
@@ -716,6 +725,21 @@
 
 - (BOOL)isIncognitoAvailable {
   return !IsIncognitoModeDisabled(_prefService);
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  base::RecordAction(base::UserMetricsAction("IOSReadingListCloseWithSwipe"));
+  // Call the delegate dismissReadingListListViewController to clean up state
+  // and stop the Coordinator.
+  [self dismissReadingList];
+}
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return [self canDismiss];
 }
 
 @end

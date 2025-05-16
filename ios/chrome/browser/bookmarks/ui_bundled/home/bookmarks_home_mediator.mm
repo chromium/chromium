@@ -211,6 +211,13 @@ bool IsABookmarkNodeSectionForIdentifier(
   DCHECK(!_bookmarkPromoController);
 }
 
+- (BOOL)canDismiss {
+  // While sign-in is in progress, the UI should be frozen.
+  // The promo manager is in charge of displaying the activity overlay, but
+  // we’re still in charge of stopping dismiss from occurring.
+  return !_bookmarkPromoController.signinInProgress;
+}
+
 #pragma mark - Initial Model Setup
 
 // Computes the bookmarks table view based on the currently displayed node.

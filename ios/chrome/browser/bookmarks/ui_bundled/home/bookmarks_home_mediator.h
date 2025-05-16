@@ -108,6 +108,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // Stops mediating and disconnects from backend models.
 - (void)disconnect;
 
+// Whether the view can be dismissed.
+- (BOOL)canDismiss;
+
 // Rebuilds the table view model data for the Bookmarks section.  Deletes any
 // existing data first.
 - (void)computeBookmarkTableViewData;

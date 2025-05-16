@@ -19,8 +19,7 @@ class Browser;
 
 // View controller that displays reading list items in a table view.
 @interface ReadingListTableViewController
-    : LegacyChromeTableViewController <ReadingListListItemAccessibilityDelegate,
-                                       UIAdaptivePresentationControllerDelegate>
+    : LegacyChromeTableViewController <ReadingListListItemAccessibilityDelegate>
 
 // The delegate.
 @property(nonatomic, weak) id<ReadingListListViewControllerDelegate> delegate;

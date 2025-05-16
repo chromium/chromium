@@ -294,6 +294,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (BOOL)canDismiss {
+  if (self.mediator && ![self.mediator canDismiss]) {
+    return NO;
+  }
   if (self.folderChooserCoordinator &&
       ![self.folderChooserCoordinator canDismiss]) {
     return NO;

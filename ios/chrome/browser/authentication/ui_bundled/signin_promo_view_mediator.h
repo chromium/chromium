@@ -92,6 +92,9 @@ enum class SigninPromoAction {
 // Sign-in promo view state. kNeverVisible by default.
 @property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
 
+// YES if the sign-in flow is in progress.
+@property(nonatomic, assign, readonly) BOOL signinInProgress;
+
 // YES if the promo spinner should be displayed. Either the sign-in or the
 // initial sync is in progress.
 @property(nonatomic, assign, readonly) BOOL showSpinner;

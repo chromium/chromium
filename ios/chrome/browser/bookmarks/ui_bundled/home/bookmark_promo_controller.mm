@@ -145,6 +145,12 @@
   self.shouldShowSigninPromo = YES;
 }
 
+#pragma mark - Property
+
+- (BOOL)signinInProgress {
+  return _signinPromoViewMediator.signinInProgress;
+}
+
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 // Called when a user changes the syncing state.

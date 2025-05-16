@@ -391,7 +391,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // identity.
   void CheckForImageNotification(SigninPromoViewStyle style) {
     configurator_ = nil;
-    ExpectConfiguratorNotification(NO /* identity changed */);
+    ExpectConfiguratorNotification(/*identity_changed=*/NO);
 
     fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
     // Check the configurator received by the consumer.
@@ -483,7 +483,7 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithWarmAndCold) {
   TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
   // Expect to receive a new configuration from -[Consumer
   // configureSigninPromoWithConfigurator:identityChanged:].
-  ExpectConfiguratorNotification(YES /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/YES);
 
   // Forgetting an identity is an asynchronous operation, so we need to wait
   // before the notification is sent.
@@ -524,7 +524,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   // Start sign-in.
   OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   EXPECT_TRUE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
@@ -533,7 +533,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   // Stop sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   command.completion(SigninCoordinatorResultSuccess, nil);
   EXPECT_FALSE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
@@ -554,7 +554,7 @@ TEST_F(SigninPromoViewMediatorTest,
       }];
   OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   // Starts sign-in without identity.
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   // Adds an identity while doing sign-in.
@@ -564,7 +564,7 @@ TEST_F(SigninPromoViewMediatorTest,
   // Finishs the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   command.completion(SigninCoordinatorResultSuccess, nil);
 }
 
@@ -583,7 +583,7 @@ TEST_F(SigninPromoViewMediatorTest,
       }];
   OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   // Starts sign-in with an identity.
   [mediator_
       signinPromoViewDidTapPrimaryButtonWithDefaultAccount:signin_promo_view_];
@@ -598,7 +598,7 @@ TEST_F(SigninPromoViewMediatorTest,
   // Finishs the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   command.completion(SigninCoordinatorResultSuccess, nil);
 }
 
@@ -629,7 +629,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
   GetAuthenticationService()->SignIn(identity_,
                                      signin_metrics::AccessPoint::kSigninPromo);
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   [mediator_ signinPromoViewIsVisible];
   EXPECT_EQ(identity_, mediator_.displayedIdentity);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
@@ -659,10 +659,17 @@ TEST_F(SigninPromoViewMediatorTest,
         }];
     OCMExpect([signin_presenter_ showSignin:command_arg]);
     OCMExpect([consumer_ promoProgressStateDidChange]);
-    ExpectConfiguratorNotification(NO /* identity changed */);
+    ExpectConfiguratorNotification(/*identity_changed=*/NO);
     // Start sign-in with an identity.
     [mediator_ signinPromoViewDidTapPrimaryButtonWithDefaultAccount:
                    signin_promo_view_];
+
+    // Finish the sign-in.
+    OCMExpect([consumer_ promoProgressStateDidChange]);
+    ExpectConfiguratorNotification(/*identity_changed=*/NO);
+    OCMExpect([consumer_ signinDidFinish]);
+    command.completion(SigninCoordinatorResultInterrupted, nil);
+
     // Remove the sign-in promo.
     [mediator_ disconnect];
     EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
@@ -676,9 +683,6 @@ TEST_F(SigninPromoViewMediatorTest,
     [(OCMockObject*)consumer_ clearInvocations];
   }
   EXPECT_EQ(weak_mediator, nil);
-  // Finish the sign-in.
-  OCMExpect([consumer_ signinDidFinish]);
-  command.completion(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that the sign-in promo view being removed, and tests the consumer is
@@ -696,16 +700,20 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
       }];
   OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   // Start sign-in with an identity.
   [mediator_
       signinPromoViewDidTapPrimaryButtonWithDefaultAccount:signin_promo_view_];
+
+  // Finish the sign-in.
+  OCMExpect([consumer_ promoProgressStateDidChange]);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
+  OCMExpect([consumer_ signinDidFinish]);
+  command.completion(SigninCoordinatorResultInterrupted, nil);
+
   // Remove the sign-in promo.
   [mediator_ disconnect];
   EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
-  // Finish the sign-in.
-  OCMExpect([consumer_ signinDidFinish]);
-  command.completion(SigninCoordinatorResultSuccess, nil);
   // Set mediator_ to nil to avoid the TearDown doesn't call
   // -[mediator_ disconnect] again.
   mediator_ = nil;
@@ -717,9 +725,9 @@ TEST_F(SigninPromoViewMediatorTest,
        SigninPromoWithSigninWithNoDefaultIdentity) {
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   [mediator_ signinPromoViewIsVisible];
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   [mediator_
       setSigninPromoAction:SigninPromoAction::kSigninWithNoDefaultIdentity];
   EXPECT_EQ(identity_, mediator_.displayedIdentity);
@@ -737,9 +745,9 @@ TEST_F(SigninPromoViewMediatorTest,
                                      signin_metrics::AccessPoint::kSigninPromo);
 
   CreateMediator(signin_metrics::AccessPoint::kBookmarkManager);
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   [mediator_ signinPromoViewIsVisible];
-  ExpectConfiguratorNotification(NO /* identity changed */);
+  ExpectConfiguratorNotification(/*identity_changed=*/NO);
   [mediator_ setSigninPromoAction:SigninPromoAction::kReviewAccountSettings];
   EXPECT_EQ(identity_, mediator_.displayedIdentity);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();

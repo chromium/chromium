@@ -45,6 +45,8 @@ class SyncService;
 
 @property(nonatomic, readonly) SigninPromoViewMediator* signinPromoViewMediator;
 
+@property(nonatomic, readonly) BOOL signinInProgress;
+
 // See `-[BookmarkPromoController initWithBrowser:delegate:presenter:
 // baseViewController:]`.
 - (instancetype)init NS_UNAVAILABLE;
