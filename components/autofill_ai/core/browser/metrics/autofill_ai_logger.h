@@ -37,6 +37,9 @@ class AutofillAiLogger {
   void OnEditedAutofilledField(const autofill::FormStructure& form,
                                const autofill::AutofillField& field,
                                ukm::SourceId ukm_source_id);
+  void OnDidFillField(const autofill::FormStructure& form,
+                      const autofill::AutofillField& field,
+                      ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form` into
   // appropriate metrics. `submission_state` denotes whether the form was

@@ -72,6 +72,13 @@ void AutofillAiLogger::OnEditedAutofilledField(
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
 }
 
+void AutofillAiLogger::OnDidFillField(const autofill::FormStructure& form,
+                                      const autofill::AutofillField& field,
+                                      ukm::SourceId ukm_source_id) {
+  ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
+                            AutofillAiUkmLogger::EventType::kFieldFilled);
+}
+
 void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
                                          ukm::SourceId ukm_source_id,
                                          bool submission_state,

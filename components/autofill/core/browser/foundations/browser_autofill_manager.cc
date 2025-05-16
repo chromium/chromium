@@ -2475,6 +2475,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                            delegate->OnDidFillSuggestion(
                                entity->guid(), form_structure,
                                trigger_autofill_field,
+                               safe_filled_autofill_fields,
                                driver().GetPageUkmSourceId());
                          }
                        },

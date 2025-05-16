@@ -54,10 +54,12 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
                           const autofill::AutofillField& field,
                           ukm::SourceId ukm_source_id) override;
   void OnFormSeen(const autofill::FormStructure& form) override;
-  void OnDidFillSuggestion(const base::Uuid& guid,
-                           const autofill::FormStructure& form,
-                           const autofill::AutofillField& field,
-                           ukm::SourceId ukm_source_id) override;
+  void OnDidFillSuggestion(
+      const base::Uuid& guid,
+      const autofill::FormStructure& form,
+      const autofill::AutofillField& trigger_field,
+      base::span<const autofill::AutofillField* const> filled_fields,
+      ukm::SourceId ukm_source_id) override;
   void OnEditedAutofilledField(const autofill::FormStructure& form,
                                const autofill::AutofillField& field,
                                ukm::SourceId ukm_source_id) override;
