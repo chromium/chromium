@@ -199,7 +199,8 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
 void ReportingEventRouter::OnSecurityInterstitialProceeded(
     const GURL& url,
     const std::string& reason,
-    int net_error_code) {
+    int net_error_code,
+    const ReferrerChain& referrer_chain) {
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
@@ -214,6 +215,11 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
   event.Set(kKeyClickedThrough, true);
   event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
                                  enterprise_connectors::EventResult::BYPASSED));
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    AddReferrerChainToEvent(referrer_chain, event);
+  }
+
   reporting_client_->ReportEventWithTimestampDeprecated(
       enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
       std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
@@ -223,7 +229,8 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
     const GURL& url,
     const std::string& reason,
     int net_error_code,
-    bool proceed_anyway_disabled) {
+    bool proceed_anyway_disabled,
+    const ReferrerChain& referrer_chain) {
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
@@ -243,6 +250,10 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
   event.Set(kKeyClickedThrough, false);
   event.Set(kKeyEventResult,
             enterprise_connectors::EventResultToString(event_result));
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    AddReferrerChainToEvent(referrer_chain, event);
+  }
 
   reporting_client_->ReportEventWithTimestampDeprecated(
       enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),

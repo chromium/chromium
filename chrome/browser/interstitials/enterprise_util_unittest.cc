@@ -71,6 +71,12 @@ class MockSafeBrowsingNavigationObserverManager
                    int user_gesture_count_limit,
                    safe_browsing::ReferrerChain* out_referrer_chain));
 
+  MOCK_METHOD3(
+      IdentifyReferrerChainByPendingEventURL,
+      AttributionResult(const GURL& event_url,
+                        int user_gesture_count_limit,
+                        safe_browsing::ReferrerChain* out_referrer_chain));
+
  private:
   raw_ptr<content::ServiceWorkerContext> notification_context_for_removal_;
 };
@@ -134,6 +140,21 @@ class InterstitialEnterpriseUtilTest : public testing::Test {
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
   }
 
+  void ValidateReferrerChain(const base::Value::Dict& report_dict,
+                             std::string_view event_name) {
+    const base::Value::List* events_list = report_dict.FindList("events");
+    ASSERT_NE(events_list, nullptr);
+    ASSERT_EQ(events_list->size(), 1u);
+    const base::Value::Dict* event_dict = (*events_list)[0].GetIfDict();
+    ASSERT_NE(event_dict, nullptr);
+    const base::Value::Dict* intertitial_event =
+        event_dict->FindDict(event_name);
+    ASSERT_NE(intertitial_event, nullptr);
+    const base::Value::List* referrer_chain =
+        intertitial_event->FindList("referrers");
+    EXPECT_EQ(referrer_chain->size(), 1u);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
@@ -164,7 +185,8 @@ TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
       /*net_error_code=*/0);
 }
 
-TEST_F(InterstitialEnterpriseUtilTest, RouterEventEnabledInGuestMode) {
+TEST_F(InterstitialEnterpriseUtilTest,
+       SecurityInterstitialShownEventSentInGuestMode) {
   std::vector<base::test::FeatureRef> enable_features;
 #if BUILDFLAG(IS_ANDROID)
   enable_features.push_back(
@@ -176,14 +198,81 @@ TEST_F(InterstitialEnterpriseUtilTest, RouterEventEnabledInGuestMode) {
       profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true);
   EnableReportingPolicy(guest_profile);
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
+
+  ASSERT_TRUE(safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+                  GetForBrowserContext(guest_profile));
+  safe_browsing::ReferrerChain expected_referrer_chain;
+  expected_referrer_chain.Add(
+      enterprise_connectors::test::MakeReferrerChainEntry());
+  EXPECT_CALL(
+      *navigation_observer_manager_,
+      IdentifyReferrerChainByPendingEventURL(GURL("https://phishing.com/"),
+                                             /*user_gesture_count_limit=*/5, _))
+      .WillOnce(DoAll(SetArgPointee<2>(expected_referrer_chain),
+                      Return(safe_browsing::ReferrerChainProvider::SUCCESS)));
+  base::RunLoop run_loop;
+  base::Value::Dict report_dict;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](bool include_device_info, base::Value::Dict&& report,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            report_dict = std::move(report);
+            run_loop.Quit();
+          }));
+
   MaybeTriggerSecurityInterstitialShownEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
       GURL("https://phishing.com/"), "reason",
       /*net_error_code=*/0);
+  run_loop.Run();
+  ValidateReferrerChain(report_dict, "interstitialEvent");
 }
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+TEST_F(InterstitialEnterpriseUtilTest,
+       SecurityInterstitialProceededEventSentInGuestMode) {
+  std::vector<base::test::FeatureRef> enable_features;
+#if BUILDFLAG(IS_ANDROID)
+  enable_features.push_back(
+      enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid);
+#endif
+  enable_features.push_back(safe_browsing::kEnhancedFieldsForSecOps);
+  scoped_feature_list_.InitWithFeatures(enable_features, {});
+  Profile* guest_profile =
+      profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
+          /*create_if_needed=*/true);
+  EnableReportingPolicy(guest_profile);
+
+  ASSERT_TRUE(safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+                  GetForBrowserContext(guest_profile));
+  safe_browsing::ReferrerChain expected_referrer_chain;
+  expected_referrer_chain.Add(
+      enterprise_connectors::test::MakeReferrerChainEntry());
+  EXPECT_CALL(
+      *navigation_observer_manager_,
+      IdentifyReferrerChainByPendingEventURL(GURL("https://phishing.com/"),
+                                             /*user_gesture_count_limit=*/5, _))
+      .WillOnce(DoAll(SetArgPointee<2>(expected_referrer_chain),
+                      Return(safe_browsing::ReferrerChainProvider::SUCCESS)));
+  base::RunLoop run_loop;
+  base::Value::Dict report_dict;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](bool include_device_info, base::Value::Dict&& report,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            report_dict = std::move(report);
+            run_loop.Quit();
+          }));
+
+  MaybeTriggerSecurityInterstitialProceededEvent(
+      web_contents_factory_.CreateWebContents(guest_profile),
+      GURL("https://phishing.com/"), "reason",
+      /*net_error_code=*/0);
+  run_loop.Run();
+  ValidateReferrerChain(report_dict, "interstitialEvent");
+}
+
 TEST_F(InterstitialEnterpriseUtilTest,
        UrlFilteringInterstitialEventSentInGuestMode) {
   scoped_feature_list_.InitWithFeatures(
@@ -192,6 +281,7 @@ TEST_F(InterstitialEnterpriseUtilTest,
       profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
           /*create_if_needed=*/true);
   EnableReportingPolicy(guest_profile);
+
   ASSERT_TRUE(safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
                   GetForBrowserContext(guest_profile));
   safe_browsing::RTLookupResponse response;
@@ -208,6 +298,58 @@ TEST_F(InterstitialEnterpriseUtilTest,
       enterprise_connectors::test::MakeReferrerChainEntry());
   EXPECT_CALL(
       *navigation_observer_manager_,
+      IdentifyReferrerChainByPendingEventURL(GURL("https://phishing.com/"),
+                                             /*user_gesture_count_limit=*/5, _))
+      .WillOnce(DoAll(SetArgPointee<2>(expected_referrer_chain),
+                      Return(safe_browsing::ReferrerChainProvider::SUCCESS)));
+  base::RunLoop run_loop;
+  base::Value::Dict report_dict;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](bool include_device_info, base::Value::Dict&& report,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            report_dict = std::move(report);
+            run_loop.Quit();
+          }));
+
+  MaybeTriggerUrlFilteringInterstitialEvent(
+      web_contents_factory_.CreateWebContents(guest_profile),
+      GURL("https://phishing.com/"), "ENTERPRISE_WARNED_SEEN", response);
+  run_loop.Run();
+  ValidateReferrerChain(report_dict, "urlFilteringInterstitialEvent");
+}
+
+TEST_F(InterstitialEnterpriseUtilTest, ReferrerChainFallsbackToEventUrl) {
+  scoped_feature_list_.InitWithFeatures(
+      {safe_browsing::kEnhancedFieldsForSecOps}, {});
+  Profile* guest_profile =
+      profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
+          /*create_if_needed=*/true);
+  EnableReportingPolicy(guest_profile);
+
+  ASSERT_TRUE(safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+                  GetForBrowserContext(guest_profile));
+  safe_browsing::RTLookupResponse response;
+  auto* threat_info = response.add_threat_info();
+  threat_info->set_verdict_type(
+      safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+  auto* matched_url_navigation_rule =
+      threat_info->mutable_matched_url_navigation_rule();
+  matched_url_navigation_rule->set_rule_id("123");
+  matched_url_navigation_rule->set_rule_name("test rule name");
+  matched_url_navigation_rule->set_matched_url_category("test rule category");
+  safe_browsing::ReferrerChain expected_referrer_chain;
+  expected_referrer_chain.Add(
+      enterprise_connectors::test::MakeReferrerChainEntry());
+  EXPECT_CALL(
+      *navigation_observer_manager_,
+      IdentifyReferrerChainByPendingEventURL(GURL("https://phishing.com/"),
+                                             /*user_gesture_count_limit=*/5, _))
+      .WillOnce(Return(
+          safe_browsing::ReferrerChainProvider::NAVIGATION_EVENT_NOT_FOUND));
+  EXPECT_CALL(
+      *navigation_observer_manager_,
       IdentifyReferrerChainByEventURL(GURL("https://phishing.com/"), _,
                                       /*user_gesture_count_limit=*/5, _))
       .WillOnce(DoAll(SetArgPointee<3>(expected_referrer_chain),
@@ -222,23 +364,13 @@ TEST_F(InterstitialEnterpriseUtilTest,
             report_dict = std::move(report);
             run_loop.Quit();
           }));
+
   MaybeTriggerUrlFilteringInterstitialEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
       GURL("https://phishing.com/"), "ENTERPRISE_WARNED_SEEN", response);
   run_loop.Run();
-  const base::Value::List* events_list = report_dict.FindList("events");
-  ASSERT_NE(events_list, nullptr);
-  ASSERT_EQ(events_list->size(), 1u);
-  const base::Value::Dict* event_dict = (*events_list)[0].GetIfDict();
-  ASSERT_NE(event_dict, nullptr);
-  const base::Value::Dict* url_filtering_event =
-      event_dict->FindDict("urlFilteringInterstitialEvent");
-  ASSERT_NE(url_filtering_event, nullptr);
-  const base::Value::List* referrer_chain =
-      url_filtering_event->FindList("referrers");
-  EXPECT_EQ(referrer_chain->size(), 1u);
+  ValidateReferrerChain(report_dict, "urlFilteringInterstitialEvent");
 }
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(InterstitialEnterpriseUtilTest,

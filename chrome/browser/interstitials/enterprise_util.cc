@@ -73,6 +73,29 @@ enterprise_connectors::ReportingEventRouter* GetReportingEventRouter(
   return enterprise_connectors::ReportingEventRouterFactory::
       GetForBrowserContext(browser_context);
 }
+
+void SetReferrerChain(
+    content::WebContents* web_contents,
+    const GURL& page_url,
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>&
+        referrer_chain) {
+  safe_browsing::SafeBrowsingNavigationObserverManager*
+      navigation_observer_manager =
+          safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+              GetForBrowserContext(web_contents->GetBrowserContext());
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+  safe_browsing::ReferrerChainProvider::AttributionResult attribution_result =
+      navigation_observer_manager->IdentifyReferrerChainByPendingEventURL(
+          page_url, enterprise_connectors::kReferrerUserGestureLimit,
+          &referrer_chain);
+  if (attribution_result ==
+      safe_browsing::ReferrerChainProvider::NAVIGATION_EVENT_NOT_FOUND) {
+    CHECK(referrer_chain.empty());
+    navigation_observer_manager->IdentifyReferrerChainByEventURL(
+        page_url, tab_id, enterprise_connectors::kReferrerUserGestureLimit,
+        &referrer_chain);
+  }
+}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -111,9 +134,16 @@ void MaybeTriggerSecurityInterstitialShownEvent(
     return;
   }
 
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    SetReferrerChain(web_contents, page_url, referrer_chain);
+  }
+
   reporting_event_router->OnSecurityInterstitialShown(
       page_url, reason, net_error_code,
-      prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled));
+      prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
+      referrer_chain);
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 }
@@ -147,8 +177,15 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
   if (!reporting_event_router) {
     return;
   }
-  reporting_event_router->OnSecurityInterstitialProceeded(page_url, reason,
-                                                          net_error_code);
+
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    SetReferrerChain(web_contents, page_url, referrer_chain);
+  }
+
+  reporting_event_router->OnSecurityInterstitialProceeded(
+      page_url, reason, net_error_code, referrer_chain);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 }
 
@@ -165,13 +202,7 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
       GetReportingEventRouter(web_contents);
 
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
-    safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-        GetForBrowserContext(web_contents->GetBrowserContext())
-            ->IdentifyReferrerChainByEventURL(
-                page_url, tab_id,
-                enterprise_connectors::kReferrerUserGestureLimit,
-                &referrer_chain);
+    SetReferrerChain(web_contents, page_url, referrer_chain);
   }
 
   router->OnUrlFilteringInterstitial(page_url, threat_type, rt_lookup_response,
@@ -186,6 +217,10 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
               kEnterpriseUrlFilteringEventReportingOnAndroid)) {
     enterprise_connectors::ReportingEventRouter* router =
         GetReportingEventRouter(web_contents);
+
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      SetReferrerChain(web_contents, page_url, referrer_chain);
+    }
 
     router->OnUrlFilteringInterstitial(page_url, threat_type,
                                        rt_lookup_response, referrer_chain);

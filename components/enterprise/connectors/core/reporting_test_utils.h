@@ -58,6 +58,43 @@ class EventReportValidatorBase {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
+  // TODO(crbug.com/396437152): Use password reuse event proto instead of raw
+  // json string for validation.
+  void ExpectPasswordReuseEvent(const std::string& expected_url,
+                                const std::string& expected_username,
+                                bool expected_is_phishing_url,
+                                const std::string& event_result,
+                                const std::string& expected_profile_username,
+                                const std::string& expected_profile_identifier);
+
+  // TODO(crbug.com/396437063): Use password changed event proto instead of raw
+  // json string for validation.
+  void ExpectPassowrdChangedEvent(
+      const std::string& expected_username,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier);
+
+  // TODO(crbug.com/396437371): Use secutiry interstital event proto instead of
+  // raw json string for validation.
+  void ExpectSecurityInterstitialEvent(
+      const std::string& expected_url,
+      const std::string& expected_reason,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      const std::string& result,
+      const bool expected_click_through,
+      int expected_net_error_code);
+
+  void ExpectSecurityInterstitialEventWithReferrers(
+      const std::string& expected_url,
+      const std::string& expected_reason,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      const std::string& result,
+      const bool expected_click_through,
+      int expected_net_error_code,
+      const ::chrome::cros::reporting::proto::UrlInfo& expected_referrers);
+
  protected:
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
@@ -68,6 +105,9 @@ class EventReportValidatorBase {
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const std::optional<int>& expected_value);
+  void ValidateField(const base::Value::Dict* value,
+                     const std::string& field_key,
+                     int expected_value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      bool expected_value);

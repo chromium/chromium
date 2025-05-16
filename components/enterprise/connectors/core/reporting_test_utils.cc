@@ -362,6 +362,167 @@ void EventReportValidatorBase::ExpectPasswordBreachEvent(
       });
 }
 
+void EventReportValidatorBase::ExpectPasswordReuseEvent(
+    const std::string& expected_url,
+    const std::string& expected_username,
+    bool expected_is_phishing_url,
+    const std::string& event_result,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_url, expected_username,
+                 expected_is_phishing_url, event_result,
+                 expected_profile_username, expected_profile_identifier](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyPasswordReuseEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyURL, expected_url);
+        ValidateField(event, kKeyUserName, expected_username);
+        ValidateField(event, kKeyIsPhishingUrl, expected_is_phishing_url);
+        ValidateField(event, kKeyEventResult, event_result);
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event,
+                      enterprise_connectors::RealtimeReportingClientBase::
+                          kKeyProfileIdentifier,
+                      expected_profile_identifier);
+      });
+}
+
+void EventReportValidatorBase::ExpectPassowrdChangedEvent(
+    const std::string& expected_username,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_username, expected_profile_username,
+                 expected_profile_identifier](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyPasswordChangedEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyUserName, expected_username);
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event,
+                      enterprise_connectors::RealtimeReportingClientBase::
+                          kKeyProfileIdentifier,
+                      expected_profile_identifier);
+      });
+}
+
+void EventReportValidatorBase::ExpectSecurityInterstitialEvent(
+    const std::string& expected_url,
+    const std::string& expected_reason,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    const std::string& result,
+    const bool expected_click_through,
+    int expected_net_error_code) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_url, expected_reason, expected_profile_username,
+                 expected_profile_identifier, result, expected_click_through,
+                 expected_net_error_code](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyInterstitialEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyURL, expected_url);
+        ValidateField(event, kKeyReason, expected_reason);
+        ValidateField(event, kKeyNetErrorCode, expected_net_error_code);
+        ValidateField(event, kKeyClickedThrough, expected_click_through);
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event,
+                      enterprise_connectors::RealtimeReportingClientBase::
+                          kKeyProfileIdentifier,
+                      expected_profile_identifier);
+        ValidateField(event, kKeyEventResult, result);
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+
+void EventReportValidatorBase::ExpectSecurityInterstitialEventWithReferrers(
+    const std::string& expected_url,
+    const std::string& expected_reason,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    const std::string& result,
+    const bool expected_click_through,
+    int expected_net_error_code,
+    const ::chrome::cros::reporting::proto::UrlInfo& expected_referrers) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_url, expected_reason, expected_profile_username,
+                 expected_profile_identifier, result, expected_click_through,
+                 expected_net_error_code, expected_referrers](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyInterstitialEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyURL, expected_url);
+        ValidateField(event, kKeyReason, expected_reason);
+        ValidateField(event, kKeyNetErrorCode, expected_net_error_code);
+        ValidateField(event, kKeyClickedThrough, expected_click_through);
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event,
+                      enterprise_connectors::RealtimeReportingClientBase::
+                          kKeyProfileIdentifier,
+                      expected_profile_identifier);
+        ValidateField(event, kKeyEventResult, result);
+        const base::Value::List* referrers = event->FindList(kReferrers);
+        ASSERT_TRUE(referrers);
+        for (const auto& referrer : *referrers) {
+          ValidateReferrer(&referrer.GetDict(), expected_referrers);
+        }
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+
 void EventReportValidatorBase::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
@@ -404,6 +565,15 @@ void EventReportValidatorBase::ValidateField(
       << "Mismatch in field " << field_key
       << "\nActual value: " << value->FindInt(field_key).value()
       << "\nExpected value: " << expected_value.value();
+}
+
+void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
+                                             const std::string& field_key,
+                                             int expected_value) {
+  ASSERT_EQ(value->FindInt(field_key), expected_value)
+      << "Mismatch in field " << field_key
+      << "\nActual value: " << value->FindInt(field_key).value()
+      << "\nExpected value: " << expected_value;
 }
 
 void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
