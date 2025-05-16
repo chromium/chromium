@@ -2651,7 +2651,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
     screenshot_destination_ = base::UnguessableToken();
   }
 
-  metadata.is_software = !layer_tree_frame_sink_->context_provider();
+  metadata.is_software = GetDrawMode() != DrawMode::DRAW_MODE_HARDWARE;
 
   return metadata;
 }
