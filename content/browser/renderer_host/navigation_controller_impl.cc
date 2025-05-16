@@ -1365,11 +1365,20 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
   TRACE_EVENT1("browser,navigation",
                "NavigationControllerImpl::LoadURLWithParams", "url",
                params.url.possibly_invalid_spec());
-  bool is_explicit_navigation =
-      GetContentClient()->browser()->IsExplicitNavigation(
-          params.transition_type);
-  if (HandleDebugURL(params.url, params.transition_type,
-                     is_explicit_navigation)) {
+
+  if (IsDebugURL(params.url)) {
+    // Browser-debug URLs won't go through NavigationThrottles so we have to
+    // check them explicitly. See crbug.com/40605746.
+    ContentBrowserClient* client = GetContentClient()->browser();
+    if (client->ShouldBlockRendererDebugURL(
+            params.url, browser_context_,
+            GetTargetFrameTreeNodeForNavigation(params)
+                ->current_frame_host())) {
+      DiscardPendingEntry(false);
+      return nullptr;
+    }
+    HandleDebugURL(params.url, params.transition_type,
+                   client->IsExplicitNavigation(params.transition_type));
     // If Telemetry is running, allow the URL load to proceed as if it's
     // unhandled, otherwise Telemetry can't tell if Navigation completed.
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -3701,24 +3710,7 @@ void NavigationControllerImpl::FindFramesToNavigate(
 
 base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     const LoadURLParams& params) {
-  // Find the appropriate FrameTreeNode.
-  FrameTreeNode* node = nullptr;
-  if (params.frame_tree_node_id || !params.frame_name.empty()) {
-    node = params.frame_tree_node_id
-               ? frame_tree_->FindByID(params.frame_tree_node_id)
-               : frame_tree_->FindByName(params.frame_name);
-    DCHECK(!node || &node->frame_tree() == &frame_tree());
-    if (!node && params.frame_tree_node_id) {
-      // If the specified FrameTreeNode exists in another FrameTree, the caller
-      // is using the wrong NavigationController.
-      CHECK(!FrameTreeNode::GloballyFindByID(params.frame_tree_node_id),
-            base::NotFatalUntil::M140);
-    }
-  }
-
-  // If no FrameTreeNode was specified, navigate the main frame.
-  if (!node)
-    node = frame_tree_->root();
+  FrameTreeNode* node = GetTargetFrameTreeNodeForNavigation(params);
 
   // Compute overrides to the LoadURLParams for |override_user_agent|,
   // |should_replace_current_entry| and |has_user_gesture| that will be used
@@ -3755,8 +3747,8 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   // URLs, unlike the cases below where we clear it if the navigation doesn't
   // proceed.
   if (blink::IsRendererDebugURL(params.url)) {
-    // Renderer-debug URLs won't go through NavigationThrottlers so we have to
-    // check them explicitly. See bug 913334.
+    // Renderer-debug URLs won't go through NavigationThrottles so we have to
+    // check them explicitly. See crbug.com/40605746.
     if (GetContentClient()->browser()->ShouldBlockRendererDebugURL(
             params.url, browser_context_, node->current_frame_host())) {
       DiscardPendingEntry(false);
@@ -3872,6 +3864,29 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
 
   in_navigate_to_pending_entry_ = false;
   return created_navigation_handle;
+}
+
+FrameTreeNode* NavigationControllerImpl::GetTargetFrameTreeNodeForNavigation(
+    const LoadURLParams& params) {
+  FrameTreeNode* node = nullptr;
+  if (params.frame_tree_node_id || !params.frame_name.empty()) {
+    node = params.frame_tree_node_id
+               ? frame_tree_->FindByID(params.frame_tree_node_id)
+               : frame_tree_->FindByName(params.frame_name);
+    DCHECK(!node || &node->frame_tree() == &frame_tree());
+    if (!node && params.frame_tree_node_id) {
+      // If the specified FrameTreeNode exists in another FrameTree, the caller
+      // is using the wrong NavigationController.
+      CHECK(!FrameTreeNode::GloballyFindByID(params.frame_tree_node_id),
+            base::NotFatalUntil::M140);
+    }
+  }
+
+  // If no FrameTreeNode was specified, navigate the main frame.
+  if (!node) {
+    node = frame_tree_->root();
+  }
+  return node;
 }
 
 void NavigationControllerImpl::HandleRendererDebugURL(

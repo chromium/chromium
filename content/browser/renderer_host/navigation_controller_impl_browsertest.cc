@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -68,6 +69,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -22989,6 +22991,152 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, WebUIFailedBack) {
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_TRUE(controller.CanGoForward());
+}
+
+// ContentBrowserClient that blocks all debug URLs.
+class BlockInternalUrlsContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  BlockInternalUrlsContentBrowserClient() = default;
+
+  BlockInternalUrlsContentBrowserClient(
+      const BlockInternalUrlsContentBrowserClient&) = delete;
+  BlockInternalUrlsContentBrowserClient& operator=(
+      const BlockInternalUrlsContentBrowserClient&) = delete;
+
+  // ContentBrowserClient
+  bool ShouldBlockRendererDebugURL(
+      const GURL& url,
+      BrowserContext* context,
+      RenderFrameHost* render_frame_host) override {
+    ++should_block_url_call_count_;
+    return block_debug_urls_;
+  }
+  bool IsExplicitNavigation(ui::PageTransition transition) override {
+    return true;
+  }
+
+  unsigned int GetShouldBlockRendererDebugURLCallCount() {
+    return should_block_url_call_count_;
+  }
+
+  void SetBlockDebugUrls(bool block) { block_debug_urls_ = block; }
+
+ private:
+  unsigned int should_block_url_call_count_ = 0U;
+  bool block_debug_urls_ = true;
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadURL_HandleBlockedBrowserDebugUrls) {
+  BlockInternalUrlsContentBrowserClient content_browser_client;
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  NavigationEntryImpl* last_entry = controller.GetLastCommittedEntry();
+
+  // Navigate to a page to force the renderer process to start.
+  {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+    same_tab_observer.Wait();
+    EXPECT_EQ(1, controller.GetEntryCount());
+    last_entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(GURL(url::kAboutBlankURL), last_entry->GetURL());
+    //  Verify that the entry is not classified as an error page.
+    EXPECT_EQ(PAGE_TYPE_NORMAL, last_entry->GetPageType());
+    EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  }
+
+  // Navigate to a blocked debug URL. Action should not trigger, i.e. a crash
+  // should not happen.
+  GURL crash_browser_url(blink::kChromeUIBrowserDcheckURL);
+  EXPECT_FALSE(controller.LoadURL(crash_browser_url, Referrer(),
+                                  ui::PAGE_TRANSITION_LINK,
+                                  /*extra_headers=*/std::string()));
+
+  EXPECT_EQ(1U,
+            content_browser_client.GetShouldBlockRendererDebugURLCallCount());
+  EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
+  //  Verify that the entry is not classified as an error page.
+  EXPECT_EQ(PAGE_TYPE_NORMAL, last_entry->GetPageType());
+  EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  // Make sure the renderer process has not been killed.
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  EXPECT_TRUE(root->current_frame_host()->IsRenderFrameLive());
+
+  // - Death tests misbehave on Android, http://crbug.com/643760.
+#if !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST)
+  // Disable the policy. Debug URL now crashes the browser process.
+  content_browser_client.SetBlockDebugUrls(false);
+  EXPECT_DCHECK_DEATH({
+    controller.LoadURL(crash_browser_url, Referrer(), ui::PAGE_TRANSITION_LINK,
+                       /*extra_headers=*/std::string());
+    EXPECT_EQ(2U,
+              content_browser_client.GetShouldBlockRendererDebugURLCallCount());
+  });
+#endif  // !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST)
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadURL_HandleBlockedRendererDebugUrls) {
+  BlockInternalUrlsContentBrowserClient content_browser_client;
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_EQ(1, controller.GetEntryCount());
+  NavigationEntryImpl* last_entry = controller.GetLastCommittedEntry();
+
+  // Navigate to a page to force the renderer process to start.
+  {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+    same_tab_observer.Wait();
+    EXPECT_EQ(1, controller.GetEntryCount());
+    last_entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(GURL(url::kAboutBlankURL), last_entry->GetURL());
+    //  Verify that the entry is not classified as an error page.
+    EXPECT_EQ(PAGE_TYPE_NORMAL, last_entry->GetPageType());
+    EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  }
+
+  // Navigate to a blocked debug URL. Action should not trigger, i.e. a crash
+  // should not happen.
+  GURL debug_url(blink::kChromeUIKillURL);
+  EXPECT_FALSE(controller.LoadURL(debug_url, Referrer(),
+                                  ui::PAGE_TRANSITION_LINK, std::string()));
+  EXPECT_EQ(1U,
+            content_browser_client.GetShouldBlockRendererDebugURLCallCount());
+  EXPECT_FALSE(controller.GetPendingEntry());
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
+  //  Verify that the entry is not classified as an error page.
+  EXPECT_EQ(PAGE_TYPE_NORMAL, last_entry->GetPageType());
+  EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  // Make sure the renderer process has not been killed.
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  EXPECT_TRUE(root->current_frame_host()->IsRenderFrameLive());
+
+  // Disable the policy. Debug URL now crashes the renderer process.
+  content_browser_client.SetBlockDebugUrls(false);
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    WebContents* web_contents = shell()->web_contents();
+    RenderProcessHost* process =
+        web_contents->GetPrimaryMainFrame()->GetProcess();
+    content::RenderProcessHostWatcher exit_observer(
+        process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+    controller.LoadURL(debug_url, Referrer(), ui::PAGE_TRANSITION_LINK,
+                       std::string());
+    exit_observer.Wait();
+
+    EXPECT_EQ(2U,
+              content_browser_client.GetShouldBlockRendererDebugURLCallCount());
+    EXPECT_TRUE(controller.GetPendingEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(web_contents->IsCrashed());
+    EXPECT_FALSE(exit_observer.did_exit_normally());
+    EXPECT_FALSE(root->current_frame_host()->IsRenderFrameLive());
+  }
 }
 
 class IgnoreDuplicateNavsBrowserTest

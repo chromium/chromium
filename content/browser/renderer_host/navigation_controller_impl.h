@@ -953,6 +953,11 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const std::string& error_page_html,
       bool is_post_commit_error_page);
 
+  // Finds the target FrameTreeNode for navigation. Returns the node specified
+  // by |params| via ID or name, or the root node if none specified.
+  FrameTreeNode* GetTargetFrameTreeNodeForNavigation(
+      const LoadURLParams& params);
+
   // ---------------------------------------------------------------------------
 
   // The FrameTree this instance belongs to. Each FrameTree gets its own
