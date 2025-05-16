@@ -68,6 +68,11 @@ const CGFloat kSelectionUICornerRadius = 14.0;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  // To ensure the elements within this side panel adapt properly to its limited
+  // width, explicitly set its horizontal size class to compact.
+  if (@available(iOS 17, *)) {
+    self.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+  }
   _borderView = [self createBorderView];
   [self.view addSubview:_borderView];
   AddSameConstraintsWithInsets(_borderView, self.view,
