@@ -5188,6 +5188,12 @@ const char kTabStripContextMenuAndroidName[] = "Tab Strip Context Menu Android";
 const char kTabStripContextMenuAndroidDescription[] =
     "Enables context menus upon long-pressing on a tab on the tab strip.";
 
+const char kTabStripDensityChangeAndroidName[] = "Tab Strip Density Change";
+const char kTabStripDensityChangeAndroidDescription[] =
+    "Enables tab UI to switch to a denser layout when a peripheral(keyboard, "
+    "mouse, touchpad, etc.) is connected, including reducing minimum tab "
+    "width and button touch target to better support click-first interactions.";
+
 const char kTabStripGroupDragDropAndroidName[] =
     "Tab Strip Group Drag Drop Android";
 const char kTabStripGroupDragDropAndroidDescription[] =
