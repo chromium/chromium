@@ -229,6 +229,9 @@ class ViewTransitionStyleTracker
   // name. Note that this only works once the transition starts.
   AtomicString GetContainingGroupName(const AtomicString& name) const;
 
+  void WillEnterGetComputedStyleScope();
+  void WillExitGetComputedStyleScope();
+
  private:
   class ImageWrapperPseudoElement;
 
@@ -323,7 +326,8 @@ class ViewTransitionStyleTracker
   // snapshot root rect.
   gfx::Rect GetSnapshotRootInFixedViewport() const;
 
-  void InvalidateStyle();
+  void InvalidateStyleAndCompositing();
+  void InvalidatePseudoStyle();
   bool HasLiveNewContent() const;
   void EndTransition();
 
@@ -376,6 +380,10 @@ class ViewTransitionStyleTracker
   // root (html) element in the case of a document transition. It can be null
   // in the rare case that the root element has been removed from the DOM.
   Element* OriginatingElement() const;
+
+  // Returns true if we have potentially created pseudo elements that should not
+  // be exposed via getComputedStyle or should not have author styles applied.
+  bool HasInternalPseudoElements() const;
 
   Member<Document> document_;
 
@@ -455,6 +463,8 @@ class ViewTransitionStyleTracker
   HashMap<AtomicString, AtomicString> id_to_auto_name_map_;
 
   Vector<AtomicString> view_transition_names_;
+
+  bool in_get_computed_style_scope_ = false;
 };
 
 }  // namespace blink

@@ -281,6 +281,9 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void NotifyInvokeDOMChangeCallback();
   bool PendingDomCallback();
 
+  void WillEnterGetComputedStyleScope();
+  void WillExitGetComputedStyleScope();
+
  private:
   friend class ViewTransitionTest;
   friend class AXViewTransitionTest;

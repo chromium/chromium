@@ -590,7 +590,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   // would not have any style or names set.
   if (RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
     InvalidateHitTestingCache();
-    InvalidateStyle();
+    InvalidateStyleAndCompositing();
     view_transition_names_.clear();
   }
 }
@@ -992,7 +992,7 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
   view_transition_names_ = std::move(transition_names);
 
   // We need a style invalidation to generate the pseudo element tree.
-  InvalidateStyle();
+  InvalidateStyleAndCompositing();
 
   set_element_sequence_id_ = 0;
   pending_transition_element_names_.clear();
@@ -1066,9 +1066,9 @@ void ViewTransitionStyleTracker::CaptureResolved() {
 
   // Since the elements will be unset, we need to invalidate their style first.
   // TODO(vmpstr): We don't have to invalidate the pseudo styles at this point,
-  // just the transition elements. We can split InvalidateStyle() into two
-  // functions as an optimization.
-  InvalidateStyle();
+  // just the transition elements. We can split InvalidateStyleAndCompositing()
+  // into two functions as an optimization.
+  InvalidateStyleAndCompositing();
 
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
@@ -1230,7 +1230,7 @@ bool ViewTransitionStyleTracker::Start() {
 
   // We need a style invalidation to generate new content pseudo elements for
   // new elements in the DOM.
-  InvalidateStyle();
+  InvalidateStyleAndCompositing();
 
   if (auto* page = document_->GetPage())
     page->Animator().SetHasViewTransition(true);
@@ -1265,7 +1265,7 @@ void ViewTransitionStyleTracker::EndTransition() {
   // We need a style invalidation to remove the pseudo element tree. This needs
   // to be done before we clear the data, since we need to invalidate the
   // transition elements stored in `element_data_map_`.
-  InvalidateStyle();
+  InvalidateStyleAndCompositing();
 
   element_data_map_.clear();
   pending_transition_element_names_.clear();
@@ -1550,7 +1550,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   }
 
   if (needs_style_invalidation) {
-    InvalidateStyle();
+    InvalidateStyleAndCompositing();
   }
 
   return true;
@@ -1814,16 +1814,21 @@ bool ViewTransitionStyleTracker::NeedsCaptureClipNode(
 
 StyleRequest::RulesToInclude ViewTransitionStyleTracker::StyleRulesToInclude()
     const {
+  return HasInternalPseudoElements() && !in_get_computed_style_scope_
+             ? StyleRequest::kUAOnly
+             : StyleRequest::kAll;
+}
+
+bool ViewTransitionStyleTracker::HasInternalPseudoElements() const {
   switch (state_) {
     case State::kIdle:
     case State::kCapturing:
     case State::kCaptured:
-      return StyleRequest::kUAOnly;
+      return true;
     case State::kStarted:
     case State::kFinished:
-      return StyleRequest::kAll;
+      return false;
   }
-
   NOTREACHED();
 }
 
@@ -2026,8 +2031,24 @@ bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
   return true;
 }
 
-void ViewTransitionStyleTracker::InvalidateStyle() {
+void ViewTransitionStyleTracker::InvalidatePseudoStyle() {
   ua_style_sheet_ = nullptr;
+
+  auto* originating_element = OriginatingElement();
+  if (!originating_element) {
+    return;
+  }
+
+  auto invalidate_style = [](PseudoElement* pseudo_element) {
+    pseudo_element->SetNeedsStyleRecalc(
+        kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                               style_change_reason::kViewTransition));
+  };
+  ViewTransitionUtils::ForEachTransitionPseudo(*originating_element,
+                                               invalidate_style);
+}
+
+void ViewTransitionStyleTracker::InvalidateStyleAndCompositing() {
   auto* originating_element = OriginatingElement();
   if (!originating_element) {
     return;
@@ -2037,13 +2058,7 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
       kLocalStyleChange, StyleChangeReasonForTracing::Create(
                              style_change_reason::kViewTransition));
 
-  auto invalidate_style = [](PseudoElement* pseudo_element) {
-    pseudo_element->SetNeedsStyleRecalc(
-        kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                               style_change_reason::kViewTransition));
-  };
-  ViewTransitionUtils::ForEachTransitionPseudo(*originating_element,
-                                               invalidate_style);
+  InvalidatePseudoStyle();
 
   // Invalidate layout view compositing properties.
   if (auto* layout_view = document_->GetLayoutView()) {
@@ -2058,8 +2073,8 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
 
     // We need to recalc style on each of the target elements, because we store
     // whether the element is a view transition participant on the computed
-    // style. InvalidateStyle() is an indication that this state may have
-    // changed.
+    // style. InvalidateStyleAndCompositing() is an indication that this state
+    // may have changed.
     entry.value->target_element->SetNeedsStyleRecalc(
         kLocalStyleChange, StyleChangeReasonForTracing::Create(
                                style_change_reason::kViewTransition));
@@ -2092,71 +2107,80 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
   // Note that the cached ua_style_sheet_ above is invalidated when |state_|
   // moves to kStarted stage to generate a new stylesheet including styles for
   // animations.
-  const bool add_animations = state_ == State::kStarted;
+  const bool in_start_phase = state_ == State::kStarted;
 
   ViewTransitionStyleBuilder builder;
   builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
                          ? StaticUAStylesScoped()
                          : StaticUAStyles());
-  if (add_animations) {
+  if (in_start_phase) {
     builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
                            ? AnimationUAStylesScoped()
                            : AnimationUAStyles());
   }
 
-  for (auto& entry : element_data_map_) {
-    const auto& view_transition_name = entry.key.GetString();
-    auto& element_data = entry.value;
+  // If we started the animation then we always create the full dynamic style
+  // sheet. However, before the animation phase, the dynamic sheet should only
+  // be created for the internal non-exposed pseudo elements. Specifically, if
+  // we're `in_get_computed_style_scope_` they should *not* be added, and only
+  // static UA style sheet is meant to be used because the pseudo elements are
+  // not yet exposed. See steps in
+  // https://www.w3.org/TR/css-view-transitions-1/#lifecycle for details.
+  if (in_start_phase || !in_get_computed_style_scope_) {
+    for (auto& entry : element_data_map_) {
+      const auto& view_transition_name = entry.key.GetString();
+      auto& element_data = entry.value;
 
-    // TODO(vmpstr): We will run a style resolution before the first time we get
-    // a chance to update our rendering in RunPostPrePaintSteps. There is no
-    // point in adding any styles here, because those will be wrong. The TODO
-    // here is to skip this step earlier, instead of per each element.
-    if (!element_data->container_properties) {
-      continue;
-    }
-
-    gfx::Transform old_parent_inverse_transform;
-    gfx::Transform new_parent_inverse_transform;
-    if (element_data->containing_group_name && HasLiveNewContent()) {
-      CHECK(element_data_map_.Contains(element_data->containing_group_name));
-      const auto& containing_group_data =
-          element_data_map_.at(element_data->containing_group_name);
-      old_parent_inverse_transform =
-          containing_group_data->cached_container_properties.snapshot_matrix
-              .InverseOrIdentity();
-
-      if (containing_group_data->container_properties) {
-        const auto& new_container_properties =
-            *containing_group_data->container_properties;
-        new_parent_inverse_transform =
-            new_container_properties.snapshot_matrix.InverseOrIdentity();
-      }
-    }
-
-    // This updates the styles on the pseudo-elements as described in
-    // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
-    builder.AddContainerStyles(
-        view_transition_name, *element_data->container_properties,
-        element_data->captured_css_properties, new_parent_inverse_transform);
-
-    // This sets up the styles to animate the pseudo-elements as described in
-    // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.
-    if (add_animations) {
-      CHECK(element_data->old_snapshot_id.IsValid() ||
-            element_data->new_snapshot_id.IsValid());
-
-      auto type = ViewTransitionStyleBuilder::AnimationType::kBoth;
-      if (!element_data->old_snapshot_id.IsValid()) {
-        type = ViewTransitionStyleBuilder::AnimationType::kNewOnly;
-      } else if (!element_data->new_snapshot_id.IsValid()) {
-        type = ViewTransitionStyleBuilder::AnimationType::kOldOnly;
+      // TODO(vmpstr): We will run a style resolution before the first time we
+      // get a chance to update our rendering in RunPostPrePaintSteps. There is
+      // no point in adding any styles here, because those will be wrong. The
+      // TODO here is to skip this step earlier, instead of per each element.
+      if (!element_data->container_properties) {
+        continue;
       }
 
-      builder.AddAnimations(type, view_transition_name,
-                            element_data->cached_container_properties,
-                            element_data->cached_animated_css_properties,
-                            old_parent_inverse_transform);
+      gfx::Transform old_parent_inverse_transform;
+      gfx::Transform new_parent_inverse_transform;
+      if (element_data->containing_group_name && HasLiveNewContent()) {
+        CHECK(element_data_map_.Contains(element_data->containing_group_name));
+        const auto& containing_group_data =
+            element_data_map_.at(element_data->containing_group_name);
+        old_parent_inverse_transform =
+            containing_group_data->cached_container_properties.snapshot_matrix
+                .InverseOrIdentity();
+
+        if (containing_group_data->container_properties) {
+          const auto& new_container_properties =
+              *containing_group_data->container_properties;
+          new_parent_inverse_transform =
+              new_container_properties.snapshot_matrix.InverseOrIdentity();
+        }
+      }
+
+      // This updates the styles on the pseudo-elements as described in
+      // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
+      builder.AddContainerStyles(
+          view_transition_name, *element_data->container_properties,
+          element_data->captured_css_properties, new_parent_inverse_transform);
+
+      // This sets up the styles to animate the pseudo-elements as described in
+      // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.
+      if (in_start_phase) {
+        CHECK(element_data->old_snapshot_id.IsValid() ||
+              element_data->new_snapshot_id.IsValid());
+
+        auto type = ViewTransitionStyleBuilder::AnimationType::kBoth;
+        if (!element_data->old_snapshot_id.IsValid()) {
+          type = ViewTransitionStyleBuilder::AnimationType::kNewOnly;
+        } else if (!element_data->new_snapshot_id.IsValid()) {
+          type = ViewTransitionStyleBuilder::AnimationType::kOldOnly;
+        }
+
+        builder.AddAnimations(type, view_transition_name,
+                              element_data->cached_container_properties,
+                              element_data->cached_animated_css_properties,
+                              old_parent_inverse_transform);
+      }
     }
   }
 
@@ -2363,6 +2387,16 @@ void ViewTransitionStyleTracker::SnapBrowserControlsToFullyShown() {
 
 Element* ViewTransitionStyleTracker::OriginatingElement() const {
   return element_ ? element_.Get() : document_->documentElement();
+}
+
+void ViewTransitionStyleTracker::WillEnterGetComputedStyleScope() {
+  CHECK(!in_get_computed_style_scope_);
+  in_get_computed_style_scope_ = true;
+}
+
+void ViewTransitionStyleTracker::WillExitGetComputedStyleScope() {
+  CHECK(in_get_computed_style_scope_);
+  in_get_computed_style_scope_ = false;
 }
 
 }  // namespace blink

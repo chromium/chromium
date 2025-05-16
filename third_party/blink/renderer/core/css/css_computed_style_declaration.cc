@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -340,6 +341,12 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
   if (!styled_element) {
     return nullptr;
   }
+
+  // TODO(crbug.com/417967839): Investigate if the performance of this scope
+  // (which invalidate view transition pseudos for specific pseudo id requests)
+  // is acceptable.
+  ViewTransitionUtils::GetPropertyCSSValueScope scope(
+      styled_element->GetDocument(), pseudo_element_specifier_);
 
   UpdateStyleAndLayoutTreeIfNeeded(&property_name,
                                    /*for_all_properties=*/false);

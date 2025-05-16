@@ -1091,4 +1091,15 @@ void ViewTransition::RebuildTransitionPseudoLayoutTree() const {
   }
 }
 
+void ViewTransition::WillEnterGetComputedStyleScope() {
+  if (style_tracker_) {
+    style_tracker_->WillEnterGetComputedStyleScope();
+  }
+}
+void ViewTransition::WillExitGetComputedStyleScope() {
+  if (style_tracker_) {
+    style_tracker_->WillExitGetComputedStyleScope();
+  }
+}
+
 }  // namespace blink

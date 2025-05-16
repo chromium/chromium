@@ -7,6 +7,7 @@
 
 #include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 
@@ -22,6 +23,20 @@ class ViewTransition;
 
 class CORE_EXPORT ViewTransitionUtils {
  public:
+  // Scope class used during getComputedStyle to ensure we don't expose internal
+  // pseudo elements before the start phase on the transition.
+  class GetPropertyCSSValueScope {
+    STACK_ALLOCATED();
+
+   public:
+    GetPropertyCSSValueScope(Document& document, PseudoId pseudo_id);
+    ~GetPropertyCSSValueScope();
+
+   private:
+    Document& document_;
+    PseudoId pseudo_id_;
+  };
+
   using PseudoFunctor = base::FunctionRef<void(PseudoElement*)>;
   using PseudoPredicate = base::FunctionRef<bool(PseudoElement*)>;
 
