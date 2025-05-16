@@ -42,6 +42,7 @@
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 
 namespace remoting {
 
@@ -132,6 +133,9 @@ void RemotingClient::StartConnection() {
           std::make_unique<protocol::IceConfigFetcherDefault>(
               url_loader_factory_, oauth_token_getter_.get()),
           protocol::TransportRole::CLIENT);
+  // WebrtcVideoRendererAdapter only supports I420 so we request AV1-Profile0.
+  transport_context->set_preferred_video_format(
+      webrtc::SdpVideoFormat::AV1Profile0());
 
   CLIENT_LOG << "Creating session manager...";
   auto protocol_config = protocol::CandidateSessionConfig::CreateDefault();

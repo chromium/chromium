@@ -459,5 +459,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

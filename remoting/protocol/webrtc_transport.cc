@@ -102,11 +102,11 @@ bool IsValidSessionDescriptionType(webrtc::SdpType type) {
   return type == webrtc::SdpType::kOffer || type == webrtc::SdpType::kAnswer;
 }
 
-void UpdateCodecParameters(SdpMessage* sdp_message, bool incoming) {
+void UpdateCodecParameters(SdpMessage& sdp_message, bool incoming) {
   // Update SDP format to use 160kbps stereo for opus codec.
-  if (sdp_message->has_audio() &&
-      !sdp_message->AddCodecParameter("opus",
-                                      "stereo=1; maxaveragebitrate=163840")) {
+  if (sdp_message.has_audio() &&
+      !sdp_message.AddCodecParameter("opus",
+                                     "stereo=1; maxaveragebitrate=163840")) {
     if (incoming) {
       LOG(WARNING) << "Opus not found in an incoming SDP.";
     } else {
@@ -565,7 +565,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
       }
     }
 
-    UpdateCodecParameters(&sdp_message, /*incoming=*/true);
+    UpdateCodecParameters(sdp_message, /*incoming=*/true);
 
     webrtc::SdpParseError error;
     std::unique_ptr<webrtc::SessionDescriptionInterface>
@@ -802,7 +802,12 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   }
 
   SdpMessage sdp_message(description_sdp);
-  UpdateCodecParameters(&sdp_message, /*incoming=*/false);
+  UpdateCodecParameters(sdp_message, /*incoming=*/false);
+  if (sdp_message.has_video() &&
+      transport_context_->preferred_video_format().has_value()) {
+    sdp_message.SetPreferredVideoFormat(
+        *transport_context_->preferred_video_format());
+  }
   description_sdp = sdp_message.ToString();
   webrtc::SdpParseError parse_error;
   description = webrtc::CreateSessionDescription(description->GetType(),
