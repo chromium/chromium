@@ -538,9 +538,11 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   IFACEMETHODIMP get_accValue(VARIANT var_id, BSTR* value) override;
   IFACEMETHODIMP put_accValue(VARIANT var_id, BSTR new_value) override;
 
-  // IAccessible methods not implemented.
+  // Retrieve or set the selection.
   IFACEMETHODIMP get_accSelection(VARIANT* selected) override;
   IFACEMETHODIMP accSelect(LONG flags_sel, VARIANT var_id) override;
+
+  // IAccessible methods not implemented.
   IFACEMETHODIMP get_accHelpTopic(BSTR* help_file,
                                   VARIANT var_id,
                                   LONG* topic_id) override;
