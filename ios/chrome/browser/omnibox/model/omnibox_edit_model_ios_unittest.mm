@@ -494,62 +494,6 @@ class OmniboxEditModelIOSPopupTest : public PlatformTest {
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 
-TEST_F(OmniboxEditModelIOSTest, OmniboxEscapeHistogram) {
-  // Escape should incrementally close the popup, clear
-  // input, and blur the omnibox.
-  AutocompleteMatch match;
-  match.type = AutocompleteMatchType::NAVSUGGEST;
-  match.destination_url = GURL("https://google.com");
-  model()->SetCurrentMatchForTest(match);
-
-  view()->SetUserText(u"user text");
-  model()->OnSetFocus(false);
-  model()->SetInputInProgress(true);
-  model()->SetPopupIsOpen(true);
-  model()->OnPopupDataChanged(std::u16string(), std::u16string(), {});
-
-  EXPECT_TRUE(model()->PopupIsOpen());
-  EXPECT_TRUE(model()->user_input_in_progress());
-  EXPECT_TRUE(model()->has_focus());
-
-  {
-    // Close the popup.
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(model()->OnEscapeKeyPressed());
-    histogram_tester.ExpectUniqueSample("Omnibox.Escape", 2, 1);
-    model()->SetPopupIsOpen(
-        false);  // `TestOmniboxEditModelIOS` stubs the popup.
-    EXPECT_FALSE(model()->PopupIsOpen());
-    EXPECT_EQ(view()->GetText(), u"user text");
-    EXPECT_TRUE(model()->user_input_in_progress());
-    EXPECT_TRUE(model()->has_focus());
-  }
-
-  {
-    // Clear user input.
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(model()->OnEscapeKeyPressed());
-    histogram_tester.ExpectUniqueSample("Omnibox.Escape", 3, 1);
-    EXPECT_FALSE(model()->PopupIsOpen());
-    EXPECT_EQ(view()->GetText(), u"");
-    EXPECT_FALSE(model()->user_input_in_progress());
-    EXPECT_TRUE(model()->has_focus());
-  }
-
-  {
-    // Blur the omnibox.
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(model()->OnEscapeKeyPressed());
-    histogram_tester.ExpectUniqueSample("Omnibox.Escape", 5, 1);
-    model()->OnKillFocus();  // `TestOmniboxEditModelIOS` stubs the client which
-                             // handles blurring the omnibox.
-    EXPECT_FALSE(model()->PopupIsOpen());
-    EXPECT_EQ(view()->GetText(), u"");
-    EXPECT_FALSE(model()->user_input_in_progress());
-    EXPECT_FALSE(model()->has_focus());
-  }
-}
-
 TEST_F(OmniboxEditModelIOSTest, IPv4AddressPartsCount) {
   base::HistogramTester histogram_tester;
   constexpr char kIPv4AddressPartsCountHistogramName[] =

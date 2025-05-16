@@ -86,22 +86,6 @@ using omnibox::mojom::NavigationPredictor;
 
 namespace {
 
-// The possible histogram values emitted when escape is pressed.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OmniboxEscapeAction {
-  // `kNone` doesn't mean escape did nothing (e.g. it could have stopped a
-  // navigation), just that it did not affect the omnibox state.
-  //  kNone = 0, No longer used since escape now always blurs the omnibox if it
-  //             does nothing else.
-  kRevertTemporaryText = 1,
-  kClosePopup = 2,
-  kClearUserInput = 3,
-  kClosePopupAndClearUserInput = 4,
-  kBlur = 5,
-  kMaxValue = kBlur,
-};
-
 const char kOmniboxFocusResultedInNavigation[] =
     "Omnibox.FocusResultedInNavigation";
 
@@ -715,63 +699,6 @@ void OmniboxEditModelIOS::OnKillFocus() {
     view_->HideImeIfNeeded();
   }
 #endif
-}
-
-bool OmniboxEditModelIOS::OnEscapeKeyPressed() {
-  const char* kOmniboxEscapeHistogramName = "Omnibox.Escape";
-
-  // We do not clear the pending entry from the omnibox when a load is first
-  // stopped.  If the user presses Escape while stopped, whether editing or not,
-  // we clear it.
-  if (controller_->client()->CurrentPageExists() &&
-      !controller_->client()->IsLoading()) {
-    controller_->client()->DiscardNonCommittedNavigations();
-    if (view_) {
-      view_->Update();
-    }
-  }
-
-  // Close the popup if it's open.
-  if (PopupIsOpen()) {
-    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
-                                  OmniboxEscapeAction::kClosePopup);
-    if (view_) {
-      view_->CloseOmniboxPopup();
-    }
-    return true;
-  }
-
-  // Unconditionally revert/select all.  This ensures any popup, whether due to
-  // normal editing or ZeroSuggest, is closed, and the full text is selected.
-  // This in turn allows the user to use escape to quickly select all the text
-  // for ease of replacement, and matches other browsers.
-  bool user_input_was_in_progress = user_input_in_progress_;
-  // TODO(crbug.com/40230336): If the popup was open, `user_input_in_progress_`
-  //  *should* also be true; checking `user_text_` in the DCHECK below, and
-  //  checking `popup_was_open` in the if predicate below *should* be
-  //  unnecessary. However, that's not always the case (see
-  //  `user_input_in_progress_` comment in the header).
-  if (view_) {
-    view_->RevertAll();
-    view_->SelectAll(true);
-  }
-  if (user_input_was_in_progress) {
-    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
-                                  OmniboxEscapeAction::kClearUserInput);
-    // If the user was in the midst of editing, don't cancel any underlying page
-    // load.  This doesn't match IE or Firefox, but seems more correct.  Note
-    // that we do allow the page load to be stopped in the case where
-    // ZeroSuggest was visible; this is so that it's still possible to focus the
-    // address bar and hit escape once to stop a load even if the address being
-    // loaded triggers the ZeroSuggest popup.
-    return true;
-  }
-
-  // Blur the omnibox and focus the web contents.
-  base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
-                                OmniboxEscapeAction::kBlur);
-  controller_->client()->FocusWebContents();
-  return true;
 }
 
 void OmniboxEditModelIOS::OnControlKeyChanged(bool pressed) {

@@ -202,10 +202,6 @@ class OmniboxEditModelIOS {
   // Called when the view is losing focus.  Resets some state.
   void OnKillFocus();
 
-  // Called when the user presses the escape key.  Decides what, if anything, to
-  // revert about any current edits.  Returns whether the key was handled.
-  bool OnEscapeKeyPressed();
-
   // Called when the user presses or releases the control key.  Changes state as
   // necessary.
   void OnControlKeyChanged(bool pressed);
