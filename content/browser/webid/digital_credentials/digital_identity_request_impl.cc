@@ -49,7 +49,6 @@ constexpr char kOpenid4vp10Protocol[] = "openid4vp1.0";
 constexpr char kPreviewProtocol[] = "preview";
 
 constexpr char kMdlDocumentType[] = "org.iso.18013.5.1.mDL";
-constexpr char kMdlNamespace[] = "org.iso.18013.5.1";
 
 constexpr char kOpenid4vpPathRegex[] =
     R"(\$\['org\.iso\.18013\.5\.1'\]\['([^\)]*)'\])";
@@ -74,7 +73,7 @@ const Value::Dict* FindSingleElementListEntry(const Value::Dict& dict,
   return list->front().GetIfDict();
 }
 
-// Returns whether an intertitial should be shown for a request which solely
+// Returns whether an interstitial should be shown for a request which solely
 // requests the passed-in mdoc data element.
 bool CanMdocDataElementBypassInterstitial(const std::string& data_element) {
   if (re2::RE2::FullMatch(data_element,
@@ -160,12 +159,11 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
       if (!claim_dict) {
         return std::nullopt;
       }
-      const std::string* namespace_str = claim_dict->FindString("namespace");
-      if (!namespace_str || *namespace_str != kMdlNamespace) {
+      const Value::List* paths = claim_dict->FindList("path");
+      if (!paths) {
         return std::nullopt;
       }
-
-      const std::string* claim_name = claim_dict->FindString("claim_name");
+      const std::string* claim_name = paths->back().GetIfString();
       if (!claim_name) {
         return std::nullopt;
       }
