@@ -1,0 +1,81 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_glic)
+
+source_set("browser_ui") {
+  sources = [
+    "glic_border_view.cc",
+    "glic_button_controller.cc",
+    "glic_iph_controller.cc",
+    "glic_tab_indicator_helper.cc",
+    "glic_vector_icon_manager.cc",
+    "scoped_glic_button_indicator.cc",
+    "theme_util.cc",
+    "theme_util.h",
+  ]
+  deps = [
+    "//chrome/browser/themes:themes",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education:user_education",
+    "//components/feature_engagement/public:public",
+  ]
+  public_deps = [ "//chrome/browser/glic" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_button_controller_unittest.cc" ]
+  deps = [
+    ":browser_ui",
+    "//base/test:test_support",
+    "//chrome/browser:browser",
+    "//chrome/browser:global_features",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "glic_border_view_interactive_uitest.cc",
+    "glic_tab_indicator_helper_interactive_uitest.cc",
+  ]
+  deps = [
+    ":browser_ui",
+    "//base",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/compositor:compositor",
+    "//ui/gfx",
+    "//ui/gfx:gfx_switches",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//url",
+  ]
+}

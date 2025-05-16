@@ -5731,10 +5731,14 @@ static_library("ui") {
       "//chrome/browser/background/glic",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/fre",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/actor",
       "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/fre",
+      "//chrome/browser/glic/browser_ui",
     ]
   }
 

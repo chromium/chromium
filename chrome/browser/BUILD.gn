@@ -6153,6 +6153,7 @@ static_library("browser") {
       "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/fre",
       "//chrome/browser/glic/media",
     ]
 
@@ -6160,6 +6161,7 @@ static_library("browser") {
       "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic:impl",
       "//chrome/browser/glic/media",
+      "//chrome/browser/glic/fre",
     ]
   }
 

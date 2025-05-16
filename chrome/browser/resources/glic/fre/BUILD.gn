@@ -27,7 +27,7 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  mojo_files_deps = [ "//chrome/browser/glic:mojo_bindings_ts__generator" ]
+  mojo_files_deps = [ "//chrome/browser/glic/fre:mojo_bindings_ts__generator" ]
   mojo_files =
       [ "$root_gen_dir/chrome/browser/glic/fre/glic_fre.mojom-webui.ts" ]
 
