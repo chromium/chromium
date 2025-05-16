@@ -447,10 +447,8 @@ class HttpStreamPool::AttemptManager
   void ProcessPreconnectsAfterAttemptComplete(int rv,
                                               size_t active_stream_count);
 
-  // Helper methods to post a task to notify a job of preconnect completion. If
-  // `this` is deleted the notification is canceled.
-  void NotifyJobOfPreconnectCompleteLater(raw_ptr<Job> job, int rv);
-  void NotifyJobOfPreconnectComplete(Job* job, int rv);
+  // Notifies a job of preconnect completion.
+  void NotifyJobOfPreconnectComplete(raw_ptr<Job> job, int rv);
 
   // Creates a text based stream. Notifies the highest priority job if there are
   // waiting jobs. Otherwise, `stream_socket` becomes an idle stream.

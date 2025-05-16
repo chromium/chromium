@@ -138,6 +138,9 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // Calls the request's client auth callback.
   void CallOnNeedsClientAuth(SSLCertRequestInfo* cert_info);
 
+  // Resets `job` and invokes the preconnect callback.
+  void ResetJobAndInvokePreconnectCallback(Job* job, int status);
+
   // Sets the result of `job`.
   void SetJobResult(Job* job, int status);
 

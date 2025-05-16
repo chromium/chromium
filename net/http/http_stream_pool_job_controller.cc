@@ -380,11 +380,10 @@ void HttpStreamPool::JobController::OnNeedsClientAuth(
 }
 
 void HttpStreamPool::JobController::OnPreconnectComplete(Job* job, int status) {
-  CHECK(!alternative_job_);
-  CHECK_EQ(origin_job_.get(), job);
-  CHECK(preconnect_callback_);
-  origin_job_.reset();
-  std::move(preconnect_callback_).Run(status);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&JobController::ResetJobAndInvokePreconnectCallback,
+                     weak_ptr_factory_.GetWeakPtr(), job, status));
 }
 
 LoadState HttpStreamPool::JobController::GetLoadState() const {
@@ -521,6 +520,16 @@ void HttpStreamPool::JobController::CallOnCertificateError(
 void HttpStreamPool::JobController::CallOnNeedsClientAuth(
     SSLCertRequestInfo* cert_info) {
   delegate_->OnNeedsClientAuth(cert_info);
+}
+
+void HttpStreamPool::JobController::ResetJobAndInvokePreconnectCallback(
+    Job* job,
+    int status) {
+  CHECK(!alternative_job_);
+  CHECK_EQ(origin_job_.get(), job);
+  CHECK(preconnect_callback_);
+  origin_job_.reset();
+  std::move(preconnect_callback_).Run(status);
 }
 
 void HttpStreamPool::JobController::SetJobResult(Job* job, int status) {

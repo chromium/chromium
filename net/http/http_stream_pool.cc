@@ -203,24 +203,22 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
 int HttpStreamPool::Preconnect(HttpStreamPoolRequestInfo request_info,
                                size_t num_streams,
                                CompletionOnceCallback callback) {
-  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs;
   auto controller = std::make_unique<JobController>(
       this, std::move(request_info), /*priority=*/RequestPriority::IDLE,
-      std::move(allowed_bad_certs),
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>(),
       /*enable_ip_based_pooling=*/true,
       /*enable_alternative_services=*/true);
   JobController* controller_raw_ptr = controller.get();
+  // Put `controller` into `job_controllers_` before calling Preconnect() to
+  // make sure `job_controllers_` always contains `controller` when
+  // OnJobControllerComplete() is called.
+  job_controllers_.emplace(std::move(controller));
   CHECK_EQ(controller_raw_ptr->respect_limits(), RespectLimits::kRespect);
-  // SAFETY: Using base::Unretained() is safe because `this` will own
-  // `controller` when Preconnect() return ERR_IO_PENDING.
-  int rv = controller_raw_ptr->Preconnect(
+  // SAFETY: Using base::Unretained() is safe because `this` owns `controller`.
+  return controller_raw_ptr->Preconnect(
       num_streams, base::BindOnce(&HttpStreamPool::OnPreconnectComplete,
                                   base::Unretained(this), controller_raw_ptr,
                                   std::move(callback)));
-  if (rv == ERR_IO_PENDING) {
-    job_controllers_.emplace(std::move(controller));
-  }
-  return rv;
 }
 
 bool HttpStreamPool::EnsureTotalActiveStreamCountBelowLimit() const {

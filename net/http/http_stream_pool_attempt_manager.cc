@@ -304,7 +304,7 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
 
   // If `job` is resumed, there could be enough streams at this point.
   if (group_->ActiveStreamSocketCount() >= job->num_streams()) {
-    NotifyJobOfPreconnectCompleteLater(job, OK);
+    NotifyJobOfPreconnectComplete(job, OK);
     return;
   }
 
@@ -1503,7 +1503,7 @@ void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
   while (!preconnect_jobs_.empty()) {
     raw_ptr<Job> job =
         preconnect_jobs_.extract(preconnect_jobs_.begin()).value();
-    NotifyJobOfPreconnectCompleteLater(job, rv);
+    NotifyJobOfPreconnectComplete(std::move(job), rv);
   }
   // TODO(crbug.com/396998469): Do we still need this? Remove if this is not
   // needed.
@@ -1524,7 +1524,7 @@ void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
     auto it = preconnect_jobs_.find(completed_job);
     CHECK(it != preconnect_jobs_.end());
     raw_ptr<Job> job = preconnect_jobs_.extract(it).value();
-    NotifyJobOfPreconnectCompleteLater(job, rv);
+    NotifyJobOfPreconnectComplete(std::move(job), rv);
   }
 
   // TODO(crbug.com/396998469): Do we still need this? Remove if this is not
@@ -1534,33 +1534,17 @@ void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
   }
 }
 
-void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectCompleteLater(
+void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(
     raw_ptr<Job> job,
     int rv) {
   Job* raw_job = job.get();
   notified_jobs_.emplace(std::move(job));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfPreconnectComplete,
-                                weak_ptr_factory_.GetWeakPtr(), raw_job, rv));
-}
-
-// TODO(crbug.com/396998469): Ensure `job` isn't a dangling pointer. There are
-// two paths to destroy `job`.
-// 1) JobController::OnPreconnectComplete() is called via
-//    Job::OnPreconnectComplete().
-// 2) JobController is destroyed as a part of HttpStreamPool destruction.
-//
-// In this method, we don't have to consider 1) because we are about to call
-// Job::OnPreconnectComplete(). If 2) happens, `this` should have been destroyed
-// too so we shouldn't reach here because we use "weak this" to post a task.
-void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(Job* job,
-                                                                   int rv) {
   TRACE_EVENT_INSTANT("net.stream",
                       "AttemptManager::NotifyJobOfPreconnectComplete", track_,
-                      NetLogWithSourceToFlow(job->request_net_log()));
+                      NetLogWithSourceToFlow(raw_job->request_net_log()));
   // We don't need to call MaybeCompleteLater() here, since `job` will call
   // OnJobComplete() later.
-  job->OnPreconnectComplete(rv);
+  raw_job->OnPreconnectComplete(rv);
 }
 
 void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndMaybeNotify(
