@@ -63,9 +63,10 @@ void LogAsyncAutocompletionTimeMetricsImpl(MetricNameSuffix name_suffix,
   // we can avoid having to construct their names and look them up each time.
 
   // The max size of each of the histogram tables.
-  constexpr int kMaxHistogramIndex =
+  constexpr int kMaxHistogramSize =
       (static_cast<int>(MetricNameSuffix::kMaxValue) +
-       metrics::OmniboxEventProto_ProviderType_ProviderType_MAX);
+       metrics::OmniboxEventProto_ProviderType_ProviderType_MAX) +
+      1;
 
   // Validate the histogram lookup parameters:
   // * name_suffix is in [0..kMaxValue]
@@ -91,7 +92,7 @@ void LogAsyncAutocompletionTimeMetricsImpl(MetricNameSuffix name_suffix,
   //   Done, LastChange, DefaultChange, Provider-0, Provider-1, ...
 #define STATIC_HISTOGRAM_TIMES_POINTER_GROUP(name, sample)    \
   STATIC_HISTOGRAM_POINTER_GROUP(                             \
-      name, histogram_index, kMaxHistogramIndex,              \
+      name, histogram_index, kMaxHistogramSize,               \
       AddTimeMillisecondsGranularity(sample),                 \
       base::Histogram::FactoryTimeGet(                        \
           name, base::Milliseconds(1), base::Seconds(10), 50, \
