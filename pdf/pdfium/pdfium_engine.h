@@ -216,7 +216,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   virtual bool HandleInputEvent(const blink::WebInputEvent& event);
   void PrintBegin();
   virtual std::vector<uint8_t> PrintPages(
-      const std::vector<int>& page_indices,
+      base::span<const int> page_indices,
       const blink::WebPrintParams& print_params);
   void PrintEnd();
   void StartFind(const std::u16string& text, bool case_sensitive);
@@ -575,7 +575,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
     // Gets all of the visible screen rects from a list of `ranges`.
     std::vector<gfx::Rect> GetVisibleScreenRectsFromRanges(
-        const std::vector<PDFiumRange>& ranges) const;
+        base::span<const PDFiumRange> ranges) const;
 
     // Invalidates `rect`, but with `rect` slightly expanded to
     // compensate for any rounding errors.
@@ -769,7 +769,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
       size_t num_of_pages) const;
 
   std::vector<gfx::Rect> GetAllScreenRectsUnion(
-      const std::vector<PDFiumRange>& rect_range,
+      base::span<const PDFiumRange> rect_range,
       const gfx::Point& point) const;
 
   void UpdateTickMarks();
@@ -814,11 +814,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool ExtendSelection(int page_index, int char_index);
 
   std::vector<uint8_t> PrintPagesAsRasterPdf(
-      const std::vector<int>& page_indices,
+      base::span<const int> page_indices,
       const blink::WebPrintParams& print_params);
 
   std::vector<uint8_t> PrintPagesAsPdf(
-      const std::vector<int>& page_indices,
+      base::span<const int> page_indices,
       const blink::WebPrintParams& print_params);
 
   // Checks if `page` has selected text in a form element. If so, sets that as

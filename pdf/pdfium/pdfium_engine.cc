@@ -1133,7 +1133,7 @@ void PDFiumEngine::PrintBegin() {
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPages(
-    const std::vector<int>& page_indices,
+    base::span<const int> page_indices,
     const blink::WebPrintParams& print_params) {
   if (page_indices.empty()) {
     return std::vector<uint8_t>();
@@ -1145,7 +1145,7 @@ std::vector<uint8_t> PDFiumEngine::PrintPages(
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
-    const std::vector<int>& page_indices,
+    base::span<const int> page_indices,
     const blink::WebPrintParams& print_params) {
   DCHECK(HasPermission(DocumentPermission::kPrintLowQuality));
 
@@ -1159,7 +1159,7 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
-    const std::vector<int>& page_indices,
+    base::span<const int> page_indices,
     const blink::WebPrintParams& print_params) {
   DCHECK(HasPermission(DocumentPermission::kPrintHighQuality));
   DCHECK(doc());
@@ -2243,7 +2243,7 @@ void PDFiumEngine::StopFind() {
 }
 
 std::vector<gfx::Rect> PDFiumEngine::GetAllScreenRectsUnion(
-    const std::vector<PDFiumRange>& rect_range,
+    base::span<const PDFiumRange> rect_range,
     const gfx::Point& point) const {
   std::vector<gfx::Rect> rect_vector;
   rect_vector.reserve(rect_range.size());
@@ -3596,7 +3596,7 @@ PDFiumEngine::ChangeInvalidator::~ChangeInvalidator() = default;
 
 std::vector<gfx::Rect>
 PDFiumEngine::ChangeInvalidator::GetVisibleScreenRectsFromRanges(
-    const std::vector<PDFiumRange>& ranges) const {
+    base::span<const PDFiumRange> ranges) const {
   std::vector<gfx::Rect> rects;
   gfx::Point visible_point = engine_->GetVisibleRect().origin();
   for (const auto& range : ranges) {

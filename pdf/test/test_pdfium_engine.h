@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
@@ -59,7 +60,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(std::vector<uint8_t>,
               PrintPages,
-              (const std::vector<int>&, const blink::WebPrintParams&),
+              (base::span<const int>, const blink::WebPrintParams&),
               (override));
 
   MOCK_METHOD(void, ZoomUpdated, (double), (override));
