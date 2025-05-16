@@ -62,13 +62,11 @@ FloatingWorkspaceUI::FloatingWorkspaceUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kLocalizedStrings);
 
   // Since we reuse animation from the OOBE consumer update screen, we
-  // need to add label for the pause/play button. Also reuse a string for the
+  // need to add label for the pause button. Also reuse a string for the
   // "Add WiFi" button on the network screen.
   static constexpr webui::LocalizedString kExtraStrings[] = {
       {"pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE},
-      {"playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE},
-      {"addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME},
-  };
+      {"addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME}};
   source->AddLocalizedStrings(kExtraStrings);
 
   // Add strings for the additional dialogs on the network screen.
