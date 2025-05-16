@@ -448,9 +448,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
         [topViewController setOverrideTraitCollection:originalTraitCollection
                                forChildViewController:child];
       }
-    }
 #endif
-
+    }
   } else {
     // Cancel the rotation.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
@@ -501,9 +500,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
         [topViewController setOverrideTraitCollection:originalTraitCollection
                                forChildViewController:child];
       }
-    }
 #endif
-
+    }
   } else {
     // Cancel the rotation.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
@@ -676,9 +674,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
         [topViewController setOverrideTraitCollection:originalTraitCollection
                                forChildViewController:child];
       }
-    }
 #endif
-
+    }
   } else {
     // Cancel the rotation.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];

@@ -53,6 +53,8 @@
 
     return secondTraitCollection;
   }
+#else
+  return nil;
 #endif
 }
 
