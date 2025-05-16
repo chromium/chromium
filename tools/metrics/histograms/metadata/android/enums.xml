@@ -1226,6 +1226,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Other"/>
   <int value="1" label="InMultiWindow"/>
   <int value="2" label="InDesktopWindow"/>
+  <int value="3" label="InFullscreen"/>
+  <int value="4" label="ActivityNotVisible"/>
+  <int value="5" label="SystemBarInsetsEmpty"/>
 </enum>
 
 <enum name="MotionEventAction">
