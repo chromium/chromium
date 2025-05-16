@@ -746,6 +746,11 @@ enum class TipsNotificationType;
 // Forces an override of the variations stored permanent country.
 + (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country;
 
+#pragma mark - Shared Tab Groups Utilities
+
+// Waits for the MessagingBackendService to be initialized.
++ (NSError*)waitForMessagingBackendServiceInitialized;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_

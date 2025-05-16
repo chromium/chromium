@@ -1921,4 +1921,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       overrideVariationsServiceStoredPermanentCountry:country];
 }
 
+#pragma mark - Shared Tab Groups Utilities
+
+- (NSError*)waitForMessagingBackendServiceInitialized {
+  return [ChromeEarlGreyAppInterface waitForMessagingBackendServiceInitialized];
+}
+
 @end

@@ -210,6 +210,11 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:identity enableHistorySync:YES];
+
+  // Make sure that the MessagingBackendService is fully initialized.
+  NSError* error = [ChromeEarlGrey waitForMessagingBackendServiceInitialized];
+  GREYAssertNil(error, @"Failed to initialize MessagingBackendService: %@",
+                error);
 }
 
 - (void)tearDownHelper {
