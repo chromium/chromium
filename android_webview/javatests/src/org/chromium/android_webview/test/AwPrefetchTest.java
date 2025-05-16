@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwNoVarySearchData;
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchManager;
@@ -28,6 +29,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -37,7 +39,11 @@ import org.chromium.net.test.ServerCertificate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This test should cover all WebView's expectations for Prefetch. Changing any of these tests
@@ -52,10 +58,12 @@ public class AwPrefetchTest extends AwParameterizedTest {
     // page with different resources in it.
     private static final String BASIC_PREFETCH_URL = "/android_webview/test/data/hello_world.html";
 
+    private final TestAwContentsClient mContentsClient;
     private String mPrefetchUrl;
 
     public AwPrefetchTest(AwSettingsMutation param) {
         mActivityTestRule = new AwActivityTestRule(param.getMutation());
+        mContentsClient = new TestAwContentsClient();
     }
 
     @Rule public AwActivityTestRule mActivityTestRule;
@@ -319,6 +327,164 @@ public class AwPrefetchTest extends AwParameterizedTest {
                     Assert.assertEquals(60, prefetchManager.getTTlInSec());
                     Assert.assertEquals(5, prefetchManager.getMaxPrefetches());
                 });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount() {
+        AtomicInteger executedPrefetchCount = new AtomicInteger(0);
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+        prefetchManager.setCallbackForTesting(executedPrefetchCount::incrementAndGet);
+
+        // Latch for the UI thread to block on.
+        CountDownLatch uiThreadBlockLatch = new CountDownLatch(1);
+
+        // This ensures the UI thread is waiting BEFORE the drain tasks posted by
+        // startPrefetchRequestAsync can be processed.
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    try {
+                        // The UI thread will stop here and wait until
+                        // uiThreadBlockLatch.countDown() is called
+                        // from another thread.
+                        Assert.assertTrue(
+                                "UI thread timed out waiting for instrumentation thread to finish"
+                                        + " queueing prefetch requests.",
+                                uiThreadBlockLatch.await(5, TimeUnit.SECONDS));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException("UI thread interrupted while blocked", e);
+                    }
+                });
+
+        int numberOfPrefetches = 5;
+        AwPrefetchParameters prefetchParameters = getAwPrefetchParameters();
+        TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
+
+        for (int i = 0; i < numberOfPrefetches; i++) {
+            // Call the async start prefetch method from the instrumentation thread.
+            // This adds a prefetch request to a queue AND
+            // posts a drain task to the UI thread (non-redundantly).
+            // The UI thread is currently blocked by uiThreadBlockLatch.await(),
+            // so the drain task will sit in its message queue until the latch is released.
+            prefetchManager.startPrefetchRequestAsync(
+                    mPrefetchUrl, prefetchParameters, callback, Runnable::run, integer -> {});
+        }
+
+        Assert.assertEquals(
+                "Prefetches should be blocked from executing while UI thread is blocked.",
+                0,
+                executedPrefetchCount.intValue());
+
+        // Signal the UI thread latch to unblock it.
+        uiThreadBlockLatch.countDown();
+
+        // At this point, the UI thread has been unblocked
+        // and is now free to process its message queue, including the drain task.
+        // Wait for the UI thread to process the queue and drain it to 0.
+        // CriteriaHelper.pollInstrumentationThread runs on the instrumentation thread,
+        // allowing the UI thread to run concurrently.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> executedPrefetchCount.intValue() == numberOfPrefetches,
+                "Prefetch queue did not drain after UI thread was unblocked.");
+        prefetchManager.setCallbackForTesting(null);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl() {
+        // Latch to block `AwContents` creation.
+        CountDownLatch awContentsCreationLatch = new CountDownLatch(1);
+        AtomicBoolean prefetchQueueDrainedDuringAwContentsConstructor = new AtomicBoolean(false);
+        CountDownLatch awContentsConstructorFinishedLatch = new CountDownLatch(1);
+
+        // Latch to block `AwContents#loadUrl` call.
+        CountDownLatch loadUrlLatch = new CountDownLatch(1);
+        AtomicBoolean prefetchQueueDrainedDuringLoadUrl = new AtomicBoolean(false);
+
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    try {
+                        // Verify we drain the prefetch queue during `AwContents` constructor.
+                        // Wait on the `AwContents` latch to release.
+                        prefetchManager.setCallbackForTesting(
+                                () -> prefetchQueueDrainedDuringAwContentsConstructor.set(true));
+                        Assert.assertTrue(
+                                "UI thread timed out waiting for instrumentation thread to finish"
+                                    + " queueing prefetch requests before AwContents constructor.",
+                                awContentsCreationLatch.await(5, TimeUnit.SECONDS));
+                        Assert.assertFalse(prefetchQueueDrainedDuringAwContentsConstructor.get());
+                        mActivityTestRule.startBrowserProcess();
+                        AwContents awContents =
+                                mActivityTestRule
+                                        .createAwTestContainerViewOnMainSync(mContentsClient)
+                                        .getAwContents();
+                        Assert.assertTrue(
+                                "Queued prefetches were not executed during AwContents"
+                                        + " constructor.",
+                                prefetchQueueDrainedDuringAwContentsConstructor.get());
+                        awContentsConstructorFinishedLatch.countDown();
+
+                        // Verify we drain the prefetch queue after loadUrl() is called.
+                        prefetchManager.setCallbackForTesting(
+                                () -> prefetchQueueDrainedDuringLoadUrl.set(true));
+                        Assert.assertTrue(
+                                "UI thread timed out waiting for instrumentation thread to finish"
+                                        + " queueing prefetch requests before loadUrl() call.",
+                                loadUrlLatch.await(5, TimeUnit.SECONDS));
+                        Assert.assertFalse(prefetchQueueDrainedDuringLoadUrl.get());
+                        awContents.loadUrl("about:blank");
+                        Assert.assertTrue(
+                                "Queued prefetches were not executed during AwContents#loadUrl.",
+                                prefetchQueueDrainedDuringAwContentsConstructor.get());
+
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException("UI thread interrupted while blocked", e);
+                    }
+                });
+
+        AwPrefetchParameters prefetchParameters = getAwPrefetchParameters();
+        TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
+
+        // Make a prefetch request on the instrumentation thread then release the `AwContents`
+        // countdown latch.
+        prefetchManager.startPrefetchRequestAsync(
+                mPrefetchUrl, prefetchParameters, callback, Runnable::run, integer -> {});
+        awContentsCreationLatch.countDown();
+
+        // Wait for the `AwContents` constructor to complete and the latch to be released.
+        try {
+            Assert.assertTrue(
+                    "Instrumentation thread timed out waiting for UI thread to finish with the"
+                            + " AwContents constructor.",
+                    awContentsConstructorFinishedLatch.await(5, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(
+                    "Instrumentation thread interrupted waiting for AwContents constructor to"
+                            + " finish.",
+                    e);
+        }
+
+        // Make another prefetch request on the instrumentation thread then release the
+        // `AwContents#loadUrl` latch.
+        prefetchManager.startPrefetchRequestAsync(
+                mPrefetchUrl, prefetchParameters, callback, Runnable::run, integer -> {});
+        loadUrlLatch.countDown();
+    }
+
+    private static AwPrefetchParameters getAwPrefetchParameters() {
+        AwNoVarySearchData expectedNoVarySearch =
+                new AwNoVarySearchData(false, false, new String[] {"ts", "uid"}, null);
+        Map<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("foo", "bar");
+        additionalHeaders.put("lorem", "ipsum");
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(additionalHeaders, expectedNoVarySearch, true);
+        return prefetchParameters;
     }
 
     private TestAwPrefetchCallback startPrefetchingAndWait(

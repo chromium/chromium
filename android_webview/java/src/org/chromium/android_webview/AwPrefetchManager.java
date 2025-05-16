@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -24,12 +25,30 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 @JNINamespace("android_webview")
 @Lifetime.Profile
 public class AwPrefetchManager {
     private final long mNativePrefetchManager;
+
+    private final Queue<Runnable> mQueuedPrefetchRequests = new ConcurrentLinkedQueue<>();
+
+    /**
+     * A flag to prevent scheduling {@link #executeQueuedPrefetchRequests()} multiple times
+     * redundantly.
+     */
+    private final AtomicBoolean mIsPrefetchExecutionScheduled = new AtomicBoolean(false);
+
+    @Nullable private CallbackForTesting mCallbackForTesting;
+
+    public interface CallbackForTesting {
+        void onPrefetchExecuted();
+    }
 
     public AwPrefetchManager(long nativePrefetchManager) {
         mNativePrefetchManager = nativePrefetchManager;
@@ -40,13 +59,35 @@ public class AwPrefetchManager {
         return new AwPrefetchManager(nativePrefetchManager);
     }
 
-    @UiThread
-    public int startPrefetchRequest(
-            @NonNull String url,
-            @Nullable AwPrefetchParameters prefetchParameters,
-            @NonNull AwPrefetchCallback callback,
-            @NonNull Executor callbackExecutor) {
-        assert ThreadUtils.runningOnUiThread();
+    @Nullable
+    private static Exception getStartPrefetchErrorOrNull(
+            String url, AwPrefetchParameters prefetchParameters) {
+        final Exception error;
+        if (!UrlUtilities.isHttps(url)) {
+            error = new IllegalArgumentException("URL must have HTTPS scheme for prefetch.");
+        } else if (!AwFeatureMap.isEnabled(
+                ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
+            error =
+                    new IllegalStateException(
+                            "WebView initiated prefetching feature is not" + " enabled.");
+        } else if (prefetchParameters != null) {
+            Optional<IllegalArgumentException> exception =
+                    AwBrowserContext.validateAdditionalHeaders(
+                            prefetchParameters.getAdditionalHeaders());
+            if (exception.isPresent()) {
+                error = exception.get();
+            } else {
+                error = null;
+            }
+        } else {
+            error = null;
+        }
+        return error;
+    }
+
+    @NonNull
+    private static String buildStartPrefetchTraceArgs(
+            String url, AwPrefetchParameters prefetchParameters) {
         String traceArgs;
         if (prefetchParameters != null && prefetchParameters.getExpectedNoVarySearch() != null) {
             traceArgs =
@@ -56,40 +97,74 @@ public class AwPrefetchManager {
         } else {
             traceArgs = String.format("{\n    url: %s\n}", url);
         }
+        return traceArgs;
+    }
+
+    public void setCallbackForTesting(@Nullable CallbackForTesting callbackForTesting) {
+        mCallbackForTesting = callbackForTesting;
+    }
+
+    @UiThread
+    public int startPrefetchRequest(
+            @NonNull String url,
+            @Nullable AwPrefetchParameters prefetchParameters,
+            @NonNull AwPrefetchCallback callback,
+            @NonNull Executor callbackExecutor) {
+        assert ThreadUtils.runningOnUiThread();
+        Exception error = getStartPrefetchErrorOrNull(url, prefetchParameters);
+        if (error != null) {
+            callbackExecutor.execute(() -> callback.onError(error));
+            return AwPrefetchManagerJni.get().getNoPrefetchKey();
+        }
+        String traceArgs = buildStartPrefetchTraceArgs(url, prefetchParameters);
         try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START", traceArgs)) {
-            final Exception error;
-            if (!UrlUtilities.isHttps(url)) {
-                error = new IllegalArgumentException("URL must have HTTPS scheme for prefetch.");
-            } else if (!AwFeatureMap.isEnabled(
-                    ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
-                error =
-                        new IllegalStateException(
-                                "WebView initiated prefetching feature is not" + " enabled.");
-            } else if (prefetchParameters != null) {
-                Optional<IllegalArgumentException> exception =
-                        AwBrowserContext.validateAdditionalHeaders(
-                                prefetchParameters.getAdditionalHeaders());
-                if (exception.isPresent()) {
-                    error = exception.get();
-                } else {
-                    error = null;
-                }
-            } else {
-                error = null;
+            int prefetchKey =
+                    AwPrefetchManagerJni.get()
+                            .startPrefetchRequest(
+                                    mNativePrefetchManager,
+                                    url,
+                                    prefetchParameters,
+                                    callback,
+                                    callbackExecutor);
+            if (mCallbackForTesting != null) {
+                mCallbackForTesting.onPrefetchExecuted();
             }
+            return prefetchKey;
+        }
+    }
 
-            if (error != null) {
-                callbackExecutor.execute(() -> callback.onError(error));
-                return AwPrefetchManagerJni.get().getNoPrefetchKey();
+    @WorkerThread
+    public void startPrefetchRequestAsync(
+            @NonNull String url,
+            @Nullable AwPrefetchParameters prefetchParameters,
+            @NonNull AwPrefetchCallback callback,
+            @NonNull Executor callbackExecutor,
+            @NonNull Consumer<Integer> prefetchKeyListener) {
+        assert !ThreadUtils.runningOnUiThread();
+        Runnable startPrefetchRunnable =
+                () ->
+                        prefetchKeyListener.accept(
+                                startPrefetchRequest(
+                                        url, prefetchParameters, callback, callbackExecutor));
+        mQueuedPrefetchRequests.offer(startPrefetchRunnable);
+
+        // Atomically check if the prefetch execution is scheduled, and if not, set it to true
+        // and schedule.
+        if (mIsPrefetchExecutionScheduled.compareAndSet(false, true)) {
+            ThreadUtils.postOnUiThread(this::executeQueuedPrefetchRequests);
+        }
+    }
+
+    @UiThread
+    public void executeQueuedPrefetchRequests() {
+        assert ThreadUtils.runningOnUiThread();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.Prefetch.EXECUTE_SCHEDULED_REQUESTS")) {
+            mIsPrefetchExecutionScheduled.set(false);
+            Runnable prefetchTask;
+            while ((prefetchTask = mQueuedPrefetchRequests.poll()) != null) {
+                prefetchTask.run();
             }
-
-            return AwPrefetchManagerJni.get()
-                    .startPrefetchRequest(
-                            mNativePrefetchManager,
-                            url,
-                            prefetchParameters,
-                            callback,
-                            callbackExecutor);
         }
     }
 

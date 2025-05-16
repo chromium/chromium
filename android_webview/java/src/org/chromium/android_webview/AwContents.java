@@ -996,6 +996,18 @@ public class AwContents implements SmartClipProvider {
             mBrowserContextSetExplicitly = true;
         }
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwContents.constructor")) {
+            mBrowserContext = browserContext;
+            // Immediately drain any prefetch requests that have been queued as soon as we have the
+            // browser context.
+            // We will do this again at the end of the constructor in case any
+            // prefetch requests
+            // have been queued during this constructor's execution. Longer term, and once the
+            // prefetch infra
+            // has been moved off of the UI thread, we will be able to clean this up (see
+            // crbug.com/363939616), but
+            // for now we need to attempt to clear the prefetch queue in multiple places.
+            // TODO (crbug.com/363939616) Clean this up once prefetch infra supports bg thread.
+            mBrowserContext.getPrefetchManager().executeQueuedPrefetchRequests();
             mDisplayModeController =
                     new AwDisplayModeController(
                             new AwDisplayModeController.Delegate() {
@@ -1033,8 +1045,6 @@ public class AwContents implements SmartClipProvider {
             mRendererPriority = RendererPriority.HIGH;
             mSettings = settings;
             updateDefaultLocale();
-
-            mBrowserContext = browserContext;
 
             // setWillNotDraw(false) is required since WebView draws its own contents using its
             // container view. If this is ever not the case we should remove this, as it removes
@@ -1109,6 +1119,11 @@ public class AwContents implements SmartClipProvider {
 
             onContainerViewChanged();
         }
+        // Drain any scheduled prefetch requests that may have happened during this constructor's
+        // execution. We will be able to clean this up once the prefetch infra is moved off of the
+        // UI thread.
+        // TODO (crbug.com/363939616) Clean this up once prefetch infra supports bg thread.
+        mBrowserContext.getPrefetchManager().executeQueuedPrefetchRequests();
         long delta = SystemClock.uptimeMillis() - startTime;
         RecordHistogram.recordTimesHistogram(CONSTRUCTOR_HISTOGRAM_NAME, delta);
         if (mId == 1) {
@@ -2458,13 +2473,16 @@ public class AwContents implements SmartClipProvider {
 
     /**
      * Load url without fixing up the url string. Consumers of ContentView are responsible for
-     * ensuring the URL passed in is properly formatted (i.e. the scheme has been added if left
-     * off during user input).
+     * ensuring the URL passed in is properly formatted (i.e. the scheme has been added if left off
+     * during user input).
      *
      * @param params Parameters for this load.
      */
     @VisibleForTesting
     public void loadUrl(LoadUrlParams params) {
+        // Drain any pending prefetch requests from the queue.
+        // TODO (crbug.com/363939616) Clean this up once prefetch infra supports bg thread.
+        mBrowserContext.getPrefetchManager().executeQueuedPrefetchRequests();
         if (params.getBaseUrl() == null) {
             // Don't record the URL if this was loaded via loadDataWithBaseURL(). That API is
             // tracked separately under Android.WebView.LoadDataWithBaseUrl.BaseUrl.

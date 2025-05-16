@@ -17,10 +17,12 @@ import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.PrefetchOperationCallback;
 import com.android.webview.chromium.PrefetchOperationStatusCode;
+import com.android.webview.chromium.PrefetchParams;
 import com.android.webview.chromium.Profile;
 import com.android.webview.chromium.SpeculativeLoadingConfig;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.ThreadUtils;
 import org.chromium.support_lib_boundary.PrefetchOperationCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
 import org.chromium.support_lib_boundary.SpeculativeLoadingConfigBoundaryInterface;
@@ -30,6 +32,7 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 /** The support-lib glue implementation for Profile, delegates all the calls to {@link Profile}. */
 @Lifetime.Profile
@@ -82,10 +85,8 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             Executor callbackExecutor,
             /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL);
-        int prefetchKey =
-                mProfileImpl.prefetchUrl(
-                        url, null, callbackExecutor, createOperationCallback(callback));
-        setCancelListener(cancellationSignal, prefetchKey);
+        prefetchUrlInternal(
+                url, null, cancellationSignal, callbackExecutor, createOperationCallback(callback));
     }
 
     @Override
@@ -101,16 +102,40 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                         SpeculativeLoadingParametersBoundaryInterface.class,
                         speculativeLoadingParams);
 
-        int prefetchKey =
-                mProfileImpl.prefetchUrl(
-                        url,
-                        SupportLibSpeculativeLoadingParametersAdapter
-                                .fromSpeculativeLoadingParametersBoundaryInterface(
-                                        speculativeLoadingParameters),
-                        callbackExecutor,
-                        createOperationCallback(callback));
+        assert speculativeLoadingParameters != null;
+        PrefetchParams prefetchParams =
+                SupportLibSpeculativeLoadingParametersAdapter
+                        .fromSpeculativeLoadingParametersBoundaryInterface(
+                                speculativeLoadingParameters);
+        prefetchUrlInternal(
+                url,
+                prefetchParams,
+                cancellationSignal,
+                callbackExecutor,
+                createOperationCallback(callback));
+    }
 
-        setCancelListener(cancellationSignal, prefetchKey);
+    private void prefetchUrlInternal(
+            String url,
+            @Nullable PrefetchParams prefetchParams,
+            @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
+            PrefetchOperationCallback callback) {
+        if (ThreadUtils.runningOnUiThread()) {
+            int prefetchKey =
+                    mProfileImpl.prefetchUrl(url, prefetchParams, callbackExecutor, callback);
+            setCancelListener(cancellationSignal, prefetchKey);
+        } else {
+            Consumer<Integer> prefetchKeyListener =
+                    new Consumer<Integer>() {
+                        @Override
+                        public void accept(Integer prefetchKey) {
+                            setCancelListener(cancellationSignal, prefetchKey);
+                        }
+                    };
+            mProfileImpl.prefetchUrlAsync(
+                    url, prefetchParams, callbackExecutor, callback, prefetchKeyListener);
+        }
     }
 
     public void setCancelListener(CancellationSignal cancellationSignal, int prefetchKey) {
