@@ -649,8 +649,7 @@ TEST_F(PaintCanvasVideoRendererTest, HighBitDepth) {
   struct params {
     int bit_depth;
     VideoPixelFormat format;
-  } kBitDepthAndFormats[] = {{9, PIXEL_FORMAT_YUV420P9},
-                             {10, PIXEL_FORMAT_YUV420P10},
+  } kBitDepthAndFormats[] = {{10, PIXEL_FORMAT_YUV420P10},
                              {12, PIXEL_FORMAT_YUV420P12}};
   for (const auto param : kBitDepthAndFormats) {
     // Copy cropped_frame into a highbit frame.

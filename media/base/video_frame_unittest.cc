@@ -770,7 +770,6 @@ TEST(VideoFrame, AllocationSize_OddSize) {
   for (unsigned int i = 1u; i <= PIXEL_FORMAT_MAX; ++i) {
     const VideoPixelFormat format = static_cast<VideoPixelFormat>(i);
     switch (format) {
-      case PIXEL_FORMAT_YUV444P9:
       case PIXEL_FORMAT_YUV444P10:
       case PIXEL_FORMAT_YUV444P12:
       case PIXEL_FORMAT_P410LE:
@@ -790,7 +789,6 @@ TEST(VideoFrame, AllocationSize_OddSize) {
         EXPECT_EQ(84u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
-      case PIXEL_FORMAT_YUV422P9:
       case PIXEL_FORMAT_YUV422P10:
       case PIXEL_FORMAT_YUV422P12:
       case PIXEL_FORMAT_P210LE:
@@ -803,7 +801,6 @@ TEST(VideoFrame, AllocationSize_OddSize) {
         EXPECT_EQ(45u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
-      case PIXEL_FORMAT_YUV420P9:
       case PIXEL_FORMAT_YUV420P10:
       case PIXEL_FORMAT_YUV420P12:
       case PIXEL_FORMAT_P010LE:
@@ -861,7 +858,7 @@ TEST(VideoFrame, NoFrameSizeExceedsUint32) {
   const auto max_size = gfx::Size(max_dimension, max_dimension);
   for (unsigned int i = 1u; i <= PIXEL_FORMAT_MAX; ++i) {
     // Deprecated pixel formats.
-    if (i == 13 || i == 15 || i == 25) {
+    if (i == 13 || i == 15 || i == 16 || i == 18 || i == 20 || i == 25) {
       continue;
     }
 

@@ -975,15 +975,15 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
     case AV_PIX_FMT_YUVA420P:
       return PIXEL_FORMAT_I420A;
 
+    // Default to 10-bit pixel formats for 9-bits since they are non-standard
+    // and were never seen in the wild.
     case AV_PIX_FMT_YUV420P9LE:
-      return PIXEL_FORMAT_YUV420P9;
     case AV_PIX_FMT_YUV420P10LE:
       return PIXEL_FORMAT_YUV420P10;
     case AV_PIX_FMT_YUV420P12LE:
       return PIXEL_FORMAT_YUV420P12;
 
     case AV_PIX_FMT_YUV422P9LE:
-      return PIXEL_FORMAT_YUV422P9;
     case AV_PIX_FMT_YUV422P10LE:
       return PIXEL_FORMAT_YUV422P10;
     case AV_PIX_FMT_YUV422P12LE:
@@ -991,7 +991,6 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
 
     case AV_PIX_FMT_YUV444P9LE:
     case AV_PIX_FMT_GBRP9LE:
-      return PIXEL_FORMAT_YUV444P9;
     case AV_PIX_FMT_YUV444P10LE:
     case AV_PIX_FMT_GBRP10LE:
       return PIXEL_FORMAT_YUV444P10;

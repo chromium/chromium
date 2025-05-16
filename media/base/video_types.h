@@ -51,11 +51,11 @@ enum VideoPixelFormat {
   // The P* in the formats below designates the number of bits per pixel
   // component. I.e. P9 is 9-bits per pixel component, P10 is 10-bits per pixel
   // component, etc.
-  PIXEL_FORMAT_YUV420P9 = 16,   // 13.5bpp YUV planar.
+  /* PIXEL_FORMAT_YUV420P9 = 16,  Deprecated // 13.5bpp YUV planar. */
   PIXEL_FORMAT_YUV420P10 = 17,  // 15bpp YUV planar, also known as I010
-  PIXEL_FORMAT_YUV422P9 = 18,   // 18bpp YUV planar.
+  /* PIXEL_FORMAT_YUV422P9 = 18,  Deprecated // 18bpp YUV planar. */
   PIXEL_FORMAT_YUV422P10 = 19,  // 20bpp YUV planar.
-  PIXEL_FORMAT_YUV444P9 = 20,   // 27bpp YUV planar.
+  /* PIXEL_FORMAT_YUV444P9 = 20,  Deprecated // 27bpp YUV planar. */
   PIXEL_FORMAT_YUV444P10 = 21,  // 30bpp YUV planar.
   PIXEL_FORMAT_YUV420P12 = 22,  // 18bpp YUV planar.
   PIXEL_FORMAT_YUV422P12 = 23,  // 24bpp YUV planar.

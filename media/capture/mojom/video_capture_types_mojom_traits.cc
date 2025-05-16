@@ -116,16 +116,10 @@ EnumTraits<media::mojom::VideoCapturePixelFormat,
       return media::mojom::VideoCapturePixelFormat::RGB24;
     case media::VideoPixelFormat::PIXEL_FORMAT_MJPEG:
       return media::mojom::VideoCapturePixelFormat::MJPEG;
-    case media::VideoPixelFormat::PIXEL_FORMAT_YUV420P9:
-      return media::mojom::VideoCapturePixelFormat::YUV420P9;
     case media::VideoPixelFormat::PIXEL_FORMAT_YUV420P10:
       return media::mojom::VideoCapturePixelFormat::YUV420P10;
-    case media::VideoPixelFormat::PIXEL_FORMAT_YUV422P9:
-      return media::mojom::VideoCapturePixelFormat::YUV422P9;
     case media::VideoPixelFormat::PIXEL_FORMAT_YUV422P10:
       return media::mojom::VideoCapturePixelFormat::YUV422P10;
-    case media::VideoPixelFormat::PIXEL_FORMAT_YUV444P9:
-      return media::mojom::VideoCapturePixelFormat::YUV444P9;
     case media::VideoPixelFormat::PIXEL_FORMAT_YUV444P10:
       return media::mojom::VideoCapturePixelFormat::YUV444P10;
     case media::VideoPixelFormat::PIXEL_FORMAT_YUV420P12:
@@ -220,21 +214,18 @@ bool EnumTraits<media::mojom::VideoCapturePixelFormat,
     case media::mojom::VideoCapturePixelFormat::MJPEG:
       *output = media::PIXEL_FORMAT_MJPEG;
       return true;
-    case media::mojom::VideoCapturePixelFormat::YUV420P9:
-      *output = media::PIXEL_FORMAT_YUV420P9;
-      return true;
+    case media::mojom::VideoCapturePixelFormat::YUV420P9_DEPRECATED:
+      NOTREACHED();
     case media::mojom::VideoCapturePixelFormat::YUV420P10:
       *output = media::PIXEL_FORMAT_YUV420P10;
       return true;
-    case media::mojom::VideoCapturePixelFormat::YUV422P9:
-      *output = media::PIXEL_FORMAT_YUV422P9;
-      return true;
+    case media::mojom::VideoCapturePixelFormat::YUV422P9_DEPRECATED:
+      NOTREACHED();
     case media::mojom::VideoCapturePixelFormat::YUV422P10:
       *output = media::PIXEL_FORMAT_YUV422P10;
       return true;
-    case media::mojom::VideoCapturePixelFormat::YUV444P9:
-      *output = media::PIXEL_FORMAT_YUV444P9;
-      return true;
+    case media::mojom::VideoCapturePixelFormat::YUV444P9_DEPRECATED:
+      NOTREACHED();
     case media::mojom::VideoCapturePixelFormat::YUV444P10:
       *output = media::PIXEL_FORMAT_YUV444P10;
       return true;

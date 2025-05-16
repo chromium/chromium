@@ -153,11 +153,10 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   if (format == PIXEL_FORMAT_UNKNOWN)
     return AVERROR(EINVAL);
   DCHECK(format == PIXEL_FORMAT_I420 || format == PIXEL_FORMAT_I422 ||
-         format == PIXEL_FORMAT_I444 || format == PIXEL_FORMAT_YUV420P9 ||
-         format == PIXEL_FORMAT_YUV420P10 || format == PIXEL_FORMAT_YUV422P9 ||
-         format == PIXEL_FORMAT_YUV422P10 || format == PIXEL_FORMAT_YUV444P9 ||
-         format == PIXEL_FORMAT_YUV444P10 || format == PIXEL_FORMAT_YUV420P12 ||
-         format == PIXEL_FORMAT_YUV422P12 || format == PIXEL_FORMAT_YUV444P12);
+         format == PIXEL_FORMAT_I444 || format == PIXEL_FORMAT_YUV420P10 ||
+         format == PIXEL_FORMAT_YUV422P10 || format == PIXEL_FORMAT_YUV444P10 ||
+         format == PIXEL_FORMAT_YUV420P12 || format == PIXEL_FORMAT_YUV422P12 ||
+         format == PIXEL_FORMAT_YUV444P12);
 
   // Do not trust `codec_context` sizes either.  Use whatever `frame` requests.
   gfx::Size coded_size(frame->width, frame->height);

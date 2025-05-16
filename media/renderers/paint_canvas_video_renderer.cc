@@ -567,9 +567,6 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
         libyuv::ARGBToABGR(pixels, row_bytes, pixels, row_bytes, width, rows);
       break;
 
-    case PIXEL_FORMAT_YUV420P9:
-    case PIXEL_FORMAT_YUV422P9:
-    case PIXEL_FORMAT_YUV444P9:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_Y16:
@@ -1127,19 +1124,16 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
   switch (video_frame->format()) {
     case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV420P10:
-    case PIXEL_FORMAT_YUV420P9:
       format = PIXEL_FORMAT_I420;
       break;
 
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV422P10:
-    case PIXEL_FORMAT_YUV422P9:
       format = PIXEL_FORMAT_I422;
       break;
 
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_YUV444P10:
-    case PIXEL_FORMAT_YUV444P9:
       format = PIXEL_FORMAT_I444;
       break;
 
@@ -1335,9 +1329,6 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   scoped_refptr<VideoFrame> temporary_frame;
   // TODO(thomasanderson): Parallelize converting these formats.
   switch (video_frame->format()) {
-    case PIXEL_FORMAT_YUV420P9:
-    case PIXEL_FORMAT_YUV422P9:
-    case PIXEL_FORMAT_YUV444P9:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
       temporary_frame = DownShiftHighbitVideoFrame(video_frame);

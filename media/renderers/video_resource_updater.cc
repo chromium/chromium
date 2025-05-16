@@ -138,9 +138,6 @@ VideoFrameResourceType ExternalResourceTypeForHardware(const VideoFrame& frame,
     case PIXEL_FORMAT_YUY2:
     case PIXEL_FORMAT_RGB24:
     case PIXEL_FORMAT_MJPEG:
-    case PIXEL_FORMAT_YUV420P9:
-    case PIXEL_FORMAT_YUV422P9:
-    case PIXEL_FORMAT_YUV444P9:
     case PIXEL_FORMAT_YUV420P10:
     case PIXEL_FORMAT_YUV422P10:
     case PIXEL_FORMAT_YUV444P10:
@@ -248,15 +245,12 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
           PlaneConfig::kY_U_V, Subsampling::k444, ChannelFormat::k8);
     case PIXEL_FORMAT_NV12:
       return viz::MultiPlaneFormat::kNV12;
-    case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV420P10:
       return viz::SharedImageFormat::MultiPlane(
           PlaneConfig::kY_U_V, Subsampling::k420, ChannelFormat::k10);
-    case PIXEL_FORMAT_YUV422P9:
     case PIXEL_FORMAT_YUV422P10:
       return viz::SharedImageFormat::MultiPlane(
           PlaneConfig::kY_U_V, Subsampling::k422, ChannelFormat::k10);
-    case PIXEL_FORMAT_YUV444P9:
     case PIXEL_FORMAT_YUV444P10:
       return viz::SharedImageFormat::MultiPlane(
           PlaneConfig::kY_U_V, Subsampling::k444, ChannelFormat::k10);
