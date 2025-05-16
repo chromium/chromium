@@ -165,6 +165,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainParts;
   friend class ChromeContentBrowserClient;
   friend class ChromeMetricsServicesManagerClient;
+  friend class ChromeSigninClient;
   friend class browser_sync::ChromeSyncClient;
   // TODO(crbug.com/40948861): Remove this friend when the limited entropy
   // synthetic trial has wrapped up.

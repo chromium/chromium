@@ -21,6 +21,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -45,11 +46,13 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/variations/synthetic_trials.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -407,6 +410,21 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
 #if !BUILDFLAG(IS_CHROMEOS)
         RecordOpenTabCount(access_point, consent_level);
 #endif
+
+        if (consent_level == signin::ConsentLevel::kSignin &&
+            SigninPrefs(*GetPrefs())
+                .GetBookmarksExplicitBrowserSignin(
+                    event_details.GetCurrentState().primary_account.gaia)) {
+          // `Enabled` group contains all users that have butter for bookmarks
+          // active - this is used to differentiate between the users that have
+          // the feature active `switches::kSyncEnableBookmarksInTransportMode`
+          // and butter active (in this group).
+          // There is no equivalent control group recorded for the field trial.
+          ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+              "UnoDesktopBookmarksButterActive", "Enabled",
+              variations::SyntheticTrialAnnotationMode::kCurrentLog);
+        }
+        break;
     }
   }
 }
