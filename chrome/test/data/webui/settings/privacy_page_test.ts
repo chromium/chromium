@@ -194,31 +194,6 @@ suite('PrivacyPage', function() {
         thirdPartyCookiesLinkRow.subLabel);
   });
 
-  test('ContentSettingsVisibility', async function() {
-    // Ensure pages are visited so that HTML components are stamped.
-    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
-    await flushTasks();
-
-    // All redesigned pages, except protocol handlers, pdf documents and
-    // protected content (except chromeos and win), will use a
-    // settings-category-default-radio-group.
-    // Exclude notifications page which is in its own element.
-    // <if expr="is_chromeos or is_win">
-    assertEquals(
-        page.shadowRoot!
-            .querySelectorAll('settings-category-default-radio-group')
-            .length,
-        redesignedPages.length - 3);
-    // </if>
-    // <if expr="not is_chromeos and not is_win">
-    assertEquals(
-        page.shadowRoot!
-            .querySelectorAll('settings-category-default-radio-group')
-            .length,
-        redesignedPages.length - 4);
-    // </if>
-  });
-
   test('NotificationPage', async function() {
     await createPage();
 
@@ -305,6 +280,51 @@ suite('PrivacyPage', function() {
     assertEquals(
         ContentSettingsTypes.AUTOMATIC_FULLSCREEN,
         categorySettingExceptions.category);
+  });
+});
+
+// Isolated ContentSettingsVisibility test suite due to significantly higher
+// execution time (10-20x factor) of that specific tests compare to other
+// sub-tests.
+suite('ContentSettingsVisibility', function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('ContentSettingsVisibility', async function() {
+    // Ensure pages are visited so that HTML components are stamped.
+    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+    await flushTasks();
+
+    // All redesigned pages will use `settings-category-default-radio-group`,
+    // except
+    //   1. protocol handlers,
+    //   2. pdf documents,
+    //   3. protected content (except on chromeos and win),
+    //   4. notifications (is in its own element)
+    let expectedPagesCount = redesignedPages.length - 4;
+    // <if expr="is_chromeos or is_win">
+    expectedPagesCount += 1;
+    // </if>
+
+    assertEquals(
+        page.shadowRoot!
+            .querySelectorAll('settings-category-default-radio-group')
+            .length,
+        expectedPagesCount);
   });
 });
 
