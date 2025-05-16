@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -12,9 +16,12 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/password_manager/ios/test_helpers.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -24,22 +31,37 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+constexpr char kTestUrl[] = "http://foo.com";
+constexpr char kFillDataUsername[] = "donut.guy@gmail.com";
+constexpr char kFillDataPassword[] = "super!secret";
+constexpr char kMainFrameId[] = "frameID";
+constexpr autofill::FormRendererId kFormRendererId(1);
+constexpr autofill::FieldRendererId kUsernameFieldRendererId(2);
+constexpr autofill::FieldRendererId kPasswordFieldRendererId(3);
 
 // Creates suggestion for a single username form.
 FormSuggestion* SuggestionForSingleUsernameForm() {
@@ -62,6 +84,20 @@ NSString* PrimaryActionLabelForPasswordFill() {
 // Gets the primary action label localized string for password fill.
 NSString* PrimaryActionLabelForUsernameFill() {
   return l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE);
+}
+
+// Creates PasswordFormFillData to be processed for offering password
+// suggestions.
+autofill::PasswordFormFillData CreatePasswordFillData(
+    autofill::FormRendererId form_renderer_id,
+    autofill::FieldRendererId username_renderer_id,
+    autofill::FieldRendererId password_renderer_id) {
+  autofill::PasswordFormFillData form_fill_data;
+  test_helpers::SetPasswordFormFillData(
+      kTestUrl, "", form_renderer_id.value(), "", username_renderer_id.value(),
+      kFillDataUsername, "", password_renderer_id.value(), kFillDataPassword,
+      nullptr, nullptr, &form_fill_data);
+  return form_fill_data;
 }
 
 }  // namespace
@@ -88,7 +124,11 @@ NSString* PrimaryActionLabelForUsernameFill() {
 @property(nonatomic, assign) SuggestionProviderType type;
 @property(nonatomic, readonly) autofill::FillingProduct mainFillingProduct;
 
-// Creates a test provider with default suggesstions.
+// YES if the suggestion provider is used to provide suggestions on a single
+// username form.
+@property(nonatomic, readonly) BOOL forSingleUsernameForm;
+
+// Creates a test provider with default suggestions.
 + (instancetype)providerWithSuggestions;
 
 - (instancetype)initWithSuggestions:(NSArray<FormSuggestion*>*)suggestions;
@@ -134,6 +174,12 @@ NSString* PrimaryActionLabelForUsernameFill() {
   if (self) {
     _suggestions = [suggestions copy];
     _type = SuggestionProviderTypeUnknown;
+    // Detect whether the suggestions were set up for a single username form,
+    // based on the content of the suggestions.
+    for (FormSuggestion* suggestion in _suggestions) {
+      _forSingleUsernameForm =
+          _forSingleUsernameForm || suggestion.metadata.is_single_username_form;
+    }
   }
   return self;
 }
@@ -195,14 +241,20 @@ NSString* PrimaryActionLabelForUsernameFill() {
 class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PasswordSuggestionBottomSheetMediatorTest()
-      : test_web_state_(std::make_unique<web::FakeWebState>()),
-        profile_(TestProfileIOS::Builder().Build()) {
+      : web_state_(std::make_unique<web::FakeWebState>()),
+        web_state_ptr_(web_state_.get()) {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
   }
 
   void SetUp() override {
-    test_web_state_->SetCurrentURL(URL());
+    web_state_->SetCurrentURL(GURL(kTestUrl));
 
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    prefs_ptr_ = prefs.get();
+    RegisterProfilePrefs(prefs_ptr_->registry());
+
+    // Set up the Profile used by the webstate.
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),
                               ios::FaviconServiceFactory::GetDefaultFactory());
@@ -219,18 +271,41 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
+    builder.SetPrefService(std::move(prefs));
     profile_ = std::move(builder).Build();
+
+    web_state_->SetBrowserState(profile_.get());
+
+    // Set up the javascript feature manager for the profile so no-op JS calls
+    // can be made on the fake frame.
+    web::test::OverrideJavaScriptFeatures(
+        profile_.get(),
+        {password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
+
+    // Set up the frames manager so frames can be used.
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    frames_manager_ptr_ = frames_manager.get();
+    web_state_->SetWebFramesManager(std::move(frames_manager));
+
+    // Create the PasswordTabHelper so the password provider is available when
+    // the sheet V2 is used.
+    PasswordTabHelper::CreateForWebState(web_state_.get());
 
     consumer_ =
         OCMProtocolMock(@protocol(PasswordSuggestionBottomSheetConsumer));
     presenter_ = OCMStrictProtocolMock(
         @protocol(PasswordSuggestionBottomSheetPresenter));
 
+    params_.frame_id = kMainFrameId;
     params_.form_name = "form";
+    params_.form_renderer_id = kFormRendererId;
+    params_.field_renderer_id = kUsernameFieldRendererId;
     params_.field_identifier = "field_id";
     params_.field_type = "select-one";
     params_.type = "type";
-    params_.value = "value";
+    // Set the value to be empty so all the suggestions can be offered without
+    // doing any filtering based on prefix matching.
+    params_.value = "";
     params_.input_missing = false;
 
     suggestion_providers_ = @[];
@@ -239,27 +314,44 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   void TearDown() override { [mediator_ disconnect]; }
 
   void CreateMediator() {
-    FormSuggestionTabHelper::CreateForWebState(test_web_state_.get(),
+    // Create the FormSuggestionTabHelper with test providers used by password
+    // sheet v1.
+    FormSuggestionTabHelper::CreateForWebState(web_state_.get(),
                                                suggestion_providers_);
 
     web_state_list_->InsertWebState(
-        std::move(test_web_state_),
+        std::move(web_state_),
         WebStateList::InsertionParams::Automatic().Activate());
 
-    prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs_->registry()->RegisterIntegerPref(
-        prefs::kIosPasswordBottomSheetDismissCount, 0);
+    // Create a frame so password suggestions can be provided for that frame.
+    auto main_frame = web::FakeWebFrame::Create(
+        kMainFrameId, /*is_main_frame=*/true, GURL(kTestUrl));
+    main_frame_ptr_ = main_frame.get();
+    main_frame_ptr_->set_browser_state(profile_.get());
+    frames_manager_ptr_->AddWebFrame(std::move(main_frame));
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
             IOSChromeProfilePasswordStoreFactory::GetForProfile(
                 profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
+
+    // Set up the fill data for the real password provider used by password
+    // sheet V2 when the mediator is tested with providers.
+    if ([suggestion_providers_ count] > 0) {
+      ASSERT_EQ(1u, [suggestion_providers_ count]);
+      PasswordSuggestionBottomSheetMediatorTestSuggestionProvider* provider =
+          base::apple::ObjCCastStrict<
+              PasswordSuggestionBottomSheetMediatorTestSuggestionProvider>(
+              [suggestion_providers_ objectAtIndex:0]);
+      SetUpFillDataInPasswordManager(provider.forSingleUsernameForm);
+    }
+
     mediator_ = [[PasswordSuggestionBottomSheetMediator alloc]
           initWithWebStateList:web_state_list_.get()
                  faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                    profile_.get())
-                   prefService:prefs_.get()
+                   prefService:prefs_ptr_
                         params:params_
                   reauthModule:nil
                            URL:URL()
@@ -268,6 +360,9 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
         sharedURLLoaderFactory:nullptr
              engagementTracker:nil
                      presenter:nil];
+
+    // Run the queued JS feature callback.
+    base::RunLoop().RunUntilIdle();
   }
 
   // Creates the bottom sheet mediator with custom suggestions `providers`.
@@ -284,19 +379,44 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
             providerWithSuggestions] ]);
   }
 
+  void SetUpFillDataInPasswordManager(bool for_single_username_form) {
+    SharedPasswordController* shared_password_controller =
+        PasswordTabHelper::FromWebState(web_state_ptr_)
+            ->GetSharedPasswordController();
+
+    // Set up the fill data based on whether or not the form is a single
+    // username form. Single username forms do not have a renderer id for their
+    // password field.
+    autofill::PasswordFormFillData fill_data =
+        for_single_username_form
+            ? CreatePasswordFillData(kFormRendererId, kUsernameFieldRendererId,
+                                     autofill::FieldRendererId(0))
+            : CreatePasswordFillData(kFormRendererId, kUsernameFieldRendererId,
+                                     kPasswordFieldRendererId);
+
+    [shared_password_controller
+        processPasswordFormFillData:fill_data
+                         forFrameId:kMainFrameId
+                        isMainFrame:YES
+                  forSecurityOrigin:main_frame_ptr_->GetSecurityOrigin()];
+  }
+
   GURL URL() { return GURL("http://foo.com"); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<web::FakeWebState> test_web_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ptr_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<web::FakeWebState> web_state_;
+  raw_ptr<web::WebState> web_state_ptr_;
+  raw_ptr<web::FakeWebFramesManager> frames_manager_ptr_;
+  raw_ptr<web::FakeWebFrame> main_frame_ptr_;
   scoped_refptr<password_manager::TestPasswordStore> store_;
   id consumer_;
   NSArray<id<FormSuggestionProvider>>* suggestion_providers_;
   autofill::FormActivityParams params_;
   PasswordSuggestionBottomSheetMediator* mediator_;
-  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   id presenter_;
 };
 
@@ -323,7 +443,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, WithSuggestions) {
 // Tests setting the consumer when suggestions are available for a single
 // username form and the feature is enabled.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest,
-       WithSuggestions_ForSingleUsernameForm_FeatureEnabled) {
+       WithSuggestions_ForSingleUsernameForm) {
   id<FormSuggestionProvider> provider =
       [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
           initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];
@@ -344,17 +464,17 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
   CreateMediatorWithDefaultSuggestions();
   ASSERT_TRUE(mediator_);
 
-  EXPECT_EQ(
-      prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 0);
+  EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
+            0);
   [mediator_ onDismissWithoutAnyPasswordAction];
-  EXPECT_EQ(
-      prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 1);
+  EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
+            1);
   [mediator_ onDismissWithoutAnyPasswordAction];
-  EXPECT_EQ(
-      prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 2);
+  EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
+            2);
   [mediator_ onDismissWithoutAnyPasswordAction];
-  EXPECT_EQ(
-      prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 3);
+  EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
+            3);
 
   // Expect failure after 3 times.
 #if defined(GTEST_HAS_DEATH_TEST)

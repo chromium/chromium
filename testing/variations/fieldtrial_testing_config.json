@@ -11370,21 +11370,6 @@
             ]
         }
     ],
-    "IOSAutofillCorrectUserEditedBitInParsedField": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillCorrectUserEditedBitInParsedField"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillFixPostFillingPaymentSheet": [
         {
             "platforms": [
@@ -11557,21 +11542,6 @@
                     "enable_features": [
                         "IPH_iOSLensOverlayEntrypointTip",
                         "LensOverlayDisableIPHPanGesture"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSCleanupHangingPasswordFormExtractionRequests": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IosCleanupHangingPasswordFormExtractionRequests"
                     ]
                 }
             ]
@@ -12115,21 +12085,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSPasskeysM2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSPasswordBottomSheetV2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasswordBottomSheetV2"
                     ]
                 }
             ]

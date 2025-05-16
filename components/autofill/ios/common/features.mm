@@ -25,7 +25,7 @@ BASE_FEATURE(kAutofillAllowDefaultPreventedSubmission,
 // LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)
 BASE_FEATURE(kAutofillCorrectUserEditedBitInParsedField,
              "AutofillCorrectUserEditedBitInParsedField",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_correct_user_edited_bit_in_parsed_field)
 
 // LINT.IfChange(autofill_dedupe_form_submission)
