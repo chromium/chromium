@@ -8,6 +8,8 @@ blink_modules_sources("clipboard") {
   sources = [
     "clipboard.cc",
     "clipboard.h",
+    "clipboard_change_event_controller.cc",
+    "clipboard_change_event_controller.h",
     "clipboard_item.cc",
     "clipboard_item.h",
     "clipboard_promise.cc",
@@ -27,6 +29,8 @@ blink_modules_sources("clipboard") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "clipboard_change_event_controller_unittest.cc",
+    "clipboard_test_utils.h",
     "clipboard_unittest.cc",
     "mock_clipboard_permission_service.cc",
     "mock_clipboard_permission_service.h",

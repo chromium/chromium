@@ -37,4 +37,6 @@ dictionary ClipboardUnsanitizedFormats {
      CallWith=ScriptState,
      RaisesException
     ] Promise<undefined> writeText(DOMString data);
+
+    [RuntimeEnabled=ClipboardChangeEvent] attribute EventHandler onclipboardchange;
 };

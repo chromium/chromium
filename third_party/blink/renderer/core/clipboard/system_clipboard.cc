@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -63,7 +64,8 @@ CloneFsaToken(
 }  // namespace
 
 SystemClipboard::SystemClipboard(LocalFrame* frame)
-    : clipboard_(frame->DomWindow()) {
+    : clipboard_(frame->DomWindow()),
+      clipboard_listener_receiver_(this, frame->DomWindow()) {
   frame->GetBrowserInterfaceBroker().GetInterface(
       clipboard_.BindNewPipeAndPassReceiver(
           frame->GetTaskRunner(TaskType::kUserInteraction)));
@@ -443,7 +445,9 @@ void SystemClipboard::WriteUnsanitizedCustomFormat(const String& type,
 }
 
 void SystemClipboard::Trace(Visitor* visitor) const {
+  PlatformEventDispatcher::Trace(visitor);
   visitor->Trace(clipboard_);
+  visitor->Trace(clipboard_listener_receiver_);
 }
 
 bool SystemClipboard::IsValidBufferType(mojom::blink::ClipboardBuffer buffer) {
@@ -611,6 +615,31 @@ void SystemClipboard::Snapshot::SetCustomData(
     const String& data) {
   BindToBuffer(buffer);
   custom_data_.Set(type, data);
+}
+
+void SystemClipboard::OnClipboardDataChanged() {
+  // If we're not listening (receiver not bound), don't notify controllers
+  if (!clipboard_listener_receiver_.is_bound()) {
+    return;
+  }
+  NotifyControllers();
+}
+
+void SystemClipboard::StartListening(LocalDOMWindow* window) {
+  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+    return;
+  }
+
+  // If we're already listening (receiver is bound), no need to register again
+  if (!clipboard_listener_receiver_.is_bound() && clipboard_.is_bound()) {
+    clipboard_->RegisterClipboardListener(
+        clipboard_listener_receiver_.BindNewPipeAndPassRemote(
+            window->GetTaskRunner(TaskType::kUserInteraction)));
+  }
+}
+
+void SystemClipboard::StopListening() {
+  clipboard_listener_receiver_.reset();
 }
 
 // static

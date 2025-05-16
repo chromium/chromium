@@ -74,6 +74,7 @@
     "chargingtimechange",
     "checking",
     "click",
+    "clipboardchange",
     "close",
     "closing",
     "command",

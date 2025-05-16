@@ -8,11 +8,14 @@
 
 #include "net/base/mime_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -56,6 +59,45 @@ ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
 
   return ClipboardPromise::CreateForReadText(GetExecutionContext(),
                                              script_state, exception_state);
+}
+
+void Clipboard::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  EventTarget::AddedEventListener(event_type, registered_listener);
+
+  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent) ||
+      event_type != event_type_names::kClipboardchange) {
+    return;
+  }
+
+  if (!clipboard_change_event_controller_) {
+    Navigator& navigator = *GetSupplementable();
+    if (navigator.DomWindow()) {
+      clipboard_change_event_controller_ =
+          MakeGarbageCollected<ClipboardChangeEventController>(navigator, this);
+    }
+  }
+
+  if (clipboard_change_event_controller_) {
+    clipboard_change_event_controller_->RegisterWithDispatcher();
+  }
+}
+
+void Clipboard::RemovedEventListener(
+    const AtomicString& event_type,
+    const RegisteredEventListener& registered_listener) {
+  EventTarget::RemovedEventListener(event_type, registered_listener);
+
+  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent) ||
+      event_type != event_type_names::kClipboardchange) {
+    return;
+  }
+
+  if (clipboard_change_event_controller_ &&
+      !HasEventListeners(event_type_names::kClipboardchange)) {
+    clipboard_change_event_controller_->UnregisterWithDispatcher();
+  }
 }
 
 ScriptPromise<IDLUndefined> Clipboard::write(
@@ -102,6 +144,7 @@ String Clipboard::ParseWebCustomFormat(const String& format) {
 void Clipboard::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(clipboard_change_event_controller_);
 }
 
 }  // namespace blink

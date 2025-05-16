@@ -139,6 +139,9 @@ function globalInterfaceListing(
     Notification: new Set([
       'getter image',
     ]),
+    // crbug.com/417636703 This API is not yet supported on Mac
+    Clipboard:
+        new Set(['getter onclipboardchange', 'setter onclipboardchange']),
   };
 
   // List of all platform-specific global properties. Please update this list
