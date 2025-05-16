@@ -4787,6 +4787,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOk) {
   EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
   EXPECT_TRUE(quic_session_pool()->has_quic_ever_worked_on_current_network());
 
+  EXPECT_EQ(pool()
+                .GetGroupForTesting(requester.GetStreamKey())
+                ->ConnectingStreamSocketCount(),
+            0u)
+      << "Successful QUIC attempt should cancel in-flight TCP attempt";
+
   std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
   LoadTimingInfo timing_info;
   ASSERT_TRUE(stream->GetLoadTimingInfo(&timing_info));

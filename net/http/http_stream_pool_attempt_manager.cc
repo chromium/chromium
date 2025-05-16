@@ -1585,8 +1585,17 @@ void HttpStreamPool::AttemptManager::StartDraining() {
   CHECK(preconnect_jobs_.empty());
   availability_state_ = AvailabilityState::kDraining;
   service_endpoint_request_.reset();
-  // TODO(crbug.com/414173943): Cancel TcpBasedAttempts and QuicAttempt if
-  // exists.
+
+  // Cancel in-flight attempts so that draining AttemptManager won't have active
+  // connecting streams.
+  // TODO(crbug.com/414173943): It might be better not to cancel in-flight
+  // attempts (especially the QUIC attempt) for future requests/preconnects
+  // unless these aren't slow. Currently we just cancel them for similicity. If
+  // we want to keep these attempts in the draining `this`,
+  // Group::ConnectingStreamSocketCount() should check draining AttemptManagers.
+  CancelTcpBasedAttempts(StreamSocketCloseReason::kAbort);
+  CancelQuicAttempt(ERR_ABORTED);
+
   group_->OnAttemptManagerShuttingDown(this);
 }
 
