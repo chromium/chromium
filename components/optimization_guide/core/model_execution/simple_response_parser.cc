@@ -14,14 +14,17 @@
 namespace optimization_guide {
 
 SimpleResponseParser::SimpleResponseParser(
-    const proto::OnDeviceModelExecutionOutputConfig& config)
-    : config_(config) {}
-SimpleResponseParser::~SimpleResponseParser() = default;
+    std::string_view proto_type,
+    const proto::ProtoField& proto_field,
+    bool suppress_parsing_incomplete_response)
+    : proto_type_(proto_type),
+      proto_field_(proto_field),
+      suppress_parsing_incomplete_response_(
+          suppress_parsing_incomplete_response) {}
 
 void SimpleResponseParser::ParseAsync(const std::string& redacted_output,
                                       ResultCallback result_callback) const {
-  auto result = SetProtoValue(config_.proto_type(), config_.proto_field(),
-                              redacted_output);
+  auto result = SetProtoValue(proto_type_, proto_field_, redacted_output);
   if (!result) {
     std::move(result_callback)
         .Run(base::unexpected(ResponseParsingError::kFailed));
@@ -31,7 +34,7 @@ void SimpleResponseParser::ParseAsync(const std::string& redacted_output,
 }
 
 bool SimpleResponseParser::SuppressParsingIncompleteResponse() const {
-  return config_.suppress_parsing_incomplete_output();
+  return suppress_parsing_incomplete_response_;
 }
 
 }  // namespace optimization_guide

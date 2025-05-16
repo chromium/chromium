@@ -5,22 +5,17 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_JSON_RESPONSE_PARSER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_JSON_RESPONSE_PARSER_H_
 
-#include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
-#include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 
 namespace optimization_guide {
 
 // A ResponseParser that just puts all of the output in a single field.
 class JsonResponseParser final : public ResponseParser {
  public:
-  explicit JsonResponseParser(
-      const proto::OnDeviceModelExecutionOutputConfig& config);
-  ~JsonResponseParser() override;
+  explicit JsonResponseParser(std::string_view proto_type);
 
   // Parses redacted model output.
   void ParseAsync(const std::string& redacted_output,
@@ -29,8 +24,7 @@ class JsonResponseParser final : public ResponseParser {
   bool SuppressParsingIncompleteResponse() const override;
 
  private:
-  std::string proto_type_;
-  proto::OnDeviceModelExecutionOutputConfig config_;
+  const std::string proto_type_;
 };
 
 }  // namespace optimization_guide

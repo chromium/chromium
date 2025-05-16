@@ -5,22 +5,20 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SIMPLE_RESPONSE_PARSER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SIMPLE_RESPONSE_PARSER_H_
 
-#include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
-#include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "components/optimization_guide/proto/descriptors.pb.h"
 
 namespace optimization_guide {
 
 // A ResponseParser that just puts all of the output in a single field.
 class SimpleResponseParser final : public ResponseParser {
  public:
-  explicit SimpleResponseParser(
-      const proto::OnDeviceModelExecutionOutputConfig& config);
-  ~SimpleResponseParser() override;
+  SimpleResponseParser(std::string_view proto_type,
+                       const proto::ProtoField& proto_field,
+                       bool suppress_parsing_incomplete_response);
 
   // Parses redacted model output, returns parsed data via result_callback.
   void ParseAsync(const std::string& redacted_output,
@@ -29,7 +27,9 @@ class SimpleResponseParser final : public ResponseParser {
   bool SuppressParsingIncompleteResponse() const override;
 
  private:
-  proto::OnDeviceModelExecutionOutputConfig config_;
+  const std::string proto_type_;
+  const proto::ProtoField proto_field_;
+  const bool suppress_parsing_incomplete_response_;
 };
 
 }  // namespace optimization_guide

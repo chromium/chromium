@@ -33,10 +33,8 @@ ResponseParser::Result ExtractProto(
 
 }  // namespace
 
-JsonResponseParser::JsonResponseParser(
-    const proto::OnDeviceModelExecutionOutputConfig& config)
-    : proto_type_(config.proto_type()), config_(config) {}
-JsonResponseParser::~JsonResponseParser() = default;
+JsonResponseParser::JsonResponseParser(std::string_view proto_type)
+    : proto_type_(proto_type) {}
 
 void JsonResponseParser::ParseAsync(const std::string& redacted_output,
                                     ResultCallback callback) const {

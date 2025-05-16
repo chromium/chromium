@@ -13,16 +13,26 @@
 
 namespace optimization_guide {
 
+namespace {
+
 using ParseResponseFuture =
     base::test::TestFuture<base::expected<proto::Any, ResponseParsingError>>;
 
-TEST(SimpleResponseParserTest, Valid) {
-  proto::OnDeviceModelExecutionOutputConfig cfg;
-  cfg.set_proto_type("optimization_guide.proto.ComposeResponse");
-  cfg.mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
+proto::ProtoField CreateProtoField(int single_descriptor_tag_number) {
+  proto::ProtoField proto_field;
+  proto_field.add_proto_descriptors()->set_tag_number(
+      single_descriptor_tag_number);
+  return proto_field;
+}
 
+}  // namespace
+
+TEST(SimpleResponseParserTest, Valid) {
+  SimpleResponseParser parser("optimization_guide.proto.ComposeResponse",
+                              CreateProtoField(1),
+                              /*suppress_parsing_incomplete_response=*/true);
   ParseResponseFuture response_future;
-  SimpleResponseParser(cfg).ParseAsync("output", response_future.GetCallback());
+  parser.ParseAsync("output", response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   ASSERT_TRUE(maybe_metadata.has_value());
@@ -32,12 +42,10 @@ TEST(SimpleResponseParserTest, Valid) {
 }
 
 TEST(SimpleResponseParserTest, BadProtoType) {
-  proto::OnDeviceModelExecutionOutputConfig cfg;
-  cfg.set_proto_type("garbage type");
-  cfg.mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
-
+  SimpleResponseParser parser("garbage type", CreateProtoField(1),
+                              /*suppress_parsing_incomplete_response=*/true);
   ParseResponseFuture response_future;
-  SimpleResponseParser(cfg).ParseAsync("output", response_future.GetCallback());
+  parser.ParseAsync("output", response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());
@@ -45,17 +53,25 @@ TEST(SimpleResponseParserTest, BadProtoType) {
 }
 
 TEST(SimpleResponseParserTest, NotStringField) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  proto::OnDeviceModelExecutionOutputConfig cfg;
-  cfg.set_proto_type("optimization_guide.proto.ComposeResponse");
-  cfg.mutable_proto_field()->add_proto_descriptors()->set_tag_number(7);
-
+  SimpleResponseParser parser("optimization_guide.proto.ComposeResponse",
+                              CreateProtoField(7),
+                              /*suppress_parsing_incomplete_response=*/true);
   ParseResponseFuture response_future;
-  SimpleResponseParser(cfg).ParseAsync("output", response_future.GetCallback());
+  parser.ParseAsync("output", response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());
   EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
+}
+
+TEST(SimpleResponseParserTest, SuppressParsingIncompleteResponse) {
+  for (const bool suppress_parsing_incomplete_response : {false, true}) {
+    SimpleResponseParser parser("optimization_guide.proto.ComposeResponse",
+                                CreateProtoField(7),
+                                suppress_parsing_incomplete_response);
+    EXPECT_EQ(parser.SuppressParsingIncompleteResponse(),
+              suppress_parsing_incomplete_response);
+  }
 }
 
 }  // namespace optimization_guide

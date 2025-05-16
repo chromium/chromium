@@ -16,16 +16,18 @@ std::unique_ptr<ResponseParser> CreateResponseParser(
   switch (output_config.parser_kind()) {
     case proto::PARSER_KIND_UNSPECIFIED:
     case proto::PARSER_KIND_SIMPLE:
-      return std::make_unique<SimpleResponseParser>(output_config);
+      return std::make_unique<SimpleResponseParser>(
+          output_config.proto_type(), output_config.proto_field(),
+          output_config.suppress_parsing_incomplete_output());
 
     case proto::PARSER_KIND_JSON:
-      return std::make_unique<JsonResponseParser>(output_config);
+      return std::make_unique<JsonResponseParser>(output_config.proto_type());
 
     case proto::PARSER_KIND_AQA:
       if (!AqaResponseParser::CanParse(output_config.proto_type())) {
         return nullptr;
       }
-      return std::make_unique<AqaResponseParser>(output_config);
+      return std::make_unique<AqaResponseParser>();
 
     default:
       return nullptr;

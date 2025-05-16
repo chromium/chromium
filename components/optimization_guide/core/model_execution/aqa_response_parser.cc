@@ -103,11 +103,6 @@ optimization_guide::AqaResponseParser::Result ParseAqaResponse(
 
 namespace optimization_guide {
 
-AqaResponseParser::AqaResponseParser(
-    const proto::OnDeviceModelExecutionOutputConfig& config)
-    : config_(config) {}
-AqaResponseParser::~AqaResponseParser() = default;
-
 // static
 bool AqaResponseParser::CanParse(std::string_view proto_type) {
   return proto_type == "optimization_guide.proto.HistoryAnswerResponse";

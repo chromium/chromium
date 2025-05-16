@@ -27,7 +27,7 @@ enum class ResponseParsingError {
 class ResponseParser {
  public:
   ResponseParser();
-  virtual ~ResponseParser() = 0;
+  virtual ~ResponseParser();
 
   ResponseParser(const ResponseParser&) = delete;
   ResponseParser& operator=(const ResponseParser&) = delete;

@@ -28,9 +28,11 @@ class JsonResponseParserTest : public testing::Test {
 TEST_F(JsonResponseParserTest, Parse) {
   base::test::TestFuture<ResponseParser::Result> response_future;
   proto::OnDeviceModelExecutionOutputConfig config;
-  config.set_proto_type("optimization_guide.proto.TabOrganizationResponse");
-  JsonResponseParser(config).ParseAsync(
-      R"({
+  constexpr char proto_type[] =
+      "optimization_guide.proto.TabOrganizationResponse";
+  JsonResponseParser(proto_type)
+      .ParseAsync(
+          R"({
         "tabGroups": [
           {
             "label": "mylabel",
@@ -47,7 +49,7 @@ TEST_F(JsonResponseParserTest, Parse) {
           }
         ]
       })",
-      response_future.GetCallback());
+          response_future.GetCallback());
   auto response = response_future.Get();
   EXPECT_TRUE(response.has_value());
   EXPECT_EQ(
