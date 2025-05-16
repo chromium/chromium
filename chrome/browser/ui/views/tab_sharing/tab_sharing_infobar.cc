@@ -193,6 +193,7 @@ void TabSharingInfoBar::StopButtonPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
+  RecordUma(TabSharingInfoBarInteraction::kStopButtonClicked);
   GetDelegate()->Stop();
 }
 
@@ -200,6 +201,7 @@ void TabSharingInfoBar::ShareThisTabInsteadButtonPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
+  RecordUma(TabSharingInfoBarInteraction::kShareThisTabInsteadButtonClicked);
   GetDelegate()->ShareThisTabInstead();
 }
 
@@ -224,10 +226,14 @@ std::unique_ptr<views::View> TabSharingInfoBar::CreateStatusMessageView(
     const std::u16string& capturer_name,
     TabSharingInfoBarDelegate::TabRole role,
     TabSharingInfoBarDelegate::TabShareType capture_type) const {
-  TabSharingStatusMessageView::EndpointInfo shared_tab_info(shared_tab_name,
-                                                            shared_tab_id);
-  TabSharingStatusMessageView::EndpointInfo capturer_info(capturer_name,
-                                                          capturer_id);
+  TabSharingStatusMessageView::EndpointInfo shared_tab_info(
+      shared_tab_name,
+      TabSharingStatusMessageView::EndpointInfo::TargetType::kCapturedTab,
+      shared_tab_id);
+  TabSharingStatusMessageView::EndpointInfo capturer_info(
+      capturer_name,
+      TabSharingStatusMessageView::EndpointInfo::TargetType::kCapturingTab,
+      capturer_id);
   if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks) &&
       GetOriginFromId(capturer_id).scheme() != extensions::kExtensionScheme) {
     return TabSharingStatusMessageView::Create(capturer_id, shared_tab_info,

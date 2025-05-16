@@ -1574,6 +1574,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kUserSelectedThisTab"/>
 </enum>
 
+<enum name="MediaUiGetDisplayMediaTabSharingInfoBarInteraction">
+  <int value="0" label="CapturedToCapturing"/>
+  <int value="1" label="CapturingToCaptured"/>
+  <int value="2" label="OtherToCapturing"/>
+  <int value="3" label="OtherToCaptured"/>
+  <int value="4" label="StopButtonClicked"/>
+  <int value="5" label="ShareThisTabInsteadButtonClicked"/>
+</enum>
+
 <enum name="MicrophoneMuteResult">
   <int value="0" label="Muted"/>
   <int value="1" label="Not muted"/>

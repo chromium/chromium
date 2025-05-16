@@ -12,6 +12,7 @@
 namespace {
 using EndpointInfo = TabSharingStatusMessageView::EndpointInfo;
 using MessageInfo = TabSharingStatusMessageView::MessageInfo;
+using TabRole = TabSharingInfoBarDelegate::TabRole;
 using content::GlobalRenderFrameHostId;
 using ::testing::ElementsAreArray;
 
@@ -26,12 +27,18 @@ std::vector<std::string> GetChildTexts(
   return texts;
 }
 
-EndpointInfo kTab1 = EndpointInfo(u"Tab1", GlobalRenderFrameHostId(1, 1));
-EndpointInfo kTab2 = EndpointInfo(u"Tab2", GlobalRenderFrameHostId(2, 2));
-EndpointInfo kWithoutId1 =
-    EndpointInfo(u"WithoutId1", GlobalRenderFrameHostId());
-EndpointInfo kWithoutId2 =
-    EndpointInfo(u"WithoutId2", GlobalRenderFrameHostId());
+EndpointInfo kTab1 = EndpointInfo(u"Tab1",
+                                  EndpointInfo::TargetType::kCapturedTab,
+                                  GlobalRenderFrameHostId(1, 1));
+EndpointInfo kTab2 = EndpointInfo(u"Tab2",
+                                  EndpointInfo::TargetType::kCapturingTab,
+                                  GlobalRenderFrameHostId(2, 2));
+EndpointInfo kWithoutId1 = EndpointInfo(u"WithoutId1",
+                                        EndpointInfo::TargetType::kCapturedTab,
+                                        GlobalRenderFrameHostId());
+EndpointInfo kWithoutId2 = EndpointInfo(u"WithoutId2",
+                                        EndpointInfo::TargetType::kCapturingTab,
+                                        GlobalRenderFrameHostId());
 }  // namespace
 
 class TabSharingStatusMessageViewTest : public ::testing::Test {

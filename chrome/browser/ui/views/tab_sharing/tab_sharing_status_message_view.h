@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_STATUS_MESSAGE_VIEW_H_
 
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -19,18 +20,29 @@ class TabSharingStatusMessageView : public views::View {
       std::variant<raw_ptr<views::Label>, raw_ptr<views::MdTextButton>>;
 
   struct EndpointInfo final {
+    enum class TargetType {
+      kCapturedTab,
+      kCapturingTab,
+    };
     explicit EndpointInfo(std::u16string text,
+                          TargetType target_type,
                           content::GlobalRenderFrameHostId focus_target_id =
                               content::GlobalRenderFrameHostId());
 
     std::u16string text;
+    TargetType target_type;
     content::GlobalRenderFrameHostId focus_target_id;
   };
 
   struct MessageInfo final {
-    MessageInfo(int message_id, std::vector<EndpointInfo> endpoint_infos);
+    MessageInfo(int message_id,
+                std::vector<EndpointInfo> endpoint_infos,
+                std::optional<TabSharingInfoBarDelegate::TabRole>
+                    tab_role_for_uma = std::nullopt);
     MessageInfo(std::u16string format_string,
-                std::vector<EndpointInfo> endpoint_infos);
+                std::vector<EndpointInfo> endpoint_infos,
+                std::optional<TabSharingInfoBarDelegate::TabRole>
+                    tab_role_for_uma = std::nullopt);
     ~MessageInfo();
 
     MessageInfo(const MessageInfo& other);
@@ -41,6 +53,7 @@ class TabSharingStatusMessageView : public views::View {
 
     std::u16string format_string;
     std::vector<EndpointInfo> endpoint_infos;
+    std::optional<TabSharingInfoBarDelegate::TabRole> tab_role_for_uma;
   };
 
   static std::unique_ptr<views::View> Create(
@@ -70,7 +83,10 @@ class TabSharingStatusMessageView : public views::View {
  private:
   void SetupMessage(MessageInfo info);
   void AddLabel(const std::u16string& text, int flex_layout_order);
-  void AddButton(const EndpointInfo& endpoint_info, int flex_layout_order);
+  void AddButton(
+      const EndpointInfo& endpoint_info,
+      int flex_layout_order,
+      std::optional<TabSharingInfoBarDelegate::TabRole> tab_role_for_uma);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_STATUS_MESSAGE_VIEW_H_

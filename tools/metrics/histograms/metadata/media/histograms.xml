@@ -5979,6 +5979,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Ui.GetDisplayMedia.TabSharingInfoBarInteraction"
+    enum="MediaUiGetDisplayMediaTabSharingInfoBarInteraction"
+    expires_after="2026-05-07">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <summary>
+    Records which controls are clicked in the TabSharingInfoBar. The histogram
+    is recorded for each click on such a control.
+  </summary>
+</histogram>
+
 <histogram
     name="Media.Ui.GetDisplayMedia.WindowSharingPermissionInteractionMac"
     enum="MediaUiGetDisplayMediaPermissionInteraction"

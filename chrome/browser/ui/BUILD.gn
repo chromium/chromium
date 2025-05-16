@@ -4635,6 +4635,8 @@ static_library("ui") {
       "views/tab_sharing/tab_capture_contents_border_helper.h",
       "views/tab_sharing/tab_sharing_infobar.cc",
       "views/tab_sharing/tab_sharing_infobar.h",
+      "views/tab_sharing/tab_sharing_infobar_utils.cc",
+      "views/tab_sharing/tab_sharing_infobar_utils.h",
       "views/tab_sharing/tab_sharing_status_message_view.cc",
       "views/tab_sharing/tab_sharing_status_message_view.h",
       "views/tab_sharing/tab_sharing_ui_views.cc",
