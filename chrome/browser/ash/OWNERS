@@ -5,7 +5,6 @@ khorimoto@chromium.org
 oshima@chromium.org
 xiyuan@chromium.org
 
-afakhry@chromium.org  #{LAST_RESORT_SUGGESTION}
 
 # This is for the common case of adding or renaming files. If you're doing
 # structural changes, use usual OWNERS rules.
