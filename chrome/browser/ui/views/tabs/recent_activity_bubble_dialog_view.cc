@@ -403,7 +403,7 @@ RecentActivityRowView::RecentActivityRowView(
   // has a delimiter if there is a description.
   std::u16string time_text;
   if (item.description_text.size() > 0) {
-    time_text += kBulletPoint + u" ";
+    time_text += u" " + kBulletPoint + u" ";
   }
   time_text += item_.time_delta_text;
 
@@ -428,10 +428,9 @@ RecentActivityRowView::RecentActivityRowView(
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
   GetViewAccessibility().SetName(item.title_text);
-  GetViewAccessibility().SetDescription((item_.description_text.size() > 0
-                                             ? item_.description_text + u" "
-                                             : u"") +
-                                        time_text);
+  GetViewAccessibility().SetDescription(
+      (item_.description_text.size() > 0 ? item_.description_text : u"") +
+      time_text);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetEnabled(GetActionEnabledForItem(item_));
