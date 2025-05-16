@@ -14,7 +14,6 @@
 #include "chrome/browser/extensions/bookmarks/bookmarks_helpers.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -27,8 +26,11 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using bookmarks::BookmarkModel;
 
@@ -62,6 +64,13 @@ MATCHER_P(IsRemoveEventForNodeWithIndex, remove_info, "") {
   return true;
 }
 
+// TODO(crbug.com/414844449): The API test extension:
+// - heavily relies on desktop bookmarks behavior (bookmarks bar and other
+//   bookmarks folders are visible when empty)
+// - uses a global state that gets carried over between sub-tests
+// The easiest way to re-enable the test for desktop Android is to modernize and
+// rewrite it.
+#if !BUILDFLAG(IS_ANDROID)
 class BookmarksApiTest : public ExtensionApiTest,
                          public testing::WithParamInterface<ContextType> {
  public:
@@ -108,6 +117,7 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
 
   ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class BookmarksApiEventsTest : public ExtensionApiTest {
  public:
@@ -201,7 +211,20 @@ IN_PROC_BROWSER_TEST_F(BookmarksApiEventsTest,
   model()->CreateAccountPermanentFolders();
 
   // The onCreated event should have been called for each of the visible
-  // permanent folders.
+  // permanent folders. This would be the account mobile bookmarks folder on
+  // desktop Android, and the account bookmarks bar and other bookmarks folder
+  // on other desktop OSes.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(event_observer()->all_events().size(), 1u);
+
+  EXPECT_EQ(event_observer()->all_events()[0]->event_name,
+            api::bookmarks::OnCreated::kEventName);
+  base::Value::List* event_args =
+      &event_observer()->all_events()[0]->event_args;
+  EXPECT_EQ(event_args->size(), 2u);
+  EXPECT_EQ((*event_args)[0].GetString(),
+            base::NumberToString(model()->account_mobile_node()->id()));
+#else
   EXPECT_EQ(event_observer()->all_events().size(), 2u);
 
   EXPECT_EQ(event_observer()->all_events()[0]->event_name,
@@ -218,6 +241,7 @@ IN_PROC_BROWSER_TEST_F(BookmarksApiEventsTest,
   EXPECT_EQ(event_args->size(), 2u);
   EXPECT_EQ((*event_args)[0].GetString(),
             base::NumberToString(model()->account_other_node()->id()));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarksApiEventsTest,

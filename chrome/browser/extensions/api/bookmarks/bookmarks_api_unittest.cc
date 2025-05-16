@@ -26,6 +26,8 @@
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/buildflags/buildflags.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 using ::testing::Pointwise;

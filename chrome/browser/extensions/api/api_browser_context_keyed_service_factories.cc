@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
+#include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
@@ -18,8 +20,6 @@
 #include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
-#include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
-#include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"  // nogncheck
 #include "chrome/browser/extensions/api/braille_display_private/braille_display_private_api.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_event_router.h"
 #include "chrome/browser/extensions/api/font_settings/font_settings_api.h"
@@ -78,6 +78,8 @@ namespace chrome_extensions {
 
 void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   // APIs supported on Win/Mac/Linux plus desktop Android go here.
+  extensions::BookmarksAPI::GetFactoryInstance();
+  extensions::BookmarksApiWatcher::EnsureFactoryBuilt();
   extensions::CookiesAPI::GetFactoryInstance();
   extensions::ExtensionNotificationDisplayHelperFactory::GetInstance();
   extensions::DeveloperPrivateAPI::GetFactoryInstance();
@@ -87,8 +89,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ActivityLogAPI::GetFactoryInstance();
   extensions::AutofillPrivateEventRouterFactory::GetInstance();
   extensions::BluetoothLowEnergyAPI::GetFactoryInstance();
-  extensions::BookmarksAPI::GetFactoryInstance();
-  extensions::BookmarksApiWatcher::EnsureFactoryBuilt();
   extensions::BookmarkManagerPrivateAPI::GetFactoryInstance();
   extensions::BrailleDisplayPrivateAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)

@@ -319,7 +319,7 @@ static_library("test_support") {
       "../browser/ui/passwords/manage_passwords_test.h",
     ]
 
-    deps += [ "//components/bookmarks/managed:managed" ]
+    deps += [ "//components/bookmarks/managed" ]
   }
 
   if (enable_extensions_core) {
@@ -1387,6 +1387,7 @@ source_set("platform_browser_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//components/bookmarks/managed",
     "//components/browsing_data/content:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
@@ -1497,6 +1498,7 @@ source_set("platform_browser_tests") {
   if (enable_extensions_core) {
     sources += [
       "../browser/extensions/api/alarms/alarms_apitest.cc",
+      "../browser/extensions/api/bookmarks/bookmarks_apitest.cc",
       "../browser/extensions/api/browsing_data/browsing_data_test.cc",
       "../browser/extensions/api/cookies/cookies_apitest.cc",
       "../browser/extensions/api/declarative_net_request/declarative_net_request_apitest.cc",
@@ -4283,7 +4285,6 @@ if (!is_android) {
         "../browser/extensions/api/autofill_private/autofill_private_api_unittest.cc",
         "../browser/extensions/api/autofill_private/autofill_private_apitest.cc",
         "../browser/extensions/api/autofill_private/autofill_util_unittest.cc",
-        "../browser/extensions/api/bookmarks/bookmark_apitest.cc",
         "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc",
         "../browser/extensions/api/command_line_private/command_line_private_apitest.cc",
         "../browser/extensions/api/content_settings/content_settings_apitest.cc",
