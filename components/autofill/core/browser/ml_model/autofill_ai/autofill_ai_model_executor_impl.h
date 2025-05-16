@@ -63,7 +63,7 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
 
   const raw_ref<optimization_guide::OptimizationGuideModelExecutor>
       model_executor_;
-  const raw_ref<optimization_guide::ModelQualityLogsUploaderService>
+  const raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
       mqls_uploader_;
 
   // Form signatures for which a query is currently ongoing. The goal is to

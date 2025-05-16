@@ -38,7 +38,7 @@ AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     optimization_guide::ModelQualityLogsUploaderService* mqls_uploader)
     : model_cache_(CHECK_DEREF(model_cache)),
       model_executor_(CHECK_DEREF(model_executor)),
-      mqls_uploader_(CHECK_DEREF(mqls_uploader)) {}
+      mqls_uploader_(mqls_uploader) {}
 
 AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
@@ -165,7 +165,8 @@ void AutofillAiModelExecutorImpl::LogModelPredictions(
     std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
         logging_data) {
   if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiUploadModelRequestAndResponse)) {
+          autofill::features::kAutofillAiUploadModelRequestAndResponse) ||
+      !mqls_uploader_) {
     return;
   }
   // Note that the logging happens when `log_entry` goes out of scope.
