@@ -54,8 +54,6 @@ _OVERRIDES = [
     #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
-    ('androidx_compose_runtime_runtime_saveable_android/runtime-saveable-android-1.9.0-SNAPSHOT.aar',
-     'https://androidx.dev/snapshots/builds/13449807/artifacts/repository/androidx/compose/runtime/runtime-saveable-android/1.9.0-SNAPSHOT/runtime-saveable-android-1.9.0-20250505.230910-1.aar'),
 ]
 
 _FILES_TO_COMMIT = [
