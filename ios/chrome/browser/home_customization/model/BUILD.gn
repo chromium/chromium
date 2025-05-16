@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "background_collection_configuration.h",
+    "background_collection_configuration.mm",
     "background_customization_configuration.h",
     "background_customization_configuration.mm",
     "home_background_customization_service.h",

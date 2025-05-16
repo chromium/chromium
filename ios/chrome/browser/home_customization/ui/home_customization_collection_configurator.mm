@@ -213,7 +213,7 @@ const CGFloat kSpacingBelowHeader = 10;
   __weak auto weakViewController = _viewController;
   auto cellProvider =
       ^UICollectionViewCell*(UICollectionView* collectionView,
-                             NSIndexPath* indexPath, NSNumber* itemIdentifier) {
+                             NSIndexPath* indexPath, NSString* itemIdentifier) {
         return [weakViewController configuredCellForIndexPath:indexPath
                                                itemIdentifier:itemIdentifier];
       };

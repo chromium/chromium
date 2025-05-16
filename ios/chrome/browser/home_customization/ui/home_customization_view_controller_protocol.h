@@ -32,7 +32,7 @@
 
 // Returns a configured cell at an index path of the collection view.
 - (UICollectionViewCell*)configuredCellForIndexPath:(NSIndexPath*)indexPath
-                                     itemIdentifier:(NSNumber*)itemIdentifier;
+                                     itemIdentifier:(NSString*)itemIdentifier;
 
 @optional
 

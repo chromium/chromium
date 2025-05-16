@@ -7,11 +7,27 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_consumer.h"
+
+@protocol HomeCustomizationLogoVendorProvider;
+
+@protocol HomeCustomizationBackgroundPresetGalleryPickerMutator;
+
 // View controller for displaying a preset gallery of background images in the
 // Home customization flow. Uses a collection view to showcase selectable preset
 // backgrounds.
 @interface HomeCustomizationBackgroundPresetGalleryPickerViewController
-    : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource>
+    : UIViewController <UICollectionViewDelegate,
+                        HomeCustomizationBackgroundPresetGalleryPickerConsumer>
+
+// A provider responsible for supplying a logo vendor object.
+@property(nonatomic, weak) id<HomeCustomizationLogoVendorProvider>
+    logoVendorProvider;
+
+// Mutator to handle the user's customization updates.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPresetGalleryPickerMutator>
+        mutator;
 
 @end
 
