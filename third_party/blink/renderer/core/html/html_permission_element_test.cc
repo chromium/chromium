@@ -1116,6 +1116,31 @@ TEST_F(HTMLPermissionElementSimTest, EnableClickingAfterDelay) {
   checker.CheckClickingEnabled(/*enabled=*/true);
 }
 
+TEST_F(HTMLPermissionElementSimTest, InvalidDisplayStyleElement) {
+  auto* permission_element = CreatePermissionElement(GetDocument(), "camera");
+  DeferredChecker checker(permission_element);
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("display: block; position: absolute;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/false);
+  EXPECT_TRUE(To<HTMLPermissionElement>(
+                  GetDocument().QuerySelector(AtomicString("permission")))
+                  ->matches(AtomicString(":invalid-style")));
+
+  permission_element->setAttribute(html_names::kStyleAttr,
+                                   AtomicString("display: inline-block;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+  EXPECT_FALSE(To<HTMLPermissionElement>(
+                   GetDocument().QuerySelector(AtomicString("permission")))
+                   ->matches(AtomicString(":invalid-style")));
+}
+
 TEST_F(HTMLPermissionElementSimTest, BadContrastDisablesElement) {
   auto* permission_element = CreatePermissionElement(GetDocument(), "camera");
   DeferredChecker checker(permission_element);

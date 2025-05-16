@@ -212,8 +212,9 @@ class CORE_EXPORT HTMLPermissionElement final
     kLowConstrastColorAndBackgroundColor = 1,
     kTooSmallFontSize = 3,
     kTooLargeFontSize = 4,
+    kInvalidDisplayProperty = 5,
 
-    kMaxValue = kTooLargeFontSize,
+    kMaxValue = kInvalidDisplayProperty,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:PermissionElementInvalidStyleReason)
 
