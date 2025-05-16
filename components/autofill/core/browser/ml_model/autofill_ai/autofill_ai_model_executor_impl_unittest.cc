@@ -11,6 +11,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -18,10 +19,13 @@
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
@@ -33,10 +37,12 @@
 namespace autofill {
 namespace {
 
+using base::test::EqualsProto;
 using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::OptimizationGuideModelExecutionResult;
 using optimization_guide::OptimizationGuideModelExecutionResultCallback;
+using optimization_guide::proto::AutofillAiTypeRequest;
 using optimization_guide::proto::AutofillAiTypeResponse;
 using ::testing::_;
 using ::testing::An;
@@ -47,9 +53,13 @@ using MockOnModelExecutedCallback =
 
 class AutofillAiModelExecutorImplTest : public testing::Test {
  public:
-  void SetUp() override {
-    engine_ = std::make_unique<AutofillAiModelExecutorImpl>(&model_cache_,
-                                                            &model_executor_);
+  AutofillAiModelExecutorImplTest() : mqls_uploader_(&local_state_) {
+    optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
+    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
+        local_state_.registry());
+    engine_ = std::make_unique<AutofillAiModelExecutorImpl>(
+        &model_cache_, &model_executor_, &mqls_uploader_);
   }
 
   AutofillAiModelExecutor* engine() { return engine_.get(); }
@@ -60,12 +70,18 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
     return &model_executor_;
   }
 
+  optimization_guide::TestModelQualityLogsUploaderService& mqls_uploader() {
+    return mqls_uploader_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
   test::AutofillUnitTestEnvironment autofill_test_env_;
   MockAutofillAiModelCache model_cache_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
+  optimization_guide::TestModelQualityLogsUploaderService mqls_uploader_;
   std::unique_ptr<AutofillAiModelExecutor> engine_;
 };
 
@@ -92,7 +108,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
           /*log_entry=*/nullptr));
   EXPECT_CALL(
       model_cache(),
-      Update(CalculateFormSignature(form), base::test::EqualsProto(response),
+      Update(CalculateFormSignature(form), EqualsProto(response),
              ElementsAre(FieldIdentifier{
                  .signature = CalculateFieldSignatureForField(form.fields()[0]),
                  .rank_in_signature_group = 0})));
@@ -124,10 +140,9 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexOutOfBounds) {
               optimization_guide::AnyWrapProto(response),
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
-  EXPECT_CALL(
-      model_cache(),
-      Update(CalculateFormSignature(form),
-             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form),
+                     EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
@@ -156,10 +171,9 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexNegative) {
               optimization_guide::AnyWrapProto(response),
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
-  EXPECT_CALL(
-      model_cache(),
-      Update(CalculateFormSignature(form),
-             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form),
+                     EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
@@ -194,10 +208,9 @@ TEST_F(AutofillAiModelExecutorImplTest, DuplicateFieldIndices) {
               optimization_guide::AnyWrapProto(response),
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
-  EXPECT_CALL(
-      model_cache(),
-      Update(CalculateFormSignature(form),
-             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form),
+                     EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
@@ -232,20 +245,18 @@ TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
       .Times(2)
       .WillOnce(MoveArg<3>(&model_callback1))
       .WillOnce(MoveArg<3>(&model_callback2));
-  EXPECT_CALL(
-      model_cache(),
-      Update(
-          CalculateFormSignature(form2), base::test::EqualsProto(response2),
-          ElementsAre(FieldIdentifier{
-              .signature = CalculateFieldSignatureForField(form2.fields()[0]),
-              .rank_in_signature_group = 0})));
-  EXPECT_CALL(
-      model_cache(),
-      Update(
-          CalculateFormSignature(form1), base::test::EqualsProto(response1),
-          ElementsAre(FieldIdentifier{
-              .signature = CalculateFieldSignatureForField(form1.fields()[0]),
-              .rank_in_signature_group = 0})));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form2), EqualsProto(response2),
+                     ElementsAre(FieldIdentifier{
+                         .signature =
+                             CalculateFieldSignatureForField(form2.fields()[0]),
+                         .rank_in_signature_group = 0})));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form1), EqualsProto(response1),
+                     ElementsAre(FieldIdentifier{
+                         .signature =
+                             CalculateFieldSignatureForField(form1.fields()[0]),
+                         .rank_in_signature_group = 0})));
 
   engine()->GetPredictions(form1, base::DoNothing(), std::nullopt);
 
@@ -288,10 +299,9 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
                           ModelExecutionError::kGenericFailure)),
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
-  EXPECT_CALL(
-      model_cache(),
-      Update(CalculateFormSignature(form),
-             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form),
+                     EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
@@ -311,13 +321,54 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
           OptimizationGuideModelExecutionResult(
               optimization_guide::proto::Any(), /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
-  EXPECT_CALL(
-      model_cache(),
-      Update(CalculateFormSignature(form),
-             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form),
+                     EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
   EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+}
+
+TEST_F(AutofillAiModelExecutorImplTest, MQLSUpload) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {optimization_guide::features::kFormsClassificationsMqlsLogging,
+       autofill::features::kAutofillAiUploadModelRequestAndResponse},
+      /*disabled_features=*/{});
+
+  const FormData form =
+      test::GetFormData({.fields = {{.name = u"Passport number"}}});
+
+  AutofillAiTypeRequest expected_request;
+  optimization_guide::proto::FormData* stripped_form =
+      expected_request.mutable_form_data();
+  stripped_form->set_form_signature(*CalculateFormSignature(form));
+  stripped_form->add_fields()->set_field_signature(
+      *CalculateFieldSignatureForField(form.fields()[0]));
+  AutofillAiTypeResponse response;
+  optimization_guide::proto::FieldTypeResponse* field_response =
+      response.add_field_responses();
+  field_response->set_field_type(PASSPORT_NUMBER);
+  field_response->set_field_index(0);
+
+  MockOnModelExecutedCallback on_model_executed;
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
+      uploaded_logs = mqls_uploader().uploaded_logs();
+  ASSERT_EQ(uploaded_logs.size(), 1u);
+  const optimization_guide::proto::FormsClassificationsLoggingData& log =
+      uploaded_logs[0]->forms_classifications();
+  EXPECT_THAT(log.request(), EqualsProto(expected_request));
+  EXPECT_THAT(log.response(), EqualsProto(response));
 }
 
 }  // namespace

@@ -30,7 +30,8 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:
   AutofillAiModelExecutorImpl(
       AutofillAiModelCache* model_cache,
-      optimization_guide::OptimizationGuideModelExecutor* model_executor);
+      optimization_guide::OptimizationGuideModelExecutor* model_executor,
+      optimization_guide::ModelQualityLogsUploaderService* mqls_uploader);
   ~AutofillAiModelExecutorImpl() override;
 
   // AutofillAiModelExecutor:
@@ -51,11 +52,19 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
           optimization_guide::proto::FormsClassificationsLoggingData>
           logging_data);
 
+  // Uploads a stripped request and the response of a model run to MQLS.
+  void LogModelPredictions(
+      std::unique_ptr<
+          optimization_guide::proto::FormsClassificationsLoggingData>
+          logging_data);
+
   // The cache into which the model responses are written.
   const raw_ref<AutofillAiModelCache> model_cache_;
 
   const raw_ref<optimization_guide::OptimizationGuideModelExecutor>
       model_executor_;
+  const raw_ref<optimization_guide::ModelQualityLogsUploaderService>
+      mqls_uploader_;
 
   // Form signatures for which a query is currently ongoing. The goal is to
   // avoid multiple queries for the same form at the same time.

@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
@@ -33,9 +34,11 @@ using optimization_guide::proto::AutofillAiTypeResponse;
 
 AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     AutofillAiModelCache* model_cache,
-    optimization_guide::OptimizationGuideModelExecutor* model_executor)
+    optimization_guide::OptimizationGuideModelExecutor* model_executor,
+    optimization_guide::ModelQualityLogsUploaderService* mqls_uploader)
     : model_cache_(CHECK_DEREF(model_cache)),
-      model_executor_(CHECK_DEREF(model_executor)) {}
+      model_executor_(CHECK_DEREF(model_executor)),
+      mqls_uploader_(CHECK_DEREF(mqls_uploader)) {}
 
 AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
@@ -91,6 +94,7 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
         logging_data) {
+  LogModelPredictions(std::move(logging_data));
   const FormSignature form_signature = CalculateFormSignature(form_data);
   ongoing_queries_.erase(form_signature);
 
@@ -155,6 +159,33 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
           });
   model_cache_->Update(form_signature, *std::move(response),
                        std::move(relevant_field_identifiers));
+}
+
+void AutofillAiModelExecutorImpl::LogModelPredictions(
+    std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
+        logging_data) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiUploadModelRequestAndResponse)) {
+    return;
+  }
+  // Note that the logging happens when `log_entry` goes out of scope.
+  // Since the user was allowed to run the model, logging is ok.
+  optimization_guide::ModelQualityLogEntry log_entry(
+      mqls_uploader_->GetWeakPtr());
+  optimization_guide::proto::FormsClassificationsLoggingData* data =
+      log_entry.log_ai_data_request()->mutable_forms_classifications();
+  // Only log the form and field signatures of the request, and the response.
+  const optimization_guide::proto::FormData& request_form =
+      logging_data->request().form_data();
+  AutofillAiTypeRequest* stripped_request = data->mutable_request();
+  optimization_guide::proto::FormData* stripped_form =
+      stripped_request->mutable_form_data();
+  stripped_form->set_form_signature(request_form.form_signature());
+  for (const optimization_guide::proto::FormFieldData& field :
+       request_form.fields()) {
+    stripped_form->add_fields()->set_field_signature(field.field_signature());
+  }
+  *data->mutable_response() = std::move(logging_data->response());
 }
 
 }  // namespace autofill

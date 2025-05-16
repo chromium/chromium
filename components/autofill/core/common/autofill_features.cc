@@ -142,6 +142,12 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
 const base::FeatureParam<int> kAutofillAiWithDataSchemaServerExperimentId{
     &kAutofillAiWithDataSchema, "autofill_ai_server_experiment_id", 0};
 
+// When enabled, requests and responses of client-triggered Autofill AI model
+// runs are uploaded to MQLS.
+BASE_FEATURE(kAutofillAiUploadModelRequestAndResponse,
+             "AutofillAiUploadModelRequestAndResponse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Guards the refactoring to allow showing Autofill and Password suggestions in
 // the same surface instead of being mutually exclusive.
 BASE_FEATURE(kAutofillAndPasswordsInSameSurface,
