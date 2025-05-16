@@ -35,16 +35,15 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -489,7 +488,6 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @Feature({"BottomSheetController"})
-    @DisableFeatures({ChromeFeatureList.SHOW_NEW_TAB_ANIMATIONS})
     public void testOpenTabInBackground() throws TimeoutException {
         requestContentInSheet(mLowPriorityContent, true);
         expandSheet();
@@ -1075,8 +1073,11 @@ public class BottomSheetControllerTest {
                     tabModel.addObserver(
                             new TabModelObserver() {
                                 @Override
-                                public void didSelectTab(
-                                        Tab tab, @TabSelectionType int type, int lastId) {
+                                public void didAddTab(
+                                        Tab tab,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
+                                        boolean markedForSelection) {
                                     tabSelectedHelper.notifyCalled();
                                     tabModel.removeObserver(this);
                                 }
