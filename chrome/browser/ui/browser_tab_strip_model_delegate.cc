@@ -233,13 +233,6 @@ void BrowserTabStripModelDelegate::WillCloseGroup(
   CreateHistoricalGroup(group);
 
   if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    tab_groups::TabGroupSyncService* sync_service =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser_->profile());
-    if (sync_service) {
-      sync_service->RemoveLocalTabGroupMapping(
-          group, tab_groups::ClosingSource::kClosedByUser);
-    }
     return;
   }
 
