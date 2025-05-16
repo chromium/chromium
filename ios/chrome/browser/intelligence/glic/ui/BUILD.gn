@@ -13,7 +13,7 @@ source_set("ui") {
     "glic_promo_display_handler.mm",
     "glic_promo_view_controller.h",
     "glic_promo_view_controller.mm",
-    "glic_view_controller_delegate.h",
+    "glic_promo_view_controller_delegate.h",
   ]
   deps = [
     ":constants",

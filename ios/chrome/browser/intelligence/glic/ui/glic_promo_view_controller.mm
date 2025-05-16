@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_constants.h"
-#import "ios/chrome/browser/intelligence/glic/ui/glic_view_controller_delegate.h"
+#import "ios/chrome/browser/intelligence/glic/ui/glic_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -144,7 +144,7 @@ const CGFloat kSubTitleLabelSpacing = 12.0;
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  [self.glicConsentDelegate didAcceptPromo];
+  [self.glicPromoDelegate didAcceptPromo];
 }
 
 - (void)didTapSecondaryActionButton {

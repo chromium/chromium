@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_constants.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_promo_view_controller.h"
-#import "ios/chrome/browser/intelligence/glic/ui/glic_view_controller_delegate.h"
+#import "ios/chrome/browser/intelligence/glic/ui/glic_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 namespace {
@@ -32,7 +32,7 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
 
 }  // namespace
 
-@interface GLICNavigationController () <GLICConsentViewControllerDelegate>
+@interface GLICNavigationController () <GLICPromoViewControllerDelegate>
 
 @end
 
@@ -47,7 +47,7 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
   [self configureNavigationController];
   [super viewDidLoad];
   _promoViewController = [[GLICPromoViewController alloc] init];
-  _promoViewController.glicConsentDelegate = self;
+  _promoViewController.glicPromoDelegate = self;
   _promoViewController.mutator = self.mutator;
   [self pushViewController:_promoViewController animated:NO];
   [self createLogos];
@@ -126,7 +126,7 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
   ]];
 }
 
-#pragma mark - GLICConsentViewControllerDelegate
+#pragma mark - GLICPromoViewControllerDelegate
 
 - (void)didAcceptPromo {
   _consentViewController = [[GLICConsentViewController alloc] init];
