@@ -13,6 +13,7 @@ build_webui("build") {
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_deps = [
+    "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/chromeos/login:build_ts",
     "//third_party/cros-components:cros_components_ts",
