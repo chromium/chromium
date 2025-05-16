@@ -28,9 +28,9 @@ SplitStringAtExclusive(std::string_view input, size_t position) {
   return std::pair(input.substr(0, position), input.substr(position + 1));
 }
 
-bool AppendStringKeyValue(std::string_view input,
-                          char delimiter,
-                          StringPairs* result) {
+bool AppendStringViewKeyValue(std::string_view input,
+                              char delimiter,
+                              StringViewPairs* result) {
   // Always append a new item regardless of success (it might be empty). The
   // below code will copy the strings directly into the result pair.
   result->resize(result->size() + 1);
@@ -42,7 +42,7 @@ bool AppendStringKeyValue(std::string_view input,
     DVLOG(1) << "cannot find delimiter in: " << input;
     return false;  // No delimiter.
   }
-  result_pair.first = std::string(input.substr(0, end_key_pos));
+  result_pair.first = input.substr(0, end_key_pos);
 
   // Find the value string.
   std::string_view remains =
@@ -53,8 +53,8 @@ bool AppendStringKeyValue(std::string_view input,
     return false;  // No value.
   }
 
-  result_pair.second = std::string(
-      remains.substr(begin_value_pos, remains.size() - begin_value_pos));
+  result_pair.second =
+      remains.substr(begin_value_pos, remains.size() - begin_value_pos);
 
   return true;
 }
@@ -127,11 +127,41 @@ bool SplitStringIntoKeyValuePairs(std::string_view input,
       std::string_view(&key_value_pair_delimiter, 1), key_value_pairs);
 }
 
+bool SplitStringIntoKeyValueViewPairs(std::string_view input,
+                                      char key_value_delimiter,
+                                      char key_value_pair_delimiter,
+                                      StringViewPairs* key_value_pairs) {
+  return SplitStringIntoKeyValueViewPairsUsingSubstr(
+      input, key_value_delimiter,
+      std::string_view(&key_value_pair_delimiter, 1), key_value_pairs);
+}
+
 bool SplitStringIntoKeyValuePairsUsingSubstr(
     std::string_view input,
     char key_value_delimiter,
     std::string_view key_value_pair_delimiter,
     StringPairs* key_value_pairs) {
+  StringViewPairs key_value_view_pairs;
+  bool success = SplitStringIntoKeyValueViewPairsUsingSubstr(
+      input, key_value_delimiter, key_value_pair_delimiter,
+      &key_value_view_pairs);
+
+  // Copy key_value_view_pairs regardless of success to allow for pairs without
+  // associated value or key.
+  key_value_pairs->clear();
+  key_value_pairs->reserve(key_value_view_pairs.size());
+  for (const auto& [key, value] : key_value_view_pairs) {
+    key_value_pairs->emplace_back(std::string(key), std::string(value));
+  }
+
+  return success;
+}
+
+bool SplitStringIntoKeyValueViewPairsUsingSubstr(
+    std::string_view input,
+    char key_value_delimiter,
+    std::string_view key_value_pair_delimiter,
+    StringViewPairs* key_value_pairs) {
   key_value_pairs->clear();
 
   std::vector<std::string_view> pairs = SplitStringPieceUsingSubstr(
@@ -140,7 +170,7 @@ bool SplitStringIntoKeyValuePairsUsingSubstr(
 
   bool success = true;
   for (std::string_view pair : pairs) {
-    if (!AppendStringKeyValue(pair, key_value_delimiter, key_value_pairs)) {
+    if (!AppendStringViewKeyValue(pair, key_value_delimiter, key_value_pairs)) {
       // Don't return here, to allow for pairs without associated
       // value or key; just record that the split failed.
       success = false;

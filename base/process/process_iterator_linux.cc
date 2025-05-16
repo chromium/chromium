@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -20,24 +23,6 @@ namespace base {
 class ScopedAllowBlockingForProc : public ScopedAllowBlocking {};
 
 namespace {
-
-// Reads the |field_num|th field from |proc_stats|.
-// Returns an empty string on failure.
-// This version only handles VM_COMM and VM_STATE, which are the only fields
-// that are strings.
-std::string GetProcStatsFieldAsString(
-    const std::vector<std::string>& proc_stats,
-    internal::ProcStatsFields field_num) {
-  if (field_num < internal::VM_COMM || field_num > internal::VM_STATE) {
-    NOTREACHED();
-  }
-
-  if (proc_stats.size() > static_cast<size_t>(field_num)) {
-    return proc_stats[field_num];
-  }
-
-  NOTREACHED();
-}
 
 // Reads /proc/<pid>/cmdline and populates |proc_cmd_line_args| with the command
 // line arguments. Returns true if successful.
@@ -84,7 +69,7 @@ bool ProcessIterator::CheckForNextProcess() {
   pid_t pid = kNullProcessId;
   std::vector<std::string> cmd_line_args;
   std::string stats_data;
-  std::vector<std::string> proc_stats;
+  std::vector<std::string_view> proc_stats;
 
   while (true) {
     dirent* const slot = readdir(procfs_dir_.get());
@@ -99,10 +84,6 @@ bool ProcessIterator::CheckForNextProcess() {
       continue;
     }
 
-    if (!GetProcCmdline(pid, &cmd_line_args)) {
-      continue;
-    }
-
     if (!internal::ReadProcStats(pid, &stats_data)) {
       continue;
     }
@@ -110,21 +91,24 @@ bool ProcessIterator::CheckForNextProcess() {
       continue;
     }
 
-    std::string runstate =
-        GetProcStatsFieldAsString(proc_stats, internal::VM_STATE);
+    std::string_view runstate = proc_stats.at(internal::VM_STATE);
     if (runstate.size() != 1) {
       NOTREACHED();
     }
 
     // Is the process in 'Zombie' state, i.e. dead but waiting to be reaped?
     // Allowed values: D R S T Z
-    if (runstate[0] != 'Z') {
-      break;
+    if (runstate[0] == 'Z') {
+      // Nope, it's a zombie; somebody isn't cleaning up after their children.
+      // (e.g. WaitForProcessesToExit doesn't clean up after dead children yet.)
+      // There could be a lot of zombies, can't really decrement i here.
+      continue;
     }
 
-    // Nope, it's a zombie; somebody isn't cleaning up after their children.
-    // (e.g. WaitForProcessesToExit doesn't clean up after dead children yet.)
-    // There could be a lot of zombies, can't really decrement i here.
+    // Read the command-line args. Do this last to avoid useless string copies.
+    if (GetProcCmdline(pid, &cmd_line_args)) {
+      break;
+    }
   }
 
   entry_.pid_ = pid;

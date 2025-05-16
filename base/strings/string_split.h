@@ -84,7 +84,7 @@ enum SplitResult {
     WhitespaceHandling whitespace,
     SplitResult result_type);
 
-// Like SplitString above except it returns a vector of StringPieces which
+// Like SplitString above except it returns a vector of std::string_views which
 // reference the original buffer without copying. Although you have to be
 // careful to keep the original string unmodified, this provides an efficient
 // way to iterate through tokens in a string.
@@ -110,6 +110,8 @@ enum SplitResult {
     SplitResult result_type);
 
 using StringPairs = std::vector<std::pair<std::string, std::string>>;
+using StringViewPairs =
+    std::vector<std::pair<std::string_view, std::string_view>>;
 
 // Splits |line| into key value pairs according to the given delimiters and
 // removes whitespace leading each key and trailing each value. Returns true
@@ -120,6 +122,14 @@ BASE_EXPORT bool SplitStringIntoKeyValuePairs(std::string_view input,
                                               char key_value_pair_delimiter,
                                               StringPairs* key_value_pairs);
 
+// Like SplitStringIntoKeyValuePairs above except it uses a vector of
+// std::string_views which reference the original buffer without copying.
+BASE_EXPORT bool SplitStringIntoKeyValueViewPairs(
+    std::string_view input,
+    char key_value_delimiter,
+    char key_value_pair_delimiter,
+    StringViewPairs* key_value_pairs);
+
 // Similar to SplitStringIntoKeyValuePairs, but use a substring
 // |key_value_pair_delimiter| instead of a single char.
 BASE_EXPORT bool SplitStringIntoKeyValuePairsUsingSubstr(
@@ -127,6 +137,14 @@ BASE_EXPORT bool SplitStringIntoKeyValuePairsUsingSubstr(
     char key_value_delimiter,
     std::string_view key_value_pair_delimiter,
     StringPairs* key_value_pairs);
+
+// Like SplitStringIntoKeyValuePairsUsingSubstr above except it uses a vector of
+// std::string_views which reference the original buffer without copying.
+BASE_EXPORT bool SplitStringIntoKeyValueViewPairsUsingSubstr(
+    std::string_view input,
+    char key_value_delimiter,
+    std::string_view key_value_pair_delimiter,
+    StringViewPairs* key_value_pairs);
 
 // Similar to SplitString, but use a substring delimiter instead of a list of
 // characters that are all possible delimiters.
