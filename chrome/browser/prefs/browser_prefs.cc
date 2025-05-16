@@ -1110,6 +1110,14 @@ inline constexpr char kWipedWebAPkDataForMigration[] =
     "sync.wiped_web_apk_data_for_migration";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Deprecated 05/2025.
+inline constexpr char kSyncCacheGuid[] = "sync.cache_guid";
+inline constexpr char kSyncBirthday[] = "sync.birthday";
+inline constexpr char kSyncBagOfChips[] = "sync.bag_of_chips";
+inline constexpr char kSyncLastSyncedTime[] = "sync.last_synced_time";
+inline constexpr char kSyncLastPollTime[] = "sync.last_poll_time";
+inline constexpr char kSyncPollInterval[] = "sync.short_poll_interval";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1567,6 +1575,14 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kWipedWebAPkDataForMigration, false);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 05/2025.
+  registry->RegisterStringPref(kSyncCacheGuid, std::string());
+  registry->RegisterStringPref(kSyncBirthday, std::string());
+  registry->RegisterStringPref(kSyncBagOfChips, std::string());
+  registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
+  registry->RegisterTimePref(kSyncLastPollTime, base::Time());
+  registry->RegisterTimeDeltaPref(kSyncPollInterval, base::TimeDelta());
 }
 
 }  // namespace
@@ -2867,6 +2883,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 05/2025.
   profile_prefs->ClearPref(kWipedWebAPkDataForMigration);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Added 05/2025.
+  profile_prefs->ClearPref(kSyncCacheGuid);
+  profile_prefs->ClearPref(kSyncBirthday);
+  profile_prefs->ClearPref(kSyncBagOfChips);
+  profile_prefs->ClearPref(kSyncLastSyncedTime);
+  profile_prefs->ClearPref(kSyncLastPollTime);
+  profile_prefs->ClearPref(kSyncPollInterval);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

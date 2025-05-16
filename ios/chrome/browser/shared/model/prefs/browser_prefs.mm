@@ -195,6 +195,14 @@ inline constexpr char kAutologinEnabled[] = "autologin.enabled";
 inline constexpr char kSuggestionGroupVisibility[] =
     "omnibox.suggestionGroupVisibility";
 
+// Deprecated 05/2025.
+inline constexpr char kSyncCacheGuid[] = "sync.cache_guid";
+inline constexpr char kSyncBirthday[] = "sync.birthday";
+inline constexpr char kSyncBagOfChips[] = "sync.bag_of_chips";
+inline constexpr char kSyncLastSyncedTime[] = "sync.last_synced_time";
+inline constexpr char kSyncLastPollTime[] = "sync.last_poll_time";
+inline constexpr char kSyncPollInterval[] = "sync.short_poll_interval";
+
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -1058,6 +1066,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 04/2025.
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
+
+  // Deprecated 05/2025.
+  registry->RegisterStringPref(kSyncCacheGuid, std::string());
+  registry->RegisterStringPref(kSyncBirthday, std::string());
+  registry->RegisterStringPref(kSyncBagOfChips, std::string());
+  registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
+  registry->RegisterTimePref(kSyncLastPollTime, base::Time());
+  registry->RegisterTimeDeltaPref(kSyncPollInterval, base::TimeDelta());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1259,6 +1275,14 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 04/2025.
   prefs->ClearPref(kSuggestionGroupVisibility);
+
+  // Added 05/2025.
+  prefs->ClearPref(kSyncCacheGuid);
+  prefs->ClearPref(kSyncBirthday);
+  prefs->ClearPref(kSyncBagOfChips);
+  prefs->ClearPref(kSyncLastSyncedTime);
+  prefs->ClearPref(kSyncLastPollTime);
+  prefs->ClearPref(kSyncPollInterval);
 }
 
 void MigrateObsoleteUserDefault() {

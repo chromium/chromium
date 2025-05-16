@@ -25,16 +25,14 @@ namespace {
 
 const char kSyncGaiaId[] = "sync.gaia_id";
 
+// Keys for the `kSyncTransportDataPerAccount` dictionary pref:
 const char kSyncCacheGuid[] = "sync.cache_guid";
 const char kSyncBirthday[] = "sync.birthday";
 const char kSyncBagOfChips[] = "sync.bag_of_chips";
-
 // 64-bit integer serialization of the base::Time when the last sync occurred.
 const char kSyncLastSyncedTime[] = "sync.last_synced_time";
-
 // 64-bit integer serialization of the base::Time of the last sync poll.
 const char kSyncLastPollTime[] = "sync.last_poll_time";
-
 // 64-bit integer serialization of base::TimeDelta storing poll intervals
 // received by the server. For historic reasons, this is called
 // "short_poll_interval", but it's not worth the hassle to rename it.
@@ -46,38 +44,6 @@ SyncTransportDataPrefs::SyncTransportDataPrefs(
     PrefService* pref_service,
     const signin::GaiaIdHash& gaia_id_hash)
     : pref_service_(pref_service), gaia_id_hash_(gaia_id_hash) {
-  // If the account-keyed prefs aren't populated yet, copy over the values from
-  // the legacy prefs.
-  // TODO(crbug.com/360888481): Clean up this migration after 2025-05 or so.
-  // As a sanity check, ensure that the Gaia IDs match.
-  GaiaId old_gaia_id(pref_service_->GetString(kSyncGaiaId));
-  if (signin::GaiaIdHash::FromGaiaId(old_gaia_id) == gaia_id_hash_ &&
-      !pref_service_->HasPrefPath(
-          prefs::internal::kSyncTransportDataPerAccount)) {
-    ScopedDictPrefUpdate update_account_dict(
-        pref_service_, prefs::internal::kSyncTransportDataPerAccount);
-    base::Value::Dict* account_values =
-        update_account_dict->EnsureDict(gaia_id_hash_.ToBase64());
-    account_values->Set(kSyncCacheGuid,
-                        pref_service_->GetValue(kSyncCacheGuid).Clone());
-    account_values->Set(kSyncBirthday,
-                        pref_service_->GetValue(kSyncBirthday).Clone());
-    account_values->Set(kSyncBagOfChips,
-                        pref_service_->GetValue(kSyncBagOfChips).Clone());
-    account_values->Set(kSyncLastSyncedTime,
-                        pref_service_->GetValue(kSyncLastSyncedTime).Clone());
-    account_values->Set(kSyncLastPollTime,
-                        pref_service_->GetValue(kSyncLastPollTime).Clone());
-    account_values->Set(kSyncPollInterval,
-                        pref_service_->GetValue(kSyncPollInterval).Clone());
-  }
-  // Whether values were migrated or not, clean up the legacy prefs now.
-  pref_service_->ClearPref(kSyncCacheGuid);
-  pref_service_->ClearPref(kSyncBirthday);
-  pref_service_->ClearPref(kSyncBagOfChips);
-  pref_service_->ClearPref(kSyncLastSyncedTime);
-  pref_service_->ClearPref(kSyncLastPollTime);
-  pref_service_->ClearPref(kSyncPollInterval);
 }
 
 SyncTransportDataPrefs::~SyncTransportDataPrefs() = default;
@@ -89,15 +55,6 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
 
   registry->RegisterDictionaryPref(
       prefs::internal::kSyncTransportDataPerAccount);
-
-  // TODO(crbug.com/360888481): Clean up the legacy non-account-keyed prefs
-  // after 2025-05 or so.
-  registry->RegisterStringPref(kSyncCacheGuid, std::string());
-  registry->RegisterStringPref(kSyncBirthday, std::string());
-  registry->RegisterStringPref(kSyncBagOfChips, std::string());
-  registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
-  registry->RegisterTimePref(kSyncLastPollTime, base::Time());
-  registry->RegisterTimeDeltaPref(kSyncPollInterval, base::TimeDelta());
 }
 
 void SyncTransportDataPrefs::ClearForCurrentAccount() {
@@ -159,7 +116,6 @@ base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   // This fixes a past bug where stored pref values were accidentally
   // re-interpreted from "seconds" to "microseconds"; see crbug.com/1246850.
   if (poll_interval < base::Minutes(1)) {
-    pref_service_->ClearPref(kSyncPollInterval);
     return base::TimeDelta();
   }
   return poll_interval;
