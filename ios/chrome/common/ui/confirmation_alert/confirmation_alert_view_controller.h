@@ -168,6 +168,9 @@
 // Button for the primary action string.
 @property(nonatomic, readonly) UIButton* primaryActionButton;
 
+// Button for the secondary action string.
+@property(nonatomic, readonly) UIButton* secondaryActionButton;
+
 // Color used for the activity indicator on the primary button when in the
 // loading state. Defaults to kSolidWhiteColor.
 @property(nonatomic, strong) UIColor* activityIndicatorColor;

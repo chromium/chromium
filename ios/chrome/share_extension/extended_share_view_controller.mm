@@ -173,9 +173,9 @@ const NSUInteger kSearchCharacterLimit = 1000;
   [moreActionsAlertController addAction:cancelAlertAction];
 
   moreActionsAlertController.popoverPresentationController.sourceView =
-      shareExtensionSheet.view;
+      self.shareSheet.secondaryActionButton;
   moreActionsAlertController.popoverPresentationController.sourceRect =
-      shareExtensionSheet.view.bounds;
+      self.shareSheet.secondaryActionButton.bounds;
 
   [self.shareSheet presentViewController:moreActionsAlertController
                                 animated:YES
