@@ -397,9 +397,10 @@ class MediaSessionImpl : public MediaSession,
     PlayerIdentifier& operator=(const PlayerIdentifier&) = default;
     PlayerIdentifier& operator=(PlayerIdentifier&&) = default;
 
-    bool operator==(const PlayerIdentifier& other) const;
-    bool operator!=(const PlayerIdentifier& other) const;
-    bool operator<(const PlayerIdentifier& other) const;
+    friend bool operator==(const PlayerIdentifier&,
+                           const PlayerIdentifier&) = default;
+    friend auto operator<=>(const PlayerIdentifier&,
+                            const PlayerIdentifier&) = default;
     // RAW_PTR_EXCLUSION: #union
     RAW_PTR_EXCLUSION MediaSessionPlayerObserver* observer;
     int player_id;

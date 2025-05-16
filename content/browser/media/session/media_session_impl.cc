@@ -158,22 +158,6 @@ MediaSessionImpl::PlayerIdentifier::PlayerIdentifier(
     int player_id)
     : observer(observer), player_id(player_id) {}
 
-bool MediaSessionImpl::PlayerIdentifier::operator==(
-    const PlayerIdentifier& other) const {
-  return this->observer == other.observer && this->player_id == other.player_id;
-}
-
-bool MediaSessionImpl::PlayerIdentifier::operator!=(
-    const PlayerIdentifier& other) const {
-  return this->observer != other.observer || this->player_id != other.player_id;
-}
-
-bool MediaSessionImpl::PlayerIdentifier::operator<(
-    const PlayerIdentifier& other) const {
-  return observer != other.observer ? observer < other.observer
-                                    : player_id < other.player_id;
-}
-
 // static
 MediaSession* MediaSession::Get(WebContents* web_contents) {
   return MediaSessionImpl::Get(web_contents);
