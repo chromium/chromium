@@ -130,7 +130,7 @@ class NET_EXPORT_PRIVATE SimpleIndex final {
     INITIALIZE_METHOD_MAX = 3,
   };
   // Used in histograms. Please only add entries at the end.
-  enum IndexWriteToDiskReason {
+  enum IndexWriteToDiskReason : uint32_t {
     INDEX_WRITE_REASON_SHUTDOWN = 0,
     INDEX_WRITE_REASON_STARTUP_MERGE = 1,
     INDEX_WRITE_REASON_IDLE = 2,
