@@ -512,10 +512,12 @@ void Dispatcher::DidCreateScriptContext(
 
   bindings_system_->DidCreateScriptContext(context);
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // Inject custom JS into the platform app context.
   if (IsWithinPlatformApp()) {
     module_system->Require("platformApp");
   }
+#endif
 
   RequireGuestViewModules(context);
 
@@ -1538,7 +1540,6 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
       context->context_type() == mojom::ContextType::kPrivilegedExtension &&
       !context->IsForServiceWorker() && context->extension() &&
       context->extension()->is_platform_app();
-  const bool app_view_permission_exists = is_platform_app;
   // The webview permission is also available to internal allowlisted
   // extensions, but not to extensions in general.
   const bool web_view_permission_exists = is_platform_app;
@@ -1547,6 +1548,8 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   // It would be better if there were a light way of detecting when a webview
   // or appview is created and only then set up the infrastructure.
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+  const bool app_view_permission_exists = is_platform_app;
   // Require AppView.
   if (context->GetAvailability("appViewEmbedderInternal").is_available()) {
     requires_guest_view_module = true;
@@ -1554,6 +1557,7 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   } else if (app_view_permission_exists) {
     module_system->Require("appViewDeny");
   }
+#endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Require ExtensionOptions.

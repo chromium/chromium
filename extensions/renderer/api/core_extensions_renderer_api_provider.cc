@@ -162,8 +162,12 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
     const char* name = nullptr;
     int id = 0;
   } js_resources[] = {
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
       {"appView", IDR_APP_VIEW_JS},
+      {"appViewDeny", IDR_APP_VIEW_DENY_JS},
       {"appViewElement", IDR_APP_VIEW_ELEMENT_JS},
+#endif
+
       {"entryIdManager", IDR_ENTRY_ID_MANAGER},
       {"extensionOptions", IDR_EXTENSION_OPTIONS_JS},
       {"extensionOptionsElement", IDR_EXTENSION_OPTIONS_ELEMENT_JS},
@@ -173,10 +177,6 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"feedbackPrivate", IDR_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS},
       {"fileEntryBindingUtil", IDR_FILE_ENTRY_BINDING_UTIL_JS},
       {"fileSystem", IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS},
-
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
-      {"appViewDeny", IDR_APP_VIEW_DENY_JS},
-#endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
       {"guestView", IDR_GUEST_VIEW_JS},
@@ -230,8 +230,10 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"automationEvent", IDR_AUTOMATION_EVENT_JS},
       {"automationNode", IDR_AUTOMATION_NODE_JS},
       {"automationTreeCache", IDR_AUTOMATION_TREE_CACHE_JS},
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
       {"app.runtime", IDR_APP_RUNTIME_CUSTOM_BINDINGS_JS},
       {"app.window", IDR_APP_WINDOW_CUSTOM_BINDINGS_JS},
+#endif
       {"declarativeWebRequest", IDR_DECLARATIVE_WEBREQUEST_CUSTOM_BINDINGS_JS},
       {"contextMenus", IDR_CONTEXT_MENUS_CUSTOM_BINDINGS_JS},
       {"contextMenusHandlers", IDR_CONTEXT_MENUS_HANDLERS_JS},
@@ -242,8 +244,10 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"printerProvider", IDR_PRINTER_PROVIDER_CUSTOM_BINDINGS_JS},
       {"webViewRequest", IDR_WEB_VIEW_REQUEST_CUSTOM_BINDINGS_JS},
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
       // Platform app sources that are not API-specific..
       {"platformApp", IDR_PLATFORM_APP_JS},
+#endif
   };
 
   for (const auto& resource : js_resources) {
