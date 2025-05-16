@@ -749,20 +749,19 @@ void CanvasRenderingContext2D::DrawElementInternal(
            CanvasPerformanceMonitor::DrawType::kOther);
 
   cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
+  canvas->save();
   canvas->translate(x, y);
   if (dwidth && dheight) {
-    canvas->save();
     canvas->scale(*dwidth / box_rect.width(), *dheight / box_rect.height());
   }
 
+  canvas->clipRect(SkRect::MakeWH(box_rect.width(), box_rect.height()));
   canvas->drawPicture(
       paint_record,
       // use a save at the beginning of the record to keep transforms local:
       true);
 
-  if (dwidth && dheight) {
-    canvas->restore();
-  }
+  canvas->restore();
 }
 
 void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
