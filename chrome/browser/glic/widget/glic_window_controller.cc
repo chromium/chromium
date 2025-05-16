@@ -1158,6 +1158,9 @@ void GlicWindowController::HandleWindowDragWithOffset(
   // lead to crashes.
   if (!in_move_loop_) {
     in_move_loop_ = true;
+#if BUILDFLAG(IS_MAC)
+    GetGlicWidget()->SetCapture(nullptr);
+#endif
     const views::Widget::MoveLoopSource move_loop_source =
         views::Widget::MoveLoopSource::kMouse;
     if (!AlwaysDetached()) {
