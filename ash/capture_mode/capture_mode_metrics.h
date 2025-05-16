@@ -259,9 +259,6 @@ void RecordSearchResultsPanelShown();
 // Records that a search result URL was clicked in the search results panel.
 void RecordSearchResultClicked();
 
-// Records that a multimodal search was requested in the search results panel.
-void RecordMultimodalSearchRequest();
-
 // Prepends the common prefix to the `root_word` and optionally inserts the
 // client's metric component (as specified by the given `behavior`) or appends
 // the ui mode suffix to build the full histogram name.

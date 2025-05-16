@@ -258,26 +258,6 @@ void TestCaptureModeDelegate::SendLensWebRegionSearch(
   }
 }
 
-void TestCaptureModeDelegate::SendRegionSearch(
-    const SkBitmap& image,
-    const gfx::Rect& region,
-    ash::OnSearchUrlFetchedCallback search_callback,
-    ash::OnTextDetectionComplete text_callback) {
-  if (!lens_detected_text_.empty()) {
-    std::move(text_callback).Run(lens_detected_text_);
-  }
-  std::move(search_callback).Run(GURL("kTestUrl"));
-}
-
-void TestCaptureModeDelegate::SendMultimodalSearch(
-    const SkBitmap& image,
-    const gfx::Rect& region,
-    const std::string& text,
-    ash::OnSearchUrlFetchedCallback callback) {
-  ++num_multimodal_search_requests_;
-  std::move(callback).Run(GURL("kTestUrl"));
-}
-
 void TestCaptureModeDelegate::DeleteRemoteFile(
     const base::FilePath& path,
     base::OnceCallback<void(bool)> callback) {

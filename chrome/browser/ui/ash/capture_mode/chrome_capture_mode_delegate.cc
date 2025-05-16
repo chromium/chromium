@@ -54,7 +54,6 @@
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/capture_mode/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -85,6 +84,7 @@
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -828,83 +828,6 @@ void ChromeCaptureModeDelegate::SendLensWebRegionSearch(
       &ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch,
       weak_ptr_factory_.GetWeakPtr(), image, is_standalone_session,
       lens_request_id_));
-}
-
-void ChromeCaptureModeDelegate::SendRegionSearch(
-    const SkBitmap& image,
-    const gfx::Rect& region,
-    ash::OnSearchUrlFetchedCallback search_callback,
-    ash::OnTextDetectionComplete text_callback) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile || image.empty() || region.IsEmpty()) {
-    return;
-  }
-  // We should not use `CanShowSunfishUi` here, as that could change between
-  // starting the image capture and finishing the image capture (for example, if
-  // the Sunfish policy changes).
-  DCHECK(ash::features::IsSunfishFeatureEnabled());
-  if (!lens_overlay_query_controller_) {
-    lens_overlay_query_controller_ =
-        std::make_unique<LensOverlayQueryController>(
-            &application_locale_storage_.get(),
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleStartQueryResponse,
-                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleInteractionURLResponse,
-                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleSuggestInputsResponse,
-                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(
-                &ChromeCaptureModeDelegate::HandleThumbnailCreated,
-                weak_ptr_factory_.GetWeakPtr()),
-            profile->GetVariationsClient(), /*identity_manager=*/nullptr,
-            profile, lens::LensOverlayInvocationSource(),
-            /*use_dark_mode=*/false);
-  }
-
-  on_search_url_fetched_callback_ = std::move(search_callback);
-  on_text_detection_complete_callback_ = std::move(text_callback);
-
-  lens_overlay_query_controller_->StartQueryFlow(
-      /*screenshot=*/image,
-      /*page_url=*/GURL(),
-      /*page_title=*/std::nullopt, /*significant_region_boxes=*/
-      std::vector<lens::CenterRotatedBox>(),
-      /*underlying_content_bytes=*/base::span<const uint8_t>(),
-      /*underlying_content_type=*/lens::MimeType(),
-      /*ui_scale_factor=*/1.f, /*invocation_time=*/base::TimeTicks::Now());
-  lens_overlay_query_controller_->SendRegionSearch(
-      GetCenterRotatedBoxFromTabViewAndImageBounds(
-          /*tab_bounds=*/region, /*view_bounds=*/region,
-          /*image_bounds=*/region),
-      lens::LensOverlaySelectionType::REGION_SEARCH,
-      /*additional_search_query_params=*/std::map<std::string, std::string>(),
-      /*region_bytes=*/image);
-}
-
-void ChromeCaptureModeDelegate::SendMultimodalSearch(
-    const SkBitmap& image,
-    const gfx::Rect& region,
-    const std::string& text,
-    ash::OnSearchUrlFetchedCallback callback) {
-  // TODO(crbug.com/375670205): Investigate edge cases when the region is
-  // adjusted or `SendMultimodalSearch()` is called before `StartQueryFlow()`.
-  if (!lens_overlay_query_controller_ || image.empty() || region.IsEmpty() ||
-      text.empty()) {
-    return;
-  }
-  on_search_url_fetched_callback_ = std::move(callback);
-  lens_overlay_query_controller_->SendMultimodalRequest(
-      GetCenterRotatedBoxFromTabViewAndImageBounds(
-          /*tab_bounds=*/region, /*view_bounds=*/region,
-          /*image_bounds=*/region),
-      text,
-      lens::LensOverlaySelectionType::
-          MULTIMODAL_SEARCH, /*additional_search_query_params=*/
-      std::map<std::string, std::string>(),
-      /*region_bytes=*/image);
 }
 
 bool ChromeCaptureModeDelegate::IsNetworkConnectionOffline() const {

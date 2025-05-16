@@ -1377,17 +1377,6 @@ bool CaptureModeController::IsAnnotatingSupported() const {
              ->ShouldCreateAnnotationsOverlayController();
 }
 
-void CaptureModeController::SendMultimodalSearch(const gfx::ImageSkia& image,
-                                                 const std::string& text) {
-  delegate_->SendMultimodalSearch(
-      *image.bitmap(), user_capture_region_, text,
-      base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
-                          weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
-                          image));
-
-  RecordMultimodalSearchRequest();
-}
-
 bool CaptureModeController::ActiveUserDefaultSearchProviderIsGoogle() const {
   return delegate_->ActiveUserDefaultSearchProviderIsGoogle();
 }

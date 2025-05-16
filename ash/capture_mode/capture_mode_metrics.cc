@@ -59,7 +59,6 @@ constexpr char kSearchResultsPanelEntryPointHistogramRootWord[] =
     "SearchResultsPanelEntryPoint";
 constexpr char kSearchResultsPanelShown[] = "SearchResultsPanelShown";
 constexpr char kSearchResultClickedRootWord[] = "SearchResultClicked";
-constexpr char kMultimodalSearchRequest[] = "MultimodalSearchRequest";
 
 void RecordCaptureModeRecordingDurationInternal(
     const std::string& histogram_name,
@@ -370,13 +369,6 @@ void RecordSearchResultsPanelShown() {
 
 void RecordSearchResultClicked() {
   base::UmaHistogramBoolean(BuildHistogramName(kSearchResultClickedRootWord,
-                                               /*behavior=*/nullptr,
-                                               /*append_ui_mode_suffix=*/true),
-                            true);
-}
-
-void RecordMultimodalSearchRequest() {
-  base::UmaHistogramBoolean(BuildHistogramName(kMultimodalSearchRequest,
                                                /*behavior=*/nullptr,
                                                /*append_ui_mode_suffix=*/true),
                             true);

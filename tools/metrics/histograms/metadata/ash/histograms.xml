@@ -1996,17 +1996,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Ash.CaptureModeController.MultimodalSearchRequest.{TabletOrClamshellMode}"
-    enum="Boolean" expires_after="2025-10-08">
-  <owner>hewer@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Recorded each time a multimodal search request is made in the search results
-    panel in {TabletOrClamshellMode}.
-  </summary>
-</histogram>
-
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
     units="connected cameras" expires_after="2025-10-08">
   <owner>minch@chromium.org</owner>

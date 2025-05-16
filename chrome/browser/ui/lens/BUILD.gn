@@ -21,13 +21,7 @@ source_set("lens") {
     "lens_searchbox_controller.h",
     "lens_side_panel_untrusted_ui.h",
   ]
-  friend = [
-    ":*",
-
-    # TODO(crbug.com/375491451): This short-term solution allows Ash Chrome to # depend on Lens Overlay directly for expediency. Remove this when the
-    # long-term refactor to separate clients is implemented.
-    "//chrome/browser/ui/ash/capture_mode",
-  ]
+  friend = [ ":*" ]
   sources = [
     "lens_overlay_blur_layer_delegate.h",
     "lens_overlay_colors.h",

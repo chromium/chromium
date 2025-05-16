@@ -358,7 +358,6 @@ after discussions on the right group.
       <annotation id="chromeos_feedback_report_hpke_public_key_fetch_for_variations"/>
       <annotation id="shared_storage_worklet_host"/>
       <annotation id="webauthn_challenge_fetch"/>
-      <annotation id="chromeos_capture_mode"/>
       <annotation id="outlook_calendar_page_handler"/>
       <annotation id="omnibox_search_aggregator_suggest"/>
       <annotation id="microsoft_files_page_handler"/>

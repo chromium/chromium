@@ -267,21 +267,6 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
       OnTextDetectionComplete text_callback,
       base::OnceCallback<void()> error_callback) = 0;
 
-  // Sends the captured `region` and `image` to the backend. Invokes `callback`
-  // when the response is fetched.
-  virtual void SendRegionSearch(const SkBitmap& image,
-                                const gfx::Rect& region,
-                                OnSearchUrlFetchedCallback search_callback,
-                                OnTextDetectionComplete text_callback) = 0;
-
-  // Sends the captured `image`, `region`, and search box `text` to the backend.
-  // Invokes `callback` when the response is fetched.
-  virtual void SendMultimodalSearch(
-      const SkBitmap& image,
-      const gfx::Rect& region,
-      const std::string& text,
-      ash::OnSearchUrlFetchedCallback callback) = 0;
-
   // Returns true if the network is currently in an offline or unknown state.
   virtual bool IsNetworkConnectionOffline() const = 0;
 
