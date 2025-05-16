@@ -180,15 +180,15 @@ BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
 
 BASE_FEATURE(kEnableSnackbarInSettings,
              "EnableSnackbarInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableImprovedGuestProfileMenu,
              "EnableImprovedGuestProfileMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnablePendingModePasswordsPromo,
              "EnablePendingModePasswordsPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 
