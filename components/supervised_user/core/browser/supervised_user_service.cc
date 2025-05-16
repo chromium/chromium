@@ -301,15 +301,7 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 }
 
 void SupervisedUserService::UpdateManualHosts() {
-  const base::Value::Dict& dict =
-      user_prefs_->GetDict(prefs::kSupervisedUserManualHosts);
-  std::map<std::string, bool> host_map;
-  for (auto&& [host, value] : dict) {
-    DCHECK(value.is_bool());
-    host_map[host] = value.GetIfBool().value_or(false);
-  }
-
-  url_filter_->SetManualHosts(std::move(host_map));
+  url_filter_->UpdateManualHosts();
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
   }

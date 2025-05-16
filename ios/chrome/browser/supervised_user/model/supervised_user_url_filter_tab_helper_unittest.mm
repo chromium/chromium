@@ -109,16 +109,16 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   }
 
   void AllowExampleSiteForSupervisedUser() {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile_.get());
+    // This single host is allowed.
+    base::Value::Dict hosts;
+    hosts.Set("example.com", true);
+    profile_->GetPrefs()->SetDict(prefs::kSupervisedUserManualHosts,
+                                  hosts.Clone());
 
-    std::map<std::string, bool> hosts;
-    hosts["example.com"] = true;
-    supervised_user_service->GetURLFilter()->SetManualHosts(hosts);
-
+    // But default behavior will block everything else.
     profile_->GetPrefs()->SetInteger(
         prefs::kDefaultSupervisedUserFilteringBehavior,
-        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
+        static_cast<int>(supervised_user::FilteringBehavior::kBlock));
     profile_->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
   }
 

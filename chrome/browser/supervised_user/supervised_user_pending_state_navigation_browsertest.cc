@@ -17,6 +17,7 @@
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "chrome/browser/ui/browser.h"
@@ -194,14 +195,9 @@ class SupervisedUserPendingStateNavigationTest
        .embedded_test_server_options = {.resolver_rules_map_host_list =
                                             "*.example.com"}}};
 
-  void SetManualHost(GURL url, bool allowlist) {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(browser()->profile());
-    supervised_user::SupervisedUserURLFilter* url_filter =
-        supervised_user_service->GetURLFilter();
-    std::map<std::string, bool> hosts;
-    hosts[url.host()] = allowlist;
-    url_filter->SetManualHosts(std::move(hosts));
+  void SetManualHost(const GURL& url, bool allowlist) {
+    supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+                                                      url.host(), allowlist);
   }
 
   content::RenderFrameHost* FindFrameByName(const std::string& name) {

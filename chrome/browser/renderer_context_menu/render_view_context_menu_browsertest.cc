@@ -48,6 +48,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -843,17 +844,8 @@ class ContextMenuForSupervisedUsersBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ContextMenuForSupervisedUsersBrowserTest,
                        SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChild) {
-  // Set up child user profile.
-  Profile* profile = browser()->profile();
-
-  // Block access to http://www.google.com/ in the URL filter.
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  supervised_user::SupervisedUserURLFilter* url_filter =
-      supervised_user_service->GetURLFilter();
-  std::map<std::string, bool> hosts;
-  hosts["www.google.com"] = false;
-  url_filter->SetManualHosts(std::move(hosts));
+  supervised_user_test_util::SetManualFilterForHost(
+      browser()->profile(), "www.google.com", /*allowlist=*/false);
 
   base::RunLoop().RunUntilIdle();
 

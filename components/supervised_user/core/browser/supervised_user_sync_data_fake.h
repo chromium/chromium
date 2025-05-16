@@ -108,17 +108,27 @@ class SupervisedUserSyncDataFake {
     }
   }
 
+  // Updates manual host list of a url filter.
+  void SetManualHosts(
+      const std::map<std::string, test::UrlStatus>& exceptions) {
+    SetManualList(exceptions, prefs::kSupervisedUserManualHosts);
+  }
+
   // Updates manual url list of a url filter.
   void SetManualUrls(const std::map<std::string, test::UrlStatus>& exceptions) {
+    SetManualList(exceptions, prefs::kSupervisedUserManualURLs);
+  }
+
+ private:
+  void SetManualList(const std::map<std::string, test::UrlStatus>& exceptions,
+                     std::string_view list_name) {
     base::Value::Dict dict;
     for (auto& [url, status] : exceptions) {
       dict.Set(url, base::Value(static_cast<bool>(status)));
     }
-    pref_service_->SetSupervisedUserPref(prefs::kSupervisedUserManualURLs,
-                                         dict.Clone());
+    pref_service_->SetSupervisedUserPref(std::string(list_name), dict.Clone());
   }
 
- private:
   raw_ptr<TestingPrefService> pref_service_;
   PrefChangeRegistrar registrar_;
 };

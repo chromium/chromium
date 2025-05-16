@@ -82,16 +82,6 @@ class ClassifyUrlNavigationThrottleTest
     EnableParentalControls(*profile()->GetPrefs());
   }
 
-  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
-    TestingProfile::Builder builder;
-    builder.AddTestingFactories(GetTestingFactories());
-    // Important. Testing profile must be of supervised user, otherwise the
-    // supervised user settings service stack won't be fully initialized (the
-    // pref service will lack supervised user pref store).
-    builder.SetIsSupervisedProfile();
-    return builder.Build();
-  }
-
   std::unique_ptr<content::MockNavigationThrottleRegistry>
   CreateNavigationThrottle(const std::vector<GURL> redirects) {
     CHECK_GT(redirects.size(), 0U) << "At least one url is required";
@@ -162,8 +152,8 @@ class ClassifyUrlNavigationThrottleTest
 
 TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   GURL allowed_url(kExampleURL);
-  std::map<std::string, bool> hosts{{allowed_url.host(), true}};
-  GetSupervisedUserURLFilter()->SetManualHosts(std::move(hosts));
+  supervised_user_test_util::SetManualFilterForHost(
+      profile(), allowed_url.host(), /*allowlist=*/true);
 
   std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
       CreateNavigationThrottle(allowed_url);
@@ -188,9 +178,8 @@ TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
 TEST_F(ClassifyUrlNavigationThrottleTest,
        BlocklistedUrlsRecordedInBlockManualBucket) {
   GURL blocked_url(kExampleURL);
-  std::map<std::string, bool> hosts;
-  hosts[blocked_url.host()] = false;
-  GetSupervisedUserURLFilter()->SetManualHosts(std::move(hosts));
+  supervised_user_test_util::SetManualFilterForHost(
+      profile(), blocked_url.host(), /*allowlist=*/false);
   ASSERT_TRUE(GetSupervisedUserURLFilter()
                   ->GetFilteringBehavior(blocked_url)
                   .IsBlocked());

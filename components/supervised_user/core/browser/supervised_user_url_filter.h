@@ -206,10 +206,9 @@ class SupervisedUserURLFilter {
       FilteringContext filtering_context = FilteringContext::kDefault,
       std::optional<ui::PageTransition> transition_type = std::nullopt);
 
-  // Sets the set of manually allowed or blocked hosts.
-  void SetManualHosts(std::map<std::string, bool> host_map);
-
-  // Refreshes data structures that hold manually configured url exceptions.
+  // Refreshes data structures that hold manually configured url and host
+  // exceptions.
+  void UpdateManualHosts();
   void UpdateManualUrls();
 
   // Returns summary of url filtering settings.

@@ -17,7 +17,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -25,7 +27,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace supervised_user {
 namespace {
+
+using test::UrlStatus;
 
 class AsyncResultHolder {
  public:
@@ -53,8 +58,7 @@ class AsyncResultHolder {
 
 // TODO(agawronska): Check if this can be a real mock.
 // Mocks PermissionRequestCreator to test the async responses.
-class MockPermissionRequestCreator
-    : public supervised_user::PermissionRequestCreator {
+class MockPermissionRequestCreator : public PermissionRequestCreator {
  public:
   MockPermissionRequestCreator() = default;
 
@@ -91,11 +95,11 @@ class MockPermissionRequestCreator
   std::vector<SuccessCallback> callbacks_;
 };
 
-}  // namespace
-
 class RemoteWebApprovalsManagerTest : public ::testing::Test {
  protected:
   RemoteWebApprovalsManagerTest() {
+    RegisterProfilePrefs(pref_service_.registry());
+    sync_data_fake_.Init();
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
   }
@@ -106,32 +110,37 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
 
   ~RemoteWebApprovalsManagerTest() override = default;
 
-  supervised_user::RemoteWebApprovalsManager& remote_web_approvals_manager() {
+  RemoteWebApprovalsManager& remote_web_approvals_manager() {
     return remote_web_approvals_manager_;
   }
 
-  void RequestApproval(const GURL& url,
-                       AsyncResultHolder* result_holder,
-                       supervised_user::FilteringBehaviorReason reason =
-                           supervised_user::FilteringBehaviorReason::DEFAULT) {
-    supervised_user::UrlFormatter url_formatter(filter_, reason);
+  void RequestApproval(
+      const GURL& url,
+      AsyncResultHolder* result_holder,
+      FilteringBehaviorReason reason = FilteringBehaviorReason::DEFAULT) {
+    UrlFormatter url_formatter(filter_, reason);
     remote_web_approvals_manager_.RequestApproval(
         url, url_formatter,
         base::BindOnce(&AsyncResultHolder::SetResult,
                        base::Unretained(result_holder)));
   }
 
-  supervised_user::SupervisedUserURLFilter& filter() { return filter_; }
+  SupervisedUserURLFilter& filter() { return filter_; }
+
+  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple>& sync_data_fake() {
+    return sync_data_fake_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
-  supervised_user::SupervisedUserURLFilter filter_ =
-      supervised_user::SupervisedUserURLFilter(
-          pref_service_,
-          std::make_unique<supervised_user::FakeURLFilterDelegate>());
-  supervised_user::RemoteWebApprovalsManager remote_web_approvals_manager_;
+  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
+      pref_service_};
+  SupervisedUserURLFilter filter_ =
+      SupervisedUserURLFilter(pref_service_,
+                              std::make_unique<FakeURLFilterDelegate>());
+  RemoteWebApprovalsManager remote_web_approvals_manager_;
 };
 
 TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
@@ -192,13 +201,12 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   // Add an entry in for the test url in the blocklist in order to get the
   // unstriped url in the approval.
-  std::map<std::string, bool> url_map;
-  url_map.emplace(url.host(), false);
-  filter().SetManualHosts(url_map);
+  sync_data_fake().SetManualHosts({{url.host(), UrlStatus::kBlocked}});
+  filter().UpdateManualHosts();
+
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder,
-                    supervised_user::FilteringBehaviorReason::MANUAL);
+    RequestApproval(url, &result_holder, FilteringBehaviorReason::MANUAL);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
 
@@ -209,8 +217,7 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder,
-                    supervised_user::FilteringBehaviorReason::MANUAL);
+    RequestApproval(url, &result_holder, FilteringBehaviorReason::MANUAL);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
 
@@ -224,3 +231,6 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
     EXPECT_TRUE(result_holder.GetResult());
   }
 }
+
+}  // namespace
+}  // namespace supervised_user

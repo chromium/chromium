@@ -606,25 +606,22 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameWithAsyncChecks(
   return RunAsyncChecker(url, std::move(callback));
 }
 
-void SupervisedUserURLFilter::SetManualHosts(
-    std::map<std::string, bool> host_map) {
-  // TODO(b/305229682): Update this method to received the two
+void SupervisedUserURLFilter::UpdateManualHosts() {
+  // TODO(crbug.com/305229682): Update this method to handle the two
   // parental lists.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  blocked_host_list_.clear();
+  allowed_host_list_.clear();
 
-  std::set<std::string> new_blocked_host_list;
-  std::set<std::string> new_allowed_host_list;
-
-  for (const auto& host_entry : host_map) {
-    if (host_entry.second) {
-      new_allowed_host_list.emplace(host_entry.first);
+  for (auto&& [host, value] :
+       user_prefs_->GetDict(prefs::kSupervisedUserManualHosts)) {
+    DCHECK(value.is_bool());
+    if (value.GetIfBool().value_or(false)) {
+      allowed_host_list_.emplace(host);
     } else {
-      new_blocked_host_list.emplace(host_entry.first);
+      blocked_host_list_.emplace(host);
     }
   }
-
-  blocked_host_list_ = std::move(new_blocked_host_list);
-  allowed_host_list_ = std::move(new_allowed_host_list);
 
   statistics_.blocked_hosts_count = blocked_host_list_.size();
   statistics_.allowed_hosts_count = allowed_host_list_.size();
