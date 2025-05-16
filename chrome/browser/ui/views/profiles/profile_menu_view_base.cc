@@ -302,10 +302,6 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
       anchor_button_(anchor_button),
       close_bubble_helper_(this, browser->tab_strip_model()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  // TODO(tluk): Remove when fixing https://crbug.com/822075
-  // The sign in webview will be clipped on the bottom corners without these
-  // margins, see related bug <http://crbug.com/593203>.
-  SetPaintClientToLayer(true);
   set_margins(gfx::Insets(0));
   DCHECK(anchor_button);
   views::InkDrop::Get(anchor_button)

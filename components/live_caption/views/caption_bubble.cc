@@ -559,9 +559,6 @@ CaptionBubble::CaptionBubble(CaptionBubbleSettings* caption_bubble_settings,
       application_locale_(application_locale),
       is_expanded_(caption_bubble_settings_->GetLiveCaptionBubbleExpanded()),
       controls_animation_(this) {
-  // Bubbles that use transparent colors should not paint their ClientViews to a
-  // layer as doing so could result in visual artifacts.
-  SetPaintClientToLayer(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // While not shown, the title is still used to identify the window in the
   // window switcher.

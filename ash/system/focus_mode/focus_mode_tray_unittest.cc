@@ -285,8 +285,7 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   EXPECT_TRUE(animator &&
               animator->IsAnimatingProperty(
                   ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
-  // Layer top edge animates down.
-  EXPECT_GT(bubble_view_layer->bounds().y(), bubble_view->y());
+
   // `task_item_view` will be removed at the start of the animation.
   EXPECT_FALSE(GetTaskItemView());
 }

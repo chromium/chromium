@@ -68,10 +68,6 @@ ShelfBubble::ShelfBubble(
           arrow_position.value_or(GetArrow(alignment))),
       for_tooltip_(for_tooltip) {
   SetBackgroundColor(SK_ColorTRANSPARENT);
-
-  // Bubbles that use transparent colors should not paint their ClientViews to a
-  // layer as doing so could result in visual artifacts.
-  SetPaintClientToLayer(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // Place the bubble in the same display as the anchor.

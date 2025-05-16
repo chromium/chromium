@@ -195,7 +195,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void SetBackgroundColor(ui::ColorVariant color);
   ui::ColorVariant background_color() const { return bubble_border_->color(); }
 
-  // For masking reasons, the ClientView may be painted to a textured layer. To
+  // For masking reasons, the ClientView is painted to a textured layer. To
   // ensure bubbles that rely on the frame background color continue to work as
   // expected, we must set the background of the ClientView to match that of the
   // BubbleFrameView.

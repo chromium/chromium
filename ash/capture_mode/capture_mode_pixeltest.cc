@@ -183,7 +183,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
       GetScreenshotName(base::StrCat({"video_capture_notification_view_",
                                       GetDisplayTypeName(GetDisplayType())}),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 }  // namespace ash

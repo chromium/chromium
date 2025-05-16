@@ -117,7 +117,6 @@ ToastView::ToastView(
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
   SetBackgroundColor(ui::kColorToastBackgroundProminent);
-  SetPaintClientToLayer(true);
   SetShowCloseButton(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(ChromeLayoutProvider::Get()->GetDistanceMetric(

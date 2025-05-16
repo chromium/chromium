@@ -845,21 +845,35 @@ void BubbleFrameView::SetBackgroundColor(ui::ColorVariant color) {
 }
 
 void BubbleFrameView::UpdateClientViewBackground() {
-  DCHECK(GetWidget());
-  DCHECK(GetWidget()->client_view());
+  CHECK(GetWidget());
 
-  // If dealing with a layer backed ClientView we need to update it's color to
-  // match that of the frame view.
   View* client_view = GetWidget()->client_view();
+  CHECK(client_view);
+
+  // If dealing with a layer backed ClientView, painting the client view with
+  // the same color serves two purposes:
+  // 1. It guarantees that bubbles depending on the frame's background color
+  // will continue functioning correctly.
+  // 2. It allows marking the client view's layer as opaque, which reduces
+  // overdraw and eliminates blending costs.
+  //
+  // However, if the frame uses transparent colors, the client view should not
+  // be painted with a background color, and its layer should be marked as
+  // transparent. This is because blending the client view's background with the
+  // BubbleBorderBackground in such cases would produce an incorrect final
+  // appearance.
+  //
+  // Note:
+  // While always marking the layer as transparent would avoid
+  // painting a background, this approach is less efficient when the background
+  // color is opaque.
   if (client_view->layer()) {
-    // If the ClientView's background is transparent this could result in visual
-    // artifacts. Make sure this isn't the case.
     const SkColor color =
         background_color().ResolveToSkColor(GetWidget()->GetColorProvider());
-    // TODO(b:414655934): Remove this assertion.
-    DCHECK(SkColor4f::FromColor(color).isOpaque());
-    client_view->SetBackground(CreateSolidBackground(color));
-    client_view->SchedulePaint();
+    const bool is_opaque = SkColor4f::FromColor(color).isOpaque();
+    client_view->layer()->SetFillsBoundsOpaquely(is_opaque);
+    client_view->SetBackground(is_opaque ? CreateSolidBackground(color)
+                                         : nullptr);
   }
 }
 

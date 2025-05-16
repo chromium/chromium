@@ -122,7 +122,7 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("close_button_focused",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 // Regression test for http://b/267195370. Tests that a notification with no
@@ -145,7 +145,7 @@ TEST_P(AshNotificationViewPixelTest, DISABLED_CollapsedNoMessage) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("collapsed_no_message",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 // Tests that a progress notification does not have its title vertically
@@ -168,7 +168,7 @@ TEST_P(AshNotificationViewPixelTest, ProgressCollapsed) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("progress_collapsed",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 // Tests the control buttons UI for the case of a notification with just the
@@ -192,7 +192,7 @@ TEST_P(AshNotificationViewPixelTest, CloseControlButton) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("close_control_button",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 // Tests the control buttons UI for the case of a notification with both the
@@ -216,7 +216,7 @@ TEST_P(AshNotificationViewPixelTest, SettingsAndCloseControlButtons) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("settings_and_close_control_buttons",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 // Tests the inline reply UI for AshNotificationView.
@@ -242,7 +242,7 @@ TEST_P(AshNotificationViewPixelTest, InlineReply) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("inline_reply_focused",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 // Tests the focus ring for the expand button in AshNotificationView.
@@ -259,7 +259,7 @@ TEST_P(AshNotificationViewPixelTest, ExpandButtonFocusRing) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("expand_button_focus_ring",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 TEST_P(AshNotificationViewPixelTest, NotificationViewFocusRing) {
@@ -273,7 +273,7 @@ TEST_P(AshNotificationViewPixelTest, NotificationViewFocusRing) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("notification_view_focus_ring",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 TEST_P(AshNotificationViewPixelTest, NotificationPopupFocusRing) {
@@ -348,7 +348,7 @@ TEST_P(AshNotificationViewIconPixelTest, DISABLED_NotificationIcon) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName(base::StringPrintf("expanded_icon_size_%u", size),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 
   notification_view->ToggleExpand();
   ASSERT_FALSE(notification_view->IsExpanded());
@@ -423,7 +423,7 @@ TEST_P(AshNotificationViewTitlePixelTest, DISABLED_NotificationTitleTest) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       ::ash::GetScreenshotName(screenshot_name,
                                IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 class AshNotificationViewCollapsedLongTextPixelTest
@@ -494,7 +494,7 @@ TEST_P(AshNotificationViewCollapsedLongTextPixelTest,
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("elided_text_spacing",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 }  // namespace ash

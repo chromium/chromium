@@ -323,9 +323,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // We force to create contents background since the bubble border background
   // is not shown in this view.
   set_force_create_contents_background(true);
-  // Bubbles that use transparent colors should not paint their ClientViews to a
-  // layer as doing so could result in visual artifacts.
-  SetPaintClientToLayer(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   DCHECK(delegate_);

@@ -91,11 +91,6 @@ ExtensionsMenuView::ExtensionsMenuView(
           nullptr, nullptr, IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA_SHORT,
           IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA,
           extensions::SitePermissionsHelper::SiteInteraction::kGranted} {
-  // Ensure layer masking is used for the extensions menu to ensure buttons with
-  // layer effects sitting flush with the bottom of the bubble are clipped
-  // appropriately.
-  SetPaintClientToLayer(true);
-
   toolbar_model_observation_.Observe(toolbar_model_.get());
   browser_->tab_strip_model()->AddObserver(this);
   set_margins(gfx::Insets(0));

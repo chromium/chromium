@@ -416,9 +416,6 @@ MediaDialogView::MediaDialogView(
       web_contents_for_presentation_request_(contents),
       entry_point_(entry_point) {
   SetProperty(views::kElementIdentifierKey, kToolbarMediaBubbleElementId);
-  // Enable layer based clipping to ensure children using layers are clipped
-  // appropriately.
-  SetPaintClientToLayer(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME));

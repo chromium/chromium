@@ -24,6 +24,8 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -1024,37 +1026,21 @@ INSTANTIATE_TEST_SUITE_P(AnchorAtFarScreenCorners,
                          testing::ValuesIn(kAnchorAtFarScreenCornersParams));
 
 // Tests whether the BubbleDialogDelegateView will create a layer backed
-// ClientView when SetPaintClientToLayer is set to true.
-TEST_F(BubbleDialogDelegateViewTest, WithClientLayerTest) {
+// ClientView.
+TEST_F(BubbleDialogDelegateViewTest, ClientViewIsPaintedToLayer) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
       BubbleDialogDelegateView::CreatePassKey(), nullptr,
       BubbleBorder::TOP_LEFT);
-  bubble_delegate->SetPaintClientToLayer(true);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
 
   WidgetAutoclosePtr bubble_widget(
       BubbleDialogDelegateView::CreateBubble(std::move(bubble_delegate)));
 
-  EXPECT_NE(nullptr, bubble_widget->client_view()->layer());
-}
-
-// Tests to ensure BubbleDialogDelegateView does not create a layer backed
-// ClientView when SetPaintClientToLayer is set to false.
-TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
-  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
-      BubbleDialogDelegateView::CreatePassKey(), nullptr,
-      BubbleBorder::TOP_LEFT);
-  bubble_delegate->SetPaintClientToLayer(false);
-  bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
-
-  WidgetAutoclosePtr bubble_widget(
-      BubbleDialogDelegateView::CreateBubble(std::move(bubble_delegate)));
-
-  EXPECT_EQ(nullptr, bubble_widget->client_view()->layer());
+  auto* client_view_layer = bubble_widget->client_view()->layer();
+  EXPECT_TRUE(client_view_layer);
+  EXPECT_EQ(client_view_layer->type(), ui::LAYER_TEXTURED);
 }
 
 TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {

@@ -84,6 +84,6 @@ TEST_P(ScalableIphPixelTest, NotificationNoBodyText) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("scalable_iph_notification_no_body_text",
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/2, message_view));
+      /*revision_number=*/3, message_view));
 }
 }  // namespace ash
