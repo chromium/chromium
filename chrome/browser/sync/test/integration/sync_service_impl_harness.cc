@@ -244,18 +244,16 @@ bool SyncServiceImplHarness::SignInPrimaryAccount(
 
     case SigninType::FAKE_SIGNIN: {
       signin_delegate_->SigninFake(profile_, username_, consent_level);
-
-      // TODO(b/1523197): The below checks should also be satisfied for the
-      // above case.
-      signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profile_);
-      CHECK(identity_manager->HasPrimaryAccount(consent_level));
-      CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
-      CHECK(!service()->GetAccountInfo().IsEmpty());
-
       break;
     }
   }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CHECK(identity_manager->HasPrimaryAccount(consent_level));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   return true;
 }
