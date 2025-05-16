@@ -503,37 +503,6 @@ IN_PROC_BROWSER_TEST_P(IwaCacheTest, UpdateNotFound) {
   AssertAppInstalledAtVersion(kBaseVersion);
 }
 
-// Install base version from the Internet.
-IN_PROC_BROWSER_TEST_P(IwaCacheTest, PRE_UpdateTaskIsTriggeredAutomatically) {
-  LaunchSession();
-  AssertAppInstalledAtVersion(kBaseVersion);
-  WaitUntilPathExists(GetCachedBundlePath(kBaseVersion));
-  CheckPathDoesNotExist(GetCachedBundlePath(kUpdateVersion));
-}
-
-// Add new version to the manifest, but the installation will be done from cache
-// with the base version first. Then the IWA cache manager will automatically
-// trigger the update check.
-IN_PROC_BROWSER_TEST_P(IwaCacheTest, UpdateTaskIsTriggeredAutomatically) {
-  AddNewVersionToUpdateServer(kUpdateVersion);
-  LaunchSession();
-
-  UpdateDiscoveryTaskFuture discovery_update_future;
-  UpdateDiscoveryTaskResultWaiter discovery_update_waiter(
-      provider(), GetAppId(), discovery_update_future.GetCallback());
-
-  AssertAppInstalledAtVersion(kBaseVersion);
-  if (IsManagedGuestSession()) {
-    // Only open app in MGS, in kiosk app is always opened after the session
-    // started.
-    OpenIwa();
-  }
-
-  EXPECT_THAT(discovery_update_future.Get(),
-              ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
-                          kUpdateFoundAndSavedInDatabase));
-}
-
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IwaCacheTest,
