@@ -98,7 +98,11 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
         SurveyConfig config = SurveyConfig.get(mProfile, SENTIMENT_ORGANIC_SURVEY_TRIGGER);
         SurveyClient surveyClient =
                 SurveyClientFactory.getInstance()
-                        .createClient(config, mSafetyHubSurveyUiDelegate, mProfile);
+                        .createClient(
+                                config,
+                                mSafetyHubSurveyUiDelegate,
+                                mProfile,
+                                mCurrentTabModelSelector);
         if (surveyClient == null) {
             Log.d(TAG, "SurveyClient is null. config: " + SurveyConfig.toString(config));
             return;

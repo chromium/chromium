@@ -55,6 +55,7 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private InsetObserver mInsetObserver;
+    @Mock private SurveyConfig mSurveyConfig;
 
     private Activity mActivity;
     private WindowAndroid mWindow;

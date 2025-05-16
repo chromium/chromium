@@ -334,7 +334,7 @@ public class PrivacySandboxSurveyController {
                         SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
         SurveyClient surveyClient =
                 SurveyClientFactory.getInstance()
-                        .createClient(surveyConfig, messageDelegate, mProfile);
+                        .createClient(surveyConfig, messageDelegate, mProfile, mTabModelSelector);
         return surveyClient;
     }
 

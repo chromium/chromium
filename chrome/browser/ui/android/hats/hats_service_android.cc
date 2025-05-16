@@ -76,14 +76,15 @@ void HatsServiceAndroid::DelayedSurveyTask::Launch() {
     message_->SetTitle(survey_options_.custom_invitation.value());
   }
 
-  hats::SurveyUiDelegateAndroid delegate(
-      message_.get(), web_contents()->GetTopLevelNativeWindow());
+  ui::WindowAndroid* window_android = web_contents()->GetTopLevelNativeWindow();
+
+  hats::SurveyUiDelegateAndroid delegate(message_.get(), window_android);
 
   // Create survey client with delegate.
-  hats::SurveyClientAndroid survey_client(
-      trigger_, &delegate, hats_service_->profile(), supplied_trigger_id_);
-  survey_client.LaunchSurvey(web_contents()->GetTopLevelNativeWindow(),
-                             product_specific_bits_data_,
+  hats::SurveyClientAndroid survey_client(trigger_, &delegate,
+                                          hats_service_->profile(),
+                                          supplied_trigger_id_, window_android);
+  survey_client.LaunchSurvey(window_android, product_specific_bits_data_,
                              product_specific_string_data_);
 }
 

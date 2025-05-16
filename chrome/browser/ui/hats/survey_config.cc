@@ -880,11 +880,6 @@ SurveyConfig::SurveyConfig(
 
   user_prompted =
       base::FeatureParam<bool>(feature, "user_prompted", false).Get();
-
-#if BUILDFLAG(IS_ANDROID)
-  CHECK(requested_browser_type == RequestedBrowserType::kRegular)
-      << "HaTS on Android supports only RequestedBrowserType::kRegular";
-#endif
 }
 
 // static

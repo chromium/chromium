@@ -29,6 +29,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -48,19 +52,32 @@ public class SurveyClientBridgeUnitTest {
     @Mock SurveyClient mDelegateSurveyClient;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock Profile mProfile;
+    @Mock TabModelSelector mTabModelSelector;
+
+    WindowAndroid mWindow;
 
     @Before
     public void setup() {
         mActivity = Robolectric.buildActivity(LifecycleDispatcherActivity.class).get();
         mActivity.setLifecycleDispatcher(mActivityLifecycleDispatcher);
         SurveyClientFactory.setInstanceForTesting(mFactory);
+        TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
 
-        doReturn(mDelegateSurveyClient).when(mFactory).createClient(any(), any(), any());
+        doReturn(mDelegateSurveyClient).when(mFactory).createClient(any(), any(), any(), any());
+
+        mWindow =
+                new ActivityWindowAndroid(
+                        mActivity,
+                        false,
+                        IntentRequestTracker.createFromActivity(mActivity),
+                        /* insetObserver= */ null,
+                        /* trackOcclusion= */ true);
     }
 
     @After
     public void tearDown() {
         mActivity.finish();
+        mWindow.destroy();
     }
 
     @Test
@@ -70,7 +87,7 @@ public class SurveyClientBridgeUnitTest {
         TestSurveyUtils.setTestSurveyConfigForTrigger(
                 TEST_TRIGGER, new String[] {}, new String[] {});
         SurveyClientBridge bridge =
-                SurveyClientBridge.create(TEST_TRIGGER, testDelegate, mProfile, "");
+                SurveyClientBridge.create(TEST_TRIGGER, testDelegate, mProfile, "", mWindow);
         assertNotNull(bridge);
 
         bridge.showSurvey(mActivity, mActivityLifecycleDispatcher);
@@ -78,7 +95,7 @@ public class SurveyClientBridgeUnitTest {
 
         ArgumentCaptor<SurveyConfig> surveyConfigArgumentCaptor =
                 ArgumentCaptor.forClass(SurveyConfig.class);
-        verify(mFactory).createClient(surveyConfigArgumentCaptor.capture(), any(), any());
+        verify(mFactory).createClient(surveyConfigArgumentCaptor.capture(), any(), any(), any());
 
         assertEquals(
                 TestSurveyUtils.TEST_TRIGGER_ID_FOO,
@@ -93,7 +110,7 @@ public class SurveyClientBridgeUnitTest {
                 TEST_TRIGGER, new String[] {}, new String[] {});
         SurveyClientBridge bridge =
                 SurveyClientBridge.create(
-                        TEST_TRIGGER, testDelegate, mProfile, SUPPLIED_TRIGGER_ID);
+                        TEST_TRIGGER, testDelegate, mProfile, SUPPLIED_TRIGGER_ID, mWindow);
         assertNotNull(bridge);
 
         bridge.showSurvey(mActivity, mActivityLifecycleDispatcher);
@@ -101,7 +118,7 @@ public class SurveyClientBridgeUnitTest {
 
         ArgumentCaptor<SurveyConfig> surveyConfigArgumentCaptor =
                 ArgumentCaptor.forClass(SurveyConfig.class);
-        verify(mFactory).createClient(surveyConfigArgumentCaptor.capture(), any(), any());
+        verify(mFactory).createClient(surveyConfigArgumentCaptor.capture(), any(), any(), any());
         assertEquals(SUPPLIED_TRIGGER_ID, surveyConfigArgumentCaptor.getValue().mTriggerId);
     }
 
@@ -112,7 +129,7 @@ public class SurveyClientBridgeUnitTest {
         TestSurveyUtils.setTestSurveyConfigForTrigger(
                 TEST_TRIGGER, new String[] {"bit1", "bit2"}, new String[] {"string1", "string2"});
         SurveyClientBridge bridge =
-                SurveyClientBridge.create(TEST_TRIGGER, testDelegate, mProfile, "");
+                SurveyClientBridge.create(TEST_TRIGGER, testDelegate, mProfile, "", mWindow);
         assertNotNull(bridge);
 
         Map<String, Boolean> bitValues = Map.of("bit1", true, "bit2", false);
@@ -130,7 +147,7 @@ public class SurveyClientBridgeUnitTest {
                 new TestSurveyUtils.TestSurveyUiDelegate();
         TestSurveyUtils.setTestSurveyConfigForTrigger(TEST_TRIGGER, bitFields, stringFields);
         SurveyClientBridge bridge =
-                SurveyClientBridge.create(TEST_TRIGGER, testDelegate, mProfile, "");
+                SurveyClientBridge.create(TEST_TRIGGER, testDelegate, mProfile, "", mWindow);
         assertNotNull(bridge);
 
         WindowAndroid window = mock(WindowAndroid.class);

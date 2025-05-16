@@ -222,8 +222,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * @return Whether survey can be shown in the current session.
      */
     private boolean canShowSurveyPrompt() {
-        return !mTabModelSelector.isIncognitoSelected()
-                && Boolean.TRUE.equals(mCrashUploadPermissionSupplier.get());
+        return Boolean.TRUE.equals(mCrashUploadPermissionSupplier.get());
     }
 
     private void showSurveyIfReady() {

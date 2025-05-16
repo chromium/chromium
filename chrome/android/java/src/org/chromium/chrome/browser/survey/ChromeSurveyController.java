@@ -85,7 +85,8 @@ public class ChromeSurveyController {
                         tabModelSelector,
                         ChromeSurveyController::isUMAEnabled);
         SurveyClient client =
-                SurveyClientFactory.getInstance().createClient(config, messageDelegate, profile);
+                SurveyClientFactory.getInstance()
+                        .createClient(config, messageDelegate, profile, tabModelSelector);
         if (client == null) return null;
 
         ChromeSurveyController chromeSurveyController = new ChromeSurveyController(client);

@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Factory class used to create SurveyClient. */
 @NullMarked
@@ -77,7 +78,10 @@ public class SurveyClientFactory {
      * @return SurveyClient to display the given survey matching the config.
      */
     public @Nullable SurveyClient createClient(
-            SurveyConfig config, SurveyUiDelegate uiDelegate, Profile profile) {
+            SurveyConfig config,
+            SurveyUiDelegate uiDelegate,
+            Profile profile,
+            @Nullable TabModelSelector tabModelSelector) {
         if (config.mProbability == 0f || TextUtils.isEmpty(config.mTriggerId)) return null;
 
         SurveyController surveyController;
@@ -89,7 +93,12 @@ public class SurveyClientFactory {
             surveyController = new SurveyController() {};
         }
         return new SurveyClientImpl(
-                config, uiDelegate, surveyController, mCrashUploadPermissionSupplier, profile);
+                config,
+                uiDelegate,
+                surveyController,
+                mCrashUploadPermissionSupplier,
+                profile,
+                tabModelSelector);
     }
 
     /** Get the crash upload supplier initialized in this factory. */

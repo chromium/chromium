@@ -30,7 +30,8 @@ SurveyClientAndroid::SurveyClientAndroid(
     const std::string& trigger,
     SurveyUiDelegateAndroid* ui_delegate,
     Profile* profile,
-    const std::optional<std::string>& supplied_trigger_id) {
+    const std::optional<std::string>& supplied_trigger_id,
+    ui::WindowAndroid* window) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_trigger =
       ConvertUTF8ToJavaString(env, trigger);
@@ -40,7 +41,8 @@ SurveyClientAndroid::SurveyClientAndroid(
                                        : std::string_view());
   jobj_ = Java_SurveyClientBridge_create(
       env, java_trigger, ui_delegate->GetJavaObject(env),
-      profile->GetJavaObject(), java_supplied_trigger_id);
+      profile->GetJavaObject(), java_supplied_trigger_id,
+      window->GetJavaObject());
 }
 
 SurveyClientAndroid::~SurveyClientAndroid() = default;

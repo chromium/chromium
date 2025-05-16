@@ -22,6 +22,7 @@ import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Map;
 import java.util.Optional;
@@ -144,9 +145,15 @@ public class TestSurveyUtils {
         public SurveyClient createClient(
                 @NonNull SurveyConfig config,
                 @NonNull SurveyUiDelegate uiDelegate,
-                Profile profile) {
+                Profile profile,
+                TabModelSelector tabModelSelector) {
             return new SurveyClientImpl(
-                    config, uiDelegate, mTestController, mCrashUploadPermissionSupplier, profile);
+                    config,
+                    uiDelegate,
+                    mTestController,
+                    mCrashUploadPermissionSupplier,
+                    profile,
+                    tabModelSelector);
         }
 
         @Override

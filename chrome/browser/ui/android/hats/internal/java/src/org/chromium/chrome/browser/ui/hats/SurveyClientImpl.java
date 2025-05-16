@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.hats.SurveyConfig.RequestedBrowserType;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -49,11 +51,13 @@ class SurveyClientImpl implements SurveyClient {
     private final ObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
     private final Map<String, String> mAggregatedSurveyPsd;
     private final Profile mProfile;
+    private final @Nullable TabModelSelector mTabModelSelector;
 
     private @Nullable WeakReference<Activity> mActivityRef;
     private @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
     private @Nullable LifecycleObserver mLifecycleObserver;
     private @Nullable Callback<Boolean> mOnCrashUploadPermissionChangeCallback;
+    private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
     private boolean mIsDestroyed;
 
     SurveyClientImpl(
@@ -61,7 +65,8 @@ class SurveyClientImpl implements SurveyClient {
             SurveyUiDelegate uiDelegate,
             SurveyController controller,
             ObservableSupplier<Boolean> crashUploadPermissionSupplier,
-            Profile profile) {
+            Profile profile,
+            @Nullable TabModelSelector tabModelSelector) {
         mConfig = config;
         mUiDelegate = uiDelegate;
         mController = controller;
@@ -69,6 +74,7 @@ class SurveyClientImpl implements SurveyClient {
         mThrottler = new SurveyThrottler(mConfig);
         mAggregatedSurveyPsd = new HashMap<>();
         mProfile = profile;
+        mTabModelSelector = tabModelSelector;
     }
 
     @Override
@@ -151,6 +157,28 @@ class SurveyClientImpl implements SurveyClient {
                 this::onSurveyDownloadFailed);
     }
 
+    /**
+     * @return Whether the actual browser type matches the requested browser type from the survey
+     *     config.
+     */
+    private boolean isRightBrowserType() {
+        if (mTabModelSelector == null) {
+            // TODO(crbug.com/418075247): Ensure mTabModelSelector is never null.
+            return true;
+        }
+
+        @RequestedBrowserType int requestedBrowserType = mConfig.mRequestedBrowserType;
+        switch (requestedBrowserType) {
+            case RequestedBrowserType.REGULAR:
+                return !mTabModelSelector.isIncognitoSelected();
+            case RequestedBrowserType.INCOGNITO:
+                return mTabModelSelector.isIncognitoSelected();
+            default:
+                assert false : "Unknown requested browser type: " + requestedBrowserType;
+                return false;
+        }
+    }
+
     private void onSurveyDownloadSucceeded() {
         Log.d(TAG, "Survey Download succeed.");
         if (!configurationAllowsSurveys()) return;
@@ -181,6 +209,21 @@ class SurveyClientImpl implements SurveyClient {
                     }
                 };
         mCrashUploadPermissionSupplier.addObserver(mOnCrashUploadPermissionChangeCallback);
+
+        // TODO(crbug.com/418075247): Ensure mTabModelSelector is never null.
+        if (mTabModelSelector != null) {
+            mTabModelSelectorObserver =
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onChange() {
+                            if (!isRightBrowserType()) {
+                                mUiDelegate.dismiss();
+                                mTabModelSelector.removeObserver(this);
+                            }
+                        }
+                    };
+            mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        }
 
         mUiDelegate.showSurveyInvitation(
                 this::onSurveyAccepted, this::onSurveyDeclined, this::onSurveyPresentationFailed);
@@ -250,6 +293,10 @@ class SurveyClientImpl implements SurveyClient {
             mCrashUploadPermissionSupplier.removeObserver(mOnCrashUploadPermissionChangeCallback);
             mOnCrashUploadPermissionChangeCallback = null;
         }
+        if (mTabModelSelector != null && mTabModelSelectorObserver != null) {
+            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelectorObserver = null;
+        }
         mLifecycleDispatcher = null;
 
         if (dismissUiDelegate) {
@@ -266,11 +313,7 @@ class SurveyClientImpl implements SurveyClient {
      * @return a boolean indicating whether the user's configuration allows a survey to be shown.
      */
     private boolean configurationAllowsSurveys() {
-        if (mConfig.mRequestedBrowserType != RequestedBrowserType.REGULAR) {
-            assert false : "HaTS on Android supports only RequestedBrowserType.REGULAR";
-            return false;
-        }
-
+        if (!isRightBrowserType()) return false;
         if (forceShowSurvey()) return true;
 
         // Do not include any logging to avoid reveal the fact user has crash upload disabled.

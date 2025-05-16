@@ -38,7 +38,8 @@ class SurveyClientAndroid {
       const std::string& trigger,
       SurveyUiDelegateAndroid* ui_delegate,
       Profile* profile,
-      const std::optional<std::string>& supplied_trigger_id);
+      const std::optional<std::string>& supplied_trigger_id,
+      ui::WindowAndroid* window);
 
   SurveyClientAndroid(const SurveyClientAndroid&) = delete;
   SurveyClientAndroid& operator=(const SurveyClientAndroid&) = delete;

@@ -100,7 +100,7 @@ public class PrivacySandboxSurveyControllerTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
         SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
-        doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any());
+        doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any(), any());
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(mProfile))
                 .thenReturn(mIdentityManager);
