@@ -40,6 +40,8 @@ class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
         verticalRegular, horizontalRegular
       ]];
     }
+#else
+    return UITraitCollection.currentTraitCollection;
 #endif
   }
 
@@ -62,6 +64,8 @@ class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
         verticalCompact, horizontalCompact
       ]];
     }
+#else
+    return UITraitCollection.currentTraitCollection;
 #endif
   }
 
@@ -84,6 +88,8 @@ class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
         verticalRegular, horizontalCompact
       ]];
     }
+#else
+    return UITraitCollection.currentTraitCollection;
 #endif
   }
 
