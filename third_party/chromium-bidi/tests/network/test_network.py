@@ -262,7 +262,7 @@ async def test_network_response_completed_event_emitted(
             "timestamp": ANY_TIMESTAMP,
             "response": {
                 "url": url_base,
-                "protocol": AnyOr("http/1.0", "h2"),
+                "protocol": AnyOr("http/1.0", "http/1.1", "h2"),
                 "status": AnyOr(200, 307),
                 "statusText": AnyOr("OK", "", "Temporary Redirect"),
                 "fromCache": False,
@@ -319,7 +319,7 @@ async def test_network_response_started_event_emitted(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
             "response": {
                 "url": url_base,
-                "protocol": AnyOr("http/1.0", "h2"),
+                "protocol": AnyOr("http/1.0", "http/1.1", "h2"),
                 "status": AnyOr(200, 307),
                 "statusText": AnyOr("OK", "", "Temporary Redirect"),
                 "fromCache": False,

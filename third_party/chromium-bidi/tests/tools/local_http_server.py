@@ -14,29 +14,38 @@
 #  limitations under the License.
 
 import base64
+import http.client
+import socket
 import ssl
+import time
 import uuid
-from datetime import datetime
+from contextlib import closing
+from datetime import datetime, timezone
 from pathlib import Path
-from threading import Event
-from typing import Literal
+from threading import Event, Thread
+from typing import Any, Literal
 
-from pytest_httpserver import HTTPServer
-from werkzeug.wrappers import Request, Response
+from flask import Flask
+from flask import Response as FlaskResponse
+from flask import redirect, request
+
+
+# Helper to find a free port
+def find_free_port() -> int:
+    """Finds and returns an available port number."""
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
 
 
 class LocalHttpServer:
     """
-    A wrapper of `pytest_httpserver.httpserver` to simplify the usage. Sets up
-    common use cases and provides url for them.
-    NOTE: the server does not support concurrent requests to different origins.
-    If needed, use a instance of the server per origin.
+    A Flask-based local HTTP/S server. Sets up common use cases and provides url
+    for them.
     """
 
-    __http_server: HTTPServer
-
-    __start_time: datetime
-
+    # Path constants
     __path_base = "/"
     __path_favicon = "/favicon.ico"
     __path_200 = "/200"
@@ -44,178 +53,298 @@ class LocalHttpServer:
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
     __path_cacheable = "/cacheable"
-    # __path_sw_page_bad_ssl = "/sw_bad_ssl.html"
-    # __path_empty_script = "/empty.js"
-
-    __protocol: Literal['http', 'https']
 
     content_200: str = 'default 200 page'
-    content_200_page: str = 'default 200 page'
 
-    # def __content_sw_page_bad_ssl(self) -> str:
-    #     return f"""<script>
-    #       window.registrationPromise = navigator.serviceWorker.register('{self.url_empty_script(protocol='https')}');
-    #     </script>"""
+    __app: Flask
+    __host: str
+    __port: int
+    __protocol: Literal['http', 'https']
 
-    def clear(self):
-        self.__http_server.clear()
+    __start_time: datetime
+    _dynamic_responses: dict[str, Any]
+    hang_forever_stop_flag: Event
+    _server_thread: Thread | None
 
-    def is_running(self):
-        return self.__http_server.is_running()
+    def clear(self) -> None:
+        """
+        Clears dynamically added responses. Static routes defined at startup remain.
+        This differs from pytest-httpserver's clear which removes all expectations.
+        """
+        self._dynamic_responses.clear()
 
-    def stop(self):
+    def is_running(self) -> bool:
+        """Checks if the server thread is alive and the server is responsive."""
+        if self._server_thread is not None and self._server_thread.is_alive():
+            # Perform a quick check to ensure the server is still responding
+            return self._check_server_readiness(timeout_s=0.05)
+        return False
+
+    def stop(self) -> None:
         self.hang_forever_stop()
-        self.__http_server.stop()
+        """Stops the Flask server."""
+        if not self._server_thread or not self._server_thread.is_alive():
+            # Ensure it's cleaned up if already dead
+            self._server_thread = None
+            return
 
-    def __html_doc(self, content):
+        # Wait for the thread to terminate
+        self._server_thread.join(timeout=5)
+        if self._server_thread.is_alive():
+            print(
+                f"Warning: Flask server thread for {self.origin()} did not shut down cleanly after 5s."
+            )
+        self._server_thread = None
+
+    def __html_doc(self, content: str) -> str:
         return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
 
     def __init__(self,
                  host: str = 'localhost',
                  protocol: Literal['http', 'https'] = 'http') -> None:
-        super().__init__()
-
+        self.__app = Flask(__name__)
+        # Important for some Flask behaviors in a test context
+        self.__app.testing = True
+        self.__host = host
         self.__protocol = protocol
+        self.__port = find_free_port()
 
         ssl_context = None
         if protocol == 'https':
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            cert_file_name = Path(__file__).parent / "cert.pem"
-            key_file_name = Path(__file__).parent / "key.pem"
-            ssl_context.load_cert_chain(cert_file_name, key_file_name)
+            current_dir = Path(__file__).parent
+            cert_file = current_dir / "cert.pem"
+            key_file = current_dir / "key.pem"
+            if not cert_file.exists() or not key_file.exists():
+                raise FileNotFoundError(
+                    f"SSL certificate or key file not found. Expected cert.pem and key.pem in {current_dir}"
+                )
+            ssl_context = (str(cert_file), str(key_file))
         elif protocol != 'http':
             raise ValueError(f"Unsupported protocol: {protocol}")
 
-        self.__http_server = HTTPServer(host=host, ssl_context=ssl_context)
+        self.__start_time = datetime.now(timezone.utc)
+        self._dynamic_responses = {}
+        self.hang_forever_stop_flag = Event()
+        self._server_thread = None
 
-        self.__http_server.start()
-        self.__http_server.clear()
+        self._setup_routes()
+        self._start_server(ssl_context)
 
-        self.__start_time = datetime.now()
+    def _setup_routes(self) -> None:
+        """Defines all the Flask routes for the server."""
+        @self.__app.route(self.__path_base)
+        def base_route():
+            return FlaskResponse(self.__html_doc("I prevent CORS"),
+                                 mimetype="text/html")
 
-        self.__http_server \
-            .expect_request(self.__path_base) \
-            .respond_with_data(
-                self.__html_doc("I prevent CORS"),
-                headers={"Content-Type": "text/html"})
+        @self.__app.route(self.__path_favicon)
+        def favicon_route():
+            return FlaskResponse("", mimetype="image/x-icon")
 
-        self.__http_server \
-            .expect_request(self.__path_favicon) \
-            .respond_with_data(
-                "",
-                headers={"Content-Type": "image/x-icon"})
+        @self.__app.route(self.__path_200)
+        def route_200_default():
+            return FlaskResponse(self.__html_doc(self.content_200),
+                                 mimetype="text/html")
 
-        # Set up 200 page.
-        self.__http_server \
-            .expect_request(self.__path_200) \
-            .respond_with_data(
-                self.__html_doc(self.content_200),
-                headers={"Content-Type": "text/html"})
+        @self.__app.route(f"{self.__path_200}/<string:response_id>")
+        def route_200_dynamic(response_id: str):
+            data = self._dynamic_responses.get(response_id)
+            if data:
+                return FlaskResponse(data["content"],
+                                     mimetype=data["content_type"],
+                                     headers=data["headers"])
+            return FlaskResponse("Not Found", status=404)
 
-        # Set up permanent redirect.
-        self.__http_server \
-            .expect_request(self.__path_permanent_redirect) \
-            .respond_with_data('', 301, {"Location": self.url_200()})
+        @self.__app.route(self.__path_permanent_redirect)
+        def route_permanent_redirect():
+            return redirect(self.url_200(), code=301)
 
-        def process_auth(request: Request):
+        @self.__app.route(self.__path_basic_auth)
+        def process_auth():
             authorization = request.headers.get("Authorization")
             if authorization is not None:
-                # If the authorization is a basic auth, return the decoded.
                 if authorization.startswith("Basic ") and len(
                         authorization.split(" ")) == 2:
+                    # If the authorization is a basic auth, return the decoded.
                     decoded = base64.b64decode(authorization.split(" ")[1])
-                    return Response(decoded, 200, content_type="text/html")
-                # Otherwise, return them as is with a 500 HTTP code.
+                    return FlaskResponse(decoded,
+                                         status=200,
+                                         mimetype="text/html")
                 else:
-                    return Response(authorization,
-                                    500,
-                                    content_type="text/html")
+                    # Otherwise, return them as is with a 500 HTTP code.
+                    return FlaskResponse(authorization,
+                                         status=500,
+                                         mimetype="text/html")
+            # No Authorization header
+            return FlaskResponse(
+                'HTTP Error 401 Unauthorized: Access is denied',
+                status=401,
+                mimetype="text/html",
+                headers={
+                    "WWW-Authenticate": 'Basic realm="Access to staging site"'
+                })
 
-            return Response(
-                'HTTP Error 401 Unauthorized: Access is denied', 401,
-                {"WWW-Authenticate": 'Basic realm="Access to staging site"'})
+        @self.__app.route(self.__path_hang_forever)
+        def hang_forever():
+            # Reset if called multiple times
+            self.hang_forever_stop_flag.clear()
+            self.hang_forever_stop_flag.wait()
+            return FlaskResponse("Request unblocked.",
+                                 status=200,
+                                 mimetype="text/html")
 
-        self.__http_server \
-            .expect_request(self.__path_basic_auth) \
-            .respond_with_handler(process_auth)
-
-        self.hang_forever_stop_flag = None
-
-        def hang_forever(_):
-            self.hang_forever_stop_flag = Event()
-            while not self.hang_forever_stop_flag.is_set():
-                self.hang_forever_stop_flag.wait(60)
-
-        self.__http_server.expect_request(self.__path_hang_forever) \
-            .respond_with_handler(hang_forever)
-
-        def cache(request: Request):
+        @self.__app.route(self.__path_cacheable)
+        def cache():
             content = self.__html_doc(self.content_200)
             if_modified_since = request.headers.get("If-Modified-Since")
 
             if if_modified_since is not None:
-                return Response(content, 304, content_type="text/html")
+                # HTTP 304 responses must not contain a message-body
+                return FlaskResponse("", status=304)
             else:
-                return Response(
+                return FlaskResponse(
                     content,
-                    200,
-                    content_type="text/html",
+                    status=200,
+                    mimetype="text/html",
                     headers={
                         "Cache-Control": 'public, max-age=31536000',
-                        'Last-Modified':
-                            self.__start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        # HTTP spec prefers RFC 1123 date format (GMT)
+                        'Last-Modified': self.__start_time.strftime(
+                            "%a, %d %b %Y %H:%M:%S GMT")
                     })
 
-        self.__http_server.expect_request(self.__path_cacheable) \
-            .respond_with_handler(cache)
+    def _check_server_readiness(self, timeout_s: float = 0.1) -> bool:
+        """Checks if the server is up and responding to a basic request."""
+        try:
+            conn: http.client.HTTPConnection | http.client.HTTPSConnection
+            if self.__protocol == 'https':
+                context = ssl.create_default_context()
+                context.check_hostname = False
+                # For self-signed certs
+                context.verify_mode = ssl.CERT_NONE
+                conn = http.client.HTTPSConnection(self.__host,
+                                                   self.__port,
+                                                   timeout=timeout_s,
+                                                   context=context)
+            else:
+                conn = http.client.HTTPConnection(self.__host,
+                                                  self.__port,
+                                                  timeout=timeout_s)
+
+            conn.request("GET", self.__path_base)
+            response = conn.getresponse()
+            # Important to consume the response
+            response.read()
+            conn.close()
+            # Check for any 2xx success
+            return 200 <= response.status < 300
+        except (ConnectionRefusedError, TimeoutError, OSError,
+                http.client.HTTPException, ssl.SSLError):
+            return False
+        except Exception:
+            # Catch any other unexpected errors during check
+            return False
+
+    def _wait_for_server_startup(self, max_wait_s: int = 5) -> None:
+        """Waits for the Flask server to start by polling a readiness check."""
+        start_time_monotonic = time.monotonic()
+        while time.monotonic() - start_time_monotonic < max_wait_s:
+            if self._check_server_readiness():
+                return
+            # Short sleep before retrying
+            time.sleep(0.05)
+        raise RuntimeError(
+            f"Flask server failed to start on {self.__protocol}://{self.__host}:{self.__port} within {max_wait_s}s."
+        )
+
+    def _start_server(self,
+                      ssl_context_config: tuple[str, str] | None) -> None:
+        """Starts the Flask development server in a separate thread."""
+        if self.is_running():
+            return
+
+        kwargs = {
+            'host': self.__host,
+            'port': self.__port,
+            # Should be False for stability and threaded mode
+            'debug': False,
+            # Reloader must be False when running in a thread
+            'use_reloader': False
+        }
+        if self.__protocol == 'https':
+            kwargs['ssl_context'] = ssl_context_config
+
+        def run_server_thread():
+            try:
+                self.__app.run(**kwargs)
+            except Exception as e:
+                # This might catch errors like "address already in use" if
+                # find_free_port failed, though it's unlikely.
+                print(f"Error running Flask server thread: {e}")
+
+        self._server_thread = Thread(target=run_server_thread, daemon=True)
+        self._server_thread.start()
+        self._wait_for_server_startup()
 
     def hang_forever_stop(self):
-        if self.hang_forever_stop_flag is not None:
-            self.hang_forever_stop_flag.set()
+        # Release any hanging requests
+        self.hang_forever_stop_flag.set()
+
+    def _build_url(self, path: str) -> str:
+        """Constructs a full URL for a given path on this server."""
+        return f"{self.__protocol}://{self.__host}:{self.__port}{path}"
 
     def origin(self) -> str:
-        """Returns the url for the base page to navigate and prevent CORS.
-        """
-        return self.url_base()[:-1]
+        """Returns the origin (scheme://host:port) of the server."""
+        return f"{self.__protocol}://{self.__host}:{self.__port}"
 
     def url_base(self) -> str:
-        """Returns the url for the base page to navigate and prevent CORS.
-        """
-        return self.__http_server.url_for(self.__path_base)
+        """Returns the URL for the base page (used to prevent CORS issues)."""
+        return self._build_url(self.__path_base)
 
     def url_200(self,
-                content=None,
-                content_type="text/html",
-                headers={}) -> str:
-        """Returns the url for the 200 page with the `default_200_page_content`.
+                content: str | None = None,
+                content_type: str = "text/html",
+                headers: dict[str, str] | None = None) -> str:
         """
+        Returns a URL that serves a 200 response.
+        If 'content' is provided, a unique URL is generated for that specific content.
+        Otherwise, returns the URL for the default 200 page.
+        """
+        if headers is None:
+            headers = {}
+
         if content is not None:
-            path = f"{self.__path_200}/{str(uuid.uuid4())}"
+            response_id = str(uuid.uuid4())
+
+            final_content = content
             if content_type == "text/html":
-                content = self.__html_doc(content)
-            self.__http_server \
-                .expect_request(path) \
-                .respond_with_data(
-                    content,
-                    headers={"Content-Type": content_type} | headers)
+                # Wrap in basic HTML structure if serving HTML, as per original logic
+                final_content = self.__html_doc(content)
 
-            return self.__http_server.url_for(path)
+            self._dynamic_responses[response_id] = {
+                "content": final_content,
+                "content_type": content_type,
+                # User-provided headers
+                "headers": headers
+            }
+            path = f"{self.__path_200}/{response_id}"
+            return self._build_url(path)
 
-        return self.__http_server.url_for(self.__path_200)
+        return self._build_url(self.__path_200)
 
     def url_permanent_redirect(self) -> str:
-        """Returns the url for the permanent redirect page, redirecting to the
-        200 page."""
-        return self.__http_server.url_for(self.__path_permanent_redirect)
+        """Returns the URL for a page that permanently redirects to the default 200 page."""
+        return self._build_url(self.__path_permanent_redirect)
 
     def url_basic_auth(self) -> str:
-        """Returns the url for the page with a basic auth."""
-        return self.__http_server.url_for(self.__path_basic_auth)
+        """Returns the URL for a page protected by Basic authentication."""
+        return self._build_url(self.__path_basic_auth)
 
     def url_hang_forever(self) -> str:
-        """Returns the url for the page, request to which will never be finished."""
-        return self.__http_server.url_for(self.__path_hang_forever)
+        """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
+        return self._build_url(self.__path_hang_forever)
 
     def url_cacheable(self) -> str:
-        """Returns the url for the cacheable page with the `default_200_page_content`."""
-        return self.__http_server.url_for(self.__path_cacheable)
+        """Returns the URL for a cacheable page (using Last-Modified and If-Modified-Since)."""
+        return self._build_url(self.__path_cacheable)

@@ -58,13 +58,6 @@ async def test_local_server_http_another_host_200(
 
 
 @pytest.mark.asyncio
-async def test_local_server_http_yet_another_host_200(
-        websocket, context_id, local_server_http_yet_another_host):
-    assert await get_content(websocket, context_id, local_server_http_yet_another_host.url_200()) \
-           == local_server_http_yet_another_host.content_200
-
-
-@pytest.mark.asyncio
 async def test_local_server_custom_content(websocket, context_id,
                                            local_server_http):
     some_custom_content = 'some custom content'
@@ -77,3 +70,9 @@ async def test_local_server_redirect(websocket, context_id, local_server_http):
     assert await get_content(websocket, context_id,
                              local_server_http.url_permanent_redirect()) \
            == local_server_http.content_200
+
+
+@pytest.mark.asyncio
+async def test_local_server_html(websocket, context_id, html):
+    content = "SOME CONTENT"
+    assert await get_content(websocket, context_id, html(content)) == content
