@@ -582,7 +582,6 @@
 <translation id="2949420361496057765">Притисните <ph name="MODIFIER" /> и кликните на линк</translation>
 <translation id="2957159466053076448">Те функције можете да искључите у било ком тренутку у Подешавањима. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Звук уређаја</translation>
-<translation id="2960314608273155470">Режим снимања, подразумевана вредност је <ph name="SOURCE" /> <ph name="TYPE" />. Притисните Tab за кретање помоћу тастатуре.</translation>
 <translation id="2961963223658824723">Дошло је до грешке. Пробајте поново за пар секунди.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Желите да укључите приступ микрофону?</translation>
@@ -2437,7 +2436,6 @@
 <translation id="8934418770423095813">Направите Google документ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
-<translation id="8937312474322077653">У снимању екрана подесите на <ph name="SOURCE" /> <ph name="TYPE" />. Притисните Tab да бисте изабрали тип снимања. Притисните тастер за размак да бисте изабрали регион. Притисните Enter да бисте снимили.</translation>
 <translation id="8938800817013097409">Уређај са USB прикључком типа C (задњи десни порт)</translation>
 <translation id="8939855324412367560">Аудио улаз је <ph name="INPUT_DEVICE_NAME" />, а аудио излаз је <ph name="OUTPUT_DEVICE_NAME" />. Идите у Подешавања да бисте то променили.</translation>
 <translation id="8940956008527784070">Батерија је скоро празна (<ph name="PERCENTAGE" />%)</translation>

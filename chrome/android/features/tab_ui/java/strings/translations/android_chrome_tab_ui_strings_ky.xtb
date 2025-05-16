@@ -123,6 +123,7 @@
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
+<translation id="6220820548421939212">Ооба</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
 <translation id="6271513594716432922">Жигерсиз өтмөктөрдүн баарын жабуу</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Өтмөктү жаңы топко кошуу}other{Өтмөктү жаңы топко кошуу}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Аракеттер</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> сын-пикир}other{Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> сын-пикир}}</translation>
 <translation id="7885132941432959125">Өтмөктү оңго жылдыруу</translation>
+<translation id="788914896430720926">Колдонулбаган өтмөктөрдөн арылгыңыз келеби?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> тандалган жок</translation>
 <translation id="7942349550061667556">Кызыл</translation>
 <translation id="7961015016161918242">Эч качан</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Ушул Жашыруун өтмөктөрдө издеген нерселериңиз бул түзмөктөн өчүрүлөт</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ай мурун түзүлдү}other{<ph name="NUM_MONTHS_MANY" /> ай мурун түзүлдү}}</translation>
 <translation id="8820741577754260431">Төмөндөгөн бааларды өтмөктөрдө көрөсүз</translation>
+<translation id="883379923675618699">3 айдын ичинде колдонбогон Chrome'догу өтмөктөрүңүз автоматтык түрдө жабылат. Бул функцияны азыр же каалаган убакта параметрлерден өчүрүп койсоңуз болот.</translation>
 <translation id="8887921976452567404">Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот.</translation>
 <translation id="8915916167043355778">Баарын жабуу</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Жаңы терезеге жылдыруу}other{Башка терезеге жылдыруу}}</translation>

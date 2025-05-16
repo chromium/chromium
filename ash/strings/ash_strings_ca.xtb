@@ -581,7 +581,6 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2949420361496057765">Prem <ph name="MODIFIER" /> i fes clic en un enllaç</translation>
 <translation id="2957159466053076448">Pots desactivar aquestes funcions en qualsevol moment a Configuració. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Àudio del dispositiu</translation>
-<translation id="2960314608273155470">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />. Prem la tecla de tabulació per navegar amb el teclat.</translation>
 <translation id="2961963223658824723">S'ha produït un error. Torna-ho a provar d'aquí a uns quants segons.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vols activar l'accés al micròfon?</translation>
@@ -2433,7 +2432,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8934418770423095813">Crea un document de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="8936501819958976551">desactivada</translation>
-<translation id="8937312474322077653">A la captura de pantalla, estableix en <ph name="TYPE" /> <ph name="SOURCE" />. Prem el tabulador per triar el tipus de captura. Prem la barra espaiadora per seleccionar la regió. Prem Retorn per capturar.</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="8939855324412367560">L'àudio d'entrada és "<ph name="INPUT_DEVICE_NAME" />" i el de sortida, "<ph name="OUTPUT_DEVICE_NAME" />". Per canviar-ho, ves a Configuració.</translation>
 <translation id="8940956008527784070">Bateria baixa (<ph name="PERCENTAGE" />%)</translation>

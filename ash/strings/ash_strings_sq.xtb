@@ -581,7 +581,6 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="2949420361496057765">Shtyp <ph name="MODIFIER" /> dhe kliko një lidhje</translation>
 <translation id="2957159466053076448">Mund t'i çaktivizosh këto veçori në çdo kohë te "Cilësimet". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audioja e pajisjes</translation>
-<translation id="2960314608273155470">Modaliteti i regjistrimit, parazgjedhja është <ph name="TYPE" /> (<ph name="SOURCE" />). Shtyp skedën për navigimin e tastierës.</translation>
 <translation id="2961963223658824723">Ndodhi një gabim. Provo sërish pas pak sekondash.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Të aktivizohet qasja te mikrofoni?</translation>
@@ -2433,7 +2432,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8934418770423095813">Krijo "Dokument të Google"</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skedar}other{# skedarë}}</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>
-<translation id="8937312474322077653">Në regjistrimin e ekranit, cakto te <ph name="TYPE" /> <ph name="SOURCE" />. Shtyp "Tab" për të zgjedhur llojin e regjistrimit. Shtyp tastin e hapësirës për të zgjedhur rajonin. Shtyp "Enter" për të regjistruar.</translation>
 <translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>
 <translation id="8939855324412367560">Audioja e hyrjes është nga "<ph name="INPUT_DEVICE_NAME" />" dhe audioja e daljes është nga "<ph name="OUTPUT_DEVICE_NAME" />". Shko te "Cilësimet" për ta ndryshuar.</translation>
 <translation id="8940956008527784070">Nivel i ulët baterie (<ph name="PERCENTAGE" />%)</translation>

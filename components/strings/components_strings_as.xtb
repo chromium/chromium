@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">পাঠ</translation>
 <translation id="2162620598375156287">এতিয়া <ph name="SOURCE_WEBSITE" />ত <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> টাইপ কৰোঁতে ভুল হৈছে নেকি পৰীক্ষা কৰক।</translation>
-<translation id="2165700285977947082">Google Walletৰ পৰা লয়েল্টী কাৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="2166049586286450108">প্ৰশাসকৰ সম্পূর্ণ এক্সেছ</translation>
 <translation id="2166378884831602661">এই ছাইটটোৱে সুৰক্ষিত সংযোগ প্ৰদান কৰিব নোৱাৰে</translation>
 <translation id="2168151236314517198">এই সমল প্ৰিণ্ট কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
@@ -3048,7 +3047,6 @@
 <translation id="6272383483618007430">Google আপডে’ট</translation>
 <translation id="6278015583149890680">Google Drive আৰু OneDrive</translation>
 <translation id="6280223929691119688">এই ঠিকনাটোত পঠিয়াব নোৱাৰি৷ অন্য এটা ঠিকনা বাছনি কৰক।</translation>
-<translation id="628324801501145855">পৰিশোধ পদ্ধতিৰ ছেটিঙত পৰিচালনা কৰক</translation>
 <translation id="6284292079994426700">২৬ x ৩৮ ইঞ্চি</translation>
 <translation id="6284449872909111707">পাঠ আৰু তাৎক্ষণিক বাৰ্তা বিনিময়</translation>
 <translation id="6284517535531159884">ৰূপভেদ ছীডৰ প্ৰকাৰ</translation>
@@ -3855,6 +3853,7 @@
 <translation id="7639968568612851608">গাঢ় ধোঁৱাবৰণীয়া</translation>
 <translation id="7646681339175747202">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এটা ডেটা উলংঘনত পোৱা গৈছে। Google Password Managerএ এই পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="7647206758853451655">প্ৰিণ্টৰ গুণগত মান</translation>
+<translation id="7648527891719919697">আপুনি আপোনাৰ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Androidৰ ছেটিঙ<ph name="END_ANDROID_SETTINGS_LINK" />ত সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধা অন কৰি থোৱাৰ বাবে এই ছাইটটো অৱৰোধিত হৈ থাকিব। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">এই ডিভাইচত ফাইলসমূহ ষ্ট’ৰ কৰক</translation>
 <translation id="7653957176542370971">পৰিশোধ নিয়ন্ত্ৰক শ্বীটখন বন্ধ কৰা আছে</translation>
 <translation id="7654909834015434372">আপুনি এন’টেশ্বন সম্পাদনা কৰিলে, এই নথিখন ইয়াৰ মূল ঘূৰ্ণনলৈ পুনৰ সলনি হ’ব</translation>
@@ -4249,6 +4248,7 @@
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ অনুবাদ কৰা নহয়</translation>
 <translation id="8339275256517065202">স্পৰ্শ আইডি ব্যৱহাৰ কৰি আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰক</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, আৱশ্যকীয়</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ভাৰ্চুৱেল কাৰ্ডৰ পঞ্জীয়ন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>

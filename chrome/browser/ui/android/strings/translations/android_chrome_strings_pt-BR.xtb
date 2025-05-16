@@ -435,6 +435,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
 <translation id="2981364137500752533">Você pode ter até cinco janelas.</translation>
 <translation id="2983102365694924129">Com base na sua atividade em um site. Esta configuração está desativada.</translation>
+<translation id="2983398917942897288">Guias inativas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Incluir o texto ao redor nas pesquisas do Google</translation>
 <translation id="2988638966064514052">Use senhas mais fortes</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
@@ -467,6 +468,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="314939179385989105">Página inicial do Chrome</translation>
 <translation id="3158667104057012316">Ordenar manualmente</translation>
 <translation id="3159335509547415276">Saiba mais sobre contas bloqueadas</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, abre em uma nova guia</translation>
 <translation id="3166827708714933426">Atalhos de guias e janelas</translation>
 <translation id="316694332262407393">O Chrome já está aberto.</translation>
 <translation id="3167258285411721858">Você pode solicitar o site móvel para <ph name="HOST_NAME" /></translation>
@@ -792,6 +794,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="469286762610133730">Receba conteúdos melhores</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Revise suas guias inativas aqui</translation>
+<translation id="4698757800236023795">Guias ativas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
 <translation id="4710167854527459075">Ordenar por mais recente</translation>
 <translation id="4718044610319080485">Aciona o assistente de IA</translation>

@@ -533,6 +533,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3208260410153224535">Din organisation har inaktiverat inloggning. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
 <translation id="3213807041830307252">Köp, översätt och identifiera det du ser med hjälp av kameran och fotogalleriet.</translation>
 <translation id="3214379938835224220">Du har loggats ut som en del av återställningen av din iPad. Tryck på Fortsätt nedan för att logga in.</translation>
+<translation id="3218296450292600703">Genom att logga in med det hanterade kontot kan du skilja på webbinformationen som är kopplad till organisationen, till exempel flikar, historik och lösenord, från annan webbinformation.</translation>
 <translation id="3224075676564434205">Flikarna förblir öppna på den här enheten men gruppen raderas från alla enheter där du är inloggad på <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Du måste ställa in ett lösenord på enheten om du vill kunna exportera lösenord.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1484,6 +1485,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Inställningar → Betalningsmetod</translation>
 <translation id="7108338896283013870">Dölj</translation>
+<translation id="7115051913071512405">Testa själv</translation>
 <translation id="7128693485119315539">Organisationen behöver kanske se och hantera webbinformation som är kopplad till ditt hanterade konto, till exempel webbhistorik och lösenord.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>

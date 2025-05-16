@@ -533,6 +533,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3208260410153224535">Teie organisatsioon on sisselogimise välja lülitanud. Uued järjehoidjad, paroolid ja muu sisu salvestatakse ainult sellesse seadmesse.</translation>
 <translation id="3213807041830307252">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat ja fotogaleriid.</translation>
 <translation id="3214379938835224220">Teid logiti iPadi lähtestamise käigus välja. Sisselogimiseks puudutage allpool käsku Jätka.</translation>
+<translation id="3218296450292600703">Hallatud kontoga sisselogimine aitab teie organisatsiooniga seotud sirvimistegevust (sh vahelehti, ajalugu ja paroole) muust sirvimistegevusest eraldada</translation>
 <translation id="3224075676564434205">Vahelehed jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest seadmetest, mis on kontole <ph name="USER_EMAIL" /> sisse logitud.</translation>
 <translation id="3224641773458703735">Paroolide eksportimiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1484,6 +1485,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7102005569666697658">Allalaadimine … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menüü → Seaded → Makseviisid</translation>
 <translation id="7108338896283013870">Peida</translation>
+<translation id="7115051913071512405">Proovi järele</translation>
 <translation id="7128693485119315539">Teie organisatsioonil võib olla vaja näha ja hallata teie hallatud kontoga seotud sirvimisandmeid (nt sirvimisajalugu ja paroole).</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kaamera pole saadaval</translation>

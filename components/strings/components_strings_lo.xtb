@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">ຂໍ້ຄວາມ</translation>
 <translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">ກວດເບິ່ງວ່າມີການພິມຜິດໃນ <ph name="HOST_NAME" /> ຫຼືບໍ່.</translation>
-<translation id="2165700285977947082">ຕື່ມຂໍ້ມູນບັດສະມາຊິກຈາກ Google Wallet ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="2166049586286450108">ການເຂົ້າເຖິງແບບເຕັມຮູບແບບສຳລັບຜູ້ເບິ່ງແຍງ</translation>
 <translation id="2166378884831602661">ເວັບໄຊນີ້ບໍ່ສາມາດສະໜອງການເຊື່ອມຕໍ່ທີ່ປອດໄພໄດ້</translation>
 <translation id="2168151236314517198">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວບລັອກການພິມເນື້ອຫານີ້ໄວ້</translation>
@@ -3053,7 +3052,6 @@
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive ແລະ OneDrive</translation>
 <translation id="6280223929691119688">ບໍ່ສາມາດສົ່ງຫາທີ່ຢູ່ນີ້ໄດ້. ກະລຸນາເລືອກທີ່ຢູ່ອື່ນ.</translation>
-<translation id="628324801501145855">ຈັດການໃນການຕັ້ງຄ່າວິທີການຈ່າຍເງິນ</translation>
 <translation id="6284292079994426700">26 x 38 ນິ້ວ</translation>
 <translation id="6284449872909111707">ຂໍ້ຄວາມ ແລະ ຂໍ້ຄວາມດ່ວນ</translation>
 <translation id="6284517535531159884">ປະເພດຂອງເມັດຮູບແບບ</translation>
@@ -4255,6 +4253,7 @@
 <translation id="833262891116910667">ໄຮໄລ</translation>
 <translation id="8339163506404995330">ໜ້າຕ່າງໆໃນ <ph name="LANGUAGE" /> ຈະບໍ່ຖືກແປ</translation>
 <translation id="8339275256517065202">ດຳເນີນການຊື້ຂອງທ່ານໃຫ້ສຳເລັດໂດຍໃຊ້ Touch ID</translation>
+<translation id="833935588477667012">ຕ້ອງລະບຸ <ph name="FIELD_LABEL" /></translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ເປີດການລົງທະບຽນບັດສະເໝືອນແບບເຕັມຄວາມສູງແລ້ວ</translation>

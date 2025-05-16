@@ -1170,6 +1170,7 @@
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
 <translation id="1798335429200675510">在文字框中按一下右鍵，即可採用 Google AI 技術建立草稿或修正現有作品。此功能目前僅供部分使用者使用。</translation>
+<translation id="1799852120691957794">無法從上一個工作階段還原視窗</translation>
 <translation id="180203835522132923">搜尋 + O，然後按 W</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
@@ -2366,6 +2367,7 @@
 <translation id="2610374175948698697">可查看裝置上的檔案或資料夾</translation>
 <translation id="2610780100389066815">Microsoft 信任清單簽署</translation>
 <translation id="261114180663074524">請登入 Microsoft 帳戶，然後再試一次</translation>
+<translation id="2611702650078660078">發生錯誤</translation>
 <translation id="2611776654555141051">長方形工具</translation>
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
@@ -2725,6 +2727,7 @@
 <translation id="2849936225196189499">重要</translation>
 <translation id="285033512555869047">已關閉</translation>
 <translation id="2850541429955027218">新增主題</translation>
+<translation id="2852045827873867442">需要互聯網連線。</translation>
 <translation id="285237063405807022">(正在載入)</translation>
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2855243985454069333">從所有已同步的裝置刪除記錄</translation>
@@ -5434,6 +5437,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • 1 個重複的分頁</translation>
 <translation id="4780321648949301421">另存網頁…</translation>
 <translation id="4780558987886269159">工作時</translation>
+<translation id="4781633367688946589">繼續新工作階段</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用你電子錢包中的個人資料。</translation>
 <translation id="4785719467058219317">您目前使用的安全密鑰並未在此網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>

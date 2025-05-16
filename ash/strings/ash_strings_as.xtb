@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> টিপক আৰু এটা লিংকত ক্লিক কৰক</translation>
 <translation id="2957159466053076448">আপুনি যিকোনো সময়তে ছেটিঙত এই সুবিধাসমূহ অফ কৰিব পাৰে। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ডিভাইচৰ অডিঅ’</translation>
-<translation id="2960314608273155470">কেপচাৰ ম’ড, ডিফ’ল্টটো হৈছে <ph name="SOURCE" /> <ph name="TYPE" />। কীব’ৰ্ড নেভিগেশ্বনৰ বাবে টেব টিপক।</translation>
 <translation id="2961963223658824723">কিবা এটা ভুল হৈছে। কেই ছেকেণ্ডমানৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">মাইক্ৰ’ফ’নৰ এক্সেছ অন কৰিবনে?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google Doc সৃষ্টি কৰক</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১ টা ফাইল}one{# টা ফাইল}other{# টা ফাইল}}</translation>
 <translation id="8936501819958976551">অক্ষম কৰা হৈছে</translation>
-<translation id="8937312474322077653">স্ক্ৰীন কেপচাৰ কৰা ম’ডত, <ph name="SOURCE" /> <ph name="TYPE" />লৈ ছেট কৰক। কেপচাৰ প্ৰকাৰ বাছনি কৰিবলৈ টেবত টিপক। অঞ্চল বাছনি কৰিবলৈ স্পে’চত টিপক। কেপচাৰ কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="8938800817013097409">USB-C ডিভাইচ (পিছফালৰ সোঁফালৰ প’র্ট)</translation>
 <translation id="8939855324412367560">অডিঅ’ ইনপুটটো হৈছে "<ph name="INPUT_DEVICE_NAME" />" আৰু আউটপুট অডিঅ’টো হৈছে "<ph name="OUTPUT_DEVICE_NAME" />"। সলনি কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="8940956008527784070">বেটাৰীৰ চাৰ্জ কম আছে (<ph name="PERCENTAGE" />%)</translation>

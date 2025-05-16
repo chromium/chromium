@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
+<translation id="6220820548421939212">Sí, d’acord</translation>
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6271513594716432922">Tanca totes les pestanyes inactives</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ressenya}other{Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ressenyes}}</translation>
 <translation id="7885132941432959125">Mou la pestanya cap a la dreta</translation>
+<translation id="788914896430720926">Vols mantenir endreçada la secció inactiva?</translation>
 <translation id="7939917283308035850">No s'ha seleccionat <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">La teva activitat en aquestes pestanyes d'incògnit se suprimirà del dispositiu</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_MONTHS_ONE" /> mes}other{Creat fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
+<translation id="883379923675618699">Chrome tanca automàticament els elements de la secció inactiva que no hagis utilitzat durant 3 mesos. Pots desactivar aquesta opció ara o en qualsevol moment a Configuració.</translation>
 <translation id="8887921976452567404">Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes.</translation>
 <translation id="8915916167043355778">Tanca-ho tot</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mou a una finestra nova}other{Mou a una altra finestra}}</translation>

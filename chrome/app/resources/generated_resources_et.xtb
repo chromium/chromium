@@ -1163,6 +1163,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1796588414813960292">Heli vajavad funktsioonid ei tööta</translation>
 <translation id="1797117170091578105">Mängige oma Chromebooki klaviatuuri kasutades. Saate klahvidele konkreetsed toimingud määrata.</translation>
 <translation id="1798335429200675510">Paremklikkige tekstikastis, et luua mustand või viimistleda olemasolevat tööd (toimib Google'i AI platvormil). See on hetkel piiratud saadavusega.</translation>
+<translation id="1799852120691957794">Eelmise seansi aknaid ei saa taastada</translation>
 <translation id="180203835522132923">Otsinguklahv + O, seejärel W</translation>
 <translation id="1802624026913571222">Lülita unerežiimi, kui kaas on suletud</translation>
 <translation id="1802687198411089702">Leht ei reageeri. Võite oodata või väljuda.</translation>
@@ -2357,6 +2358,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2610374175948698697">Võivad teie seadmes faile ja kaustu vaadata</translation>
 <translation id="2610780100389066815">Microsoft Trusti loendi signeerimine</translation>
 <translation id="261114180663074524">Logige sisse oma Microsofti kontole ja proovige uuesti</translation>
+<translation id="2611702650078660078">Ilmnes viga</translation>
 <translation id="2611776654555141051">Nelinurgatööriist</translation>
 <translation id="2612676031748830579">Kaardi number</translation>
 <translation id="261305050785128654">Andke veebisaitidele teada, milliseid keeli te räägite. Võimaluse korral kuvatakse sisu nendes keeltes.</translation>
@@ -2717,6 +2719,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2849936225196189499">Kriitiline</translation>
 <translation id="285033512555869047">Suletud</translation>
 <translation id="2850541429955027218">Lisa teema</translation>
+<translation id="2852045827873867442">Vaja on internetiühendust.</translation>
 <translation id="285237063405807022">(laadimine)</translation>
 <translation id="2853121255651601031">Parool salvestati</translation>
 <translation id="2855243985454069333">Kustutab ajaloo kõigist sünkroonitud seadmetest</translation>
@@ -5431,6 +5434,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplikaat</translation>
 <translation id="4780321648949301421">Salvesta leht &amp;nimega...</translation>
 <translation id="4780558987886269159">Töö jaoks</translation>
+<translation id="4781633367688946589">Jätka uues seansis</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> soovib kasutada teie digitaalsest rahakotist pärinevat isiklikku teavet.</translation>
 <translation id="4785719467058219317">Kasutate turvavõtit, mis ei ole sellel veebisaidil registreeritud</translation>
 <translation id="4785914069240823137">Kärpimisest loobumine</translation>

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
+<translation id="6220820548421939212">होय. मी तयार आहे</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6271513594716432922">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{नवीन गटामध्ये टॅब जोडा}other{नवीन गटामध्ये टॅब जोडा}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> परीक्षण}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> परीक्षणे}}</translation>
 <translation id="7885132941432959125">टॅब उजवीकडे हलवा</translation>
+<translation id="788914896430720926">तुमचे इनॅक्टिव्ह विभाग व्यवस्थित ठेवायचे आहेत का?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> निवडलेला नाही</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून काढून टाकली जाईल</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिन्यापूर्वी तयार केला आहे}other{<ph name="NUM_MONTHS_MANY" /> महिन्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
+<translation id="883379923675618699">Chrome हे तुम्ही ३ महिन्यांपासून न वापरलेल्या इनॅक्टिव्ह विभागामधील आयटम आपोआप बंद करते. तुम्ही हे सेटिंग्ज मध्ये आताच किंवा कधीही बंद करू शकता.</translation>
 <translation id="8887921976452567404">तुमचे बंद केलेले टॅब आणि गट अलीकडील टॅब विभाग व टॅब गट विभागामधून पुन्हा उघडले जाऊ शकतात.</translation>
 <translation id="8915916167043355778">सर्व बंद करा</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{नवीन विंडोवर हलवा}other{इतर विंडोवर हलवा}}</translation>

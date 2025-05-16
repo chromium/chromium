@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">Texte</translation>
 <translation id="2162620598375156287">Maintenant <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Vérifiez si <ph name="HOST_NAME" /> est écrit correctement.</translation>
-<translation id="2165700285977947082">Remplissez automatiquement les cartes de fidélité à partir de Google Portefeuille</translation>
 <translation id="2166049586286450108">Accès administrateur complet</translation>
 <translation id="2166378884831602661">Ce site ne fournit pas de connexion sécurisée</translation>
 <translation id="2168151236314517198">La politique définie par l'administrateur empêche l'impression de ce contenu</translation>
@@ -3053,7 +3052,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6272383483618007430">Mise à jour Google</translation>
 <translation id="6278015583149890680">Google Disque et OneDrive</translation>
 <translation id="6280223929691119688">Impossible d'effectuer une livraison à cette adresse. Sélectionnez une autre adresse.</translation>
-<translation id="628324801501145855">Gérez dans les paramètres des modes de paiement</translation>
 <translation id="6284292079994426700">26 po x 38 po</translation>
 <translation id="6284449872909111707">Messagerie texte et clavardage</translation>
 <translation id="6284517535531159884">Type d'élément de référence des variantes</translation>

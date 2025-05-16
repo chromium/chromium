@@ -5164,6 +5164,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4585793705637313973">Sahifani tahrirlash</translation>
 <translation id="4586275095964870617"><ph name="URL" /> muqobil brauzerda ochilmadi. Tizim administratoriga muroojat qiling.</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588497044036650559">Yangi varaq sahifasi kengaytmasining sozlamalari sahifasini joriy varaqda ochish</translation>
 <translation id="4588749726511456218">Varaqlash tezlatkichi <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> va <ph name="DOMAIN" /> resurslari bogʻliq shekilli. Bu paroldan foydalanishdan oldin <ph name="DOMAIN" /> resursi ishonchli ekanini tekshiring.</translation>
 <translation id="4589713469967853491">Jurnallar odatda Yuklanmalar jildiga yoziladi.</translation>
@@ -9139,6 +9140,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7461924472993315131">Qadab qo‘yish</translation>
 <translation id="746216226901520237">Keyingi safar telefoningiz <ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqara oladi. Sozlamalar orqali Smart Lock funksiyasini faolsizlantirish mumkin.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">Tashkilotingiz bu funksiyalar orqali jamlangan axborotlar qanday ishlatilishini boshqaradi.</translation>
 <translation id="7464645554245611385">Bu varaqqa oid oxirgi xabar</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ta ochiq varaq, darchalar panelini yoqish uchun bosing}other{# ta ochiq varaq, darchalar panelini yoqish uchun bosing}}</translation>
 <translation id="7465635034594602553">Xatolik yuz berdi. Bir necha daqiqadan keyin <ph name="APP_NAME" /> ilovasini qaytadan ishga tushiring.</translation>
@@ -11700,6 +11702,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="934244546219308557">Bu guruhni nomlang</translation>
 <translation id="93480724622239549">Nosozlik yoki xatolik</translation>
 <translation id="9354763467503131">Qurilmangizda veb ilovalarni oʻrnatish uchun ruxsat soʻrashi mumkin</translation>
+<translation id="936329857119665832">Joriy varaqda ochiladi</translation>
 <translation id="936646668635477464">Kamera va mikrofon</translation>
 <translation id="936801553271523408">Tizim diagnostik ma’lumotlari</translation>
 <translation id="93766956588638423">Kengaytmani ta’mirlash</translation>

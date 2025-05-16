@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="6109251075362363230">Хамгийн сүүлд ашигласан хуулбарыг эс тооцвол бүх давхардсан табыг одоо мөн архивлана.</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
+<translation id="6220820548421939212">Тийм. Би зөвшөөрч байна</translation>
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
 <translation id="6271513594716432922">Бүх идэвхгүй табыг хаах</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Табыг шинэ бүлэгт нэмэх}other{Табуудыг шинэ бүлэгт нэмэх}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Үйл ажиллагаа</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ, <ph name="REVIEWS_COUNT_ONE" /> шүүмж}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ, <ph name="REVIEWS_COUNT_MANY" /> шүүмж}}</translation>
 <translation id="7885132941432959125">Табыг баруун тийш зөөх</translation>
+<translation id="788914896430720926">Идэвхгүй хэсгээ цэгцтэй байлгах уу?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />-г сонгоогүй</translation>
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7961015016161918242">Хэзээ ч</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Эдгээр Нууцлалтай таб дахь таны үйл ажиллагааг энэ төхөөрөмжөөс хасна</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> сарын өмнө үүсгэсэн}other{<ph name="NUM_MONTHS_MANY" /> сарын өмнө үүсгэсэн}}</translation>
 <translation id="8820741577754260431">Табууд дээрх үнэ бууралтыг хараарай</translation>
+<translation id="883379923675618699">Chrome таны 3 сарын хугацаанд ашиглаагүй идэвхгүй харилцан үйлдэл дэх зүйлийг автоматаар хаана. Та хүссэн үедээ үүнийг Тохиргооноос унтраах боломжтой.</translation>
 <translation id="8887921976452567404">Та хаасан таб, бүлгээ Саяхны табын хэсэг, Табын бүлгийн хэсгээс дахин нээх боломжтой.</translation>
 <translation id="8915916167043355778">Бүгдийг хаах</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Шинэ цонх руу зөөх}other{Өөр цонх руу зөөх}}</translation>

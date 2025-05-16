@@ -1171,6 +1171,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
 <translation id="1797117170091578105">Spela med tangentbordet på Chromebook. Du kan tilldela tangenter specifika funktioner.</translation>
 <translation id="1798335429200675510">Högerklicka i en textruta för att skapa ett utkast eller finjustera befintligt arbete med hjälp av Google AI. Har för närvarande begränsad tillgänglighet.</translation>
+<translation id="1799852120691957794">Det gick inte att återställa fönster från din senaste session</translation>
 <translation id="180203835522132923">Sök + O, sedan W</translation>
 <translation id="1802624026913571222">Aktivera viloläge när fodralet stängs</translation>
 <translation id="1802687198411089702">Sidan svarar inte. Vänta tills den svarar eller avbryt.</translation>
@@ -2366,6 +2367,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2610374175948698697">Får visa filer eller mappar på enheten</translation>
 <translation id="2610780100389066815">Microsofts Signering av lista över betrodda certifikat</translation>
 <translation id="261114180663074524">Logga in på Microsoft-kontot och försök igen</translation>
+<translation id="2611702650078660078">Något gick fel</translation>
 <translation id="2611776654555141051">Rektangelverktyg</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Visa webbplatser vilka språk du talar. Om möjligt visas innehåll på de språken.</translation>
@@ -2726,6 +2728,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2849936225196189499">Kritiskt</translation>
 <translation id="285033512555869047">Stängd</translation>
 <translation id="2850541429955027218">Lägg till tema</translation>
+<translation id="2852045827873867442">Internetanslutning krävs.</translation>
 <translation id="285237063405807022">(läser in)</translation>
 <translation id="2853121255651601031">Lösenordet sparades</translation>
 <translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter.</translation>
@@ -5440,6 +5443,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 dubblett</translation>
 <translation id="4780321648949301421">Spara sida som...</translation>
 <translation id="4780558987886269159">För arbete</translation>
+<translation id="4781633367688946589">Fortsätt till ny session</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vill använda personliga uppgifter från din digitala plånbok.</translation>
 <translation id="4785719467058219317">Säkerhetsnyckeln som du använder är inte registrerad på den här webbplatsen</translation>
 <translation id="4785914069240823137">Avbryt beskärning</translation>
@@ -5826,7 +5830,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5059429103770496207">Visningsformat</translation>
 <translation id="5059526285558225588">Välj vad du vill dela</translation>
 <translation id="5060332552815861872">Det finns 1 skrivare att spara.</translation>
-<translation id="5060419232449737386">Bildtextinställningar</translation>
+<translation id="5060419232449737386">Textningsinställningar</translation>
 <translation id="5061270227873845372">Du har för närvarande <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> med mera. Organisationen kan se och hantera denna data</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Den här mappen innehåller ett bokmärke. Vill du ta bort den?}other{Den här mappen innehåller # bokmärken. Vill du ta bort den?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
 <translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
 <translation id="6193448654517602979">タブを選択</translation>
+<translation id="6220820548421939212">はい。オンにします。</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6271513594716432922">アクティブでないタブをすべて閉じる</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ}other{<ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ}}</translation>
 <translation id="7885132941432959125">タブを右に移動</translation>
+<translation id="788914896430720926">アクティブでないセクションを整理しますか？</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> は選択されていません</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7961015016161918242">使用しない</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> か月前に作成}other{<ph name="NUM_MONTHS_MANY" /> か月前に作成}}</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
+<translation id="883379923675618699">3 か月間使用されていないセクションのアイテムを自動的に終了します。この設定は [設定] でいつでもオフにできます。</translation>
 <translation id="8887921976452567404">閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。</translation>
 <translation id="8915916167043355778">すべて閉じる</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{新しいウィンドウに移動}other{他のウィンドウに移動}}</translation>

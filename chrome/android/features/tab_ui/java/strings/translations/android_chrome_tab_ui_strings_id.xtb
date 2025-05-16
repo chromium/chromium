@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Harga item ini baru-baru ini turun dari <ph name="PREVIOUS_PRICE" /> ke <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Semua tab duplikat kini juga akan diarsipkan, kecuali salinan yang terakhir digunakan.</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
+<translation id="6220820548421939212">Ya. Izinkan</translation>
 <translation id="6228793724645064692">(rating toko)</translation>
 <translation id="6271513594716432922">Menutup semua tab tidak aktif</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tambahkan tab ke grup baru}other{Tambahkan tab ke grup baru}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktivitas</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ulasan}other{Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ulasan}}</translation>
 <translation id="7885132941432959125">Pindahkan tab ke kanan</translation>
+<translation id="788914896430720926">Jadikan tab tidak aktif Anda tetap rapi?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> Tidak dipilih</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_MONTHS_ONE" /> bulan lalu}other{Dibuat <ph name="NUM_MONTHS_MANY" /> bulan lalu}}</translation>
 <translation id="8820741577754260431">Lihat diskon di tab</translation>
+<translation id="883379923675618699">Chrome otomatis menutup item di tab tidak aktif yang tidak Anda gunakan selama 3 bulan. Anda dapat menonaktifkannya sekarang atau kapan saja di Setelan.</translation>
 <translation id="8887921976452567404">Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Pindahkan ke jendela baru}other{Pindahkan ke jendela lain}}</translation>

@@ -5166,6 +5166,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4585793705637313973">Uredi stranicu</translation>
 <translation id="4586275095964870617">URL <ph name="URL" /> nije moguće otvoriti u zamjenskom pregledniku. Obratite se administratoru sustava.</translation>
 <translation id="4587589328781138893">Web-lokacije</translation>
+<translation id="4588497044036650559">Otvaranje stranice opcija proširenja stranice nove kartice u trenutačnoj kartici</translation>
 <translation id="4588749726511456218">Ubrzanje pomicanja <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905">Čini se da su domene <ph name="PASSWORD_DOMAIN" /> i <ph name="DOMAIN" /> povezane. Prije nego što upotrijebite zaporku, provjerite je li domena <ph name="DOMAIN" /> pouzdana.</translation>
 <translation id="4589713469967853491">Zapisnici su uspješno zabilježeni u direktorij Preuzimanja.</translation>
@@ -9142,6 +9143,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7461924472993315131">Prikvači</translation>
 <translation id="746216226901520237">Sljedeći će put vaš telefon otključati vaš uređaj <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">Vaša organizacija upravlja načinom na koji se podaci koje prikupljaju ove značajke mogu upotrebljavati.</translation>
 <translation id="7464645554245611385">Posljednje ažuriranje ove kartice</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otvorena kartica, pritisnite da biste uključili ili isključili vrpcu kartica}one{# otvorena kartica, pritisnite da biste uključili ili isključili vrpcu kartica}few{# otvorene kartice, pritisnite da biste uključili ili isključili vrpcu kartica}other{# otvorenih kartica, pritisnite da biste uključili ili isključili vrpcu kartica}}</translation>
 <translation id="7465635034594602553">Nešto nije u redu. Pričekajte nekoliko minuta, a zatim ponovo pokrenite <ph name="APP_NAME" />.</translation>
@@ -11707,6 +11709,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="934244546219308557">Postavite naziv grupe</translation>
 <translation id="93480724622239549">Programska ili neka druga pogreška</translation>
 <translation id="9354763467503131">Dopušteno je tražiti instaliranje web-aplikacija na uređaju</translation>
+<translation id="936329857119665832">Otvara se u trenutačnoj kartici</translation>
 <translation id="936646668635477464">Fotoaparat i mikrofon</translation>
 <translation id="936801553271523408">Podaci o dijagnozi sustava</translation>
 <translation id="93766956588638423">Popravi proširenje</translation>

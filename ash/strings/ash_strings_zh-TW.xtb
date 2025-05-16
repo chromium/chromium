@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">按下 <ph name="MODIFIER" /> 鍵，然後點選連結</translation>
 <translation id="2957159466053076448">你隨時可以前往「設定」關閉這些功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">裝置音訊</translation>
-<translation id="2960314608273155470">擷取模式，預設為<ph name="SOURCE" /><ph name="TYPE" />。按下 Tab 鍵即可查看鍵盤瀏覽資訊。</translation>
 <translation id="2961963223658824723">發生錯誤，請於幾秒後再試一次。</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">要允許存取麥克風嗎？</translation>
@@ -2428,7 +2427,6 @@
 <translation id="8934418770423095813">建立 Google 文件</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>
-<translation id="8937312474322077653">在螢幕畫面擷取中，設為<ph name="SOURCE" />的<ph name="TYPE" />。按下 Tab 鍵選擇擷取類型。按下空格鍵選取區域。按下 Enter 鍵擷取。</translation>
 <translation id="8938800817013097409">USB-C 裝置 (背面右側連接埠)</translation>
 <translation id="8939855324412367560">音訊輸入裝置為「<ph name="INPUT_DEVICE_NAME" />」，音訊輸出裝置為「<ph name="OUTPUT_DEVICE_NAME" />」。如要變更，請前往「設定」。</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>

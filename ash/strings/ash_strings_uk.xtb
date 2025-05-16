@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">Натисніть <ph name="MODIFIER" />, а потім – посилання</translation>
 <translation id="2957159466053076448">Ці функції можна будь-коли вимкнути в налаштуваннях. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Звук із пристрою</translation>
-<translation id="2960314608273155470">Режим зйомки. За умовчанням – <ph name="TYPE" /> <ph name="SOURCE" />. Для навігації за допомогою клавіатури натисніть клавішу Tab.</translation>
 <translation id="2961963223658824723">Сталася помилка. Повторіть спробу за кілька секунд.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Надати доступ до мікрофона?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Створити документ Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="8936501819958976551">деактивовано</translation>
-<translation id="8937312474322077653">У налаштуваннях запису екрана вибрано область екрана "<ph name="SOURCE" />" і тип запису "<ph name="TYPE" />". Щоб вибрати тип запису, натисніть клавішу Tab. Щоб вибрати область екрана, натисніть пробіл. Щоб почати запис, натисніть клавішу Enter.</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="8939855324412367560">Для введення аудіо використовується <ph name="INPUT_DEVICE_NAME" />, а для виведення – <ph name="OUTPUT_DEVICE_NAME" />. Щоб внести зміни, перейдіть у налаштування.</translation>
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>

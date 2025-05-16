@@ -679,7 +679,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162620598375156287">Ahora, por <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comprueba si hay un error de escritura en <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Autocompletar tarjetas de fidelización de Google Wallet</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
 <translation id="2166378884831602661">Este sitio web no puede proporcionar una conexión segura</translation>
 <translation id="2168151236314517198">La política del administrador ha bloqueado la opción de imprimir este contenido</translation>
@@ -3053,7 +3052,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive y OneDrive</translation>
 <translation id="6280223929691119688">Los pedidos no se pueden entregar en esta dirección. Selecciona otra.</translation>
-<translation id="628324801501145855">Gestiónala en los ajustes de métodos de pago</translation>
 <translation id="6284292079994426700">26x38 pulgadas</translation>
 <translation id="6284449872909111707">Mensajería instantánea y de texto</translation>
 <translation id="6284517535531159884">Tipo de origen de las variaciones</translation>
@@ -4256,6 +4254,7 @@ Más información:
 <translation id="833262891116910667">Resaltar</translation>
 <translation id="8339163506404995330">No se traducirán las páginas en <ph name="LANGUAGE" /></translation>
 <translation id="8339275256517065202">Completa tu compra con Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, obligatorio</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registro de tarjeta virtual abierto a altura completa</translation>

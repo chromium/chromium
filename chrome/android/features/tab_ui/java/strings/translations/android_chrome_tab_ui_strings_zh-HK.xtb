@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">所有重複的分頁現在亦會封存 (最近使用的重複分頁除外)。</translation>
 <translation id="6193448654517602979">選取分頁</translation>
+<translation id="6220820548421939212">是，我同意</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6271513594716432922">關閉所有閒置分頁</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">活動</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_ONE" /> 則評論}other{<ph name="CURRENT_RATING" /> 分，滿分係 <ph name="RATING_BASELINE" /> 分，有 <ph name="REVIEWS_COUNT_MANY" /> 則評論}}</translation>
 <translation id="7885132941432959125">移去右邊</translation>
+<translation id="788914896430720926">要整理閒置部分嗎？</translation>
 <translation id="7939917283308035850">冇揀到<ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7961015016161918242">從來沒有</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">系統將會從此裝置移除你在這些無痕式分頁中的活動</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前建立}other{<ph name="NUM_MONTHS_MANY" /> 個月前建立}}</translation>
 <translation id="8820741577754260431">在分頁上查看降價資料</translation>
+<translation id="883379923675618699">Chrome 會自動關閉閒置部分中 3 個月未曾使用的項目。你可以現在或隨時在「設定」中關閉此功能。</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{移至新視窗}other{移至其他視窗}}</translation>

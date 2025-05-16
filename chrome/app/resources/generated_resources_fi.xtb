@@ -1170,6 +1170,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1796588414813960292">Ääntä edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="1797117170091578105">Pelaa Chromebookin näppäimistöllä. Voit määrittää näppäimiä tietyille toiminnoille.</translation>
 <translation id="1798335429200675510">Klikkaa tekstikenttää kakkospainikkeella, niin voit kirjoittaa luonnoksen tai viimeistellä aiemmin luodun tehtävän Googlen tekoälyn avulla. Saatavuus on tällä hetkellä rajoitettu.</translation>
+<translation id="1799852120691957794">Edellisen istunnon ikkunoita ei voi palauttaa</translation>
 <translation id="180203835522132923">Haku + O ja sitten W</translation>
 <translation id="1802624026913571222">Lepotila, kun kansi suljetaan</translation>
 <translation id="1802687198411089702">Tämä sivu ei vastaa. Voit odottaa sitä tai sulkea sen.</translation>
@@ -2365,6 +2366,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2610374175948698697">Saa nähdä laitteesi tiedostot tai kansiot</translation>
 <translation id="2610780100389066815">Microsoft-luottamusluettelon allekirjoitus</translation>
 <translation id="261114180663074524">Kirjaudu Microsoft-tilille ja yritä uudelleen</translation>
+<translation id="2611702650078660078">Tapahtui virhe</translation>
 <translation id="2611776654555141051">Suorakulmiotyökalu</translation>
 <translation id="2612676031748830579">Kortin numero</translation>
 <translation id="261305050785128654">Kerro sivustoille, mitä kieliä osaat. Ne näyttävät mahdollisuuksien mukaan sisältöä kyseisillä kielillä.</translation>
@@ -2725,6 +2727,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2849936225196189499">Kriittinen</translation>
 <translation id="285033512555869047">Suljettu</translation>
 <translation id="2850541429955027218">Lisää teema</translation>
+<translation id="2852045827873867442">Edellyttää internetyhteyttä.</translation>
 <translation id="285237063405807022">(ladataan)</translation>
 <translation id="2853121255651601031">Salasana tallennettu</translation>
 <translation id="2855243985454069333">Poistaa kaikkien synkronoitujen laitteiden historian</translation>
@@ -5436,6 +5439,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 kopio</translation>
 <translation id="4780321648949301421">Tallenna sivu nimellä...</translation>
 <translation id="4780558987886269159">Työntekoon</translation>
+<translation id="4781633367688946589">Jatka uuteen istuntoon</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> haluaa käyttää henkilökohtaisia tietoja digitaalisesta lompakostasi.</translation>
 <translation id="4785719467058219317">Käytät suojausavainta, jota ei ole rekisteröity tällä sivustolla.</translation>
 <translation id="4785914069240823137">Peru rajaus</translation>

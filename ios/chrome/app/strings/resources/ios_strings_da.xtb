@@ -533,6 +533,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3208260410153224535">Din organisation har deaktiveret login. Nye bogmærker, adgangskoder m.m. gemmes kun på denne enhed.</translation>
 <translation id="3213807041830307252">Køb, oversæt og identificer det, du ser, med dit kamera og billedgalleri.</translation>
 <translation id="3214379938835224220">Du blev logget ud som en del af nulstillingen af din iPad. Tryk på Fortsæt nedenfor for at logge ind.</translation>
+<translation id="3218296450292600703">Når du logger ind med din administrerede konto, kan du adskille browserdata, der er relateret til din organisation (herunder faner, historik og adgangskoder), fra dine øvrige browserdata</translation>
 <translation id="3224075676564434205">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, der er logget ind på <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1484,6 +1485,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7102005569666697658">Downloader… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Indstillinger → Betalingsmetoder</translation>
 <translation id="7108338896283013870">Skjul</translation>
+<translation id="7115051913071512405">Prøv det</translation>
 <translation id="7128693485119315539">Din organisation skal muligvis se og administrere browserdata, der er knyttet til din administrerede konto, f.eks. din browserhistorik og dine adgangskoder.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameraet er ikke tilgængeligt</translation>

@@ -533,6 +533,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3208260410153224535">Tu organización ha desactivado el inicio de sesión. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
 <translation id="3213807041830307252">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos.</translation>
 <translation id="3214379938835224220">Se ha cerrado tu sesión al restablecer tu iPad. Toca Continuar abajo para iniciar sesión.</translation>
+<translation id="3218296450292600703">Iniciar sesión con tu cuenta gestionada te ayuda a mantener la navegación relacionada con tu organización (como las pestañas, el historial y las contraseñas) separada del resto de tu navegación</translation>
 <translation id="3224075676564434205">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se eliminará de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -1484,6 +1485,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7102005569666697658">Descargando… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7115051913071512405">Pruébalo</translation>
 <translation id="7128693485119315539">Es posible que tu organización necesite ver y gestionar los datos de navegación asociados a tu cuenta gestionada, como el historial de navegación y las contraseñas.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>

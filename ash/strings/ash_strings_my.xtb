@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> ကို ဖိပြီး လင့်ခ်ကို နှိပ်ပါ</translation>
 <translation id="2957159466053076448">ဤဝန်ဆောင်မှုများကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">စက်ပစ္စည်းအသံ</translation>
-<translation id="2960314608273155470">ပုံဖမ်းယူမှုမုဒ်၊ မူရင်းမှာ <ph name="SOURCE" /> <ph name="TYPE" /> ဖြစ်သည်။ ကီးဘုတ် လမ်းညွှန်အတွက် တဘ်ကိုနှိပ်ပါ။</translation>
 <translation id="2961963223658824723">တစ်ခုခုမှားယွင်း နေသည်။ မိနစ်အနည်းငယ်အကြာတွင် ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">မိုက်ခရိုဖုန်းသုံးခွင့် ဖွင့်မလား။</translation>
@@ -2434,7 +2433,6 @@
 <translation id="8934418770423095813">Google Doc ပြုလုပ်ရန်</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ဖိုင် ၁ ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="8936501819958976551">ရပ်ထားသည်</translation>
-<translation id="8937312474322077653">ဖန်သားပြင် ပုံဖမ်းခြင်းတွင် <ph name="SOURCE" /> <ph name="TYPE" /> သို့ သတ်မှတ်ပါ။ ရိုက်ကူးမှုအမျိုးအစားရွေးရန် တဘ်ခလုတ်နှိပ်ပါ။ အပိုင်းရွေးရန် နေရာခြားခလုတ်နှိပ်ပါ။ ရိုက်ကူးရန် Enter ခလုတ်နှိပ်ပါ။</translation>
 <translation id="8938800817013097409">USB-C ကိရိယာ (ကျောဘက် ညာ ပို့တ်)</translation>
 <translation id="8939855324412367560">အသံဝင်မည့် ကိရိယာသည် “<ph name="INPUT_DEVICE_NAME" />” ဖြစ်ပြီး အသံထွက်မည့် ကိရိယာသည် “<ph name="OUTPUT_DEVICE_NAME" />” ဖြစ်သည်။ ပြောင်းရန် ဆက်တင်များသို့ သွားပါ။</translation>
 <translation id="8940956008527784070">ဓာတ်ခဲအားနည်း (<ph name="PERCENTAGE" />%)</translation>

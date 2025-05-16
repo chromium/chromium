@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">กด <ph name="MODIFIER" /> แล้วคลิกลิงก์</translation>
 <translation id="2957159466053076448">คุณปิดฟีเจอร์เหล่านี้ในการตั้งค่าได้ทุกเมื่อ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">เสียงจากอุปกรณ์</translation>
-<translation id="2960314608273155470">โหมดจับภาพ ค่าเริ่มต้นคือ<ph name="TYPE" /><ph name="SOURCE" /> กดแป้น Tab เพื่อไปยังส่วนต่างๆ ด้วยแป้นพิมพ์</translation>
 <translation id="2961963223658824723">เกิดข้อผิดพลาด โปรดลองอีกครั้งในอีกสักครู่</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">เปิดการเข้าถึงไมโครโฟนใช่ไหม</translation>
@@ -2428,7 +2427,6 @@
 <translation id="8934418770423095813">สร้างเอกสารใน Google เอกสาร</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ไฟล์}other{# ไฟล์}}</translation>
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>
-<translation id="8937312474322077653">ในการจับภาพหน้าจอ ให้ตั้งค่าเป็น <ph name="SOURCE" /> <ph name="TYPE" /> กด Tab เพื่อเลือกประเภทการจับภาพ กด Space เพื่อเลือกภูมิภาค กด Enter เพื่อจับภาพ</translation>
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="8939855324412367560">เสียงอินพุตคือ "<ph name="INPUT_DEVICE_NAME" />" และเสียงเอาต์พุตคือ "<ph name="OUTPUT_DEVICE_NAME" />" โปรดเปลี่ยนที่การตั้งค่า</translation>
 <translation id="8940956008527784070">แบตเตอรี่ต่ำ (<ph name="PERCENTAGE" />%)</translation>

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Все одинаковые вкладки также будут добавляться в архив, за исключением недавно открытой</translation>
 <translation id="6193448654517602979">Выбрать вкладки</translation>
+<translation id="6220820548421939212">Да</translation>
 <translation id="6228793724645064692">(оценка магазина)</translation>
 <translation id="6271513594716432922">Закрыть все неактивные вкладки</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Добавить вкладку в новую группу}one{Добавить вкладки в новую группу}few{Добавить вкладки в новую группу}many{Добавить вкладки в новую группу}other{Добавить вкладки в новую группу}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Действия</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзыв}one{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыв}few{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}many{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзывов}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}}</translation>
 <translation id="7885132941432959125">Переместить вкладку вправо</translation>
+<translation id="788914896430720926">Закрывать неиспользуемые вкладки автоматически?</translation>
 <translation id="7939917283308035850">Цвет "<ph name="COLOR_NAME" />" не выбран</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7961015016161918242">Нет</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Информация о действиях на этих вкладках инкогнито будет удалена с устройства.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Создано <ph name="NUM_MONTHS_ONE" /> месяц назад}one{Создано <ph name="NUM_MONTHS_MANY" /> месяц назад}few{Создано <ph name="NUM_MONTHS_MANY" /> месяца назад}many{Создано <ph name="NUM_MONTHS_MANY" /> месяцев назад}other{Создано <ph name="NUM_MONTHS_MANY" /> месяца назад}}</translation>
 <translation id="8820741577754260431">Показывать скидки на вкладках</translation>
+<translation id="883379923675618699">Вкладки в Chrome, на которые вы не переходили 3 месяца, будут автоматически закрываться. Эту функцию всегда можно отключить в настройках.</translation>
 <translation id="8887921976452567404">Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок".</translation>
 <translation id="8915916167043355778">Закрыть все</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Перенести в другое окно}one{Перенести в другое окно}few{Перенести в другое окно}many{Перенести в другое окно}other{Перенести в другое окно}}</translation>

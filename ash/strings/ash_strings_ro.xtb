@@ -581,7 +581,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2949420361496057765">Apasă pe <ph name="MODIFIER" /> și dă clic pe un link</translation>
 <translation id="2957159466053076448">Poți dezactiva oricând aceste funcții din Setări. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Conținutul audio de la dispozitiv</translation>
-<translation id="2960314608273155470">Modul de capturare, setarea prestabilită este <ph name="TYPE" /> <ph name="SOURCE" />. Apasă pe tasta Tab pentru navigare pe tastatură.</translation>
 <translation id="2961963223658824723">A apărut o eroare. Încearcă din nou în câteva secunde.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Activezi accesul la microfon?</translation>
@@ -2433,7 +2432,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8934418770423095813">Creează un document Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="8936501819958976551">dezactivată</translation>
-<translation id="8937312474322077653">În captura de ecran, setează la <ph name="SOURCE" /> <ph name="TYPE" />. Apasă pe Tab pentru a alege tipul de captură. Apasă pe tasta de spațiu pentru a selecta regiunea. Apasă pe Enter pentru a captura.</translation>
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>
 <translation id="8939855324412367560">Intrarea audio provine de la <ph name="INPUT_DEVICE_NAME" />, iar conținutul se redă pe <ph name="OUTPUT_DEVICE_NAME" />. Accesează Setările pentru a le modifica.</translation>
 <translation id="8940956008527784070">Baterie slabă (<ph name="PERCENTAGE" /> %)</translation>

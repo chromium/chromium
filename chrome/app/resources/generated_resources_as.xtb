@@ -1169,6 +1169,7 @@
 <translation id="1796588414813960292">ধ্বনিৰ আৱশ্যক হোৱা সুবিধাসমূহে কাম নকৰিব</translation>
 <translation id="1797117170091578105">আপোনাৰ Chromebook কীব’ৰ্ড ব্যৱহাৰ কৰি খেলক। নিৰ্দিষ্ট কাৰ্যৰ বাবে আপুনি কী কাষ্টমাইজ কৰিব পাৰে।</translation>
 <translation id="1798335429200675510">এটা খচৰা সৃষ্টি কৰিবলৈ অথবা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ পাঠৰ বাকচটোত ৰাইট ক্লিক কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত। বৰ্তমান সীমিতৰূপত উপলব্ধ।</translation>
+<translation id="1799852120691957794">আপোনাৰ পূৰ্বৱৰ্তী ছেশ্বনৰ পৰা ৱিণ্ড’ পুনঃস্থাপন কৰিব নোৱাৰি</translation>
 <translation id="180203835522132923">Search + O, তাৰ পাছত W</translation>
 <translation id="1802624026913571222">ক’ভাৰটো বন্ধ কৰিলে সুপ্ত অৱস্থালৈ নিয়ক</translation>
 <translation id="1802687198411089702">এই পৃষ্ঠাটোৱে সঁহাৰি জনোৱা নাই। আপুনি পৃষ্ঠাটোৱে সঁহাৰি জনোৱালৈ অপেক্ষা কৰিব পাৰে বা বাহিৰ হ’ব পাৰে।</translation>
@@ -2364,6 +2365,7 @@
 <translation id="2610374175948698697">আপোনাৰ ডিভাইচত ফাইল বা ফ’ল্ডাৰসমূহ চাব পাৰে</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">আপোনাৰ Microsoft একাউণ্টত ছাইন ইন কৰক আৰু তাৰ পাছত পুনৰ চেষ্টা কৰক</translation>
+<translation id="2611702650078660078">কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="2611776654555141051">আয়তক্ষেত্ৰৰ সঁজুলি</translation>
 <translation id="2612676031748830579">কার্ড নম্বৰ</translation>
 <translation id="261305050785128654">আপুনি কোৱা ভাষাটো ৱেবছাইটসমূহক জনাওক। যেতিয়া সম্ভৱ হয়, এইবোৰে সেই ভাষাসমূহত উপলব্ধ সমল দেখুৱাব।</translation>
@@ -2724,6 +2726,7 @@
 <translation id="2849936225196189499">জটিল</translation>
 <translation id="285033512555869047">বন্ধ আছে</translation>
 <translation id="2850541429955027218">থীম যোগ কৰক</translation>
+<translation id="2852045827873867442">ইণ্টাৰনেট সংযোগৰ প্ৰয়োজন।</translation>
 <translation id="285237063405807022">(ল’ড কৰি থকা হৈছে)</translation>
 <translation id="2853121255651601031">পাছৱৰ্ড ছেভ কৰা হ’ল</translation>
 <translation id="2855243985454069333">আটাইবোৰ ছিংক কৰা ডিভাইচৰ পৰা ইতিহাস মচে</translation>
@@ -3282,6 +3285,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ফাইল}one{# টা ফাইল}other{# টা ফাইল}}</translation>
 <translation id="326999365752735949">diff ডাউনল'ড কৰি থকা হৈছে</translation>
 <translation id="3270965368676314374">আপোনাৰ কম্পিউটাৰৰ পৰা ফট’, সংগীত আৰু অন্য মিডিয়া পঢ়ক, সলনি কৰক আৰু মচক</translation>
+<translation id="3275464924531706548"><ph name="HEADER" /> সংকোচন কৰক</translation>
 <translation id="3275778809241512831">আপোনাৰ আভ্যন্তৰীণ সুৰক্ষা চাবিটো বৰ্তমান অসুৰক্ষিত। আপুনি এইটোৰ জৰিয়তে ব্যৱহাৰ কৰা সেৱাসমূহৰ পৰা অনুগ্ৰহ কৰি এইটো আঁতৰাওক। সমস্যাটো সমাধান কৰিবলৈ, অনুগ্ৰহ কৰি সুৰক্ষাৰ চাবিটো ৰিছেট কৰক।</translation>
 <translation id="3275778913554317645">ৱিণ্ড’ হিচাপে খোলক</translation>
 <translation id="3277214528693754078">পাঠৰ কাৰ্ছৰডালৰ জৰিয়তে নেভিগে’ট কৰক (caret browsing)</translation>
@@ -3613,6 +3617,7 @@
 <translation id="3510471875518562537">এই ঠিকনাটো আপোনাৰ iPhoneত ব্যৱহাৰ কৰক</translation>
 <translation id="3511200754045804813">পুনঃস্কেন কৰক</translation>
 <translation id="3511307672085573050">লিংকৰ ঠি&amp;কনা প্ৰতিলিপি কৰক</translation>
+<translation id="3511358375261756531"><ph name="HEADER" /> বিস্তাৰ কৰক</translation>
 <translation id="351152300840026870">নিৰ্দিষ্ট-প্ৰস্থৰ ফণ্ট</translation>
 <translation id="3511528412952710609">চুটি</translation>
 <translation id="3513019849832307207">যোগদান কৰক আৰু খোলক</translation>
@@ -5435,6 +5440,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • ১ টা ডুপ্লিকেট</translation>
 <translation id="4780321648949301421">এই হিচাপ ছেভ কৰক…</translation>
 <translation id="4780558987886269159">কৰ্মস্থানৰ বাবে</translation>
+<translation id="4781633367688946589">নতুন ছেশ্বনলৈ অব্যাহত ৰাখক</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />এ আপোনাৰ ডিজিটেল ৱালেটৰ পৰা ব্যক্তিগত তথ্য ব্যৱহাৰ কৰিব বিচাৰে।</translation>
 <translation id="4785719467058219317">আপুনি ব্যৱহাৰ কৰি থকা সুৰক্ষা চাবিটো এই ৱেবছাইটটোত পঞ্জীকৃত নহয়</translation>
 <translation id="4785914069240823137">ক্ৰপ কৰাটো বাতিল কৰক</translation>
@@ -6164,6 +6170,7 @@
 <translation id="5296536303670088158">আপোনাৰ ওচৰত ক্ষতিকাৰক ৱেবছাইটৰ বিৰুদ্ধে Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা ব্যৱস্থা আছে</translation>
 <translation id="5297005732522718715">টেডাৰিং কনফিগাৰেশ্বন ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="5297082477358294722">পাছৱৰ্ড ছেভ কৰা হ'ল। আপোনাৰ <ph name="SAVED_PASSWORDS_STORE" />ত ছেভ হৈ থকা পাছৱৰ্ড চাওক আৰু পৰিচালনা কৰক।</translation>
+<translation id="5297548311167268289"><ph name="RP_ID" />ত ছাইন ইন কৰক</translation>
 <translation id="5297946558563358707">অন্য কোনোবাই আপোনাৰ স্ক্ৰীনখন চালে, আপোনাৰ স্ক্ৰীনখনৰ একেবাৰে তলৰ সোঁফালে গোপনীয়তাৰ চকুৰ চিহ্নটো দেখুৱাওক</translation>
 <translation id="5297984209202974345"><ph name="STYLE" /> শৈলীত <ph name="SUBJECT" />ৰ শেহতীয়া AI থীম <ph name="INDEX" /></translation>
 <translation id="5298219193514155779">থীম সৃষ্টি কৰোঁতা</translation>

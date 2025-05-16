@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Prisen på denne varen falt nylig fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle duplikatfaner blir nå også arkivert, med unntak av den sist brukte kopien.</translation>
 <translation id="6193448654517602979">Velg faner</translation>
+<translation id="6220820548421939212">Ja. Jeg er med</translation>
 <translation id="6228793724645064692">(butikkvurdering)</translation>
 <translation id="6271513594716432922">Lukk alle inaktive faner</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> anmeldelse}other{Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> anmeldelser}}</translation>
 <translation id="7885132941432959125">Flytt fanen mot høyre</translation>
+<translation id="788914896430720926">Vil du holde den inaktive delen ryddig?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> er ikke valgt</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7961015016161918242">Aldri</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Aktiviteten din på disse inkognitofanene blir fjernet fra denne enheten</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Opprettet for <ph name="NUM_MONTHS_ONE" /> måned siden}other{Opprettet for <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
 <translation id="8820741577754260431">Se avslag på fanene dine</translation>
+<translation id="883379923675618699">Chrome lukker automatisk elementer i den inaktive delen som du ikke har brukt på tre måneder. Du kan slå dette av nå eller når som helst i innstillingene.</translation>
 <translation id="8887921976452567404">Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen.</translation>
 <translation id="8915916167043355778">Lukk alle</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Flytt til nytt vindu}other{Flytt til et annet vindu}}</translation>

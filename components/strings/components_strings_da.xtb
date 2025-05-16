@@ -679,7 +679,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162620598375156287">Fås nu til <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Tjek, om der er en stavefejl i <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Udfyld loyalitetskort automatisk fra Google Wallet</translation>
 <translation id="2166049586286450108">Fuld administratoradgang</translation>
 <translation id="2166378884831602661">Dette website kan ikke levere en sikker forbindelse</translation>
 <translation id="2168151236314517198">Administratorpolitikken tillader ikke, at du udskriver dette indhold</translation>
@@ -3053,7 +3052,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drev og OneDrive</translation>
 <translation id="6280223929691119688">Der kan ikke leveres til denne adresse. Vælg en anden adresse.</translation>
-<translation id="628324801501145855">Administrer i indstillinger for betalingsmetoder</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284449872909111707">Beskeder og chatfunktioner</translation>
 <translation id="6284517535531159884">Varianter af seedtype</translation>
@@ -4256,6 +4254,7 @@ Yderligere oplysninger:
 <translation id="833262891116910667">Fremhæv</translation>
 <translation id="8339163506404995330">Sider på <ph name="LANGUAGE" /> oversættes ikke</translation>
 <translation id="8339275256517065202">Gennemfør dit køb ved hjælp af Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, påkrævet</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Tilmelding via virtuelt kort er åbnet i fuld højde</translation>

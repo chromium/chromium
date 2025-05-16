@@ -3163,6 +3163,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3188465121994729530">Batez besteko mugimendua</translation>
 <translation id="3189187154924005138">Kurtsore handia</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan.}other{{PASSWORD_COUNT} pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan.}}</translation>
+<translation id="319044078641740013">Bisitatutako webguneetara erraz itzultzeko, sinkronizatu zure historia eta fitxak <ph name="ACCOUNT_EMAIL" /> kontuarekin</translation>
 <translation id="3190558889382726167">Gorde da pasahitza</translation>
 <translation id="3192586965067888278">Azaldu arazoa xehetasun osoz. Oharrak Google-ri bidaliko zaizkio gizaki batek berrikusteko, eta baliteke Google-ren produktuak eta zerbitzuak hobetzeko erabiltzea.</translation>
 <translation id="3192947282887913208">Audio-fitxategiak</translation>
@@ -10327,6 +10328,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8280848878018088610">Itsaso harrotua, estilo ilunean, atzeko planoan fantasiazko hiri bat eta gaztelu bat ikusten direla.</translation>
 <translation id="828180235270931531">Erabilgarri dauden beste inprimagailu batzuk</translation>
 <translation id="8281886186245836920">Saltatu</translation>
+<translation id="8283802069507225582">Beste gailuetan utzitako tokitik jarraitzeko, sinkronizatu zure historia eta fitxak <ph name="ACCOUNT_EMAIL" /> kontuarekin</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> webguneak.</translation>
 <translation id="8284326494547611709">Azpitituluak</translation>
 <translation id="8286036467436129157">Hasi saioa</translation>
@@ -11004,6 +11006,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8754200782896249056">&lt;p&gt;Ordenagailu-ingurune bateragarri batean <ph name="PRODUCT_NAME" /> abiarazten duzunean, sistemaren proxy-ezarpenak erabiliko dira. Dena den, zure sistema ez da bateragarria edo arazo bat izan da sistemaren konfigurazioa kargatzean.&lt;/p&gt;
 
         &lt;p&gt;Hala ere, agindu-lerroaren bidez konfigura dezakezu. Etengailuei eta ingurune-aldagaiei buruzko informazio gehiago lortzeko, ikusi &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Zure beste ordenagailu eta mugikorretan irekita dauzkazun fitxak ikusteko, sinkronizatu zure historia eta fitxak <ph name="ACCOUNT_EMAIL" /> kontuarekin</translation>
 <translation id="8755175579224030324">Erakundean segurtasunari lotutako zereginak gauzatu, hala nola gailuan gordetako ziurtagirien eta gakoen kudeaketa.</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" /> gailuan, hautatu tekla bakoitzaren ekintza</translation>
 <translation id="8755376271068075440">&amp;Handiagoa</translation>

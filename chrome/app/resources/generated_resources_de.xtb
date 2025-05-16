@@ -1159,6 +1159,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
 <translation id="1798335429200675510">Klicke mit der rechten Maustaste in ein Textfeld, um Vorschläge zu erstellen oder vorhandene Texte zu optimieren, die auf Google AI basieren. Derzeit nur eingeschränkt verfügbar.</translation>
+<translation id="1799852120691957794">Fenster aus der vorherigen Sitzung können nicht wiederhergestellt werden</translation>
 <translation id="180203835522132923">Suchtaste + O, anschließend W</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Du kannst warten, bis sie wieder reagiert, oder sie schließen.</translation>
@@ -2350,6 +2351,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2610374175948698697">Können Dateien und Ordner auf meinem Gerät ansehen</translation>
 <translation id="2610780100389066815">Microsoft-Vertrauenslistensignatur</translation>
 <translation id="261114180663074524">Melde dich in deinem Microsoft-Konto an und versuch es dann noch einmal</translation>
+<translation id="2611702650078660078">Ein Fehler ist aufgetreten</translation>
 <translation id="2611776654555141051">Rechtecktool</translation>
 <translation id="2612676031748830579">Kartennummer</translation>
 <translation id="261305050785128654">Gib für Websites an, welche Sprachen du sprichst. Sofern möglich, werden Inhalte in diesen Sprachen angezeigt.</translation>
@@ -2710,6 +2712,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2849936225196189499">Kritisch</translation>
 <translation id="285033512555869047">Geschlossen</translation>
 <translation id="2850541429955027218">Design hinzufügen</translation>
+<translation id="2852045827873867442">Eine Internetverbindung ist erforderlich.</translation>
 <translation id="285237063405807022">(wird geladen)</translation>
 <translation id="2853121255651601031">Passwort gespeichert</translation>
 <translation id="2855243985454069333">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
@@ -5422,6 +5425,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4779855924282373274"><ph name="URL" /> • 1 Duplikat</translation>
 <translation id="4780321648949301421">Seite speichern unter...</translation>
 <translation id="4780558987886269159">Für die Arbeit</translation>
+<translation id="4781633367688946589">Mit neuer Sitzung fortfahren</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> möchte personenbezogene Daten aus deinem digitalen Wallet verwenden.</translation>
 <translation id="4785719467058219317">Du verwendest einen Sicherheitsschlüssel, der nicht auf dieser Website registriert ist</translation>
 <translation id="4785914069240823137">Zuschneiden abbrechen</translation>

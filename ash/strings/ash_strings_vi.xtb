@@ -581,7 +581,6 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="2949420361496057765">Nhấn phím <ph name="MODIFIER" /> rồi nhấp vào một đường liên kết</translation>
 <translation id="2957159466053076448">Bạn có thể tắt các tính năng này bất cứ lúc nào trong phần Cài đặt. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Âm thanh trên thiết bị</translation>
-<translation id="2960314608273155470">Chế độ chụp, mặc định là <ph name="SOURCE" /> <ph name="TYPE" />. Nhấn phím Tab để di chuyển bằng bàn phím.</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Cho phép truy cập micrô?</translation>
@@ -2433,7 +2432,6 @@ Mới cài đặt</translation>
 <translation id="8934418770423095813">Tạo Google Tài liệu</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tệp}other{# tệp}}</translation>
 <translation id="8936501819958976551">đã tắt</translation>
-<translation id="8937312474322077653">Trong chế độ chụp ảnh màn hình, hãy đặt thành <ph name="SOURCE" /> <ph name="TYPE" />. Nhấn phím Tab để chọn kiểu chụp. Nhấn phím cách để chọn khu vực. Nhấn phím Enter để chụp.</translation>
 <translation id="8938800817013097409">Thiết bị USB-C (cổng bên phải ở phía sau)</translation>
 <translation id="8939855324412367560">Âm thanh đầu vào là "<ph name="INPUT_DEVICE_NAME" />" và âm thanh đầu ra là "<ph name="OUTPUT_DEVICE_NAME" />". Chuyển đến phần Cài đặt để thay đổi.</translation>
 <translation id="8940956008527784070">Pin yếu (<ph name="PERCENTAGE" />%)</translation>

@@ -581,7 +581,6 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2949420361496057765">Premi <ph name="MODIFIER" /> e fai clic su un link</translation>
 <translation id="2957159466053076448">Puoi disattivare queste funzionalità in qualsiasi momento nelle Impostazioni. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio del dispositivo</translation>
-<translation id="2960314608273155470">Modalità di acquisizione, l'impostazione predefinita è <ph name="TYPE" /> <ph name="SOURCE" />. Premi Tab per usare la navigazione da tastiera.</translation>
 <translation id="2961963223658824723">Si è verificato un problema. Riprova tra qualche secondo.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vuoi attivare l'accesso al microfono?</translation>
@@ -2429,7 +2428,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8934418770423095813">Crea documento Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">disattivato</translation>
-<translation id="8937312474322077653">In Cattura schermo, imposta su <ph name="SOURCE" /> <ph name="TYPE" />. Premi Tab per scegliere il tipo di acquisizione. Premi la barra spaziatrice per selezionare la regione. Premi Invio per acquisire.</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="8939855324412367560">Il dispositivo di input audio è "<ph name="INPUT_DEVICE_NAME" />" e il dispositivo di output audio è "<ph name="OUTPUT_DEVICE_NAME" />". Vai alle Impostazioni per modificare.</translation>
 <translation id="8940956008527784070">Batteria in esaurimento (<ph name="PERCENTAGE" />%)</translation>

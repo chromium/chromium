@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
+<translation id="6220820548421939212">አዎ። ገብቼያለሁ</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
 <translation id="6271513594716432922">ሁሉንም የቦዘኑ ትሮች ዝጋ</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ትርን ወደ አዲስ ቡድን ያክሉ}one{ትርን ወደ አዲስ ቡድን ያክሉ}other{ትሮችን ወደ አዲስ ቡድን ያክሉ}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">እንቅስቃሴ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣ <ph name="REVIEWS_COUNT_ONE" /> ግምገማ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}}</translation>
 <translation id="7885132941432959125">ቅርን ወደ ቀኝ አንቀሳቅስ</translation>
+<translation id="788914896430720926">ገቢር ያልሆነ ክፍልዎን ንፁህ አድርገው ያቆያሉ?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> አልተመረጠም</translation>
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">በእነዚህ ማንነትን የማያሳውቁ ትሮች ውስጥ የሚኖርዎት እንቅስቃሴ ከዚህ መሣሪያ ላይ ይወገዳል</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_MONTHS_ONE" /> ወር በፊት የተፈጠረ}one{ከ<ph name="NUM_MONTHS_MANY" /> ወር በፊት የተፈጠረ}other{ከ<ph name="NUM_MONTHS_MANY" /> ወሮች በፊት የተፈጠረ}}</translation>
 <translation id="8820741577754260431">በትሮችዎ ላይ የዋጋ ቅነሳዎችን ይመልከቱ</translation>
+<translation id="883379923675618699">Chrome በ3 ወራት ውስጥ ያልተጠቀሙባቸውን ገቢር ባልሆነ ክፍል ውስጥ ያሉ ንጥሎችን በራስ-ሰር ይዘጋል። ይህን አሁን ወይም በማንኛውም ጊዜ ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="8887921976452567404">የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ።</translation>
 <translation id="8915916167043355778">ሁሉንም ዝጋ</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ወደ አዲስ መስኮት ያንቀሳቅሱ}one{ወደ ሌላ መስኮት ያንቀሳቅሱ}other{ወደ ሌላ መስኮት ያንቀሳቅሱ}}</translation>

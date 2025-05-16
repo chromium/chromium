@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> үг үсгийн алдаатай бичигдсэн эсэхийг шалгана уу.</translation>
-<translation id="2165700285977947082">Google Wallet-с лояалти картыг автоматаар бөглөнө үү</translation>
 <translation id="2166049586286450108">Админы бүрэн хандалт</translation>
 <translation id="2166378884831602661">Энэ сайтад холбогдоход аюултай</translation>
 <translation id="2168151236314517198">Энэ контентыг хэвлэх сонголтыг администраторын бодлогоор блоклосон байна</translation>
@@ -3053,7 +3052,6 @@
 <translation id="6272383483618007430">Google Шинэчлэл</translation>
 <translation id="6278015583149890680">Google Драйв болон OneDrive</translation>
 <translation id="6280223929691119688">Энэ хаяг руу хүргэх боломжгүй тул өөр хаяг сонгоно уу.</translation>
-<translation id="628324801501145855">Төлбөрийн хэрэгслийн тохиргооноос удирдах</translation>
 <translation id="6284292079994426700">26 x 38 инч</translation>
 <translation id="6284449872909111707">Мессеж, шуурхай мессеж</translation>
 <translation id="6284517535531159884">Хувилбарын үрийн төрөл</translation>
@@ -4255,6 +4253,7 @@
 <translation id="833262891116910667">Тодруулах</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> хэл дээрх хуудсыг орчуулахгүй</translation>
 <translation id="8339275256517065202">Хүрэлтийн ID-г ашиглан худалдан авалтаа дуусгана уу</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, шаардлагатай</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуал картын бүртгэлийг бүтэн өндрөөр нь нээсэн</translation>

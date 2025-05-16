@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" />ను నొక్కి, లింక్‌ను క్లిక్ చేయండి</translation>
 <translation id="2957159466053076448">మీరు ఈ ఫీచర్‌లను సెట్టింగ్‌లలో ఎప్పుడైనా ఆఫ్ చేయవచ్చు. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">డివైజ్ ఆడియో</translation>
-<translation id="2960314608273155470">క్యాప్చర్ మోడ్, ఆటోమేటిక్ సెట్టింగ్ <ph name="SOURCE" /> <ph name="TYPE" />. కీబోర్డ్ నావిగేషన్ కోసం Tabను నొక్కండి.</translation>
 <translation id="2961963223658824723">ఏదో తప్పు జరిగింది. కొన్ని క్షణాల తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
@@ -2434,7 +2433,6 @@
 <translation id="8934418770423095813">Google డాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>
-<translation id="8937312474322077653">స్క్రీన్ క్యాప్చర్‌లో, <ph name="SOURCE" /> <ph name="TYPE" />‌కు సెట్ చేయండి. క్యాప్చర్ రకాన్ని ఎంచుకోవడానికి ట్యాబ్‌ను నొక్కండి. ప్రాంతాన్ని ఎంచుకోవడానికి స్పేస్‌ను నొక్కండి. క్యాప్చర్ చేయడానికి Enterను నొక్కండి.</translation>
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
 <translation id="8939855324412367560">ఇన్‌పుట్ ఆడియో "<ph name="INPUT_DEVICE_NAME" />", అవుట్‌పుట్ ఆడియో "<ph name="OUTPUT_DEVICE_NAME" />". మార్చడానికి సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="8940956008527784070">బ్యాటరీ తక్కువగా ఉంది (<ph name="PERCENTAGE" />%)</translation>

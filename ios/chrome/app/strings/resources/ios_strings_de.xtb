@@ -533,6 +533,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3208260410153224535">Deine Organisation hat die Anmeldung deaktiviert. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
 <translation id="3213807041830307252">Kaufe ein, übersetze und finde mit deiner Kamera und Fotogalerie heraus, was du gerade siehst.</translation>
 <translation id="3214379938835224220">Du wurdest beim Zurücksetzen deines iPads abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
+<translation id="3218296450292600703">Wenn du dich mit deinem verwalteten Konto anmeldest, kannst du die mit deiner Organisation verbundenen Browserdaten wie Tabs, Verlauf und Passwörter besser von deinen anderen Browserdaten trennen</translation>
 <translation id="3224075676564434205">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird von allen Geräten gelöscht, die im Konto <ph name="USER_EMAIL" /> angemeldet sind.</translation>
 <translation id="3224641773458703735">Um Passwörter zu exportieren, musst du zuerst einen Passcode auf deinem Gerät einrichten.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1484,6 +1485,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7102005569666697658">Wird heruntergeladen… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">„Menü“ → Einstellungen → „Zahlungsmethoden“</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
+<translation id="7115051913071512405">Testen</translation>
 <translation id="7128693485119315539">Deine Organisation muss möglicherweise Browserdaten, die mit deinem verwalteten Konto verknüpft sind, sehen und verwalten – beispielsweise deinen Browserverlauf und deine Passwörter.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>

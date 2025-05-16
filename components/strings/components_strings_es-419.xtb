@@ -679,7 +679,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162620598375156287">Ahora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Revisa que no haya errores de ortografía en <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Autocompletar tarjetas de lealtad de la Billetera de Google</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
 <translation id="2166378884831602661">Este sitio no puede proporcionar una conexión segura</translation>
 <translation id="2168151236314517198">La política del administrador no permite imprimir este contenido.</translation>
@@ -3054,7 +3053,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6272383483618007430">Google Actualización</translation>
 <translation id="6278015583149890680">Google Drive y OneDrive</translation>
 <translation id="6280223929691119688">La dirección de envío no es válida. Selecciona una dirección diferente.</translation>
-<translation id="628324801501145855">Administrar en la configuración de las formas de pago</translation>
 <translation id="6284292079994426700">66.04 × 96.52 cm</translation>
 <translation id="6284449872909111707">Mensajería instantánea y de texto</translation>
 <translation id="6284517535531159884">Tipo de origen de las variaciones</translation>
@@ -4257,6 +4255,7 @@ Detalles adicionales:
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">No se traducirán las páginas en <ph name="LANGUAGE" /></translation>
 <translation id="8339275256517065202">Completa tu compra con Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, obligatorio</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">El diálogo de inscripción de tarjeta virtual está totalmente abierto</translation>

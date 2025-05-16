@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">শেহতীয়াকৈ এইটো বস্তুৰ মূল্য <ph name="PREVIOUS_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />লৈ হ্ৰাস পাইছে</translation>
 <translation id="6109251075362363230">আটাইবোৰ ডুপ্লিকেট টেবো এতিয়া আৰ্কাইভ কৰা হ’ব, য’ত একেবাৰে শেহতীয়াকৈ ব্যৱহাৰ কৰা প্ৰতিলিপিটোৰ ক্ষেত্ৰত ব্যতিক্ৰম থাকিব।</translation>
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
+<translation id="6220820548421939212">হয়। মই সন্মত</translation>
 <translation id="6228793724645064692">(ষ্ট’ৰৰ মূল্যাংকন)</translation>
 <translation id="6271513594716432922">আটাইবোৰ নিষ্ক্ৰিয় টেব বন্ধ কৰক</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{নতুন গোটত টেব যোগ দিয়ক}one{নতুন গোটত টেবসমূহ যোগ দিয়ক}other{নতুন গোটত টেবসমূহ যোগ দিয়ক}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_ONE" /> টা পৰ্যালোচনা}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}}</translation>
 <translation id="7885132941432959125">টেবটো সোঁফাললৈ নিয়ক</translation>
+<translation id="788914896430720926">আপোনাৰ নিষ্ক্ৰিয় শাখাটো পৰিপাটিকৈ ৰাখিবনে?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> বাছনি কৰা হোৱা নাই</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7961015016161918242">কেতিয়াও নহয়</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">এই ইনক’গনিট’ টেবসমূহত আপুনি কৰা কাৰ্যকলাপ এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_MONTHS_MANY" /> মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_MONTHS_MANY" /> মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="8820741577754260431">আপোনাৰ টেবসমূহত মূল্য কমাৰ বিষয়ে তথ্য চাওক</translation>
+<translation id="883379923675618699">Chromeএ নিষ্ক্ৰিয় শাখাত থকা বস্তুবোৰ স্বয়ংক্ৰিয়ভাৱে বন্ধ কৰে যিবোৰ আপুনি ৩ মাহ ধৰি ব্যৱহাৰ কৰা নাই। আপুনি এতিয়া বা যিকোনো সময়তে এইটো অফ কৰিব পাৰে।</translation>
 <translation id="8887921976452567404">আপোনাৰ বন্ধ কৰা টেব আৰু গোটসমূহ শেহতীয়া টেব আৰু টেবৰ গোটসমূহ শাখাৰ পৰা পুনৰ খুলিব পাৰি।</translation>
 <translation id="8915916167043355778">আটাইবোৰ বন্ধ কৰক</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{নতুন ৱিণ্ড’লৈ নিয়ক}one{অন্য ৱিণ্ড’লৈ নিয়ক}other{অন্য ৱিণ্ড’লৈ নিয়ক}}</translation>

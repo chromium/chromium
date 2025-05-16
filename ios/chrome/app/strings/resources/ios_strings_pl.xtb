@@ -533,6 +533,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3208260410153224535">Twoja organizacja wyłączyła logowanie się. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
 <translation id="3213807041830307252">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu i galerii zdjęć.</translation>
 <translation id="3214379938835224220">W ramach resetowania iPada nastąpiło wylogowanie. Aby się zalogować, poniżej kliknij Dalej.</translation>
+<translation id="3218296450292600703">Logowanie się na konto zarządzane pozwala oddzielić dane przeglądania związane z organizacją (w tym karty, historię i hasła) od pozostałych danych przeglądania</translation>
 <translation id="3224075676564434205">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Aby wyeksportować hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1484,6 +1485,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7102005569666697658">Pobieram… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Ustawienia → Formy płatności</translation>
 <translation id="7108338896283013870">Ukryj</translation>
+<translation id="7115051913071512405">Wypróbuj</translation>
 <translation id="7128693485119315539">Twoja organizacja może potrzebować dostępu do danych przeglądania powiązanych z Twoim kontem zarządzanym, takich jak historia przeglądania i hasła, oraz chcieć nimi zarządzać.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Aparat jest niedostępny</translation>

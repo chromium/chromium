@@ -581,7 +581,6 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="2949420361496057765">Ýttu á <ph name="MODIFIER" /> og smelltu á tengil</translation>
 <translation id="2957159466053076448">Þú getur slökkt á þessum eiginleikum hvenær sem er í stillingum. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Hljóð tækis</translation>
-<translation id="2960314608273155470">Tökustilling, <ph name="SOURCE" /> <ph name="TYPE" /> er sjálfgefið. Ýttu á Tab (dálkalykilinn) til að fletta á lyklaborði.</translation>
 <translation id="2961963223658824723">Eitthvað fór úrskeiðis. Reyndu aftur eftir nokkrar sekúndur.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Kveikja á hljóðnemaaðgangi?</translation>
@@ -2433,7 +2432,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8934418770423095813">Búa til Google skjal</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="8936501819958976551">óvirkt</translation>
-<translation id="8937312474322077653">Stilla á <ph name="SOURCE" /> <ph name="TYPE" /> í skjáupptöku. Ýttu á flipa til að velja gerð töku. Ýttu á bil til að velja svæði. Ýttu á enter til að taka mynd.</translation>
 <translation id="8938800817013097409">USB-C tæki (hægra tengi að aftan)</translation>
 <translation id="8939855324412367560">Inntakshljóð er „<ph name="INPUT_DEVICE_NAME" />“ og úttakshljóð er „<ph name="OUTPUT_DEVICE_NAME" />“. Farðu í stillingar til að breyta þessu.</translation>
 <translation id="8940956008527784070">Rafhlaða að tæmast (<ph name="PERCENTAGE" />%)</translation>

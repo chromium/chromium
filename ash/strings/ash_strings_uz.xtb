@@ -462,6 +462,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2530896289327917474">Faol kursor rejimini yoqish yoki oʻchirish</translation>
 <translation id="2531025035050312891">qurilma sekin ishlayapti</translation>
 <translation id="2531107890083353124">Varaqni sudrayotganda <ph name="KEY_ONE" /> tugmasini bosing</translation>
+<translation id="2532199152994248594">Rasmga olinadigan hududni tanlash uchun kursorni tortib joylang yoki Boʻshliq tugmasini bosing</translation>
 <translation id="2545334090614121435">Home bosish kerakmi? Buni ishlating:</translation>
 <translation id="254900897760075745">Tanlangan kontentni vaqtincha xotiraga nusxalash</translation>
 <translation id="2549711466868162843">Yoritishni yaxshilash</translation>
@@ -581,7 +582,6 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="2949420361496057765"><ph name="MODIFIER" /> bilan havola ustiga bosing</translation>
 <translation id="2957159466053076448">Bu funksiyalarni istalgan vaqt sozlamalar orqali faolsizlantirish mumkin. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Qurilmadagi audio</translation>
-<translation id="2960314608273155470">Tasvirga olish rejimi, standart: <ph name="SOURCE" /> <ph name="TYPE" />. Klaviaturada harakatlanish uchun tab tugmasini bosing.</translation>
 <translation id="2961963223658824723">Xatolik yuz berdi. Bir necha soniyadan keyin qayta urining.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Mikrofondan foydalanishga ruxsat berilsinmi?</translation>
@@ -1770,6 +1770,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6700713906295497288">IME menyusi tugmasi</translation>
 <translation id="6704073473590541209">Oʻng chekka dastasi belgilandi, tomon strelkalari yordamida suring</translation>
 <translation id="6706742084323792866">PIN kod klaviaturasi</translation>
+<translation id="6709719156428404245">Yozib olinadigan hududni tanlash uchun kursorni tortib joylang yoki Boʻshliq tugmasini bosing</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6723839937902243910">Quvvat</translation>
 <translation id="672609503628871915">Nimalar yangiligini ko‘ring</translation>
@@ -2433,7 +2434,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8934418770423095813">Google Doc hujjatini yaratish</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ta fayl}other{# ta fayl}}</translation>
 <translation id="8936501819958976551">faolsizlantirildi</translation>
-<translation id="8937312474322077653">Ekranni yozib olish parametrlari: <ph name="SOURCE" />, <ph name="TYPE" />. Yozuv turini oʻzgartirish uchun Tab tugmasini bosing. Ekran hududini tanlash uchun Boʻshliq tugmasini bosing. Yozib olish uchun Enter tugmasini bosing.</translation>
 <translation id="8938800817013097409">USB-C qurilma (orqa tomondagi o‘ng port)</translation>
 <translation id="8939855324412367560">Audio manbasi: "<ph name="INPUT_DEVICE_NAME" />" va audio chiqarish qurilmasi: "<ph name="OUTPUT_DEVICE_NAME" />". Sozlamalar orqali oʻzgartirish mumkin.</translation>
 <translation id="8940956008527784070">Batareya zaryadi kam (<ph name="PERCENTAGE" />%)</translation>

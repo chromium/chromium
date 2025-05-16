@@ -1172,6 +1172,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1796588414813960292">Funktioner, der skal bruge lyd, fungerer ikke</translation>
 <translation id="1797117170091578105">Spil ved hjælp af dit Chromebook-tastatur. Du kan tilpasse taster, så de tildeles bestemte handlinger.</translation>
 <translation id="1798335429200675510">Højreklik i et tekstfelt for at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Google AI. Tilgængeligheden er begrænset i øjeblikket.</translation>
+<translation id="1799852120691957794">Vinduerne fra din forrige session kan ikke gendannes</translation>
 <translation id="180203835522132923">Søgetasten+O efterfulgt af W</translation>
 <translation id="1802624026913571222">Gå i dvale, når skærmen er slået ned</translation>
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller afslutte.</translation>
@@ -2368,6 +2369,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2610374175948698697">Kan se filer eller mapper på din enhed</translation>
 <translation id="2610780100389066815">Microsoft-signering af tillidslister</translation>
 <translation id="261114180663074524">Log ind på din Microsoft-konto, og prøv igen</translation>
+<translation id="2611702650078660078">Der opstod en fejl</translation>
 <translation id="2611776654555141051">Rektangelværktøj</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Angiv for websites, hvilke sprog du taler. Så viser de indhold på disse sprog, når det er muligt.</translation>
@@ -2728,6 +2730,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="285033512555869047">Lukket</translation>
 <translation id="2850541429955027218">Tilføj tema</translation>
+<translation id="2852045827873867442">Dette kræver internetforbindelse.</translation>
 <translation id="285237063405807022">(indlæser)</translation>
 <translation id="2853121255651601031">Adgangskoden er blevet gemt</translation>
 <translation id="2855243985454069333">Sletter historikken fra alle synkroniserede enheder</translation>
@@ -5442,6 +5445,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 dublet</translation>
 <translation id="4780321648949301421">Gem side som...</translation>
 <translation id="4780558987886269159">Til arbejde</translation>
+<translation id="4781633367688946589">Fortsæt til ny session</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vil gerne bruge personlige oplysninger fra din digitale pung.</translation>
 <translation id="4785719467058219317">Du bruger en sikkerhedsnøgle, som ikke er registreret på dette website</translation>
 <translation id="4785914069240823137">Annuller beskæring</translation>

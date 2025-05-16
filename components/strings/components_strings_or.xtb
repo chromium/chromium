@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
 <translation id="2162620598375156287">ବର୍ତ୍ତମାନ <ph name="SOURCE_WEBSITE" />ରେ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />ରେ ଟାଇପିଂ ତ୍ରୁଟି ଅଛି କି ନାହିଁ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
-<translation id="2165700285977947082">Google Walletରୁ ଲୟାଲ୍ଟି କାର୍ଡଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରନ୍ତୁ</translation>
 <translation id="2166049586286450108">ସମ୍ପୂର୍ଣ୍ଣ ବ୍ୟବସ୍ଥାପକ ଆକ୍ସେସ୍</translation>
 <translation id="2166378884831602661">ଏହି ସାଇଟ୍ ଏକ ସୁରକ୍ଷିତ ସଂଯୋଗ ପ୍ରଦାନ କରିପାରିବ ନାହିଁ</translation>
 <translation id="2168151236314517198">ଏହି ବିଷୟବସ୍ତୁକୁ ପ୍ରିଣ୍ଟ କରିବା ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -3049,7 +3048,6 @@
 <translation id="6272383483618007430">Google ଅପଡେଟ୍</translation>
 <translation id="6278015583149890680">Google Drive ଏବଂ OneDrive</translation>
 <translation id="6280223929691119688">ଏହି ଠିକଣାକୁ ପହଞ୍ଚାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
-<translation id="628324801501145855">ପେମେଣ୍ଟ ପଦ୍ଧତି ସେଟିଂସରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6284292079994426700">26 x 38 ଇଞ୍ଚ</translation>
 <translation id="6284449872909111707">ଟେକ୍ସଟ ଏବଂ ଇନଷ୍ଟାଣ୍ଟ ମେସେଜିଂ</translation>
 <translation id="6284517535531159884">ଭେରିଏସନ ସିଡ ପ୍ରକାର</translation>
@@ -3856,6 +3854,7 @@
 <translation id="7639968568612851608">ଗାଢ଼ ଧୂସର</translation>
 <translation id="7646681339175747202">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। Google Password Manager ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।</translation>
 <translation id="7647206758853451655">ପ୍ରିଣ୍ଟ ଗୁଣବତ୍ତା</translation>
+<translation id="7648527891719919697">ଆପଣ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ସେଟିଂସ<ph name="END_ANDROID_SETTINGS_LINK" />ରେ ଆଡଭାନ୍ସଡ ପ୍ରୋଟେକସନ ଚାଲୁ କରିଥିବା ଯୋଗୁଁ ଏହି ସାଇଟ ବ୍ଲକ ହୋଇ ରହିବ। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ଏହି ଡିଭାଇସ୍‌ରେ ଫାଇଲ୍ ଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
 <translation id="7653957176542370971">ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ସିଟ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="7654909834015434372">ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କଲେ, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ଏହାର ମୂଳ ରୋଟେସନକୁ ଫେରି ଆସିବ</translation>

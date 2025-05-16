@@ -435,6 +435,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
 <translation id="2981364137500752533">Můžete mít až 5 oken.</translation>
 <translation id="2983102365694924129">Na základě vaší aktivity na webu. Toto nastavení je vypnuté.</translation>
+<translation id="2983398917942897288">Neaktivní (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Při vyhledávání na Googlu zahrnovat okolní text</translation>
 <translation id="2988638966064514052">Zesilte svá hesla</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
@@ -467,6 +468,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="314939179385989105">Domovská stránka Chromu</translation>
 <translation id="3158667104057012316">Ruční řazení</translation>
 <translation id="3159335509547415276">Další informace o blokovaných účtech</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otevře se na nové kartě</translation>
 <translation id="3166827708714933426">Zkratky pro okna a karty</translation>
 <translation id="316694332262407393">Chrome už je spuštěný.</translation>
 <translation id="3167258285411721858">Můžete požádat o web <ph name="HOST_NAME" /> pro mobily</translation>
@@ -791,6 +793,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="469286762610133730">Získejte lepší obsah</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}few{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}many{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}other{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> dalších}}</translation>
 <translation id="4698061626562952596">Tady najdete své neaktivní karty</translation>
+<translation id="4698757800236023795">Aktivní (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Obrázky a soubory v mezipaměti</translation>
 <translation id="4710167854527459075">Seřadit od nejnovějších</translation>
 <translation id="4718044610319080485">Vyvolá AI asistenta</translation>

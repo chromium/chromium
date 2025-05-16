@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">Нажмите на ссылку, удерживая <ph name="MODIFIER" /></translation>
 <translation id="2957159466053076448">Эти функции можно в любой момент отключить в настройках.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Звук с устройства</translation>
-<translation id="2960314608273155470">Режим съемки. По умолчанию: <ph name="SOURCE" />, <ph name="TYPE" />. Для навигации с помощью клавиатуры используйте клавишу Tab.</translation>
 <translation id="2961963223658824723">Произошла ошибка. Повторите попытку через несколько секунд.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Предоставить доступ к микрофону?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Создать документ Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="8936501819958976551">отключила</translation>
-<translation id="8937312474322077653">Параметры записи экрана: <ph name="SOURCE" />, <ph name="TYPE" />. Чтобы изменить тип записи, нажмите Tab. Чтобы выбрать область экрана, нажмите Пробел. Чтобы начать запись, нажмите Ввод.</translation>
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>
 <translation id="8939855324412367560">Устройство ввода – "<ph name="INPUT_DEVICE_NAME" />", устройство вывода – "<ph name="OUTPUT_DEVICE_NAME" />". Изменить их можно в настройках.</translation>
 <translation id="8940956008527784070">Низкий заряд батареи (<ph name="PERCENTAGE" />%)</translation>

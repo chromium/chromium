@@ -1162,6 +1162,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
 <translation id="1797117170091578105">Juga utilitzant el teclat del Chromebook. Pots personalitzar les tecles perquè facin accions específiques.</translation>
 <translation id="1798335429200675510">Fes clic amb el botó dret en un quadre de text per crear un esborrany o polir el treball existent amb la tecnologia de la IA de Google. En aquests moments té una disponibilitat limitada.</translation>
+<translation id="1799852120691957794">No es poden restaurar les finestres de la sessió anterior</translation>
 <translation id="180203835522132923">Cerca+O i, després, W</translation>
 <translation id="1802624026913571222">Posa en repòs quan es tanqui la tapa</translation>
 <translation id="1802687198411089702">La pàgina no respon. Pots esperar que respongui o pots sortir-ne.</translation>
@@ -2353,6 +2354,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2610374175948698697">Poden veure els fitxers o les carpetes del dispositiu</translation>
 <translation id="2610780100389066815">Signatura de llista de confiança de Microsoft</translation>
 <translation id="261114180663074524">Inicia la sessió al teu compte de Microsoft i torna-ho a provar</translation>
+<translation id="2611702650078660078">S'ha produït un error</translation>
 <translation id="2611776654555141051">Eina de rectangle</translation>
 <translation id="2612676031748830579">Número de targeta</translation>
 <translation id="261305050785128654">Deixa que els llocs web sàpiguen els idiomes que parles. Quan sigui possible, mostraran el contingut en aquests idiomes.</translation>
@@ -2713,6 +2715,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="285033512555869047">tancat</translation>
 <translation id="2850541429955027218">Afegeix el tema</translation>
+<translation id="2852045827873867442">Cal tenir connexió a Internet.</translation>
 <translation id="285237063405807022">(s'està carregant)</translation>
 <translation id="2853121255651601031">S'ha desat la contrasenya</translation>
 <translation id="2855243985454069333">Suprimeix l'historial de tots els dispositius sincronitzats</translation>
@@ -5424,6 +5427,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplicat</translation>
 <translation id="4780321648949301421">Anomena i desa la pàgina...</translation>
 <translation id="4780558987886269159">Per a la feina</translation>
+<translation id="4781633367688946589">Continua a la sessió nova</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital.</translation>
 <translation id="4785719467058219317">Estàs utilitzant una clau de seguretat que no està registrada en aquest lloc web</translation>
 <translation id="4785914069240823137">Cancel·la la retallada</translation>

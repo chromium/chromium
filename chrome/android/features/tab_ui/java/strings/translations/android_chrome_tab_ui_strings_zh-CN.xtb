@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">这件商品的价格最近从 <ph name="PREVIOUS_PRICE" />降至 <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">现在，所有重复的标签页也将归档，最近使用的副本除外。</translation>
 <translation id="6193448654517602979">选择标签页</translation>
+<translation id="6220820548421939212">是，整理</translation>
 <translation id="6228793724645064692">（商店评分）</translation>
 <translation id="6271513594716432922">关闭所有闲置标签页</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{向新分组中添加标签页}other{向新分组中添加标签页}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">活动</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />，共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价}other{当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />，共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价}}</translation>
 <translation id="7885132941432959125">右移标签页</translation>
+<translation id="788914896430720926">要整理“闲置”部分吗？</translation>
 <translation id="7939917283308035850">未选择<ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">红色</translation>
 <translation id="7961015016161918242">一律不</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">您在这些无痕式标签页中的活动记录将从此设备上移除</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_MONTHS_ONE" /> 个月前}other{创建时间：<ph name="NUM_MONTHS_MANY" /> 个月前}}</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>
+<translation id="883379923675618699">Chrome 会自动关闭“闲置”部分中 3 个月内未曾使用的标签页。您可以现在关闭此功能，也可以随时在“设置”中进行关闭。</translation>
 <translation id="8887921976452567404">您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。</translation>
 <translation id="8915916167043355778">全部关闭</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{移至新窗口}other{移至其他窗口}}</translation>

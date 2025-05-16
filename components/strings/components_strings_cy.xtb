@@ -679,7 +679,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2161656808144014275">Testun</translation>
 <translation id="2162620598375156287">Nawr <ph name="CURRENT_PRICE" /> yn <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Gwiriwch a oes teipo yn <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Awtolenwi cardiau teyrngarwch o Google Wallet</translation>
 <translation id="2166049586286450108">Mynediad Gweinyddol Llawn</translation>
 <translation id="2166378884831602661">Ni all y wefan hon ddarparu cysylltiad diogel</translation>
 <translation id="2168151236314517198">Mae argraffu'r cynnwys hwn wedi'i rhwystro gan bolisi gweinyddwr</translation>
@@ -3053,7 +3052,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6272383483618007430">Diweddariad Google</translation>
 <translation id="6278015583149890680">Google Drive a OneDrive</translation>
 <translation id="6280223929691119688">Methu ag anfon i'r cyfeiriad hwn. Dewiswch gyfeiriad gwahanol.</translation>
-<translation id="628324801501145855">Rheoli yn y gosodiadau dulliau talu</translation>
 <translation id="6284292079994426700">26 x 38 modfedd</translation>
 <translation id="6284449872909111707">Tecstio a Negeseuo Gwib</translation>
 <translation id="6284517535531159884">Math o Hedyn Amrywiadau</translation>
@@ -4255,6 +4253,7 @@ Manylion ychwanegol:
 <translation id="833262891116910667">Amlygu</translation>
 <translation id="8339163506404995330">Ni fydd tudalennau yn <ph name="LANGUAGE" /> yn cael eu cyfieithu</translation>
 <translation id="8339275256517065202">Cwblhewch eich pryniant gan ddefnyddio Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, gofynnol</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Agorwyd cofrestriad cerdyn rhithwir ar uchder llawn</translation>

@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> ಅನ್ನು ಒತ್ತಿರಿ ಮತ್ತು ಲಿಂಕ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="2957159466053076448">ನೀವು ಈ ಫೀಚರ್‌ಗಳನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆಫ್ ಮಾಡಬಹುದು. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ಸಾಧನದ ಆಡಿಯೋ</translation>
-<translation id="2960314608273155470">ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್, <ph name="SOURCE" /> <ph name="TYPE" /> ಡೀಫಾಲ್ಟ್ ಆಗಿದೆ. ಕೀಬೋರ್ಡ್ ನ್ಯಾವಿಗೇಶನ್‌ಗಾಗಿ ಟ್ಯಾಬ್ ಒತ್ತಿರಿ.</translation>
 <translation id="2961963223658824723">ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ. ಕೆಲವು ನಿಮಿಷಗಳಲ್ಲಿ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">ಮೈಕ್ರೋಫೋನ್ ಆ್ಯಕ್ಸೆಸ್ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google Doc ರಚಿಸಿ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="8936501819958976551">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="8937312474322077653">ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್‌ನಲ್ಲಿ, <ph name="SOURCE" /> <ph name="TYPE" /> ಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವಿಕೆಯ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಟ್ಯಾಬ್ ಒತ್ತಿರಿ. ಪ್ರದೇಶವನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಸ್ಪೇಸ್ ಒತ್ತಿರಿ. ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಎಂಟರ್ ಒತ್ತಿರಿ.</translation>
 <translation id="8938800817013097409">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿನ ಬಲ ಪೋರ್ಟ್‌)</translation>
 <translation id="8939855324412367560">ಇನ್‌ಪುಟ್ ಆಡಿಯೋ "<ph name="INPUT_DEVICE_NAME" />" ಮತ್ತು ಔಟ್‌ಪುಟ್ ಆಡಿಯೋ "<ph name="OUTPUT_DEVICE_NAME" />" ಆಗಿದೆ. ಬದಲಾಯಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="8940956008527784070">ಬ್ಯಾಟರಿ ಕಡಿಮೆ (<ph name="PERCENTAGE" />%)</translation>

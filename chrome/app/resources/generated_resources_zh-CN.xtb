@@ -1157,6 +1157,7 @@
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
 <translation id="1798335429200675510">右键点击文本框即可创建草稿或润色现有作品，此功能由 Google AI 赋能。目前仅面向部分用户提供。</translation>
+<translation id="1799852120691957794">无法恢复上一次会话中的窗口</translation>
 <translation id="180203835522132923">搜索键 + O，然后按 W</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
@@ -2345,6 +2346,7 @@
 <translation id="2610374175948698697">可以查看您设备上的文件或文件夹</translation>
 <translation id="2610780100389066815">Microsoft 信任列表签名</translation>
 <translation id="261114180663074524">请登录您的 Microsoft 账号，然后重试</translation>
+<translation id="2611702650078660078">发生了错误</translation>
 <translation id="2611776654555141051">矩形工具</translation>
 <translation id="2612676031748830579">卡号</translation>
 <translation id="261305050785128654">让网站知道您所用的语言。它们将尽可能以这些语言显示内容。</translation>
@@ -2705,6 +2707,7 @@
 <translation id="2849936225196189499">关键</translation>
 <translation id="285033512555869047">已关闭</translation>
 <translation id="2850541429955027218">添加主题背景</translation>
+<translation id="2852045827873867442">需要联网。</translation>
 <translation id="285237063405807022">（加载中）</translation>
 <translation id="2853121255651601031">密码已保存</translation>
 <translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
@@ -5416,6 +5419,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • 1 个重复项</translation>
 <translation id="4780321648949301421">页面存储为...</translation>
 <translation id="4780558987886269159">用于工作</translation>
+<translation id="4781633367688946589">继续新会话</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。</translation>
 <translation id="4785719467058219317">您使用的安全密钥尚未在此网站注册</translation>
 <translation id="4785914069240823137">取消剪裁</translation>

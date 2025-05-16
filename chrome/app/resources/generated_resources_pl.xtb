@@ -1164,6 +1164,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1797117170091578105">Graj przy użyciu klawiatury Chromebooka. Możesz dostosować klawisze do konkretnych działań.</translation>
 <translation id="1798335429200675510">Kliknij prawym przyciskiem myszy w polu tekstowym, aby utworzyć wersję roboczą lub dopracować już istniejącą pracę z wykorzystaniem AI od Google. Obecnie dostępność jest ograniczona.</translation>
+<translation id="1799852120691957794">Nie można przywrócić okien z poprzedniej sesji</translation>
 <translation id="180203835522132923">Wyszukaj + O, a następnie W</translation>
 <translation id="1802624026913571222">Uśpij po zamknięciu pokrywy</translation>
 <translation id="1802687198411089702">Strona nie odpowiada. Możesz zaczekać lub ją zamknąć.</translation>
@@ -2339,6 +2340,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2610374175948698697">Możliwość wyświetlania plików i folderów na urządzeniu</translation>
 <translation id="2610780100389066815">Podpisywanie listy zaufania firmy Microsoft</translation>
 <translation id="261114180663074524">Zaloguj się na konto Microsoft i spróbuj jeszcze raz</translation>
+<translation id="2611702650078660078">Wystąpił błąd</translation>
 <translation id="2611776654555141051">Narzędzie Prostokąt</translation>
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="261305050785128654">Informuj witryny o językach, którymi się posługujesz. Witryny w miarę możliwości będą wyświetlać treści w tych językach.</translation>
@@ -2699,6 +2701,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2849936225196189499">Krytyczne</translation>
 <translation id="285033512555869047">Zamknięta</translation>
 <translation id="2850541429955027218">Dodaj motyw</translation>
+<translation id="2852045827873867442">Wymagane jest połączenie z internetem.</translation>
 <translation id="285237063405807022">(wczytuję)</translation>
 <translation id="2853121255651601031">Hasło zostało zapisane</translation>
 <translation id="2855243985454069333">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
@@ -5409,6 +5412,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplikat</translation>
 <translation id="4780321648949301421">Zapisz stronę jako...</translation>
 <translation id="4780558987886269159">Do pracy</translation>
+<translation id="4781633367688946589">Przejdź do nowej sesji</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> chce używać danych osobowych z Twojego cyfrowego portfela.</translation>
 <translation id="4785719467058219317">Używasz klucza bezpieczeństwa, który nie jest zarejestrowany w tej witrynie</translation>
 <translation id="4785914069240823137">Anuluj przycinanie</translation>

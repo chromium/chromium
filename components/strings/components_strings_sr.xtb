@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162620598375156287">Цена је сада <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Уверите се да <ph name="HOST_NAME" /> не садржи словне грешке.</translation>
-<translation id="2165700285977947082">Аутоматско попуњавање картица лојалности из Google новчаника</translation>
 <translation id="2166049586286450108">Потпуни администраторски приступ</translation>
 <translation id="2166378884831602661">Овај сајт не може да пружи безбедну везу</translation>
 <translation id="2168151236314517198">Смернице администратора блокирају штампање овог садржаја</translation>
@@ -3052,7 +3051,6 @@
 <translation id="6272383483618007430">Google ажурирање</translation>
 <translation id="6278015583149890680">Google диск и OneDrive</translation>
 <translation id="6280223929691119688">Испорука на ову адресу није могућа. Изаберите другу адресу.</translation>
-<translation id="628324801501145855">Управљајте у подешавањима начина плаћања</translation>
 <translation id="6284292079994426700">26×38 in</translation>
 <translation id="6284449872909111707">Размена текстуалних и тренутних порука</translation>
 <translation id="6284517535531159884">Тип почетне вредности варијација</translation>

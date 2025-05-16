@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> را فشار دهید و روی پیوندی کلیک کنید</translation>
 <translation id="2957159466053076448">هروقت خواستید می‌توانید این ویژگی‌ها را در «تنظیمات» خاموش کنید. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">صدای دستگاه</translation>
-<translation id="2960314608273155470">«حالت ضبط»، پیش‌فرض <ph name="SOURCE" /> <ph name="TYPE" /> است. برای پیمایش با صفحه‌کلید، کلید جهش را فشار دهید.</translation>
 <translation id="2961963223658824723">مشکلی پیش آمد. چند ثانیه دیگر دوباره امتحان کنید.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">دسترسی به میکروفون روشن شود؟</translation>
@@ -2432,7 +2431,6 @@
 <translation id="8934418770423095813">‏ایجاد «سندنگار Google»</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="8936501819958976551">غیرفعال</translation>
-<translation id="8937312474322077653">‏در حالت ضبط صفحه‌نمایش، روی <ph name="TYPE" /> <ph name="SOURCE" /> تنظیم شد. برای انتخاب نوع ضبط، کلید «جهش» را فشار دهید. برای انتخاب منطقه، کلید «فاصله» را فشار دهید. برای ضبط کردن، کلید Enter را فشار دهید.</translation>
 <translation id="8938800817013097409">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="8939855324412367560">صدای ورودی «<ph name="INPUT_DEVICE_NAME" />» و صدای خروجی «<ph name="OUTPUT_DEVICE_NAME" />» است. برای تغییر به «تنظیمات» بروید.</translation>
 <translation id="8940956008527784070">باتری ضعیف است (<ph name="PERCENTAGE" />٪)</translation>

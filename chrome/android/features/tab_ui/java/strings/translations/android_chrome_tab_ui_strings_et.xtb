@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Selle üksuse hind <ph name="PREVIOUS_PRICE" /> langes hiljuti ja uus hind on <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Nüüd arhiivitakse ka kõik vahelehtede duplikaadid, välja arvatud viimati kasutatud koopia.</translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
+<translation id="6220820548421939212">Jah. Sobib</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
 <translation id="6271513594716432922">Sule kõik inaktiivsed vahelehed</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Tegevus</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_ONE" /> arvustus}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_MANY" /> arvustust}}</translation>
 <translation id="7885132941432959125">Teisalda vaheleht paremale</translation>
+<translation id="788914896430720926">Kas soovite mitteaktiivset jaotist puhastada?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> pole valitud</translation>
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Teie tegevused nendel inkognito vahelehtedel eemaldatakse sellest seadmest</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Loodud <ph name="NUM_MONTHS_ONE" /> kuu tagasi}other{Loodud <ph name="NUM_MONTHS_MANY" /> kuud tagasi}}</translation>
 <translation id="8820741577754260431">Näete oma vahelehtedel hinnalangusi</translation>
+<translation id="883379923675618699">Chrome kustutab automaatselt mitteaktiivse jaotise üksused, mida te pole kolme kuu jooksul kasutanud. Saate selle igal ajal seadetes välja lülitada.</translation>
 <translation id="8887921976452567404">Teie suletud vahelehti ja gruppe on võimalik avada jaotistest Hiljutised vahelehed ja Vahelehegrupid.</translation>
 <translation id="8915916167043355778">Sule kõik</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Teisalda uude aknasse}other{Teisalda teise aknasse}}</translation>

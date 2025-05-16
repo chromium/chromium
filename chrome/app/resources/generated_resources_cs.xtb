@@ -3165,6 +3165,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3188465121994729530">Plovoucí průměr</translation>
 <translation id="3189187154924005138">Velký kurzor</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 heslo a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}few{{PASSWORD_COUNT} hesla a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}many{{PASSWORD_COUNT} hesla a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}other{{PASSWORD_COUNT} hesel a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}}</translation>
+<translation id="319044078641740013">Pokud se chcete snadno vracet na navštívené weby, synchronizujte historii a karty do účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Heslo uloženo</translation>
 <translation id="3192586965067888278">Podrobně problém popište. Zpětná vazba bude odeslána společnosti Google ke kontrole člověkem a může být použita ke zlepšení nebo vývoji produktů a služeb Google.</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
@@ -3270,6 +3271,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="326999365752735949">Stahování souboru diff</translation>
 <translation id="3270965368676314374">Číst, měnit a mazat fotografie, hudbu a další média v počítači</translation>
+<translation id="3275464924531706548">Sbalit <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Váš interní bezpečnostní klíč momentálně není bezpečný. Odeberte jej ze všech služeb, se kterými jste jej použili. Tento problém vyřešíte tím, že bezpečnostní klíč resetujete.</translation>
 <translation id="3275778913554317645">Otevřít jako okno</translation>
 <translation id="3277214528693754078">Navigovat pomocí textového kurzoru (procházení pomocí kurzoru)</translation>
@@ -3601,6 +3603,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3510471875518562537">Používejte tuto adresu na svém iPhonu</translation>
 <translation id="3511200754045804813">Vyhledat znovu</translation>
 <translation id="3511307672085573050">Kopírovat adr&amp;esu odkazu</translation>
+<translation id="3511358375261756531">Rozbalit <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Písmo s pevnou šířkou</translation>
 <translation id="3511528412952710609">Krátká</translation>
 <translation id="3513019849832307207">Přidat se a otevřít</translation>
@@ -6150,6 +6153,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5296536303670088158">Máte nejsilnější zabezpečení prohlížeče Chrome proti škodlivým webům</translation>
 <translation id="5297005732522718715">Obnovit konfiguraci tetheringu</translation>
 <translation id="5297082477358294722">Heslo bylo uloženo. K zobrazení a správě uložených hesel můžete použít svůj <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Přihlášení k účtu <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Když se na obrazovku dívá někdo další, zobrazit v pravém dolním rohu obrazovky ikona oka</translation>
 <translation id="5297984209202974345">Nedávný motiv vygenerovaný umělou inteligencí <ph name="INDEX" /> na téma <ph name="SUBJECT" /> ve stylu <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Autor motivu</translation>
@@ -10331,6 +10335,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8280848878018088610">Burácející mořské vlny s fantastickým městem a hradem v pozadí, v temné náladě.</translation>
 <translation id="828180235270931531">Další dostupné tiskárny</translation>
 <translation id="8281886186245836920">Přeskočit</translation>
+<translation id="8283802069507225582">Pokud chcete pokračovat, kde jste skončili na jiných zařízeních, synchronizujte historii a karty do účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">všechny weby <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="8286036467436129157">Přihlásit se</translation>
@@ -11007,6 +11012,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8754200782896249056">&lt;p&gt;Při spuštění aplikace <ph name="PRODUCT_NAME" /> v podporovaném počítačovém prostředí se použijí systémová nastavení proxy serveru. Váš systém však buď není podporován, nebo došlo k problému se spuštěním konfigurace systému.&lt;/p&gt;
 
 &lt;p&gt;Konfiguraci můžete provést pomocí příkazového řádku. Další informace o příznacích a proměnných prostředí zobrazíte zadáním příkazu: &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Pokud chcete vidět otevřené karty z jiných počítačů a telefonů, synchronizujte historii a karty do účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Provádět pro vaši organizaci úlohy týkající se zabezpečení, například spravovat certifikáty a klíče uložené v zařízení</translation>
 <translation id="875532100880844232">Vyberte akce jednotlivých kláves zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">Větší</translation>

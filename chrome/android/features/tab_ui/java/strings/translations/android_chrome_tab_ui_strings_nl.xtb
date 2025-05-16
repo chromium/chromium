@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
+<translation id="6220820548421939212">Ja. Nu aanzetten</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
 <translation id="6271513594716432922">Alle inactieve tabbladen sluiten</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tabblad toevoegen aan nieuwe groep}other{Tabbladen toevoegen aan nieuwe groep}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Tabblad naar rechts verplaatsen</translation>
+<translation id="788914896430720926">Wil je je inactieve gedeelte netjes houden?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> is niet geselecteerd</translation>
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7961015016161918242">Nooit</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand geleden gemaakt}other{<ph name="NUM_MONTHS_MANY" /> maanden geleden gemaakt}}</translation>
 <translation id="8820741577754260431">Prijsdalingen bekijken op je tabbladen</translation>
+<translation id="883379923675618699">Chrome sluit automatisch items in het gedeelte Inactief die je al 3 maanden niet hebt gebruikt. Je kunt dit nu of later uitzetten via Instellingen.</translation>
 <translation id="8887921976452567404">Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen.</translation>
 <translation id="8915916167043355778">Alles sluiten</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Verplaatsen naar nieuw venster}other{Verplaatsen naar ander venster}}</translation>

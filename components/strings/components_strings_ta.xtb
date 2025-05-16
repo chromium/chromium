@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">உரை</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> தளத்தில் தற்போதைய விலை: <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> என்பதில் எழுத்துப்பிழை உள்ளதா எனப் பார்க்கவும்.</translation>
-<translation id="2165700285977947082">Google Walletடில் உள்ள லாயல்டி கார்டுகளைத் தானாக நிரப்புங்கள்</translation>
 <translation id="2166049586286450108">முழு நிர்வாகி அணுகல்</translation>
 <translation id="2166378884831602661">இந்தத் தளத்தால் பாதுகாப்பான இணைப்பை வழங்க முடியவில்லை</translation>
 <translation id="2168151236314517198">இந்த உள்ளடக்கத்தை அச்சிடுவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
@@ -3048,7 +3047,6 @@
 <translation id="6272383483618007430">Google புதுப்பிப்பு</translation>
 <translation id="6278015583149890680">Google Drive மற்றும் OneDrive</translation>
 <translation id="6280223929691119688">இந்த முகவரிக்கு டெலிவரி செய்ய முடியாது. வேறு முகவரியைத் தேர்ந்தெடுக்கவும்.</translation>
-<translation id="628324801501145855">பேமெண்ட் முறைக்கான அமைப்புகளில் நிர்வகியுங்கள்</translation>
 <translation id="6284292079994426700">26 x 38 இன்ச்</translation>
 <translation id="6284449872909111707">மெசேஜ் மற்றும் உடனடி மெசேஜிங்</translation>
 <translation id="6284517535531159884">வேரியேஷன் சீடு வகை</translation>
@@ -4251,6 +4249,7 @@
 <translation id="833262891116910667">தனிப்படுத்தும்</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> மொழியில் உள்ள பக்கங்கள் மொழிபெயர்க்கப்படாது</translation>
 <translation id="8339275256517065202">Touch ID மூலம் பர்ச்சேஸை நிறைவுசெய்யுங்கள்</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, தேவை</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">விர்ச்சுவல் கார்டைப் பதிவுசெய்யும் உரையாடல் முழுத் திரையில் திறக்கப்பட்டது</translation>

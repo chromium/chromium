@@ -679,7 +679,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2162620598375156287">Tani <ph name="CURRENT_PRICE" /> te <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kontrollo nëse ka ndonjë gabim drejtshkrimor në <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Plotëso automatikisht kartat e besnikërisë nga "Portofoli i Google"</translation>
 <translation id="2166049586286450108">Qasja e plotë e administratorit</translation>
 <translation id="2166378884831602661">Ky sajt nuk mund të ofrojë një lidhje të sigurt</translation>
 <translation id="2168151236314517198">Printimi i kësaj përmbajtjeje është bllokuar nga politika e administratorit</translation>
@@ -3052,7 +3051,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6272383483618007430">Përditësimi i Google</translation>
 <translation id="6278015583149890680">"Diskut të Google" dhe OneDrive</translation>
 <translation id="6280223929691119688">Nuk mund të dorëzohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
-<translation id="628324801501145855">Menaxho te cilësimet e mënyrave të pagesës</translation>
 <translation id="6284292079994426700">26 x 38 inç</translation>
 <translation id="6284449872909111707">Mesazhe me tekst dhe të çastit</translation>
 <translation id="6284517535531159884">Lloji i burimit të varianteve</translation>
@@ -3859,6 +3857,7 @@ Detaje shtesë:
 <translation id="7639968568612851608">Gri e errët</translation>
 <translation id="7646681339175747202">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon që ta ndryshosh fjalëkalimin tënd tani.</translation>
 <translation id="7647206758853451655">Cilësia e printimit</translation>
+<translation id="7648527891719919697">Ky sajt do të qëndrojë i bllokuar sepse ke të aktivizuar "Mbrojtjen e përparuar" te <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Cilësimet e Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Ruaji skedarët në këtë pajisje</translation>
 <translation id="7653957176542370971">Fleta e përpunuesit të pagesës është mbyllur</translation>
 <translation id="7654909834015434372">Kur redakton shënimet, ky dokument do të kthehet te rrotullimi i vet fillestar</translation>

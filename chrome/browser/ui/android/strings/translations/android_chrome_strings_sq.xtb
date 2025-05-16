@@ -435,6 +435,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2979639724566107830">Hape në një dritare të re</translation>
 <translation id="2981364137500752533">Mund të kesh deri në 5 dritare.</translation>
 <translation id="2983102365694924129">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është joaktiv.</translation>
+<translation id="2983398917942897288">Joaktiv (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Përfshi tekstin përreth në kërkimet e Google</translation>
 <translation id="2988638966064514052">Forco fjalëkalimet e tua</translation>
 <translation id="2989523299700148168">Vizituar së fundi</translation>
@@ -467,6 +468,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="314939179385989105">Faqja kryesore e Chrome</translation>
 <translation id="3158667104057012316">Po renditen sipas renditjes manuale</translation>
 <translation id="3159335509547415276">Mëso rreth llogarive të bllokuara</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />; hapet në një skedë të re</translation>
 <translation id="3166827708714933426">Shkurtoret e skedës dhe dritares</translation>
 <translation id="316694332262407393">Chrome është tashmë duke u ekzekutuar këtu.</translation>
 <translation id="3167258285411721858">Mund të kërkosh sajtin për celular për <ph name="HOST_NAME" /></translation>
@@ -791,6 +793,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="469286762610133730">Merr përmbajtje më të mirë</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
 <translation id="4698061626562952596">Rishiko skedat e tua joaktive këtu</translation>
+<translation id="4698757800236023795">Aktiv (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="4710167854527459075">Rendit nga më i riu</translation>
 <translation id="4718044610319080485">Thërret asistentin me IA-në</translation>

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Ціна на цей товар нещодавно знизилася з <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Тепер також архівуватимуться всі повторювані вкладки, за винятком тієї, що використовувалась останньою.</translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
+<translation id="6220820548421939212">Так, видаляти</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
 <translation id="6271513594716432922">Закрити всі неактивні вкладки</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Дії</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> відгук}one{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгук}few{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуки}many{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуків}other{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуку}}</translation>
 <translation id="7885132941432959125">Перемістити вкладку праворуч</translation>
+<translation id="788914896430720926">Видаляти неактивні вкладки?</translation>
 <translation id="7939917283308035850">Не вибрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7961015016161918242">Ніколи</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Дані про ваші дії на цих анонімних вкладках буде вилучено з пристрою</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Створено <ph name="NUM_MONTHS_ONE" /> місяць тому}one{Створено <ph name="NUM_MONTHS_MANY" /> місяць тому}few{Створено <ph name="NUM_MONTHS_MANY" /> місяці тому}many{Створено <ph name="NUM_MONTHS_MANY" /> місяців тому}other{Створено <ph name="NUM_MONTHS_MANY" /> місяця тому}}</translation>
 <translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>
+<translation id="883379923675618699">Chrome автоматично закриває об’єкти в розділі "Неактивні вкладки", які ви не використовували протягом 3 місяців. Ви можете будь-коли вимкнути цю функцію в налаштуваннях.</translation>
 <translation id="8887921976452567404">Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок".</translation>
 <translation id="8915916167043355778">Закрити всі</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Перемістити в нове вікно}one{Перемістити в інше вікно}few{Перемістити в інше вікно}many{Перемістити в інше вікно}other{Перемістити в інше вікно}}</translation>

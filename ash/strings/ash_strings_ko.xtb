@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> 키를 누른 상태에서 링크 클릭</translation>
 <translation id="2957159466053076448">언제든지 설정에서 이러한 기능을 사용 중지할 수 있습니다. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">기기 오디오</translation>
-<translation id="2960314608273155470">캡처 모드, 기본값은 <ph name="SOURCE" /> <ph name="TYPE" />입니다. 키보드 탐색을 사용하려면 Tab 키를 누르세요.</translation>
 <translation id="2961963223658824723">문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">마이크 액세스를 사용 설정하시겠습니까?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google 문서 만들기</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="8936501819958976551">비활성화됨</translation>
-<translation id="8937312474322077653">화면 캡처에서 <ph name="SOURCE" /> <ph name="TYPE" /> 유형으로 설정합니다. 캡처 유형을 선택하려면 Tab 키를 누르세요. 스페이스바를 눌러 지역을 선택하세요. 캡처하려면 Enter 키를 누르세요.</translation>
 <translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>
 <translation id="8939855324412367560">입력 오디오와 출력 오디오가 각각 "<ph name="INPUT_DEVICE_NAME" />" 및 "<ph name="OUTPUT_DEVICE_NAME" />"입니다. 설정으로 이동하여 해당 설정을 변경하세요.</translation>
 <translation id="8940956008527784070">배터리 부족(<ph name="PERCENTAGE" />%)</translation>

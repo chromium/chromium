@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">Натиснете <ph name="MODIFIER" /> и кликнете върху връзка</translation>
 <translation id="2957159466053076448">Можете да изключите тези функции по всяко време от настройките. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Аудио от устройството</translation>
-<translation id="2960314608273155470">Стандартната опция за режима на заснемане е <ph name="SOURCE" /> <ph name="TYPE" />. Натиснете Tab за навигиране с клавиатурата.</translation>
 <translation id="2961963223658824723">Нещо се обърка. Опитайте отново след няколко секунди.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Да се включи ли достъпът до микрофона?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Създаване на документ в Google Документи</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файла}}</translation>
 <translation id="8936501819958976551">деактивирана</translation>
-<translation id="8937312474322077653">Във функцията за заснемане на екрана задайте <ph name="SOURCE" /> <ph name="TYPE" />. Натиснете Tab, за да изберете типа на заснемането. Натиснете клавиша за интервал, за да изберете регион. Натиснете Enter за заснемане.</translation>
 <translation id="8938800817013097409">Устройство с USB-C (десният порт на гърба)</translation>
 <translation id="8939855324412367560">Аудиовходът е <ph name="INPUT_DEVICE_NAME" />, а аудиоизходът – <ph name="OUTPUT_DEVICE_NAME" />. За промяна отворете „Настройки“.</translation>
 <translation id="8940956008527784070">Батерията е изтощена (<ph name="PERCENTAGE" />%)</translation>

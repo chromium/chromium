@@ -1174,6 +1174,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1796588414813960292">Ni fydd nodweddion sy'n gofyn am sain yn gweithio</translation>
 <translation id="1797117170091578105">Chwarae gan ddefnyddio'ch bysellfwrdd Chromebook. Gallwch personoleiddio bysellau i gamau gweithredu penodol.</translation>
 <translation id="1798335429200675510">De-gliciwch mewn blwch testun i greu drafft neu fireinio gwaith sy'n bodoli eisoes, wedi'i bweru gan AI Google. Argaeledd cyfyngedig ar hyn o bryd.</translation>
+<translation id="1799852120691957794">Methu adfer ffenestri o'ch sesiwn flaenorol</translation>
 <translation id="180203835522132923">Search + O, yna W</translation>
 <translation id="1802624026913571222">Cysgu pan fydd y gorchudd ar gau</translation>
 <translation id="1802687198411089702">Nid yw'r dudalen yn ymateb. Gallwch aros amdani neu adael.</translation>
@@ -2369,6 +2370,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2610374175948698697">Yn gallu gweld ffeiliau neu ffolderi ar eich dyfais</translation>
 <translation id="2610780100389066815">Llofnodi Rhestr Ymddiried Microsoft</translation>
 <translation id="261114180663074524">Mewngofnodwch i'ch cyfrif Microsoft ac yna rhowch gynnig arall arni</translation>
+<translation id="2611702650078660078">Bu gwall</translation>
 <translation id="2611776654555141051">Offeryn Petryal</translation>
 <translation id="2612676031748830579">Rhif y cerdyn</translation>
 <translation id="261305050785128654">Rhowch wybod i wefannau am yr ieithoedd rydych yn eu siarad. Byddant yn dangos cynnwys yn yr ieithoedd hynny, pan fo modd.</translation>
@@ -2729,6 +2731,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2849936225196189499">Critigol</translation>
 <translation id="285033512555869047">Wedi cau</translation>
 <translation id="2850541429955027218">Ychwanegu thema</translation>
+<translation id="2852045827873867442">Mae angen cysylltiad rhyngrwyd.</translation>
 <translation id="285237063405807022">(wrthi'n llwytho)</translation>
 <translation id="2853121255651601031">Cadwyd y Cyfrinair</translation>
 <translation id="2855243985454069333">Yn dileu hanes o bob dyfais sydd wedi'i chysoni</translation>
@@ -5443,6 +5446,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 tab dyblyg</translation>
 <translation id="4780321648949301421">Cadw Tudalen Fel...</translation>
 <translation id="4780558987886269159">Ar gyfer gwaith</translation>
+<translation id="4781633367688946589">Parhau i sesiwn newydd</translation>
 <translation id="4784349455504343791">Mae <ph name="WEBSITE_ORIGIN" /> eisiau defnyddio gwybodaeth bersonol o'ch waled ddigidol.</translation>
 <translation id="4785719467058219317">Rydych yn defnyddio allwedd ddiogelwch nad yw wedi'i chofrestru gyda'r wefan hon</translation>
 <translation id="4785914069240823137">Canslo Tocio</translation>

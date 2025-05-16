@@ -1170,6 +1170,7 @@
 <translation id="1796588414813960292">ድምፅ የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="1797117170091578105">የእርስዎን የChromebook ቁልፍ ሰሌዳ በመጠቀም ይጫወቱ። ቁልፎችን ለተወሰኑ እርምጃዎች ማበጀት ይችላሉ።</translation>
 <translation id="1798335429200675510">ረቂቅ ለመፍጠር ወይም ነባር ሥራን ለማጣራት በጽሑፍ ሳጥን ውስጥ በቀኝ ጠቅ ያድርጉ፣ በGoogle ሰው ሠራሽ አስተውሎት የተጎላበተ። በአሁኑ ጊዜ ውስን የሆነ ተገኝነት ነው ያለው።</translation>
+<translation id="1799852120691957794">ከቀዳሚ ክፍለ ጊዜው መስኮቶችን ወደነበሩበት መመለስ አይቻልም</translation>
 <translation id="180203835522132923">+ O፣ ከዚያ Wን ይፈልጉ</translation>
 <translation id="1802624026913571222">ክዳኑ ሲዘጋ ተኛ</translation>
 <translation id="1802687198411089702">ይህ ገፅ ምላሽ እየሰጠ አይደለም። እሱን መጠበቅ ወይም ትተው መውጣት ይችላል።</translation>
@@ -2362,6 +2363,7 @@
 <translation id="2610374175948698697">በመሣሪያዎ ላይ ፋይሎችን ወይም አቃፊዎችን መመልከት ይቻላል</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">በMicrosoft መለያዎ ይግቡ እና በመቀጠል እንደገና ይሞክሩ</translation>
+<translation id="2611702650078660078">ስህተት ተከስቷል</translation>
 <translation id="2611776654555141051">የአራት ማዕዘን መሣሪያ</translation>
 <translation id="2612676031748830579">የካርድ ቁጥር</translation>
 <translation id="261305050785128654">የሚናገሩትን ቋንቋዎች ድር ጣቢያዎች እንዲያውቁ ያድርጉ። በሚቻልበት ጊዜ በእነዚያ ቋንቋዎች ይዘትን ያሳያሉ።</translation>
@@ -2722,6 +2724,7 @@
 <translation id="2849936225196189499">ዋነኛ</translation>
 <translation id="285033512555869047">ዝግ ነው</translation>
 <translation id="2850541429955027218">ገጽታ አክል</translation>
+<translation id="2852045827873867442">የበይነመረብ ግንኙነት ያስፈልጋል።</translation>
 <translation id="285237063405807022">(በመጫን ላይ)</translation>
 <translation id="2853121255651601031">የይለፍ ቃሉ ተቀምጧል</translation>
 <translation id="2855243985454069333">ታሪክን ከሁሉም ከተመሳሰሉ መሣሪያዎች ይሰርዛል</translation>
@@ -5434,6 +5437,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • 1 የተባዛ</translation>
 <translation id="4780321648949301421">ገፅ አስቀምጥ እንደ…</translation>
 <translation id="4780558987886269159">ለሥራ</translation>
+<translation id="4781633367688946589">ወደ አዲስ ክፍለ ጊዜ ቀጥል</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ከእርስዎ ዲጂታል የኪስ ቦርሳ ላይ ግላዊ መረጃን መጠቀም ይፈልጋል።</translation>
 <translation id="4785719467058219317">በዚህ ድር ጣቢያ ያልተመዘገበ የደህንነት ቁልፍ እየተጠቀሙ ነው</translation>
 <translation id="4785914069240823137">ከርክምን ሰርዝ</translation>

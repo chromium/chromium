@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> প্রেস করুন এবং লিঙ্কে ক্লিক করুন</translation>
 <translation id="2957159466053076448">আপনি 'সেটিংস' থেকে যেকোনও সময় এইসব ফিচার বন্ধ করতে পারবেন। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ডিভাইস অডিও</translation>
-<translation id="2960314608273155470">ক্যাপচার মোড, <ph name="SOURCE" /> <ph name="TYPE" /> ডিফল্ট হিসেবে সেট করা হয়েছে। কীবোর্ড ব্যবহার করে নেভিগেট করতে Tab কী প্রেস করুন।</translation>
 <translation id="2961963223658824723">কিছু সমস্যা হয়েছে। কয়েক সেকেন্ডের মধ্যে আবার চেষ্টা করুন।</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">মাইক্রোফোন অ্যাক্সেস চালু করতে চান?</translation>
@@ -2434,7 +2433,6 @@
 <translation id="8934418770423095813">Google Doc তৈরি করুন</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="8936501819958976551">বন্ধ আছে</translation>
-<translation id="8937312474322077653">স্ক্রিন ক্যাপচারে, <ph name="SOURCE" /> <ph name="TYPE" />-এ সেট করুন। ক্যাপচার করার ধরন বেছে নিতে ট্যাব প্রেস করুন। অঞ্চল বেছে নিতে স্পেস প্রেস করুন। ক্যাপচার করতে Enter প্রেস করুন।</translation>
 <translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>
 <translation id="8939855324412367560">"<ph name="INPUT_DEVICE_NAME" />" হল ইনপুট অডিও এবং "<ph name="OUTPUT_DEVICE_NAME" />" হল আউটপুট অডিও। পরিবর্তন করতে 'সেটিংস' মেনু দেখুন।</translation>
 <translation id="8940956008527784070">(<ph name="PERCENTAGE" />%) কম ব্যাটারি</translation>

@@ -4818,6 +4818,7 @@ A remoção foi feita na versão M112.</translation>
 Se ela for desativada, os arquivos PDF serão abertos no plug-in, a menos que ele seja desativado pelos usuários.
 
 Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela não for definida, os usuários poderão escolher se os PDFs serão ou não abertos externamente.</translation>
+<translation id="4413764344717830250">Controlar a visibilidade da atribuição da extensão na página "Nova guia" para navegadores gerenciados</translation>
 <translation id="4415603335307944578">Se esta política for definida como verdadeira ou não for configurada, o navegador mostrará novamente a página de recepção na primeira execução após um upgrade do SO.
 
       Se esta política for definida como falsa, o navegador não mostrará novamente a página de recepção na primeira execução após um upgrade do SO.</translation>
@@ -6780,6 +6781,11 @@ Consulte <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIR
 <translation id="5670249935663090320">Se a política for definida como ativada ou não for definida, o <ph name="PRODUCT_NAME" /> será ativado e poderá ser iniciado pelos usuários no menu de apps, nos menus de contexto da página, nos controles de mídia em sites compatíveis com o Cast e no ícone da barra de ferramentas do Google Cast (se for exibido).
 
 Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será desativado.</translation>
+<translation id="5671392367521500075">Esta política controla a visibilidade da atribuição da extensão no rodapé da página "Nova guia" quando uma extensão controla essa página. Por padrão, o rodapé da página "Nova guia" exibe informações sobre a extensão que controla essa página.
+
+Se esta política for deixada sem definição ou for definida como "true", os navegadores com uma página "Nova guia" controlada por uma extensão vão mostrar o nome da extensão e um link para ela.
+
+Se esta política for definida como "false", a atribuição da extensão será ocultada.</translation>
 <translation id="5673254755365419402">Ativar o recurso Proteção contra técnicas de impressão digital do <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Se a política for definida como verdadeira, o Google receberá relatórios sobre eventos importantes e acionados por políticas relacionados à instalação de extensões. Se a política for definida como falsa, nenhum evento será capturado. Se ela não for definida, o valor padrão será verdadeiro.</translation>
 <translation id="5673780539191375049">Define o intervalo de tempo (em minutos) usado para atualizar automaticamente o fluxo de autenticação do usuário no dispositivo <ph name="PRODUCT_OS_NAME" />. Esta política é introduzida para processar a validade de alguns serviços usados em fluxos de autenticação quando o dispositivo fica inativo por algum tempo.

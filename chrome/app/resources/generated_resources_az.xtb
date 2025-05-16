@@ -1158,6 +1158,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1796588414813960292">Səs tələb edən funksiyalar işləməyəcək</translation>
 <translation id="1797117170091578105">Chromebook klaviaturanızdan istifadə edərək oynayın. Xüsusi hərəkətlər üçün düymələri fərdiləşdirə bilərsiniz.</translation>
 <translation id="1798335429200675510">Google AI tərəfindən dəstəklənən qaralama yaratmaq və ya mövcud işi təkmilləşdirmək üçün mətn qutusuna sağ düymə ilə toxunun. Hazırda məhdud əlçatanlığa malikdir.</translation>
+<translation id="1799852120691957794">Əvvəlki sessiyanızdan pəncərələri bərpa etmək olmur</translation>
 <translation id="180203835522132923">Axtarış + O, sonra W</translation>
 <translation id="1802624026913571222">Qapaq bağlandıqda yuxu rejiminə keçsin</translation>
 <translation id="1802687198411089702">Səhifəyə daxil olmaq alınmadı. Gözləyin və ya çıxın.</translation>
@@ -2352,6 +2353,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2610374175948698697">Cihazda fayl və ya qovluqlara baxa bilər</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft hesabına daxil olub, yenidən cəhd edin</translation>
+<translation id="2611702650078660078">Xəta baş verdi</translation>
 <translation id="2611776654555141051">Düzbucaqlı Aləti</translation>
 <translation id="2612676031748830579">Kart nömrəsi</translation>
 <translation id="261305050785128654">Veb-saytlara danışdığınız dilləri bilmək imkanı verin. Onlar mümkün olduqda həmin dillərdə kontent göstərəcək.</translation>
@@ -2712,6 +2714,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2849936225196189499">Kritik</translation>
 <translation id="285033512555869047">Bağlıdır</translation>
 <translation id="2850541429955027218">Tema əlavə edin</translation>
+<translation id="2852045827873867442">İnternet bağlantısı tələb olunur.</translation>
 <translation id="285237063405807022">(yüklənir)</translation>
 <translation id="2853121255651601031">Parol Yadda Saxlandı</translation>
 <translation id="2855243985454069333">Bütün sinxronlaşdırılmış cihazlardan tarixçəni silir</translation>
@@ -5424,6 +5427,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4779855924282373274"><ph name="URL" /> • 1 dublikat</translation>
 <translation id="4780321648949301421">Səhifəni yadda saxlama formatı:</translation>
 <translation id="4780558987886269159">İş üçün</translation>
+<translation id="4781633367688946589">Yeni sessiyaya davam edin</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> rəqəmsal pulqabınızdakı şəxsi məlumatlardan istifadə etmək istəyir.</translation>
 <translation id="4785719467058219317">Bu veb saytda qeydiyyatda olmayan təhlükəsizlik açarından istifadə edirsiniz</translation>
 <translation id="4785914069240823137">Kəsilməni ləğv edin</translation>

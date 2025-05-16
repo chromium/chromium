@@ -581,7 +581,6 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="2949420361496057765">Sakatu <ph name="MODIFIER" /> eta egin klik esteka batean</translation>
 <translation id="2957159466053076448">Eginbide horiek desaktibatzeko, joan Ezarpenak atalera. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Gailuaren audioa</translation>
-<translation id="2960314608273155470">Edukia kapturatzeko modua. Balio lehenetsia <ph name="TYPE" /> <ph name="SOURCE" /> da. Teklatuaren bidez nabigatzeko, sakatu tabuladorea.</translation>
 <translation id="2961963223658824723">Arazo bat izan da. Saiatu berriro segundo batzuk barru.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Mikrofonoa erabiltzeko baimena aktibatu nahi duzu?</translation>
@@ -2434,7 +2433,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8934418770423095813">Sortu Google-ko dokumentu bat</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxategi}other{# fitxategi}}</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>
-<translation id="8937312474322077653">Pantaila-kapturan, <ph name="TYPE" /> <ph name="SOURCE" />. Kaptura mota aldatzeko, sakatu tabuladorea. Eremua hautatzeko, sakatu zuriune-barra. Kapturatzeko, sakatu Sartu.</translation>
 <translation id="8938800817013097409">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
 <translation id="8939855324412367560">Audio-sarrera "<ph name="INPUT_DEVICE_NAME" />" da, eta audio-irteera, berriz, "<ph name="OUTPUT_DEVICE_NAME" />". Aldatzeko, joan Ezarpenak atalera.</translation>
 <translation id="8940956008527784070">Bateria gutxi (% <ph name="PERCENTAGE" />)</translation>

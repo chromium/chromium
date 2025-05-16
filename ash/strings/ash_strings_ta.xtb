@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> அழுத்தி, இணைப்பைக் கிளிக் செய்யவும்</translation>
 <translation id="2957159466053076448">அமைப்புகளில் எப்போது வேண்டுமானாலும் இந்த அம்சங்களை முடக்கிக்கொள்ளலாம். <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">சாதன ஆடியோ</translation>
-<translation id="2960314608273155470">படமெடுப்புப் பயன்முறையின் இயல்பு, <ph name="SOURCE" /> <ph name="TYPE" />. கீபோர்டு மூலம் வழிசெலுத்துதலுக்கு Tab பட்டனை அழுத்தவும்.</translation>
 <translation id="2961963223658824723">ஏதோ தவறாகிவிட்டது. சில வினாடிகள் கழித்து மீண்டும் முயலவும்.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">மைக்ரோஃபோனுக்கான அணுகலை வழங்கவா?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google ஆவணத்தை உருவாக்கு</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ஃபைல்}other{# ஃபைல்கள்}}</translation>
 <translation id="8936501819958976551">முடக்கப்பட்டது</translation>
-<translation id="8937312474322077653">ஸ்கிரீன் கேப்சரில் <ph name="SOURCE" /> <ph name="TYPE" /> என்று அமைக்கப்பட்டுள்ளது. கேப்சர் வகையைத் தேர்வுசெய்ய Tab அழுத்தவும். பகுதியைத் தேர்ந்தெடுக்க Space அழுத்தவும். கேப்சர் செய்ய Enter அழுத்தவும்.</translation>
 <translation id="8938800817013097409">USB-C சாதனம் (பின்பக்கம் உள்ள வலது போர்ட்)</translation>
 <translation id="8939855324412367560">ஆடியோ இன்புட்: "<ph name="INPUT_DEVICE_NAME" />" மற்றும் ஆடியோ அவுட்புட்: "<ph name="OUTPUT_DEVICE_NAME" />". அமைப்புகளுக்குச் சென்று மாற்றவும்.</translation>
 <translation id="8940956008527784070">பேட்டரி குறைவு (<ph name="PERCENTAGE" />%)</translation>

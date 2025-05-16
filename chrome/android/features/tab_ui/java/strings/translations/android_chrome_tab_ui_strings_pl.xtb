@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Wszystkie zduplikowane karty będą teraz również archiwizowane, z wyjątkiem ostatnio używanej kopii.</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
+<translation id="6220820548421939212">Tak. Chętnie</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6271513594716432922">Zamknij wszystkie nieaktywne karty</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj kartę do nowej grupy}few{Dodaj karty do nowej grupy}many{Dodaj karty do nowej grupy}other{Dodaj karty do nowej grupy}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktywność</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> opinia}few{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> opinie}many{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> opinii}other{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> opinii}}</translation>
 <translation id="7885132941432959125">Przenieś kartę w prawo</translation>
+<translation id="788914896430720926">Uporządkować nieaktywną sekcję?</translation>
 <translation id="7939917283308035850">Nie wybrano: <ph name="COLOR_NAME" />.</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7961015016161918242">Nigdy</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_MONTHS_ONE" /> miesiąc temu}few{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiące temu}many{Utworzono <ph name="NUM_MONTHS_MANY" /> miesięcy temu}other{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiąca temu}}</translation>
 <translation id="8820741577754260431">Pokazuj obniżki cen na kartach</translation>
+<translation id="883379923675618699">Chrome automatycznie zamyka elementy w sekcji nieaktywnych, których nie używasz od 3 miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.</translation>
 <translation id="8887921976452567404">Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart.</translation>
 <translation id="8915916167043355778">Zamknij wszystko</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Przenieś do nowego okna}few{Przenieś do innego okna}many{Przenieś do innego okna}other{Przenieś do innego okna}}</translation>

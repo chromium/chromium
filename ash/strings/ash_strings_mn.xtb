@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" />-г дараад холбоосыг товшино уу</translation>
 <translation id="2957159466053076448">Та эдгээр онцлогийг Тохиргоонд хүссэн үедээ унтраах боломжтой. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Төхөөрөмжийн аудио</translation>
-<translation id="2960314608273155470">Зураг авах горим. Өгөгдмөл нь <ph name="SOURCE" /> <ph name="TYPE" /> байна. Гарын навигац ашиглах бол tab дээр дарна уу.</translation>
 <translation id="2961963223658824723">Алдаа гарлаа. Хэдэн секундын дараа дахин оролдоно уу.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Микрофоны хандалтыг асаах уу?</translation>
@@ -2435,7 +2434,6 @@
 <translation id="8934418770423095813">Google Док үүсгэх</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">идэвхгүй болгосон</translation>
-<translation id="8937312474322077653">Дэлгэцийн зураг авах явцад <ph name="SOURCE" /> <ph name="TYPE" /> болгож тохируулна уу. Зураг авах төрлийг сонгохын тулд tab дээр дарна уу. Бүс сонгохын тулд зай авах товчин дээр дарна уу. Зураг авахын тулд enter дээр дарна уу.</translation>
 <translation id="8938800817013097409">USB-C төхөөрөмж (ард талын баруун порт)</translation>
 <translation id="8939855324412367560">Аудио оролт нь "<ph name="INPUT_DEVICE_NAME" />" бол гаралт нь "<ph name="OUTPUT_DEVICE_NAME" />" юм. Өөрчлөхийн тулд Тохиргоо руу очно уу.</translation>
 <translation id="8940956008527784070">Цэнэг бага байна ( <ph name="PERCENTAGE" /> %)</translation>

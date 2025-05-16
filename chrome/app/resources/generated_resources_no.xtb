@@ -1166,6 +1166,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1796588414813960292">Funksjoner som krever lyd, kommer ikke til å virke</translation>
 <translation id="1797117170091578105">Spill med Chromebook-tastaturet. Du kan tilpasse taster til bestemte handlinger.</translation>
 <translation id="1798335429200675510">Høyreklikk i et tekstfelt for å opprette et utkast eller finjustere eksisterende tekst – basert på AI fra Google. Har begrenset tilgjengelighet for øyeblikket.</translation>
+<translation id="1799852120691957794">Kan ikke gjenopprette vinduer fra forrige økt</translation>
 <translation id="180203835522132923">Søk + O og deretter W</translation>
 <translation id="1802624026913571222">Gå i hvilemodus når dekselet lukkes</translation>
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller avslutte.</translation>
@@ -2360,6 +2361,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2610374175948698697">Kan se filer og mapper på enheten</translation>
 <translation id="2610780100389066815">Signering med Microsoft-klareringsliste</translation>
 <translation id="261114180663074524">Logg på Microsoft-kontoen, og prøv igjen</translation>
+<translation id="2611702650078660078">Det oppstod en feil:</translation>
 <translation id="2611776654555141051">Rektangelverktøy</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="261305050785128654">Gi nettsteder beskjed om hvilke språk du snakker. Nettsteder viser innhold på disse språkene når det er mulig.</translation>
@@ -2720,6 +2722,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="285033512555869047">Lukket</translation>
 <translation id="2850541429955027218">Legg til temaet</translation>
+<translation id="2852045827873867442">Internettilkobling er nødvendig.</translation>
 <translation id="285237063405807022">(laster inn)</translation>
 <translation id="2853121255651601031">Passordet er lagret</translation>
 <translation id="2855243985454069333">Sletter loggen fra alle synkroniserte enheter</translation>
@@ -5432,6 +5435,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplikat</translation>
 <translation id="4780321648949301421">L&amp;agre side som</translation>
 <translation id="4780558987886269159">For jobb</translation>
+<translation id="4781633367688946589">Fortsett til en ny økt</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vil bruke personopplysninger fra den digitale lommeboken din.</translation>
 <translation id="4785719467058219317">Du bruker en sikkerhetsnøkkel som ikke er registrert på dette nettstedet</translation>
 <translation id="4785914069240823137">Avbryt beskjæring</translation>

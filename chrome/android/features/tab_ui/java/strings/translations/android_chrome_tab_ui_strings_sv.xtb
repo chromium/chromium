@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Priset på den här varan minskade nyligen från <ph name="PREVIOUS_PRICE" /> till <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alla flikdubbletter arkiveras nu också, med undantag för den senast använda kopian.</translation>
 <translation id="6193448654517602979">Välj flikar</translation>
+<translation id="6220820548421939212">Ja. Ja gärna</translation>
 <translation id="6228793724645064692">(butikens betyg)</translation>
 <translation id="6271513594716432922">Stänga alla inaktiva flikar</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lägg till fliken i en ny grupp}other{Lägg till flikarna i en ny grupp}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg med <ph name="REVIEWS_COUNT_ONE" /> recension}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg med <ph name="REVIEWS_COUNT_MANY" /> recensioner}}</translation>
 <translation id="7885132941432959125">Flytta fliken åt höger</translation>
+<translation id="788914896430720926">Vill du ha ordning och reda i avsnittet Inaktiva?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> har inte valts</translation>
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Skapades för <ph name="NUM_MONTHS_ONE" /> månad sedan}other{Skapades för <ph name="NUM_MONTHS_MANY" /> månader sedan}}</translation>
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>
+<translation id="883379923675618699">Chrome stänger automatiskt objekt i avsnittet Inaktiva som du inte har använt på tre månader. Du kan inaktivera detta nu eller när som helst i inställningarna.</translation>
 <translation id="8887921976452567404">Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper.</translation>
 <translation id="8915916167043355778">Stäng alla</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Flytta till ett nytt fönster}other{Flytta till ett annat fönster}}</translation>

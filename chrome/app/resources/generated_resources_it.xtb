@@ -3168,6 +3168,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3188465121994729530">Media spostamento</translation>
 <translation id="3189187154924005138">Puntatore grande</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 password e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}other{{PASSWORD_COUNT} password e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
+<translation id="319044078641740013">Per tornare facilmente ai siti che hai visitato, sincronizza la cronologia e le schede con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Password salvata</translation>
 <translation id="3192586965067888278">Descrivi il problema in modo dettagliato. Il feedback verrà inviato a Google per la revisione umana e potrebbe essere utilizzato per migliorare o sviluppare i prodotti e i servizi Google.</translation>
 <translation id="3192947282887913208">File audio</translation>
@@ -3273,6 +3274,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# file}}</translation>
 <translation id="326999365752735949">Download delle differenze in corso...</translation>
 <translation id="3270965368676314374">Leggere, modificare ed eliminare foto, musica e altri contenuti multimediali del computer</translation>
+<translation id="3275464924531706548">Comprimi <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Il tuo token di sicurezza interno al momento non è sicuro. Rimuovilo dai servizi con cui l'hai utilizzato. Per risolvere il problema, reimposta il token di sicurezza.</translation>
 <translation id="3275778913554317645">Apri come finestra</translation>
 <translation id="3277214528693754078">Naviga con il cursore di testo (navigazione con cursore)</translation>
@@ -3604,6 +3606,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3510471875518562537">Usa questo indirizzo sul tuo iPhone</translation>
 <translation id="3511200754045804813">Ripeti scansione</translation>
 <translation id="3511307672085573050">Copia indir&amp;izzo link</translation>
+<translation id="3511358375261756531">Espandi <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Carattere a larghezza fissa</translation>
 <translation id="3511528412952710609">Breve</translation>
 <translation id="3513019849832307207">Entra e apri</translation>
@@ -6156,6 +6159,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5296536303670088158">Disponi della misura di sicurezza più efficace di Chrome contro siti web pericolosi</translation>
 <translation id="5297005732522718715">Aggiorna configurazione tethering</translation>
 <translation id="5297082477358294722">Password salvata. Visualizza e gestisci le password salvate in <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Accedi a <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Quando qualcuno osserva il tuo schermo, mostra l'icona Privacy a forma di occhio nell'angolo inferiore destro dello schermo</translation>
 <translation id="5297984209202974345">Tema IA recente <ph name="INDEX" /> di <ph name="SUBJECT" />, in stile <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema creato da</translation>
@@ -10334,6 +10338,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8280848878018088610">Onde che si infrangono in mare, con una città fantastica e un castello sullo sfondo, in un'atmosfera cupa.</translation>
 <translation id="828180235270931531">Altre stampanti disponibili</translation>
 <translation id="8281886186245836920">Salta</translation>
+<translation id="8283802069507225582">Per riprendere da dove avevi interrotto su altri dispositivi, sincronizza la cronologia e le schede con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sottotitoli codificati</translation>
 <translation id="8286036467436129157">Accedi</translation>
@@ -11011,6 +11016,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8754200782896249056">&lt;p&gt;Quando esegui <ph name="PRODUCT_NAME" /> in un ambiente desktop supportato, vengono utilizzate le impostazioni proxy del sistema. Tuttavia, il tuo sistema non è supportato o si è verificato un problema durante l'avvio della tua configurazione di sistema.&lt;/p&gt;
 
           &lt;p&gt;Puoi comunque eseguire la configurazione tramite la riga di comando. Consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; per avere ulteriori informazioni su contrassegni e variabili di ambiente.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Per vedere le schede aperte dagli altri computer e smartphone, sincronizza la cronologia e le schede con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Svolgimento di attività relative alla sicurezza per la tua organizzazione, ad esempio gestire le chiavi e i certificati memorizzati sul dispositivo</translation>
 <translation id="875532100880844232">Scegli un'azione per ogni tasto di: <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">Più &amp;grande</translation>

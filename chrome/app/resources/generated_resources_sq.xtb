@@ -3267,6 +3267,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3269689705184377744">{COUNT,plural, =1{Skedar}other{# skedarë}}</translation>
 <translation id="326999365752735949">Diferenca e shkarkimit</translation>
 <translation id="3270965368676314374">Lexo, ndrysho dhe fshi fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
+<translation id="3275464924531706548">Palos: <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Çelësi yt i brendshëm i sigurisë është aktualisht i pasigurt. Hiqe atë nga çdo shërbim me të cilin e ke përdorur. Për të zgjidhur problemin, rivendos çelësin e sigurisë.</translation>
 <translation id="3275778913554317645">Hape si dritare</translation>
 <translation id="3277214528693754078">Navigo me kursorin e tekstit (shfletimi me kursorin e tekstit)</translation>
@@ -3598,6 +3599,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3510471875518562537">Përdor këtë adresë në iPhone</translation>
 <translation id="3511200754045804813">Skano sërish</translation>
 <translation id="3511307672085573050">Kopjo adr&amp;esën e lidhjes</translation>
+<translation id="3511358375261756531">Zgjero: <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Shkrim me gjerësi fikse</translation>
 <translation id="3511528412952710609">E shkurtër</translation>
 <translation id="3513019849832307207">Bashkohu dhe hap</translation>
@@ -6148,6 +6150,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5296536303670088158">Ti ke sigurinë më të fortë të Chrome kundër sajteve të dëmshme të uebit</translation>
 <translation id="5297005732522718715">Rifresko konfigurimin e ndarjes së internetit</translation>
 <translation id="5297082477358294722">Fjalëkalimi u ruajt. Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Identifikohu në <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Kur dikush tjetër shikon ekranin tënd, shfaq ikonën e "Syrit të privatësisë" në pjesën e poshtme djathtas të ekranit</translation>
 <translation id="5297984209202974345">Tema e fundit me IA <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />"</translation>
 <translation id="5298219193514155779">Tema u krijua nga</translation>

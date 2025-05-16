@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">ამ ერთეულის ფასმა ახლახან დაიკლო <ph name="PREVIOUS_PRICE" />-დან <ph name="NEW_PRICE" />-მდე</translation>
 <translation id="6109251075362363230">ყველა დუბლირებული ჩანართი დაარქივდება, ყველაზე ხშირად გამოყენებული დუბლიკატის გარდა.</translation>
 <translation id="6193448654517602979">აირჩიეთ ჩანართები</translation>
+<translation id="6220820548421939212">დიახ. თანახმა ვარ</translation>
 <translation id="6228793724645064692">(მაღაზიის შეფასება)</translation>
 <translation id="6271513594716432922">ყველა უმოქმედო ჩანართის დახურვა</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ჩანართის დამატება ახალ ჯგუფში}other{ჩანართის დამატება ახალ ჯგუფში}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">აქტივობა</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა}other{შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა}}</translation>
 <translation id="7885132941432959125">ჩანართის მარჯვნივ გადატანა</translation>
+<translation id="788914896430720926">გსურთ თქვენი უმოქმედოების სექციის დალაგება?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> არ არის არჩეული</translation>
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7961015016161918242">არასოდეს</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">ამ ინკოგნიტო ჩანართებში თქვენი აქტივობა წაიშლება ამ მოწყობილობიდან</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{შეიქმნა <ph name="NUM_MONTHS_ONE" /> თვის წინ}other{შეიქმნა <ph name="NUM_MONTHS_MANY" /> თვის წინ}}</translation>
 <translation id="8820741577754260431">იხილეთ ინფორმაცია ფასების დაწევის შესახებ თქვენს ჩანართებზე</translation>
+<translation id="883379923675618699">Chrome ავტომატურად დახურავს იმ ერთეულებს უმოქმედოების სექციაში, რომლებიც 3 თვეა, არ გამოგიყენებიათ. ამის შეცვლა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="8887921976452567404">თქვენი დახურული ჩანართებისა და ჯგუფების ხელახლა გახსნა შესაძლებელია ბოლო ჩანართების სექციიდან და ჩანართების ჯგუფების სექციიდან.</translation>
 <translation id="8915916167043355778">ყველას დახურვა</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ახალ ფანჯარაში გადატანა}other{სხვა ფანჯარაში გადატანა}}</translation>

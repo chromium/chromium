@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> ਦਬਾ ਕੇ ਲਿੰਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2957159466053076448">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੀ ਸਮੇਂ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ਡੀਵਾਈਸ ਆਡੀਓ</translation>
-<translation id="2960314608273155470">ਕੈਪਚਰ ਮੋਡ, <ph name="SOURCE" /> <ph name="TYPE" /> ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਹੈ। ਕੀ-ਬੋਰਡ ਨੈਵੀਗੇਸ਼ਨ ਲਈ ਟੈਬ ਦਬਾਓ।</translation>
 <translation id="2961963223658824723">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕੁਝ ਸਕਿੰਟਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">ਕੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਚਾਲੂ ਕਰਨੀ ਹੈ?</translation>
@@ -2434,7 +2433,6 @@
 <translation id="8934418770423095813">Google ਡੌਕ ਬਣਾਓ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="8937312474322077653">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਵਿੱਚ, <ph name="SOURCE" /> <ph name="TYPE" /> 'ਤੇ ਸੈੱਟ ਕਰੋ। ਕੈਪਚਰ ਦੀ ਕਿਸਮ ਚੁਣਨ ਲਈ Tab ਦਬਾਓ। ਖੇਤਰ ਚੁਣਨ ਲਈ Space ਦਬਾਓ। ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="8938800817013097409">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਸੱਜਾ ਪੋਰਟ)</translation>
 <translation id="8939855324412367560">ਇਨਪੁੱਟ ਆਡੀਓ "<ph name="INPUT_DEVICE_NAME" />" ਹੈ ਅਤੇ ਆਊਟਪੁੱਟ ਆਡੀਓ "<ph name="OUTPUT_DEVICE_NAME" />" ਹੈ। ਤਬਦੀਲੀ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="8940956008527784070">ਬੈਟਰੀ ਘੱਟ (<ph name="PERCENTAGE" />%)</translation>

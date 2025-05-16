@@ -1163,6 +1163,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1796588414813960292">Opțiunile care au nevoie de sunet nu vor funcționa</translation>
 <translation id="1797117170091578105">Joacă-te folosind tastatura Chromebookului. Poți personaliza cheile în funcție de anumite acțiuni.</translation>
 <translation id="1798335429200675510">Dă clic dreapta într-o casetă text pentru a crea o schiță sau pentru a rafina lucrările existente, bazate pe Google AI. Momentan are disponibilitate limitată.</translation>
+<translation id="1799852120691957794">Nu se pot restabili ferestrele din sesiunea anterioară</translation>
 <translation id="180203835522132923">Tasta de căutare + O, apoi W</translation>
 <translation id="1802624026913571222">Când capacul este închis: modul inactiv</translation>
 <translation id="1802687198411089702">Pagina nu răspunde. Poți aștepta să răspundă sau o poți închide.</translation>
@@ -2354,6 +2355,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2610374175948698697">Poate să vadă fișierele sau dosarele de pe dispozitiv</translation>
 <translation id="2610780100389066815">Semnarea listei de încredere Microsoft</translation>
 <translation id="261114180663074524">Conectează-te la contul Microsoft și încearcă din nou</translation>
+<translation id="2611702650078660078">A apărut o eroare</translation>
 <translation id="2611776654555141051">Instrument pentru dreptunghiuri</translation>
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="261305050785128654">Permite site-urilor să afle limbile pe care le vorbești. Acestea vor afișa conținutul în limbile respective, dacă este posibil.</translation>
@@ -2714,6 +2716,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2849936225196189499">Critic</translation>
 <translation id="285033512555869047">Închis</translation>
 <translation id="2850541429955027218">Adaugă o temă</translation>
+<translation id="2852045827873867442">Este necesară o conexiune la internet.</translation>
 <translation id="285237063405807022">(se încarcă)</translation>
 <translation id="2853121255651601031">Parola a fost salvată</translation>
 <translation id="2855243985454069333">Șterge istoricul de pe toate dispozitivele sincronizate</translation>
@@ -5427,6 +5430,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4779855924282373274"><ph name="URL" /> • o dublură</translation>
 <translation id="4780321648949301421">Salvează pagina ca...</translation>
 <translation id="4780558987886269159">Pentru serviciu</translation>
+<translation id="4781633367688946589">Continuă cu noua sesiune</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> dorește să-ți folosească informațiile cu caracter personal din portofelul digital.</translation>
 <translation id="4785719467058219317">Folosești o cheie de securitate care nu este înregistrată pe acest site</translation>
 <translation id="4785914069240823137">Anulează decuparea</translation>

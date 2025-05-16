@@ -581,7 +581,6 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="2949420361496057765">Pindutin ang <ph name="MODIFIER" /> at mag-click ng link</translation>
 <translation id="2957159466053076448">Puwede mong i-off ang mga feature na ito anumang oras sa Mga Setting. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio ng device</translation>
-<translation id="2960314608273155470">Capture Mode, <ph name="SOURCE" /> <ph name="TYPE" /> ang default. Pindutin ang tab para mag-navigate gamit ang keyboard.</translation>
 <translation id="2961963223658824723">Nagkaproblema. Subukang muli sa loob ng ilang segundo.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">I-on ang access sa mikropono?</translation>
@@ -2431,7 +2430,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8934418770423095813">Gumawa ng Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}one{# file}other{# na file}}</translation>
 <translation id="8936501819958976551">na-deactivate</translation>
-<translation id="8937312474322077653">Sa screen capture, itakda sa <ph name="SOURCE" /> <ph name="TYPE" />. Pindutin ang tab para pumili ng uri ng pag-capture. Pindutin ang space para pumili ng rehiyon. Pindutin ang enter para mag-capture.</translation>
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>
 <translation id="8939855324412367560">Ang input audio ay "<ph name="INPUT_DEVICE_NAME" />" at ang output audio ay "<ph name="OUTPUT_DEVICE_NAME" />." Pumunta sa Mga Setting para baguhin.</translation>
 <translation id="8940956008527784070">Mahina na ang baterya (<ph name="PERCENTAGE" />%)</translation>

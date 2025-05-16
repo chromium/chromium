@@ -581,7 +581,6 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="2949420361496057765">Bonyeza <ph name="MODIFIER" /> na ubofye kiungo</translation>
 <translation id="2957159466053076448">Unaweza kuzima vipengele hivi wakati wowote kwenye Mipangilio. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Sauti ya kifaa</translation>
-<translation id="2960314608273155470">Hali ya Kupiga Picha, chaguomsingi ni <ph name="SOURCE" /> <ph name="TYPE" />. Bonyeza 'tab' ili usogeze kwa kutumia kibodi.</translation>
 <translation id="2961963223658824723">Hitilafu fulani imetokea. Jaribu tena baada ya sekunde chache.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Ungependa kuwasha ufikiaji wa maikrofoni?</translation>
@@ -2434,7 +2433,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8934418770423095813">Unda Hati ya Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Faili 1}other{Faili #}}</translation>
 <translation id="8936501819958976551">kimezimwa</translation>
-<translation id="8937312474322077653">Katika mchakato wa kurekodi skrini, weka mipangilio iwe <ph name="SOURCE" /> <ph name="TYPE" />. Bonyeza kichupo ili uchague jinsi ya kurekodi tukio. Bonyeza 'space' ili uchague eneo. Bonyeza 'enter' ili urekodi.</translation>
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>
 <translation id="8939855324412367560">Kifaa cha kuingiza sauti ni "<ph name="INPUT_DEVICE_NAME" />" na kifaa cha kutoa sauti ni "<ph name="OUTPUT_DEVICE_NAME" />". Nenda kwenye mipangilio ili ubadilishe.</translation>
 <translation id="8940956008527784070">Betri inaisha (<ph name="PERCENTAGE" />%)</translation>

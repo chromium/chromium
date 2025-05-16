@@ -533,6 +533,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3208260410153224535">Organisasjonen din har slått av pålogging. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
 <translation id="3213807041830307252">Kjøp, oversett og identifiser det du ser, ved bruk av kameraet og bildegalleriet.</translation>
 <translation id="3214379938835224220">Du ble logget av som en del av tilbakestillingen av iPad. Trykk på Fortsett under for å logge på.</translation>
+<translation id="3218296450292600703">Hvis du logger på med den administrerte kontoen din, kan du holde nettlesingen som er knyttet til organisasjonen din (inkludert faner, logg og passord), atskilt fra annen nettlesing</translation>
 <translation id="3224075676564434205">Fanene forblir åpne på denne enheten, men gruppen blir slettet fra alle enheter som er logget på <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">For å eksportere passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1484,6 +1485,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7102005569666697658">Laster ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Innstillinger → Betalingsmåter</translation>
 <translation id="7108338896283013870">Skjul</translation>
+<translation id="7115051913071512405">Test det</translation>
 <translation id="7128693485119315539">Organisasjonen din kan ha behov for å se og administrere nettlesingsdata knyttet til den administrerte kontoen din, for eksempel nettleserloggen og passordene dine.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>

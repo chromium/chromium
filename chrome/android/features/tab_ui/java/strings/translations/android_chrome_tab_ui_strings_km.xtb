@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">តម្លៃទំនិញនេះ​បានធ្លាក់ចុះ​ថ្មីៗនេះ​ពី <ph name="PREVIOUS_PRICE" /> ទៅ <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">ឥឡូវនេះ ផ្ទាំងស្ទួន​ទាំងអស់​ក៏នឹង​ត្រូវបាន​ទុកក្នុង​បណ្ណសារ​ផងដែរ លើកលែងតែ​ផ្ទាំងស្ទួន​ដែលបានប្រើ​ថ្មីៗបំផុត​ប៉ុណ្ណោះ។</translation>
 <translation id="6193448654517602979">ជ្រើសរើសផ្ទាំង</translation>
+<translation id="6220820548421939212">បាទ/ចាស។ ខ្ញុំយល់ព្រម</translation>
 <translation id="6228793724645064692">(ការវាយ​តម្លៃហាង)</translation>
 <translation id="6271513594716432922">បិទ​ផ្ទាំង​អសកម្ម​ទាំងអស់</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{បញ្ចូលផ្ទាំង​ទៅក្រុមថ្មី}other{បញ្ចូលផ្ទាំង​ទៅក្រុមថ្មី}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">សកម្មភាព</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_ONE" />}other{ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_MANY" />}}</translation>
 <translation id="7885132941432959125">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ខាងស្ដាំ</translation>
+<translation id="788914896430720926">រក្សា​ផ្នែក​អសកម្ម​របស់អ្នក​ឱ្យមាន​របៀប​រៀបរយឬ?</translation>
 <translation id="7939917283308035850">មិនបាន​ជ្រើសរើសពណ៌<ph name="COLOR_NAME" />ទេ</translation>
 <translation id="7942349550061667556">ក្រហម</translation>
 <translation id="7961015016161918242">មិនដែល</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">សកម្មភាព​របស់អ្នក​នៅក្នុង​ផ្ទាំងឯកជន​ទាំងនេះ​នឹងត្រូវបាន​ដកចេញពី​ឧបករណ៍នេះ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{បានបង្កើត <ph name="NUM_MONTHS_ONE" /> ខែមុន}other{បានបង្កើត <ph name="NUM_MONTHS_MANY" /> ខែមុន}}</translation>
 <translation id="8820741577754260431">មើលការធ្លាក់ថ្លៃនៅក្នុងផ្ទាំងរបស់អ្នក</translation>
+<translation id="883379923675618699">Chrome បិទ​ធាតុ​នៅក្នុង​ផ្នែក​អសកម្ម​ដែលអ្នក​មិនបានប្រើ​រយៈពេល 3 ខែ​ដោយ​ស្វ័ួយប្រវត្តិ។ អ្នកអាច​បិទវា​ឥឡូវនេះ ឬ​នៅពេល​ណាក៏បាន​នៅក្នុង "ការកំណត់"។</translation>
 <translation id="8887921976452567404">ផ្ទាំង និងក្រុមដែលអ្នកបានបិទអាចត្រូវបានបើកឡើងវិញពីផ្នែកផ្ទាំងថ្មីៗ និងផ្នែកក្រុមផ្ទាំង។</translation>
 <translation id="8915916167043355778">បិទ​ទាំងអស់</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ផ្លាស់ទីទៅ​វិនដូថ្មី}other{ផ្លាស់ទីទៅ​វិនដូ​ផ្សេងទៀត}}</translation>

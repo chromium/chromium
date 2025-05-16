@@ -679,7 +679,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162620598375156287">Nå <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Sjekk om det er en skrivefeil i <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Fyll ut stamkundekort fra Google Wallet automatisk</translation>
 <translation id="2166049586286450108">Full administratortilgang</translation>
 <translation id="2166378884831602661">Dette nettstedet tilbyr ikke sikre tilkoblinger</translation>
 <translation id="2168151236314517198">Utskrift av dette innholdet er blokkert på grunn av en administratorregel</translation>
@@ -3053,7 +3052,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6272383483618007430">Google Oppdatering</translation>
 <translation id="6278015583149890680">Google Disk og OneDrive</translation>
 <translation id="6280223929691119688">Kan ikke levere til denne adressen. Velg en annen adresse.</translation>
-<translation id="628324801501145855">Administrer i innstillingene for betalingsmåter</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284449872909111707">Tekstmeldinger og chat</translation>
 <translation id="6284517535531159884">Typer frøvarianter</translation>
@@ -4255,6 +4253,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="833262891116910667">Fremhev</translation>
 <translation id="8339163506404995330">Sider på <ph name="LANGUAGE" /> oversettes ikke</translation>
 <translation id="8339275256517065202">Fullfør kjøpet med Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, obligatorisk</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registrering med virtuelt kort er åpnet i full høyde</translation>

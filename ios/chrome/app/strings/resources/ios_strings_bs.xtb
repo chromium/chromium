@@ -533,7 +533,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3208260410153224535">Vaša organizacija je isključila prijavu. Nove oznake, lozinke i još mnogo toga će se pohranjivati samo na ovom uređaju.</translation>
 <translation id="3213807041830307252">Kupujte, prevodite sadržaj i prepoznajte šta vidite pomoću kamere i galerije fotografija.</translation>
 <translation id="3214379938835224220">Bili ste odjavljeni tokom vraćanja iPada na zadano. Dodirnite Nastavi u nastavku da se prijavite.</translation>
-<translation id="3218296450292600703">Prijavite se na upravljani račun kako biste pregledavanje povezano s vašom organizacijom (uključujući kartice, povijest i zaporke) lakše odvojili od ostatka pregledavanja</translation>
+<translation id="3218296450292600703">Prijava putem upravljanog računa vam pomaže da odvojite pregledanje povezano s vašom organizacijom (uključujući kartice, historiju i lozinke) od drugog pregledanja</translation>
 <translation id="3224075676564434205">Kartice će ostati otvorene na uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Da izvezete lozinke, najprije morate postaviti šifru na uređaju.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1485,6 +1485,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7102005569666697658">Preuzimanje… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meni → Postavke → Načini plaćanja</translation>
 <translation id="7108338896283013870">Sakrij</translation>
+<translation id="7115051913071512405">Isprobajte</translation>
 <translation id="7128693485119315539">Vaša organizacija možda mora vidjeti podatke pregledanja povezane s vašim upravljanim računom kao što su historija pregledanja i lozinke te upravljati njima.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera je nedostupna</translation>
@@ -1903,6 +1904,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8786100550345425552">Uredite odobrenja</translation>
 <translation id="878871978861915380">Sakrij "Praćenje cijena"</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8796634520835503150">Dostupan je čitački način</translation>
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8803639129939845298">Sigurno</translation>
 <translation id="8806823403540278281">Vaša organizacija zahtijeva da pregledate privatno. Kartice se ne pohranjuju u anonimnom načinu rada.

@@ -462,6 +462,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2530896289327917474">Vklop ali izklop brskanja s kazalko</translation>
 <translation id="2531025035050312891">počasna naprava</translation>
 <translation id="2531107890083353124">Med vlečenjem zavihka pritisnite <ph name="KEY_ONE" /></translation>
+<translation id="2532199152994248594">Povlecite ali pritisnite preslednico, če želite izbrati območje zajema</translation>
 <translation id="2545334090614121435">Ali poskušate uporabiti tipko Home? Uporabite</translation>
 <translation id="254900897760075745">Kopiranje izbrane vsebine v odložišče</translation>
 <translation id="2549711466868162843">Izboljšanje osvetlitve</translation>
@@ -581,7 +582,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="2949420361496057765">Pritisnite <ph name="MODIFIER" /> in kliknite povezavo</translation>
 <translation id="2957159466053076448">Te funkcije lahko kadar koli izklopite v nastavitvah. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Zvok v napravi</translation>
-<translation id="2960314608273155470">Način zajema, privzeta nastavitev je <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite tabulatorko za premikanje s tipkovnico.</translation>
 <translation id="2961963223658824723">Prišlo je do napake. Poskusite znova čez nekaj sekund.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Želite vklopiti dostop do mikrofona?</translation>
@@ -1770,6 +1770,7 @@ Nova namestitev</translation>
 <translation id="6700713906295497288">Menijski gumb UNV-ja</translation>
 <translation id="6704073473590541209">Izbrana ročica desnega roba, uporabite puščične tipke za premikanje</translation>
 <translation id="6706742084323792866">Pripenjanje tipkovnice</translation>
+<translation id="6709719156428404245">Povlecite ali pritisnite preslednico, če želite izbrati območje snemanja</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="672609503628871915">Oglejte si novosti</translation>
@@ -2433,7 +2434,6 @@ Nova namestitev</translation>
 <translation id="8934418770423095813">Ustvari Google Dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
-<translation id="8937312474322077653">Pri zajemu zaslonske slike nastavite na <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite tabulatorko, če želite izbrati vrsto zajema. Pritisnite preslednico, če želite izbrati regijo. Pritisnite Enter, da zajamete.</translation>
 <translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="8939855324412367560">Zvočni vhod je »<ph name="INPUT_DEVICE_NAME" />«, zvočni izhod pa »<ph name="OUTPUT_DEVICE_NAME" />«. To lahko spremenite v nastavitvah.</translation>
 <translation id="8940956008527784070">Akumulator je skoraj prazen (<ph name="PERCENTAGE" /> %)</translation>

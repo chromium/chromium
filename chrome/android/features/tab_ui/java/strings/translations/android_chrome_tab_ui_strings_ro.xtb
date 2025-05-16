@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
 <translation id="6193448654517602979">Selectează file</translation>
+<translation id="6220820548421939212">Da. Accept</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6271513594716432922">Închide toate filele inactive</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Activitate</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzie}few{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzii}other{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> de recenzii}}</translation>
 <translation id="7885132941432959125">Mută fila spre dreapta</translation>
+<translation id="788914896430720926">Dorești să păstrezi secțiunea inactivă ordonată?</translation>
 <translation id="7939917283308035850">Nu s-a selectat <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7961015016161918242">Niciodată</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Activitatea ta în filele incognito va fi eliminată de pe acest dispozitiv</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat acum <ph name="NUM_MONTHS_ONE" /> lună}few{Creat acum <ph name="NUM_MONTHS_MANY" /> luni}other{Creat acum <ph name="NUM_MONTHS_MANY" /> de luni}}</translation>
 <translation id="8820741577754260431">Vezi scăderile de prețuri din file</translation>
+<translation id="883379923675618699">Chrome închide automat elementele din secțiunea inactivă pe care nu le-ai folosit timp de trei luni. Poți dezactiva această opțiune acum sau oricând din Setări.</translation>
 <translation id="8887921976452567404">Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file.</translation>
 <translation id="8915916167043355778">Închide-le pe toate</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mută într-o fereastră nouă}few{Mută în altă fereastră}other{Mută în altă fereastră}}</translation>

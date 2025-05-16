@@ -678,7 +678,6 @@
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
-<translation id="2165700285977947082">自動填入 Google 錢包中的會員卡</translation>
 <translation id="2166049586286450108">完整管理員存取權</translation>
 <translation id="2166378884831602661">這個網站無法提供安全連線</translation>
 <translation id="2168151236314517198">系統管理員政策禁止列印此內容</translation>
@@ -3051,7 +3050,6 @@
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6278015583149890680">Google 雲端硬碟和 OneDrive</translation>
 <translation id="6280223929691119688">快遞無法送貨到這個地址，請改用其他地址。</translation>
-<translation id="628324801501145855">在付款方式設定中管理</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284449872909111707">文字與即時通訊</translation>
 <translation id="6284517535531159884">種子類型變化版本</translation>
@@ -4254,6 +4252,7 @@
 <translation id="833262891116910667">醒目顯示</translation>
 <translation id="8339163506404995330">系統將不會翻譯<ph name="LANGUAGE" />網頁</translation>
 <translation id="8339275256517065202">使用 Touch ID 完成購買交易</translation>
+<translation id="833935588477667012">「<ph name="FIELD_LABEL" />」為必填欄位</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虛擬卡片註冊對話方塊已開啟，並顯示在整個畫面上</translation>

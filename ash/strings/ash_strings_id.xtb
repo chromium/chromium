@@ -581,7 +581,6 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="2949420361496057765">Tekan <ph name="MODIFIER" />, lalu klik link</translation>
 <translation id="2957159466053076448">Anda dapat menonaktifkan fitur ini kapan saja di Setelan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio perangkat</translation>
-<translation id="2960314608273155470">Mode Tangkapan Layar, opsi defaultnya adalah <ph name="TYPE" /> <ph name="SOURCE" />. Tekan tab untuk menavigasi dengan keyboard.</translation>
 <translation id="2961963223658824723">Terjadi error. Coba lagi dalam beberapa detik.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Aktifkan akses mikrofon?</translation>
@@ -2433,7 +2432,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8934418770423095813">Buat Dokumen Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>
-<translation id="8937312474322077653">Di screenshot, setel ke <ph name="TYPE" /> <ph name="SOURCE" />. Tekan tab untuk memilih jenis pengambilan screenshot. Tekan spasi untuk memilih wilayah. Tekan enter untuk mengambil screenshot.</translation>
 <translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="8939855324412367560">Audio input adalah "<ph name="INPUT_DEVICE_NAME" />" dan audio output adalah "<ph name="OUTPUT_DEVICE_NAME" />". Buka Setelan untuk mengubah.</translation>
 <translation id="8940956008527784070">Baterai lemah (<ph name="PERCENTAGE" />%)</translation>

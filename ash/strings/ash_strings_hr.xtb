@@ -462,6 +462,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2530896289327917474">Uključivanje ili isključivanje pregledavanja kursorom</translation>
 <translation id="2531025035050312891">uređaj je spor</translation>
 <translation id="2531107890083353124">Dok povlačite karticu, pritisnite <ph name="KEY_ONE" /></translation>
+<translation id="2532199152994248594">Povucite ili pritisnite razmaknicu da biste odabrali područje za snimanje</translation>
 <translation id="2545334090614121435">Pokušavate li upotrijebiti tipku Home? Upotrijebite</translation>
 <translation id="254900897760075745">Kopiranje odabranog sadržaja u međuspremnik</translation>
 <translation id="2549711466868162843">Poboljšanje osvjetljenja</translation>
@@ -581,7 +582,6 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="2949420361496057765">Pritisnite <ph name="MODIFIER" /> i kliknite vezu</translation>
 <translation id="2957159466053076448">Te značajke uvijek možete isključiti u postavkama. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Zvuk na uređaju</translation>
-<translation id="2960314608273155470">Način snimanja, zadano je <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite Tab da biste se kretali pomoću tipkovnice.</translation>
 <translation id="2961963223658824723">Nešto nije u redu. Pokušajte ponovno za nekoliko sekundi.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Uključiti pristup mikrofonu?</translation>
@@ -1770,6 +1770,7 @@ Novo instaliranje</translation>
 <translation id="6700713906295497288">Gumb izbornika IME-a</translation>
 <translation id="6704073473590541209">Odabran je marker za desni rub, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="6706742084323792866">Tipkovnica za unos PIN-a</translation>
+<translation id="6709719156428404245">Povucite ili pritisnite razmaknicu da biste odabrali područje za snimanje</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="672609503628871915">Pogledajte što je novo</translation>
@@ -2433,7 +2434,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8934418770423095813">Izradi Google dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
-<translation id="8937312474322077653">U snimci zaslona postavite na <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite Tab da biste odabrali vrstu snimanja. Pritisnite razmaknicu da biste odabrali regiju. Pritisnite Enter da biste snimili.</translation>
 <translation id="8938800817013097409">USB-C uređaj (desni priključak sa stražnje strane)</translation>
 <translation id="8939855324412367560">Audioulaz je <ph name="INPUT_DEVICE_NAME" />, a audioizlaz <ph name="OUTPUT_DEVICE_NAME" />. Otvorite Postavke da biste ih promijenili.</translation>
 <translation id="8940956008527784070">Baterija je skoro prazna (<ph name="PERCENTAGE" />%)</translation>

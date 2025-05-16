@@ -533,6 +533,7 @@
 <translation id="3208260410153224535">贵组织关闭了登录功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
 <translation id="3213807041830307252">使用相机和图库购买、翻译和识别所见内容。</translation>
 <translation id="3214379938835224220">您在 iPad 重置过程中退出了账号。点按下方的“继续”即可登录。</translation>
+<translation id="3218296450292600703">使用受管理的账号登录有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
 <translation id="3224075676564434205">相应标签页将在此设备上保持打开状态，但该分组会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除。</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3227137524299004712">麦克风</translation>
@@ -1484,6 +1485,7 @@
 <translation id="7102005569666697658">正在下载…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">菜单 → 设置 → 支付方式</translation>
 <translation id="7108338896283013870">隐藏</translation>
+<translation id="7115051913071512405">试用</translation>
 <translation id="7128693485119315539">您的组织可能需要查看和管理与您的受管理账号相关联的浏览数据，例如您的浏览记录和密码。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">无法使用相机</translation>

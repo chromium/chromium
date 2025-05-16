@@ -581,7 +581,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="2949420361496057765">Presiona <ph name="MODIFIER" /> y haz clic en un vínculo</translation>
 <translation id="2957159466053076448">Puedes desactivar estas funciones en cualquier momento en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio del dispositivo</translation>
-<translation id="2960314608273155470">Modo de captura, la configuración predeterminada es <ph name="SOURCE" /> <ph name="TYPE" />. Presiona Tab para navegar con el teclado.</translation>
 <translation id="2961963223658824723">Se produjo un error. Vuelve a intentarlo en unos segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">¿Quieres activar el acceso al micrófono?</translation>
@@ -2434,7 +2433,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8934418770423095813">Crear documento de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivada</translation>
-<translation id="8937312474322077653">En la captura de pantalla, establece <ph name="SOURCE" /> <ph name="TYPE" />. Presiona Tab para elegir el tipo de captura. Presiona la barra espaciadora para seleccionar la región. Presiona Intro para capturar.</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (puerto derecho en la parte posterior)</translation>
 <translation id="8939855324412367560">La entrada de audio es "<ph name="INPUT_DEVICE_NAME" />" y la salida es "<ph name="OUTPUT_DEVICE_NAME" />". Ve a Configuración para cambiarlas.</translation>
 <translation id="8940956008527784070">Batería baja (<ph name="PERCENTAGE" />%)</translation>

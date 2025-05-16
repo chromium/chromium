@@ -170,7 +170,7 @@
 <translation id="1112998165730922436">कास्ट करने की प्रोसेस रोकी गई</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">डायमंड</translation>
-<translation id="1114525161406758033">लिड बंद होने पर सुलाएं (कम बैटरी मोड)</translation>
+<translation id="1114525161406758033">लिड बंद होने पर स्लीप मोड चालू करें</translation>
 <translation id="1116639326869298217">आपकी पहचान की पुष्टि नहीं की जा सकी</translation>
 <translation id="1116694919640316211">इसके बारे में</translation>
 <translation id="1116779635164066733">यह सेटिंग "<ph name="NAME" />" एक्सटेंशन के ज़रिए लागू की गई है.</translation>
@@ -1172,6 +1172,7 @@
 <translation id="1796588414813960292">वे सुविधाएं काम नहीं करेंगी जिन्हें आवाज़ की ज़रूरत है</translation>
 <translation id="1797117170091578105">अपने Chromebook के कीबोर्ड की मदद से चलाएं. कीबोर्ड की कुंजियों को अपनी पसंद के मुताबिक, खास कार्रवाइयों के लिए सेट किया जा सकता है.</translation>
 <translation id="1798335429200675510">Google के एआई की मदद से, ड्राफ़्ट बनाने या मौजूदा काम को बेहतर बनाने के लिए, टेक्स्ट बॉक्स में राइट क्लिक करें. फ़िलहाल, यह सुविधा सीमित तौर पर उपलब्ध है.</translation>
+<translation id="1799852120691957794">आपके पिछले सेशन वाली विंडो वापस नहीं लाई जा सकतीं</translation>
 <translation id="180203835522132923">Search + O, फिर W</translation>
 <translation id="1802624026913571222">लिड बंद होने पर स्लीप मोड चालू करें</translation>
 <translation id="1802687198411089702">पेज काम नहीं कर रहा है. आप इंतज़ार कर सकते हैं या बाहर निकल सकते हैं.</translation>
@@ -2367,6 +2368,7 @@
 <translation id="2610374175948698697">आपके डिवाइस पर, इन फ़ाइलों या फ़ोल्डर को देखने की अनुमति है</translation>
 <translation id="2610780100389066815">Microsoft विश्वास सूची हस्ताक्षर</translation>
 <translation id="261114180663074524">अपने Microsoft खाते में साइन इन करें और फिर से कोशिश करें</translation>
+<translation id="2611702650078660078">कोई गड़बड़ी हुई</translation>
 <translation id="2611776654555141051">आयत बनाने का टूल</translation>
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="261305050785128654">वेबसाइटों को अपनी भाषा की जानकारी दें. इससे, जब भी मुमकिन होगा साइटें इन भाषाओं में कॉन्टेंट दिखाएंगी.</translation>
@@ -2727,6 +2729,7 @@
 <translation id="2849936225196189499">महत्वपूर्ण</translation>
 <translation id="285033512555869047">बंद हो गया है</translation>
 <translation id="2850541429955027218">थीम जोड़ें</translation>
+<translation id="2852045827873867442">इंटरनेट कनेक्शन होना ज़रूरी है.</translation>
 <translation id="285237063405807022">(लोड हो रहा है)</translation>
 <translation id="2853121255651601031">पासवर्ड सेव किया गया</translation>
 <translation id="2855243985454069333">सिंक किए गए सभी डिवाइसों से ब्राउज़िंग इतिहास मिटा देता है</translation>
@@ -5440,6 +5443,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • 1 डुप्लीकेट</translation>
 <translation id="4780321648949301421">पेज को इस रूप में सेव करें...</translation>
 <translation id="4780558987886269159">काम के लिए</translation>
+<translation id="4781633367688946589">नए सेशन में जारी रखें</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> को आपके डिजिटल वॉलेट से निजी जानकारी इस्तेमाल करनी है.</translation>
 <translation id="4785719467058219317">आप एक ऐसी 'सुरक्षा चाबी' इस्तेमाल कर रहे हैं जिसे इस वेबसाइट पर रजिस्टर नहीं किया गया है</translation>
 <translation id="4785914069240823137">कांट-छांट को रद्द करें</translation>
@@ -6880,7 +6884,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5832970156002835240">सभी साइटों पर अनुमति दें</translation>
 <translation id="5833397272224757657">आप जिन साइटों पर जाते हैं उनकी सामग्री के साथ ही ब्राउज़र गतिविधि और इंटरैक्शन का इस्तेमाल आपके मनमुताबिक बनाने के लिए करता है</translation>
-<translation id="5833726373896279253">ये सेटिंग केवल मालिक द्वारा ही संशोधित की जा सकती हैं:</translation>
+<translation id="5833726373896279253">इन सेटिंग को सिर्फ़ मालिक खाते से बदला जा सकता है:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">साइटों को JavaScript इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="583431638776747">साइट को ऐक्सेस नहीं किया जा सका</translation>

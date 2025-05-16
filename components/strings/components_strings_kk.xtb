@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">Мәтін</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтындағы қазіргі бағасы – <ph name="CURRENT_PRICE" />.</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> қатесіз енгізілгенін тексеріңіз.</translation>
-<translation id="2165700285977947082">Google Wallet-тегі тұрақты клиент карталарын автоматты түрде толтырыңыз</translation>
 <translation id="2166049586286450108">Әкімшінің бүкіл дерекке кіру рұқсаты</translation>
 <translation id="2166378884831602661">Бұл сайт қауіпсіз байланысты ұсына алмайды</translation>
 <translation id="2168151236314517198">Әкімші саясаты бұл контентті басып шығару процесін бөгеді.</translation>
@@ -3052,7 +3051,6 @@
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive және OneDrive</translation>
 <translation id="6280223929691119688">Бұл мекенжайға жеткізілмейді. Басқа мекенжайды таңдаңыз.</translation>
-<translation id="628324801501145855">Төлеу әдісі параметрлерінде реттеу</translation>
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
 <translation id="6284449872909111707">Мәтін және лезде хабар алмасу</translation>
 <translation id="6284517535531159884">Вариациялар дереккөзінің түрі</translation>
@@ -3859,6 +3857,7 @@
 <translation id="7639968568612851608">Қою сұр</translation>
 <translation id="7646681339175747202">Сіз жаңа ғана қолданған құпия сөз деректердің қолды болуы салдарынан жария етілді. Google Password Manager құпия сөзіңізді дереу өзгертуді ұсынады.</translation>
 <translation id="7647206758853451655">Басып шығару сапасы</translation>
+<translation id="7648527891719919697">Бұл сайт блокталған күйі қалады, себебі <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android параметрлерінде<ph name="END_ANDROID_SETTINGS_LINK" /> күшейтілген қорғаныс қосылды. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Файлдарды осы құрылғыда сақтау</translation>
 <translation id="7653957176542370971">Төлем өңдегіш беті жабық.</translation>
 <translation id="7654909834015434372">Аннотацияларды өзгерткенде, бұл құжат бастапқыдағыдай бұрылып тұрады.</translation>
@@ -4253,6 +4252,7 @@
 <translation id="833262891116910667">Ерекшелеу</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тіліндегі беттер аударылмайды</translation>
 <translation id="8339275256517065202">Сатып алуды Touch ID көмегімен аяқтаңыз.</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" /> (міндетті)</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуалдық картаны тіркеудің диалогтік терезесі толық ашылды</translation>

@@ -533,6 +533,7 @@
 <translation id="3208260410153224535">ድርጅትዎ በመለያ መግባትን አጥፍቷል። አዳዲስ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎችም በዚህ መሣሪያ ላይ ብቻ ይቀመጣሉ።</translation>
 <translation id="3213807041830307252">የእርስዎን ካሜራ እና የፎቶ ማዕከለ ሥዕላት ተጠቅመው ያዩትን ይግዙ፣ ይተርጉሙ እና ይለዩ</translation>
 <translation id="3214379938835224220">እንደ የእርስዎ iPad ዳግም ማስጀመር አንድ አካል ከመለያዎ ዘግተው እንዲወጡ ተደርገዋል። በመለያ ለመግባት ከታች ያለውን ቀጥልን መታ ያድርጉ።</translation>
+<translation id="3218296450292600703">በሚተዳደረው መለያዎ መግባት ከድርጅትዎ ጋር ተዛማጅ አሰሳን (ትሮች፣ ታሪክ እና የይለፍ ቃላትን ጨምሮ) ከሌላ አሰሳዎ ጋር ለይተው እንዲያቆዩ ያግዝዎታል።</translation>
 <translation id="3224075676564434205">ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ ወደ <ph name="USER_EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛል።</translation>
 <translation id="3224641773458703735">የይለፍ ቃላትን ወደ ውጭ ለመላክ በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
@@ -1484,6 +1485,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7102005569666697658">በማውረድ ላይ… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">ምናሌ → ቅንብሮች → የመክፈያ ዘዴዎች</translation>
 <translation id="7108338896283013870">ደብቅ</translation>
+<translation id="7115051913071512405">ሞክረው</translation>
 <translation id="7128693485119315539">ደርጅትዎ እንደ የእርስዎ የአሰሳ ታሪክ እና የይለፍ ቃላት ያለ ከሚተዳደር መለያ ጋር የተያያዘ የአሰሳ ውሂብን ማየት እና ማስተዳደር ሊያስፈልገው ይችላል።</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ካሜራ አይገኝም</translation>

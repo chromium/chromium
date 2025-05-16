@@ -533,6 +533,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3208260410153224535">Organisasi Anda menonaktifkan login. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
 <translation id="3213807041830307252">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat menggunakan kamera dan galeri foto.</translation>
 <translation id="3214379938835224220">Anda telah logout sebagai bagian dari proses reset iPad. Ketuk lanjutkan di bawah untuk login.</translation>
+<translation id="3218296450292600703">Login dengan akun terkelola Anda akan membantu penjelajahan yang terkait dengan organisasi Anda (termasuk tab, histori, dan sandi) terpisah dari penjelajahan lainnya</translation>
 <translation id="3224075676564434205">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Untuk mengekspor sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1484,6 +1485,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7102005569666697658">Mendownload… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Setelan → Metode pembayaran</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
+<translation id="7115051913071512405">Cobalah</translation>
 <translation id="7128693485119315539">Organisasi Anda mungkin perlu melihat dan mengelola data penjelajahan yang terkait dengan akun terkelola, seperti histori penjelajahan dan sandi.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>

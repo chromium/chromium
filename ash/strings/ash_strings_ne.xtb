@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> थिच्नुहोस् र कुनै लिंकमा क्लिक गर्नुहोस्</translation>
 <translation id="2957159466053076448">तपाईं सेटिङमा गई जुनसुकै बेला यी सुविधाहरू अफ गर्न सक्नुहुन्छ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">डिभाइसको अडियो</translation>
-<translation id="2960314608273155470">क्याप्चर मोड, डिफल्ट मोड <ph name="SOURCE" /> <ph name="TYPE" /> हो। किबोर्डमार्फत नेभिगेसन गर्न ट्याब की थिच्नुहोस्।</translation>
 <translation id="2961963223658824723">कुनै समस्या आयो। केही बेरमा फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2963773877003373896">मोड3</translation>
 <translation id="2965227184985674128">माइक्रोफोन प्रयोग गर्ने अनुमति अन गर्ने हो?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google कागजात प्रयोग गरी डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
-<translation id="8937312474322077653">स्क्रिन क्याप्चरमा गई <ph name="SOURCE" /> <ph name="TYPE" /> सेट गर्नुहोस्। क्याप्चरको प्रकार छनौट गर्न ट्याब थिच्नुहोस्। क्षेत्र चयन गर्न स्पेस थिच्नुहोस्। क्याप्चर गर्न इन्टर थिच्नुहोस्।</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
 <translation id="8939855324412367560">इनपुट अडियो "<ph name="INPUT_DEVICE_NAME" />" हो र आउटपुट अडियो "<ph name="OUTPUT_DEVICE_NAME" />" हो। परिवर्तन गर्न "सेटिङ" मा जानुहोस्।</translation>
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>

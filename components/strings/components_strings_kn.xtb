@@ -678,7 +678,6 @@
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
 <translation id="2162620598375156287">ಇದೀಗ <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> ನಲ್ಲಿ</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> ನ ಕಾಗುಣಿತ ತಪ್ಪಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
-<translation id="2165700285977947082">Google Wallet ನಿಂದ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="2166049586286450108">ಪೂರ್ಣ ನಿರ್ವಾಹಕ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="2166378884831602661">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತ ಸಂಪರ್ಕವನ್ನು ಒದಗಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2168151236314517198">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಈ ವಿಷಯವನ್ನು ಪ್ರಿಂಟ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -3049,7 +3048,6 @@
 <translation id="6272383483618007430">Google ಅಪ್‍ಡೇಟ್</translation>
 <translation id="6278015583149890680">Google Drive ಮತ್ತು OneDrive</translation>
 <translation id="6280223929691119688">ಈ ವಿಳಾಸಕ್ಕೆ ತಲುಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
-<translation id="628324801501145855">ಪಾವತಿ ವಿಧಾನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6284292079994426700">26 x 38 ಇಂಚು</translation>
 <translation id="6284449872909111707">ಪಠ್ಯ ಮತ್ತು ಇನ್‌ಸ್ಟಂಟ್ ಸಂದೇಶ ಕಳುಹಿಸುವಿಕೆ</translation>
 <translation id="6284517535531159884">ವೇರಿಯೇಶನ್ಸ್ ಸೀಡ್ ಪ್ರಕಾರ</translation>
@@ -4252,6 +4250,7 @@
 <translation id="833262891116910667">ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8339275256517065202">Touch ID ಯನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ಸಂಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನೋಂದಣಿಯನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>

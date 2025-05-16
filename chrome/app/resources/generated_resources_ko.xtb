@@ -1171,6 +1171,7 @@
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
 <translation id="1798335429200675510">텍스트 상자를 마우스 오른쪽 버튼으로 클릭하여 Google AI를 기반으로 초안을 작성하거나 기존 작업물을 다듬어 보세요. 현재는 제한적으로만 이용할 수 있습니다.</translation>
+<translation id="1799852120691957794">이전 세션의 창을 복원할 수 없음</translation>
 <translation id="180203835522132923">검색 + O를 누른 후 W</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
@@ -2368,6 +2369,7 @@
 <translation id="2610374175948698697">기기에 있는 파일 또는 폴더를 볼 수 있음</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft 계정에 로그인한 후 다시 시도해 보세요</translation>
+<translation id="2611702650078660078">오류가 발생했습니다</translation>
 <translation id="2611776654555141051">직사각형 도구</translation>
 <translation id="2612676031748830579">카드 번호</translation>
 <translation id="261305050785128654">사용하는 언어를 웹사이트에 알려주세요. 가능한 경우 해당 언어로 콘텐츠가 표시됩니다.</translation>
@@ -2728,6 +2730,7 @@
 <translation id="2849936225196189499">중요</translation>
 <translation id="285033512555869047">닫힘</translation>
 <translation id="2850541429955027218">테마 추가</translation>
+<translation id="2852045827873867442">인터넷 연결이 필요합니다</translation>
 <translation id="285237063405807022">(로드 중)</translation>
 <translation id="2853121255651601031">비밀번호 저장됨</translation>
 <translation id="2855243985454069333">동기화된 모든 기기에서 방문 기록 삭제</translation>
@@ -5441,6 +5444,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 중복 1개</translation>
 <translation id="4780321648949301421">페이지를 다른 이름으로 저장...</translation>
 <translation id="4780558987886269159">업무용</translation>
+<translation id="4781633367688946589">새 세션으로 계속</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다.</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4785914069240823137">자르기 취소</translation>

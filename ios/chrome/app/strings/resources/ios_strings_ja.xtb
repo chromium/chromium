@@ -533,6 +533,7 @@
 <translation id="3208260410153224535">ログインは組織によってオフにされています。新しいブックマークやパスワードなどは、このデバイスにのみ保存されます。</translation>
 <translation id="3213807041830307252">カメラとフォト ギャラリーを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="3214379938835224220">iPad をリセットする途中でログアウトしました。下の [続行] をタップしてログインしてください。</translation>
+<translation id="3218296450292600703">管理対象アカウントでログインすると、組織に関連するブラウジング（タブ、履歴、パスワードなど）を他のブラウジングと分けて管理できます</translation>
 <translation id="3224075676564434205">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます。</translation>
 <translation id="3224641773458703735">パスワードをエクスポートするには、まずデバイスでパスコードを設定する必要があります。</translation>
 <translation id="3227137524299004712">マイク</translation>
@@ -1484,6 +1485,7 @@
 <translation id="7102005569666697658">ダウンロードしています… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">[メニュー] → [設定] → [お支払い方法]</translation>
 <translation id="7108338896283013870">非表示</translation>
+<translation id="7115051913071512405">試してみる</translation>
 <translation id="7128693485119315539">組織で必要に応じて管理対象アカウントに関連付けられた閲覧データ（閲覧履歴やパスワードなど）を確認、管理する場合があります。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" />（<ph name="FILESIZE" />）</translation>
 <translation id="7136892417564438900">カメラを使用できません</translation>

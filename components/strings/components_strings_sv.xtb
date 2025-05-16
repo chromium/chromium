@@ -679,7 +679,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kontrollera om det finns ett stavfel i <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Autofyll stamkundskort från Google Wallet</translation>
 <translation id="2166049586286450108">Fullständig administrativ åtkomst</translation>
 <translation id="2166378884831602661">Webbplatsen kan inte tillhandahålla en säker anslutning</translation>
 <translation id="2168151236314517198">Utskrift av detta innehåll blockeras av en administratörspolicy</translation>
@@ -2354,7 +2353,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5052517576853118371">Aktiva ämnen</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Om du vill skicka den här filen med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}other{Om du vill skicka de här filerna med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="505757197798929356">Ange anledning till att den öppnas (obligatoriskt)</translation>
-<translation id="5060419232449737386">Bildtextinställningar</translation>
+<translation id="5060419232449737386">Textningsinställningar</translation>
 <translation id="5060483733937416656">Du har valt att verifiera dig med Windows Hello på webbplatser där <ph name="PROVIDER_ORIGIN" /> används. Den här leverantören kan ha lagrat uppgifter om din betalningsmetod som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Menade du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Utskriftshistorik</translation>
@@ -3053,7 +3052,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive och OneDrive</translation>
 <translation id="6280223929691119688">Det går inte att leverera till den här adressen. Välj en annan adress.</translation>
-<translation id="628324801501145855">Hantera i inställningarna för betalningsmetoder</translation>
 <translation id="6284292079994426700">26 x 38 tum</translation>
 <translation id="6284449872909111707">Sms och snabbmeddelanden</translation>
 <translation id="6284517535531159884">Typ av variantkälla</translation>
@@ -4256,6 +4254,7 @@ Mer information.
 <translation id="833262891116910667">Markera</translation>
 <translation id="8339163506404995330">Sidor på <ph name="LANGUAGE" /> översätts inte</translation>
 <translation id="8339275256517065202">Slutför köpet med Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, obligatoriskt</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registreringen av virtuella kort har öppnats över hela skärmen</translation>

@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">Սեղմեք <ph name="MODIFIER" />, ապա սեղմեք հղման վրա</translation>
 <translation id="2957159466053076448">Դուք ցանկացած ժամանակ կարող եք անջատել այս գործառույթները Կարգավորումներում։ Իմանալ ավելին՝ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Սարքի ձայները</translation>
-<translation id="2960314608273155470">Տեսագրման կանխադրված ռեժիմը՝ <ph name="SOURCE" /> <ph name="TYPE" />։ Սեղմեք Tab՝ ստեղնաշարի միջոցով նավիգացիայի համար։</translation>
 <translation id="2961963223658824723">Սխալ առաջացավ: Փորձեք ավելի ուշ:</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Միացնե՞լ խոսափողի օգտագործման թույլտվությունը</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Ստեղծել Google փաստաթուղթ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="8936501819958976551">անջատվեց</translation>
-<translation id="8937312474322077653">Էկրանի տեսագրման պարամետրեր՝ <ph name="SOURCE" />, <ph name="TYPE" />։ Տեսագրման տեսակն ընտրելու համար սեղմեք Tab։ Էկրանի հատվածն ընտրելու համար սեղմեք բացատի ստեղնը։ Տեսագրումը սկսելու համար սեղմեք Enter։</translation>
 <translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>
 <translation id="8939855324412367560">Աուդիոյի ներածման համար ընտրված է «<ph name="INPUT_DEVICE_NAME" />» սարքը, իսկ արտածման համար՝ «<ph name="OUTPUT_DEVICE_NAME" />» սարքը։ Փոխելու համար անցեք Կարգավորումներ։</translation>
 <translation id="8940956008527784070">Մարտկոցի լիցքն սպառվում է (<ph name="PERCENTAGE" />%)</translation>

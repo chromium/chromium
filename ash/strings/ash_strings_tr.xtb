@@ -581,7 +581,6 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="2949420361496057765"><ph name="MODIFIER" /> tuşunu basılı tutarken bağlantıyı tıklayın</translation>
 <translation id="2957159466053076448">Bu özellikleri dilediğiniz zaman Ayarlar'dan kapatabilirsiniz. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Cihaz sesi</translation>
-<translation id="2960314608273155470">Ekran Görüntüsü Alma Modu, varsayılan <ph name="SOURCE" /> <ph name="TYPE" />. Klavyeyle gezinmek için sekme tuşuna basın.</translation>
 <translation id="2961963223658824723">Bir sorun oluştu. Birkaç saniye sonra tekrar deneyin.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Mikrofon erişimi açılsın mı?</translation>
@@ -2433,7 +2432,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8934418770423095813">Google Dokümanı Oluştur</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 dosya}other{# dosya}}</translation>
 <translation id="8936501819958976551">devre dışı</translation>
-<translation id="8937312474322077653">Ekran görüntüsünde <ph name="SOURCE" /> <ph name="TYPE" /> olarak ayarlayın. Yakalama türünü seçmek için Sekme tuşuna basın. Bölgeyi seçmek için boşluk tuşuna basın. Çekmek için Enter tuşuna basın.</translation>
 <translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>
 <translation id="8939855324412367560">Giriş sesi "<ph name="INPUT_DEVICE_NAME" />", çıkış sesi "<ph name="OUTPUT_DEVICE_NAME" />". Değiştirmek için Ayarlar'a gidin.</translation>
 <translation id="8940956008527784070">Pil gücü az (%<ph name="PERCENTAGE" />)</translation>

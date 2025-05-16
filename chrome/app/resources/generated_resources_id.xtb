@@ -1171,6 +1171,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1796588414813960292">Fitur yang memerlukan suara tidak akan berfungsi</translation>
 <translation id="1797117170091578105">Mainkan dengan keyboard Chromebook. Anda dapat menyesuaikan tombol untuk tindakan tertentu.</translation>
 <translation id="1798335429200675510">Klik kanan di kotak teks untuk membuat draf atau memperbaiki pekerjaan yang ada, didukung teknologi AI Google. Saat ini ketersediaannya terbatas.</translation>
+<translation id="1799852120691957794">Tidak dapat memulihkan jendela dari sesi sebelumnya</translation>
 <translation id="180203835522132923">Search + O, lalu W</translation>
 <translation id="1802624026913571222">Tidur saat cover ditutup</translation>
 <translation id="1802687198411089702">Halaman tidak merespons. Anda dapat menunggunya atau keluar.</translation>
@@ -2366,6 +2367,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2610374175948698697">Dapat melihat file atau folder di perangkat Anda</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Login ke akun Microsoft, lalu coba lagi</translation>
+<translation id="2611702650078660078">Terjadi error</translation>
 <translation id="2611776654555141051">Alat Kotak</translation>
 <translation id="2612676031748830579">Nomor kartu</translation>
 <translation id="261305050785128654">Izinkan situs mengetahui bahasa yang Anda gunakan. Situs akan menampilkan konten dalam bahasa tersebut, jika memungkinkan.</translation>
@@ -2726,6 +2728,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2849936225196189499">Kritis</translation>
 <translation id="285033512555869047">Ditutup</translation>
 <translation id="2850541429955027218">Tambahkan tema</translation>
+<translation id="2852045827873867442">Memerlukan koneksi internet.</translation>
 <translation id="285237063405807022">(memuat)</translation>
 <translation id="2853121255651601031">Sandi Sudah Disimpan</translation>
 <translation id="2855243985454069333">Menghapus histori dari semua perangkat yang disinkronkan</translation>
@@ -5440,6 +5443,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplikat</translation>
 <translation id="4780321648949301421">Simpan Halaman Sebagai...</translation>
 <translation id="4780558987886269159">Untuk bekerja</translation>
+<translation id="4781633367688946589">Lanjutkan ke sesi baru</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ingin menggunakan info pribadi dari dompet digital Anda.</translation>
 <translation id="4785719467058219317">Anda menggunakan kunci keamanan yang tidak terdaftar di situs ini</translation>
 <translation id="4785914069240823137">Batalkan Pemangkasan</translation>

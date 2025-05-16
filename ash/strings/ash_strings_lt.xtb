@@ -581,7 +581,6 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="2949420361496057765">Paspauskite <ph name="MODIFIER" /> ir spustelėkite nuorodą</translation>
 <translation id="2957159466053076448">Galite bet kada išjungti šias funkcijas skiltyje „Nustatymai“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Įrenginio garsas</translation>
-<translation id="2960314608273155470">Užfiksavimo režimas, numatytoji parinktis yra <ph name="SOURCE" /> <ph name="TYPE" />. Norėdami naudoti klaviatūrą, paspauskite tabuliavimo klavišą.</translation>
 <translation id="2961963223658824723">Deja, įvyko klaida. Bandykite dar kartą po kelių sekundžių.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Įjungti prieigą prie mikrofono?</translation>
@@ -2433,7 +2432,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8934418770423095813">Sukurti „Google“ dokumentą</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Vienas failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="8936501819958976551">išaktyvinta</translation>
-<translation id="8937312474322077653">Įjungę ekrano fiksavimą nustatykite <ph name="SOURCE" /> <ph name="TYPE" />. Paspauskite tabuliavimo klavišą, kad pasirinktumėte fiksavimo tipą. Paspauskite tarpo klavišą, kad pasirinktumėte sritį. Paspauskite „Enter“, kad užfiksuotumėte.</translation>
 <translation id="8938800817013097409">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="8939855324412367560">Įvesties garso įrašas yra „<ph name="INPUT_DEVICE_NAME" />“, o išvesties garsas – „<ph name="OUTPUT_DEVICE_NAME" />“. Eikite į skiltį „Nustatymai“ ir pakeiskite.</translation>
 <translation id="8940956008527784070">Akumuliatorius senka (<ph name="PERCENTAGE" /> %)</translation>

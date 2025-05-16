@@ -2442,6 +2442,7 @@ Sistem hanya akan mengkueri data AAAA ketika perangkat dapat menjangkau host IPv
 <translation id="2652747206827086936">Nonaktifkan Kartu NTP SharePoint dan OneDrive File</translation>
 <translation id="2656559539624760733">Jangan gunakan Chrome Root Store.</translation>
 <translation id="2658653824183107970">Menggunakan implementasi <ph name="CORS" /> lama, bukan <ph name="CORS" /> baru.</translation>
+<translation id="2659581762274047663">Mengaktifkan Layanan <ph name="PRODUCT_NAME" /></translation>
 <translation id="2660846099862559570">Jangan pernah gunakan proxy</translation>
 <translation id="2661628029848851543">Semua penggunaan akun terkelola diizinkan</translation>
 <translation id="2664391398878045611">Halaman Tab Baru tidak akan menampilkan pengumuman slot tengah meskipun jika tersedia</translation>
@@ -3089,6 +3090,7 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, menu aksesibilitas me
 <translation id="3143203373436771188">Saat membuka dokumen Office yang ditangani oleh <ph name="BASIC_EDITOR_NAME" />, buka dokumen tersebut di <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3144173889708944482">Jika <ph name="PRINTERS_BLOCKLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> akan menentukan printer yang tidak dapat digunakan oleh pengguna. Semua printer diberikan kepada pengguna kecuali ID yang tercantum dalam kebijakan ini. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Larang suara text-to-speech enhanced network saat menggunakan Klik untuk Diucapkan</translation>
+<translation id="315013437951136266">Aktifkan fitur <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">Jangan tampilkan ikon <ph name="PRODUCT_NAME" /> di toolbar secara default, tetapi izinkan pengguna memilih</translation>
 <translation id="3152135410085709340">Mengizinkan akses file lokal ke URL file:// di situs ini di Penampil PDF</translation>
 <translation id="3152425128389603870">Membuat Desktop Terpadu tersedia dan aktif secara default</translation>
@@ -4326,6 +4328,7 @@ Kebijakan ini setara dengan kebijakan <ph name="RELATED_WEBSITE_SETS_ENABLED_POL
 Salah satu kebijakan dapat digunakan, tetapi kebijakan ini tidak akan digunakan lagi dalam waktu dekat sehingga kebijakan <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> lebih disarankan.
 Kedua kebijakan tersebut memiliki efek yang sama pada perilaku browser.</translation>
 <translation id="4016700865356669962">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan template tata letak desktop.  Jika kebijakan disetel ke Nonaktif atau tidak disetel, template tersebut tidak akan tersedia.</translation>
+<translation id="4018536413833147396">Izinkan pengguna mengaktifkan atau menonaktifkan setelan <ph name="IP_PROTECTION_NAME" /> di perangkat mereka. Fitur ini akan diaktifkan secara default.</translation>
 <translation id="4020682745012723568">Cookie yang ditransfer ke profil pengguna tidak dapat diakses oleh aplikasi Android.</translation>
 <translation id="4021684548211845008">Menonaktifkan suara dalam Mode Fokus.</translation>
 <translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal muncul</translation>
@@ -4828,6 +4831,7 @@ Hal ini dihapus di M112.</translation>
 Jika kebijakan disetel ke Nonaktif, file PDF akan dibuka kecuali jika pengguna menonaktifkan plugin PDF.
 
 Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika kebijakan tidak disetel, pengguna dapat memilih apakah akan membuka PDF secara eksternal atau tidak.</translation>
+<translation id="4413764344717830250">Mengontrol visibilitas atribusi ekstensi di Halaman Tab Baru untuk browser terkelola</translation>
 <translation id="4415603335307944578">Jika kebijakan ini ditetapkan ke True atau tidak dikonfigurasi, browser akan menampilkan kembali halaman sambutan saat diluncurkan pertama kali setelah upgrade OS.
 
       Jika kebijakan ini ditetapkan ke False, browser tidak akan menampilkan kembali halaman sambutan saat diluncurkan pertama kali setelah upgrade OS.</translation>
@@ -4950,6 +4954,7 @@ Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau ti
 
       Nilai kebijakan harus ditentukan dalam hari.</translation>
 <translation id="4525328580251166229">Mengontrol kebijakan yang terkait dengan subsistem Bruschetta.</translation>
+<translation id="4528981768990874684">Nonaktifkan fitur <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Kebijakan ini tidak digunakan lagi.</translation>
 <translation id="4531706050939927436">Aplikasi Android dapat diinstal otomatis dari konsol Google Admin menggunakan Google Play. Aplikasi Android tidak menggunakan kebijakan ini.</translation>
 <translation id="4534500438517478692">Nama pembatasan Android:</translation>
@@ -6793,6 +6798,11 @@ Lihat <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT
 <translation id="5670249935663090320">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan diaktifkan dan pengguna dapat meluncurkannya dari menu aplikasi, menu konteks halaman, kontrol media di situs yang kompatibel untuk Cast, dan ikon toolbar Cast (jika ditampilkan).
 
 Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan dinonaktifkan.</translation>
+<translation id="5671392367521500075">Kebijakan ini mengontrol visibilitas atribusi ekstensi di dalam footer Halaman Tab Baru (NTP) saat NTP dikontrol oleh ekstensi. Secara default, footer NTP menampilkan informasi tentang ekstensi yang mengontrol NTP.
+
+Jika kebijakan ini tidak disetel atau disetel ke benar (true), browser dengan NTP yang dikontrol ekstensi akan menampilkan nama ekstensi dan link ke ekstensi tersebut.
+
+Jika kebijakan ini disetel ke salah (false), atribusi ekstensi akan disembunyikan.</translation>
 <translation id="5673254755365419402">Aktifkan fitur Perlindungan Pelacakan Sidik Jari <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Jika kebijakan disetel ke Benar (True), laporan peristiwa penting penginstalan ekstensi Android yang dipicu kebijakan akan dikirimkan ke Google. Jika kebijakan disetel ke Salah (False), tidak ada peristiwa yang direkam. Jika kebijakan tidak disetel, nilai default akan disetel ke Benar (True).</translation>
 <translation id="5673780539191375049">Menetapkan interval waktu (dalam menit) yang digunakan untuk otomatis memuat ulang alur autentikasi pengguna di perangkat <ph name="PRODUCT_OS_NAME" /> mereka. Kebijakan ini diperkenalkan untuk menangani masa berlaku beberapa layanan yang digunakan dalam alur autentikasi saat perangkat dibiarkan tidak ada aktivitas selama beberapa waktu.
@@ -7936,6 +7946,23 @@ Fitur AI Generatif DevTools mencakup:
 
 Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Kebijakan ini tidak lagi digunakan sejak <ph name="PRODUCT_OS_NAME" /> versi 29. Gunakan kebijakan PresentationScreenDimDelayScale sebagai gantinya.</translation>
+<translation id="6397424663361748439">Kebijakan untuk mengontrol apakah fitur <ph name="IP_PROTECTION_NAME" /> <ph name="PRIVACY_SANDBOX_NAME" /> harus diaktifkan.
+
+<ph name="IP_PROTECTION_NAME" /> adalah fitur yang membatasi ketersediaan alamat IP asli pengguna untuk permintaan jaringan pihak ketiga tertentu yang dibuat saat menjelajah dalam mode Samaran, sehingga meningkatkan perlindungan terhadap pelacakan lintas situs selama sesi penjelajahan Samaran.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="IP_PROTECTION_NAME" /> akan dinonaktifkan dan pengguna tidak akan dapat mengaktifkan fitur tersebut melalui setelan UI.
+Jika kebijakan ini disetel ke Aktif, <ph name="IP_PROTECTION_NAME" /> akan diaktifkan dan pengguna tidak akan dapat menonaktifkan fitur tersebut melalui setelan UI.
+Jika kebijakan ini tidak disetel, <ph name="IP_PROTECTION_NAME" /> akan diaktifkan secara default dan pengguna akan dapat mengontrol fitur tersebut di perangkatnya melalui setelan UI.
+
+Beberapa pertimbangan terkait apakah perusahaan harus menonaktifkan <ph name="IP_PROTECTION_NAME" /> meliputi:
+- Pencarian DNS tidak akan dilakukan untuk permintaan yang di-proxy, yang dapat memengaruhi pemantauan atau pemfilteran berbasis DNS.
+- Aplikasi perusahaan mungkin mengalami gangguan saat digunakan dalam mode Samaran jika aplikasi tersebut bergantung pada permintaan ke domain (atau subdomain dari domain tersebut) di Daftar Domain Tersamar (<ph name="MASKED_DOMAIN_LIST_URL" />) dan mengharuskan permintaan tersebut berasal dari rentang alamat IP tertentu.
+- Traffic mungkin tidak di-proxy dalam mode Samaran dalam kondisi tertentu, misalnya saat pengguna meluncurkan mode Samaran dari profil Chrome yang tidak mereka gunakan untuk login. Secara umum, fitur ini mengharuskan pengguna untuk login ke Chrome dengan Akun Google pribadi saat meluncurkan mode Samaran.
+- Daftar domain di Daftar Domain Tersamar mungkin berubah dari waktu ke waktu. Setiap versi barunya akan otomatis dikirimkan kepada pengguna. Untuk mengetahui informasi selengkapnya tentang Daftar Domain Tersamar, lihat: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Untuk mengetahui informasi selengkapnya tentang <ph name="IP_PROTECTION_NAME" />, lihat: <ph name="IP_PROTECTION_README_URL" />.
+
+<ph name="IP_PROTECTION_NAME" /> akan diluncurkan mulai M139.</translation>
 <translation id="6397588391180665797">Melaporkan konfigurasi jaringan pengguna di perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.

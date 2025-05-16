@@ -533,6 +533,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3208260410153224535">La teva organització ha desactivat l'inici de sessió. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
 <translation id="3213807041830307252">Compra, tradueix i identifica el que veus utilitzant la càmera i la galeria de fotos.</translation>
 <translation id="3214379938835224220">Se t'ha tancat la sessió com a part del restabliment de l'iPad. Per iniciar-la, toca Continua, més avall.</translation>
+<translation id="3218296450292600703">Si inicies la sessió amb el compte gestionat, podràs mantenir la navegació relacionada amb la teva organització (incloses les pestanyes, l'historial i les contrasenyes) separada de la teva altra activitat de navegació</translation>
 <translation id="3224075676564434205">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Per exportar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
@@ -1484,6 +1485,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7102005569666697658">S'està baixant… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuració → Formes de pagament</translation>
 <translation id="7108338896283013870">Amaga</translation>
+<translation id="7115051913071512405">Prova-ho</translation>
 <translation id="7128693485119315539">És possible que la teva organització necessiti veure i gestionar les dades de navegació associades al teu compte gestionat, com ara l'historial de navegació i les contrasenyes.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La càmera no està disponible</translation>

@@ -679,7 +679,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Prüfe, ob „<ph name="HOST_NAME" />“ einen Tippfehler enthält.</translation>
-<translation id="2165700285977947082">Kundenkarten aus Google Wallet automatisch ausfüllen</translation>
 <translation id="2166049586286450108">Vollständiger Administratorzugriff</translation>
 <translation id="2166378884831602661">Diese Website kann keine sichere Verbindung bereitstellen</translation>
 <translation id="2168151236314517198">Die Administratorrichtlinie blockiert das Drucken dieses Inhalts</translation>
@@ -3051,7 +3050,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive und OneDrive</translation>
 <translation id="6280223929691119688">Die Lieferadresse wird nicht unterstützt. Bitte wähle eine andere Adresse aus.</translation>
-<translation id="628324801501145855">In den Einstellungen für Zahlungsmethoden verwalten</translation>
 <translation id="6284292079994426700">26 x 38 Zoll</translation>
 <translation id="6284449872909111707">SMS und Chat</translation>
 <translation id="6284517535531159884">Quelltyp der Varianten</translation>
@@ -4254,6 +4252,7 @@ Weitere Details:
 <translation id="833262891116910667">Hervorheben</translation>
 <translation id="8339163506404995330">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt</translation>
 <translation id="8339275256517065202">Schließe den Kauf mit Touch ID ab</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, erforderlich</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Ansicht zur Registrierung der virtuellen Karte vollständig geöffnet</translation>

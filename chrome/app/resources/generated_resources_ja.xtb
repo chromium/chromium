@@ -1161,6 +1161,7 @@
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
 <translation id="1798335429200675510">テキスト ボックスで右クリックすると、Google AI を活用して下書きを作成したり、既存の文章を手直ししたりできます。現在、限定的にご利用いただけます。</translation>
+<translation id="1799852120691957794">前回のセッションからウィンドウを復元できません</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
@@ -2347,6 +2348,7 @@
 <translation id="2610374175948698697">デバイスのファイルやフォルダを表示できる</translation>
 <translation id="2610780100389066815">Microsoft 信頼リストの署名</translation>
 <translation id="261114180663074524">Microsoft アカウントにログインして、もう一度お試しください</translation>
+<translation id="2611702650078660078">エラーが発生しました</translation>
 <translation id="2611776654555141051">長方形ツール</translation>
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="261305050785128654">お使いの言語を指定すると、可能な場合はウェブサイトのコンテンツが指定した言語で表示されます。</translation>
@@ -2707,6 +2709,7 @@
 <translation id="2849936225196189499">重要</translation>
 <translation id="285033512555869047">閉じています</translation>
 <translation id="2850541429955027218">テーマを追加</translation>
+<translation id="2852045827873867442">インターネット接続が必要です。</translation>
 <translation id="285237063405807022">（読み込んでいます）</translation>
 <translation id="2853121255651601031">パスワードが保存されました</translation>
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
@@ -5416,6 +5419,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • 1 件の重複</translation>
 <translation id="4780321648949301421">ページを別名で保存...</translation>
 <translation id="4780558987886269159">仕事向け</translation>
+<translation id="4781633367688946589">新しいセッションに進む</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。</translation>
 <translation id="4785719467058219317">このウェブサイトに登録されていないセキュリティ キーを使用しています</translation>
 <translation id="4785914069240823137">切り抜きをキャンセル</translation>

@@ -435,6 +435,7 @@
 <translation id="2979639724566107830">නව කවුළුවක විවෘත කරන්න</translation>
 <translation id="2981364137500752533">ඔබට කවුළු 5ක් දක්වා තිබිය හැකිය.</translation>
 <translation id="2983102365694924129">අඩවියක ඔබේ ක්‍රියාකාරකම් මත පදනම්ව. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
+<translation id="2983398917942897288">අක්‍රිය (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google සෙවීම් තුළ අවට පෙළ ඇතුළත් කරන්න</translation>
 <translation id="2988638966064514052">ඔබේ මුරපද ශක්තිමත් කරන්න</translation>
 <translation id="2989523299700148168">මෑතදී පිවිසි</translation>
@@ -467,6 +468,7 @@
 <translation id="314939179385989105">Chrome හි මුල් පිටුව</translation>
 <translation id="3158667104057012316">හස්තීය අනුපිළිවෙල අනුව වර්ග කිරීම</translation>
 <translation id="3159335509547415276">අවහිර කළ ගිණුම් පිළිබඳව දැන ගන්න</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, නව පටිත්තක විවෘත වේ</translation>
 <translation id="3166827708714933426">ටැබ සහ කවුළු කෙටි මං</translation>
 <translation id="316694332262407393">Chrome දැනටමත් මෙහි ධාවනය වේ.</translation>
 <translation id="3167258285411721858">ඔබට <ph name="HOST_NAME" /> සඳහා ජංගම අඩවිය ඉල්ලා සිටිය හැක</translation>
@@ -791,6 +793,7 @@
 <translation id="469286762610133730">ඉතා හොඳ අන්තර්ගතය ලබා ගන්න</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">ඔබේ අක්‍රිය පටිති මෙහි සමාලෝචනය කරන්න</translation>
+<translation id="4698757800236023795">සක්‍රිය (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">අනුරූ සහ ගොනු කෑෂ් කරන්න</translation>
 <translation id="4710167854527459075">නවතම අනුව වර්ග කරන්න</translation>
 <translation id="4718044610319080485">AI සහායකයාට ආරාධනා කරයි</translation>

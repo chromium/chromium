@@ -581,7 +581,6 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2949420361496057765">Paina <ph name="MODIFIER" /> ja klikkaa linkkiä</translation>
 <translation id="2957159466053076448">Voit laittaa nämä ominaisuudet pois päältä milloin tahansa asetuksista. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Laitteen audio</translation>
-<translation id="2960314608273155470">Tallennustila, oletuksena on <ph name="SOURCE" /> <ph name="TYPE" />. Aloita näppäimistöllä siirtyminen painamalla sarkainta.</translation>
 <translation id="2961963223658824723">Jotain meni pieleen. Yritä uudelleen parin sekunnin kuluttua.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Laitetaanko mikrofonin käyttölupa päälle?</translation>
@@ -2432,7 +2431,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8934418770423095813">Luo Google-dokumentti</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>
-<translation id="8937312474322077653">Kuvakaappauksessa, <ph name="SOURCE" /> <ph name="TYPE" /> valittu. Valitse tallennustyyppi painamalla välilehteä. Valitse alue painamalla välilyöntiä. Tallenna painamalla Enter.</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>
 <translation id="8939855324412367560">Äänitulo on "<ph name="INPUT_DEVICE_NAME" />" ja äänentoisto on "<ph name="OUTPUT_DEVICE_NAME" />". Muuta sitä asetuksista.</translation>
 <translation id="8940956008527784070">Akku vähissä (<ph name="PERCENTAGE" /> %)</translation>

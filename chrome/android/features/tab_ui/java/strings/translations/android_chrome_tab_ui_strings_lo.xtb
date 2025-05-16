@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="6109251075362363230">ຕອນນີ້ລະບົບຍັງຈະເກັບແຖບທີ່ຊ້ຳກັນທັງໝົດໄວ້ໃນແຟ້ມນຳ, ຍົກເວັ້ນສຳເນົາທີ່ໃຊ້ຫຼ້າສຸດ.</translation>
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
+<translation id="6220820548421939212">ໄດ້. ຕົກລົງ</translation>
 <translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
 <translation id="6271513594716432922">ປິດແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ທັງໝົດ</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">ການເຄື່ອນໄຫວ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ}other{ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ}}</translation>
 <translation id="7885132941432959125">ຍ້າຍແຖບໄປເບື້ອງຂວາ</translation>
+<translation id="788914896430720926">ເກັບຮັກສາພາກສ່ວນທີ່ບໍ່ໄດ້ນຳໃຊ້ໃຫ້ເປັນລະບຽບບໍ?</translation>
 <translation id="7939917283308035850">ບໍ່ໄດ້ເລືອກ <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">ການເຄື່ອນໄຫວຂອງທ່ານໃນແຖບບໍ່ເປີດເຜີຍຕົວຕົນເຫຼົ່ານີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_MONTHS_ONE" /> ເດືອນກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_MONTHS_MANY" /> ເດືອນກ່ອນ}}</translation>
 <translation id="8820741577754260431">ເບິ່ງການຫຼຸດລາຄາສຳລັບແຖບຂອງທ່ານ</translation>
+<translation id="883379923675618699">Chrome ຈະປິດລາຍການໃນພາກສ່ວນທີ່ທ່ານບໍ່ໄດ້ນຳໃຊ້ເປັນເວລາ 3 ເດືອນໂດຍອັດຕະໂນມັດ. ທ່ານສາມາດປິດຄຸນສົມບັດນີ້ຕອນນີ້ເລີຍ ຫຼື ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="8887921976452567404">ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ.</translation>
 <translation id="8915916167043355778">ປິດທັງໝົດ</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ຍ້າຍໄປໜ້າຈໍໃໝ່}other{ຍ້າຍໄປຫາໜ້າຈໍອື່ນ}}</translation>

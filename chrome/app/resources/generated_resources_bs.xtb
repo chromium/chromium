@@ -2366,7 +2366,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2610374175948698697">Može pregledati fajlove ili foldere na uređaju</translation>
 <translation id="2610780100389066815">Potpisivanje Microsoftove liste pouzdanih stavki</translation>
 <translation id="261114180663074524">Prijavite se na Microsoft račun, a zatim pokušajte ponovo</translation>
-<translation id="2611702650078660078">Došlo je do pogreške</translation>
+<translation id="2611702650078660078">Došlo je do greške</translation>
 <translation id="2611776654555141051">Alat za crtanje pravougaonika</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="261305050785128654">Omogućite web lokacijama da znaju koje jezike govorite. Prikazivat će vam sadržaj na tim jezicima, kada je to moguće.</translation>
@@ -5176,6 +5176,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4585793705637313973">Uredite stranicu</translation>
 <translation id="4586275095964870617">Otvaranje web lokacije <ph name="URL" /> u alternativnom pregledniku nije uspjelo. Kontaktirajte administratora sistema.</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
+<translation id="4588497044036650559">Otvaranje stranice opcija proširenja stranice nove kartice u trenutačnoj kartici</translation>
 <translation id="4588749726511456218">Ubrzanje klizanja <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905">Izgleda da su <ph name="PASSWORD_DOMAIN" /> i <ph name="DOMAIN" /> povezani. Provjerite je li <ph name="DOMAIN" /> pouzdana web lokacija prije korištenja lozinke.</translation>
 <translation id="4589713469967853491">Zapisnici su uspješno ispisani u direktorij Preuzimanja.</translation>
@@ -5442,7 +5443,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplikat</translation>
 <translation id="4780321648949301421">Sačuvaj stranicu kao...</translation>
 <translation id="4780558987886269159">Za posao</translation>
-<translation id="4781633367688946589">Nastavi do nove sesije</translation>
+<translation id="4781633367688946589">Nastavi na novu sesiju</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> želi koristiti lične informacije iz vašeg digitalnog novčanika.</translation>
 <translation id="4785719467058219317">Koristite sigurnosni ključ koji nije registriran na ovoj web lokaciji</translation>
 <translation id="4785914069240823137">Otkažite izrezivanje</translation>
@@ -9157,6 +9158,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7461924472993315131">PIN</translation>
 <translation id="746216226901520237">Sljedeći put će vaš telefon otključati vaš uređaj <ph name="DEVICE_TYPE" />. Pametno zaključavanje možete isključiti u Postavkama.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">Vaša organizacija upravlja načinom na koji se podaci koje prikupljaju ove značajke mogu upotrebljavati.</translation>
 <translation id="7464645554245611385">Posljednje ažuriranje kartice</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otvorena kartica. Pritisnite da aktivirate/deaktivirate traku kartice}one{# otvorena kartica. Pritisnite da aktivirate/deaktivirate traku kartice}few{# otvorene kartice. Pritisnite da aktivirate/deaktivirate traku kartice}other{# otvorenih kartica. Pritisnite da aktivirate/deaktivirate traku kartice}}</translation>
 <translation id="7465635034594602553">Nešto nije uredu. Sačekajte nekoliko minuta i ponovo pokrenite aplikaciju <ph name="APP_NAME" />.</translation>
@@ -11722,6 +11724,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="934244546219308557">Dajte naziv ovoj grupi</translation>
 <translation id="93480724622239549">Propust ili greška</translation>
 <translation id="9354763467503131">Dozvoljeno je tražiti instaliranje web aplikacija na uređaju</translation>
+<translation id="936329857119665832">Otvara se u trenutačnoj kartici</translation>
 <translation id="936646668635477464">Kamera i mikrofon</translation>
 <translation id="936801553271523408">Dijagnostički podaci sistema</translation>
 <translation id="93766956588638423">Popravi ekstenziju</translation>

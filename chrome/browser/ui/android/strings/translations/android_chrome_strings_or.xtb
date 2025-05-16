@@ -435,6 +435,7 @@
 <translation id="2979639724566107830">ନୂତନ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="2981364137500752533">ଆପଣ 5ଟି ପର୍ଯ୍ୟନ୍ତ ୱିଣ୍ଡୋକୁ ଖୋଲିପାରିବେ।</translation>
 <translation id="2983102365694924129">କୌଣସି ସାଇଟରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଆଧାରରେ। ଏହି ସେଟିଂ ବନ୍ଦ ଅଛି।</translation>
+<translation id="2983398917942897288">ନିଷ୍କ୍ରିୟ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google ସନ୍ଧାନଗୁଡ଼ିକରେ ଆଖପାଖର ଟେକ୍ସଟକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="2988638966064514052">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁଦୃଢ଼ କରନ୍ତୁ</translation>
 <translation id="2989523299700148168">ନିକଟରେ ଯାଇଥିବା</translation>
@@ -467,6 +468,7 @@
 <translation id="314939179385989105">Chromeର ମୂଳପୃଷ୍ଠା</translation>
 <translation id="3158667104057012316">ମାନୁଆଲ କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="3159335509547415276">ବ୍ଲକ କରାଯାଇଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ଏକ ନୂଆ ଟାବରେ ଖୋଲେ</translation>
 <translation id="3166827708714933426">ଟାବ୍‌ ଏବଂ ୱିଣ୍ଡୋ ସର୍ଟକଟ୍‌</translation>
 <translation id="316694332262407393">Chrome ପୂର୍ବରୁ ଏଠାରେ ଚାଲୁଛି।</translation>
 <translation id="3167258285411721858">ଆପଣ <ph name="HOST_NAME" /> ପାଇଁ ମୋବାଇଲ ସାଇଟ ଅନୁରୋଧ କରିପାରିବେ</translation>
@@ -791,6 +793,7 @@
 <translation id="469286762610133730">ଆହୁରି ଭଲ ବିଷୟବସ୍ତୁ ପାଆନ୍ତୁ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ଅଧିକ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ଅଧିକ}}</translation>
 <translation id="4698061626562952596">ଆପଣଙ୍କ ନିଷ୍ଟ୍ରିୟ ଟାବଗୁଡ଼ିକୁ ଏଠାରେ ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="4698757800236023795">ସକ୍ରିୟ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">କେଚ୍‍ ଛବି ଏବଂ ଫାଇଲ୍‌</translation>
 <translation id="4710167854527459075">ସବୁଠୁ ନୂଆ ଅନୁସାରେ ସର୍ଟ କର</translation>
 <translation id="4718044610319080485">AI ଆସିଷ୍ଟାଣ୍ଟକୁ ଆରମ୍ଭ କରେ</translation>

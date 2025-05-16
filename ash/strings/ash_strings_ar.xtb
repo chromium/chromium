@@ -580,7 +580,6 @@
 <translation id="2949420361496057765">اضغط على <ph name="MODIFIER" /> ثم انقر على الرابط.</translation>
 <translation id="2957159466053076448">يمكنك إيقاف هذه الميزات في أي وقت من خلال "الإعدادات". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">صوت الجهاز</translation>
-<translation id="2960314608273155470">‏وضع الالتقاط، الإعداد التلقائي هو <ph name="SOURCE" /> <ph name="TYPE" />. اضغط على مفتاح Tab للتنقّل على لوحة المفاتيح.</translation>
 <translation id="2961963223658824723">حدث خطأ. يُرجى إعادة المحاولة خلال بضع ثوانٍ.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">هل تريد السماح بالوصول إلى الميكروفون؟</translation>
@@ -2432,7 +2431,6 @@
 <translation id="8934418770423095813">‏إنشاء مستند Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>
-<translation id="8937312474322077653">‏في ميزة "لقطة الشاشة"، عليك ضبط الإعدادات على "<ph name="SOURCE" />" من النوع "<ph name="TYPE" />". يُرجى الضغط على مفتاح التبويب لاختيار نوع الالتقاط. ويُرجى الضغط على مفتاح المسافة لاختيار المنطقة، ثم الضغط على مفتاح Enter لأخذ لقطة شاشة.</translation>
 <translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>
 <translation id="8939855324412367560">إنّ مصدر إدخال الصوت هو "<ph name="INPUT_DEVICE_NAME" />" ومصدر إخراجه هو "<ph name="OUTPUT_DEVICE_NAME" />". انتقِل إلى "الإعدادات" لتغييرهما.</translation>
 <translation id="8940956008527784070">طاقة البطارية منخفضة (<ph name="PERCENTAGE" />%)</translation>

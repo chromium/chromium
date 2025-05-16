@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> баскычын басып, шилтемени чыкылдатыңыз</translation>
 <translation id="2957159466053076448">Бул функцияларды каалаган убакта Параметрлерден өчүрө аласыз. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Түзмөктөгү аудиолор</translation>
-<translation id="2960314608273155470">Сүрөткө тартуу режими, демейки шартта: <ph name="SOURCE" /> <ph name="TYPE" />. Өтүү үчүн баскычтоптогу "Tab" баскычын басыңыз.</translation>
 <translation id="2961963223658824723">Бир жерден ката кетти. Бир нече секунддан кийин кайталап көрүңүз.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Микрофонду пайдалануу мүмкүнчүлүгүн күйгүзөсүзбү?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google документин түзүү</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өчүрүлдү</translation>
-<translation id="8937312474322077653">Экрандагыны тартып алууда <ph name="SOURCE" /> <ph name="TYPE" /> деп коюңуз. Тартуу түрүн тандоо үчүн өтмөктү басыңыз. Аймакты тандоо үчүн боштук баскычын басыңыз. Тартуу үчүн Enter баскычын басыңыз.</translation>
 <translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>
 <translation id="8939855324412367560">Киргизүүчү түзмөк – "<ph name="INPUT_DEVICE_NAME" />", ал эми чыгаруучу түзмөк – "<ph name="OUTPUT_DEVICE_NAME" />". Өзгөртүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="8940956008527784070">Батарея аз (<ph name="PERCENTAGE" />%)</translation>

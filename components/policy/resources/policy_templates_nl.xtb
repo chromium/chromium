@@ -2309,6 +2309,7 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
 <translation id="2652747206827086936">Kaart SharePoint- en OneDrive-bestand uitzetten op de pagina Nieuw tabblad</translation>
 <translation id="2656559539624760733">De Chrome Root Store niet gebruiken.</translation>
 <translation id="2658653824183107970">De verouderde <ph name="CORS" />-implementatie in plaats van de nieuwe <ph name="CORS" /> gebruiken</translation>
+<translation id="2659581762274047663">Service <ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="2660846099862559570">Nooit een proxy gebruiken</translation>
 <translation id="2661628029848851543">Alle typen gebruik van beheerde accounts zijn toegestaan</translation>
 <translation id="2664391398878045611">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is</translation>
@@ -2945,6 +2946,7 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3143203373436771188">Office-documenten die worden verwerkt door de <ph name="BASIC_EDITOR_NAME" />, openen in de <ph name="BASIC_EDITOR_NAME" /> als je ernaartoe navigeert</translation>
 <translation id="3144173889708944482">Als <ph name="PRINTERS_BLOCKLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers niet kunnen gebruiken. Alle printers zijn beschikbaar voor gebruikers, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Stemmen voor verbeterde tekst-naar-spraak via netwerk niet toestaan bij gebruik van Selecteer om voor te lezen</translation>
+<translation id="315013437951136266">Zet de functie <ph name="IP_PROTECTION_NAME" /> aan.</translation>
 <translation id="3150351525324499342">Het icoon voor <ph name="PRODUCT_NAME" /> niet standaard tonen in de werkbalk, maar gebruikers laten kiezen</translation>
 <translation id="3152135410085709340">Lokale bestandstoegang tot file://-URL's op deze sites toestaan in de pdf-viewer</translation>
 <translation id="3152425128389603870">Maak Samengestelde desktop beschikbaar en zet deze standaard aan</translation>
@@ -4134,6 +4136,7 @@ Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_ENABLED_POLI
 Beide beleidsregels kunnen worden gebruikt, maar dit beleid wordt binnenkort beëindigd. Daarom heeft het beleid <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> de voorkeur.
 Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="4016700865356669962">Als je het beleid toepast, kunnen gebruikers templates voor bureaubladindelingen gebruiken.  Als je het beleid niet toepast of niet instelt, zijn deze templates niet beschikbaar.</translation>
+<translation id="4018536413833147396">Toestaan dat gebruikers de instelling <ph name="IP_PROTECTION_NAME" /> aan- of uitzetten op hun apparaat. De functie wordt standaard aangezet.</translation>
 <translation id="4020682745012723568">Cookies die worden overgedragen naar het profiel van de gebruiker, zijn niet toegankelijk voor Android-apps.</translation>
 <translation id="4021684548211845008">Geluiden in Focusmodus uitzetten.</translation>
 <translation id="4025500273782820766">Sta toe dat gebruikers 'Altijd toestaan' selecteren als een dialoogvenster voor externe protocollen wordt getoond om toekomstige bevestigingsprompts over te slaan</translation>
@@ -4731,6 +4734,7 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 
       De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="4525328580251166229">Beheert de beleidsregels met betrekking tot het Bruschetta-subsysteem.</translation>
+<translation id="4528981768990874684">Zet de functie <ph name="IP_PROTECTION_NAME" /> uit.</translation>
 <translation id="453031441196755904">Dit beleid is beëindigd.</translation>
 <translation id="4531706050939927436">De installatie van Android-apps kan via de Google Admin Console worden afgedwongen door gebruik te maken van Google Play. Deze apps gebruiken dit beleid niet.</translation>
 <translation id="4534500438517478692">Naam Android-beperking:</translation>
@@ -7549,6 +7553,23 @@ De generatieve AI-functies in DevTools zijn onder andere:
 
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
+<translation id="6397424663361748439">Beleid om te bepalen of de functie <ph name="IP_PROTECTION_NAME" /> van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.
+
+<ph name="IP_PROTECTION_NAME" /> is een functie die de beschikbaarheid van het oorspronkelijke IP-adres van een gebruiker beperkt voor bepaalde netwerkverzoeken van derden die worden gedaan terwijl de gebruiker in de incognitomodus browst. Hiermee wordt de beveiliging tegen cross-site tracking verbeterd tijdens incognitosessies.
+
+Als je het beleid niet toepast, wordt <ph name="IP_PROTECTION_NAME" /> uitgezet en kunnen gebruikers de functie niet aanzetten via de UI-instellingen.
+Als je het beleid toepast, wordt <ph name="IP_PROTECTION_NAME" /> aangezet en kunnen gebruikers de functie niet uitzetten via de UI-instellingen.
+Als je het beleid niet instelt, wordt <ph name="IP_PROTECTION_NAME" /> standaard aangezet en kunnen gebruikers de functie op hun apparaat beheren via de UI-instellingen.
+
+Enkele overwegingen voor bedrijven die <ph name="IP_PROTECTION_NAME" /> willen uitzetten:
+- DNS-lookups worden niet uitgevoerd voor verzoeken die via een proxy worden gestuurd. Dit kan van invloed zijn op op DNS gebaseerde monitoring of filtering.
+- Bedrijfsapps werken misschien niet goed als ze worden gebruikt in de incognitomodus als ze afhankelijk zijn van verzoeken naar domeinen (of subdomeinen van die domeinen) op de lijst met gemaskeerde domeinen (<ph name="MASKED_DOMAIN_LIST_URL" />) en als die verzoeken afkomstig moeten zijn van specifieke IP-adresbereiken.
+- Verkeer wordt in de incognitomodus onder bepaalde omstandigheden misschien niet via een proxy gestuurd, bijvoorbeeld als gebruikers de incognitomodus starten vanuit een Chrome-profiel waarmee ze niet zijn ingelogd. Over het algemeen moet de gebruiker zijn ingelogd bij Chrome met een persoonlijk Google-account als die de incognitomodus start.
+- De lijst met domeinen op de lijst met gemaskeerde domeinen kan in de loop van de tijd veranderen. Nieuwe versies worden automatisch naar gebruikers gestuurd. Ga naar <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" /> voor meer informatie over de lijst met gemaskeerde domeinen.
+
+Ga naar <ph name="IP_PROTECTION_README_URL" /> voor meer informatie over <ph name="IP_PROTECTION_NAME" />.
+
+<ph name="IP_PROTECTION_NAME" /> wordt niet eerder gelanceerd dan in M139.</translation>
 <translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.

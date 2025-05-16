@@ -533,6 +533,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3208260410153224535">Tu organización desactivó el acceso. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
 <translation id="3213807041830307252">Compra, identifica y traduce lo que ves con la cámara y la galería de fotos.</translation>
 <translation id="3214379938835224220">Saliste de tu cuenta como parte del restablecimiento de tu iPad. Presiona Continuar para acceder.</translation>
+<translation id="3218296450292600703">Acceder con tu cuenta administrada te ayuda a mantener la navegación relacionada con tu organización (incluidas las pestañas, el historial y las contraseñas) separada de la que realizas en otras plataformas</translation>
 <translation id="3224075676564434205">Las pestañas permanecerán abiertas en este dispositivo, pero se borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Para exportar las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -1484,6 +1485,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menú → Configuración → Formas de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7115051913071512405">Probar</translation>
 <translation id="7128693485119315539">Es posible que tu organización necesite ver y administrar los datos de navegación vinculados a tu cuenta administrada, como el historial de navegación y las contraseñas.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>

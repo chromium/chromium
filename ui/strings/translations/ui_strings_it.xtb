@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">Seleziona &amp;tutto</translation>
 <translation id="6346952829206698721">Incolla dagli appunti</translation>
 <translation id="6364916375976753737">Scorri a sinistra</translation>
+<translation id="63712816010840859">Se il display in uso non è un touchscreen, premi Esc.</translation>
 <translation id="6394627529324717982">Virgola</translation>
 <translation id="6397363302884558537">Interrompi comandi vocali</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 sec fa}other{# sec fa}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">Per uscire dalla calibrazione premi Esc.</translation>
 <translation id="6620110761915583480">Salva file</translation>
 <translation id="6699343763173986273">Traccia successiva contenuti multimediali</translation>
+<translation id="6738856801552481343">Se il display non è un touchscreen, premi Esc.</translation>
 <translation id="6807086321996342431">Colonna <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Interrompi contenuti multimediali</translation>
 <translation id="6845383723252244143">Seleziona cartella</translation>

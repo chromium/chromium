@@ -581,7 +581,6 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2949420361496057765">Press <ph name="MODIFIER" /> and click a link</translation>
 <translation id="2957159466053076448">You can turn off these features at any time in Settings. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Device audio</translation>
-<translation id="2960314608273155470">Capture mode, default is <ph name="SOURCE" /> <ph name="TYPE" />. Press tab for keyboard navigation.</translation>
 <translation id="2961963223658824723">Something went wrong. Try again in a few seconds.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Turn on microphone access?</translation>
@@ -2433,7 +2432,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8934418770423095813">Create Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# files}}</translation>
 <translation id="8936501819958976551">deactivated</translation>
-<translation id="8937312474322077653">In Screen Capture, set to <ph name="SOURCE" /> <ph name="TYPE" />. Press Tab to choose capture type. Press Space to select region. Press Enter to capture.</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>
 <translation id="8939855324412367560">Input audio is '<ph name="INPUT_DEVICE_NAME" />' and output audio is '<ph name="OUTPUT_DEVICE_NAME" />'. Go to Settings to change.</translation>
 <translation id="8940956008527784070">Battery low (<ph name="PERCENTAGE" />%)</translation>

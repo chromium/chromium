@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Цана на гэты тавар нядаўна знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
+<translation id="6220820548421939212">Так. Згаджаюся</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
 <translation id="6271513594716432922">Закрыць усе неактыўныя ўкладкі</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Дадаць укладку ў новую групу}one{Дадаць укладкі ў новую групу}few{Дадаць укладкі ў новую групу}many{Дадаць укладкі ў новую групу}other{Дадаць укладкі ў новую групу}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> водгук}one{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгук}few{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукі}many{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукаў}other{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгуку}}</translation>
 <translation id="7885132941432959125">Перамясціць укладку ўправа</translation>
+<translation id="788914896430720926">Выдаляць неактыўныя элементы з раздзела?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> колер не выбраны</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7961015016161918242">Ніколі</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Звесткі пра вашы дзеянні на гэтых укладках у рэжыме інкогніта будуць выдалены з прылады</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Створана <ph name="NUM_MONTHS_ONE" /> месяц таму}one{Створана <ph name="NUM_MONTHS_MANY" /> месяц таму}few{Створана <ph name="NUM_MONTHS_MANY" /> месяцы таму}many{Створана <ph name="NUM_MONTHS_MANY" /> месяцаў таму}other{Створана <ph name="NUM_MONTHS_MANY" /> месяца таму}}</translation>
 <translation id="8820741577754260431">Паказваць інфармацыю пра зніжэнне цэн на ўкладках</translation>
+<translation id="883379923675618699">Chrome аўтаматычна выдаляе з раздзела неактыўныя элементы, якімі вы не карысталіся на працягу трох месяцаў. Выключыць гэту функцыю можна ў любы час у наладах.</translation>
 <translation id="8887921976452567404">Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак".</translation>
 <translation id="8915916167043355778">Закрыць усе</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Перамясціць у новае акно}one{Перамясціць у іншае акно}few{Перамясціць у іншае акно}many{Перамясціць у іншае акно}other{Перамясціць у іншае акно}}</translation>

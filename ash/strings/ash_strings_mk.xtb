@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">Притиснете <ph name="MODIFIER" /> и кликнете на линк</translation>
 <translation id="2957159466053076448">Функцииве може да ги исклучите во „Поставки“ кога сакате. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Аудио од уредот</translation>
-<translation id="2960314608273155470">Режим на снимање. Стандардната поставка е „<ph name="TYPE" />“ (<ph name="SOURCE" />). Притиснете Tab за навигација со тастатура.</translation>
 <translation id="2961963223658824723">Нешто тргна наопаку. Обидете се повторно за неколку секунди.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Да се вклучи пристап до микрофонот?</translation>
@@ -2434,7 +2433,6 @@
 <translation id="8934418770423095813">Создај документ на Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
-<translation id="8937312474322077653">Во „Снимање на екранот“, поставете на <ph name="SOURCE" /> <ph name="TYPE" />. Притиснете Tab за да го изберете типот снимање. Притиснете Space за да го изберете регионот. Притиснете Enter за да снимате.</translation>
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>
 <translation id="8939855324412367560">Влезот за аудио е „<ph name="INPUT_DEVICE_NAME" />“, а излезот за аудио е „<ph name="OUTPUT_DEVICE_NAME" />“. Одете во „Поставки“ за да промените.</translation>
 <translation id="8940956008527784070">Слаба батерија (<ph name="PERCENTAGE" />%)</translation>

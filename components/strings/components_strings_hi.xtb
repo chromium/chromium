@@ -680,7 +680,6 @@
 <translation id="2161656808144014275">लेख संदेश</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
 <translation id="2164510882479075877">देखें कि <ph name="HOST_NAME" /> की स्पेलिंग गलत तो नहीं है.</translation>
-<translation id="2165700285977947082">Google Wallet से लॉयल्टी कार्ड की जानकारी अपने-आप भरने की सुविधा</translation>
 <translation id="2166049586286450108">पूरा एडमिन एक्सेस</translation>
 <translation id="2166378884831602661">यह साइट सुरक्षित कनेक्शन नहीं उपलब्ध करा सकती</translation>
 <translation id="2168151236314517198">एडमिन नीति के तहत, इस कॉन्टेंट की प्रिंटिंग को ब्लॉक किया गया</translation>
@@ -3053,7 +3052,6 @@
 <translation id="6272383483618007430">Google अपडेट</translation>
 <translation id="6278015583149890680">Google Drive और OneDrive</translation>
 <translation id="6280223929691119688">इस पते पर वितरित नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
-<translation id="628324801501145855">इसे पेमेंट के तरीकों की सेटिंग में जाकर मैनेज करें</translation>
 <translation id="6284292079994426700">26 x 38 इंच</translation>
 <translation id="6284449872909111707">टेक्स्ट और फटाफट मैसेज सेवा</translation>
 <translation id="6284517535531159884">वैरिएशन सीड टाइप</translation>
@@ -4256,6 +4254,7 @@
 <translation id="833262891116910667">हाइलाइट करें</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> भाषा के पेज का अनुवाद नहीं किया जाएगा</translation>
 <translation id="8339275256517065202">Touch ID का इस्तेमाल करके खरीदारी पूरी करें</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, ज़रूरी है</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">वर्चुअल कार्ड रजिस्टर करने की सुविधा पूरी स्क्रीन पर खुली है</translation>

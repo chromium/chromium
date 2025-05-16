@@ -208,6 +208,7 @@
 <translation id="1928618076168182477">ভিজুৱেল ভিউ দেখুৱাই থকা হৈছে</translation>
 <translation id="1928696683969751773">আপডে’টসমূহ</translation>
 <translation id="1939549834451474504">Google Play সেৱা উপলব্ধ নোহোৱাৰ বাবে পাছৱৰ্ডসমূহে সোনকালে কাম কৰা বন্ধ কৰিব। সেইসমূহে কাম কৰা বন্ধ কৰাৰ আগতে আপুনি আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ প্ৰতিলিপি কৰিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="1943398124995840148">আপোনাৰ খোলা টেবসমূহৰ এতিয়া XRত এটা আপডে’ট কৰা ৰূপ আছে</translation>
 <translation id="1943432128510653496">পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="1944535645109964458">কোনো পাছকী উপলব্ধ নহয়</translation>
 <translation id="1957557050935255529">PDF ল’ড কৰি থকা হৈছে…</translation>
@@ -435,6 +436,7 @@
 <translation id="2979639724566107830">নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="2981364137500752533">আপোনাৰ ৫ খনলৈকে ৱিণ্ড’ থাকিব পাৰে।</translation>
 <translation id="2983102365694924129">এটা ছাইটত আপোনাৰ কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি। এই ছেটিংটো অফ হৈ আছে।</translation>
+<translation id="2983398917942897288">নিষ্ক্ৰিয় হৈ আছে (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Googleত কৰা সন্ধানত আশে-পাশে থকা পাঠ ব্যৱহাৰ কৰক</translation>
 <translation id="2988638966064514052">আপোনাৰ পাছৱর্ডসমূহ অধিক শক্তিশালী কৰক</translation>
 <translation id="2989523299700148168">শেহতীয়াকৈ চোৱা</translation>
@@ -467,6 +469,7 @@
 <translation id="314939179385989105">Chromeৰ গৃহপৃষ্ঠা</translation>
 <translation id="3158667104057012316">মেনুৱেল ক্ৰম অনুসৰি সজাই থকা হৈছে</translation>
 <translation id="3159335509547415276">অৱৰোধ কৰা একাউণ্টৰ বিষয়ে জানক</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, এটা নতুন টেবত খোলে</translation>
 <translation id="3166827708714933426">টেব আৰু ৱিণ্ড’ৰ শ্বৰ্টকাট</translation>
 <translation id="316694332262407393">ইয়াত ইতিমধ্যে Chrome চলি আছে।</translation>
 <translation id="3167258285411721858">আপুনি <ph name="HOST_NAME" />ৰ ম’বাইলৰ ছাইটৰ বাবে অনুৰোধ কৰিব পাৰে</translation>
@@ -791,6 +794,7 @@
 <translation id="469286762610133730">অধিক ভাল সমল পাওক</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
 <translation id="4698061626562952596">আপোনাৰ নিস্ক্ৰিয় টেবসমূহ ইয়াত পৰ্যালোচনা কৰক</translation>
+<translation id="4698757800236023795">সক্ৰিয় হৈ আছে (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">কেশ্ব প্ৰতিচ্ছবি আৰু ফাইল</translation>
 <translation id="4710167854527459075">নতুন অনুসৰি সজাওক</translation>
 <translation id="4718044610319080485">AI সহায়কক আহ্বান জনায়</translation>

@@ -1170,6 +1170,7 @@
 <translation id="1796588414813960292">साउंडची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="1797117170091578105">तुमच्या Chromebook चा कीबोर्ड वापरून प्ले करा. तुम्ही विशिष्ट कृतींसाठी की कस्टमाइझ करू शकता.</translation>
 <translation id="1798335429200675510">Google AI वापरून मसुदा तयार करणे किंवा सध्याचे काम सुधारित करणे यासाठी टेक्स्ट बॉक्सवर राइट-क्लिक करा. सध्या मर्यादित उपलब्धता आहे.</translation>
+<translation id="1799852120691957794">तुमच्या खाजगी सेशनमधील विंडो रिस्टोअर करू शकत नाही</translation>
 <translation id="180203835522132923">Search + O, त्यानंतर W</translation>
 <translation id="1802624026913571222">कव्हर बंद केल्यावर स्लीप मोड ऑन करा</translation>
 <translation id="1802687198411089702">पेज प्रतिसाद देत नाही. तुम्ही वाट पाहू शकता किंवा बाहेर पडू शकता.</translation>
@@ -2365,6 +2366,7 @@
 <translation id="2610374175948698697">तुमच्या डिव्हाइसवरील फाइल किंवा फोल्डर पाहू शकते</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">तुमच्या Microsoft खात्यामध्ये साइन इन करून पुन्हा प्रयत्न करा</translation>
+<translation id="2611702650078660078">एरर आली:</translation>
 <translation id="2611776654555141051">आयत टूल</translation>
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="261305050785128654">तुम्ही बोलता त्या भाषा वेबसाइटना कळवा. शक्य असेल, तेव्हा ते त्या भाषांमध्ये आशय दाखवतील.</translation>
@@ -2725,6 +2727,7 @@
 <translation id="2849936225196189499">गंभीर</translation>
 <translation id="285033512555869047">बंद आहे</translation>
 <translation id="2850541429955027218">थीम जोडा</translation>
+<translation id="2852045827873867442">इंटरनेट कनेक्शन आवश्यक आहे.</translation>
 <translation id="285237063405807022">(लोड करत आहे)</translation>
 <translation id="2853121255651601031">पासवर्ड सेव्ह केला</translation>
 <translation id="2855243985454069333">सर्व सिंक केलेल्या डिव्हाइसवरून इतिहास हटवते</translation>
@@ -5437,6 +5440,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • १ डुप्लिकेट</translation>
 <translation id="4780321648949301421">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
 <translation id="4780558987886269159">ऑफिससाठी</translation>
+<translation id="4781633367688946589">नवीन सेशनमध्ये पुढे सुरू ठेवा</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ला तुमच्या डिजिटल वॉलेटमधून वैयक्तिक माहिती वापरायची आहे.</translation>
 <translation id="4785719467058219317">तुम्ही या वेबसाइटवर नोंदणीकृत नसलेली सिक्युरिटी की वापरत आहात</translation>
 <translation id="4785914069240823137">क्रॉप रद्द करा</translation>

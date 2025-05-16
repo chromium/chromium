@@ -2301,6 +2301,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2652747206827086936">停用 NTP SharePoint 和 OneDrive 文件卡片</translation>
 <translation id="2656559539624760733">不使用 Chrome 根存储区。</translation>
 <translation id="2658653824183107970">使用旧版 <ph name="CORS" /> 实现方案（而非新版 <ph name="CORS" />）</translation>
+<translation id="2659581762274047663">启用 <ph name="PRODUCT_NAME" /> Service</translation>
 <translation id="2660846099862559570">从不使用代理</translation>
 <translation id="2661628029848851543">允许受管理的账号的所有使用情况</translation>
 <translation id="2664391398878045611">“新标签页”页面将不会显示中间槽通知（即使有）</translation>
@@ -2937,6 +2938,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3143203373436771188">找到由<ph name="BASIC_EDITOR_NAME" />处理的 Office 文档后，在<ph name="BASIC_EDITOR_NAME" />中打开它们</translation>
 <translation id="3144173889708944482">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="3146711617256415776">不允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
+<translation id="315013437951136266">启用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
 <translation id="3150351525324499342">默认情况下不在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标，但允许用户选择是否显示</translation>
 <translation id="3152135410085709340">允许这些网站使用 PDF 查看器对 file:// 网址进行本地文件访问</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
@@ -4122,6 +4124,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 您可在这两项政策中任选其一，但此政策很快就会被弃用，所以您应首选 <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> 政策。
 这两者对浏览器行为的影响相同。</translation>
 <translation id="4016700865356669962">如果此政策已启用，用户便能使用桌面布局模板。如果此政策已停用或未设置，则意味着这些模板不可用。</translation>
+<translation id="4018536413833147396">允许用户在其设备上开启或关闭 <ph name="IP_PROTECTION_NAME" />设置。该功能默认处于启用状态。</translation>
 <translation id="4020682745012723568">Android 应用无法访问已转移到用户个人资料中的 Cookie。</translation>
 <translation id="4021684548211845008">禁止在专注模式下播放音乐。</translation>
 <translation id="4025500273782820766">允许用户在系统显示外部协议对话框时选择“始终允许”，以跳过后续的确认提示</translation>
@@ -4719,6 +4722,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 
       此政策的值应以天为单位。</translation>
 <translation id="4525328580251166229">控制与 Bruschetta 子系统相关的政策。</translation>
+<translation id="4528981768990874684">停用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
 <translation id="453031441196755904">此政策已被弃用。</translation>
 <translation id="4531706050939927436">您可以通过 Google Play 从 Google 管理控制台中强制安装 Android 应用。这些应用不会使用此政策。</translation>
 <translation id="4534500438517478692">Android 限制名称：</translation>
@@ -7536,6 +7540,23 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="6394350458541421998">此政策从 <ph name="PRODUCT_OS_NAME" />版本 29 起开始弃用。请改用 PresentationScreenDimDelayScale 政策。</translation>
+<translation id="6397424663361748439">此政策用于控制是否应启用 <ph name="PRIVACY_SANDBOX_NAME" /> <ph name="IP_PROTECTION_NAME" />功能。
+
+<ph name="IP_PROTECTION_NAME" />功能可限制用户在无痕模式下浏览时发出的某些第三方网络请求使用用户的原始 IP 地址，从而加强无痕模式浏览会话期间的跨网站跟踪防护。
+
+如果已停用此政策，<ph name="IP_PROTECTION_NAME" />将停用，而且用户无法通过界面设置启用此功能。
+如果已启用此政策，<ph name="IP_PROTECTION_NAME" />将会启用，而且用户无法通过界面设置停用此功能。
+如果未设置此政策，<ph name="IP_PROTECTION_NAME" />将默认处于启用状态，而且用户将能够在其设备上通过界面设置控制此功能。
+
+关于企业是否应停用 <ph name="IP_PROTECTION_NAME" />的注意事项包括：
+- 对于通过代理传输的请求，系统不会执行 DNS 查找，这可能会影响基于 DNS 的监控或过滤。
+- 如果企业应用依赖于对掩码网域列表 (<ph name="MASKED_DOMAIN_LIST_URL" />) 中的某些网域（或这些网域的子网域）的请求，并且要求这些请求来自特定 IP 地址范围，那么在无痕模式下使用时，这些应用可能会出现功能异常。
+- 在特定条件下，无痕模式下的流量可能不会通过代理传输，例如当用户通过未登录的 Chrome 个人资料启动无痕模式时。一般来说，此功能要求用户在启动无痕模式时，已使用个人 Google 账号登录 Chrome。
+- 掩码网域列表中的网域可能会随时间更新，新版本会自动推送给用户。如需详细了解掩码网域列表，请参阅：<ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />。
+
+如需详细了解 <ph name="IP_PROTECTION_NAME" />，请参阅：<ph name="IP_PROTECTION_README_URL" />。
+
+<ph name="IP_PROTECTION_NAME" />最快会在 M139 中推出。</translation>
 <translation id="6397588391180665797">报告已注册的设备上的用户网络配置。
 
       如果此政策设为 false，系统将不会报告这些信息。

@@ -581,7 +581,6 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="2949420361496057765">Stlačte <ph name="MODIFIER" /> a kliknite na odkaz</translation>
 <translation id="2957159466053076448">Tieto funkcie môžete kedykoľvek vypnúť v Nastaveniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Zvuk zariadenia</translation>
-<translation id="2960314608273155470">Režim snímania, predvolené nastavenie je <ph name="SOURCE" /> <ph name="TYPE" />. Ak chcete používať navigáciu klávesnicou, stlačte kláves Tab.</translation>
 <translation id="2961963223658824723">Vyskytol sa problém. Skúste to znova o niekoľko minút.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Chcete zapnúť prístup k mikrofónu?</translation>
@@ -2432,7 +2431,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8934418770423095813">Vytvoriť dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 súbor}few{# súbory}many{# files}other{# súborov}}</translation>
 <translation id="8936501819958976551">deaktivované</translation>
-<translation id="8937312474322077653">V zázname obrazovky nastavte na <ph name="SOURCE" /> <ph name="TYPE" />. Stlačením klávesa Tab vyberte typ záznamu. Stlačením medzerníka vyberte región. Stlačením klávesa Enter vytvorte záznam.</translation>
 <translation id="8938800817013097409">Zariadenie USB-C (pravý port vzadu)</translation>
 <translation id="8939855324412367560">Zvukový vstup je <ph name="INPUT_DEVICE_NAME" /> a zvukový výstup je <ph name="OUTPUT_DEVICE_NAME" />. Zmeny môžete vykonať v Nastaveniach.</translation>
 <translation id="8940956008527784070">Kapacita batérie je nízka (<ph name="PERCENTAGE" /> %)</translation>

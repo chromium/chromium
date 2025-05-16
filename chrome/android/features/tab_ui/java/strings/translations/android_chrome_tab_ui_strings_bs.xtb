@@ -123,7 +123,7 @@
 <translation id="6054741997831917303">Cijena ove stavke je nedavno pala sa <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Svi duplikati kartica će se sada arhivirati s izuzetkom posljednje korištene kopije.</translation>
 <translation id="6193448654517602979">Odaberite kartice</translation>
-<translation id="6220820548421939212">Da. U redu</translation>
+<translation id="6220820548421939212">Da. Pristajem</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6271513594716432922">Zatvori sve neaktivne kartice</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj karticu u novu grupu}one{Dodaj kartice u novu grupu}few{Dodaj kartice u novu grupu}other{Dodaj kartice u novu grupu}}</translation>
@@ -172,7 +172,7 @@
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocjena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzija}one{Ocjena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}few{Ocjena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzije}other{Ocjena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}}</translation>
 <translation id="7885132941432959125">Pomjeranje kartice udesno</translation>
-<translation id="788914896430720926">Želite li da neaktivni odjeljak bude uredan?</translation>
+<translation id="788914896430720926">Organizirati neaktivni odjeljak?</translation>
 <translation id="7939917283308035850">Nije odabrano: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7961015016161918242">Nikada</translation>
@@ -199,7 +199,7 @@
 <translation id="8730999928494395583">Vaša aktivnost na ovim anonimnim karticama će se ukloniti s ovog uređaja</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Kreirano je prije <ph name="NUM_MONTHS_ONE" /> mjeseca}one{Kreirano je prije <ph name="NUM_MONTHS_MANY" /> mjeseca}few{Kreirano je prije <ph name="NUM_MONTHS_MANY" /> mjeseca}other{Kreirano je prije <ph name="NUM_MONTHS_MANY" /> mjeseci}}</translation>
 <translation id="8820741577754260431">Vidite pad cijena na svojim karticama</translation>
-<translation id="883379923675618699">Chrome automatski zatvara stavke u neaktivnom odjeljku koje niste koristili tri mjeseca. To možete isključiti u postavkama.</translation>
+<translation id="883379923675618699">Chrome automatski zatvara stavke u neaktivnom odjeljku koje niste koristili 3 mjeseca. Ovo možete isključiti sada ili bilo kada u Postavkama.</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica.</translation>
 <translation id="8915916167043355778">Zatvori sve</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premještanje u novi prozor}one{Premještanje u drugi prozor}few{Premještanje u drugi prozor}other{Premještanje u drugi prozor}}</translation>

@@ -533,6 +533,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3208260410153224535">Organizația a dezactivat conectarea. Marcajele, parolele și alte date noi vor fi salvate numai pe acest dispozitiv.</translation>
 <translation id="3213807041830307252">Cumpără, tradu și identifică ceea ce vezi cu ajutorul camerei foto și al galeriei foto.</translation>
 <translation id="3214379938835224220">Te-ai deconectat în cadrul resetării dispozitivului iPad. Atinge Continuă pentru a te conecta.</translation>
+<translation id="3218296450292600703">Dacă te conectezi cu contul gestionat, poți să separi navigarea asociată organizației tale (inclusiv filele, istoricul și parolele) de celelalte activități de navigare</translation>
 <translation id="3224075676564434205">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Pentru a exporta parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="3227137524299004712">Microfon</translation>
@@ -1484,6 +1485,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7102005569666697658">Se descarcă… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meniu → Setări → Metode de plată</translation>
 <translation id="7108338896283013870">Ascunde</translation>
+<translation id="7115051913071512405">Încercați</translation>
 <translation id="7128693485119315539">Organizația ta poate avea nevoie să vadă și să gestioneze datele de navigare asociate contului tău gestionat, cum ar fi istoricul de navigare și parolele.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera foto nu este disponibilă</translation>

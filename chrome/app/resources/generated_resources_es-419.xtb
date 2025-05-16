@@ -1159,6 +1159,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1796588414813960292">No se habilitarán las funciones que necesitan sonido.</translation>
 <translation id="1797117170091578105">Juega con el teclado de la Chromebook. Puedes personalizar las teclas para que realicen acciones específicas.</translation>
 <translation id="1798335429200675510">Haz clic con el botón derecho en el cuadro de texto para crear un borrador o mejorar el trabajo existente con la tecnología de IA de Google. Actualmente tiene disponibilidad limitada.</translation>
+<translation id="1799852120691957794">No se pueden restablecer las ventanas de tu sesión anterior</translation>
 <translation id="180203835522132923">Tecla de búsqueda + O y, luego, W</translation>
 <translation id="1802624026913571222">Suspender cuando se cierra la tapa</translation>
 <translation id="1802687198411089702">La página no responde. Puedes esperar o salir.</translation>
@@ -2350,6 +2351,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2610374175948698697">Pueden ver archivos o carpetas del dispositivo</translation>
 <translation id="2610780100389066815">Firma de lista de confianza de Microsoft</translation>
 <translation id="261114180663074524">Accede a tu cuenta de Microsoft y vuelve a intentarlo</translation>
+<translation id="2611702650078660078">Se produjo un error</translation>
 <translation id="2611776654555141051">Herramienta de rectángulo</translation>
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas en los que hablas. De ser posible, los sitios mostrarán contenido en esos idiomas.</translation>
@@ -2710,6 +2712,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2849936225196189499">Crítico</translation>
 <translation id="285033512555869047">Cerrado</translation>
 <translation id="2850541429955027218">Agregar tema</translation>
+<translation id="2852045827873867442">Se requiere una conexión a Internet.</translation>
 <translation id="285237063405807022">(cargando)</translation>
 <translation id="2853121255651601031">Se guardó la contraseña</translation>
 <translation id="2855243985454069333">Borra el historial de todos los dispositivos sincronizados</translation>
@@ -3162,6 +3165,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3188465121994729530">Promedio móvil</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 contraseña y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google.}other{{PASSWORD_COUNT} contraseñas y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google.}}</translation>
+<translation id="319044078641740013">Para volver fácilmente a los sitios que visitaste, sincroniza tu historial y tus pestañas con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Se guardó la contraseña</translation>
 <translation id="3192586965067888278">Describe el error de forma detallada. Se enviarán los comentarios a Google para su revisión humana y podrán usarse para mejorar o desarrollar productos y servicios de Google.</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
@@ -5423,6 +5427,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplicado</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
 <translation id="4780558987886269159">Para el trabajo</translation>
+<translation id="4781633367688946589">Continuar a la nueva sesión</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quiere usar información personal de tu billetera digital.</translation>
 <translation id="4785719467058219317">Estás usando una llave de seguridad que no se registró con este sitio web</translation>
 <translation id="4785914069240823137">Cancelar recorte</translation>
@@ -10334,6 +10339,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8280848878018088610">Olas rompiendo en el mar, con una ciudad fantástica y un castillo en el fondo, en un ambiente oscuro.</translation>
 <translation id="828180235270931531">Otras impresoras disponibles</translation>
 <translation id="8281886186245836920">Omitir</translation>
+<translation id="8283802069507225582">Para retomar tu actividad desde donde la dejaste en otros dispositivos, sincroniza tu historial y tus pestañas con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Acceder</translation>
@@ -11011,6 +11017,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8754200782896249056">&lt;p&gt;Al ejecutar <ph name="PRODUCT_NAME" /> en un entorno admitido de escritorio, se utiliza la configuración proxy del sistema. Sin embargo, o bien el sistema no es admitido, o hubo un problema al lanzar la configuración del sistema.&lt;/p&gt;
 
           &lt;p&gt;Aún puedes establecer la configuración mediante la línea de comando. Consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obtener más información sobre etiquetas y variables del entorno.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Para ver las pestañas abiertas de tus otras computadoras y teléfonos, sincroniza el historial y las pestañas con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Realizar tareas de seguridad para tu organización, como administrar las claves y los certificados almacenados en el dispositivo</translation>
 <translation id="875532100880844232">Para <ph name="DEVICE_NAME" />, elige una acción para cada tecla</translation>
 <translation id="8755376271068075440">&amp;Mayor</translation>

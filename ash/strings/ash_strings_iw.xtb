@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">הקשה על <ph name="MODIFIER" /> ולחיצה על קישור</translation>
 <translation id="2957159466053076448">אפשר להשבית את התכונות האלה בכל שלב בהגדרות. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">אודיו מהמכשיר</translation>
-<translation id="2960314608273155470">‏מצב צילום מסך, ברירת המחדל היא <ph name="SOURCE" /> <ph name="TYPE" />. צריך להקיש על Tab כדי לנווט באמצעות המקלדת.</translation>
 <translation id="2961963223658824723">משהו השתבש. אפשר לנסות שוב בעוד כמה שניות.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">להפעיל את הגישה למיקרופון?</translation>
@@ -2435,7 +2434,6 @@
 <translation id="8934418770423095813">‏יצירה של מסמך Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{קובץ אחד}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="8936501819958976551">מושבתת</translation>
-<translation id="8937312474322077653">‏בצילום מסך, צריך להגדיר את האפשרות <ph name="SOURCE" /> <ph name="TYPE" />. אפשר להקיש על Tab כדי לבחור את סוג הצילום. כדי לבחור אזור, מקישים על מקש הרווח. מקישים על Enter כדי לצלם.</translation>
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
 <translation id="8939855324412367560">מקור קלט האודיו הוא '<ph name="INPUT_DEVICE_NAME" />' ומקור פלט האודיו הוא '<ph name="OUTPUT_DEVICE_NAME" />'. אפשר לשנות את זה בהגדרות.</translation>
 <translation id="8940956008527784070">‏סוללה חלשה (‎<ph name="PERCENTAGE" />%‎)</translation>

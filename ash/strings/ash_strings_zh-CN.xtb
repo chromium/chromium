@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">在按住 <ph name="MODIFIER" /> 的同时点击链接</translation>
 <translation id="2957159466053076448">您随时可以在“设置”中关闭这些功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">设备音频</translation>
-<translation id="2960314608273155470">截屏/录屏模式，默认为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键即可使用键盘进行导航。</translation>
 <translation id="2961963223658824723">出了点问题。请过几秒钟后重试。</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">开启麦克风使用权限？</translation>
@@ -2431,7 +2430,6 @@
 <translation id="8934418770423095813">创建 Google 文档</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="8936501819958976551">已停用</translation>
-<translation id="8937312474322077653">在屏幕截取中，将其设置为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键可选择截取类型。按空格键可选择区域。按 Enter 键可截取。</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8939855324412367560">音频输入设备为“<ph name="INPUT_DEVICE_NAME" />”，音频输出设备为“<ph name="OUTPUT_DEVICE_NAME" />”。如需更改，请前往“设置”。</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>

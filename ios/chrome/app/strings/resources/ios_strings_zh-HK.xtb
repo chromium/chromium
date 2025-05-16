@@ -533,6 +533,7 @@
 <translation id="3208260410153224535">你的機構已關閉登入功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
 <translation id="3213807041830307252">使用相機和相片購物、翻譯及識別所見內容。</translation>
 <translation id="3214379938835224220">您已在重設 iPad 時登出，輕按下方的 [繼續] 即可登入。</translation>
+<translation id="3218296450292600703">登入受管帳戶後，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開。</translation>
 <translation id="3224075676564434205">分頁會在此裝置上保持開啟，但群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除。</translation>
 <translation id="3224641773458703735">如要匯出密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="3227137524299004712">麥克風</translation>
@@ -1484,6 +1485,7 @@
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">選單 → 設定 → 付款方法</translation>
 <translation id="7108338896283013870">隱藏</translation>
+<translation id="7115051913071512405">試試看</translation>
 <translation id="7128693485119315539">機構可能要查看和管理與受管帳戶關聯的瀏覽資料 (例如瀏覽記錄和密碼)。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">無法使用相機</translation>

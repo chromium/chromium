@@ -581,7 +581,6 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="2949420361496057765">Pwyswch <ph name="MODIFIER" /> a chliciwch ddolen</translation>
 <translation id="2957159466053076448">Gallwch ddiffodd y nodweddion hyn ar unrhyw adeg yn y Gosodiadau. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Sain dyfais</translation>
-<translation id="2960314608273155470">Diofyn y Modd Tynnu yw <ph name="SOURCE" /> <ph name="TYPE" />. Pwyswch Tab am lywio bysellfwrdd.</translation>
 <translation id="2961963223658824723">Aeth rhywbeth o'i le. Rhowch gynnig arall arni mewn ychydig eiliadau.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Troi mynediad meicroffon ymlaen?</translation>
@@ -2433,7 +2432,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8934418770423095813">Creu Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="8936501819958976551">wedi dadweithredu</translation>
-<translation id="8937312474322077653">Yn y gosodiadau tynnu sgrinlun, gosodwch i <ph name="SOURCE" /> <ph name="TYPE" />. Pwyswch Tab i ddewis math o sgrinlun. Pwyswch Space i ddewis ardal. Pwyswch Enter i dynnu sgrinlun.</translation>
 <translation id="8938800817013097409">Dyfais USB-C (porth de yn y cefn)</translation>
 <translation id="8939855324412367560">Sain mewnbwn yw "<ph name="INPUT_DEVICE_NAME" />" a sain allbwn yw "<ph name="OUTPUT_DEVICE_NAME" />". Ewch i'r Gosodiadau i newid.</translation>
 <translation id="8940956008527784070">Mae'r batri'n isel (<ph name="PERCENTAGE" />%)</translation>

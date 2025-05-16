@@ -1162,6 +1162,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1797117170091578105">Speel met het toetsenbord van je Chromebook. Je kunt toetsen aan specifieke acties toewijzen.</translation>
 <translation id="1798335429200675510">Klik met de rechtermuisknop in een tekstvak om een concept te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google. Deze functie is op dit moment beperkt beschikbaar.</translation>
+<translation id="1799852120691957794">Kan vensters van je vorige sessie niet herstellen</translation>
 <translation id="180203835522132923">Zoeken + O, dan W</translation>
 <translation id="1802624026913571222">Slaapstand als de klep wordt gesloten</translation>
 <translation id="1802687198411089702">De pagina reageert niet. Je kunt wachten tot deze reageert of de pagina afsluiten.</translation>
@@ -2353,6 +2354,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2610374175948698697">Kan bestanden of mappen op je apparaat bekijken</translation>
 <translation id="2610780100389066815">Microsoft-vertrouwenslijsthandtekening</translation>
 <translation id="261114180663074524">Log in op je Microsoft-account en probeer het opnieuw</translation>
+<translation id="2611702650078660078">Er is een fout opgetreden</translation>
 <translation id="2611776654555141051">Tool Rechthoek</translation>
 <translation id="2612676031748830579">Kaartnummer</translation>
 <translation id="261305050785128654">Laat websites weten welke talen je spreekt. Waar mogelijk tonen ze content in die talen.</translation>
@@ -2713,6 +2715,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2849936225196189499">Kritiek</translation>
 <translation id="285033512555869047">Gesloten</translation>
 <translation id="2850541429955027218">Thema toevoegen</translation>
+<translation id="2852045827873867442">Internetverbinding vereist.</translation>
 <translation id="285237063405807022">(laden)</translation>
 <translation id="2853121255651601031">Wachtwoord opgeslagen</translation>
 <translation id="2855243985454069333">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten verwijderd.</translation>
@@ -5424,6 +5427,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplicaat</translation>
 <translation id="4780321648949301421">Bewaar pagina als...</translation>
 <translation id="4780558987886269159">Voor het werk</translation>
+<translation id="4781633367688946589">Doorgaan naar nieuwe sessie</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> wil persoonlijke informatie uit je digitale portemonnee gebruiken.</translation>
 <translation id="4785719467058219317">Je gebruikt een beveiligingssleutel die niet is geregistreerd voor deze website</translation>
 <translation id="4785914069240823137">Bijsnijden annuleren</translation>

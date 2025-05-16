@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
+<translation id="6220820548421939212">હા. હું સંમત છું</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6271513594716432922">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{નવા ગ્રૂપમાં ટૅબ ઉમેરો}one{નવા ગ્રૂપમાં ટૅબ ઉમેરો}other{નવા ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7885132941432959125">ટૅબને જમણે ખસેડો</translation>
+<translation id="788914896430720926">તમારા નિષ્ક્રિય વિભાગને સુઘડ રાખીએ?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> પસંદ કરેલો નથી</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">આ ડિવાઇસમાંથી આ છૂપા ટૅબમાંની તમારી પ્રવૃત્તિ કાઢી નાખવામાં આવશે</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> મહિના પહેલાં બનાવ્યું}one{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}other{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}}</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>
+<translation id="883379923675618699">Chrome નિષ્ક્રિય વિભાગમાંની આઇટમને ઑટોમૅટિક રીતે બંધ કરે છે, જેનો તમારા 3 મહિનામાં ઉપયોગ ન કર્યો હોય. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.</translation>
 <translation id="8887921976452567404">તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે.</translation>
 <translation id="8915916167043355778">બધા બંધ કરો</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{નવી વિન્ડો પર ખસેડો}one{અન્ય વિન્ડો પર ખસેડો}other{અન્ય વિન્ડો પર ખસેડો}}</translation>

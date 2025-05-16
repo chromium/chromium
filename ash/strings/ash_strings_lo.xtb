@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">ກົດ <ph name="MODIFIER" /> ແລ້ວຄລິກລິ້ງ</translation>
 <translation id="2957159466053076448">ທ່ານສາມາດປິດຄຸນສົມບັດເຫຼົ່ານີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ສຽງຈາກອຸປະກອນ</translation>
-<translation id="2960314608273155470">ໂໝດບັນທຶກ, ຄ່າເລີ່ມຕົ້ນແມ່ນ <ph name="SOURCE" /> <ph name="TYPE" />. ກົດແຖບສຳລັບການນຳທາງແປ້ນພິມ.</translation>
 <translation id="2961963223658824723">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນອີກສອງສາມວິນາທີ.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">ເປີດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນບໍ?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">ສ້າງ Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ໄຟລ໌}other{# ໄຟລ໌}}</translation>
 <translation id="8936501819958976551">ປິດນຳໃຊ້ແລ້ວ</translation>
-<translation id="8937312474322077653">ໃນການຖ່າຍຮູບໜ້າຈໍ, ໃຫ້ຕັ້ງເປັນ <ph name="SOURCE" /> <ph name="TYPE" />. ກົດແຖບເພື່ອເລືອກປະເພດການຖ່າຍຮູບ. ກົດ Space ເພື່ອເລືອກພາກພື້ນ. ກົດ Enter ເພື່ອຖ່າຍຮູບ.</translation>
 <translation id="8938800817013097409">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານ​ຂວາ​ຢູ່​ເບື້ອງ​ຫຼັງ)</translation>
 <translation id="8939855324412367560">ສຽງອິນພຸດແມ່ນ "<ph name="INPUT_DEVICE_NAME" />" ແລະ ສຽງເອົ້າພຸດແມ່ນ "<ph name="OUTPUT_DEVICE_NAME" />". ເຂົ້າໄປການຕັ້ງຄ່າເພື່ອປ່ຽນແປງ.</translation>
 <translation id="8940956008527784070">ແບັດເຕີຣີອ່ອນ (<ph name="PERCENTAGE" />%)</translation>

@@ -679,7 +679,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2162620598375156287">Nyt <ph name="CURRENT_PRICE" /> osoitteessa <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Tarkista, sisältääkö <ph name="HOST_NAME" /> kirjoitusvirheitä.</translation>
-<translation id="2165700285977947082">Täytä kanta-asiakaskortit automaattisesti Google Walletista</translation>
 <translation id="2166049586286450108">Järjestelmänvalvojan täydet käyttöoikeudet</translation>
 <translation id="2166378884831602661">Tämä sivusto ei voi tarjota suojattua yhteyttä</translation>
 <translation id="2168151236314517198">Järjestelmänvalvojakäytäntö on estänyt tämän sisällön tulostamisen</translation>
@@ -3054,7 +3053,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6272383483618007430">Google-päivitys</translation>
 <translation id="6278015583149890680">Google Drive ja OneDrive</translation>
 <translation id="6280223929691119688">Toimitus ei onnistu tähän osoitteeseen. Valitse eri osoite.</translation>
-<translation id="628324801501145855">Muokkaa maksutapa-asetuksista</translation>
 <translation id="6284292079994426700">26 x 38 tuumaa</translation>
 <translation id="6284449872909111707">Tekstiviestit ja pikaviestit</translation>
 <translation id="6284517535531159884">Muunnelmien lähdetyyppi</translation>
@@ -4257,6 +4255,7 @@ Lisätietoja:
 <translation id="833262891116910667">Korosta</translation>
 <translation id="8339163506404995330">Kielellä <ph name="LANGUAGE" /> kirjoitettuja sivuja ei käännetä.</translation>
 <translation id="8339275256517065202">Suorita ostos loppuun Touch ID:n avulla</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, vaaditaan</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtuaalikortin rekisteröinti avattu koko näytön kokoisena</translation>

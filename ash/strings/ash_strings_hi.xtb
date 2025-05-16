@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> दबाएं और किसी लिंक पर क्लिक करें</translation>
 <translation id="2957159466053076448">सेटिंग में जाकर, इन सुविधाओं को किसी भी समय बंद किया जा सकता है. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">डिवाइस का ऑडियो</translation>
-<translation id="2960314608273155470">कैप्चर मोड में, <ph name="SOURCE" /> <ph name="TYPE" /> डिफ़ॉल्ट के तौर पर सेट है. कीबोर्ड नेविगेशन के लिए, Tab दबाएं.</translation>
 <translation id="2961963223658824723">कुछ गड़बड़ी हो गई. कुछ सेकंड में फिर से कोशिश करें.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">माइक्रोफ़ोन का ऐक्सेस देना है?</translation>
@@ -2434,7 +2433,6 @@
 <translation id="8934418770423095813">Google दस्तावेज़ बनाएं</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="8936501819958976551">बंद की गई</translation>
-<translation id="8937312474322077653">स्क्रीन कैप्चर में, <ph name="SOURCE" /> <ph name="TYPE" /> पर सेट करें. कैप्चर का टाइप चुनने के लिए, tab दबाएं. देश/इलाका चुनने के लिए space दबाएं. कैप्चर करने के लिए enter दबाएं.</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8939855324412367560">इनपुट ऑडियो "<ph name="INPUT_DEVICE_NAME" />" है और आउटपुट ऑडियो "<ph name="OUTPUT_DEVICE_NAME" />" है. इन्हें बदलने के लिए सेटिंग पर जाएं.</translation>
 <translation id="8940956008527784070">बैटरी कम (<ph name="PERCENTAGE" />%)</translation>

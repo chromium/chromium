@@ -4616,6 +4616,7 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 Si cette règle est désactivée, les fichiers PDF sont ouverts, sauf si les utilisateurs ont désactivé le plug-in PDF.
 
 Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si cette règle n'est pas configurée, les utilisateurs peuvent choisir d'ouvrir le PDF en externe ou non.</translation>
+<translation id="4413764344717830250">Contrôler la visibilité de l'attribution de l'extension sur la page "Nouvel onglet" des navigateurs gérés</translation>
 <translation id="4415603335307944578">Si cette règle est définie sur "True" ou n'est pas configurée, le navigateur affiche la page de bienvenue à chaque premier lancement suivant une mise à jour de l'OS.
 
       Si cette règle est définie sur "False", le navigateur n'affiche pas la page de bienvenue à chaque premier lancement suivant une mise à jour de l'OS.</translation>
@@ -6528,6 +6529,11 @@ Pour en savoir plus, veuillez consulter <ph name="DEFAULT_DIRECT_SOCKETS_SETTING
 <translation id="5670249935663090320">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> est activé. Les utilisateurs pourront le lancer depuis le menu de l'application, les menus contextuels des pages, les commandes multimédias sur les sites Web compatibles Cast et l'icône Cast de la barre d'outils (si elle est affichée).
 
 Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.</translation>
+<translation id="5671392367521500075">Cette règle contrôle la visibilité de l'attribution de l'extension dans le pied de la page "Nouvel onglet" lorsque cette page est contrôlée par une extension. Par défaut, le pied de la page "Nouvel onglet" affiche des informations sur l'extension qui contrôle cette page.
+
+Si cette règle n'est pas configurée ou si elle est définie sur "True", les navigateurs dont la page "Nouvel onglet" est contrôlée par une extension affichent le nom de l'extension et un lien vers celle-ci.
+
+Si cette règle est définie sur "False", l'attribution de l'extension sera masquée.</translation>
 <translation id="5673254755365419402">Activer la fonctionnalité de protection contre le fingerprinting de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
 <translation id="5673780539191375049">Définit l'intervalle de temps (en minutes) pour actualiser automatiquement le flux d'authentification de l'utilisateur sur son appareil <ph name="PRODUCT_OS_NAME" />. Cette règle permet de gérer l'expiration de certains services utilisés dans les flux d'authentification lorsque l'appareil est inactif pendant un certain temps.

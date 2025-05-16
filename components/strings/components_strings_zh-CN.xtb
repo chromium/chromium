@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">检查 <ph name="HOST_NAME" /> 中是否有拼写错误。</translation>
-<translation id="2165700285977947082">自动填充 Google 钱包中的会员卡</translation>
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
 <translation id="2166378884831602661">此网站无法提供安全连接</translation>
 <translation id="2168151236314517198">管理员政策禁止打印此内容</translation>
@@ -3048,7 +3047,6 @@
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6278015583149890680">Google 云端硬盘和 OneDrive</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
-<translation id="628324801501145855">在支付方式设置中管理</translation>
 <translation id="6284292079994426700">26 x 38 英寸</translation>
 <translation id="6284449872909111707">短信与即时通讯</translation>
 <translation id="6284517535531159884">变体版本种子类型</translation>
@@ -4251,6 +4249,7 @@
 <translation id="833262891116910667">突出显示</translation>
 <translation id="8339163506404995330">系统不会自动翻译源语言为<ph name="LANGUAGE" />的网页</translation>
 <translation id="8339275256517065202">请使用触控 ID 完成购买交易</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />（必填）</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虚拟卡注册对话框已全屏打开</translation>

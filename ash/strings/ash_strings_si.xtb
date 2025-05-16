@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> ඔබා සබැඳියක් ක්ලික් කරන්න</translation>
 <translation id="2957159466053076448">ඔබට මෙම විශේෂාංග සැකසීම් තුළ ඕනෑම වේලාවක ක්‍රියාවිරහිත කළ හැක. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">උපාංග ශ්‍රව්‍ය</translation>
-<translation id="2960314608273155470">ග්‍රහණ ප්‍රකාරය, පෙරනිමි වන්නේ <ph name="SOURCE" /> <ph name="TYPE" />. යතුරු පුවරු සංචාලනය සඳහා ටැබය ඔබන්න.</translation>
 <translation id="2961963223658824723">යම් දෙයක් වැරදිණි. මිනිත්තු කිහිපයකින් නැවත උත්සාහ කරන්න.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google Doc තනන්න</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ගොනුවක්}one{ගොනු #ක්}other{ගොනු #ක්}}</translation>
 <translation id="8936501819958976551">ක්‍රියා විරහිතයි</translation>
-<translation id="8937312474322077653">තිර ග්‍රහණයේ දී, <ph name="SOURCE" /> ලෙස <ph name="TYPE" /> සකසන්න. ග්‍රහණ වර්ගය තේරීමට පටිත්ත ඔබන්න. කලාපය තේරීමට ඉඩ ඔබන්න. ග්‍රහණය කිරීමට enter ඔබන්න.</translation>
 <translation id="8938800817013097409">USB-C උපාංගය (පසුපස දකුණු තොට)</translation>
 <translation id="8939855324412367560">ආදාන ශ්‍රව්‍ය "<ph name="INPUT_DEVICE_NAME" />" වන අතර ප්‍රතිදාන ශ්‍රව්‍ය "<ph name="OUTPUT_DEVICE_NAME" />" වේ. වෙනස් කිරීමට සැකසීම් වෙත යන්න.</translation>
 <translation id="8940956008527784070">බැටරි බලය අඩුය (<ph name="PERCENTAGE" />%)</translation>

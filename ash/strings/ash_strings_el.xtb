@@ -581,7 +581,6 @@
 <translation id="2949420361496057765">Πατήστε <ph name="MODIFIER" /> και έναν σύνδεσμο</translation>
 <translation id="2957159466053076448">Μπορείτε να απενεργοποιήσετε αυτές τις λειτουργίες ανά πάσα στιγμή στις Ρυθμίσεις. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Ήχος συσκευής</translation>
-<translation id="2960314608273155470">Λειτουργία λήψης, η προεπιλογή είναι <ph name="SOURCE" /> <ph name="TYPE" />. Πατήστε Tab για πλοήγηση με το πληκτρολόγιο.</translation>
 <translation id="2961963223658824723">Δυστυχώς, παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε ξανά σε λίγα δευτερόλεπτα.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Ενεργοποίηση πρόσβασης στο μικρόφωνο;</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Δημιουργία Εγγράφου Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 αρχείο}other{# αρχεία}}</translation>
 <translation id="8936501819958976551">απενεργοποιημένο</translation>
-<translation id="8937312474322077653">Στην καταγραφή οθόνης, ορίστε σε <ph name="SOURCE" /> <ph name="TYPE" />. Πατήστε Tab για να επιλέξετε τύπο λήψης. Πατήστε το πλήκτρο διαστήματος για να επιλέξετε περιοχή. Πατήστε Enter για λήψη.</translation>
 <translation id="8938800817013097409">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
 <translation id="8939855324412367560">Ο ήχος εισόδου είναι <ph name="INPUT_DEVICE_NAME" /> και ο ήχος εξόδου είναι <ph name="OUTPUT_DEVICE_NAME" />. Μεταβείτε στις Ρυθμίσεις για αλλαγή.</translation>
 <translation id="8940956008527784070">Χαμηλή στάθμη μπαταρίας (<ph name="PERCENTAGE" />%)</translation>

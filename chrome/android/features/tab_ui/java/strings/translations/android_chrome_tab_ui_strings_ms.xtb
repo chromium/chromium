@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Kini semua tab pendua akan turut diarkibkan kecuali salinan yang digunakan baru-baru ini.</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
+<translation id="6220820548421939212">Ya. Saya mahu</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
 <translation id="6271513594716432922">Tutup semua tab tidak aktif</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tambahkan tab pada kumpulan baharu}other{Tambahkan tab pada kumpulan baharu}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ulasan}other{Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ulasan}}</translation>
 <translation id="7885132941432959125">Alihkan tab ke kanan</translation>
+<translation id="788914896430720926">Kemaskan bahagian tidak aktif anda?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> Tidak dipilih</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Aktiviti anda dalam tab Inkognito ini akan dialih keluar daripada peranti ini</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_MONTHS_ONE" /> bulan yang lalu}other{Dibuat <ph name="NUM_MONTHS_MANY" /> bulan yang lalu}}</translation>
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>
+<translation id="883379923675618699">Chrome menutup item dalam bahagian tidak aktif yang tidak digunakan selama 3 bulan secara automatik. Anda boleh mematikan pilihan ini sekarang atau pada bila-bila masa dalam Tetapan.</translation>
 <translation id="8887921976452567404">Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Alihkan kepada tetingkap baharu}other{Alihkan kepada tetingkap lain}}</translation>

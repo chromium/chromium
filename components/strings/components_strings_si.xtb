@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">පාඨය</translation>
 <translation id="2162620598375156287">දැන් <ph name="SOURCE_WEBSITE" /> හි <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> හි ටයිප් කිරීමේ වරදක් තිබේදැයි බලන්න.</translation>
-<translation id="2165700285977947082">Google Wallet වෙතින් ලැදියා කාඩ්පත් ස්වයංව පුරවන්න</translation>
 <translation id="2166049586286450108">පූර්ණ පරිපාලක ප්‍රවේශය</translation>
 <translation id="2166378884831602661">මෙම අඩවියට සුරක්ෂිත සබැඳුමක් සැපයීමට නොහැකිය</translation>
 <translation id="2168151236314517198">මෙම අන්තර්ගත මුද්‍රණය කිරීම පරිපාලක ප්‍රතිපත්තිය මගින් අබල කර ඇත</translation>
@@ -3053,7 +3052,6 @@
 <translation id="6272383483618007430">Google යාවත්කාලීන</translation>
 <translation id="6278015583149890680">Google Drive සහ OneDrive</translation>
 <translation id="6280223929691119688">මෙම ලිපිනයට බෙදා හැරීමට නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
-<translation id="628324801501145855">ගෙවීම් ක්‍රම සැකසීම් තුළ කළමනාකරණය කරන්න</translation>
 <translation id="6284292079994426700">අඟ 26 x 38</translation>
 <translation id="6284449872909111707">පාඨ සහ ක්‍ෂණික පණිවුඩ යැවීම</translation>
 <translation id="6284517535531159884">ප්‍රභේදන බිජ වර්ගය</translation>
@@ -3860,6 +3858,7 @@
 <translation id="7639968568612851608">තද අළු</translation>
 <translation id="7646681339175747202">ඔබ මේ දැන් භාවිතා කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදි. Google මුරපද කළමනාකරු ඔබේ මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7647206758853451655">මුද්‍රණ ගුණත්වය</translation>
+<translation id="7648527891719919697">ඔබ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android සැකසීම්<ph name="END_ANDROID_SETTINGS_LINK" /> තුළ උසස් ආරක්ෂණය ක්‍රියාත්මක කර ඇති නිසා මෙම අඩවිය අවහිරව පවතිනු ඇත. <ph name="BEGIN_LEARN_MORE_LINK" />මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">මෙම උපාංගය මත ගොනු ගබඩා කරන්න</translation>
 <translation id="7653957176542370971">ගෙවීම් හසුරුවන පත්‍රය වසා ඇත</translation>
 <translation id="7654909834015434372">ඔබ අනුසටහන් සංස්කරණය කරන විට, මෙම ලේඛනය එහි මුල් කරකැවීමට ආපසු යනු ඇත</translation>

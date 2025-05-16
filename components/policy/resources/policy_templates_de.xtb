@@ -2311,6 +2311,7 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="2652747206827086936">Karte mit SharePoint- und OneDrive-Dateien auf der Seite „Neuer Tab“ deaktivieren</translation>
 <translation id="2656559539624760733">Chrome Root Store nicht verwenden.</translation>
 <translation id="2658653824183107970">Alte <ph name="CORS" />-Implementierung statt des neuen <ph name="CORS" /> verwenden</translation>
+<translation id="2659581762274047663">Dienst „<ph name="PRODUCT_NAME" />“ aktivieren</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
 <translation id="2661628029848851543">Jegliche Nutzung von verwalteten Konten ist zulässig</translation>
 <translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
@@ -2947,6 +2948,7 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3143203373436771188">Beim Aufrufen von Office-Dokumenten, die normalerweise im <ph name="BASIC_EDITOR_NAME" /> geöffnet werden, diese im <ph name="BASIC_EDITOR_NAME" /> öffnen</translation>
 <translation id="3144173889708944482">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="3146711617256415776">Stimmen für die Sprachausgabe bei Enhanced Network nicht zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
+<translation id="315013437951136266">Funktion „<ph name="IP_PROTECTION_NAME" />“ aktivieren.</translation>
 <translation id="3150351525324499342"><ph name="PRODUCT_NAME" />-Symbol nicht standardmäßig in der Symbolleiste anzeigen, sondern Nutzer auswählen lassen</translation>
 <translation id="3152135410085709340">Lokalen Dateizugriff auf „file://“-URLs auf diesen Websites im PDF-Viewer zulassen</translation>
 <translation id="3152425128389603870">Unified Desktop verfügbar machen und standardmäßig aktivieren</translation>
@@ -4142,6 +4144,7 @@ Dies entspricht der Richtlinie <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAM
 Beide Richtlinien können verwendet werden, diese Richtlinie wird jedoch bald eingestellt. Daher ist die Richtlinie <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> zu bevorzugen.
 Beide haben den gleichen Effekt auf das Browserverhalten.</translation>
 <translation id="4016700865356669962">Wenn diese Richtlinie aktiviert ist, dürfen Nutzer Vorlagen für Desktoplayouts verwenden.  Ist diese Richtlinie deaktiviert oder nicht konfiguriert, sind diese Vorlagen nicht verfügbar.</translation>
+<translation id="4018536413833147396">Nutzern erlauben, die Einstellung „<ph name="IP_PROTECTION_NAME" />“ auf ihrem Gerät zu aktivieren oder zu deaktivieren. Die Funktion wird standardmäßig aktiviert.</translation>
 <translation id="4020682745012723568">In das Nutzerprofil übertragene Cookies sind für Android-Apps nicht zugänglich.</translation>
 <translation id="4021684548211845008">Im Konzentrationsmodus Töne deaktivieren.</translation>
 <translation id="4025500273782820766">Zulassen, dass Nutzer „Immer öffnen“ auswählen, wenn ein Dialog für ein externes Protokoll angezeigt wird, sodass das Protokoll in Zukunft ohne die Bestätigung geöffnet wird</translation>
@@ -4616,6 +4619,7 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 Ist die Richtlinie deaktiviert, werden PDF-Dateien mit dem PDF-Plug‑in geöffnet, sofern es nicht von den Nutzern deaktiviert wird.
 
 Wenn diese Richtlinie konfiguriert ist, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Ist die Richtlinie nicht konfiguriert, können Nutzer entscheiden, ob das PDF extern geöffnet werden soll.</translation>
+<translation id="4413764344717830250">Sichtbarkeit der Namensnennung für Erweiterungen auf der Seite „Neuer Tab“ für verwaltete Browser steuern</translation>
 <translation id="4415603335307944578">Wenn die Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, zeigt der Browser die Begrüßungsseite beim ersten Start nach einer Aktualisierung des Betriebssystems noch einmal an.
 
       Ist die Richtlinie auf "false" gesetzt, wird die Begrüßungsseite beim ersten Start nach einer Aktualisierung des Betriebssystems nicht noch einmal angezeigt.</translation>
@@ -4738,6 +4742,7 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 
       Der Wert der Richtlinie muss in Tagen angegeben werden.</translation>
 <translation id="4525328580251166229">Steuert zum Bruschetta-Subsystem gehörige Richtlinien.</translation>
+<translation id="4528981768990874684">Funktion „<ph name="IP_PROTECTION_NAME" />“ deaktivieren.</translation>
 <translation id="453031441196755904">Diese Richtlinie ist veraltet.</translation>
 <translation id="4531706050939927436">Die Installation von Android-Apps kann von der Google Admin-Konsole aus über Google Play erzwungen werden. Android-Apps nutzen diese Richtlinie nicht.</translation>
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
@@ -6523,6 +6528,11 @@ Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTI
 <translation id="5670249935663090320">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
 
 Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> deaktiviert.</translation>
+<translation id="5671392367521500075">Mit dieser Richtlinie wird die Sichtbarkeit der Namensnennung für Erweiterungen in der Fußzeile der Seite „Neuer Tab“ festgelegt, wenn die Seite von einer Erweiterung gesteuert wird. Standardmäßig werden in der Fußzeile Informationen zur Erweiterung angezeigt, die die Seite „Neuer Tab“ steuert.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, wird in Browsern, in denen die Seite „Neuer Tab“ von einer Erweiterung gesteuert wird, ein Link zur Erweiterung und deren Name angezeigt.
+
+Ist sie auf „false“ gesetzt, wird die Namensnennung ausgeblendet.</translation>
 <translation id="5673254755365419402"><ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ aktivieren.</translation>
 <translation id="567377007899266033">Wenn die Richtlinie auf "True" gesetzt ist, werden Berichte über wichtige richtlinienbasierte Erweiterungsinstallationen an Google gesendet. Wenn die Richtlinie auf "False" gesetzt ist, werden keine diesbezüglichen Ereignisse erfasst. Ist die Richtlinie nicht konfiguriert, ist der Standardwert "True".</translation>
 <translation id="5673780539191375049">Mit dieser Richtlinie wird das Zeitintervall (in Minuten) festgelegt, gemäß dem der Authentifizierungsvorgang des Nutzers auf seinem <ph name="PRODUCT_OS_NAME" />-Gerät automatisch aktualisiert wird. Die Richtlinie wird eingeführt, um das Beenden einiger Dienste zu verhindern, die bei Authentifizierungsabläufen verwendet werden, nachdem das Gerät eine Weile inaktiv war.
@@ -7577,6 +7587,23 @@ Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören f
 
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Diese Richtlinie ist ab <ph name="PRODUCT_OS_NAME" />-Version 29 nicht mehr vorhanden. Verwende stattdessen die Richtlinie "PresentationScreenDimDelayScale".</translation>
+<translation id="6397424663361748439">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „<ph name="IP_PROTECTION_NAME" />“ aktiviert werden soll.
+
+Durch die Funktion „<ph name="IP_PROTECTION_NAME" />“ wird die Verfügbarkeit der ursprünglichen IP-Adresse von Nutzern, die im Inkognitomodus surfen, für bestimmte Netzwerkanfragen von Drittanbietern eingeschränkt. Dadurch werden Nutzer im Inkognitomodus besser vor websiteübergreifendem Tracking geschützt.
+
+Ist die Richtlinie deaktiviert, ist die Funktion „<ph name="IP_PROTECTION_NAME" />“ deaktiviert und Nutzer können sie nicht über die Einstellungen der Benutzeroberfläche aktivieren.
+Ist die Richtlinie aktiviert, ist die Funktion „<ph name="IP_PROTECTION_NAME" />“ aktiviert und Nutzer können sie nicht über die Einstellungen der Benutzeroberfläche deaktivieren.
+Ist die Richtlinie nicht konfiguriert, ist die Funktion „<ph name="IP_PROTECTION_NAME" />“ standardmäßig aktiviert und Nutzer können sie auf ihrem Gerät über die Einstellungen der Benutzeroberfläche steuern.
+
+Hinweise für Unternehmen, die erwägen, die Funktion „<ph name="IP_PROTECTION_NAME" />“ zu deaktivieren:
+– Bei Anfragen über einen Proxy werden keine DNS-Lookups durchgeführt. Dies kann sich auf die DNS-basierte Kontrolle oder Filterung auswirken.
+– Bei Unternehmensanwendungen, die im Inkognitomodus verwendet werden, können Probleme auftreten, wenn sie auf Anfragen an Domains (oder zugehörige Subdomains) auf der Liste der maskierten Domains (<ph name="MASKED_DOMAIN_LIST_URL" />) angewiesen sind und diese Anfragen aus bestimmten IP-Adressbereichen stammen müssen.
+– Unter bestimmten Bedingungen wird der Traffic im Inkognitomodus möglicherweise nicht über einen Proxy geleitet, z. B. wenn Nutzer den Inkognitomodus über ein Chrome-Profil starten, in dem sie nicht angemeldet sind. Im Allgemeinen erfordert die Funktion, dass die Nutzer beim Starten des Inkognitomodus in Chrome in einem privaten Google-Konto angemeldet sind.
+– Die Liste der maskierten Domains kann sich im Laufe der Zeit ändern. Neue Versionen werden automatisch an Nutzer gesendet. Weitere Informationen zur Liste der maskierten Domains finden Sie unter <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Weitere Informationen zur Funktion „<ph name="IP_PROTECTION_NAME" />“ finden Sie unter <ph name="IP_PROTECTION_README_URL" />.
+
+Die Funktion „<ph name="IP_PROTECTION_NAME" />“ wird frühestens mit M139 eingeführt.</translation>
 <translation id="6397588391180665797">Mit dieser Richtlinie wird festgelegt, ob die Netzwerkkonfiguration von Nutzern auf angemeldeten Geräten ausgegeben wird.
 
       Wenn sie auf „false“ gesetzt ist, werden keine Informationen ausgegeben.

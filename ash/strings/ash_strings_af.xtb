@@ -581,7 +581,6 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="2949420361496057765">Druk <ph name="MODIFIER" /> en klik ’n skakel</translation>
 <translation id="2957159466053076448">Jy kan hierdie kenmerke enige tyd in Instellings afskakel. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Toesteloudio</translation>
-<translation id="2960314608273155470">Vasvangmodus; verstek is <ph name="SOURCE" /> <ph name="TYPE" />. Druk Tab vir sleutelbordnavigasie</translation>
 <translation id="2961963223658824723">Iets het verkeerd gegaan. Probeer oor 'n paar sekondes weer.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Skakel mikrofoontoegang aan?</translation>
@@ -2434,7 +2433,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8934418770423095813">Skep Google Dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 lêer}other{# lêers}}</translation>
 <translation id="8936501819958976551">gedeaktiveer</translation>
-<translation id="8937312474322077653">In skermskoot, stel op <ph name="SOURCE" /> <ph name="TYPE" />. Druk oortjie om vasvangtipe te kies. Druk spasiebalk om streek te kies. Druk Enter om vas te vang.</translation>
 <translation id="8938800817013097409">USB C-toestel (regterpoort aan agterkant)</translation>
 <translation id="8939855324412367560">Invoeroudio is "<ph name="INPUT_DEVICE_NAME" />" en uitvoeroudio is "<ph name="OUTPUT_DEVICE_NAME" />". Gaan na Instellings om te verander.</translation>
 <translation id="8940956008527784070">Battery laag (<ph name="PERCENTAGE" />%)</translation>

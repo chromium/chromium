@@ -581,7 +581,6 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2949420361496057765">Appuyez sur <ph name="MODIFIER" />, puis cliquez sur un lien</translation>
 <translation id="2957159466053076448">Vous pouvez désactiver ces fonctionnalités à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio de l'appareil</translation>
-<translation id="2960314608273155470">Mode de capture, la valeur par défaut est : <ph name="TYPE" /> <ph name="SOURCE" />. Appuyez sur Tab pour la navigation au clavier.</translation>
 <translation id="2961963223658824723">Une erreur s'est produite. Veuillez réessayer dans quelques secondes.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Activer l'accès au micro ?</translation>
@@ -2433,7 +2432,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8934418770423095813">Créer un document Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">a désactivé</translation>
-<translation id="8937312474322077653">Dans Capture d'écran, sélectionner <ph name="SOURCE" /> <ph name="TYPE" />. Appuyer sur Tabulation pour choisir le type de capture. Appuyer sur la barre d'espace pour sélectionner la région. Appuyer sur Entrée pour effectuer une capture.</translation>
 <translation id="8938800817013097409">Appareil USB de type C (port situé sur l'arrière de l'appareil, à droite)</translation>
 <translation id="8939855324412367560">L'entrée audio est "<ph name="INPUT_DEVICE_NAME" />" et la sortie audio est "<ph name="OUTPUT_DEVICE_NAME" />". Pour les modifier, accédez aux paramètres.</translation>
 <translation id="8940956008527784070">Batterie faible (<ph name="PERCENTAGE" /> %)</translation>

@@ -581,7 +581,6 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="2949420361496057765">Tryck på <ph name="MODIFIER" /> och klicka på en länk</translation>
 <translation id="2957159466053076448">Du kan när som helst inaktivera dessa funktioner i inställningarna. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Ljud på enheten</translation>
-<translation id="2960314608273155470">Läge för skärmbild/skärminspelning, standard är <ph name="SOURCE" /> <ph name="TYPE" />. Tryck på tabb om du vill navigera med tangentbordet.</translation>
 <translation id="2961963223658824723">Ett fel har uppstått. Försök igen om några sekunder.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vill du aktivera mikrofonåtkomst?</translation>
@@ -2433,7 +2432,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8934418770423095813">Skapa Google-dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">inaktiverad</translation>
-<translation id="8937312474322077653">Ange <ph name="SOURCE" /> <ph name="TYPE" /> under Skärmbild/skärminspelning. Tryck på Tabb för att välja typ av skärmbild/skärminspelning. Tryck på mellanslag för att välja region. Tryck på Retur för ta en skärmbild eller spela in.</translation>
 <translation id="8938800817013097409">USB-C-enhet (högra porten på baksidan)</translation>
 <translation id="8939855324412367560">Ljudingången är <ph name="INPUT_DEVICE_NAME" /> och ljudutgången är <ph name="OUTPUT_DEVICE_NAME" />. Du kan ändra detta i inställningarna.</translation>
 <translation id="8940956008527784070">Låg batterinivå (<ph name="PERCENTAGE" /> %)</translation>

@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> അമർത്തി ഒരു ലിങ്ക് ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2957159466053076448">ക്രമീകരണത്തിൽ ഏതുസമയത്തും നിങ്ങൾക്ക് ഈ ഫീച്ചറുകൾ ഓഫാക്കാം. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ഉപകരണത്തിന്റെ ഓഡിയോ</translation>
-<translation id="2960314608273155470">ക്യാപ്‌ചർ മോഡ്, <ph name="SOURCE" /> <ph name="TYPE" /> ഡിഫോൾട്ട് ആണ്. കീബോർഡ് നാവിഗേഷന് Tab അമർത്തുക.</translation>
 <translation id="2961963223658824723">എന്തോ കുഴപ്പം സംഭവിച്ചു. അൽപ്പസമയത്തിനുള്ളിൽ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">മൈക്രോഫോൺ ആക്‌സസ് ഓണാക്കണോ?</translation>
@@ -2434,7 +2433,6 @@
 <translation id="8934418770423095813">Google ഡോക് സൃഷ്ടിക്കുക</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="8936501819958976551">നിർജീവമാക്കി</translation>
-<translation id="8937312474322077653">സ്ക്രീൻ ക്യാപ്ച്ചറിൽ, <ph name="SOURCE" /> <ph name="TYPE" /> എന്നതായി സജ്ജീകരിക്കുക. ക്യാപ്‌ച്ചർ തരം തിരഞ്ഞെടുക്കാൻ Tab അമർത്തുക. പ്രദേശം തിരഞ്ഞെടുക്കാൻ Space അമർത്തുക. ക്യാപ്‌ചർ ചെയ്യാൻ Enter അമർത്തുക.</translation>
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>
 <translation id="8939855324412367560">ഇൻപുട്ട് ഓഡിയോ "<ph name="INPUT_DEVICE_NAME" />" എന്നതും ഔട്ട്പുട്ട് വീഡിയോ "<ph name="OUTPUT_DEVICE_NAME" />" എന്നതുമാണ്. മാറ്റാൻ ക്രമീകരണത്തിൽ പോകുക.</translation>
 <translation id="8940956008527784070">ബാറ്ററി കുറവാണ് (<ph name="PERCENTAGE" />%)</translation>

@@ -679,7 +679,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comprova si <ph name="HOST_NAME" /> està ben escrit.</translation>
-<translation id="2165700285977947082">Emplena automàticament les targetes de fidelització de Google Wallet</translation>
 <translation id="2166049586286450108">Accés administratiu complet</translation>
 <translation id="2166378884831602661">Aquest lloc web no pot proporcionar una connexió segura</translation>
 <translation id="2168151236314517198">La política de l'administrador ha bloquejat l'opció d'imprimir aquest contingut</translation>
@@ -3053,7 +3052,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive i OneDrive</translation>
 <translation id="6280223929691119688">No es pot entregar a aquesta adreça. Selecciona'n una altra.</translation>
-<translation id="628324801501145855">Gestiona a la configuració de les formes de pagament</translation>
 <translation id="6284292079994426700">26 x 38 polzades</translation>
 <translation id="6284449872909111707">Missatgeria de text i instantània</translation>
 <translation id="6284517535531159884">Tipus d'origen de les variacions</translation>
@@ -4256,6 +4254,7 @@ Detalls addicionals:
 <translation id="833262891116910667">Destacat</translation>
 <translation id="8339163506404995330">Les pàgines en <ph name="LANGUAGE" /> no es traduiran</translation>
 <translation id="8339275256517065202">Completa la compra amb Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" /> (obligatori)</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">S'ha obert la inscripció de targetes virtuals a alçada completa</translation>

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
+<translation id="6220820548421939212">Sí. Acepto</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
 <translation id="6271513594716432922">Cerrar todas las pestañas inactivas</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> opinión}other{Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> opiniones}}</translation>
 <translation id="7885132941432959125">Mover la pestaña a la derecha</translation>
+<translation id="788914896430720926">¿Quieres mantener tu sección inactiva ordenada?</translation>
 <translation id="7939917283308035850">No se seleccionó <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Se quitará tu actividad en las pestañas de incógnito del dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Se creó hace <ph name="NUM_MONTHS_ONE" /> mes}other{Se creó hace <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8820741577754260431">Visualiza los descuentos en las pestañas.</translation>
+<translation id="883379923675618699">Chrome cierra automáticamente los elementos de la sección inactiva que no usaste en 3 meses. Puedes desactivar esta opción ahora o en cualquier momento en Configuración.</translation>
 <translation id="8887921976452567404">Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas.</translation>
 <translation id="8915916167043355778">Cerrar</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mover a una ventana nueva}other{Mover a otra ventana}}</translation>

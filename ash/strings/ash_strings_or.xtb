@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" />କୁ ଦବାଇ ଏକ ଲିଙ୍କରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="2957159466053076448">ଆପଣ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ଏହି ଫିଚରଗୁଡ଼ିକୁ ବନ୍ଦ କରିପାରିବେ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">ଡିଭାଇସ ଅଡିଓ</translation>
-<translation id="2960314608273155470">କ୍ୟାପଚର ମୋଡ, ଡିଫଲ୍ଟ ହେଉଛି <ph name="SOURCE" /> <ph name="TYPE" />। କୀବୋର୍ଡ ନାଭିଗେସନ ପାଇଁ Tabକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="2961963223658824723">କିଛି ସମସ୍ୟା ହୋଇଛି। କିଛି ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଚାଲୁ କରିବେ?</translation>
@@ -2432,7 +2431,6 @@
 <translation id="8934418770423095813">Google Doc ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1ଟି ଫାଇଲ}other{#ଟି ଫାଇଲ}}</translation>
 <translation id="8936501819958976551">ନିଷ୍କ୍ରିୟ କରାଯାଇଛି</translation>
-<translation id="8937312474322077653">ସ୍କ୍ରିନ କେପଚରରେ, <ph name="SOURCE" /> <ph name="TYPE" />ରେ ସେଟ କରନ୍ତୁ। କେପଚର ପ୍ରକାର ବାଛିବାକୁ ଟାବକୁ ଦବାନ୍ତୁ। ଅଞ୍ଚଳ ଚୟନ କରିବାକୁ ସ୍ପେସକୁ ଦବାନ୍ତୁ। କେପଚର କରିବାକୁ ଏଣ୍ଟର ଦବାନ୍ତୁ।</translation>
 <translation id="8938800817013097409">USB-C ଡିଭାଇସ୍‌ (ପଛରେ ଥିବା ଡାହାଣପଟ ପୋର୍ଟ)</translation>
 <translation id="8939855324412367560">ଇନପୁଟ ଅଡିଓ ହେଉଛି "<ph name="INPUT_DEVICE_NAME" />" ଏବଂ ଆଉଟପୁଟ ଅଡିଓ ହେଉଛି "<ph name="OUTPUT_DEVICE_NAME" />"। ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="8940956008527784070">ବ୍ୟାଟେରୀ କମ୍ ଅଛି (<ph name="PERCENTAGE" />%)</translation>

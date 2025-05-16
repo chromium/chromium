@@ -581,7 +581,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> प्रेस करा आणि लिंकवर क्लिक करा</translation>
 <translation id="2957159466053076448">तुम्ही सेटिंग्ज मध्ये कधीही ही वैशिष्ट्ये बंद करू शकता. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">डिव्हाइस ऑडिओ</translation>
-<translation id="2960314608273155470">कॅप्चर मोड, <ph name="SOURCE" /> <ph name="TYPE" /> हा डीफॉल्ट आहे. कीबोर्ड नेव्हिगेशनसाठी टॅब प्रेस करा.</translation>
 <translation id="2961963223658824723">काहीतरी चूक झाली. काही सेकंदांनी पुन्हा प्रयत्न करा.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">मायक्रोफोनचा अ‍ॅक्सेस सुरू करायचा आहे का?</translation>
@@ -2433,7 +2432,6 @@
 <translation id="8934418770423095813">Google Doc तयार करा</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{१ फाइल}other{# फाइल}}</translation>
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>
-<translation id="8937312474322077653">स्‍क्रीन कॅप्‍चरमध्ये, <ph name="SOURCE" /> <ph name="TYPE" /> वर सेट करा. कॅप्चराचा प्रकार निवडण्यासाठी टॅब प्रेस करा. प्रदेश निवडण्यासाठी स्पेस प्रेस करा. कॅप्चर करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
 <translation id="8939855324412367560">"<ph name="INPUT_DEVICE_NAME" />" हा इनपुट ऑडिओ आहे आणि "<ph name="OUTPUT_DEVICE_NAME" />" हा आउटपुट ऑडिओ आहे. बदलण्यासाठी सेटिंग्ज वर जा.</translation>
 <translation id="8940956008527784070">बॅटरी कमी झाली (<ph name="PERCENTAGE" />%)</translation>

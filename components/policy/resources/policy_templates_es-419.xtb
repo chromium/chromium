@@ -2435,6 +2435,7 @@ El sistema solo consulta registros AAAA cuando el dispositivo es accesible para 
 <translation id="2652747206827086936">Inhabilitar la tarjeta de archivos de SharePoint y OneDrive de NTP</translation>
 <translation id="2656559539624760733">No utilizar Chrome Root Store</translation>
 <translation id="2658653824183107970">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" /></translation>
+<translation id="2659581762274047663">Habilitar el servicio <ph name="PRODUCT_NAME" /></translation>
 <translation id="2660846099862559570">Nunca usar un proxy</translation>
 <translation id="2661628029848851543">Se permiten todos los usos de cuentas administradas</translation>
 <translation id="2664391398878045611">La página Nueva pestaña no mostrará la notificación del espacio del medio aunque esté disponible</translation>
@@ -3080,6 +3081,7 @@ Si la inhabilitas o no la estableces, nunca se mostrará el menú de accesibilid
 <translation id="3143203373436771188">Cuando navegues a documentos de Office administrados por <ph name="BASIC_EDITOR_NAME" />, abrirlos en <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3144173889708944482">Si eliges <ph name="PRINTERS_BLOCKLIST" /> para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> especificará las impresoras que no podrán utilizar los usuarios. Los usuarios podrán acceder a todas las impresoras, excepto aquellas con los ID mencionados en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">No permitir las voces de texto a voz de la red mejorada cuando se utiliza Seleccionar para pronunciar</translation>
+<translation id="315013437951136266">Habilitar la función <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">No mostrar el ícono de <ph name="PRODUCT_NAME" /> en la barra de herramientas de forma predeterminada, pero permitir que los usuarios elijan</translation>
 <translation id="3152135410085709340">Permitir el acceso de archivo local a las URLs de file:// para estos sitios en el Lector de PDF</translation>
 <translation id="3152425128389603870">Habilitar el modo de escritorio unificado y activarlo de forma predeterminada</translation>
@@ -4315,6 +4317,7 @@ Esto equivale a la política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME"
 Se puede usar cualquiera de las políticas, pero esta dejará de estar disponible pronto, por lo que se prefiere la política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
 Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="4016700865356669962">Si habilitas la política, los usuarios podrán usar las plantillas de diseño de escritorio.  Si inhabilitas la política o no la estableces, estas plantillas no estarán disponibles.</translation>
+<translation id="4018536413833147396">Permitir que los usuarios activen o desactiven el parámetro de configuración <ph name="IP_PROTECTION_NAME" /> en sus dispositivos. La función estará habilitada de forma predeterminada.</translation>
 <translation id="4020682745012723568">Las apps de Android no pueden acceder a las cookies transferidas al perfil del usuario.</translation>
 <translation id="4021684548211845008">Inhabilitar los sonidos en el Modo sin distracciones.</translation>
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando se muestra un diálogo de protocolo externo para omitir futuros mensajes de confirmación</translation>
@@ -4818,6 +4821,7 @@ Esto se quitó en M112.</translation>
 Si inhabilitas la política, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.
 
 Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, los usuarios podrán elegir si desean abrir los archivos PDF de forma externa o no.</translation>
+<translation id="4413764344717830250">Controlar la visibilidad de la atribución de la extensión en la página Nueva pestaña para los navegadores administrados</translation>
 <translation id="4415603335307944578">Si esta política se configura como verdadera, o no se configura, el navegador volverá a mostrar la página de bienvenida la primera vez que se inicie después de una actualización del SO.
 
       Si esta política se configura como falsa, el navegador no volverá a mostrar la página de bienvenida la primera vez que se inicie después de una actualización del SO.</translation>
@@ -4940,6 +4944,7 @@ No tiene efecto si la habilitas, la dejas vacía o no la configuras.</translatio
 
       El valor de la política deberá especificarse en días.</translation>
 <translation id="4525328580251166229">Controla las políticas relacionadas con el subsistema de Bruschetta.</translation>
+<translation id="4528981768990874684">Inhabilitar la función <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Esta política es obsoleta.</translation>
 <translation id="4531706050939927436">Con Google Play, se puede forzar la instalación de apps de Android desde la Consola del administrador de Google. Estas apps no usan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
@@ -6782,6 +6787,11 @@ Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIR
 <translation id="5670249935663090320">Si habilitas la política o no la estableces, se activará <ph name="PRODUCT_NAME" />, que los usuarios pueden ejecutar desde el menú de la app, los menús contextuales de la página, los controles de contenido multimedia en los sitios web compatibles con Cast y el ícono de la barra de herramientas de Cast (si se muestra).
 
 Si inhabilitas la política, se desactivará <ph name="PRODUCT_NAME" />.</translation>
+<translation id="5671392367521500075">Esta política controla la visibilidad de la atribución de la extensión en el pie de página de la página Nueva pestaña cuando esta página está controlada por una extensión. De forma predeterminada, este pie de página muestra información sobre la extensión que controla la página Nueva pestaña.
+
+Si no la estableces o la estableces como verdadera, los navegadores con una página Nueva pestaña controlada por una extensión mostrarán el nombre de la extensión y un vínculo a ella.
+
+Si estableces esta política como falsa, se ocultará la atribución de la extensión.</translation>
 <translation id="5673254755365419402">Habilitar la función Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si estableces la política como verdadera, se enviarán a Google los informes sobre los eventos clave de instalación de extensiones que activan la política. Si la estableces como falsa, no se capturará ningún evento. Si no la estableces, se establecerá el valor predeterminado como verdadero.</translation>
 <translation id="5673780539191375049">Establece el intervalo de tiempo (en minutos) que se usa para volver a cargar automáticamente el flujo de autenticación del usuario en su dispositivo <ph name="PRODUCT_OS_NAME" />. Se presenta esta política para controlar el vencimiento de algunos servicios que se usan en los flujos de autenticación cuando el dispositivo permanece inactivo por un tiempo.
@@ -7926,6 +7936,23 @@ Las funciones potenciadas por IA generativa de Herramientas para desarrolladores
 
 Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
+<translation id="6397424663361748439">Una política que controla si se debe activar la función <ph name="IP_PROTECTION_NAME" /> de <ph name="PRIVACY_SANDBOX_NAME" />.
+
+<ph name="IP_PROTECTION_NAME" /> es una función que limita la disponibilidad de la dirección IP original de un usuario para ciertas solicitudes de red de terceros realizadas mientras navega en modo Incógnito, lo que mejora las protecciones contra el seguimiento entre sitios durante las sesiones de navegación en Incógnito.
+
+Si inhabilitas la política, se desactivará <ph name="IP_PROTECTION_NAME" /> y los usuarios no podrán activar la función desde la configuración de la IU.
+Si la habilitas, se activará <ph name="IP_PROTECTION_NAME" /> y los usuarios no podrán desactivar la función desde la configuración de la IU.
+Si no estableces la política, se habilitará <ph name="IP_PROTECTION_NAME" /> de forma predeterminada y los usuarios podrán controlar la función en sus dispositivos desde la configuración de la IU.
+
+Algunas consideraciones sobre si las empresas deben inhabilitar <ph name="IP_PROTECTION_NAME" /> incluyen:
+- No se realizarán búsquedas de DNS para las solicitudes con proxy, lo que puede afectar la supervisión o el filtrado basado en DNS.
+- Es posible que las aplicaciones empresariales se interrumpan cuando se usan en modo Incógnito si dependen de solicitudes a dominios (o subdominios de esos dominios) de la lista de dominios enmascarados (<ph name="MASKED_DOMAIN_LIST_URL" />) y requieren que esas solicitudes provengan de rangos de direcciones IP específicos.
+- Es posible que el tráfico no se envíe mediante proxy en el modo Incógnito en ciertas condiciones, por ejemplo, cuando los usuarios abren el modo Incógnito desde un perfil de Chrome en el que no accedieron. En general, la función requiere que el usuario haya accedido a Chrome con una Cuenta de Google personal cuando inicia el modo Incógnito.
+- La lista de dominios en la lista de dominios enmascarados puede cambiar con el tiempo, y las versiones nuevas se envían a los usuarios automáticamente. Para obtener más información sobre la lista de dominios enmascarados, consulta <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Para obtener más información sobre <ph name="IP_PROTECTION_NAME" />, consulta <ph name="IP_PROTECTION_README_URL" />.
+
+<ph name="IP_PROTECTION_NAME" /> se lanzará a más tardar en M139.</translation>
 <translation id="6397588391180665797">Informa a los usuarios sobre la configuración de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.

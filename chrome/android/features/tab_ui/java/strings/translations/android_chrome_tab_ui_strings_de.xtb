@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
 <translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme der zuletzt verwendeten Kopie.</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
+<translation id="6220820548421939212">Ok</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6271513594716432922">Alle inaktiven Tabs schließen</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> Rezension}other{Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> Rezensionen}}</translation>
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
+<translation id="788914896430720926">Im Bereich „Inaktiv“ für Ordnung sorgen?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> nicht ausgewählt</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7961015016161918242">Nie</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_MONTHS_ONE" /> Monat erstellt}other{Vor <ph name="NUM_MONTHS_MANY" /> Monaten erstellt}}</translation>
 <translation id="8820741577754260431">Preisnachlässe auf deinen Tabs sehen</translation>
+<translation id="883379923675618699">Chrome schließt automatisch Elemente im Bereich „Inaktiv“, die du seit 3 Monaten nicht verwendet hast. Du kannst diese Funktion jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="8887921976452567404">Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden.</translation>
 <translation id="8915916167043355778">Alle schließen</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Zu einem neuen Fenster wechseln}other{Zu anderen Fenstern wechseln}}</translation>

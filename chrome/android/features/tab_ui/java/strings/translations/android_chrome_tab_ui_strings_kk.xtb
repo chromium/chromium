@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
+<translation id="6220820548421939212">Иә. Жарайды</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6271513594716432922">Барлық әрекетсіз қойындыны жабу</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Жаңа топқа қойынды қосу}other{Жаңа топқа қойындылар қосу}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Әрекет</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Бағасы: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> пікір}other{Бағасы: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> пікір}}</translation>
 <translation id="7885132941432959125">Қойындыны оңға жылжыту</translation>
+<translation id="788914896430720926">Әрекетсіз бөлімді тазалап отыру қажет пе?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> таңдалмады</translation>
 <translation id="7942349550061667556">Қызыл</translation>
 <translation id="7961015016161918242">Ешқашан</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Бұл инкогнито қойындыларындағы әрекетіңіз осы құрылғыдан өшіріледі.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ай бұрын жасалды.}other{<ph name="NUM_MONTHS_MANY" /> ай бұрын жасалды.}}</translation>
 <translation id="8820741577754260431">Баға төмендеген кезде, оны қойындыдан көріңіз.</translation>
+<translation id="883379923675618699">Chrome әрекетсіз бөлімдегі сіз 3 ай қолданбаған элементтерді автоматты түрде жабады. Бұл функцияны параметрлерде кез келген уақытта өшіре аласыз.</translation>
 <translation id="8887921976452567404">Жабылған қойындылар мен топтарды "Соңғы қойындылар" және "Қойындылар топтары" бөлімдерінен қайта ашуға болады.</translation>
 <translation id="8915916167043355778">Барлығын жабу</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Жаңа терезеге жылжыту}other{Басқа терезеге жылжыту}}</translation>

@@ -679,7 +679,6 @@
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверьте, нет ли опечаток в имени хоста <ph name="HOST_NAME" />.</translation>
-<translation id="2165700285977947082">Автоматически заполняйте данные карт постоянного клиента из Google Кошелька.</translation>
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
 <translation id="2166378884831602661">Этот сайт не может обеспечить безопасное подключение</translation>
 <translation id="2168151236314517198">Администратор запретил печатать этот контент.</translation>
@@ -3052,7 +3051,6 @@
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Диск и OneDrive</translation>
 <translation id="6280223929691119688">Невозможно доставить заказ по этому адресу. Выберите другой вариант.</translation>
-<translation id="628324801501145855">Управляйте настройками способов оплаты.</translation>
 <translation id="6284292079994426700">26 x 38 дюймов</translation>
 <translation id="6284449872909111707">Текстовые и мгновенные сообщения</translation>
 <translation id="6284517535531159884">Тип файла конфигурации для модификации</translation>
@@ -3611,7 +3609,7 @@
 <translation id="7234585564776614047">Автозаполнение с помощью другого сервиса</translation>
 <translation id="7236417832106250253">Выполнено <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подарки и товары для особых случаев</translation>
-<translation id="7237454422623102448">Открыть настройки системы</translation>
+<translation id="7237454422623102448">Настройки системы</translation>
 <translation id="7237492777898608035">Больше не показывать такое сообщение для этого сайта</translation>
 <translation id="7240120331469437312">Альтернативное имя субъекта сертификата</translation>
 <translation id="7241863998525879494">Что изменится</translation>
@@ -4255,6 +4253,7 @@
 <translation id="833262891116910667">Выделить</translation>
 <translation id="8339163506404995330">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически</translation>
 <translation id="8339275256517065202">Завершите покупку с помощью Touch ID.</translation>
+<translation id="833935588477667012">Поле "<ph name="FIELD_LABEL" />". Его необходимо заполнить.</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Диалоговое окно создания виртуальной карты открыто на весь экран</translation>
