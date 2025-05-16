@@ -107,6 +107,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
   void CheckCaptureModeInitRestrictionByDlp(
+      bool shutting_down,
       OnCaptureModeDlpRestrictionChecked callback) override;
   void CheckCaptureOperationRestrictionByDlp(
       const aura::Window* window,

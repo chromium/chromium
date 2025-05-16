@@ -1798,6 +1798,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.ScreenshotWarnShutdownOverride" enum="Boolean"
+    expires_after="2025-09-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when there is a &quot;warn&quot; level Data Leak Prevention
+    evaluation for initiating capture mode, but it occurs during a shutdown
+    request, so no new warning is shown and the screenshot is silently blocked.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.ScreenshotWarnSilentProceeded" enum="Boolean"
     expires_after="2025-09-01">
   <owner>aidazolic@chromium.org</owner>

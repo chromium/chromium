@@ -139,7 +139,8 @@ void DlpContentManagerAsh::CheckScreenshotRestriction(
                                      IsBlocked(info.restriction_info));
   data_controls::DlpBooleanHistogram(data_controls::dlp::kScreenshotWarnedUMA,
                                      IsWarn(info.restriction_info));
-  CheckScreenCaptureRestriction(info, std::move(callback));
+  CheckScreenCaptureRestriction(info, /*shutting_down=*/false,
+                                std::move(callback));
 }
 
 void DlpContentManagerAsh::CheckScreenShareRestriction(
@@ -238,6 +239,7 @@ void DlpContentManagerAsh::OnImageCapture(const ScreenshotArea& area) {
 }
 
 void DlpContentManagerAsh::CheckCaptureModeInitRestriction(
+    bool shutting_down,
     ash::OnCaptureModeDlpRestrictionChecked callback) {
   const ConfidentialContentsInfo info =
       GetConfidentialContentsOnScreen(DlpContentRestriction::kScreenshot);
@@ -253,7 +255,7 @@ void DlpContentManagerAsh::CheckCaptureModeInitRestriction(
   data_controls::DlpBooleanHistogram(
       data_controls::dlp::kCaptureModeInitWarnedUMA,
       IsWarn(info.restriction_info));
-  CheckScreenCaptureRestriction(info, std::move(callback));
+  CheckScreenCaptureRestriction(info, shutting_down, std::move(callback));
 }
 
 void DlpContentManagerAsh::OnScreenShareStarted(
@@ -750,6 +752,7 @@ base::TimeDelta DlpContentManagerAsh::GetPrivacyScreenOffDelayForTesting() {
 
 void DlpContentManagerAsh::CheckScreenCaptureRestriction(
     ConfidentialContentsInfo info,
+    bool shutting_down,
     ash::OnCaptureModeDlpRestrictionChecked callback) {
   if (IsBlocked(info.restriction_info)) {
     // TODO(296534642): Remove once proper tooling is added.
@@ -776,6 +779,15 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
 
     ReportWarningEvent(info.restriction_info.url,
                        DlpRulesManager::Restriction::kScreenshot);
+
+    // If the device has requested shutdown, we should not show a warning
+    // dialog, and instead return `false`.
+    if (shutting_down) {
+      data_controls::DlpBooleanHistogram(
+          data_controls::dlp::kScreenshotWarnShutdownOverrideUMA, true);
+      std::move(callback).Run(false);
+      return;
+    }
 
     // base::Unretained(this) is safe here because DlpContentManagerAsh is
     // initialized as a singleton that's always available in the system.

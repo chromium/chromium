@@ -375,10 +375,12 @@ class ASH_EXPORT CaptureModeController
   void MaybeUpdateVcPanel();
 
   // Checks if there are any content currently on the screen that are restricted
-  // by DLP. `callback` will be triggered by the DLP manager with `proceed` set
-  // to true if screen capture is allowed to continue, or set to false if it
-  // should not continue.
+  // by DLP. `shutting_down` is true if the lock state controller has received a
+  // request to shut down, and false otherwise. `callback` will be triggered by
+  // the DLP manager with `proceed` set to true if screen capture is allowed to
+  // continue, or set to false if it should not continue.
   void CheckScreenCaptureDlpRestrictions(
+      bool shutting_down,
       OnCaptureModeDlpRestrictionChecked callback);
 
   // Returns true if the video recording is in progress and annotating is

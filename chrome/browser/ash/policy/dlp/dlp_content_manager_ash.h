@@ -88,6 +88,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   // based on the currently visible content. Depending on the result, calls
   // |callback| and passes an indicator whether to proceed or not.
   void CheckCaptureModeInitRestriction(
+      bool shutting_down,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // DlpContentManager overrides:
@@ -184,6 +185,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   // calls |callback| with an indicator whether to proceed or not.
   void CheckScreenCaptureRestriction(
       ConfidentialContentsInfo info,
+      bool shutting_down,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
   // Map of window observers for the current confidential WebContents.

@@ -72,6 +72,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
   void CheckCaptureModeInitRestrictionByDlp(
+      bool shutting_down,
       ash::OnCaptureModeDlpRestrictionChecked callback) override;
   void CheckCaptureOperationRestrictionByDlp(
       const aura::Window* window,

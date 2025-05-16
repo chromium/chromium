@@ -510,9 +510,10 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
 }
 
 void ChromeCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(
+    bool shutting_down,
     ash::OnCaptureModeDlpRestrictionChecked callback) {
   policy::DlpContentManagerAsh::Get()->CheckCaptureModeInitRestriction(
-      std::move(callback));
+      shutting_down, std::move(callback));
 }
 
 void ChromeCaptureModeDelegate::CheckCaptureOperationRestrictionByDlp(

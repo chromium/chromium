@@ -1361,8 +1361,10 @@ void CaptureModeController::MaybeUpdateVcPanel() {
 }
 
 void CaptureModeController::CheckScreenCaptureDlpRestrictions(
+    bool shutting_down,
     OnCaptureModeDlpRestrictionChecked callback) {
-  delegate_->CheckCaptureModeInitRestrictionByDlp(std::move(callback));
+  delegate_->CheckCaptureModeInitRestrictionByDlp(shutting_down,
+                                                  std::move(callback));
 }
 
 bool CaptureModeController::ShouldAllowAnnotating() const {
@@ -1576,10 +1578,12 @@ void CaptureModeController::StartInternal(
   }
 
   pending_dlp_check_ = true;
-  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
-      &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
-      weak_ptr_factory_.GetWeakPtr(), session_type, entry_type,
-      deferred_runner.Release()));
+  delegate_->CheckCaptureModeInitRestrictionByDlp(
+      /*shutting_down=*/false,
+      base::BindOnce(
+          &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
+          weak_ptr_factory_.GetWeakPtr(), session_type, entry_type,
+          deferred_runner.Release()));
 }
 
 void CaptureModeController::PushNewRootSizeToRecordingService(
@@ -2857,10 +2861,12 @@ void CaptureModeController::CaptureInstantScreenshot(
   }
 
   pending_dlp_check_ = true;
-  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
-      &CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot,
-      weak_ptr_factory_.GetWeakPtr(), entry_type, source,
-      std::move(instant_screenshot_callback), behavior_type));
+  delegate_->CheckCaptureModeInitRestrictionByDlp(
+      /*shutting_down=*/false,
+      base::BindOnce(
+          &CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot,
+          weak_ptr_factory_.GetWeakPtr(), entry_type, source,
+          std::move(instant_screenshot_callback), behavior_type));
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(

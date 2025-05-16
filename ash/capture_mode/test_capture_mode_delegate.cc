@@ -103,6 +103,7 @@ bool TestCaptureModeDelegate::Uses24HourFormat() const {
 }
 
 void TestCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(
+    bool shutting_down,
     OnCaptureModeDlpRestrictionChecked callback) {
   std::move(callback).Run(/*proceed=*/is_allowed_by_dlp_);
 }

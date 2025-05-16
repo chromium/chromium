@@ -868,6 +868,7 @@ void LockStateController::SessionStateChangeWithInformedRestore(
   // Check if there are any content currently on the screen that are restricted
   // by DLP.
   CaptureModeController::Get()->CheckScreenCaptureDlpRestrictions(
+      shutting_down_,
       base::BindOnce(
           &LockStateController::OnDlpRestrictionCheckedAtScreenCapture,
           weak_ptr_factory_.GetWeakPtr(), requested_session_state, file_path));
