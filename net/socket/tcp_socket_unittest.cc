@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -610,7 +611,7 @@ TEST_P(TCPSocketTest, DestroyWithPendingWrite) {
   scoped_refptr<IOBufferWithDestructionCallback> write_buffer(
       base::MakeRefCounted<IOBufferWithDestructionCallback>(
           run_loop.QuitClosure()));
-  memset(write_buffer->data(), '1', write_buffer->size());
+  std::ranges::fill(write_buffer->span(), '1');
   TestCompletionCallback write_callback;
   while (true) {
     int result = connecting_socket->Write(

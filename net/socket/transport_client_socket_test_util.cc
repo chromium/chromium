@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "net/socket/transport_client_socket_test_util.h"
 
 #include <memory>
 #include <string>
 
-#include "net/socket/transport_client_socket_test_util.h"
-
+#include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -24,14 +20,12 @@ namespace net {
 void SendRequestAndResponse(StreamSocket* socket,
                             StreamSocket* connected_socket) {
   // Send client request.
-  const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
-  int request_len = strlen(request_text);
+  const std::string kRequestText = "GET / HTTP/1.0\r\n\r\n";
   scoped_refptr<DrainableIOBuffer> request_buffer =
       base::MakeRefCounted<DrainableIOBuffer>(
-          base::MakeRefCounted<IOBufferWithSize>(request_len), request_len);
-  memcpy(request_buffer->data(), request_text, request_len);
+          base::MakeRefCounted<StringIOBuffer>(kRequestText),
+          kRequestText.size());
 
-  int bytes_written = 0;
   while (request_buffer->BytesRemaining() > 0) {
     TestCompletionCallback write_callback;
     int write_result =
@@ -40,18 +34,15 @@ void SendRequestAndResponse(StreamSocket* socket,
 
     write_result = write_callback.GetResult(write_result);
     ASSERT_GT(write_result, 0);
-    ASSERT_LE(bytes_written + write_result, request_len);
+    ASSERT_LE(write_result, request_buffer->size());
     request_buffer->DidConsume(write_result);
-
-    bytes_written += write_result;
   }
-  ASSERT_EQ(request_len, bytes_written);
 
   // Confirm that the server receives what client sent.
   std::string data_received =
-      ReadDataOfExpectedLength(connected_socket, bytes_written);
+      ReadDataOfExpectedLength(connected_socket, kRequestText.length());
   ASSERT_TRUE(connected_socket->IsConnectedAndIdle());
-  ASSERT_EQ(request_text, data_received);
+  ASSERT_EQ(kRequestText, data_received);
 
   // Write server response.
   SendServerResponse(connected_socket);
@@ -59,29 +50,29 @@ void SendRequestAndResponse(StreamSocket* socket,
 
 std::string ReadDataOfExpectedLength(StreamSocket* socket,
                                      int expected_bytes_read) {
-  int bytes_read = 0;
-  scoped_refptr<IOBufferWithSize> read_buffer =
-      base::MakeRefCounted<IOBufferWithSize>(expected_bytes_read);
-  while (bytes_read < expected_bytes_read) {
+  auto read_buffer = base::MakeRefCounted<DrainableIOBuffer>(
+      base::MakeRefCounted<IOBufferWithSize>(expected_bytes_read),
+      expected_bytes_read);
+  while (read_buffer->size() > 0) {
     TestCompletionCallback read_callback;
-    int rv = socket->Read(read_buffer.get(), expected_bytes_read - bytes_read,
+    int rv = socket->Read(read_buffer.get(), read_buffer->size(),
                           read_callback.callback());
     EXPECT_TRUE(rv >= 0 || rv == ERR_IO_PENDING);
     rv = read_callback.GetResult(rv);
-    EXPECT_GE(rv, 0);
-    bytes_read += rv;
+    CHECK_GE(rv, 0);
+    EXPECT_LE(rv, read_buffer->size());
+    read_buffer->DidConsume(rv);
   }
-  EXPECT_EQ(expected_bytes_read, bytes_read);
-  return std::string(read_buffer->data(), bytes_read);
+  read_buffer->SetOffset(0);
+  return std::string(base::as_string_view(read_buffer->span()));
 }
 
 void SendServerResponse(StreamSocket* socket) {
-  const char kServerReply[] = "HTTP/1.1 404 Not Found";
-  int reply_len = strlen(kServerReply);
+  const std::string kServerReply = "HTTP/1.1 404 Not Found";
   scoped_refptr<DrainableIOBuffer> write_buffer =
       base::MakeRefCounted<DrainableIOBuffer>(
-          base::MakeRefCounted<IOBufferWithSize>(reply_len), reply_len);
-  memcpy(write_buffer->data(), kServerReply, reply_len);
+          base::MakeRefCounted<StringIOBuffer>(kServerReply),
+          kServerReply.size());
   int bytes_written = 0;
   while (write_buffer->BytesRemaining() > 0) {
     TestCompletionCallback write_callback;
@@ -90,7 +81,8 @@ void SendServerResponse(StreamSocket* socket) {
                       write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
     write_result = write_callback.GetResult(write_result);
     ASSERT_GE(write_result, 0);
-    ASSERT_LE(bytes_written + write_result, reply_len);
+    ASSERT_LE(bytes_written + write_result,
+              static_cast<int>(kServerReply.size()));
     write_buffer->DidConsume(write_result);
     bytes_written += write_result;
   }

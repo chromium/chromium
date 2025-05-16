@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/tcp_socket.h"
 
 #include <errno.h>
@@ -188,7 +183,7 @@ class TCPSocketDefaultWin::CoreImpl : public TCPSocketWin::Core {
   // TODO(mmenke): Can writes be switched to WSAEventSelect as well? That would
   // allow removing this class. The only concern is whether that would have a
   // negative perf impact.
-  OVERLAPPED write_overlapped_;
+  OVERLAPPED write_overlapped_ = {};
 
   // The buffers used in Read() and Write().
   scoped_refptr<IOBuffer> read_iobuffer_;
@@ -247,7 +242,6 @@ TCPSocketDefaultWin::CoreImpl::CoreImpl(TCPSocketDefaultWin* socket)
       socket_(socket),
       reader_(this),
       writer_(this) {
-  memset(&write_overlapped_, 0, sizeof(write_overlapped_));
   write_overlapped_.hEvent = WSACreateEvent();
 }
 
@@ -259,7 +253,6 @@ TCPSocketDefaultWin::CoreImpl::~CoreImpl() {
   // in Detach().
   write_watcher_.StopWatching();
   WSACloseEvent(write_overlapped_.hEvent);
-  memset(&write_overlapped_, 0xaf, sizeof(write_overlapped_));
 }
 
 void TCPSocketDefaultWin::CoreImpl::WatchForRead() {
