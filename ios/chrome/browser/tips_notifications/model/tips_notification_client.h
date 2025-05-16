@@ -110,6 +110,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // sent.
   bool ShouldSendEnhancedSafeBrowsing(ProfileIOS* profile);
 
+  // Returns true if the CPE notification should be sent.
+  bool ShouldSendCPE(ProfileIOS* profile);
+
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
@@ -123,6 +126,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowOmniboxPosition(Browser* browser);
   void ShowLensPromo(Browser* browser);
   void ShowEnhancedSafeBrowsingPromo(Browser* browser);
+  void ShowCPEPromo(Browser* browser);
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);

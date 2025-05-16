@@ -289,6 +289,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Password Saved (deprecated)"/>
   <int value="3" label="Autofill Used"/>
   <int value="4" label="Set Up List"/>
+  <int value="5" label="Tips Notification"/>
 </enum>
 
 <!-- LINT.IfChange(IOSDefaultBrowserBannerPromoPromoSessionEndedReason) -->

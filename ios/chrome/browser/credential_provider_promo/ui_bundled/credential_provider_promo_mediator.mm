@@ -111,8 +111,10 @@ NSString* GetLearnMoreSubtitleString() {
             (CredentialProviderPromoTrigger)trigger
                                         promoSeen:
                                             (BOOL)promoSeenInCurrentSession {
-  if (trigger == CredentialProviderPromoTrigger::SetUpList) {
-    // Always allow showing when triggered by user via the SetUpList.
+  if (trigger == CredentialProviderPromoTrigger::SetUpList ||
+      trigger == CredentialProviderPromoTrigger::TipsNotification) {
+    // Always allow showing when triggered by user via the SetUpList or Tips
+    // Notification.
     return YES;
   }
   BOOL impressionLimitMet =
@@ -153,6 +155,10 @@ NSString* GetLearnMoreSubtitleString() {
       break;
     case CredentialProviderPromoTrigger::SetUpList:
       source = IOSCredentialProviderPromoSource::kSetUpList;
+      [self setAnimation];
+      break;
+    case CredentialProviderPromoTrigger::TipsNotification:
+      source = IOSCredentialProviderPromoSource::kTipsNotification;
       [self setAnimation];
       break;
   }

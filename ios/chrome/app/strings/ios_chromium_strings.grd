@@ -727,6 +727,12 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_TIPS_SETTINGS_TOGGLE_MESSSAGE" desc="The label for the notification opt-in toggle message for tips notifications.">
         Tips on getting the most out of Chromium.
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_CPE_BODY" desc="Text for the body of a Tips notification that encourages the user to enable the CPE.">
+        To easily get your saved passwords in other apps, chose Chromium for Autofill.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_CPE_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable the CPE.">
+        Chromium Tip: Get your passwords in any app
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY" desc="Text for the body of a Tips notification that encourages the user to set the app as their default browser">
         Use Chromium anytime you tap links in messages or other apps.
       </message>

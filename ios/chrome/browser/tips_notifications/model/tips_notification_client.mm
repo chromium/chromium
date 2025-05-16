@@ -11,6 +11,7 @@
 #import "base/task/bind_post_task.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -470,8 +472,9 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type,
       return ShouldSendLens(profile);
     case TipsNotificationType::kEnhancedSafeBrowsing:
       return ShouldSendEnhancedSafeBrowsing(profile);
-    case TipsNotificationType::kLensOverlay:
     case TipsNotificationType::kCPE:
+      return ShouldSendCPE(profile);
+    case TipsNotificationType::kLensOverlay:
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -562,6 +565,23 @@ bool TipsNotificationClient::ShouldSendEnhancedSafeBrowsing(
          !safe_browsing::IsEnhancedProtectionEnabled(*user_prefs);
 }
 
+bool TipsNotificationClient::ShouldSendCPE(ProfileIOS* profile) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!local_state_->GetBoolean(
+          prefs::kIosCredentialProviderPromoPolicyEnabled)) {
+    return false;
+  }
+  bool is_credential_provider_enabled =
+      password_manager_util::IsCredentialProviderEnabledOnStartup(local_state_);
+  if (is_credential_provider_enabled) {
+    return false;
+  }
+  // TODO(crbug.com/417940156): Refine CPE trigger criteria to include:
+  //   * have not seen the promo in the last 30 days, AND
+  //   * have used autofill in the last 30 days.
+  return true;
+}
+
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetActiveForegroundBrowser() != nullptr;
@@ -596,8 +616,10 @@ void TipsNotificationClient::ShowUIForNotificationType(
     case TipsNotificationType::kEnhancedSafeBrowsing:
       ShowEnhancedSafeBrowsingPromo(browser);
       break;
-    case TipsNotificationType::kLensOverlay:
     case TipsNotificationType::kCPE:
+      ShowCPEPromo(browser);
+      break;
+    case TipsNotificationType::kLensOverlay:
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -670,6 +692,14 @@ void TipsNotificationClient::ShowEnhancedSafeBrowsingPromo(Browser* browser) {
   [HandlerForProtocol(browser->GetCommandDispatcher(),
                       BrowserCoordinatorCommands)
       showEnhancedSafeBrowsingPromo];
+}
+
+void TipsNotificationClient::ShowCPEPromo(Browser* browser) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [HandlerForProtocol(browser->GetCommandDispatcher(),
+                      CredentialProviderPromoCommands)
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 TipsNotification];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(

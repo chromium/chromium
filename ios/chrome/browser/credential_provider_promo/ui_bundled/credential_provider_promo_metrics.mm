@@ -22,6 +22,10 @@ const char kIOSCredentialProviderPromoOnSetUpListIsReminderHistogram[] =
     "IOS.CredentialProviderExtension.Promo.OnSetUpList.IsReminder";
 const char kIOSCredentialProviderPromoOnSetUpListHistogram[] =
     "IOS.CredentialProviderExtension.Promo.OnSetUpList";
+const char kIOSCredentialProviderPromoOnTipsNotificationIsReminderHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnTipsNotification.IsReminder";
+const char kIOSCredentialProviderPromoOnTipsNotificationHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnTipsNotification";
 
 namespace credential_provider_promo {
 
@@ -50,6 +54,12 @@ void RecordAction(IOSCredentialProviderPromoSource source,
       name = is_reminder
                  ? kIOSCredentialProviderPromoOnSetUpListIsReminderHistogram
                  : kIOSCredentialProviderPromoOnSetUpListHistogram;
+      break;
+    case IOSCredentialProviderPromoSource::kTipsNotification:
+      name =
+          is_reminder
+              ? kIOSCredentialProviderPromoOnTipsNotificationIsReminderHistogram
+              : kIOSCredentialProviderPromoOnTipsNotificationHistogram;
       break;
     case IOSCredentialProviderPromoSource::kUnknown:
       NOTREACHED();
