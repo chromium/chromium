@@ -41,6 +41,18 @@ TEST(SimpleResponseParserTest, Valid) {
       ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
 }
 
+TEST(SimpleResponseParserTest, EmptyProtoField) {
+  SimpleResponseParser parser("optimization_guide.proto.ComposeResponse",
+                              proto::ProtoField(),
+                              /*suppress_parsing_incomplete_response=*/true);
+  ParseResponseFuture response_future;
+  parser.ParseAsync("output", response_future.GetCallback());
+  auto maybe_metadata = response_future.Get();
+
+  EXPECT_FALSE(maybe_metadata.has_value());
+  EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
+}
+
 TEST(SimpleResponseParserTest, BadProtoType) {
   SimpleResponseParser parser("garbage type", CreateProtoField(1),
                               /*suppress_parsing_incomplete_response=*/true);
