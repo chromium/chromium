@@ -1926,17 +1926,10 @@ void BrowserAutofillManager::OnFocusOnNonFormFieldImpl() {
 
   ProcessPendingFormForUpload();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // There is no way of determining whether ChromeVox is in use, so assume it's
-  // being used.
-  external_delegate_->OnAutofillAvailabilityEvent(
-      mojom::AutofillSuggestionAvailability::kNoSuggestions);
-#else
   if (external_delegate_->HasActiveScreenReader()) {
     external_delegate_->OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
   }
-#endif
 }
 
 void BrowserAutofillManager::OnFocusOnFormFieldImpl(
@@ -1960,14 +1953,10 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   autofill_field->set_was_focused(true);
 
   // Notify installed screen readers if the focus is on a field for which there
-  // are suggestions to present. Ignore if a screen reader is not present. If
-  // the platform is ChromeOS, then assume ChromeVox is in use as there is no
-  // way of determining whether it's being used from this point in the code.
-#if !BUILDFLAG(IS_CHROMEOS)
+  // are suggestions to present. Ignore if a screen reader is not present.
   if (!external_delegate_->HasActiveScreenReader()) {
     return;
   }
-#endif
 
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   SuggestionsContext context =

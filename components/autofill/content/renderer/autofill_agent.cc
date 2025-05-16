@@ -806,7 +806,7 @@ void AutofillAgent::OnDestruct() {
 }
 
 void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
-  is_screen_reader_enabled_ = mode.has_mode(ui::AXMode::kExtendedProperties);
+  is_screen_reader_enabled_ = mode.has_mode(ui::AXMode::kScreenReader);
 }
 
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,

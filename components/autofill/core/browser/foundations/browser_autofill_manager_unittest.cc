@@ -7395,17 +7395,8 @@ class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,
   }
 
   void CheckSuggestionsAvailableIfScreenReaderRunning() {
-#if BUILDFLAG(IS_CHROMEOS)
-    // The only existing functions for determining whether ChromeVox is in use
-    // are in the src/chrome directory, which cannot be included in components.
-    // Thus, if the platform is ChromeOS, we assume that ChromeVox is in use at
-    // this point in the code.
-    EXPECT_EQ(true,
-              external_delegate()->has_suggestions_available_on_field_focus());
-#else
     EXPECT_EQ(has_active_screen_reader_,
               external_delegate()->has_suggestions_available_on_field_focus());
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void CheckNoSuggestionsAvailableOnFieldFocus() {

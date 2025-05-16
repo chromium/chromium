@@ -483,10 +483,8 @@ bool AutofillExternalDelegate::HasActiveScreenReader() const {
   // a11y internally.
   return false;
 #else
-  // Note: This always returns false if ChromeVox is in use because the
-  // process-wide AXMode is not updated in that case.
   return ui::AXPlatform::GetInstance().GetMode().has_mode(
-      ui::AXMode::kExtendedProperties);
+      ui::AXMode::kScreenReader);
 #endif
 }
 
