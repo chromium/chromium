@@ -953,31 +953,51 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
 }
 
 std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
+  const char* const kNoRestartSwitches[] = {
+      // Automation might want to launch Chrome elevated.
+      switches::kEnableAutomation,
+      // Never attempt to de-elevate a second time.
+      switches::kDoNotDeElevateOnLaunch,
+      // Chrome is launched elevated in system-level installs to prompt the
+      // user, see `DoUninstallTasks`.
+      // TODO(crbug.com/418159641): Investigate whether this stage of uninstall
+      // could be run de-elevated.
+      switches::kUninstall};
+
   // Check if the browser process is launching elevated, and attempt to
   // automatically de-elevate. Do not interfere with automation scenarios. Don't
   // bother trying when UAC is disabled because it won't work anyway.
-  if (base::FeatureList::IsEnabled(features::kAutoDeElevate) &&
-      base::win::UserAccountIsUnnecessarilyElevated() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableAutomation) &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDoNotDeElevateOnLaunch)) {
-    base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
-    // Give a fully qualified .exe name
-    base::FilePath full_exe_name;
-    if (base::PathService::Get(base::FILE_EXE, &full_exe_name)) {
-      new_command_line.SetProgram(full_exe_name);
-    }
-    new_command_line.AppendSwitch(switches::kDoNotDeElevateOnLaunch);
+  if (!base::FeatureList::IsEnabled(features::kAutoDeElevate)) {
+    return std::nullopt;
+  }
 
-    const HRESULT hr = base::win::RunDeElevated(new_command_line).IsValid()
-                           ? S_OK
-                           : HRESULT_FROM_WIN32(::GetLastError());
-    base::UmaHistogramSparse("Windows.AutoDeElevateResult", hr);
-    // If it fails, it doesn't matter why, just proceed with the normal launch.
-    if (SUCCEEDED(hr)) {
-      return CHROME_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED;
+  if (!base::win::UserAccountIsUnnecessarilyElevated()) {
+    return std::nullopt;
+  }
+
+  for (const auto* do_not_restart_switch : kNoRestartSwitches) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            do_not_restart_switch)) {
+      return std::nullopt;
     }
   }
+
+  base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
+  // Give a fully qualified .exe name
+  base::FilePath full_exe_name;
+  if (base::PathService::Get(base::FILE_EXE, &full_exe_name)) {
+    new_command_line.SetProgram(full_exe_name);
+  }
+  new_command_line.AppendSwitch(switches::kDoNotDeElevateOnLaunch);
+
+  const HRESULT hr = base::win::RunDeElevated(new_command_line).IsValid()
+                         ? S_OK
+                         : HRESULT_FROM_WIN32(::GetLastError());
+  base::UmaHistogramSparse("Windows.AutoDeElevateResult", hr);
+  // If it fails, it doesn't matter why, just proceed with the normal launch.
+  if (SUCCEEDED(hr)) {
+    return CHROME_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED;
+  }
+
   return std::nullopt;
 }
