@@ -2300,6 +2300,10 @@ OmniboxAction* AutocompleteMatch::GetActionAt(size_t index) const {
   return index >= actions.size() ? nullptr : actions[index].get();
 }
 
+bool AutocompleteMatch::HasTakeoverAction(OmniboxActionId id) const {
+  return takeover_action && takeover_action->ActionId() == id;
+}
+
 AutocompleteMatch AutocompleteMatch::CreateActionMatch(
     size_t action_index) const {
   CHECK_LT(action_index, actions.size());

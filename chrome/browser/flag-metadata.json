@@ -1766,6 +1766,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "contextual-search-open-lens-action-uses-thumbnail",
+    "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "contextual-search-suppress-short-view",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
     "expiry_milestone": 110

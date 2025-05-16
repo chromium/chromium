@@ -1699,6 +1699,9 @@ extern const char kOmniboxSearchAggregatorDescription[];
 extern const char kContextualSearchBoxUsesContextualSearchProviderName[];
 extern const char kContextualSearchBoxUsesContextualSearchProviderDescription[];
 
+extern const char kContextualSearchOpenLensActionUsesThumbnailName[];
+extern const char kContextualSearchOpenLensActionUsesThumbnailDescription[];
+
 extern const char kOmniboxContextualSearchOnFocusSuggestionsName[];
 extern const char kOmniboxContextualSearchOnFocusSuggestionsDescription[];
 

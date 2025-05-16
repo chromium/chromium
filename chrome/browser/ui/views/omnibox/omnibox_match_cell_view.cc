@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -242,7 +243,11 @@ bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
          match.type == AutocompleteMatchType::CALCULATOR ||
          (!match.image_url.is_empty() &&
           match.provider->type() !=
-              AutocompleteProvider::TYPE_UNSCOPED_EXTENSION);
+              AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) ||
+         (match.HasTakeoverAction(
+              OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
+          omnibox_feature_configs::ContextualSearch::Get()
+              .open_lens_action_uses_thumbnail);
 }
 
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
@@ -401,8 +406,12 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   int height = image.height();
 
   // Weather icon square background should be the same color as the pop-up
-  // background.
-  if (is_weather_answer) {
+  // background. The experimental thumbnail is treated similar to the
+  // weather icon and is likewise resized to reduce downscaling artifacts.
+  if (is_weather_answer ||
+      (match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
+       omnibox_feature_configs::ContextualSearch::Get()
+           .open_lens_action_uses_thumbnail)) {
     // Explicitly resize the weather icon to avoid pixelation.
     gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
         image, skia::ImageOperations::RESIZE_GOOD,

@@ -141,6 +141,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
   DECLARE_FEATURE(kContextualSearchBoxUsesContextualSearchProvider);
   DECLARE_FEATURE(kOmniboxZeroSuggestSynchronousMatchesOnly);
+  DECLARE_FEATURE(kContextualSearchOpenLensActionUsesThumbnail);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -169,6 +170,10 @@ struct ContextualSearch : Config<ContextualSearch> {
   // Whether to omit asynchronous matches in ZeroSuggestProvider specifically,
   // a behavior that is relevant to one planned configuration of this feature.
   bool zero_suggest_synchronous_matches_only;
+
+  // Whether the Lens entrypoint action uses a thumbnail of web contents view
+  // instead of its regular vector icon.
+  bool open_lens_action_uses_thumbnail;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.

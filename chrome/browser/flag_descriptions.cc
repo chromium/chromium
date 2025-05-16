@@ -2954,6 +2954,12 @@ const char kContextualSearchBoxUsesContextualSearchProviderDescription[] =
     "Enables the contextual search box to use the ContextualSearchProvider "
     "instead of the ZeroSuggestProvider as the source for suggestions.";
 
+const char kContextualSearchOpenLensActionUsesThumbnailName[] =
+    "Contextual search open Lens action uses thumbnail";
+const char kContextualSearchOpenLensActionUsesThumbnailDescription[] =
+    "Enables web content thumbnail image to override the Lens icon "
+    "for the omnibox entry point action match.";
+
 const char kOmniboxContextualSearchOnFocusSuggestionsName[] =
     "Omnibox contextual search on focus suggestions";
 const char kOmniboxContextualSearchOnFocusSuggestionsDescription[] =

@@ -90,6 +90,10 @@ BASE_FEATURE(ContextualSearch::kOmniboxZeroSuggestSynchronousMatchesOnly,
              "OmniboxZeroSuggestSynchronousMatchesOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kContextualSearchOpenLensActionUsesThumbnail,
+             "ContextualSearchOpenLensActionUsesThumbnail",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -118,6 +122,8 @@ ContextualSearch::ContextualSearch() {
       kContextualSearchBoxUsesContextualSearchProvider);
   zero_suggest_synchronous_matches_only =
       base::FeatureList::IsEnabled(kOmniboxZeroSuggestSynchronousMatchesOnly);
+  open_lens_action_uses_thumbnail = base::FeatureList::IsEnabled(
+      kContextualSearchOpenLensActionUsesThumbnail);
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;

@@ -10312,6 +10312,8 @@ from previous Chrome versions.
   <int value="-1423193305"
       label="AutofillRationalizeRepeatedServerPredictions:enabled"/>
   <int value="-1421676705" label="force-webxr-runtime"/>
+  <int value="-1421447857"
+      label="ContextualSearchOpenLensActionUsesThumbnail:enabled"/>
   <int value="-1420949910" label="ChromeWideEchoCancellation:enabled"/>
   <int value="-1420908477" label="EnterOverviewFromWallpaper:disabled"/>
   <int value="-1420676362"
@@ -13068,6 +13070,8 @@ from previous Chrome versions.
   <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
   <int value="-368811558" label="DynamicTopChrome:enabled"/>
+  <int value="-368143295"
+      label="ContextualSearchOpenLensActionUsesThumbnail:disabled"/>
   <int value="-368106169"
       label="CrOSLateBootCrasSplitAlsaUSBInternal:disabled"/>
   <int value="-367820709" label="PartitionVisitedLinkDatabase:disabled"/>

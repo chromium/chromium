@@ -6608,6 +6608,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
                             kContextualSearchBoxUsesContextualSearchProvider)},
 
+    {"contextual-search-open-lens-action-uses-thumbnail",
+     flag_descriptions::kContextualSearchOpenLensActionUsesThumbnailName,
+     flag_descriptions::kContextualSearchOpenLensActionUsesThumbnailDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
+                            kContextualSearchOpenLensActionUsesThumbnail)},
+
     {"omnibox-contextual-search-on-focus-suggestions",
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsName,
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsDescription,

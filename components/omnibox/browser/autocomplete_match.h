@@ -707,6 +707,9 @@ struct AutocompleteMatch {
     return it != actions.end() ? it->get() : nullptr;
   }
 
+  // Returns true if this match has a `takeover_action` with given `id`.
+  bool HasTakeoverAction(OmniboxActionId id) const;
+
   // Create a new match from scratch based on this match and its action at
   // given `action_index`. The content and takeover match on the returned
   // match will be set up to execute the action, and only a minimum of

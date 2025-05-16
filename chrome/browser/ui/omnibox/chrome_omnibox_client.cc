@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -91,6 +92,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -554,6 +556,26 @@ void ChromeOmniboxClient::OnResultChanged(
         request_ids_.push_back(bitmap_fetcher_service->RequestImage(
             turl->favicon_url(), base::BindOnce(on_bitmap_fetched, result_index,
                                                 turl->favicon_url())));
+      }
+    }
+    if (match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
+        omnibox_feature_configs::ContextualSearch::Get()
+            .open_lens_action_uses_thumbnail) {
+      if (const content::WebContents* web_contents =
+              location_bar_->GetWebContents()) {
+        content::RenderWidgetHostView* view =
+            web_contents->GetPrimaryMainFrame()
+                ->GetRenderViewHost()
+                ->GetWidget()
+                ->GetView();
+        if (view && view->IsSurfaceAvailableForCopy()) {
+          view->CopyFromSurface(
+              /*src_rect=*/gfx::Rect(),
+              /*output_size=*/gfx::Size(),
+              base::BindPostTask(
+                  base::SequencedTaskRunner::GetCurrentDefault(),
+                  base::BindOnce(on_bitmap_fetched, result_index, GURL())));
+        }
       }
     }
     if (!match.ImageUrl().is_empty()) {
