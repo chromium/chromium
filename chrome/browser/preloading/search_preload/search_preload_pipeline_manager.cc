@@ -54,7 +54,11 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchPreloadPipelineManager);
 SearchPreloadPipelineManager::SearchPreloadPipelineManager(
     content::WebContents* web_contents)
     : content::WebContentsUserData<SearchPreloadPipelineManager>(
-          *web_contents) {}
+          *web_contents) {
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents);
+  SetIsNavigationInDomainCallback(preloading_data);
+}
 
 SearchPreloadPipelineManager::~SearchPreloadPipelineManager() = default;
 

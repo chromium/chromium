@@ -31,9 +31,6 @@ void SearchPreloadPipeline::UpdateConfidence(content::WebContents& web_contents,
 
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&web_contents);
-  // TODO(crbug.com/409506954): Avoid calling it multiple times. (Inherited from
-  // SearchPrefetch.)
-  SetIsNavigationInDomainCallback(preloading_data);
 
   // Safety: The ownership of this callback will be passed to
   // `PreloadingDataImpl`, which has lifetime bounded by `web_contents`. So,
@@ -72,9 +69,6 @@ bool SearchPreloadPipeline::StartPrefetch(
 
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&web_contents);
-  // TODO(crbug.com/409506954): Avoid calling it multiple times. (Inherited from
-  // SearchPrefetch.)
-  SetIsNavigationInDomainCallback(preloading_data);
 
   // Safety: The ownership of this callback will be passed to
   // `PreloadingDataImpl`, which has lifetime bounded by `web_contents`. So,
@@ -119,9 +113,6 @@ void SearchPreloadPipeline::StartPrerender(
 
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&web_contents);
-  // TODO(crbug.com/409506954): Avoid calling it multiple times. (Inherited from
-  // SearchPrefetch.)
-  SetIsNavigationInDomainCallback(preloading_data);
 
   // Safety: The ownership of this callback will be passed to
   // `PreloadingDataImpl`, which has lifetime bounded by `web_contents`. So,
