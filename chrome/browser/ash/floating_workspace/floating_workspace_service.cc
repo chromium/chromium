@@ -145,6 +145,16 @@ void FloatingWorkspaceService::InitiateSigninTask() {
       FloatingWorkspaceDialog::ShowDefaultScreen();
     }
   }
+  if (should_run_restore_) {
+    // We need to run restore and we've started showing the startup UI
+    // above. It might be that all relevant Sync state changes came before
+    // this method (e.g. often happens in wake-up flow while we are on
+    // the lock screen), so we trigger `OnStateChanged` here manually to
+    // make sure that we process current Sync states at least once. Otherwise we
+    // might show the startup UI for a long time (until the next Sync update)
+    // even though all needed data is already available.
+    OnStateChanged(sync_service_);
+  }
 }
 
 // TODO(b/309137462): Clean up params to not need to be passed in.
