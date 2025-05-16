@@ -165,22 +165,56 @@ public final class ViewUtils {
     }
 
     /**
-     * Sets clip children for the provided ViewGroup and all of its ancestors.
-     * @param view The ViewGroup whose children should (not) be clipped.
-     * @param clip Whether to clip children to the parent bounds.
+     * As {@link #setAncestorsShouldClipChildren(ViewGroup, boolean, int)}, defaulting to stopping
+     * at the view with id android.R.id.content.
      */
     public static void setAncestorsShouldClipChildren(ViewGroup view, boolean clip) {
+        setAncestorsShouldClipChildren(view, clip, android.R.id.content);
+    }
+
+    /**
+     * Sets clip children for the provided ViewGroup and all of its ancestors.
+     *
+     * @param view The ViewGroup whose children should (not) be clipped.
+     * @param clip Whether to clip children to the parent bounds.
+     * @param viewIdToStopAt The id of the last view in the ancestor list on which the operation
+     *     should performed; potentially NO_ID signifying the operation should traverse all the way
+     *     to the root.
+     */
+    public static void setAncestorsShouldClipChildren(
+            ViewGroup view, boolean clip, int viewIdToStopAt) {
         ViewGroup parent = view;
         while (parent != null) {
             parent.setClipChildren(clip);
             if (!(parent.getParent() instanceof ViewGroup)) break;
-            if (parent.getId() == android.R.id.content) break;
+            if (viewIdToStopAt != View.NO_ID && parent.getId() == viewIdToStopAt) break;
+            parent = (ViewGroup) parent.getParent();
+        }
+    }
+
+    /**
+     * Sets clipToPadding for the provided ViewGroup and all of its ancestors.
+     *
+     * @param view The ViewGroup who should (not) be clipped to padding.
+     * @param clip Whether to clip to padding.
+     * @param viewIdToStopAt The id of the last view in the ancestor list on which the operation
+     *     should performed; potentially NO_ID signifying the operation should traverse all the way
+     *     to the root.
+     */
+    public static void setAncestorsShouldClipToPadding(
+            ViewGroup view, boolean clip, int viewIdToStopAt) {
+        ViewGroup parent = view;
+        while (parent != null) {
+            parent.setClipToPadding(clip);
+            if (!(parent.getParent() instanceof ViewGroup)) break;
+            if (viewIdToStopAt != View.NO_ID && parent.getId() == viewIdToStopAt) break;
             parent = (ViewGroup) parent.getParent();
         }
     }
 
     /**
      * Creates a {@link RoundedBitmapDrawable} using the provided {@link Bitmap} and cornerRadius.
+     *
      * @param resources The {@link Resources}.
      * @param icon The {@link Bitmap} to round.
      * @param cornerRadius The corner radius.

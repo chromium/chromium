@@ -251,6 +251,8 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Integer> mKeyboardAccessoryHeightSupplier =
             new ObservableSupplierImpl<>(0);
+    private final ObservableSupplierImpl<Integer> mControlContainerTranslationSupplier =
+            new ObservableSupplierImpl<>(0);
     private HistogramWatcher mStartupExpectation;
     private WindowAndroid mWindowAndroid;
 
@@ -314,6 +316,7 @@ public class ToolbarPositionControllerTest {
                         mBottomControlsStacker,
                         mBottomToolbarOffsetSupplier,
                         mProgressBarContainer,
+                        mControlContainerTranslationSupplier,
                         mContext);
     }
 
@@ -791,7 +794,7 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
-    public void testKeyboardAccessoryHeight() {
+    public void testControlContainerTranslationAdjustments() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
@@ -808,6 +811,12 @@ public class ToolbarPositionControllerTest {
 
         mKeyboardAccessoryHeightSupplier.set(0);
         verify(mControlContainerView, times(2)).setTranslationY(12);
+
+        mControlContainerTranslationSupplier.set(10);
+        verify(mControlContainerView).setTranslationY(22);
+
+        mControlContainerTranslationSupplier.set(20);
+        verify(mControlContainerView).setTranslationY(32);
     }
 
     private void assertControlsAtBottom() {

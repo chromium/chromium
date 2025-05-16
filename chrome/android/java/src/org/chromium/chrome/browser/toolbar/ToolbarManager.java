@@ -1665,9 +1665,11 @@ public class ToolbarManager
                 mLayoutStateProvider != null
                         ? mLayoutStateProvider.getActiveLayoutType() == LayoutType.TAB_SWITCHER
                         : false);
-        ObservableSupplier<Integer> keyboardAccessoryHeightSupplier =
-                new KeyboardAccessoryHeightSupplier(
+        KeyboardAccessoryStateSupplier keyboardAccessoryHeightSupplier =
+                new KeyboardAccessoryStateSupplier(
                         ManualFillingComponentSupplier.from(mWindowAndroid));
+        ObservableSupplierImpl<Integer> controlContainerTranslationSupplier =
+                new ObservableSupplierImpl<>(0);
         new ToolbarPositionController(
                 mBrowserControlsSizer,
                 ContextUtils.getAppSharedPreferences(),
@@ -1682,6 +1684,7 @@ public class ToolbarManager
                 mBottomControlsStacker,
                 mBottomToolbarControlsOffsetSupplier,
                 mProgressBarContainer,
+                controlContainerTranslationSupplier,
                 mActivity);
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
             mMiniOriginBarController =
@@ -1692,7 +1695,12 @@ public class ToolbarManager
                             mActivity,
                             mControlContainer,
                             mSuppressToolbarSceneLayerSupplier,
-                            mBrowserControlsSizer);
+                            mBrowserControlsSizer,
+                            mWindowAndroid.getInsetObserver(),
+                            controlContainerTranslationSupplier,
+                            () ->
+                                    keyboardAccessoryHeightSupplier.isSheetShowing(
+                                            mControlContainer.getView()));
         }
     }
 

@@ -87,6 +87,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Context mContext;
     private final ObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
+    private final ObservableSupplier<Integer> mControlContainerTranslationSupplier;
     @LayerVisibility private int mLayerVisibility;
     private final BottomControlsLayerWithOffset mBottomToolbarLayer;
     private final BottomControlsLayerWithOffset mProgressBarLayer;
@@ -128,6 +129,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             BottomControlsStacker bottomControlsStacker,
             ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
             View toolbarProgressBarContainer,
+            ObservableSupplier<Integer> controlContainerTranslationSupplier,
             Context context) {
         mBrowserControlsSizer = browserControlsSizer;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
@@ -141,6 +143,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mBottomControlsStacker = bottomControlsStacker;
         mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
         mToolbarProgressBarContainer = toolbarProgressBarContainer;
+        mControlContainerTranslationSupplier = controlContainerTranslationSupplier;
         mContext = context;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
@@ -244,6 +247,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
         mIsFormFieldFocusedSupplier.addObserver(
                 (focused) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer));
+        mControlContainerTranslationSupplier.addObserver(
+                (offset) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
         updateCurrentPosition();
     }
 
@@ -450,7 +455,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private void updateViewOffset(BottomControlsLayerWithOffset layer, View viewForLayer) {
         if (mLayerVisibility != LayerVisibility.VISIBLE) return;
 
-        int layerYOffset = layer.getLayerOffsetPx() - mKeyboardAccessoryHeightSupplier.get();
+        int layerYOffset =
+                layer.getLayerOffsetPx()
+                        - mKeyboardAccessoryHeightSupplier.get()
+                        + mControlContainerTranslationSupplier.get();
         viewForLayer.setTranslationY(layerYOffset);
     }
 

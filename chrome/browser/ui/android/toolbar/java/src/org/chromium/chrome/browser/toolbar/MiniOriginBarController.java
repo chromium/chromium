@@ -6,8 +6,15 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -18,8 +25,14 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
+import org.chromium.ui.base.ViewUtils;
+
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * Controller responsible for toggling the "mini origin" presentation of the browsing mode toolbar.
@@ -28,6 +41,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
  */
 @NullMarked
 public class MiniOriginBarController implements Observer {
+
     private final LocationBar mLocationBar;
     private final ObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -37,11 +51,14 @@ public class MiniOriginBarController implements Observer {
     private final ControlContainer mControlContainer;
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
     private final BrowserControlsSizer mBrowserControlsSizer;
+    private final BooleanSupplier mIsKeyboardAccessorySheetShowing;
+    private final MiniOriginWindowInsetsAnimationListener mWindowInsetsAnimationListener;
     private boolean mShowMiniOriginBar;
     private FrameLayout.LayoutParams mDefaultLocationBarLayoutParams;
     private boolean mOriginBarClickedInSession;
     private final TouchEventObserver mTouchEventObserver;
     private final int mDefaultLocationBarRightPadding;
+    private boolean mFormFieldFocusChanged;
 
     /**
      * @param locationBar LocationBar instance used to change the presentation of e.g. the UrlBar
@@ -60,7 +77,10 @@ public class MiniOriginBarController implements Observer {
             Context context,
             ControlContainer controlContainer,
             ObservableSupplierImpl<Boolean> suppressToolbarSceneLayerSupplier,
-            BrowserControlsSizer browserControlsSizer) {
+            BrowserControlsSizer browserControlsSizer,
+            InsetObserver insetObserver,
+            ObservableSupplierImpl<Integer> controlContainerTranslationSupplier,
+            BooleanSupplier isKeyboardAccessorySheetShowing) {
         mLocationBar = locationBar;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
@@ -68,12 +88,25 @@ public class MiniOriginBarController implements Observer {
         mControlContainer = controlContainer;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
         mBrowserControlsSizer = browserControlsSizer;
+        mIsKeyboardAccessorySheetShowing = isKeyboardAccessorySheetShowing;
         mDefaultLocationBarRightPadding = mLocationBar.getContainerView().getPaddingRight();
         mDefaultLocationBarLayoutParams =
                 (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
         mBrowserControlsSizer.addObserver(this);
+        mWindowInsetsAnimationListener =
+                new MiniOriginWindowInsetsAnimationListener(
+                        keyboardVisibilityDelegate,
+                        (ViewGroup) mLocationBar.getContainerView(),
+                        controlContainerTranslationSupplier,
+                        () -> mFormFieldFocusChanged = false,
+                        this::waitingForImeAnimationToStart);
+        insetObserver.addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
 
-        mIsFormFieldFocusedObserver = (focused) -> updateMiniOriginBarState();
+        mIsFormFieldFocusedObserver =
+                (focused) -> {
+                    mFormFieldFocusChanged = true;
+                    updateMiniOriginBarState();
+                };
         mKeyboardVisibilityObserver = (showing) -> updateMiniOriginBarState();
 
         mIsFormFieldFocusedSupplier.addObserver(mIsFormFieldFocusedObserver);
@@ -105,6 +138,7 @@ public class MiniOriginBarController implements Observer {
                         && isFormFieldFocused
                         && isKeyboardVisible;
         if (showMiniOriginBar == mShowMiniOriginBar) return;
+
         if (showMiniOriginBar) {
             mDefaultLocationBarLayoutParams =
                     (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
@@ -149,5 +183,78 @@ public class MiniOriginBarController implements Observer {
     @Override
     public void onControlsPositionChanged(int controlsPosition) {
         updateMiniOriginBarState();
+    }
+
+    @VisibleForTesting
+    boolean waitingForImeAnimationToStart() {
+        return mFormFieldFocusChanged && !mIsKeyboardAccessorySheetShowing.getAsBoolean();
+    }
+
+    @VisibleForTesting
+    static class MiniOriginWindowInsetsAnimationListener implements WindowInsetsAnimationListener {
+
+        private boolean mAnimationInProgress;
+        private int mFinalKeyboardHeight;
+        private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+        private final ViewGroup mContainerView;
+        private final ObservableSupplierImpl<Integer> mTranslationSupplier;
+        private final Context mContext;
+        private final Runnable mAnimationStartedSignal;
+        private final BooleanSupplier mWaitingForAnimation;
+
+        MiniOriginWindowInsetsAnimationListener(
+                KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+                ViewGroup containerView,
+                ObservableSupplierImpl<Integer> translationSupplier,
+                Runnable animationStartedSignal,
+                BooleanSupplier waitingForAnimation) {
+            mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
+            mContainerView = containerView;
+            mTranslationSupplier = translationSupplier;
+            mContext = containerView.getContext();
+            mAnimationStartedSignal = animationStartedSignal;
+            mWaitingForAnimation = waitingForAnimation;
+        }
+
+        @Override
+        public void onPrepare(WindowInsetsAnimationCompat animation) {}
+
+        @Override
+        public void onStart(WindowInsetsAnimationCompat animation, BoundsCompat bounds) {
+            if (!mWaitingForAnimation.getAsBoolean()
+                    || ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0)) {
+                return;
+            }
+
+            mAnimationStartedSignal.run();
+            // Prevent clipping so that the mini origin bar can draw in bounds allocated for the
+            // keyboard; we will prevent overlap by syncing our translation to its movement in
+            // onProgress.
+            ViewUtils.setAncestorsShouldClipChildren(mContainerView, false, View.NO_ID);
+            ViewUtils.setAncestorsShouldClipToPadding(mContainerView, false, View.NO_ID);
+            mAnimationInProgress = true;
+            mFinalKeyboardHeight =
+                    mKeyboardVisibilityDelegate.isKeyboardShowing(mContext, mContainerView)
+                            ? bounds.getUpperBound().bottom
+                            : 0;
+        }
+
+        @Override
+        public void onProgress(
+                WindowInsetsCompat windowInsetsCompat, List<WindowInsetsAnimationCompat> list) {
+            if (!mAnimationInProgress) return;
+            mTranslationSupplier.set(
+                    mFinalKeyboardHeight
+                            - windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom);
+        }
+
+        @Override
+        public void onEnd(WindowInsetsAnimationCompat animation) {
+            if (!mAnimationInProgress) return;
+            mAnimationInProgress = false;
+            ViewUtils.setAncestorsShouldClipChildren(mContainerView, true, ViewGroup.NO_ID);
+            ViewUtils.setAncestorsShouldClipToPadding(mContainerView, true, ViewGroup.NO_ID);
+            mTranslationSupplier.set(0);
+        }
     }
 }
