@@ -969,10 +969,15 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
   // [not specced] Store V8 code cache on successful evaluation.
   if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess) {
+    // Script IDs are not available on non-source text modules, so we give them
+    // a default value.
     DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
         TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"), "ModuleEvaluated",
         inspector_target_rundown_event::Data, execution_context, isolate,
-        script_state, module_script->V8Module()->ScriptId());
+        script_state,
+        module_script->V8Module()->IsSourceTextModule()
+            ? module_script->V8Module()->ScriptId()
+            : v8::UnboundScript::kNoScriptId);
     execution_context->GetTaskRunner(TaskType::kNetworking)
         ->PostTask(
             FROM_HERE,

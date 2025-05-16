@@ -1228,6 +1228,10 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
                                           v8::Isolate* isolate,
                                           ScriptState* scriptState,
                                           int scriptId) {
+  if (scriptId == v8::UnboundScript::kNoScriptId) {
+    return;
+  }
+
   // Target related info
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
   LocalFrame* frame = window ? window->GetFrame() : nullptr;
