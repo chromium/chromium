@@ -340,6 +340,7 @@ robolectric_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendDispatcherBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendReceiverBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchDispatcherBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManagerTest.java",
@@ -373,6 +374,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/browser/password_manager/android/access_loss:helper_java",
     "//chrome/browser/password_manager/android/access_loss:utils_java",
     "//chrome/browser/password_manager/android/one_time_passwords:java",
+    "//chrome/browser/password_manager/android/one_time_passwords:sms_otp_fetching_interface_java",
     "//chrome/browser/password_manager/android/pwd_migration:java",
     "//chrome/browser/password_manager/android/pwm_disabled:java",
     "//chrome/browser/preferences:java",
@@ -471,18 +473,6 @@ android_library("backend_interface_java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegate.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactoryUpstreamImpl.java",
-  ]
-}
-
-android_library("sms_otp_fetching_interface_java") {
-  deps = [
-    "//base:base_java",
-    "//base:service_loader_java",
-  ]
-  sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcher.java",
-    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcherFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcherFactoryUpstreamImpl.java",
   ]
 }
 

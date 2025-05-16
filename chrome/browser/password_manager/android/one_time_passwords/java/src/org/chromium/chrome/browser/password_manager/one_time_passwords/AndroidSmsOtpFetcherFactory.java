@@ -1,8 +1,9 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.chrome.browser.password_manager;
+package org.chromium.chrome.browser.password_manager.one_time_passwords;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,5 +39,12 @@ public abstract class AndroidSmsOtpFetcherFactory {
      */
     public @Nullable AndroidSmsOtpFetcher createSmsOtpFetcher() {
         return null;
+    }
+
+    public static void setFactoryForTesting(
+            AndroidSmsOtpFetcherFactory androidSmsOtpFetcherFactory) {
+        var oldValue = sInstance;
+        sInstance = androidSmsOtpFetcherFactory;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 }

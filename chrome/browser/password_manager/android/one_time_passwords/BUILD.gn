@@ -11,6 +11,8 @@ source_set("backend") {
     "android_sms_otp_backend.h",
     "android_sms_otp_backend_factory.cc",
     "android_sms_otp_backend_factory.h",
+    "android_sms_otp_fetch_dispatcher_bridge.cc",
+    "android_sms_otp_fetch_dispatcher_bridge.h",
     "android_sms_otp_fetch_receiver_bridge.cc",
     "android_sms_otp_fetch_receiver_bridge.h",
     "sms_otp_retrieval_api_error_codes.h",
@@ -31,21 +33,41 @@ generate_jni("jni_headers") {
     ":*",
     "//chrome/browser",
   ]
-  sources = [ "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchDispatcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridge.java",
+  ]
 }
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchDispatcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridge.java",
+  ]
 
   deps = [
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/password_manager/android/one_time_passwords:sms_otp_fetching_interface_java",
     "//third_party/jni_zero:gendeps_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
   resources_package =
       "org.chromium.chrome.browser.password_manager.one_time_passwords"
+}
+
+android_library("sms_otp_fetching_interface_java") {
+  deps = [
+    "$google_play_services_package:google_play_services_basement_java",
+    "//base:base_java",
+    "//base:service_loader_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetcher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetcherFactory.java",
+    "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetcherFactoryUpstreamImpl.java",
+  ]
 }
