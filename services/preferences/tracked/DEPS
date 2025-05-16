@@ -1,4 +1,7 @@
 include_rules = [
   "+components/pref_registry",
   "+crypto/hmac.h",
+  '+components/os_crypt/async/browser',
+  '+components/os_crypt/async/common',
+  '+crypto',
 ]

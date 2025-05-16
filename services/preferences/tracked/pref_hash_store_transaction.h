@@ -71,6 +71,25 @@ class PrefHashStoreTransaction {
   // Forces a valid super MAC to be stored when this transaction terminates.
   // Returns true if this results in a change to the store contents.
   virtual bool StampSuperMac() = 0;
+
+  // Stores the OS-encrypted hash of the preference at |path| and |value|.
+  // |value| may be NULL. Requires the encryptor to have been provided at
+  // transaction start.
+  virtual void StoreEncryptedHash(const std::string& path,
+                                  const base::Value* value) = 0;
+
+  // Retrieves the stored OS-encrypted hash (Base64 encoded) for the
+  // preference at |path|. Returns nullopt if no encrypted hash is stored.
+  virtual std::optional<std::string> GetEncryptedHash(
+      const std::string& path) const = 0;
+
+  // Retrieves the stored legacy MAC for the preference at |path|.
+  // Returns nullopt if no MAC is stored.
+  virtual std::optional<std::string> GetMac(const std::string& path) const = 0;
+
+  // Returns true if an OS-encrypted hash is stored for the preference at
+  // |path|. This could be an atomic hash or hashes for a split dictionary.
+  virtual bool HasEncryptedHash(const std::string& path) const = 0;
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_TRANSACTION_H_
