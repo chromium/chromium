@@ -54,7 +54,6 @@ class MLReverseOptions;
 class MLScatterOptions;
 class MLSliceOptions;
 class MLSplitOptions;
-class MLTensor;
 class MLTransposeOptions;
 class MLTriangularOptions;
 class MLOperand;
@@ -101,9 +100,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* constant(ScriptState* script_state,
                       const MLOperandDescriptor* desc,
                       AllowSharedBufferSource* buffer,
-                      ExceptionState& exception_state);
-  MLOperand* constant(ScriptState* script_state,
-                      MLTensor* tensor,
                       ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.

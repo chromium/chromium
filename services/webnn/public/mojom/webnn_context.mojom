@@ -4,7 +4,6 @@
 
 module webnn.mojom;
 
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_tensor.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
@@ -39,8 +38,5 @@ interface WebNNContext {
   // Called by the renderer process to create `WebNNTensor` message pipe for
   // creating platform specific tensors, the WebNN tensor will be validated and
   // created. This method guarantees memory allocation on the device.
-  // Optionally, non-empty tensor data containing values to initialize contents.
-  // Valid for tensor data to be empty when not being used as graph constants.
-  CreateTensor(TensorInfo tensor_info, mojo_base.mojom.BigBuffer tensor_data)
-    => (CreateTensorResult result);
+  CreateTensor(TensorInfo tensor_info) => (CreateTensorResult result);
 };

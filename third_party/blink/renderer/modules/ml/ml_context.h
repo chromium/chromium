@@ -77,12 +77,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                        const MLTensorDescriptor* descriptor,
                                        ExceptionState& exception_state);
 
-  ScriptPromise<MLTensor> createConstantTensor(
-      ScriptState* script_state,
-      const MLOperandDescriptor* descriptor,
-      AllowSharedBufferSource* src_data,
-      ExceptionState& exception_state);
-
   void writeTensor(ScriptState* script_state,
                    MLTensor* dst_tensor,
                    AllowSharedBufferSource* src_data,

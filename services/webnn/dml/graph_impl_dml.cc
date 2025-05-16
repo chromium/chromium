@@ -5970,7 +5970,6 @@ void GraphImplDml::OnCompilationComplete(
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
     base::expected<ComPtr<IDMLCompiledOperator>, HRESULT> compilation_result) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
 
@@ -6114,23 +6113,6 @@ void GraphImplDml::OnCompilationComplete(
           std::move(buffer_binding);
     }
   }
-
-  // The tensors used for constants must be bound during operator initialization
-  // and not during execution.
-  for (auto& [constant_id, constant_tensor] : constant_tensor_operands) {
-    TensorImplDml* constant_tensor_impl =
-        static_cast<TensorImplDml*>(constant_tensor);
-    // Get the graph input index with the constant id.
-    const auto graph_input_index_iterator =
-        constant_id_to_input_index_map.find(constant_id);
-    CHECK(graph_input_index_iterator != constant_id_to_input_index_map.end());
-    input_buffer_binding[graph_input_index_iterator->second] =
-        DML_BUFFER_BINDING{
-            .Buffer = constant_tensor_impl->buffer(),
-            .Offset = 0,
-            .SizeInBytes = constant_tensor_impl->PackedByteLength()};
-  }
-
   DML_BUFFER_ARRAY_BINDING input_buffer_array_binding{
       .BindingCount = base::checked_cast<uint32_t>(input_buffer_binding.size()),
       .Bindings = input_buffer_binding.data()};
@@ -6330,7 +6312,6 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
     mojom::GraphInfoPtr& graph_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
-    const base::flat_map<OperandId, WebNNTensorImpl*>& constant_tensor_operands,
     GraphBuilderDml& graph_builder,
     absl::flat_hash_map<OperandId, uint32_t>& constant_id_to_input_index_map,
     GraphBufferBindingInfo& graph_buffer_binding_info) {
@@ -6361,19 +6342,6 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
     CreateConstantNode(adapter.get(), constant_id, constant_operands,
                        graph_builder, id_to_node_output_map,
                        constant_id_to_input_index_map);
-  }
-
-  // Add constant tensors which are considered read-only inputs that must be
-  // bound during graph initialization.
-  for (const auto& [constant_id, tensor_impl] : constant_tensor_operands) {
-    const Node* node = graph_builder.CreateInputNode();
-    constant_id_to_input_index_map[constant_id] =
-        node->AsInputNode()->GetGraphInputIndex();
-    TensorDesc tensor_desc(GetTensorDataType(tensor_impl->data_type()),
-                           DML_TENSOR_FLAG_OWNED_BY_DML, tensor_impl->shape());
-    const NodeOutput* output =
-        graph_builder.CreateNodeOutput(node, std::move(tensor_desc));
-    CHECK(id_to_node_output_map.try_emplace(constant_id, output).second);
   }
 
   // Fuse the operations in `mojom::GraphInfo` wherever possible to optimize the
@@ -6805,7 +6773,6 @@ void GraphImplDml::CreateAndBuild(
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
     WebNNContextImpl::CreateGraphImplCallback callback,
     const bool disable_dml_meta_commands_for_gpu) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
@@ -6815,8 +6782,8 @@ void GraphImplDml::CreateAndBuild(
   base::expected<void, mojom::ErrorPtr> create_operator_result =
       GraphImplDml::CreateAndBuildInternal(
           context->properties(), adapter, graph_info, constant_operands,
-          constant_tensor_operands, graph_builder,
-          constant_id_to_input_index_map, graph_buffer_binding_info);
+          graph_builder, constant_id_to_input_index_map,
+          graph_buffer_binding_info);
 
   // TODO(crbug.com/349649099): Handle context lost for operator creation
   // failures.
@@ -6847,8 +6814,7 @@ void GraphImplDml::CreateAndBuild(
           std::move(adapter), std::move(context), std::move(callback),
           std::move(constant_id_to_input_index_map),
           std::move(graph_buffer_binding_info),
-          std::move(compute_resource_info), std::move(constant_operands),
-          std::move(constant_tensor_operands)));
+          std::move(compute_resource_info), std::move(constant_operands)));
 }
 
 void GraphImplDml::HandleDispatchFailure(std::string_view error_message,

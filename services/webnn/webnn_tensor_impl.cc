@@ -26,11 +26,6 @@ WebNNTensorImpl::WebNNTensorImpl(
 
 WebNNTensorImpl::~WebNNTensorImpl() = default;
 
-bool WebNNTensorImpl::IsValidWithDescriptor(
-    const OperandDescriptor& descriptor) const {
-  return descriptor_ == descriptor;
-}
-
 void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
   if (!usage().Has(MLTensorUsageFlags::kRead)) {
     receiver_.ReportBadMessage(kBadMessageInvalidTensor);

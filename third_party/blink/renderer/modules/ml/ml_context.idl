@@ -303,14 +303,6 @@ typedef record<USVString, MLTensor> MLNamedTensors;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<MLTensor> createConstantTensor(
-        MLOperandDescriptor descriptor,
-        AllowSharedBufferSource sourceData);
-
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    CallWith=ScriptState,
-    RaisesException
   ] void writeTensor(MLTensor dstTensor, AllowSharedBufferSource srcData);
 
   [

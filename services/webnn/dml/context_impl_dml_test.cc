@@ -123,7 +123,7 @@ CreateTensorSuccess CreateWebNNTensor(
           *OperandDescriptor::Create(webnn::GetContextPropertiesForTesting(),
                                      data_type, shape, "tensor"),
           MLTensorUsage{MLTensorUsageFlags::kWrite, MLTensorUsageFlags::kRead}),
-      mojo_base::BigBuffer(0), create_tensor_future.GetCallback());
+      create_tensor_future.GetCallback());
   mojom::CreateTensorResultPtr create_tensor_result =
       create_tensor_future.Take();
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;

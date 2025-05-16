@@ -7,7 +7,6 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 
 namespace blink {
 
@@ -17,16 +16,9 @@ MLConstantOperand::MLConstantOperand(MLGraphBuilder* builder,
                 webnn::mojom::blink::Operand::Kind::kConstant,
                 std::move(descriptor)) {}
 
-MLConstantOperand::MLConstantOperand(MLGraphBuilder* builder, MLTensor* tensor)
-    : MLOperand(builder,
-                webnn::mojom::blink::Operand::Kind::kConstant,
-                tensor->Descriptor()),
-      tensor_(tensor) {}
-
 MLConstantOperand::~MLConstantOperand() = default;
 
 void MLConstantOperand::Trace(Visitor* visitor) const {
-  visitor->Trace(tensor_);
   MLOperand::Trace(visitor);
 }
 

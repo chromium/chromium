@@ -84,7 +84,7 @@ TensorRemoteAndHandle CreateTensor(
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
 
   base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
-  context_remote->CreateTensor(std::move(tensor_info), mojo_base::BigBuffer(0),
+  context_remote->CreateTensor(std::move(tensor_info),
                                create_tensor_future.GetCallback());
   mojom::CreateTensorResultPtr create_tensor_result =
       create_tensor_future.Take();

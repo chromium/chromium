@@ -76,10 +76,6 @@ bool MLTensor::writable() const {
   return usage_.Has(webnn::MLTensorUsageFlags::kWrite);
 }
 
-bool MLTensor::constant() const {
-  return usage_.Has(webnn::MLTensorUsageFlags::kGraphConstant);
-}
-
 void MLTensor::destroy() {
   // Calling OnConnectionError() will disconnect and destroy the tensor in
   // the service. The remote tensor must remain unbound after calling
