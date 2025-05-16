@@ -40,8 +40,32 @@ void StoreAvatarDataToDisk(NSURL* identity_file, NSData* png_data) {
                                                 base::BlockingType::WILL_BLOCK);
   if (png_data) {
     [png_data writeToURL:identity_file atomically:YES];
-  } else {
-    [[NSFileManager defaultManager] removeItemAtURL:identity_file error:nil];
+  }
+}
+
+// Remove legacy avatar data from disk.
+void RemoveAvatarDataFromDisk(NSDictionary* avatars) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  NSURL* avatars_folder = app_group::WidgetsAvatarFolder();
+  if (!avatars_folder) {
+    return;
+  }
+  NSFileManager* manager = [NSFileManager defaultManager];
+  NSArray<NSURL*>* contents =
+      [manager contentsOfDirectoryAtURL:avatars_folder
+             includingPropertiesForKeys:nil
+                                options:NSDirectoryEnumerationSkipsHiddenFiles
+                                  error:nil];
+
+  for (NSURL* url in contents) {
+    if ([url.pathExtension.lowercaseString isEqualToString:@"png"]) {
+      NSString* file_name =
+          [[url lastPathComponent] stringByDeletingPathExtension];
+      if (avatars[file_name] == nil) {
+        [manager removeItemAtURL:url error:nil];
+      }
+    }
   }
 }
 
@@ -54,6 +78,8 @@ void UpdateAvatarData(NSDictionary* avatars) {
     NSData* avatar_data = avatars[gaia];
     StoreAvatarDataToDisk(identity_file, avatar_data);
   }
+  // Check if disk cleanup in WidgetsAvatarFolder folder is needed.
+  RemoveAvatarDataFromDisk(avatars);
 }
 
 }  // namespace
