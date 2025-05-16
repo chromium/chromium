@@ -227,6 +227,8 @@ class MockCustomLinksManager : public CustomLinksManager {
   MOCK_METHOD0(Uninitialize, void());
   MOCK_CONST_METHOD0(IsInitialized, bool());
   MOCK_CONST_METHOD0(GetLinks, const std::vector<CustomLinksManager::Link>&());
+  MOCK_METHOD3(AddLinkTo,
+               bool(const GURL& url, const std::u16string& title, size_t pos));
   MOCK_METHOD2(AddLink, bool(const GURL& url, const std::u16string& title));
   MOCK_METHOD3(UpdateLink,
                bool(const GURL& url,
@@ -1633,6 +1635,20 @@ TEST_F(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_manager_, GetLinks())
       .WillOnce(ReturnRef(expected_links));
   most_visited_sites_->UndoCustomLinkAction();
+  base::RunLoop().RunUntilIdle();
+
+  // Exercise AddCustomLinkTo().
+  EXPECT_CALL(*mock_custom_links_manager_, Initialize(_))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_custom_links_manager_, AddLinkTo(_, _, _))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_custom_links_manager_, IsInitialized())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_custom_links_manager_, GetLinks())
+      .WillRepeatedly(ReturnRef(expected_links));
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
+      .WillOnce(SaveArg<0>(&sections));
+  most_visited_sites_->AddCustomLinkTo(GURL("test2.com"), u"test2", 0);
   base::RunLoop().RunUntilIdle();
 }
 

@@ -42,6 +42,11 @@ class MostVisitedSitesBridge {
                          const base::android::JavaParamRef<jobject>& obj,
                          const base::android::JavaParamRef<jobject>& j_client);
 
+  jboolean AddCustomLinkTo(JNIEnv* env,
+                           const std::u16string& name,
+                           const GURL& url,
+                           jint pos);
+
   jboolean AddCustomLink(JNIEnv* env,
                          const std::u16string& name,
                          const GURL& url);

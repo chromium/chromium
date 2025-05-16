@@ -17,9 +17,10 @@ public interface CustomLinkOperations {
      *
      * @param name The name of the added tile.
      * @param url The URL of the added tile.
+     * @param pos The position to add tile, with null indicating add to end.
      * @return Whether the operation successfully ran.
      */
-    boolean addCustomLink(String name, @Nullable GURL url);
+    boolean addCustomLink(String name, @Nullable GURL url, @Nullable Integer pos);
 
     /**
      * Assigns a link identified by {@param keyUrl} to a custom link specified with {@param name}

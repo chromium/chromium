@@ -359,6 +359,14 @@ bool MostVisitedSites::IsShortcutsVisible() const {
   return is_shortcuts_visible_;
 }
 
+bool MostVisitedSites::AddCustomLinkTo(const GURL& url,
+                                       const std::u16string& title,
+                                       size_t pos) {
+  return ApplyCustomLinksAction(base::BindOnce(
+      &CustomLinksManager::AddLinkTo,
+      base::Unretained(custom_links_manager_.get()), url, title, pos));
+}
+
 bool MostVisitedSites::AddCustomLink(const GURL& url,
                                      const std::u16string& title) {
   return ApplyCustomLinksAction(base::BindOnce(

@@ -57,6 +57,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
     private boolean mIsDestroyed;
     private SnackbarController mTileRemovedSnackbarController;
+    private SnackbarController mTileUnpinnedSnackbarController;
 
     public TileGroupDelegateImpl(
             Context context,
@@ -73,20 +74,23 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
     // CustomLinkOperations -> TileGroup.Delegate implementation.
     @Override
-    public boolean addCustomLink(String name, @Nullable GURL url) {
+    public boolean addCustomLink(String name, @Nullable GURL url, @Nullable Integer pos) {
         assert !mIsDestroyed;
-        return mMostVisitedSites.addCustomLink(name, url);
+        dismissAllSnackbars();
+        return mMostVisitedSites.addCustomLink(name, url, pos);
     }
 
     @Override
     public boolean assignCustomLink(GURL keyUrl, String name, @Nullable GURL url) {
         assert !mIsDestroyed;
+        dismissAllSnackbars();
         return mMostVisitedSites.assignCustomLink(keyUrl, name, url);
     }
 
     @Override
     public boolean deleteCustomLink(GURL keyUrl) {
         assert !mIsDestroyed;
+        dismissAllSnackbars();
         return mMostVisitedSites.deleteCustomLink(keyUrl);
     }
 
@@ -99,6 +103,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     @Override
     public boolean reorderCustomLink(GURL keyUrl, int newPos) {
         assert !mIsDestroyed;
+        dismissAllSnackbars();
         return mMostVisitedSites.reorderCustomLink(keyUrl, newPos);
     }
 
@@ -197,14 +202,48 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     }
 
     @Override
+    public void showTileUnpinSnackbar(Runnable undoHandler) {
+        if (mTileUnpinnedSnackbarController == null) {
+            mTileUnpinnedSnackbarController =
+                    new SnackbarController() {
+                        @Override
+                        public void onDismissNoAction(Object actionData) {}
+
+                        /** Undoes the tile removal. */
+                        @Override
+                        public void onAction(Object actionData) {
+                            if (mIsDestroyed) return;
+                            Runnable undoHandlerFromData = (Runnable) actionData;
+                            undoHandlerFromData.run();
+                        }
+                    };
+        }
+        Snackbar snackbar =
+                Snackbar.make(
+                                mContext.getString(R.string.most_visited_item_removed),
+                                mTileUnpinnedSnackbarController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_NTP_MOST_VISITED_UNPIN_UNDO)
+                        .setAction(mContext.getString(R.string.undo), undoHandler);
+        mSnackbarManager.showSnackbar(snackbar);
+    }
+
+    @Override
     public void destroy() {
         assert !mIsDestroyed;
         mIsDestroyed = true;
 
+        dismissAllSnackbars();
+        mMostVisitedSites.destroy();
+    }
+
+    private void dismissAllSnackbars() {
+        if (mTileUnpinnedSnackbarController != null) {
+            mSnackbarManager.dismissSnackbars(mTileUnpinnedSnackbarController);
+        }
         if (mTileRemovedSnackbarController != null) {
             mSnackbarManager.dismissSnackbars(mTileRemovedSnackbarController);
         }
-        mMostVisitedSites.destroy();
     }
 
     private void showTileRemovedSnackbar(GURL url) {

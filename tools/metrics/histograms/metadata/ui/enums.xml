@@ -375,6 +375,7 @@ chromium-metrics-reviews@google.com.
   <int value="72" label="UMA_REVOKE_FILE_EDIT_GRANT"/>
   <int value="73" label="UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION"/>
   <int value="74" label="UMA_BOOKMARK_BATCH_UPLOAD"/>
+  <int value="75" label="UMA_NTP_MOST_VISITED_UNPIN_UNDO"/>
 </enum>
 
 <enum name="WebUIPreloadResult">

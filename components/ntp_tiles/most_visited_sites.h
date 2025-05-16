@@ -203,10 +203,17 @@ class MostVisitedSites :
   // Returns whether NTP tiles should be shown.
   bool IsShortcutsVisible() const;
 
-  // Adds a custom link. If the number of current links is maxed, returns false
-  // and does nothing. Will initialize custom links if they have not been
-  // initialized yet, unless the action fails. Custom links must be enabled.
+  // Adds a custom link at position |pos|, bumping existing links. If the number
+  // of current links is maxed, returns false and does nothing. Will initialize
+  // custom links if they have not been initialized yet, unless the action
+  // fails. Custom links must be enabled.
+  bool AddCustomLinkTo(const GURL& url,
+                       const std::u16string& title,
+                       size_t pos);
+
+  // Similar to AddCustomLinkTo(), but add to end of list.
   bool AddCustomLink(const GURL& url, const std::u16string& title);
+
   // Updates the URL and/or title of the custom link specified by |url|. If
   // |url| does not exist or |new_url| already exists in the custom link list,
   // returns false and does nothing. Will initialize custom links if they have

@@ -180,6 +180,20 @@ TEST_F(CustomLinksManagerImplTest, AddLink) {
   EXPECT_EQ(expected_links, custom_links_->GetLinks());
 }
 
+TEST_F(CustomLinksManagerImplTest, AddLinkTo) {
+  // Initialize.
+  std::vector<Link> initial_links = FillTestLinks(kTestCase1);
+  ASSERT_TRUE(custom_links_->Initialize(FillTestTiles(kTestCase1)));
+  ASSERT_EQ(initial_links, custom_links_->GetLinks());
+
+  // Add link in front.
+  std::vector<Link> expected_links = initial_links;
+  expected_links.insert(expected_links.begin(),
+                        Link{GURL(kTestUrl), kTestTitle16, false});
+  EXPECT_TRUE(custom_links_->AddLinkTo(GURL(kTestUrl), kTestTitle16, 0U));
+  EXPECT_EQ(expected_links, custom_links_->GetLinks());
+}
+
 TEST_F(CustomLinksManagerImplTest, AddLinkWhenAtMaxLinks) {
   // Initialize.
   std::vector<Link> initial_links = FillTestLinks(kTestCaseMax);

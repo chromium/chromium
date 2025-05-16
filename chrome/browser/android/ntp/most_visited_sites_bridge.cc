@@ -209,6 +209,13 @@ void MostVisitedSitesBridge::SetObserver(
   most_visited_->AddMostVisitedURLsObserver(java_observer_.get(), num_sites);
 }
 
+jboolean MostVisitedSitesBridge::AddCustomLinkTo(JNIEnv* env,
+                                                 const std::u16string& name,
+                                                 const GURL& url,
+                                                 jint pos) {
+  return most_visited_->AddCustomLinkTo(url, name, pos);
+}
+
 jboolean MostVisitedSitesBridge::AddCustomLink(JNIEnv* env,
                                                const std::u16string& name,
                                                const GURL& url) {

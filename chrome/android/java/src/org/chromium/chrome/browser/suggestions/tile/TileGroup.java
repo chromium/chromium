@@ -114,6 +114,12 @@ public class TileGroup implements MostVisitedSites.Observer {
         CustomTileEditCoordinator createCustomTileEditCoordinator(@Nullable Tile originalTile);
 
         /**
+         * Displays the snackbar to inform the user that a tile was unpinned and to offer the
+         * opportunity to undo the operation.
+         */
+        void showTileUnpinSnackbar(Runnable undoHandler);
+
+        /**
          * To be called before this instance is abandoned to the garbage collector so it can do any
          * necessary cleanups. This instance must not be used after this method is called.
          */
@@ -671,7 +677,10 @@ public class TileGroup implements MostVisitedSites.Observer {
             CustomTileEditCoordinator customTileEditCoordinator =
                     mTileGroupDelegate.createCustomTileEditCoordinator(/* originalTile= */ null);
             customTileEditCoordinator.show(
-                    this::addCustomLinkAndUpdateOnSuccess, mTileGroupDelegate::hasCustomLink);
+                    (String name, GURL url) -> {
+                        return addCustomLinkAndUpdateOnSuccess(name, url, /* pos= */ null);
+                    },
+                    mTileGroupDelegate::hasCustomLink);
         }
 
         @Override
@@ -689,7 +698,7 @@ public class TileGroup implements MostVisitedSites.Observer {
             @Nullable Tile tile = findTile(suggestion);
             if (tile == null) return;
 
-            deleteCustomLinkAndUpdateOnSuccess(tile.getUrl());
+            deleteCustomLinkAndUpdateOnSuccess(tile);
         }
 
         @Override
@@ -720,14 +729,15 @@ public class TileGroup implements MostVisitedSites.Observer {
             return mCustomTileCountIsUnderLimit;
         }
 
-        private boolean addCustomLinkAndUpdateOnSuccess(String name, GURL url) {
+        private boolean addCustomLinkAndUpdateOnSuccess(
+                String name, GURL url, @Nullable Integer pos) {
             if (!TileUtils.isValidCustomTileName(name) || !TileUtils.isValidCustomTileUrl(url)) {
                 return false;
             }
 
             // On success, onSiteSuggestionsAvailable() triggers.
             mPendingChanges.customTilesIndicator = true;
-            boolean success = mTileGroupDelegate.addCustomLink(name, url);
+            boolean success = mTileGroupDelegate.addCustomLink(name, url, pos);
             if (!success) {
                 mPendingChanges.customTilesIndicator = false;
             }
@@ -750,10 +760,18 @@ public class TileGroup implements MostVisitedSites.Observer {
             return success;
         }
 
-        private void deleteCustomLinkAndUpdateOnSuccess(GURL url) {
+        private void deleteCustomLinkAndUpdateOnSuccess(Tile tile) {
             // On success, onSiteSuggestionsAvailable() triggers.
             mPendingChanges.customTilesIndicator = true;
-            if (!mTileGroupDelegate.deleteCustomLink(url)) {
+
+            if (mTileGroupDelegate.deleteCustomLink(tile.getUrl())) {
+                mTileGroupDelegate.showTileUnpinSnackbar(
+                        () -> {
+                            // Perform undo by adding the tile back at its original index.
+                            addCustomLinkAndUpdateOnSuccess(
+                                    tile.getTitle(), tile.getUrl(), tile.getIndex());
+                        });
+            } else {
                 mPendingChanges.customTilesIndicator = false;
             }
         }
