@@ -34,6 +34,7 @@ source_set("unit_tests") {
     ":office_web_app",
     "//base/test:test_support",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_app_test",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications:web_applications_unit_tests",
     "//chrome/test:test_support",
