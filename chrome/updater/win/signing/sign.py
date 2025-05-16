@@ -113,9 +113,9 @@ class Signer:
             command += flags
             if self._certificate_file_path:
                 command += ['/f', self._certificate_file_path]
-            if self._certificate_password:
-                command += ['/p', self._certificate_password]
-            if self._identity:
+                if self._certificate_password:
+                    command += ['/p', self._certificate_password]
+            elif self._identity:
                 command += ['/s', 'My', '/n', self._identity]
 
             command += [in_file]
