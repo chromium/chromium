@@ -1779,6 +1779,7 @@ bool RenderProcessHostImpl::Init() {
 
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);
+    CHECK(!in_process_renderer_);
     // Crank up a thread and run the initialization there.  With the way that
     // messages flow between the browser and renderer, this thread is required
     // to prevent a deadlock in single-process mode.  Since the primordial
@@ -4628,9 +4629,11 @@ bool RenderProcessHostImpl::MayReuseAndIsSuitable(
     RenderProcessHost* host,
     const IsolationContext& isolation_context,
     const SiteInfo& site_info) {
+  // Don't check for renderer responsiveness in single-process mode - even if
+  // it's unresponsive we can't create another one and trying will crash us.
   return host->MayReuseHost() &&
          IsSuitableHost(host, isolation_context, site_info) &&
-         !IsRendererUnresponsive(host);
+         (run_renderer_in_process() || !IsRendererUnresponsive(host));
 }
 
 // static
