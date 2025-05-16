@@ -2839,6 +2839,47 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
 }
 
+// Tests that using window.open the prerendered url with a customized window
+// name cannot activate a prerender whose target_hint is "_blank".
+IN_PROC_BROWSER_TEST_F(
+    PrerenderTargetHintEnabledBrowserTest,
+    DoesNotActivateOnWindowOpen_WithCustomizedWindowName_WithTargetHintBlank) {
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start prerendering `prerendering_url`.
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
+      prerendering_url, /*eagerness=*/std::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  // Use window.open a customized window name should not activate
+  // `prerendering_url`.
+  TestNavigationObserver nav_observer(prerendering_url);
+  nav_observer.StartWatchingNewWebContents();
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 host_id);
+
+  std::string window_open_script =
+      R"(window.open($1, 'WindowName', 'noopener');)";
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace(window_open_script, prerendering_url.spec())));
+
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_FALSE(prerender_observer.was_activated());
+
+  // Navigating prerendered url with a customized window name should not cancel
+  // the prerender.
+  EXPECT_TRUE(prerender_helper()->HasNewTabHandle(host_id));
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+}
+
 // Tests that clicking a link annotated with "target=_blank" can activate a
 // prerender whose target_hint is "_blank" where the initiator page is in the
 // background when the speculation rules were added.
