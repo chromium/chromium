@@ -284,11 +284,6 @@ class ChromiumDepGraph {
         // Does not include version because by default the resolution strategy for gradle is to use the newest version
         // among the required ones. We want to be able to match it in the BUILD.gn file.
         String moduleId = sanitize("${group}_${module}")
-
-        // Add 'android' suffix for guava-android so that its module name is distinct from the module for guava.
-        if (module == 'guava' && version.contains('android')) {
-            moduleId += '_android'
-        }
         return moduleId
     }
 

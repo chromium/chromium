@@ -103,24 +103,6 @@ class ChromiumPlugin implements Plugin<Project> {
             }
         }
 
-        // Guava is special, we always want the desktop JVM variant unless we
-        // are shipping it to devices (and thus limited by their
-        // OS/Java/Dex version).
-        project.dependencies.constraints {
-            project.configurations.each { Configuration config ->
-                // We only want android guava when we are shipping it, otherwise desktop guava.
-                if (config.name.startsWith('compile')) {
-                    add(config.name,"com.google.guava:guava") {
-                        attributes constraintAndroid
-                    }
-                } else {
-                    add(config.name,"com.google.guava:guava") {
-                        attributes constraintJvm
-                    }
-                }
-            }
-        }
-
         def latestResolutionStrategy = {
             if (project.hasProperty('versionCache') && project.versionCache) {
                 project.ext.versionCache.each { String selector, String version ->
