@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -35,9 +37,9 @@ using enum SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType;
 
 bool DidUserDeclineExplicitly(
     SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
-        closed_reason) {
+        close_reason) {
   using enum SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason;
-  switch (closed_reason) {
+  switch (close_reason) {
     case kCancelled:
     case kClosed:
       return true;
@@ -47,6 +49,36 @@ bool DidUserDeclineExplicitly(
     case kLostFocus:
       return false;
   }
+}
+
+void EmitBubbleFunnelMetrics(
+    bool is_save_prompt,
+    autofill::EntityType entity_type,
+    SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
+        close_reason) {
+  auto get_save_or_update_histogram_string = [](bool is_save_prompt) {
+    return is_save_prompt ? ".SavePrompt" : ".UpdatePrompt";
+  };
+  auto get_entity_name_for_logging = [](autofill::EntityType entity_type) {
+    switch (entity_type.name()) {
+      case autofill::EntityTypeName::kVehicle:
+        return "Vehicle";
+      case autofill::EntityTypeName::kPassport:
+        return "Passport";
+      case autofill::EntityTypeName::kDriversLicense:
+        return "DriversLicense";
+    }
+    NOTREACHED();
+  };
+  const std::string prefix = "Autofill.Ai";
+  base::UmaHistogramEnumeration(
+      base::StrCat({prefix, get_save_or_update_histogram_string(is_save_prompt),
+                    ".", get_entity_name_for_logging(entity_type)}),
+      close_reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat({prefix, get_save_or_update_histogram_string(is_save_prompt),
+                    ".AllEntities"}),
+      close_reason);
 }
 
 }  // namespace
@@ -198,16 +230,19 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
 
 void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
     SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
-        closed_reason) {
+        close_reason) {
+  // Make sure competing close calls does not lead to emitting metrics twice.
+  if (bubble_view()) {
+    EmitBubbleFunnelMetrics(IsSavePrompt(), new_entity_->type(), close_reason);
+  }
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
   if (!save_prompt_acceptance_callback_.is_null()) {
     std::move(save_prompt_acceptance_callback_)
-        .Run(
-            {DidUserDeclineExplicitly(closed_reason),
-             /*entity=*/closed_reason == AutofillAiBubbleClosedReason::kAccepted
-                 ? std::exchange(new_entity_, std::nullopt)
-                 : std::nullopt});
+        .Run({DidUserDeclineExplicitly(close_reason),
+              /*entity=*/close_reason == AutofillAiBubbleClosedReason::kAccepted
+                  ? std::exchange(new_entity_, std::nullopt)
+                  : std::nullopt});
   }
 }
 
