@@ -78,7 +78,9 @@ TEST_F(TextControlElementTest, SetSelectionRange) {
   EXPECT_EQ(0u, TextControl().selectionStart());
   EXPECT_EQ(0u, TextControl().selectionEnd());
 
-  TextControl().SetInnerEditorValue("Hello, text form.");
+  TextControl().SetValue("Hello, text form.",
+                         TextFieldEventBehavior::kDispatchNoEvent,
+                         TextControlSetValueSelection::kSetSelectionToStart);
   EXPECT_EQ(0u, TextControl().selectionStart());
   EXPECT_EQ(0u, TextControl().selectionEnd());
 

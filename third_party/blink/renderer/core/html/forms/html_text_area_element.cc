@@ -471,7 +471,7 @@ String HTMLTextAreaElement::SanitizeUserInputValue(const String& proposed_value,
 }
 
 void HTMLTextAreaElement::UpdateValue() {
-  value_ = InnerEditorValue();
+  value_ = SerializeInnerEditorValue();
   NotifyFormStateChanged();
   is_dirty_ = true;
   UpdatePlaceholderVisibility();
@@ -732,7 +732,7 @@ bool HTMLTextAreaElement::IsInnerEditorValueEmpty() const {
   return Value().empty();
 }
 
-String HTMLTextAreaElement::EditingValue() const {
+String HTMLTextAreaElement::InnerEditorValue() const {
   return Value();
 }
 

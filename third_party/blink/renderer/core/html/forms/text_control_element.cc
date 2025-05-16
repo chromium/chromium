@@ -952,7 +952,7 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
   if (!IsTextControl() || OpenShadowRoot())
     return;
 
-  bool text_is_changed = value != InnerEditorValue();
+  bool text_is_changed = value != SerializeInnerEditorValue();
   HTMLElement* inner_editor = EnsureInnerEditorElement();
   if (!text_is_changed && inner_editor->HasChildren())
     return;
@@ -1006,7 +1006,7 @@ void TextControlElement::AppendTextOrBr(const String& value,
   }
 }
 
-String TextControlElement::InnerEditorValue() const {
+String TextControlElement::SerializeInnerEditorValue() const {
   DCHECK(!OpenShadowRoot());
   HTMLElement* inner_editor = InnerEditorElement();
   if (!inner_editor || !IsTextControl())
@@ -1028,8 +1028,8 @@ String TextControlElement::InnerEditorValue() const {
   }
 
   if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    auto [length, is_8bit] = ComputeValueLengthAndUpdateOffsetMap(nullptr);
-    return ComputeValue(length, is_8bit);
+    auto [length, is_8bit] = AnalyzeInnerEditorValue(nullptr);
+    return SerializeInnerEditorValueInternal(length, is_8bit);
   }
 
   StringBuilder result;
@@ -1052,8 +1052,7 @@ String TextControlElement::InnerEditorValue() const {
   return result.ToString();
 }
 
-std::pair<wtf_size_t, bool>
-TextControlElement::ComputeValueLengthAndUpdateOffsetMap(
+std::pair<wtf_size_t, bool> TextControlElement::AnalyzeInnerEditorValue(
     HeapHashMap<Member<const Text>, unsigned>* offset_map) const {
   const HTMLElement* inner_editor = InnerEditorElement();
   if (!inner_editor) {
@@ -1076,7 +1075,9 @@ TextControlElement::ComputeValueLengthAndUpdateOffsetMap(
   return {offset, is_8bit};
 }
 
-String TextControlElement::ComputeValue(wtf_size_t length, bool is_8bit) const {
+String TextControlElement::SerializeInnerEditorValueInternal(
+    wtf_size_t length,
+    bool is_8bit) const {
   if (length == 0u) {
     return g_empty_string;
   }
@@ -1118,8 +1119,8 @@ String TextControlElement::ComputeValue(wtf_size_t length, bool is_8bit) const {
   return buffer.Release();
 }
 
-String TextControlElement::EditingValue() const {
-  return InnerEditorValue();
+String TextControlElement::InnerEditorValue() const {
+  return SerializeInnerEditorValue();
 }
 
 String TextControlElement::ValueWithHardLineBreaks() const {
