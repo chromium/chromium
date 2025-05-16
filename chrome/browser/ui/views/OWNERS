@@ -21,7 +21,6 @@ ellyjones@chromium.org    #{LAST_RESORT_SUGGESTION}
 emshack@chromium.org      #{LAST_RESORT_SUGGESTION}
 kylixrd@chromium.org      #{LAST_RESORT_SUGGESTION}
 msw@chromium.org          #{LAST_RESORT_SUGGESTION}
-tbergquist@chromium.org   #{LAST_RESORT_SUGGESTION}
 
 per-file content_settings*=file://components/content_settings/OWNERS
 
