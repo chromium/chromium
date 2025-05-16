@@ -1040,6 +1040,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           this.$.searchifyProgress.hide();
         }
         return;
+      // <if expr="enable_pdf_ink2">
+      case 'startInkStroke':
+        this.handleStartInkStroke_();
+        return;
+      // </if>
       case 'startedFindInPage':
         record(UserAction.FIND_IN_PAGE);
         if (this.hasSearchifyText_) {
@@ -1130,6 +1135,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
+  /** Handles the start of a new ink stroke in annotation mode. */
+  private handleStartInkStroke_() {
+    this.pluginController_.getEventTarget().dispatchEvent(
+        new CustomEvent(PluginControllerEventType.START_INK_STROKE));
+  }
+
   /** Handles a new ink stroke in annotation mode. */
   private handleFinishInkStroke_(modified: boolean) {
     if (modified) {

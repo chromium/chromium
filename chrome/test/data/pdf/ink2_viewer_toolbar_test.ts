@@ -10,7 +10,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertCheckboxMenuButton, createTextBox, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {assertCheckboxMenuButton, createTextBox, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu, setupMockMetricsPrivate, setupTestMockPluginForInk, startFinishModifiedInkStroke, startInkStroke} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -266,6 +266,7 @@ chrome.test.runTests([
 
     // Perform a stroke that did not modify anything. The undo/redo state should
     // not change.
+    startInkStroke(controller);
     finishInkStroke(controller, false);
     await microtasksFinished();
 
@@ -273,7 +274,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(redoButton.disabled);
 
     // Draw a stroke. The undo button should be enabled.
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
     await microtasksFinished();
 
     chrome.test.assertTrue(
@@ -294,6 +295,7 @@ chrome.test.runTests([
 
     // Perform a stroke that did not modify anything. The undo/redo state should
     // not change.
+    startInkStroke(controller);
     finishInkStroke(controller, false);
     await microtasksFinished();
 
@@ -319,7 +321,7 @@ chrome.test.runTests([
     // After redo, draw a stroke and undo it after. The undo button and redo
     // button should both be enabled.
     mockPlugin.clearMessages();
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
     undoButton.click();
     await microtasksFinished();
 
@@ -332,7 +334,7 @@ chrome.test.runTests([
 
     // Draw another stroke, overriding the stroke that could've been redone. The
     // undo button should be enabled.
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
     await microtasksFinished();
 
     chrome.test.assertFalse(undoButton.disabled);
@@ -361,8 +363,8 @@ chrome.test.runTests([
 
     // Draw two strokes and undo, so that both undo and redo buttons are
     // enabled.
-    finishInkStroke(controller, true);
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
+    startFinishModifiedInkStroke(controller);
     await microtasksFinished();
 
     undoButton.click();
@@ -426,7 +428,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(redoButton.disabled);
 
     // Draw a stroke. The undo button should be enabled.
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
     await microtasksFinished();
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);
@@ -493,6 +495,124 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.succeed();
   },
+  // Test that the undo and redo buttons are active but do nothing when a stroke
+  // is in progress.
+  async function testUndoRedoButtonsAreNoopsWhenStrokeInProgress() {
+    mockPlugin.clearMessages();
+    mockMetricsPrivate.reset();
+
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
+
+    // The buttons should be disabled when there aren't any strokes.
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Draw 2 strokes and undo one. The undo/redo buttons should be enabled.
+    startFinishModifiedInkStroke(controller);
+    startFinishModifiedInkStroke(controller);
+    await microtasksFinished();
+    undoButton.click();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Start drawing another stroke, but do not finish it yet.
+    mockPlugin.clearMessages();
+    startInkStroke(controller);
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Try to undo, which should do nothing even though the button is enabled.
+    mockPlugin.clearMessages();
+    undoButton.click();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Try to redo, which should do nothing even though the button is enabled.
+    mockPlugin.clearMessages();
+    redoButton.click();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Finish the stroke. Redo button is no longer enabled.
+    mockPlugin.clearMessages();
+    finishInkStroke(controller, true);
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Make sure undo works. Then both buttons are enabled.
+    mockPlugin.clearMessages();
+    undoButton.click();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Make sure redo works. Then redo button is disabled again.
+    mockPlugin.clearMessages();
+    redoButton.click();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
+
+    viewerToolbar.resetStrokesForTesting();
+    chrome.test.succeed();
+  },
   // Test the behavior of the undo redo keyboard shortcuts.
   async function testUndoRedoKeyboardShortcuts() {
     mockPlugin.clearMessages();
@@ -505,7 +625,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
 
     // Undo shortcut.
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
@@ -538,8 +658,8 @@ chrome.test.runTests([
 
     // Draw two strokes and undo, so that both undo and redo buttons are
     // enabled.
-    finishInkStroke(controller, true);
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
+    startFinishModifiedInkStroke(controller);
     await microtasksFinished();
 
     getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo').click();
@@ -620,7 +740,7 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
 
     // Simulate committing an edited text annotation.
-    finishInkStroke(PluginController.getInstance(), true);
+    startFinishModifiedInkStroke(controller);
 
     // Undo shortcut.
     keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
@@ -678,6 +798,96 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 2);
     mockPlugin.clearMessages();
+
+    viewerToolbar.resetStrokesForTesting();
+    chrome.test.succeed();
+  },
+  // Test that the undo and redo keyboard shortcuts do nothing when a stroke is
+  // in progress.
+  async function testUndoRedoKeyboardShortcutsAreNoopsWhenStrokeInProgress() {
+    mockPlugin.clearMessages();
+    mockMetricsPrivate.reset();
+
+    // Draw 2 strokes and undo one. The undo/redo buttons should be enabled.
+    startFinishModifiedInkStroke(controller);
+    startFinishModifiedInkStroke(controller);
+    await microtasksFinished();
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Start drawing another stroke, but do not finish it yet.
+    mockPlugin.clearMessages();
+    startInkStroke(controller);
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Try to undo, which should do nothing.
+    mockPlugin.clearMessages();
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Try to redo, which should do nothing.
+    mockPlugin.clearMessages();
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Finish the stroke. Redo is no longer possible.
+    mockPlugin.clearMessages();
+    finishInkStroke(controller, true);
+    await microtasksFinished();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Make sure undo works.
+    mockPlugin.clearMessages();
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
+
+    // Make sure redo works.
+    mockPlugin.clearMessages();
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+    mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
+    mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
 
     viewerToolbar.resetStrokesForTesting();
     chrome.test.succeed();

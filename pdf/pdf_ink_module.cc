@@ -631,6 +631,8 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
     return false;
   }
 
+  client_->StrokeStarted();
+
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
 
@@ -814,6 +816,8 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
     return false;
   }
 
+  client_->StrokeStarted();
+
   CHECK(is_erasing_stroke());
   EraserState& state = erasing_stroke_state();
   CHECK(!state.erasing);
@@ -987,6 +991,8 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
                                       int click_count,
                                       base::TimeTicks timestamp,
                                       ink::StrokeInput::ToolType tool_type) {
+  client_->StrokeStarted();
+
   current_tool_state_.emplace<TextHighlightState>();
 
   bool is_double_click = click_count == 2;

@@ -410,6 +410,12 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     }
   }
 
+  void StrokeStarted() override {
+    base::Value::Dict message;
+    message.Set("type", "startInkStroke");
+    plugin_->client_->PostMessage(std::move(message));
+  }
+
   void UpdateInkCursor(const ui::Cursor& cursor) override {
     plugin_->cursor_ = cursor;
   }

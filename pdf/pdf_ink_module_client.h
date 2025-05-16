@@ -138,6 +138,9 @@ class PdfInkModuleClient {
   // whether strokes got added or erased.
   virtual void StrokeFinished(bool modified) {}
 
+  // Notifies the client that a stroke has started drawing or erasing.
+  virtual void StrokeStarted() {}
+
   // Asks the client to change the cursor to `cursor`.
   virtual void UpdateInkCursor(const ui::Cursor& cursor) {}
 

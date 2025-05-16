@@ -490,6 +490,27 @@ export function enterFullscreenWithUserGesture(): Promise<void> {
 
 // <if expr="enable_pdf_ink2">
 /**
+ * Convenience function to start stroking, and then modify some Ink stroke
+ * before finishing.
+ */
+export function startFinishModifiedInkStroke(controller: PluginController) {
+  startInkStroke(controller);
+  finishInkStroke(controller, true);
+}
+
+/**
+ * Helper to simulate the PDF content sending a message to the PDF extension
+ * to indicate that a new ink stroke has been started.
+ */
+export function startInkStroke(controller: PluginController) {
+  const eventTarget = controller.getEventTarget();
+  const message = {type: 'startInkStroke'};
+
+  eventTarget.dispatchEvent(new CustomEvent(
+      PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
+}
+
+/**
  * Helper to simulate the PDF content sending a message to the PDF extension
  * to indicate that Ink stroking has occurred.
  */

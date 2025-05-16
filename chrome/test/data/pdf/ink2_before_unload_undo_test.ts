@@ -5,7 +5,7 @@
 import {AnnotationMode, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {finishInkStroke, getNewTestBeforeUnloadProxy, setupTestMockPluginForInk} from './test_util.js';
+import {getNewTestBeforeUnloadProxy, setupTestMockPluginForInk, startFinishModifiedInkStroke} from './test_util.js';
 
 chrome.test.runTests([
   // Test that the save unedited dialog does not appear when the user navigates
@@ -21,7 +21,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, toolbar.annotationMode);
 
-    finishInkStroke(PluginController.getInstance(), true);
+    startFinishModifiedInkStroke(PluginController.getInstance());
     await microtasksFinished();
 
     toolbar.undo();

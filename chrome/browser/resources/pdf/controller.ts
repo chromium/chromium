@@ -133,6 +133,7 @@ export enum PluginControllerEventType {
   // <if expr="enable_pdf_ink2">
   CONTENT_FOCUSED = 'PluginControllerEventType.CONTENT_FOCUSED',
   FINISH_INK_STROKE = 'PluginControllerEventType.FINISH_INK_STROKE',
+  START_INK_STROKE = 'PluginControllerEventType.START_INK_STROKE',
   UPDATE_INK_THUMBNAIL = 'PluginControllerEventType.UPDATE_INK_THUMBNAIL',
   // </if>
   IS_ACTIVE_CHANGED = 'PluginControllerEventType.IS_ACTIVE_CHANGED',

@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTextBox, finishInkStroke, getRequiredElement, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {createTextBox, getRequiredElement, setupMockMetricsPrivate, setupTestMockPluginForInk, startFinishModifiedInkStroke} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -85,7 +85,7 @@ chrome.test.runTests([
 
     chrome.test.assertFalse(actionMenu.open);
 
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
     await microtasksFinished();
     downloadControls.$.download.click();
 
@@ -223,7 +223,7 @@ chrome.test.runTests([
     mockMetricsPrivate.reset();
 
     // Add another ink stroke. There should now be two ink strokes on the PDF.
-    finishInkStroke(controller, true);
+    startFinishModifiedInkStroke(controller);
     await microtasksFinished();
 
     const undoButton =
