@@ -19,11 +19,11 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Range} from '../print_preview_utils.js';
 import {areRangesEqual} from '../print_preview_utils.js';
 
-import {InputMixinLit} from './input_mixin_lit.js';
+import {InputMixin} from './input_mixin.js';
 import {getCss} from './pages_settings.css.js';
 import {getHtml} from './pages_settings.html.js';
-import {SelectMixinLit} from './select_mixin_lit.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 enum PagesInputErrorState {
   NO_ERROR = 0,
@@ -59,8 +59,8 @@ export interface PrintPreviewPagesSettingsElement {
   };
 }
 
-const PrintPreviewPagesSettingsElementBase = WebUiListenerMixinLit(
-    InputMixinLit(SettingsMixinLit(SelectMixinLit(CrLitElement))));
+const PrintPreviewPagesSettingsElementBase =
+    WebUiListenerMixinLit(InputMixin(SettingsMixin(SelectMixin(CrLitElement))));
 
 export class PrintPreviewPagesSettingsElement extends
     PrintPreviewPagesSettingsElementBase {

@@ -16,9 +16,9 @@ import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
 import {getCss} from './destination_select.css.js';
 import {getHtml} from './destination_select.html.js';
-import {SelectMixinLit} from './select_mixin_lit.js';
+import {SelectMixin} from './select_mixin.js';
 
-const PrintPreviewDestinationSelectElementBase = SelectMixinLit(CrLitElement);
+const PrintPreviewDestinationSelectElementBase = SelectMixin(CrLitElement);
 
 export class PrintPreviewDestinationSelectElement extends
     PrintPreviewDestinationSelectElementBase {

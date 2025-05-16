@@ -10,7 +10,7 @@ import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {DarkModeMixinLit} from '../dark_mode_mixin_lit.js';
+import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
 import type {Destination} from '../data/destination.js';
 import type {Margins, MarginsSetting} from '../data/margins.js';
@@ -31,7 +31,7 @@ import type {PluginProxy} from './plugin_proxy.js';
 import {PluginProxyImpl} from './plugin_proxy.js';
 import {getCss} from './preview_area.css.js';
 import {getHtml} from './preview_area.html.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 export type PreviewTicket = Ticket&{
   headerFooterEnabled: boolean,
@@ -54,7 +54,7 @@ export interface PrintPreviewPreviewAreaElement {
 }
 
 const PrintPreviewPreviewAreaElementBase = WebUiListenerMixinLit(
-    I18nMixinLit(SettingsMixinLit(DarkModeMixinLit(CrLitElement))));
+    I18nMixinLit(SettingsMixin(DarkModeMixin(CrLitElement))));
 
 export class PrintPreviewPreviewAreaElement extends
     PrintPreviewPreviewAreaElementBase {

@@ -10,7 +10,7 @@ import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_liste
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {InputMixinLit} from './input_mixin_lit.js';
+import {InputMixin} from './input_mixin.js';
 import {getCss} from './number_settings_section.css.js';
 import {getHtml} from './number_settings_section.html.js';
 
@@ -21,7 +21,7 @@ export interface PrintPreviewNumberSettingsSectionElement {
 }
 
 const PrintPreviewNumberSettingsSectionElementBase =
-    WebUiListenerMixinLit(InputMixinLit(CrLitElement));
+    WebUiListenerMixinLit(InputMixin(CrLitElement));
 
 export class PrintPreviewNumberSettingsSectionElement extends
     PrintPreviewNumberSettingsSectionElementBase {

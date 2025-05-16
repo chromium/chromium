@@ -12,9 +12,9 @@ import type {MediaSizeCapability} from '../data/cdd.js';
 
 import {getCss} from './media_size_settings.css.js';
 import {getHtml} from './media_size_settings.html.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-const PrintPreviewMediaSizeSettingsElementBase = SettingsMixinLit(CrLitElement);
+const PrintPreviewMediaSizeSettingsElementBase = SettingsMixin(CrLitElement);
 
 export class PrintPreviewMediaSizeSettingsElement extends
     PrintPreviewMediaSizeSettingsElementBase {

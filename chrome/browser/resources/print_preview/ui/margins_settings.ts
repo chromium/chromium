@@ -13,12 +13,12 @@ import {State} from '../data/state.js';
 
 import {getHtml} from './margins_settings.html.js';
 import {getCss as getPrintPreviewSharedCss} from './print_preview_shared_lit.css.js';
-import {SelectMixinLit} from './select_mixin_lit.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 
 const PrintPreviewMarginsSettingsElementBase =
-    SettingsMixinLit(SelectMixinLit(CrLitElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewMarginsSettingsElement extends
     PrintPreviewMarginsSettingsElementBase {

@@ -9,11 +9,11 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './layout_settings.html.js';
 import {getCss as getPrintPreviewSharedCss} from './print_preview_shared_lit.css.js';
-import {SelectMixinLit} from './select_mixin_lit.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 const PrintPreviewLayoutSettingsElementBase =
-    SettingsMixinLit(SelectMixinLit(CrLitElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewLayoutSettingsElement extends
     PrintPreviewLayoutSettingsElementBase {

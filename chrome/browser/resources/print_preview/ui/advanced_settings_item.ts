@@ -17,10 +17,9 @@ import {getStringForCurrentLocale} from '../print_preview_utils.js';
 import {getCss} from './advanced_settings_item.css.js';
 import {getHtml} from './advanced_settings_item.html.js';
 import {updateHighlights} from './highlight_utils.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-const PrintPreviewAdvancedSettingsItemElementBase =
-    SettingsMixinLit(CrLitElement);
+const PrintPreviewAdvancedSettingsItemElementBase = SettingsMixin(CrLitElement);
 
 export class PrintPreviewAdvancedSettingsItemElement extends
     PrintPreviewAdvancedSettingsItemElementBase {

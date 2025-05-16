@@ -19,7 +19,7 @@ import {State} from '../data/state.js';
 import type {PrintPreviewMarginControlElement} from './margin_control.js';
 import {getCss} from './margin_control_container.css.js';
 import {getHtml} from './margin_control_container.html.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 export const MARGIN_KEY_MAP:
     Map<CustomMarginsOrientation, keyof MarginsSetting> = new Map([
@@ -33,7 +33,7 @@ const MINIMUM_DISTANCE: number = 72;  // 1 inch
 
 
 const PrintPreviewMarginControlContainerElementBase =
-    SettingsMixinLit(CrLitElement);
+    SettingsMixin(CrLitElement);
 
 export class PrintPreviewMarginControlContainerElement extends
     PrintPreviewMarginControlContainerElementBase {

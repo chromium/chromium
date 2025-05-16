@@ -21,7 +21,7 @@ import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 import {getCss} from './advanced_settings_dialog.css.js';
 import {getHtml} from './advanced_settings_dialog.html.js';
 import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 export interface PrintPreviewAdvancedSettingsDialogElement {
   $: {
@@ -31,7 +31,7 @@ export interface PrintPreviewAdvancedSettingsDialogElement {
 }
 
 const PrintPreviewAdvancedSettingsDialogElementBase =
-    I18nMixinLit(SettingsMixinLit(CrLitElement));
+    I18nMixinLit(SettingsMixin(CrLitElement));
 
 export class PrintPreviewAdvancedSettingsDialogElement extends
     PrintPreviewAdvancedSettingsDialogElementBase {

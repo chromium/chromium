@@ -53,7 +53,6 @@ build_webui("build") {
 
   ts_files = [
     "dark_mode_mixin.ts",
-    "dark_mode_mixin_lit.ts",
     "data/cdd.ts",
     "data/coordinate2d.ts",
     "data/destination.ts",
@@ -78,12 +77,9 @@ build_webui("build") {
     "ui/destination_settings.ts",
     "ui/highlight_utils.ts",
     "ui/input_mixin.ts",
-    "ui/input_mixin_lit.ts",
     "ui/plugin_proxy.ts",
     "ui/select_mixin.ts",
-    "ui/select_mixin_lit.ts",
     "ui/settings_mixin.ts",
-    "ui/settings_mixin_lit.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

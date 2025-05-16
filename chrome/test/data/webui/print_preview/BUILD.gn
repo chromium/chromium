@@ -55,7 +55,6 @@ build_webui_tests("build") {
     "restore_state_test.ts",
     "scaling_settings_interactive_test.ts",
     "scaling_settings_test.ts",
-    "select_mixin_lit_test.ts",
     "select_mixin_test.ts",
     "settings_select_test.ts",
     "test_plugin_proxy.ts",

@@ -15,8 +15,8 @@ import {ScalingType} from '../data/scaling.js';
 
 import {getCss as getPrintPreviewSharedCss} from './print_preview_shared_lit.css.js';
 import {getHtml} from './scaling_settings.html.js';
-import {SelectMixinLit} from './select_mixin_lit.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 /*
  * Fit to page and fit to paper options will only be displayed for PDF
@@ -25,7 +25,7 @@ import {SettingsMixinLit} from './settings_mixin_lit.js';
  */
 
 const PrintPreviewScalingSettingsElementBase =
-    SettingsMixinLit(SelectMixinLit(CrLitElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewScalingSettingsElement extends
     PrintPreviewScalingSettingsElementBase {

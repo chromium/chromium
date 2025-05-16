@@ -38,7 +38,7 @@ import {getHtml} from './app.html.js';
 import {DestinationState} from './destination_settings.js';
 import type {PrintPreviewPreviewAreaElement} from './preview_area.js';
 import {PreviewAreaState} from './preview_area.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 import type {PrintPreviewSidebarElement} from './sidebar.js';
 
 export interface PrintPreviewAppElement {
@@ -52,7 +52,7 @@ export interface PrintPreviewAppElement {
 }
 
 const PrintPreviewAppElementBase =
-    WebUiListenerMixinLit(SettingsMixinLit(CrLitElement));
+    WebUiListenerMixinLit(SettingsMixin(CrLitElement));
 
 export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   static get is() {

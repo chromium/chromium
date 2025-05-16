@@ -24,7 +24,7 @@ import type {PrintPreviewDestinationDialogElement} from './destination_dialog.js
 import type {PrintPreviewDestinationSelectElement} from './destination_select.js';
 import {getHtml} from './destination_settings.html.js';
 import {getCss as getPrintPreviewSharedLitCss} from './print_preview_shared_lit.css.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 export enum DestinationState {
   INIT = 0,
@@ -51,7 +51,7 @@ export interface PrintPreviewDestinationSettingsElement {
 }
 
 const PrintPreviewDestinationSettingsElementBase =
-    I18nMixinLit(WebUiListenerMixinLit(SettingsMixinLit(CrLitElement)));
+    I18nMixinLit(WebUiListenerMixinLit(SettingsMixin(CrLitElement)));
 
 export class PrintPreviewDestinationSettingsElement extends
     PrintPreviewDestinationSettingsElementBase {

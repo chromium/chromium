@@ -70,10 +70,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixin) {
   RunTest("print_preview/select_mixin_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixinLit) {
-  RunTest("print_preview/select_mixin_lit_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelect) {
   RunTest("print_preview/settings_select_test.js", "mocha.run()");
 }

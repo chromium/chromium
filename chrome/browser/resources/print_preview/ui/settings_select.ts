@@ -9,13 +9,13 @@ import type {CapabilityWithReset, SelectOption} from '../data/cdd.js';
 import type {Settings} from '../data/model.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
-import {SelectMixinLit} from './select_mixin_lit.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 import {getCss} from './settings_select.css.js';
 import {getHtml} from './settings_select.html.js';
 
 const PrintPreviewSettingsSelectElementBase =
-    SettingsMixinLit(SelectMixinLit(CrLitElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewSettingsSelectElement extends
     PrintPreviewSettingsSelectElementBase {

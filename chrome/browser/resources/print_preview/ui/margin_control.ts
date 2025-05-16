@@ -15,7 +15,7 @@ import {CustomMarginsOrientation} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';
 import type {Size} from '../data/size.js';
 
-import {InputMixinLit} from './input_mixin_lit.js';
+import {InputMixin} from './input_mixin.js';
 import {getCss} from './margin_control.css.js';
 import {getHtml} from './margin_control.html.js';
 
@@ -33,7 +33,7 @@ export interface PrintPreviewMarginControlElement {
 }
 
 const PrintPreviewMarginControlElementBase =
-    I18nMixinLit(WebUiListenerMixinLit(InputMixinLit(CrLitElement)));
+    I18nMixinLit(WebUiListenerMixinLit(InputMixin(CrLitElement)));
 
 export class PrintPreviewMarginControlElement extends
     PrintPreviewMarginControlElementBase {

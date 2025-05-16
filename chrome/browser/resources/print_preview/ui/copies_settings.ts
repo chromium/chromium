@@ -14,7 +14,7 @@ import type {CopiesCapability} from '../data/cdd.js';
 
 import {getCss} from './copies_settings.css.js';
 import {getHtml} from './copies_settings.html.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 /**
  * Maximum number of copies supported by the printer if not explicitly
@@ -28,7 +28,7 @@ export interface PrintPreviewCopiesSettingsElement {
   };
 }
 
-const PrintPreviewCopiesSettingsElementBase = SettingsMixinLit(CrLitElement);
+const PrintPreviewCopiesSettingsElementBase = SettingsMixin(CrLitElement);
 
 export class PrintPreviewCopiesSettingsElement extends
     PrintPreviewCopiesSettingsElementBase {

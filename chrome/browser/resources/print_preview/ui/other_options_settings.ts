@@ -14,7 +14,7 @@ import type {Settings} from '../data/model.js';
 
 import {getCss} from './other_options_settings.css.js';
 import {getHtml} from './other_options_settings.html.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 interface CheckboxOption {
   name: keyof Settings;
@@ -25,7 +25,7 @@ interface CheckboxOption {
 }
 
 const PrintPreviewOtherOptionsSettingsElementBase =
-    SettingsMixinLit(I18nMixinLit(CrLitElement));
+    SettingsMixin(I18nMixinLit(CrLitElement));
 
 export class PrintPreviewOtherOptionsSettingsElement extends
     PrintPreviewOtherOptionsSettingsElementBase {

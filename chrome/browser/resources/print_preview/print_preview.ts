@@ -51,8 +51,7 @@ export {PluginProxy, PluginProxyImpl, ViewportChangedCallback} from './ui/plugin
 export {PreviewAreaState, PreviewTicket, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
-export {SelectMixin, SelectMixinInterface} from './ui/select_mixin.js';
-export {SelectMixinLit} from './ui/select_mixin_lit.js';
+export {SelectMixin} from './ui/select_mixin.js';
 export {SettingsMixinInterface} from './ui/settings_mixin.js';
 export {PrintPreviewSettingsSelectElement} from './ui/settings_select.js';
 export {PrintPreviewSidebarElement} from './ui/sidebar.js';

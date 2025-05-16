@@ -14,14 +14,14 @@ import type {DpiCapability, DpiOption, SelectOption} from '../data/cdd.js';
 
 import {getCss} from './dpi_settings.css.js';
 import {getHtml} from './dpi_settings.html.js';
-import {SettingsMixinLit} from './settings_mixin_lit.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 type LabelledDpiOption = DpiOption&SelectOption;
 export interface LabelledDpiCapability {
   option: LabelledDpiOption[];
 }
 
-const PrintPreviewDpiSettingsElementBase = SettingsMixinLit(CrLitElement);
+const PrintPreviewDpiSettingsElementBase = SettingsMixin(CrLitElement);
 
 export class PrintPreviewDpiSettingsElement extends
     PrintPreviewDpiSettingsElementBase {
