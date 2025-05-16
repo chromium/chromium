@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "crypto/hash.h"
 #include "net/base/net_export.h"
+#include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 
@@ -173,15 +174,13 @@ struct NET_EXPORT_PRIVATE Jades2QwacHeader {
   // be found in the JSON Web Signature and Encryption Algorithms IANA registry
   // (https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms).
   // The consumer of this struct must check that the algorithm provided in this
-  // field matches the signature algorithm of the leaf cert in |cert_chain|.
+  // field matches the signature algorithm of the leaf cert in |two_qwac_cert|.
   std::string sig_alg;
 
   // The certificate chain with a leaf cert that is a 2-QWAC. This certificate
   // chain is used to sign the JWS, which binds the 2-QWAC to a set of TLS
   // serverAuth certificates.
-  //
-  // TODO(crbug.com/392929826): Replace this with net::X509Certificate.
-  std::vector<std::vector<uint8_t>> cert_chain;
+  scoped_refptr<net::X509Certificate> two_qwac_cert;
 
   // The hash algorithm used to hash the bound certificates.
   crypto::hash::HashKind hash_alg;

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
@@ -327,14 +328,15 @@ TEST(Has2QwacEku, TestEkuCases) {
 
 // Builds a header that has the minimal required set of parameters
 base::DictValue MinimalBindingHeader() {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
   base::Value::Dict header =
       base::Value::Dict()
           .Set("alg", "test alg")
           .Set("cty", "TLS-Certificate-Binding-v1")
           .Set("x5c", base::Value::List()
                           // These are base64 encoded, not base64url encoded
-                          .Append("MIIDnotarealcert")
-                          .Append("MIIDanotherfakecert="))
+                          .Append(base::Base64Encode(leaf->GetDER()))
+                          .Append(base::Base64Encode(root->GetDER())))
           .Set("sigD",
                base::Value::Dict()
                    .Set("mId", "http://uri.etsi.org/19182/ObjectIdByURIHash")
@@ -519,6 +521,13 @@ TEST(ParseTlsCertificateBinding, InvalidFields) {
           // (but not regular base64) string.
           "x5c",
           base::Value(base::ListValue().Append("M-_A")),
+      },
+      {
+          // "x5c" expects the base64 strings in its list to be valid X.509
+          // certificates. This string is valid base64, but is a (very)
+          // truncated X.509 certificate.
+          "x5c",
+          base::Value(base::ListValue().Append("MIID")),
       },
       {
           // "iat" expects an int (when used for 2-QWACs). "iat" more generally

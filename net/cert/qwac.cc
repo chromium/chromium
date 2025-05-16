@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
+#include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/parser.h"
 
 namespace net {
@@ -269,7 +270,9 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
     return std::nullopt;
   }
 
-  parsed_header.cert_chain.reserve(x5c_list->size());
+  size_t i = 0;
+  bssl::UniquePtr<CRYPTO_BUFFER> leaf;
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
   for (const base::Value& cert_value : *x5c_list) {
     // RFC 7515 section 4.1.6:
     // "Each string in the array is a base64-encoded (not base64url-encoded) DER
@@ -281,7 +284,18 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
     if (!cert_bytes.has_value()) {
       return std::nullopt;
     }
-    parsed_header.cert_chain.emplace_back(std::move(cert_bytes.value()));
+    auto buf = x509_util::CreateCryptoBuffer(*cert_bytes);
+    if (i == 0) {
+      leaf = std::move(buf);
+    } else {
+      intermediates.emplace_back(std::move(buf));
+    }
+    i++;
+  }
+  parsed_header.two_qwac_cert = X509Certificate::CreateFromBuffer(
+      std::move(leaf), std::move(intermediates));
+  if (!parsed_header.two_qwac_cert) {
+    return std::nullopt;
   }
   header.Remove("x5c");
 
