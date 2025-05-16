@@ -59,6 +59,11 @@ class MockFreezingPolicy : public FreezingPolicy {
       : FreezingPolicy(std::move(discarder), std::move(opt_out_checker)) {}
   ~MockFreezingPolicy() override = default;
 
+  base::TimeTicks GenerateRandomPeriodicUnfreezePhase() const override {
+    //  Make the periodic unfreeze phase non-random for tests.
+    return base::TimeTicks();
+  }
+
   MOCK_METHOD(void,
               RecordFreezingEligibilityUKMForPage,
               (ukm::SourceId source_id,
@@ -1979,7 +1984,9 @@ class FreezingPolicyInfiniteTabsTest
   void OnGraphCreated(GraphImpl* graph) override {
     FreezingPolicyTest_BaseWithNoPage::OnGraphCreated(graph);
 
-    AdvanceClock(base::Milliseconds(1));
+    // Start the test outside of the periodic unfreeze period.
+    AdvanceToAlignedTime(base::Minutes(1));
+    AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
 
     // Create "num protected tabs" hidden pages. All pages have their own
     // browsing instance, which is not equal to `kBrowsingInstance(A|B|C)`.
@@ -2175,6 +2182,55 @@ TEST_F(FreezingPolicyInfiniteTabsTest, UniversalCannotFreezeReason) {
   VerifyFreezerExpectations();
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[1].get()));
   pages_[1]->SetIsHoldingWebLockForTesting(false);
+}
+
+// Verify that under "Infinite Tabs Freezing", frozen tabs are periodically
+// unfrozen.
+TEST_F(FreezingPolicyInfiniteTabsTest, PeriodicUnfreeze) {
+  // Advance to the beginning of the next periodic unfreeze period.
+  AdvanceToAlignedTime(base::Minutes(1));
+
+  // Create a new page. This should remove
+  // `CannotFreezeReason::kMostRecentlyUsed` from `pages_[0]`. However, it's not
+  // frozen yet since it's still in its periodic unfreeze period.
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  // Advance to the end of the periodic unfreeze period. `pages_[0]` should be
+  // frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  VerifyFreezerExpectations();
+
+  // Advance to the beginning of the next periodic unfreeze period. `pages_[0]`
+  // should be unfrozen.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() -
+               features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  VerifyFreezerExpectations();
+
+  // Advance to the end of the periodic unfreeze period. `pages_[0]` should be
+  // frozen again.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  VerifyFreezerExpectations();
+
+  // Add a `CannotFreezeReason`. `pages_[0]` is unfrozen.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  pages_[0]->SetUsesWebRTCForTesting(true);
+  VerifyFreezerExpectations();
+
+  // At the next periodic unfreeze period, `pages_[0]` remains unfrozen.
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() -
+               features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+
+  // When the periodic unfreeze period ends, `pages_[0]` is not re-frozen.
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+
+  // When the `CannotFreezeReason` is removed, `pages_[0]` is frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  pages_[0]->SetUsesWebRTCForTesting(false);
   VerifyFreezerExpectations();
 }
 

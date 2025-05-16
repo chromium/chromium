@@ -111,11 +111,68 @@ struct FreezingPolicy::PageFreezingState
   PageFreezingState(const PageFreezingState&) = delete;
   PageFreezingState& operator=(const PageFreezingState&) = delete;
 
+  // Returns the start time (inclusive) and end time (exclusive) of the current
+  // periodic unfreeze period, or of the next one if not currently in a periodic
+  // unfreeze period. A periodic unfreeze period is a period during which a tab
+  // frozen with `FreezingType::kInfiniteTabs` is temporarily unfrozen.
+  // Concretely, if the page must be unfrozen from t=10 (incl) to t=12 (excl)
+  // and from t=20 (incl) to t=22 (excl):
+  //         If `now` is 10 -> returns [10, 12]
+  //                     11 ->         [10, 12]
+  //                     12 ->         [20, 22]
+  //                     13 ->         [20, 22]
+  //         etc.
+  std::pair<base::TimeTicks, base::TimeTicks>
+  GetCurrentOrNextUnfreezePeriodStart(base::TimeTicks now) const {
+    const base::TimeTicks next_unfreeze_time = now.SnappedToNextTick(
+        *periodic_unfreeze_phase,
+        features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
+    const base::TimeTicks previous_unfreeze_time =
+        next_unfreeze_time -
+        features::kInfiniteTabsFreezing_UnfreezeInterval.Get();
+    CHECK_LT(previous_unfreeze_time, now);
+
+    if ((previous_unfreeze_time +
+         features::kInfiniteTabsFreezing_UnfreezeDuration.Get()) > now) {
+      return {previous_unfreeze_time,
+              previous_unfreeze_time +
+                  features::kInfiniteTabsFreezing_UnfreezeDuration.Get()};
+    }
+
+    return {next_unfreeze_time,
+            next_unfreeze_time +
+                features::kInfiniteTabsFreezing_UnfreezeDuration.Get()};
+  }
+
+  // Returns true if `now` is within a periodic unfreeze period for this page.
+  bool IsInUnfreezePeriod(base::TimeTicks now) const {
+    return GetCurrentOrNextUnfreezePeriodStart(now).first <= now;
+  }
+
+  // Returns the delay until the next start or end of a periodic unfreeze period
+  // for this page. The return value is guaranteed to be greater than zero (if
+  // there is a state change at time `now`, this returns the time of the next
+  // state change).
+  base::TimeDelta GetDelayUntilNextUnfreezeStateChange(
+      base::TimeTicks now) const {
+    auto [start_incl, end_excl] = GetCurrentOrNextUnfreezePeriodStart(now);
+    if (start_incl > now) {
+      return start_incl - now;
+    }
+    CHECK_GT(end_excl, now);
+    return end_excl - now;
+  }
+
   // Whether this page is frozen.
   bool frozen = false;
 
   // Number of votes to freeze the page.
   int num_freeze_votes = 0;
+
+  // Phase for periodic unfreezing. Use a random value so that different tabs
+  // are unfrozen at different tabs as much as possible, but also cannot learn
+  // anything about other unrelated tabs.
+  std::optional<base::TimeTicks> periodic_unfreeze_phase;
 
   // Reasons not to freeze the page.
   CannotFreezeReasonSet cannot_freeze_reasons;
@@ -125,6 +182,9 @@ struct FreezingPolicy::PageFreezingState
 
   // Timer to remove `CannotFreezeReason::kRecentlyAudible`.
   base::OneShotTimer recently_audible_timer;
+
+  // Timer for periodic unfreezing.
+  base::OneShotTimer periodic_unfreeze_timer;
 };
 
 class FreezingPolicy::CanFreezePerTypeTracker {
@@ -201,6 +261,7 @@ FreezingPolicy::FreezingPolicy(
 FreezingPolicy::~FreezingPolicy() = default;
 
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
+  const base::TimeTicks now = base::TimeTicks::Now();
   is_battery_saver_active_ = is_enabled;
 
   // Update frozen state for all connected sets of pages (toggling the state of
@@ -208,7 +269,7 @@ void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
   base::flat_set<raw_ptr<const PageNode>> visited_pages;
   for (auto& [id, state] : browsing_instance_states_) {
     if (!base::Contains(visited_pages, *state.pages.begin())) {
-      UpdateFrozenState(*state.pages.begin(), &visited_pages);
+      UpdateFrozenState(*state.pages.begin(), now, &visited_pages);
     }
   }
 }
@@ -330,11 +391,17 @@ FreezingPolicy::GetBrowsingInstances(const PageNode* page) const {
 
 FreezingPolicy::PageFreezingState& FreezingPolicy::GetFreezingState(
     const PageNode* page_node) const {
-  return *PageFreezingState::GetOrCreate(PageNodeImpl::FromNode(page_node));
+  auto& state =
+      *PageFreezingState::GetOrCreate(PageNodeImpl::FromNode(page_node));
+  if (!state.periodic_unfreeze_phase) {
+    state.periodic_unfreeze_phase = GenerateRandomPeriodicUnfreezePhase();
+  }
+  return state;
 }
 
 void FreezingPolicy::UpdateFrozenState(
     const PageNode* page,
+    base::TimeTicks now,
     base::flat_set<raw_ptr<const PageNode>>* connected_pages_out) {
   const base::flat_set<raw_ptr<const PageNode>> connected_pages =
       GetConnectedPages(page);
@@ -344,9 +411,11 @@ void FreezingPolicy::UpdateFrozenState(
   // - Any browsing instance hosting a frame from a connected page was CPU
   //   intensive in the background and Battery Saver is active and the
   //   `kFreezingOnBatterySaver` feature is enabled.
+  // - Any connected page is in a periodic unfreeze period.
   // - All connected page have a freeze vote.
   CanFreezePerTypeTracker can_freeze_per_type_tracker;
   bool eligible_for_freezing_on_battery_saver = false;
+  bool is_in_periodic_unfreeze = false;
   bool all_pages_have_freeze_vote = true;
 
   const double high_cpu_proportion = features::kFreezingHighCPUProportion.Get();
@@ -357,7 +426,13 @@ void FreezingPolicy::UpdateFrozenState(
     can_freeze_per_type_tracker.PopulateWithPageFreezingState(
         page_freezing_state);
 
-    all_pages_have_freeze_vote &= (page_freezing_state.num_freeze_votes > 0);
+    if (page_freezing_state.num_freeze_votes == 0) {
+      all_pages_have_freeze_vote = false;
+    }
+
+    if (page_freezing_state.IsInUnfreezePeriod(now)) {
+      is_in_periodic_unfreeze = true;
+    }
 
     for (auto browsing_instance_id : GetBrowsingInstances(visited_page)) {
       auto it = browsing_instance_states_.find(browsing_instance_id);
@@ -392,6 +467,7 @@ void FreezingPolicy::UpdateFrozenState(
     should_be_frozen = true;
   } else if (can_freeze_per_type_tracker.CanFreeze(
                  FreezingType::kInfiniteTabs) &&
+             !is_in_periodic_unfreeze &&
              base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing)) {
     should_be_frozen = true;
   }
@@ -442,6 +518,18 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
 
   CanFreezePerTypeTracker after_tracker;
   after_tracker.PopulateWithPageFreezingState(state);
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  if (!after_tracker.CanFreeze(FreezingType::kInfiniteTabs)) {
+    // No need to run the periodic unfreeze timer when the tab isn't eligible
+    // for infinite tabs freezing.
+    state.periodic_unfreeze_timer.Stop();
+  } else if (!state.periodic_unfreeze_timer.IsRunning()) {
+    // Start a timer which fires when entering or exiting a periodic unfreeze
+    // period.
+    StartPeriodicUnfreezeTimer(page_node, now);
+  }
 
   if (before_tracker != after_tracker) {
     UpdateFrozenState(page_node);
@@ -1143,6 +1231,22 @@ void FreezingPolicy::CheckMostRecentlyUsedListSize() {
       base::NotFatalUntil::M140);
 }
 
+void FreezingPolicy::StartPeriodicUnfreezeTimer(const PageNode* page_node,
+                                                base::TimeTicks now) {
+  auto& state = GetFreezingState(page_node);
+  CHECK(!state.periodic_unfreeze_timer.IsRunning(), base::NotFatalUntil::M141);
+  state.periodic_unfreeze_timer.Start(
+      FROM_HERE, state.GetDelayUntilNextUnfreezeStateChange(now),
+      base::BindOnce(&FreezingPolicy::OnPeriodicUnfreezeTimer,
+                     base::Unretained(this), base::Unretained(page_node)));
+}
+
+void FreezingPolicy::OnPeriodicUnfreezeTimer(const PageNode* page_node) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  UpdateFrozenState(page_node, now);
+  StartPeriodicUnfreezeTimer(page_node, now);
+}
+
 void FreezingPolicy::RecordFreezingEligibilityUKM() {
   if (!base::FeatureList::IsEnabled(features::kRecordFreezingEligibilityUKM)) {
     return;
@@ -1286,6 +1390,13 @@ void FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
       CannotFreezeReason::kNotificationPermission));
 
   ukm.Record(ukm::UkmRecorder::Get());
+}
+
+base::TimeTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
+  return base::TimeTicks() +
+         base::Milliseconds(base::RandInt(
+             0, features::kInfiniteTabsFreezing_UnfreezeInterval.Get()
+                    .InMilliseconds()));
 }
 
 }  // namespace performance_manager

@@ -279,6 +279,18 @@ BASE_FEATURE_PARAM(int,
                    "num_protected_tabs",
                    5);
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kInfiniteTabsFreezing_UnfreezeInterval,
+                   &kInfiniteTabsFreezing,
+                   "unfreeze_interval",
+                   base::Minutes(1));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kInfiniteTabsFreezing_UnfreezeDuration,
+                   &kInfiniteTabsFreezing,
+                   "unfreeze_duration",
+                   base::Seconds(5));
+
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
              "ResourceAttributionIncludeOrigins",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -155,6 +155,7 @@ class FreezingPolicy : public PageNodeObserver,
   // (including `page_node`) are added to `connected_pages_out` if not nullptr.
   void UpdateFrozenState(
       const PageNode* page_node,
+      base::TimeTicks now = base::TimeTicks::Now(),
       base::flat_set<raw_ptr<const PageNode>>* connected_pages_out = nullptr);
 
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.
@@ -242,6 +243,17 @@ class FreezingPolicy : public PageNodeObserver,
   // Checks that the size of the most recently used list respects the limit.
   void CheckMostRecentlyUsedListSize();
 
+  // Starts a timer to manage periodic unfreezing of a tab frozen for
+  // `FreezingContext::kInfiniteTabs`. The timer is scheduled to invoke
+  // OnPeriodicUnfreezeTimer() at the next time when the tab must be unfrozen or
+  // re-frozen.
+  void StartPeriodicUnfreezeTimer(const PageNode* page_node,
+                                  base::TimeTicks now);
+
+  // Method invoked when when it's time to unfreeze or re-freeze a tab frozen
+  // for `FreezingContext::kInfiniteTabs`.
+  void OnPeriodicUnfreezeTimer(const PageNode* page);
+
   // Records freezing eligibility UKM for all pages.
   void RecordFreezingEligibilityUKM();
 
@@ -263,6 +275,10 @@ class FreezingPolicy : public PageNodeObserver,
       double highest_cpu_current_interval,
       double highest_cpu_without_battery_saver_cannot_freeze,
       freezing::CannotFreezeReasonSet battery_saver_cannot_freeze_reasons);
+
+  // Returns a random periodic unfreeze phase. Can be overridden in test to
+  // eliminate randomness.
+  virtual base::TimeTicks GenerateRandomPeriodicUnfreezePhase() const;
 
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
