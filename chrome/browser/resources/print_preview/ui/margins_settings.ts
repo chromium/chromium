@@ -46,9 +46,9 @@ export class PrintPreviewMarginsSettingsElement extends
     };
   }
 
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   accessor state: State;
-  protected accessor marginsDisabled_: boolean;
+  protected accessor marginsDisabled_: boolean = false;
   private accessor pagesPerSheet_: number;
   private loaded_: boolean = false;
 

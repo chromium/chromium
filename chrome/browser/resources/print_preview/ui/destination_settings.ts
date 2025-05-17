@@ -101,19 +101,19 @@ export class PrintPreviewDestinationSettingsElement extends
     };
   }
 
-  accessor dark: boolean;
+  accessor dark: boolean = false;
   accessor destination: Destination|null = null;
   accessor destinationState: DestinationState = DestinationState.INIT;
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   accessor error: Error;
-  accessor firstLoad: boolean;
+  accessor firstLoad: boolean = false;
   accessor state: State;
   protected accessor destinationStore_: DestinationStore|null = null;
   protected accessor displayedDestinations_: Destination[] = [];
   private accessor isDialogOpen_: boolean = false;
   protected accessor noDestinations_: boolean = false;
-  protected accessor pdfPrinterDisabled_: boolean;
-  protected accessor loaded_: boolean;
+  protected accessor pdfPrinterDisabled_: boolean = false;
+  protected accessor loaded_: boolean = false;
 
   private lastUser_: string = '';
   private tracker_: EventTracker = new EventTracker();

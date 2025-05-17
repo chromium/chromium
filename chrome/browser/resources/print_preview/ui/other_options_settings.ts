@@ -54,7 +54,7 @@ export class PrintPreviewOtherOptionsSettingsElement extends
     };
   }
 
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   protected accessor options_: CheckboxOption[] = [
     {name: 'headerFooter', label: 'optionHeaderFooter'},
     {name: 'cssBackground', label: 'optionBackgroundColorsAndImages'},

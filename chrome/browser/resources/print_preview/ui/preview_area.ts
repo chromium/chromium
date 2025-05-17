@@ -96,7 +96,7 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   accessor destination: Destination;
-  accessor documentModifiable: boolean;
+  accessor documentModifiable: boolean = false;
   accessor error: Error;
   accessor margins: Margins;
   accessor measurementSystem: MeasurementSystem|null;

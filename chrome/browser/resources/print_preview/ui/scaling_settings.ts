@@ -58,12 +58,12 @@ export class PrintPreviewScalingSettingsElement extends
     };
   }
 
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   accessor isPdf: boolean = false;
   protected accessor currentValue_: string;
-  protected accessor customSelected_: boolean;
+  protected accessor customSelected_: boolean = false;
   protected accessor dropdownDisabled_: boolean = false;
-  protected accessor inputValid_: boolean;
+  protected accessor inputValid_: boolean = false;
   private accessor settingKey_: keyof Settings;
   private accessor scalingTypeValue_: ScalingType;
   private accessor scalingTypePdfValue_: ScalingType;

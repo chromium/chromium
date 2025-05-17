@@ -55,8 +55,8 @@ export class PrintPreviewDuplexSettingsElement extends
     };
   }
 
-  accessor dark: boolean;
-  accessor disabled: boolean;
+  accessor dark: boolean = false;
+  accessor disabled: boolean = false;
   protected accessor duplexManaged_: boolean = false;
   protected accessor duplexShortEdgeManaged_: boolean = false;
   protected accessor collapseOpened_: boolean = false;

@@ -38,7 +38,7 @@ export class PrintPreviewMediaSizeSettingsElement extends
   }
 
   accessor capability: MediaSizeCapability|null;
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   private lastSelectedValue_: string = '';
 
   override connectedCallback() {

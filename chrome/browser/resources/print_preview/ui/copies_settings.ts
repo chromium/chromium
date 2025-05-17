@@ -56,11 +56,11 @@ export class PrintPreviewCopiesSettingsElement extends
   }
 
   accessor capability: CopiesCapability|null;
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   protected accessor copiesMax_: number;
   protected accessor currentValue_: string;
-  protected accessor inputValid_: boolean;
-  private accessor collateAvailable_: boolean;
+  protected accessor inputValid_: boolean = false;
+  private accessor collateAvailable_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

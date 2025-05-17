@@ -41,8 +41,8 @@ export class PrintPreviewColorSettingsElement extends
     };
   }
 
-  accessor disabled: boolean;
-  private accessor managed_: boolean;
+  accessor disabled: boolean = false;
+  private accessor managed_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

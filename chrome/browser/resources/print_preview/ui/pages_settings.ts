@@ -95,9 +95,9 @@ export class PrintPreviewPagesSettingsElement extends
     };
   }
 
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   accessor pageCount: number;
-  protected accessor controlsDisabled_: boolean;
+  protected accessor controlsDisabled_: boolean = false;
   private accessor errorState_: PagesInputErrorState =
       PagesInputErrorState.NO_ERROR;
   protected accessor hasError_: boolean = false;

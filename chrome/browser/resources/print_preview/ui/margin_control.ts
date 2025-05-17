@@ -86,10 +86,10 @@ export class PrintPreviewMarginControlElement extends
     };
   }
 
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   accessor side: CustomMarginsOrientation;
-  accessor invalid: boolean;
-  accessor invisible: boolean;
+  accessor invalid: boolean = false;
+  accessor invisible: boolean = false;
   accessor measurementSystem: MeasurementSystem|null;
   accessor scaleTransform: number;
   accessor translateTransform: Coordinate2d;

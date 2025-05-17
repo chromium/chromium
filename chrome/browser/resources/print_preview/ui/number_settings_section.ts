@@ -63,7 +63,7 @@ export class PrintPreviewNumberSettingsSectionElement extends
 
   accessor currentValue: string;
   accessor defaultValue: string;
-  accessor disabled: boolean;
+  accessor disabled: boolean = false;
   accessor hintMessage: string;
   accessor inputAriaLabel: string;
   accessor inputLabel: string;

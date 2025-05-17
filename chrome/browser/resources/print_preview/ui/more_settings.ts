@@ -48,8 +48,8 @@ class PrintPreviewMoreSettingsElement extends CrLitElement {
     };
   }
 
-  accessor settingsExpandedByUser: boolean;
-  accessor disabled: boolean;
+  accessor settingsExpandedByUser: boolean = false;
+  accessor disabled: boolean = false;
   private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
   /**

@@ -119,20 +119,20 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     };
   }
 
-  accessor controlsManaged: boolean;
+  accessor controlsManaged: boolean = false;
   accessor destination: Destination|null = null;
-  accessor destinationCapabilities_: Cdd|null;
+  accessor destinationCapabilities_: Cdd|null = null;
   accessor destinationState: DestinationState;
   accessor error: Error;
-  accessor isPdf: boolean;
+  accessor isPdf: boolean = false;
   accessor pageCount: number;
   accessor state: State;
   protected accessor settingsAvailable_: Record<keyof Settings, boolean>;
-  protected accessor controlsDisabled_: boolean;
+  protected accessor controlsDisabled_: boolean = false;
   protected accessor firstLoad_: boolean = true;
   protected accessor isInAppKioskMode_: boolean = false;
   protected accessor settingsExpandedByUser_: boolean = false;
-  protected accessor shouldShowMoreSettings_: boolean;
+  protected accessor shouldShowMoreSettings_: boolean = false;
 
   constructor() {
     super();

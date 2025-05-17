@@ -78,10 +78,10 @@ export class PrintPreviewMarginControlContainerElement extends
 
   accessor pageSize: Size;
   accessor documentMargins: Margins;
-  accessor previewLoaded: boolean;
+  accessor previewLoaded: boolean = false;
   accessor measurementSystem: MeasurementSystem|null;
   accessor state: State;
-  private accessor available_: boolean;
+  private accessor available_: boolean = false;
   protected accessor invisible_: boolean = true;
   protected accessor clipSize_: Size = new Size(0, 0);
   protected accessor scaleTransform_: number = 0;

@@ -57,11 +57,11 @@ export class PrintPreviewLinkContainerElement extends CrLitElement {
     };
   }
 
-  accessor appKioskMode: boolean;
-  accessor destination: Destination|null;
-  accessor disabled: boolean;
-  protected accessor shouldShowSystemDialogLink_: boolean;
-  protected accessor systemDialogLinkDisabled_: boolean;
+  accessor appKioskMode: boolean = false;
+  accessor destination: Destination|null = null;
+  accessor disabled: boolean = false;
+  protected accessor shouldShowSystemDialogLink_: boolean = false;
+  protected accessor systemDialogLinkDisabled_: boolean = false;
   protected accessor openingSystemDialog_: boolean = false;
   protected accessor openingInPreview_: boolean = false;
 

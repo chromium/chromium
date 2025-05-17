@@ -43,7 +43,7 @@ export class PrintPreviewButtonStripElement extends CrLitElement {
   }
 
   accessor destination: Destination;
-  accessor firstLoad: boolean;
+  accessor firstLoad: boolean = false;
   accessor state: State;
   protected accessor printButtonEnabled_: boolean = false;
   protected accessor printButtonLabel_: string =

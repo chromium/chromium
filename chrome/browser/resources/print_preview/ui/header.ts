@@ -49,7 +49,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   accessor destination: Destination;
   accessor error: Error;
   accessor state: State;
-  accessor managed: boolean;
+  accessor managed: boolean = false;
   private accessor sheetCount_: number = 0;
   protected accessor summary_: string|null;
 

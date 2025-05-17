@@ -61,7 +61,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
 
   accessor destination: Destination;
   protected accessor searchQuery_: RegExp|null = null;
-  private accessor hasMatching_: boolean;
+  private accessor hasMatching_: boolean = false;
 
   private highlights_: HTMLElement[] = [];
   private bubbles_: Map<HTMLElement, number> = new Map();
