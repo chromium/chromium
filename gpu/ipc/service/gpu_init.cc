@@ -1017,6 +1017,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     gl_use_swiftshader_ = true;
   }
 #endif  // IS_LINUX || (IS_CHROMEOS && !IS_CHROMEOS_DEVICE)
+  gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
 
   if (!gl_disabled && !gl_use_swiftshader_) {
     CollectContextGraphicsInfo(&gpu_info_);
