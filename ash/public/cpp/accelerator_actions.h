@@ -211,6 +211,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(DevToggleUnifiedDesktop)                    \
   ACCELERATOR_ACTION_ENTRY(DebugToggleFocusModeState)                  \
   ACCELERATOR_ACTION_ENTRY(DebugStartSunfishSession)                   \
+  ACCELERATOR_ACTION_ENTRY(DebugShowTestWindow)                        \
   // LINT.ThenChange(//ash/public/mojom/accelerator_actions.mojom)
 
 enum AcceleratorAction {

@@ -160,6 +160,7 @@ enum AcceleratorAction {
   kDebugShowInformedRestore,
   kDebugShowToast,
   kDebugShowSystemNudge,
+  kDebugShowTestWindow,
   kDebugSystemUiStyleViewer,
   kDebugToggleDarkMode,
   kDebugToggleDynamicColor,

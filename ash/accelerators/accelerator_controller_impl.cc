@@ -943,6 +943,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugShowInformedRestore:
     case AcceleratorAction::kDebugShowToast:
     case AcceleratorAction::kDebugShowSystemNudge:
+    case AcceleratorAction::kDebugShowTestWindow:
     case AcceleratorAction::kDebugSystemUiStyleViewer:
     case AcceleratorAction::kDebugStartSunfishSession:
     case AcceleratorAction::kDebugToggleDarkMode:
@@ -1259,6 +1260,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugShowInformedRestore:
     case AcceleratorAction::kDebugShowToast:
     case AcceleratorAction::kDebugShowSystemNudge:
+    case AcceleratorAction::kDebugShowTestWindow:
     case AcceleratorAction::kDebugStartSunfishSession:
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:

@@ -3647,6 +3647,13 @@ component("ash") {
     "//chromeos/ash/components/auth_panel/impl",
   ]
 
+  if (!is_chromeos_device) {
+    sources += [
+      "examples/test_app_window.cc",
+      "examples/test_app_window.h",
+    ]
+  }
+
   if (enable_cros_ambient_mode_backend) {
     sources += [
       "ambient/backdrop/ambient_backend_controller_impl.cc",

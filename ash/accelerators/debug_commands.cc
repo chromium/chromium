@@ -62,6 +62,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include "ash/examples/test_app_window.h"
+#endif
+
 namespace ash {
 namespace debug {
 namespace {
@@ -456,6 +460,11 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       HandleToggleVideoConferenceCameraTrayIcon();
+      break;
+    case AcceleratorAction::kDebugShowTestWindow:
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+      OpenTestAppWindow();
+#endif
       break;
     default:
       break;
