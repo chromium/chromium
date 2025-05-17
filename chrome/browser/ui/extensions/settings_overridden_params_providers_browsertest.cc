@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -305,22 +303,10 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
 }
 
-class LightweightSettingsOverriddenParamsProvidersBrowserTest
-    : public SettingsOverriddenParamsProvidersBrowserTest {
- public:
-  LightweightSettingsOverriddenParamsProvidersBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kLightweightExtensionOverrideConfirmations);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that, with the lightweight settings overrides feature enabled, the
-// settings overridden dialog isn't shown for a simple override extension, but
-// would be if the extension is then updated to have more capabilities.
-IN_PROC_BROWSER_TEST_F(LightweightSettingsOverriddenParamsProvidersBrowserTest,
+// Tests that the settings overridden dialog isn't shown for a simple override
+// extension, but would be if the extension is then updated to have more
+// capabilities.
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
                        DialogNotShownForSimpleOverridesAndIsAfterUpdate) {
   extensions::TestExtensionDir dir_v1;
   static constexpr char kManifestV1[] =

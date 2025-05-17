@@ -48,12 +48,6 @@ BASE_FEATURE(kFewerUpdateConfirmations,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Controls whether we use a different UX for simple extensions overriding
-// settings.
-BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
-             "LightweightExtensionOverrideConfirmations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionsCollapseMainMenu,
              "ExtensionsCollapseMainMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -34,8 +34,6 @@ BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
-
 // Controls how extensions show up in the main menu. When enabled, if the
 // current profile has no extensions, instead of a full extensions submenu, only
 // the "Discover Chrome Extensions" item will be present.
