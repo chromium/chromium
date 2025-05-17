@@ -26,14 +26,13 @@ class Profile;
 // data, so it can't be used as a channel between these classes.)
 class HttpsUpgradesNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<HttpsUpgradesNavigationThrottle>
-  MaybeCreateThrottleFor(
-      content::NavigationHandle* handle,
+  static void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry,
       std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
       Profile* profile);
 
   HttpsUpgradesNavigationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       Profile* profile,
       std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
       security_interstitials::https_only_mode::HttpInterstitialState

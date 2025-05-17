@@ -10,19 +10,15 @@
 
 class Profile;
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace web_app {
 
 // Throttle that is used to wait with IWA navigation until the required modules
 // (e.g. web app provider, ...) are available / initialized.
 class IsolatedWebAppThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
-  explicit IsolatedWebAppThrottle(content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
+  explicit IsolatedWebAppThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~IsolatedWebAppThrottle() override;
 
   // content::NavigationThrottle:

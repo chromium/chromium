@@ -32,8 +32,7 @@ class AppInstallNavigationThrottle : public content::NavigationThrottle {
 
   // Possibly creates a navigation throttle that handles special instructions to
   // install an app on Chrome OS.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   // Exposed for testing.
   struct QueryParams {
@@ -53,7 +52,7 @@ class AppInstallNavigationThrottle : public content::NavigationThrottle {
   static QueryParams ExtractQueryParams(std::string_view query);
 
   explicit AppInstallNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
   AppInstallNavigationThrottle(const AppInstallNavigationThrottle&) = delete;
   AppInstallNavigationThrottle& operator=(const AppInstallNavigationThrottle&) =
       delete;

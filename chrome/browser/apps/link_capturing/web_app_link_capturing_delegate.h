@@ -13,7 +13,6 @@ class Profile;
 
 namespace content {
 class WebContents;
-class NavigationHandle;
 }  // namespace content
 
 namespace web_app {
@@ -25,7 +24,8 @@ class WebAppLinkCapturingDelegate
   ~WebAppLinkCapturingDelegate() override;
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
-  bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;
+  bool ShouldCancelThrottleCreation(
+      content::NavigationThrottleRegistry& registry) override;
   std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
   CreateLinkCaptureLaunchClosure(Profile* profile,
                                  content::WebContents* web_contents,

@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -24,8 +25,9 @@ namespace web_app {
 namespace {
 class MockIsolatedWebAppThrottle : public IsolatedWebAppThrottle {
  public:
-  explicit MockIsolatedWebAppThrottle(content::MockNavigationHandle* handle)
-      : IsolatedWebAppThrottle(handle) {}
+  explicit MockIsolatedWebAppThrottle(
+      content::NavigationThrottleRegistry& registry)
+      : IsolatedWebAppThrottle(registry) {}
   ~MockIsolatedWebAppThrottle() override = default;
 
   MOCK_METHOD(void, Resume, (), (override));
@@ -62,7 +64,10 @@ class IsolatedWebAppThrottleTest : public WebAppTest {
 TEST_F(IsolatedWebAppThrottleTest, NoIwaNavigationProceed) {
   content::MockNavigationHandle test_handle(
       GURL("https://notanisolatedwebapp.com"), main_frame());
-  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
   EXPECT_CALL(*throttle, Resume()).Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
@@ -71,7 +76,10 @@ TEST_F(IsolatedWebAppThrottleTest, NoIwaNavigationProceed) {
 TEST_F(IsolatedWebAppThrottleTest, WebAppProviderNotInitialized) {
   content::MockNavigationHandle test_handle(GURL(isolated_app_origin),
                                             main_frame());
-  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
   EXPECT_CALL(*throttle, Resume()).Times(0);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillStartRequest().action());
@@ -81,7 +89,10 @@ TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitialized) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   content::MockNavigationHandle test_handle(GURL(isolated_app_origin),
                                             main_frame());
-  auto throttle = std::make_unique<IsolatedWebAppThrottle>(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<IsolatedWebAppThrottle>(test_registry);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
 }
@@ -89,7 +100,10 @@ TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitialized) {
 TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitializedAfterNavigation) {
   content::MockNavigationHandle test_handle(GURL(isolated_app_origin),
                                             main_frame());
-  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
   EXPECT_CALL(*throttle, Resume()).Times(0);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillStartRequest().action());

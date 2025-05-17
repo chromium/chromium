@@ -33,9 +33,9 @@ void RecordResumeOnTimeout(bool is_timeout) {
 }  // namespace
 
 FirstPartySetsNavigationThrottle::FirstPartySetsNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     FirstPartySetsPolicyService& service)
-    : content::NavigationThrottle(navigation_handle), service_(service) {
+    : content::NavigationThrottle(registry), service_(service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -68,17 +68,18 @@ const char* FirstPartySetsNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<FirstPartySetsNavigationThrottle>
-FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(
-    content::NavigationHandle* navigation_handle) {
+void FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
   Profile* profile = Profile::FromBrowserContext(
-      navigation_handle->GetWebContents()->GetBrowserContext());
+      navigation_handle.GetWebContents()->GetBrowserContext());
   // The `service` might be null for some irregular profiles.
   // TODO(crbug.com/40233408): regular profiles and guest sessions
   // aren't mutually exclusive on ChromeOS.
-  if (!profile->IsRegularProfile() || profile->IsGuestSession())
-    return nullptr;
+  if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
+    return;
+  }
 
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile);
@@ -88,11 +89,11 @@ FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(
           net::features::kWaitForFirstPartySetsInit) ||
       net::features::kWaitForFirstPartySetsInitNavigationThrottleTimeout.Get()
           .is_zero() ||
-      navigation_handle->GetParentFrameOrOuterDocument()) {
-    return nullptr;
+      navigation_handle.GetParentFrameOrOuterDocument()) {
+    return;
   }
-  return std::make_unique<FirstPartySetsNavigationThrottle>(navigation_handle,
-                                                            *service);
+  registry.AddThrottle(
+      std::make_unique<FirstPartySetsNavigationThrottle>(registry, *service));
 }
 
 void FirstPartySetsNavigationThrottle::OnTimeOut() {

@@ -23,22 +23,20 @@
 #include "url/gurl.h"
 
 // static
-std::unique_ptr<PreviewNavigationThrottle>
-PreviewNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void PreviewNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   auto* web_contents = content::WebContents::FromFrameTreeNodeId(
-      navigation_handle->GetFrameTreeNodeId());
+      registry.GetNavigationHandle().GetFrameTreeNodeId());
   CHECK(web_contents);
   if (web_contents->IsInPreviewMode()) {
-    return base::WrapUnique(new PreviewNavigationThrottle(navigation_handle));
+    registry.AddThrottle(
+        base::WrapUnique(new PreviewNavigationThrottle(registry)));
   }
-
-  return nullptr;
 }
 
 PreviewNavigationThrottle::PreviewNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 PreviewNavigationThrottle::~PreviewNavigationThrottle() = default;
 

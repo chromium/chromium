@@ -5,15 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NTP_MICROSOFT_AUTH_NTP_MICROSOFT_AUTH_RESPONSE_CAPTURE_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_WEBUI_NTP_MICROSOFT_AUTH_NTP_MICROSOFT_AUTH_RESPONSE_CAPTURE_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/navigation_throttle.h"
-
-namespace content {
-class NavigationHandle;
-}  // namespace content
 
 // This throttle looks for redirections from a microsoft popup (for login
 // explicitly started by the user) or iframe (for silent reauthentication in
@@ -22,11 +16,10 @@ class NavigationHandle;
 class NtpMicrosoftAuthResponseCaptureNavigationThrottle
     : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<NtpMicrosoftAuthResponseCaptureNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   explicit NtpMicrosoftAuthResponseCaptureNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   NtpMicrosoftAuthResponseCaptureNavigationThrottle(
       const NtpMicrosoftAuthResponseCaptureNavigationThrottle&) = delete;

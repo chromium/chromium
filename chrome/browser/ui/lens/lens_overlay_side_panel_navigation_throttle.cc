@@ -11,29 +11,30 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace lens {
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
-    content::NavigationHandle* handle,
+void LensOverlaySidePanelNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry,
     ThemeService* theme_service) {
   // We only want to handle navigations within the side panel results frame, we
   // can ignore all navigations that don't occur one level down (e.g. children
   // of iframes in the WebUI). However, since the top level frame hosts the
   // WebUI, we should also handle those navigations within this throttle to
   // prevent breakages.
-  if (!handle->IsInPrimaryMainFrame() &&
-      (!handle->GetParentFrame() ||
-       !handle->GetParentFrame()->IsInPrimaryMainFrame())) {
-    return nullptr;
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame() &&
+      (!handle.GetParentFrame() ||
+       !handle.GetParentFrame()->IsInPrimaryMainFrame())) {
+    return;
   }
 
   LensOverlayController* controller =
-      LensOverlayController::FromWebUIWebContents(handle->GetWebContents());
+      LensOverlayController::FromWebUIWebContents(handle.GetWebContents());
   // Only create the navigation throttle for this handle if it equals the side
   // panel web contents and the side panel web contents is not null. The entry
   // does not need to be showing as it's possible a new tab was opened that hid
@@ -41,13 +42,11 @@ LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
   // URL in the side panel should the user return.
   if (controller && controller->results_side_panel_coordinator() &&
       controller->results_side_panel_coordinator()->GetSidePanelWebContents() &&
-      (handle->GetWebContents() == controller->results_side_panel_coordinator()
-                                       ->GetSidePanelWebContents())) {
-    return base::WrapUnique(
-        new LensOverlaySidePanelNavigationThrottle(handle, theme_service));
+      (handle.GetWebContents() == controller->results_side_panel_coordinator()
+                                      ->GetSidePanelWebContents())) {
+    registry.AddThrottle(base::WrapUnique(
+        new LensOverlaySidePanelNavigationThrottle(registry, theme_service)));
   }
-
-  return nullptr;
 }
 
 LensOverlaySidePanelNavigationThrottle::ThrottleCheckResult
@@ -65,9 +64,9 @@ const char* LensOverlaySidePanelNavigationThrottle::GetNameForLogging() {
 }
 
 LensOverlaySidePanelNavigationThrottle::LensOverlaySidePanelNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     ThemeService* theme_service)
-    : NavigationThrottle(navigation_handle), theme_service_(theme_service) {}
+    : NavigationThrottle(registry), theme_service_(theme_service) {}
 
 LensOverlaySidePanelNavigationThrottle::ThrottleCheckResult
 LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {

@@ -52,7 +52,7 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
     virtual ~Delegate();
 
     virtual bool ShouldCancelThrottleCreation(
-        content::NavigationHandle* handle) = 0;
+        content::NavigationThrottleRegistry& registry) = 0;
 
     // If the return value is a nullopt, then no capture was possible.
     // Otherwise, the returned closure will launch the application at the
@@ -67,9 +67,8 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
 
   // Possibly creates a navigation throttle that checks if any installed apps
   // can handle the URL being navigated to.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
-      content::NavigationHandle* handle,
-      std::unique_ptr<Delegate> delegate);
+  static bool MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry,
+                                std::unique_ptr<Delegate> delegate);
 
   using LaunchCallbackForTesting =
       base::OnceCallback<void(bool closed_web_contents)>;
@@ -93,9 +92,8 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
                                             const GURL& current_url);
 
  private:
-  explicit LinkCapturingNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
-      std::unique_ptr<Delegate> delegate);
+  LinkCapturingNavigationThrottle(content::NavigationThrottleRegistry& registry,
+                                  std::unique_ptr<Delegate> delegate);
   std::unique_ptr<Delegate> delegate_;
   GURL starting_url_;
 

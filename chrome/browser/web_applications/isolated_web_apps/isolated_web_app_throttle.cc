@@ -19,19 +19,19 @@
 
 namespace web_app {
 
-std::unique_ptr<content::NavigationThrottle>
-IsolatedWebAppThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  if (content::AreIsolatedWebAppsEnabled(
-          handle->GetWebContents()->GetBrowserContext())) {
-    return std::make_unique<IsolatedWebAppThrottle>(handle);
+// static
+void IsolatedWebAppThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  if (content::AreIsolatedWebAppsEnabled(registry.GetNavigationHandle()
+                                             .GetWebContents()
+                                             ->GetBrowserContext())) {
+    registry.AddThrottle(std::make_unique<IsolatedWebAppThrottle>(registry));
   }
-  return nullptr;
 }
 
 IsolatedWebAppThrottle::IsolatedWebAppThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 IsolatedWebAppThrottle::~IsolatedWebAppThrottle() = default;
 

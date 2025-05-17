@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "content/public/browser/navigation_throttle.h"
 
 namespace offline_pages {
@@ -20,7 +18,7 @@ extern const char kOfflinePagesDidNavigationThrottleCancelNavigation[];
 class OfflinePageNavigationThrottle : public content::NavigationThrottle {
  public:
   explicit OfflinePageNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
   ~OfflinePageNavigationThrottle() override;
 
   OfflinePageNavigationThrottle(const OfflinePageNavigationThrottle&) = delete;
@@ -31,8 +29,8 @@ class OfflinePageNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult WillStartRequest() override;
   const char* GetNameForLogging() override;
 
-  static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry);
 };
 
 }  // namespace offline_pages

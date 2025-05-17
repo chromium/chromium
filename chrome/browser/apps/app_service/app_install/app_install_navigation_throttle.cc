@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -22,9 +23,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
-#include "url/url_util.h"
-#include "base/unguessable_token.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/url_util.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 
@@ -70,12 +70,13 @@ std::optional<AppInstallService::WindowIdentifier> GetAnchorWindow(
   return web_contents->GetTopLevelNativeWindow();
 }
 
-bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
-  if (!handle->IsRendererInitiated()) {
+bool IsNavigationUserInitiated(content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsRendererInitiated()) {
     return true;
   }
 
-  switch (handle->GetNavigationInitiatorActivationAndAdStatus()) {
+  switch (handle.GetNavigationInitiatorActivationAndAdStatus()) {
     case blink::mojom::NavigationInitiatorActivationAndAdStatus::
         kDidNotStartWithTransientActivation:
       return false;
@@ -97,18 +98,17 @@ AppInstallNavigationThrottle::MaybeCreateCallbackForTesting() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-AppInstallNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  std::unique_ptr<content::NavigationThrottle> throttle;
-  if (IsNavigationUserInitiated(handle)) {
-    throttle = std::make_unique<apps::AppInstallNavigationThrottle>(handle);
+void AppInstallNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  bool create = IsNavigationUserInitiated(registry);
+  if (create) {
+    registry.AddThrottle(
+        std::make_unique<apps::AppInstallNavigationThrottle>(registry));
   }
 
   if (MaybeCreateCallbackForTesting()) {
-    std::move(MaybeCreateCallbackForTesting()).Run(static_cast<bool>(throttle));
+    std::move(MaybeCreateCallbackForTesting()).Run(create);
   }
-
-  return throttle;
 }
 
 AppInstallNavigationThrottle::QueryParams::QueryParams() = default;
@@ -164,8 +164,8 @@ AppInstallNavigationThrottle::ExtractQueryParams(std::string_view query) {
 }
 
 AppInstallNavigationThrottle::AppInstallNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 AppInstallNavigationThrottle::~AppInstallNavigationThrottle() = default;
 

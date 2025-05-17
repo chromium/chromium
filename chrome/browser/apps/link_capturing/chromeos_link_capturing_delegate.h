@@ -21,7 +21,6 @@ class TickClock;
 }
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -47,7 +46,8 @@ class ChromeOsLinkCapturingDelegate
       const base::TickClock* tick_clock);
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
-  bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;
+  bool ShouldCancelThrottleCreation(
+      content::NavigationThrottleRegistry& registry) override;
   std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
   CreateLinkCaptureLaunchClosure(Profile* profile,
                                  content::WebContents* web_contents,

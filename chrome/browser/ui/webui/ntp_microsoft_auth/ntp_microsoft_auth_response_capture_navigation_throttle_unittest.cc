@@ -16,6 +16,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,10 +53,10 @@ class NtpMicrosoftAuthResponseCaptureNavigationThrottleTest
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   }
 
-  std::unique_ptr<NtpMicrosoftAuthResponseCaptureNavigationThrottle>
-  CreateNavigationThrottle(const GURL& url,
-                           content::RenderFrameHost* render_frame_host,
-                           bool set_redirect_chain) {
+  std::unique_ptr<content::NavigationThrottle> CreateNavigationThrottle(
+      const GURL& url,
+      content::RenderFrameHost* render_frame_host,
+      bool set_redirect_chain) {
     navigation_handle_ =
         std::make_unique<::testing::NiceMock<content::MockNavigationHandle>>(
             url, render_frame_host);
@@ -63,8 +64,17 @@ class NtpMicrosoftAuthResponseCaptureNavigationThrottleTest
       std::vector<GURL> redirect_chain{GURL(kEntraLoginHost)};
       navigation_handle_->set_redirect_chain(redirect_chain);
     }
-    return NtpMicrosoftAuthResponseCaptureNavigationThrottle::
-        MaybeCreateThrottleFor(navigation_handle_.get());
+    navigation_throttle_registry_ =
+        std::make_unique<content::MockNavigationThrottleRegistry>(
+            navigation_handle_.get(),
+            content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    NtpMicrosoftAuthResponseCaptureNavigationThrottle::MaybeCreateAndAdd(
+        *navigation_throttle_registry_);
+    if (navigation_throttle_registry_->throttles().size() == 0) {
+      return nullptr;
+    }
+    EXPECT_EQ(navigation_throttle_registry_->throttles().size(), 1u);
+    return std::move(navigation_throttle_registry_->throttles().back());
   }
 
   void SetThirdPartyNTP() {
@@ -92,6 +102,8 @@ class NtpMicrosoftAuthResponseCaptureNavigationThrottleTest
 
  private:
   std::unique_ptr<content::MockNavigationHandle> navigation_handle_;
+  std::unique_ptr<content::MockNavigationThrottleRegistry>
+      navigation_throttle_registry_;
 };
 
 TEST_F(NtpMicrosoftAuthResponseCaptureNavigationThrottleTest,

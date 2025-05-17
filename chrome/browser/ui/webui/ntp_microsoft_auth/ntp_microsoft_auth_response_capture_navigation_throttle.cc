@@ -67,12 +67,12 @@ const url_matcher::URLMatcher* GetMicrosoftEnrollmentUrlMatcher() {
 }  // namespace
 
 // static
-std::unique_ptr<NtpMicrosoftAuthResponseCaptureNavigationThrottle>
-NtpMicrosoftAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
-  auto* web_contents = navigation_handle->GetWebContents();
+void NtpMicrosoftAuthResponseCaptureNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  auto* web_contents = navigation_handle.GetWebContents();
   if (!web_contents) {
-    return nullptr;
+    return;
   }
 
   // Must be a profile using the first party NTP.
@@ -80,31 +80,32 @@ NtpMicrosoftAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!profile ||
       search::GetNewTabPageURL(profile) != chrome::kChromeUINewTabPageURL) {
-    return nullptr;
+    return;
   }
 
   // The web contents' opener or the navigation handle's parent frame
   // should be the microsoft auth iframe on the NTP.
   bool is_valid_popup_navigation =
-      web_contents->HasOpener() && navigation_handle->IsInMainFrame() &&
+      web_contents->HasOpener() && navigation_handle.IsInMainFrame() &&
       web_contents->GetOpener()->GetLastCommittedURL() ==
           GURL(chrome::kChromeUIUntrustedNtpMicrosoftAuthURL);
   bool is_valid_iframe_navigation =
-      navigation_handle->GetParentFrame() &&
-      navigation_handle->GetParentFrame()->GetLastCommittedURL() ==
+      navigation_handle.GetParentFrame() &&
+      navigation_handle.GetParentFrame()->GetLastCommittedURL() ==
           GURL(chrome::kChromeUIUntrustedNtpMicrosoftAuthURL);
   if (!is_valid_popup_navigation && !is_valid_iframe_navigation) {
-    return nullptr;
+    return;
   }
 
-  return std::make_unique<NtpMicrosoftAuthResponseCaptureNavigationThrottle>(
-      navigation_handle);
+  registry.AddThrottle(
+      std::make_unique<NtpMicrosoftAuthResponseCaptureNavigationThrottle>(
+          registry));
 }
 
 NtpMicrosoftAuthResponseCaptureNavigationThrottle::
     NtpMicrosoftAuthResponseCaptureNavigationThrottle(
-        content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+        content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 NtpMicrosoftAuthResponseCaptureNavigationThrottle::
     ~NtpMicrosoftAuthResponseCaptureNavigationThrottle() = default;

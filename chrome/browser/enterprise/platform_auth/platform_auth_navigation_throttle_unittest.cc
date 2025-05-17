@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_request_headers.h"
@@ -74,9 +75,14 @@ class PlatformAuthNavigationThrottleTest : public testing::Test {
     return PlatformAuthProviderManager::GetInstance();
   }
 
-  std::unique_ptr<PlatformAuthNavigationThrottle> CreateThrottle(
-      content::NavigationHandle* navigation_handle) {
-    return std::make_unique<PlatformAuthNavigationThrottle>(navigation_handle);
+  std::unique_ptr<content::MockNavigationThrottleRegistry>
+  CreateRegistryWithThrottle(content::NavigationHandle* navigation_handle) {
+    auto registry = std::make_unique<content::MockNavigationThrottleRegistry>(
+        navigation_handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    enterprise_auth::PlatformAuthNavigationThrottle::MaybeCreateAndAdd(
+        *registry);
+    return registry;
   }
 
   content::WebContents* web_contents() const { return web_contents_.get(); }
@@ -123,7 +129,14 @@ TEST_F(PlatformAuthNavigationThrottleTest, ManagerDisabled) {
 
   content::MockNavigationHandle test_handle(GURL("https://www.example.test/"),
                                             main_frame());
-  auto throttle = CreateThrottle(&test_handle);
+  // MaybeCreateAndAdd doesn't create a throttle if the manager is disabled.
+  auto registry = CreateRegistryWithThrottle(&test_handle);
+  ASSERT_EQ(registry->throttles().size(), 0u);
+
+  // Manually create a throttle to test the WillStartRequest behavior and how
+  // the manager behaves in the situation.
+  auto throttle = std::make_unique<PlatformAuthNavigationThrottle>(*registry);
+
   EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(false));
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
 
@@ -147,11 +160,13 @@ TEST_F(PlatformAuthNavigationThrottleTest, EmptyOrigins) {
 
   content::MockNavigationHandle test_handle(GURL("https://www.example.test/"),
                                             main_frame());
-  auto throttle = CreateThrottle(&test_handle);
+  auto registry = CreateRegistryWithThrottle(&test_handle);
+  ASSERT_EQ(registry->throttles().size(), 1u);
   EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true));
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
 
-  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            registry->throttles().back()->WillStartRequest().action());
   EXPECT_EQ(manager().GetOriginsForTesting(), std::vector<url::Origin>());
 }
 
@@ -170,7 +185,8 @@ TEST_F(PlatformAuthNavigationThrottleTest, EmptyData) {
   EXPECT_TRUE(manager().IsEnabled());
 
   content::MockNavigationHandle test_handle(url, main_frame());
-  auto throttle = CreateThrottle(&test_handle);
+  auto registry = CreateRegistryWithThrottle(&test_handle);
+  ASSERT_EQ(registry->throttles().size(), 1u);
   EXPECT_CALL(test_handle, SetAllowCookiesFromBrowser(true));
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
 
@@ -183,7 +199,8 @@ TEST_F(PlatformAuthNavigationThrottleTest, EmptyData) {
 
   EXPECT_EQ(manager().GetOriginsForTesting(),
             std::vector<url::Origin>({url::Origin::Create(url)}));
-  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            registry->throttles().back()->WillStartRequest().action());
 }
 
 // The manager is enabled and a set of origins is returned, so the throttle
@@ -218,7 +235,9 @@ TEST_F(PlatformAuthNavigationThrottleTest, DataReceived) {
   headers.SetHeader(kHeader1Name, kHeader1Value);
   test_handle.set_request_headers(std::move(headers));
 
-  auto throttle = CreateThrottle(&test_handle);
+  auto registry = CreateRegistryWithThrottle(&test_handle);
+  ASSERT_EQ(registry->throttles().size(), 1u);
+  auto throttle = registry->throttles().back().get();
   throttle->set_resume_callback_for_testing(base::DoNothing());
 
   // Headers are added to the request whose origin matches the origin stored in
@@ -308,7 +327,9 @@ TEST_F(PlatformAuthNavigationNoOriginFilteringThrottleTest,
   headers.SetHeader(kHeader1Name, kHeader1Value);
   test_handle.set_request_headers(std::move(headers));
 
-  auto throttle = CreateThrottle(&test_handle);
+  auto registry = CreateRegistryWithThrottle(&test_handle);
+  ASSERT_EQ(registry->throttles().size(), 1u);
+  auto throttle = registry->throttles().back().get();
   throttle->set_resume_callback_for_testing(base::DoNothing());
 
   // Headers are added to the request whose origin matches the origin stored in

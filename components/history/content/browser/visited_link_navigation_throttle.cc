@@ -11,9 +11,9 @@
 #include "url/origin.h"
 
 VisitedLinkNavigationThrottle::VisitedLinkNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     history::HistoryService* history_service)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       history_service_(history_service) {}
 
 VisitedLinkNavigationThrottle::~VisitedLinkNavigationThrottle() = default;

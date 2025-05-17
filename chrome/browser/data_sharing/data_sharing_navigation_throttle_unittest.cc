@@ -14,6 +14,7 @@
 #include "components/data_sharing/public/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -32,8 +33,11 @@ class DataSharingNavigationThrottleUnitTest
     test_handle_ = std::make_unique<content::MockNavigationHandle>(
         GURL("https://www.example.com/"),
         web_contents()->GetPrimaryMainFrame());
+    test_registry_ = std::make_unique<content::MockNavigationThrottleRegistry>(
+        test_handle_.get(),
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
     throttle_ =
-        std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
+        std::make_unique<DataSharingNavigationThrottle>(*test_registry_);
     throttle_->SetServiceForTesting(&mock_collaboration_service_);
     DataSharingNavigationUtils::GetInstance()->set_clock_for_testing(&clock_);
   }
@@ -48,6 +52,7 @@ class DataSharingNavigationThrottleUnitTest
   base::test::ScopedFeatureList scoped_feature_list_;
   collaboration::MockCollaborationService mock_collaboration_service_;
   std::unique_ptr<content::MockNavigationHandle> test_handle_;
+  std::unique_ptr<content::MockNavigationThrottleRegistry> test_registry_;
   std::unique_ptr<DataSharingNavigationThrottle> throttle_;
   base::SimpleTestClock clock_;
 };
@@ -105,7 +110,7 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
   // Create a new throttle, this time without user gesture and interception.
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(false));
   throttle_ =
-      std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
+      std::make_unique<DataSharingNavigationThrottle>(*test_registry_);
   throttle_->SetServiceForTesting(&mock_collaboration_service_);
   DataSharingUtils::SetShouldInterceptForTesting(true);
   EXPECT_CALL(mock_collaboration_service_,
@@ -133,7 +138,7 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
       std::vector<GURL>(3, GURL("http://foo.com")));
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(false));
   throttle_ =
-      std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
+      std::make_unique<DataSharingNavigationThrottle>(*test_registry_);
   throttle_->SetServiceForTesting(&mock_collaboration_service_);
   DataSharingUtils::SetShouldInterceptForTesting(true);
   EXPECT_CALL(mock_collaboration_service_,
@@ -161,7 +166,7 @@ TEST_F(DataSharingNavigationThrottleUnitTest,
       std::vector<GURL>(3, GURL("http://foo.com")));
   EXPECT_CALL(*test_handle_, HasUserGesture()).WillRepeatedly(Return(false));
   throttle_ =
-      std::make_unique<DataSharingNavigationThrottle>(test_handle_.get());
+      std::make_unique<DataSharingNavigationThrottle>(*test_registry_);
   throttle_->SetServiceForTesting(&mock_collaboration_service_);
   DataSharingUtils::SetShouldInterceptForTesting(true);
   EXPECT_CALL(mock_collaboration_service_,

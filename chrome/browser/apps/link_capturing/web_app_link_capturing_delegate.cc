@@ -59,9 +59,9 @@ WebAppLinkCapturingDelegate::WebAppLinkCapturingDelegate() = default;
 WebAppLinkCapturingDelegate::~WebAppLinkCapturingDelegate() = default;
 
 bool WebAppLinkCapturingDelegate::ShouldCancelThrottleCreation(
-    content::NavigationHandle* handle) {
+    content::NavigationThrottleRegistry& registry) {
   Profile* profile = Profile::FromBrowserContext(
-      handle->GetWebContents()->GetBrowserContext());
+      registry.GetNavigationHandle().GetWebContents()->GetBrowserContext());
   return !web_app::AreWebAppsUserInstallable(profile);
 }
 

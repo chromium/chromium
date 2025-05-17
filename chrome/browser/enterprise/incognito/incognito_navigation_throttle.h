@@ -5,17 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_INCOGNITO_INCOGNITO_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_ENTERPRISE_INCOGNITO_INCOGNITO_NAVIGATION_THROTTLE_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class Profile;
-
-namespace content {
-class NavigationHandle;
-}  // namespace content
 
 namespace enterprise_incognito {
 
@@ -25,11 +19,10 @@ namespace enterprise_incognito {
 // administrator via the `MandatoryExtensionsForIncognitoNavigation` policy.
 class IncognitoNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<IncognitoNavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
-  explicit IncognitoNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+  IncognitoNavigationThrottle(
+      content::NavigationThrottleRegistry& registry,
       Profile* profile);
   IncognitoNavigationThrottle(const IncognitoNavigationThrottle&) = delete;
   IncognitoNavigationThrottle& operator=(const IncognitoNavigationThrottle&) =

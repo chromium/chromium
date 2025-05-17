@@ -8,19 +8,15 @@
 #include "components/collaboration/public/collaboration_service.h"
 #include "content/public/browser/navigation_throttle.h"
 
-namespace content {
-class NavigationHandle;
-}
-
 namespace data_sharing {
 
 // This class allows blocking a navigation for data sharing related URLs.
 class DataSharingNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry);
   explicit DataSharingNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;

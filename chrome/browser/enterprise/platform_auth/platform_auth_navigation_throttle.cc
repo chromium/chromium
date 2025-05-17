@@ -12,23 +12,24 @@
 
 namespace enterprise_auth {
 // static
-std::unique_ptr<PlatformAuthNavigationThrottle>
-PlatformAuthNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void PlatformAuthNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   // The manager is enabled when both the feature and policy are enabled.
   // If the manager is not enabled, there is no point in creating a throttle
   // since no auth data can be fetched.
-  if (!PlatformAuthProviderManager::GetInstance().IsEnabled())
-    return nullptr;
+  if (!PlatformAuthProviderManager::GetInstance().IsEnabled()) {
+    return;
+  }
 
   // To ensure that auth data is attached to both requests and redirects, the
   // navigation throttle is created for all requests.
-  return std::make_unique<PlatformAuthNavigationThrottle>(navigation_handle);
+  registry.AddThrottle(
+      std::make_unique<PlatformAuthNavigationThrottle>(registry));
 }
 
 PlatformAuthNavigationThrottle::PlatformAuthNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 PlatformAuthNavigationThrottle::~PlatformAuthNavigationThrottle() = default;
 
@@ -44,8 +45,9 @@ PlatformAuthNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PlatformAuthNavigationThrottle::WillRedirectRequest() {
-  for (auto header : attached_headers_)
+  for (auto header : attached_headers_) {
     navigation_handle()->RemoveRequestHeader(header);
+  }
 
   attached_headers_.clear();
   return FetchHeaders();
@@ -63,8 +65,9 @@ PlatformAuthNavigationThrottle::FetchHeaders() {
   // change, such as becoming disabled or updating its supported IdP origins, in
   // which case the auth data fetch may still succeed.
   if (!PlatformAuthProviderManager::GetInstance().IsEnabledFor(
-          navigation_handle()->GetURL()))
+          navigation_handle()->GetURL())) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   PlatformAuthProviderManager::GetInstance().GetData(
       navigation_handle()->GetURL(),
@@ -74,8 +77,9 @@ PlatformAuthNavigationThrottle::FetchHeaders() {
   // If the header fetch callback already ran it likely means that headers could
   // not be fetched and `PlatformAuthProviderManager::GetData()` returned
   // synchronously, so no need to defer.
-  if (fetch_headers_callback_ran_)
+  if (fetch_headers_callback_ran_) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   is_deferred_ = true;
   return content::NavigationThrottle::DEFER;

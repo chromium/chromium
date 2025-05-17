@@ -77,28 +77,27 @@ std::string GetIncognitoNavigationBlockedErrorPage(
 }  // namespace
 
 // static
-std::unique_ptr<IncognitoNavigationThrottle>
-IncognitoNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void IncognitoNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   content::BrowserContext* browser_context =
-      navigation_handle->GetWebContents()->GetBrowserContext();
+      registry.GetNavigationHandle().GetWebContents()->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile->IsIncognitoProfile()) {
-    return nullptr;
+    return;
   }
   const base::Value::List& mandatory_extensions = profile->GetPrefs()->GetList(
       prefs::kMandatoryExtensionsForIncognitoNavigation);
   if (mandatory_extensions.empty()) {
-    return nullptr;
+    return;
   }
-  return std::make_unique<IncognitoNavigationThrottle>(navigation_handle,
-                                                       profile);
+  registry.AddThrottle(
+      std::make_unique<IncognitoNavigationThrottle>(registry, profile));
 }
 
 IncognitoNavigationThrottle::IncognitoNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     Profile* profile)
-    : content::NavigationThrottle(navigation_handle), profile_(profile) {}
+    : content::NavigationThrottle(registry), profile_(profile) {}
 
 IncognitoNavigationThrottle::~IncognitoNavigationThrottle() = default;
 

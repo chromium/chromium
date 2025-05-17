@@ -184,8 +184,9 @@ ChromeOsLinkCapturingDelegate::ChromeOsLinkCapturingDelegate() = default;
 ChromeOsLinkCapturingDelegate::~ChromeOsLinkCapturingDelegate() = default;
 
 bool ChromeOsLinkCapturingDelegate::ShouldCancelThrottleCreation(
-    content::NavigationHandle* handle) {
-  content::WebContents* web_contents = handle->GetWebContents();
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  content::WebContents* web_contents = handle.GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   return !AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);

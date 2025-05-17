@@ -52,18 +52,17 @@ bool ShouldHandleShareURLNavigation(
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-DataSharingNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
+void DataSharingNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   if (features::IsDataSharingFunctionalityEnabled()) {
-    return std::make_unique<DataSharingNavigationThrottle>(handle);
+    registry.AddThrottle(
+        std::make_unique<DataSharingNavigationThrottle>(registry));
   }
-  return nullptr;
 }
 
 DataSharingNavigationThrottle::DataSharingNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 DataSharingNavigationThrottle::ThrottleCheckResult
 DataSharingNavigationThrottle::WillStartRequest() {

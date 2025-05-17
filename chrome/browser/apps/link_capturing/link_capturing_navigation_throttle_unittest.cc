@@ -13,6 +13,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -303,9 +304,12 @@ TEST_P(LinkCapturingNavThrottleReimplTest, NotCreated) {
   auto web_contents = content::WebContents::Create(
       content::WebContents::CreateParams(&profile));
   content::MockNavigationHandle handle(web_contents.get());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
-  EXPECT_EQ(nullptr, LinkCapturingNavigationThrottle::MaybeCreate(
-                         &handle, /*delegate=*/nullptr));
+  EXPECT_FALSE(LinkCapturingNavigationThrottle::MaybeCreateAndAdd(
+      registry, /*delegate=*/nullptr));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

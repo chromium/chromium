@@ -155,14 +155,13 @@ bool LinkCapturingNavigationThrottle::
 LinkCapturingNavigationThrottle::Delegate::~Delegate() = default;
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-LinkCapturingNavigationThrottle::MaybeCreate(
-    content::NavigationHandle* handle,
+bool LinkCapturingNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<Delegate> delegate) {
   // If the reimplementation params of the link capturing feature flag is
   // enabled for all navigations, turn off the "old" link capturing behavior.
   if (features::IsNavigationCapturingReimplEnabled()) {
-    return nullptr;
+    return false;
   }
 
   // Don't handle navigations in subframes or main frames that are in a nested
@@ -172,25 +171,26 @@ LinkCapturingNavigationThrottle::MaybeCreate(
   // prerender, the prerender-activating navigation doesn't run throttles so we
   // must cancel it during initial loading to get a standard (non-prerendering)
   // navigation at link-click-time.
-  if (!handle->IsInOutermostMainFrame()) {
-    return nullptr;
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInOutermostMainFrame()) {
+    return false;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
+  content::WebContents* web_contents = handle.GetWebContents();
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr) {
-    return nullptr;
+    return false;
   }
 
-  if (delegate->ShouldCancelThrottleCreation(handle)) {
-    return nullptr;
+  if (delegate->ShouldCancelThrottleCreation(registry)) {
+    return false;
   }
 
   // If there is no browser attached to this web-contents yet, this was a
   // middle-mouse-click action, which should not be captured.
   // TODO(crbug.com/40279479): Find a better way to detect middle-clicks.
   if (chrome::FindBrowserWithTab(web_contents) == nullptr) {
-    return nullptr;
+    return false;
   }
 
   // Never link capture links that open in a popup window. Popups are closely
@@ -200,11 +200,12 @@ LinkCapturingNavigationThrottle::MaybeCreate(
       GetLinkCapturingSourceDisposition(web_contents);
   if (disposition == WindowOpenDisposition::NEW_POPUP &&
       !web_contents->GetLastCommittedURL().is_valid()) {
-    return nullptr;
+    return false;
   }
 
-  return base::WrapUnique(
-      new LinkCapturingNavigationThrottle(handle, std::move(delegate)));
+  registry.AddThrottle(base::WrapUnique(
+      new LinkCapturingNavigationThrottle(registry, std::move(delegate))));
+  return true;
 }
 
 LinkCapturingNavigationThrottle::LaunchCallbackForTesting&
@@ -368,9 +369,8 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
 }
 
 LinkCapturingNavigationThrottle::LinkCapturingNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<Delegate> delegate)
-    : content::NavigationThrottle(navigation_handle),
-      delegate_(std::move(delegate)) {}
+    : content::NavigationThrottle(registry), delegate_(std::move(delegate)) {}
 
 }  // namespace apps

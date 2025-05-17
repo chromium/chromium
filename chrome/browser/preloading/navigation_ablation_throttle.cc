@@ -4,6 +4,8 @@
 
 #include "chrome/browser/preloading/navigation_ablation_throttle.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -17,6 +19,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -63,12 +66,14 @@ AblationType GetAblationType(const GURL& navigation_url,
                              content::BrowserContext* browser_context) {
   auto* template_url_service = TemplateURLServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context));
-  if (!template_url_service)
+  if (!template_url_service) {
     return AblationType::kNonDefaultSearchHost;
+  }
 
   auto* default_search = template_url_service->GetDefaultSearchProvider();
-  if (!default_search)
+  if (!default_search) {
     return AblationType::kNonDefaultSearchHost;
+  }
 
   if (default_search->IsSearchURL(navigation_url,
                                   template_url_service->search_terms_data())) {
@@ -85,31 +90,34 @@ AblationType GetAblationType(const GURL& navigation_url,
   return AblationType::kNonDefaultSearchHost;
 }
 
-bool ShouldCreateThrottle(content::NavigationHandle* navigation) {
+bool ShouldCreateThrottle(content::NavigationThrottleRegistry& registry) {
   if (!base::FeatureList::IsEnabled(kNavigationLatencyAblation)) {
     return false;
   }
 
   // Exclude navigations for prerender or other MPArch.
-  if (!navigation->IsInPrimaryMainFrame())
+  content::NavigationHandle& navigation = registry.GetNavigationHandle();
+  if (!navigation.IsInPrimaryMainFrame()) {
     return false;
+  }
 
   // Don't slow down activations from prerender or BFCache.
-  if (navigation->IsPageActivation())
+  if (navigation.IsPageActivation()) {
     return false;
+  }
 
   // Avoid ablating pages that likely are served from HTTP Cache.
-  if (navigation->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK) {
+  if (navigation.GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK) {
     return false;
   }
 
   // Avoid ablataing client redirects as they may be part of a chain for a
   // single navigation.
-  if (navigation->GetPageTransition() & ui::PAGE_TRANSITION_CLIENT_REDIRECT) {
+  if (navigation.GetPageTransition() & ui::PAGE_TRANSITION_CLIENT_REDIRECT) {
     return false;
   }
 
-  const GURL& url = navigation->GetURL();
+  const GURL& url = navigation.GetURL();
 
   // Ignore navigations that are not HTTP(S).
   if (!url.SchemeIsHTTPOrHTTPS()) {
@@ -127,7 +135,7 @@ bool ShouldCreateThrottle(content::NavigationHandle* navigation) {
   }
 
   auto ablation_type =
-      GetAblationType(url, navigation->GetWebContents()->GetBrowserContext());
+      GetAblationType(url, navigation.GetWebContents()->GetBrowserContext());
   switch (ablation_type) {
     case AblationType::kDefaultSearchQuery:
       return kShouldAblateDefaultSearchQueries.Get();
@@ -142,8 +150,9 @@ bool ShouldCreateThrottle(content::NavigationHandle* navigation) {
 // a fixed duration.
 class NavigationAblationThrottle : public content::NavigationThrottle {
  public:
-  explicit NavigationAblationThrottle(content::NavigationHandle* navigation)
-      : content::NavigationThrottle(navigation) {}
+  explicit NavigationAblationThrottle(
+      content::NavigationThrottleRegistry& registry)
+      : content::NavigationThrottle(registry) {}
   ~NavigationAblationThrottle() override = default;
 
  private:
@@ -181,11 +190,10 @@ class NavigationAblationThrottle : public content::NavigationThrottle {
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-MaybeCreateNavigationAblationThrottle(content::NavigationHandle* navigation) {
-  DCHECK(navigation);
-  if (!ShouldCreateThrottle(navigation)) {
-    return nullptr;
+void MaybeCreateAndAddNavigationAblationThrottle(
+    content::NavigationThrottleRegistry& registry) {
+  if (!ShouldCreateThrottle(registry)) {
+    return;
   }
-  return std::make_unique<NavigationAblationThrottle>(navigation);
+  registry.AddThrottle(std::make_unique<NavigationAblationThrottle>(registry));
 }

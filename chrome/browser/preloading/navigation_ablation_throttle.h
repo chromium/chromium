@@ -5,11 +5,8 @@
 #ifndef CHROME_BROWSER_PRELOADING_NAVIGATION_ABLATION_THROTTLE_H_
 #define CHROME_BROWSER_PRELOADING_NAVIGATION_ABLATION_THROTTLE_H_
 
-#include <memory>
-
 namespace content {
-class NavigationHandle;
-class NavigationThrottle;
+class NavigationThrottleRegistry;
 }  // namespace content
 
 // Creates a throttle that will delay the start of the navigation by a fixed
@@ -17,7 +14,7 @@ class NavigationThrottle;
 // for subframes, prerenders, fenced frames, bf/restore style navigations,
 // client redirects, web bundles, or the default search engine based on
 // configuration.
-std::unique_ptr<content::NavigationThrottle>
-MaybeCreateNavigationAblationThrottle(content::NavigationHandle* navigation);
+void MaybeCreateAndAddNavigationAblationThrottle(
+    content::NavigationThrottleRegistry& registry);
 
 #endif  // CHROME_BROWSER_PRELOADING_NAVIGATION_ABLATION_THROTTLE_H_

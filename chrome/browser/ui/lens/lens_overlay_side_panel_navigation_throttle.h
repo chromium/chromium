@@ -18,9 +18,8 @@ class LensOverlaySidePanelNavigationThrottle
  public:
   // Static function that creates the navigation throttle for the provided
   // handle if eligible.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateFor(
-      content::NavigationHandle* handle,
-      ThemeService* theme_service);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry,
+                                ThemeService* theme_service);
 
   // NavigationThrottle overrides:
   ThrottleCheckResult WillStartRequest() override;
@@ -29,8 +28,8 @@ class LensOverlaySidePanelNavigationThrottle
   const char* GetNameForLogging() override;
 
  private:
-  explicit LensOverlaySidePanelNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+  LensOverlaySidePanelNavigationThrottle(
+      content::NavigationThrottleRegistry& registry,
       ThemeService* theme_service);
 
   ThrottleCheckResult HandleSidePanelRequest();
