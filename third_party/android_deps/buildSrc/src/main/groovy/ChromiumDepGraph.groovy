@@ -89,18 +89,15 @@ class ChromiumDepGraph {
                     url: 'https://github.com/google/guava',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0'),
+            // This targets needs to conditionally support android. When no internal android override is defined, this
+            // target needs to set supports_android=true as both android and non-android targets use guava, but when an
+            // internal android override is defined, android targets should use that instead (and fail compile if they
+            // use this one) but non-android targets still needs this guava target to exist.
             com_google_guava_guava: new PropertyOverride(
                     url: 'https://github.com/google/guava',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0',
-                    // Both -jre and -android versions are listed. Filter to only the -jre ones.
-                    versionFilter: '-jre'),
-            com_google_guava_guava_android: new PropertyOverride(
-                    url: 'https://github.com/google/guava',
-                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-                    licenseName: 'Apache 2.0',
-                    // Both -jre and -android versions are listed. Filter to only the -android ones.
-                    versionFilter: '-android'),
+                    supportsAndroid: false),
             com_google_testparameterinjector_test_parameter_injector: new PropertyOverride(
                     url: 'https://github.com/google/TestParameterInjector',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',

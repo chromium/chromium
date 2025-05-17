@@ -99,7 +99,7 @@ class BuildConfigGenerator extends DefaultTask {
             com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
             com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
             com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
-            com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
+            com_google_guava_guava: '//third_party/android_deps:guava_android_java',
             com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
             net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
             // Logic for google_play_services_package added below.
@@ -113,7 +113,6 @@ class BuildConfigGenerator extends DefaultTask {
             com_google_dagger_dagger_producers: '!defined(dagger_annotation_processor_target)',
             com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
             com_google_dagger_dagger: '!defined(dagger_java_target)',
-            com_google_guava_guava_android: '!defined(guava_android_target)',
             com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
             // Logic for google_play_services_package added below.
     ]
@@ -557,18 +556,9 @@ No modifications.
             String aliasedLib = ALIASED_LIBS.get(dep.id)
             aliasedLib = aliasedLib != null ? aliasedLib : EXISTING_LIBS.get(dep.id)
 
-            // The failureaccess alias needs to map to -jre or -android guava.
-            if (aliasedLib == '//third_party/android_deps:guava_android_java' && !dependency.supportsAndroid) {
-                aliasedLib = ':com_google_guava_guava_java'
-            }
-
             String depTargetName = translateTargetName(dep.id) + '_java'
             String gnTarget;
-            if (targetName.startsWith('org_robolectric') && dep.id.contains('guava')) {
-                // Change from guava-jre to guava-android so that we don't get two copies of Guava
-                // in robolectric tests (since code-under-test might depend on guava-android).
-                gnTarget = '//third_party/android_deps:guava_android_java'
-            } else if (aliasedLib) {
+            if (aliasedLib) {
                 gnTarget = aliasedLib
             } else if (depTargetName.startsWith('google_play_services_') || depTargetName.startsWith('google_firebase_')) {
                 gnTarget = '$google_play_services_package:' + depTargetName
@@ -582,9 +572,7 @@ No modifications.
                 gnTarget = ":${depTargetName}"
             }
 
-            if (targetName.contains('guava') && (
-                    gnTarget == '//third_party/android_deps:guava_android_java' ||
-                            gnTarget == ':com_google_guava_guava_java')) {
+            if (targetName.contains('guava') && gnTarget == '//third_party/android_deps:guava_android_java') {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
                 return
             }
@@ -679,8 +667,11 @@ No modifications.
             if (CONDITIONAL_LIBS.containsKey(dependency.id)) {
                 sb.append('  # Target is swapped out when internal code is enabled.\n')
             }
-            sb.append("  # Please depend on $aliasedLib instead.\n")
-            sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
+            // Guava is special in that it needs to be available for non-android code to depend on.
+            if (dependency.id != 'com_google_guava_guava') {
+              sb.append("  # Please depend on $aliasedLib instead.\n")
+              sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
+            }
         } else if (!dependency.visible) {
             sb.append('  # To remove visibility constraint, add this dependency to\n')
             sb.append("  # //${pathToBuildGradle}/build.gradle.\n")
@@ -831,7 +822,9 @@ No modifications.
                 sb.append('  preferred_dep = true\n')
                 break
             case 'com_google_guava_guava':
-            case 'com_google_guava_guava_android':
+                sb.append('\n')
+                sb.append('  # Only allow android targets to depend on this if there is no internal alias.\n')
+                sb.append('  supports_android = !defined(guava_android_java)\n')
                 sb.append('\n')
                 sb.append('  # Dep needed to fix:\n')
                 sb.append('  #   warning: unknown enum constant ReflectionSupport$Level.FULL\n')
@@ -886,7 +879,6 @@ No modifications.
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
             case 'com_google_guava_guava':
-            case 'com_google_guava_guava_android':
             case 'google_play_services_basement':
                 String libraryDep = '//third_party/android_deps/local_modifications/preconditions:' +
                         computePreconditionsStubLibraryForDep(dependencyId)
@@ -910,7 +902,6 @@ No modifications.
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
             case 'com_google_guava_guava':
-            case 'com_google_guava_guava_android':
                 return 'guava_stub_preconditions_java'
             case 'google_play_services_basement':
                 return 'gms_stub_preconditions_java'
@@ -922,7 +913,6 @@ No modifications.
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
             case 'com_google_guava_guava':
-            case 'com_google_guava_guava_android':
                 return 'com/google/common/base/Preconditions.class'
             case 'google_play_services_basement':
                 return 'com/google/android/gms/common/internal/Preconditions.class'
