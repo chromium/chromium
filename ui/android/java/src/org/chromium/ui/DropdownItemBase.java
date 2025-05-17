@@ -55,31 +55,6 @@ public class DropdownItemBase implements DropdownItem {
     }
 
     @Override
-    public int getLabelFontSizeResId() {
-        return R.dimen.text_size_large;
-    }
-
-    @Override
-    public int getSublabelFontColorResId() {
-        return R.color.default_text_color_secondary_list_baseline;
-    }
-
-    @Override
-    public int getSublabelFontSizeResId() {
-        return R.dimen.text_size_small;
-    }
-
-    @Override
-    public int getIconSizeResId() {
-        return 0;
-    }
-
-    @Override
-    public int getIconMarginResId() {
-        return R.dimen.dropdown_icon_margin;
-    }
-
-    @Override
     public @Nullable GURL getCustomIconUrl() {
         return null;
     }

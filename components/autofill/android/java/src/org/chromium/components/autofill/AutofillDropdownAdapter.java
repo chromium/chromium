@@ -127,13 +127,13 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         labelView.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
-                mContext.getResources().getDimension(item.getLabelFontSizeResId()));
+                mContext.getResources().getDimension(R.dimen.text_size_large));
         labelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
 
         if (secondaryLabelView != null) {
             secondaryLabelView.setTextSize(
                     TypedValue.COMPLEX_UNIT_PX,
-                    mContext.getResources().getDimension(item.getLabelFontSizeResId()));
+                    mContext.getResources().getDimension(R.dimen.text_size_large));
             secondaryLabelView.setTextColor(mContext.getColor(item.getLabelFontColorResId()));
         }
 
@@ -144,8 +144,9 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         if (sublabelView != null) {
             sublabelView.setTextSize(
                     TypedValue.COMPLEX_UNIT_PX,
-                    mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
-            sublabelView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
+                    mContext.getResources().getDimension(R.dimen.text_size_small));
+            sublabelView.setTextColor(
+                    mContext.getColor(R.color.default_text_color_secondary_list_baseline));
         }
 
         TextView secondarySublabelView =
@@ -157,8 +158,9 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         if (secondarySublabelView != null) {
             secondarySublabelView.setTextSize(
                     TypedValue.COMPLEX_UNIT_PX,
-                    mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
-            secondarySublabelView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
+                    mContext.getResources().getDimension(R.dimen.text_size_small));
+            secondarySublabelView.setTextColor(
+                    mContext.getColor(R.color.default_text_color_secondary_list_baseline));
         }
 
         return layout;

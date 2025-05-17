@@ -120,7 +120,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             sublabelView.setText(sublabel);
             sublabelView.setTextSize(
                     TypedValue.COMPLEX_UNIT_PX,
-                    mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
+                    mContext.getResources().getDimension(R.dimen.text_size_small));
             sublabelView.setVisibility(View.VISIBLE);
         }
 
@@ -128,17 +128,12 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
         if (item.getIconId() == DropdownItem.NO_ICON) {
             iconView.setVisibility(View.GONE);
         } else {
-            int iconSizeResId = item.getIconSizeResId();
-            int iconSize =
-                    iconSizeResId == 0
-                            ? LayoutParams.WRAP_CONTENT
-                            : mContext.getResources().getDimensionPixelSize(iconSizeResId);
             ViewGroup.MarginLayoutParams iconLayoutParams =
                     (ViewGroup.MarginLayoutParams) iconView.getLayoutParams();
-            iconLayoutParams.width = iconSize;
-            iconLayoutParams.height = iconSize;
+            iconLayoutParams.width = LayoutParams.WRAP_CONTENT;
+            iconLayoutParams.height = LayoutParams.WRAP_CONTENT;
             int iconMargin =
-                    mContext.getResources().getDimensionPixelSize(item.getIconMarginResId());
+                    mContext.getResources().getDimensionPixelSize(R.dimen.dropdown_icon_margin);
             MarginLayoutParamsCompat.setMarginStart(iconLayoutParams, iconMargin);
             MarginLayoutParamsCompat.setMarginEnd(iconLayoutParams, iconMargin);
             iconView.setLayoutParams(iconLayoutParams);
