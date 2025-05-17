@@ -58,8 +58,9 @@ AutofillAiModelExecutorFactory::BuildServiceInstanceForBrowserContext(
   if (!model_cache || !optimization_guide) {
     return nullptr;
   }
-  return std::make_unique<AutofillAiModelExecutorImpl>(model_cache,
-                                                       optimization_guide);
+  return std::make_unique<AutofillAiModelExecutorImpl>(
+      model_cache, optimization_guide,
+      optimization_guide->GetModelQualityLogsUploaderService());
 }
 
 bool AutofillAiModelExecutorFactory::ServiceIsCreatedWithBrowserContext()
