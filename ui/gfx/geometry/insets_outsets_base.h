@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/numerics/clamped_math.h"
-#include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -133,9 +133,7 @@ class InsetsOutsetsBase {
   }
 
   // Returns a string representation of the insets/outsets.
-  std::string ToString() const {
-    return base::StringPrintf("x:%d,%d y:%d,%d", left_, right_, top_, bottom_);
-  }
+  COMPONENT_EXPORT(GEOMETRY) std::string ToString() const;
 
  private:
   // Clamp the bottom/right to avoid integer over/underflow in width() and

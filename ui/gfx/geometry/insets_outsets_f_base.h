@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/strings/stringprintf.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -113,9 +113,7 @@ class InsetsOutsetsFBase {
   }
 
   // Returns a string representation of the insets/outsets.
-  std::string ToString() const {
-    return base::StringPrintf("x:%g,%g y:%g,%g", left_, right_, top_, bottom_);
-  }
+  COMPONENT_EXPORT(GEOMETRY) std::string ToString() const;
 
  private:
   float top_ = 0.f;
