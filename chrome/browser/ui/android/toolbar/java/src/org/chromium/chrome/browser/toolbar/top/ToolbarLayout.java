@@ -442,11 +442,6 @@ public abstract class ToolbarLayout extends FrameLayout
         mMenuButtonCoordinator = menuButtonCoordinator;
     }
 
-    void setTabSwitcherButtonCoordinatorForTesting(
-            ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator) {
-        mTabSwitcherButtonCoordinator = toggleTabStackButtonCoordinator;
-    }
-
     /**
      * @return The {@link ProgressBar} this layout uses.
      */
@@ -793,20 +788,6 @@ public abstract class ToolbarLayout extends FrameLayout
      * @return Optional button view.
      */
     public @Nullable View getOptionalButtonViewForTesting() {
-        return null;
-    }
-
-    /**
-     * @return Home button this {@link ToolbarLayout} contains, if any.
-     */
-    public @Nullable ImageView getHomeButton() {
-        return null;
-    }
-
-    /**
-     * @return {@link ToggleTabStackButton} this {@link ToolbarLayout} contains.
-     */
-    public @Nullable ToggleTabStackButton getTabSwitcherButton() {
         return null;
     }
 

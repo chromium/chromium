@@ -40,10 +40,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -68,6 +69,8 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mStandardTabModel;
     @Mock private TabModel mIncognitoTabModel;
+    @Mock private TopUiThemeColorProvider mTopUIThemeProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
@@ -79,7 +82,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>(0);
 
-    private boolean mIsIncognito;
     private boolean mOverviewOpen;
     private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
@@ -122,7 +124,7 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         // Defaults most test cases expect, can be overridden by each test though.
         when(mToggleTabStackButton.isShown()).thenReturn(true);
-        mIsIncognito = false;
+        when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(false);
         mCoordinator = newToggleTabStackButtonCoordinator(mToggleTabStackButton);
     }
 
@@ -133,11 +135,12 @@ public class ToggleTabStackButtonCoordinatorTest {
                         mActivity,
                         toggleTabStackButton,
                         mUserEducationHelper,
-                        () -> mIsIncognito,
                         mPromoShownOneshotSupplier,
                         mLayoutSateProviderOneshotSupplier,
                         new ObservableSupplierImpl<>(),
-                        mTabModelSelectorSupplier);
+                        mTabModelSelectorSupplier,
+                        mTopUIThemeProvider,
+                        mIncognitoStateProvider);
 
         coordinator.initializeWithNative(
                 mOnClickListener,
@@ -299,11 +302,11 @@ public class ToggleTabStackButtonCoordinatorTest {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
-        mIsIncognito = true;
+        when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(true);
         mCoordinator.handlePageLoadFinished();
         verifyIphNotShown();
 
-        mIsIncognito = false;
+        when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(false);
         mCoordinator.handlePageLoadFinished();
         IphCommand iphCommand = verifyIphShown();
         assertEquals(
@@ -401,16 +404,10 @@ public class ToggleTabStackButtonCoordinatorTest {
     }
 
     @Test
-    public void testSetBrandedColorScheme() {
-        mCoordinator.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
-        verify(mToggleTabStackButton).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
-    }
-
-    @Test
-    public void testDrawTabSwitcherAnimationOverlay() {
+    public void testDraw() {
         Canvas canvas = new Canvas();
-        mCoordinator.drawTabSwitcherAnimationOverlay(mToggleTabStackButton, canvas, 255);
-        verify(mToggleTabStackButton).drawTabSwitcherAnimationOverlay(canvas, 255);
+        mCoordinator.draw(mToggleTabStackButton, canvas);
+        verify(mToggleTabStackButton).drawTabSwitcherAnimationOverlay(canvas);
     }
 
     @Test

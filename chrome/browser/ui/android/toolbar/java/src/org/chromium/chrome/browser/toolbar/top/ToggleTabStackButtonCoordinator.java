@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.top;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
@@ -15,12 +16,12 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,14 +32,18 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
@@ -52,7 +57,7 @@ import java.util.concurrent.TimeUnit;
  * class.
  */
 @NullMarked
-public class ToggleTabStackButtonCoordinator {
+public class ToggleTabStackButtonCoordinator extends ToolbarChild {
     private static final int IPH_TAB_SWITCHER_XR_WAIT_TIME_MS = 5 * 1000;
     private static final int IPH_TAB_SWITCHER_XR_MIN_TABS = 4;
     private static final long ONE_DAY_IN_MILLIS = TimeUnit.DAYS.toMillis(1);
@@ -60,7 +65,6 @@ public class ToggleTabStackButtonCoordinator {
     private final Context mContext;
     private final ToggleTabStackButton mToggleTabStackButton;
     private final UserEducationHelper mUserEducationHelper;
-    private final Supplier<Boolean> mIsIncognitoSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final CurrentTabObserver mPageLoadObserver;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -78,6 +82,7 @@ public class ToggleTabStackButtonCoordinator {
     private @Nullable Runnable mArchivedTabsIphShownCallback;
     private @Nullable Runnable mArchivedTabsIphDismissedCallback;
     private final Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
+    private @Nullable Callback<TabModelSelector> mTabModelSelectorCallback;
     private boolean mAlreadyRequestedDeclutterIph;
     private long mLastTimeXrIphWasShown;
 
@@ -86,7 +91,6 @@ public class ToggleTabStackButtonCoordinator {
      * @param toggleTabStackButton The concrete {@link ToggleTabStackButton} class for this MVC
      *     component.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
-     * @param isIncognitoSupplier Supplier for whether the current tab is incognito.
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param layoutStateProviderSupplier Allows observing layout state.
      * @param activityTabSupplier Supplier of the activity tab.
@@ -96,15 +100,16 @@ public class ToggleTabStackButtonCoordinator {
             Context context,
             ToggleTabStackButton toggleTabStackButton,
             UserEducationHelper userEducationHelper,
-            Supplier<Boolean> isIncognitoSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ObservableSupplier<@Nullable Tab> activityTabSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ThemeColorProvider themeColorProvider,
+            IncognitoStateProvider incognitoStateProvider) {
+        super(themeColorProvider, incognitoStateProvider);
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
-        mIsIncognitoSupplier = isIncognitoSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
@@ -156,7 +161,7 @@ public class ToggleTabStackButtonCoordinator {
 
         mToggleTabStackButton.setOnClickListener(onClickListener);
         mToggleTabStackButton.setOnLongClickListener(onLongClickListener);
-        mToggleTabStackButton.setSuppliers(tabCountSupplier, mIsIncognitoSupplier);
+        mToggleTabStackButton.setSuppliers(tabCountSupplier);
 
         mArchivedTabCountSupplier = archivedTabCountSupplier;
         if (mArchivedTabCountSupplier != null) {
@@ -164,10 +169,23 @@ public class ToggleTabStackButtonCoordinator {
             mArchivedTabsIphShownCallback = archivedTabsIphShownCallback;
             mArchivedTabsIphDismissedCallback = archivedTabsIphDismissedCallback;
         }
+
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        TabModelUtils.runOnTabStateInitialized(
+                tabModelSelector,
+                mCallbackController.makeCancelable(
+                        (unusedTabModelSelector) -> {
+                            handleTabRestoreCompleted();
+                        }));
+        if (tabModelSelector.isTabStateInitialized()) {
+            handleTabRestoreCompleted();
+        }
     }
 
     /** Cleans up callbacks and observers. */
+    @Override
     public void destroy() {
+        super.destroy();
         mCallbackController.destroy();
 
         mPageLoadObserver.destroy();
@@ -175,6 +193,10 @@ public class ToggleTabStackButtonCoordinator {
         if (mTabCountSupplier != null) {
             mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
         }
+        if (mTabModelSelectorCallback != null) {
+            mTabModelSelectorSupplier.removeObserver(mTabModelSelectorCallback);
+        }
+
         if (mNotificationDotSupplier != null) {
             mNotificationDotSupplier.removeObserver(mNotificationDotObserver);
         }
@@ -204,27 +226,46 @@ public class ToggleTabStackButtonCoordinator {
      *
      * @param root Root view for the menu button; used to position the canvas that's drawn on.
      * @param canvas Canvas to draw to.
-     * @param alpha Integer (0-255) alpha level to draw at.
      */
-    public void drawTabSwitcherAnimationOverlay(View root, Canvas canvas, int alpha) {
+    @Override
+    public void draw(View root, Canvas canvas) {
         canvas.save();
         ViewUtils.translateCanvasToView(root, mToggleTabStackButton, canvas);
-        mToggleTabStackButton.drawTabSwitcherAnimationOverlay(canvas, alpha);
+        mToggleTabStackButton.drawTabSwitcherAnimationOverlay(canvas);
         canvas.restore();
     }
 
-    /** Get tab count on button for texture capture. */
-    public int getDrawableTabCount() {
-        return ((TabSwitcherDrawable) mToggleTabStackButton.getDrawable()).getTabCount();
+    @Override
+    public void onIncognitoStateChanged(boolean isIncognito) {
+        if (mToggleTabStackButton == null) return;
+        mToggleTabStackButton.setIncognitoState(isIncognito);
+        // Set the correct branded color scheme tinting for the {@link TabSwitcherDrawable} whenever
+        // the incognito state changes.
+        mToggleTabStackButton.setBrandedColorScheme(
+                mTopUiThemeColorProvider.getBrandedColorScheme());
+    }
+
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            ImageViewCompat.setImageTintList(mToggleTabStackButton, activityFocusTint);
+        } else {
+            mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
+        }
+    }
+
+    private void handleTabRestoreCompleted() {
+        // Enable tab switcher button.
+        mToggleTabStackButton.setClickable(true);
     }
 
     /** Update button with branded color scheme. */
     public void setBrandedColorScheme(int brandedColorScheme) {
         mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
-    }
-
-    public Supplier<Boolean> getIsIncognitoSupplier() {
-        return mIsIncognitoSupplier;
     }
 
     private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
@@ -305,7 +346,7 @@ public class ToggleTabStackButtonCoordinator {
         }
 
         if (builder == null
-                && !mIsIncognitoSupplier.get()
+                && !mIncognitoStateProvider.isIncognitoSelected()
                 && mPromoShownOneshotSupplier.hasValue()
                 && !mPromoShownOneshotSupplier.get()) {
             builder =
@@ -349,7 +390,11 @@ public class ToggleTabStackButtonCoordinator {
     }
 
     private void onUpdateTabCount(int tabCount) {
-        mToggleTabStackButton.onUpdateTabCount(tabCount);
+        mToggleTabStackButton.setEnabled(tabCount >= 1);
+        mToggleTabStackButton.updateTabCount(
+                tabCount, mIncognitoStateProvider.isIncognitoSelected());
+        mToggleTabStackButton.setBrandedColorScheme(
+                mTopUiThemeColorProvider.getBrandedColorScheme());
         maybeShowXrIph(tabCount);
     }
 
@@ -372,7 +417,7 @@ public class ToggleTabStackButtonCoordinator {
     }
 
     private void maybeShowDeclutterIph(int tabCount) {
-        if (mIsIncognitoSupplier.get()) return;
+        if (mIncognitoStateProvider.isIncognitoSelected()) return;
         if (mAlreadyRequestedDeclutterIph) return;
         if (tabCount == 0) return;
         mAlreadyRequestedDeclutterIph = true;

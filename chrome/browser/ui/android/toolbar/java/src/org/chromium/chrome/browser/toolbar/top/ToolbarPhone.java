@@ -44,7 +44,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
@@ -129,8 +128,6 @@ public class ToolbarPhone extends ToolbarLayout
                 @ViewDebug.IntToString(from = ENTERING_TAB_SWITCHER, to = "ENTERING_TAB_SWITCHER"),
                 @ViewDebug.IntToString(from = EXITING_TAB_SWITCHER, to = "EXITING_TAB_SWITCHER")
             })
-    private final Callback<Integer> mTabCountSupplierObserver;
-
     private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
 
     private UserEducationHelper mUserEducationHelper;
@@ -318,7 +315,6 @@ public class ToolbarPhone extends ToolbarLayout
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
                         LocationBarBackgroundColorAlphaForNtp);
-        mTabCountSupplierObserver = this::onTabCountChanged;
     }
 
     @Override
@@ -391,10 +387,6 @@ public class ToolbarPhone extends ToolbarLayout
         Handler handler = getHandler();
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
-        }
-
-        if (mTabCountSupplier != null) {
-            mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
         }
 
         getToolbarDataProvider().removeToolbarDataProviderObserver(this);
@@ -1376,8 +1368,7 @@ public class ToolbarPhone extends ToolbarLayout
         // Draw the tab stack button and associated text if necessary.
         if (getTabSwitcherButtonCoordinator() != null && mUrlExpansionFraction != 1f) {
             // Draw the tab stack button image.
-            getTabSwitcherButtonCoordinator()
-                    .drawTabSwitcherAnimationOverlay(mToolbarButtonsContainer, canvas, rgbAlpha);
+            getTabSwitcherButtonCoordinator().draw(mToolbarButtonsContainer, canvas);
         }
 
         // Draw the menu button if necessary.
@@ -1707,10 +1698,6 @@ public class ToolbarPhone extends ToolbarLayout
             @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, tint);
 
-        if (getTabSwitcherButtonCoordinator() != null) {
-            getTabSwitcherButtonCoordinator().setBrandedColorScheme(brandedColorScheme);
-        }
-
         if (mOptionalButtonCoordinator != null) {
             mOptionalButtonCoordinator.setIconForegroundColor(tint);
         }
@@ -1719,11 +1706,6 @@ public class ToolbarPhone extends ToolbarLayout
         if (mLocationBar != null) mLocationBar.updateVisualsForState();
 
         if (mLayoutUpdater != null) mLayoutUpdater.run();
-    }
-
-    @Override
-    public ImageView getHomeButton() {
-        return mHomeButton;
     }
 
     @Override
@@ -2062,27 +2044,12 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public void onIncognitoStateChanged() {
-        // Set the correct branded color scheme tinting for the {@link TabSwitcherDrawable} whenever
-        // the incognito state changes.
-        setTabSwitcherDrawableColorScheme();
         updateRippleBackground();
     }
 
     @Override
     public void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {
         mTabCountSupplier = tabCountSupplier;
-        mTabCountSupplier.addObserver(mTabCountSupplierObserver);
-    }
-
-    private void onTabCountChanged(int numberOfTabs) {
-        setTabSwitcherDrawableColorScheme();
-    }
-
-    private void setTabSwitcherDrawableColorScheme() {
-        if (getTabSwitcherButtonCoordinator() != null) {
-            getTabSwitcherButtonCoordinator()
-                    .setBrandedColorScheme(mThemeColorProvider.getBrandedColorScheme());
-        }
     }
 
     @Override
@@ -2127,9 +2094,6 @@ public class ToolbarPhone extends ToolbarLayout
                         ? R.drawable.search_box_icon_background_baseline
                         : R.drawable.search_box_icon_background;
         mHomeButton.setBackgroundResource(toolbarIconRippleId);
-        getTabSwitcherButtonCoordinator()
-                .getContainerView()
-                .setBackgroundResource(toolbarIconRippleId);
         getMenuButtonCoordinator().updateButtonBackground(toolbarIconRippleId);
         mLocationBar.updateButtonBackground(omniboxIconRippleId);
     }

@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -278,9 +277,6 @@ public class ToolbarTablet extends ToolbarLayout {
         ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
         // The tint of the |mSaveOfflineButton| should not be affected by an activity focus change.
         ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
-        ImageViewCompat.setImageTintList(
-                (ImageView) getTabSwitcherButtonCoordinator().getContainerView(),
-                activityFocusTint);
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
             ImageViewCompat.setImageTintList(mOptionalButton, activityFocusTint);
@@ -327,9 +323,6 @@ public class ToolbarTablet extends ToolbarLayout {
 
         mHomeButton.setBackgroundResource(toolbarIconRippleId);
         mForwardButton.setBackgroundResource(toolbarIconRippleId);
-        getTabSwitcherButtonCoordinator()
-                .getContainerView()
-                .setBackgroundResource(toolbarIconRippleId);
         getMenuButtonCoordinator().updateButtonBackground(toolbarIconRippleId);
 
         mBookmarkButton.setBackgroundResource(omniboxIconRippleId);
@@ -556,11 +549,6 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     @Override
-    public ImageView getHomeButton() {
-        return mHomeButton;
-    }
-
-    @Override
     public void requestKeyboardFocus() {
         setFocusOnFirstFocusableDescendant(this);
         // TODO(crbug.com/360423850): Replace this setFocus(mLocationBar) when omnibox keyboard
@@ -761,9 +749,5 @@ public class ToolbarTablet extends ToolbarLayout {
     @VisibleForTesting
     void setBackButtonCoordinator(BackButtonCoordinator coordinator) {
         mBackButtonCoordinator = coordinator;
-    }
-
-    public ImageButton getBookmarkButtonForTesting() {
-        return mBookmarkButton;
     }
 }

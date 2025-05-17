@@ -124,7 +124,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiOneshotSupplier;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
@@ -313,8 +312,6 @@ public class ToolbarManager
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenFindInPageToken = TokenHolder.INVALID_TOKEN;
-
-    private boolean mTabRestoreCompleted;
 
     private boolean mInitializedWithNative;
     private Runnable mOnInitializedRunnable;
@@ -966,11 +963,12 @@ public class ToolbarManager
                             mActivity,
                             tabSwitcherButton,
                             mUserEducationHelper,
-                            mIncognitoStateProvider::isIncognitoSelected,
                             mPromoShownOneshotSupplier,
                             mLayoutStateProviderSupplier,
                             mActivityTabProvider,
-                            mTabModelSelectorSupplier);
+                            mTabModelSelectorSupplier,
+                            browsingModeThemeColorProvider,
+                            mIncognitoStateProvider);
         }
 
         NavigationPopup.HistoryDelegate historyDelegate =
@@ -2147,18 +2145,9 @@ public class ToolbarManager
         }
 
         mInitializedWithNative = true;
-        TabModelUtils.runOnTabStateInitialized(
-                mTabModelSelector,
-                mCallbackController.makeCancelable(
-                        (unusedTabModelSelector) -> {
-                            mTabRestoreCompleted = true;
-                            handleTabRestoreCompleted();
-                        }));
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         refreshSelectedTab(mActivityTabProvider.get());
         maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
-        if (mTabModelSelector.isTabStateInitialized()) mTabRestoreCompleted = true;
-        handleTabRestoreCompleted();
         mIncognitoStateProvider.setTabModelSelector(mTabModelSelector);
         mAppThemeColorProvider.setIncognitoStateProvider(mIncognitoStateProvider);
 
@@ -2438,14 +2427,6 @@ public class ToolbarManager
                     }
                 };
         mTemplateUrlService.addObserver(mTemplateUrlObserver);
-    }
-
-    private void handleTabRestoreCompleted() {
-        if (!mTabRestoreCompleted || !mInitializedWithNative) return;
-        // Enable tab switcher button.
-        if (mTabSwitcherButtonCoordinator != null) {
-            mTabSwitcherButtonCoordinator.getContainerView().setClickable(true);
-        }
     }
 
     // TODO(crbug.com/40585866): remove the below two methods if possible.
