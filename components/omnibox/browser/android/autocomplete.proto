@@ -57,6 +57,11 @@ message AutocompleteMatchProto {
   // suggestion.
   string inline_autocompletion = 14;
   string additional_text = 15;
+
+  // Icon type, see SuggestTemplateInfo.IconType. Due to import restrictions
+  // and proto level differences the suggest_template_info.proto cannot be
+  // used directly.
+  int32 icon_type = 16;
 }
 
 message MatchClassificationProto {

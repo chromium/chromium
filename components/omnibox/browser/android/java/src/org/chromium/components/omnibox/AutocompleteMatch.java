@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 
@@ -508,7 +507,8 @@ public class AutocompleteMatch {
                 .setTransition(mTransition)
                 .setGroupId(mGroupId)
                 .setIsSearchType(mIsSearchType)
-                .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch);
+                .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch)
+                .setIconType(mIconType);
 
         if (!TextUtils.isEmpty(mFillIntoEdit)) {
             builder.setFillIntoEdit(mFillIntoEdit);
@@ -567,7 +567,7 @@ public class AutocompleteMatch {
                 input.getType(),
                 new ArraySet(input.getSubtypeList()),
                 input.getIsSearchType(),
-                SuggestTemplateInfo.IconType.ICON_TYPE_UNSPECIFIED_VALUE,
+                input.getIconType(),
                 input.getTransition(),
                 input.getDisplayText(),
                 displayTextClassifications,
