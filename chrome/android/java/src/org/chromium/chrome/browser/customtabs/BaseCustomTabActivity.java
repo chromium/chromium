@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -1127,7 +1128,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
-    public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
+    public boolean onMenuOrKeyboardAction(
+            int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent) {
         // Disable creating new tabs, bookmark, print, help, focus_url, etc.
         if (id == R.id.focus_url_bar
                 || id == R.id.all_bookmarks_menu_id
@@ -1137,7 +1139,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 || id == R.id.new_tab_menu_id) {
             return true;
         }
-        return super.onMenuOrKeyboardAction(id, fromMenu);
+        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotionEvent);
     }
 
     public WebContentsDelegateAndroid getWebContentsDelegate() {

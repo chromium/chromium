@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import android.view.MotionEvent;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A controller to register/unregister {@link MenuOrKeyboardActionHandler} for menu or keyboard
@@ -35,12 +38,28 @@ public interface MenuOrKeyboardActionController {
     void unregisterMenuOrKeyboardActionHandler(MenuOrKeyboardActionHandler handler);
 
     /**
-     * Performs the specified action.
+     * Handles menu item selection and keyboard shortcuts.
      *
-     * @param id The ID of the selected menu item (defined in main_menu.xml) or keyboard
-     *           shortcut (defined in values.xml).
+     * <p>The default implementation works for most cases, so it's not recommended to override it
+     * unless you are sure.
+     *
+     * @see #onMenuOrKeyboardAction(int, boolean, MotionEvent)
+     */
+    default boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
+        return onMenuOrKeyboardAction(id, fromMenu, /* triggeringMotionEvent= */ null);
+    }
+
+    /**
+     * Handles menu item selection and keyboard shortcuts.
+     *
+     * @param id The ID of the selected menu item (defined in main_menu.xml) or keyboard shortcut
+     *     (defined in values.xml).
      * @param fromMenu Whether this was triggered from the menu.
+     * @param triggeringMotionEvent The {@link MotionEvent} that triggered the action; it is {@code
+     *     null} if {@link MotionEvent} wasn't available when the action was detected, such as in
+     *     {@link android.view.View.OnClickListener}.
      * @return Whether the action was handled.
      */
-    boolean onMenuOrKeyboardAction(int id, boolean fromMenu);
+    boolean onMenuOrKeyboardAction(
+            int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent);
 }

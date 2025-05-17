@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -67,10 +68,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Shows a popup of menuitems anchored to a host view. When a item is selected we call
- * AppMenuHandlerImpl.AppMenuDelegate.onOptionsItemSelected with the appropriate MenuItem.
- *   - Only visible MenuItems are shown.
- *   - Disabled items are grayed out.
+ * Shows a popup of menu items anchored to a host view.
+ *
+ * <p>When an item is selected, we call {@link AppMenuHandlerImpl#onOptionsItemSelected}, which then
+ * delegates to {@link AppMenuDelegate#onOptionsItemSelected}.
+ *
+ * <ul>
+ *   <li>Only visible menu items are shown.
+ *   <li>Disabled items are grayed out.
+ * </ul>
  */
 @NullMarked
 class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler {
@@ -447,13 +453,13 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     }
 
     @Override
-    public void onItemClick(PropertyModel model) {
+    public void onItemClick(PropertyModel model, @Nullable MotionEvent triggeringMotionEvent) {
         if (!model.get(AppMenuItemProperties.ENABLED)) return;
 
         int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
         mSelectedItemBeforeDismiss = true;
         dismiss();
-        mHandler.onOptionsItemSelected(id);
+        mHandler.onOptionsItemSelected(id, triggeringMotionEvent);
     }
 
     @Override

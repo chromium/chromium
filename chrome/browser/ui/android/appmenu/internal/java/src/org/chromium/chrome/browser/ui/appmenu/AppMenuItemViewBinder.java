@@ -97,13 +97,9 @@ class AppMenuItemViewBinder {
             view.setOnTouchListener(
                     new OnPeripheralClickListener(
                             view,
-                            triggeringMotionEvent -> {
-                                // TODO(crbug.com/375468032): pass "triggeringMotionEvent" to
-                                // "onItemClick()".
-                                // This way we can handle a click based on whether it's from a
-                                // peripheral.
-                                model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model);
-                            }));
+                            triggeringMotionEvent ->
+                                    model.get(AppMenuItemProperties.CLICK_HANDLER)
+                                            .onItemClick(model, triggeringMotionEvent)));
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
         }

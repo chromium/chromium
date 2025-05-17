@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
@@ -15,7 +16,10 @@ class TestAppMenuDelegate implements AppMenuDelegate {
     public int lastSelectedItemId;
 
     @Override
-    public boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData) {
+    public boolean onOptionsItemSelected(
+            int itemId,
+            @Nullable Bundle menuItemData,
+            @Nullable MotionEvent triggeringMotionEvent) {
         lastSelectedItemId = itemId;
         itemSelectedCallbackHelper.notifyCalled();
         return true;

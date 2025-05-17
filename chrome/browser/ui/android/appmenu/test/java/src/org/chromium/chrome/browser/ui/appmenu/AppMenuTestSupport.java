@@ -38,7 +38,7 @@ public class AppMenuTestSupport {
     public static void onOptionsItemSelected(AppMenuCoordinator coordinator, int itemId) {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
-                .onOptionsItemSelected(itemId);
+                .onOptionsItemSelected(itemId, /* triggeringMotionEvent= */ null);
     }
 
     /**

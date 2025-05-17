@@ -23,6 +23,7 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
@@ -3220,7 +3221,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     @Override
-    public boolean onMenuOrKeyboardAction(final int id, boolean fromMenu) {
+    public boolean onMenuOrKeyboardAction(
+            final int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent) {
         final Tab currentTab = getActivityTab();
         boolean currentTabIsNtp = isTabNtp(currentTab);
         if (id == R.id.new_tab_menu_id) {
@@ -3324,12 +3326,17 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
             RecordUserAction.record("MobileMenuRecentTabs");
         } else if (id == R.id.close_tab) {
+            // TODO(crbug.com/375468032): use triggeringMotionEvent to decide
+            // TabClosureParams.allowUndo.
             getCurrentTabModel()
                     .getTabRemover()
                     .closeTabs(
                             TabClosureParams.closeTab(currentTab).build(), /* allowDialog= */ true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
+            // TODO(crbug.com/375468032): use triggeringMotionEvent to decide
+            // TabClosureParams.allowUndo when building closeAllTabsRunnable.
+
             // Close both incognito and normal tabs.
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
@@ -3341,6 +3348,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     closeAllTabsRunnable);
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
+            // TODO(crbug.com/375468032): use triggeringMotionEvent to decide
+            // TabClosureParams.allowUndo when building closeAllTabsRunnable.
+
             // Close only incognito tabs
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
@@ -3425,7 +3435,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
             RecordUserAction.record("MobileMenuNtpCustomization");
         } else {
-            return super.onMenuOrKeyboardAction(id, fromMenu);
+            return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotionEvent);
         }
         return true;
     }

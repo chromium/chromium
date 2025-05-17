@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -13,17 +14,35 @@ import org.chromium.build.annotations.Nullable;
 /** A delegate to handle menu item selection. */
 @NullMarked
 public interface AppMenuDelegate {
-    /**
-     * Called whenever an item in the app menu is selected.
-     * See {@link android.app.Activity#onOptionsItemSelected(MenuItem)}.
-     * @param itemId The id of the menu item that was selected.
-     * @param menuItemData Extra data associated with the menu item. May be null.
-     */
-    boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData);
 
     /**
-     * @return {@link AppMenuPropertiesDelegateImpl} instance that the {@link AppMenuHandlerImpl}
-     *         should be using.
+     * Called whenever an item in the app menu is selected.
+     *
+     * <p>The default implementation works for most cases, so it's not recommended to override it
+     * unless you are sure.
+     *
+     * @see #onOptionsItemSelected(int, Bundle, MotionEvent)
+     */
+    default boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData) {
+        return onOptionsItemSelected(itemId, menuItemData, /* triggeringMotionEvent= */ null);
+    }
+
+    /**
+     * Called whenever an item in the app menu is selected. See {@link
+     * android.app.Activity#onOptionsItemSelected(MenuItem)}.
+     *
+     * @param itemId The id of the menu item that was selected.
+     * @param menuItemData Extra data associated with the menu item. May be null.
+     * @param triggeringMotionEvent The {@link MotionEvent} that triggered the click; it is {@code
+     *     null} if {@link MotionEvent} wasn't available when the click was detected, such as in
+     *     {@link android.view.View.OnClickListener}.
+     */
+    boolean onOptionsItemSelected(
+            int itemId, @Nullable Bundle menuItemData, @Nullable MotionEvent triggeringMotionEvent);
+
+    /**
+     * @return {@link AppMenuPropertiesDelegate} instance that the {@link AppMenuHandlerImpl} should
+     *     be using.
      */
     AppMenuPropertiesDelegate createAppMenuPropertiesDelegate();
 }

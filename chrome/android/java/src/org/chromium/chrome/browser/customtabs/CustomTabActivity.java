@@ -304,7 +304,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData) {
+    public boolean onOptionsItemSelected(
+            int itemId,
+            @Nullable Bundle menuItemData,
+            @Nullable MotionEvent triggeringMotionEvent) {
         int menuIndex =
                 CustomTabAppMenuPropertiesDelegate.getIndexOfMenuItemFromBundle(menuItemData);
         if (menuIndex >= 0) {
@@ -318,11 +321,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             return true;
         }
 
-        return super.onOptionsItemSelected(itemId, menuItemData);
+        return super.onOptionsItemSelected(itemId, menuItemData, triggeringMotionEvent);
     }
 
     @Override
-    public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
+    public boolean onMenuOrKeyboardAction(
+            int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent) {
         if (id == R.id.bookmark_this_page_id) {
             mTabBookmarkerSupplier.get().addOrEditBookmark(getActivityTab());
             RecordUserAction.record("MobileMenuAddToBookmarks");
@@ -368,7 +372,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             }
             return true;
         }
-        return super.onMenuOrKeyboardAction(id, fromMenu);
+        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotionEvent);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class AppMenuItemViewBinderTest {
         public PropertyModel lastLongClickedModel;
 
         @Override
-        public void onItemClick(PropertyModel model) {
+        public void onItemClick(PropertyModel model, @Nullable MotionEvent triggeringMotionEvent) {
             onClickCallback.notifyCalled();
             lastClickedModel = model;
         }

@@ -10,12 +10,14 @@ import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_WEBAPK_PACKAG
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -66,7 +68,8 @@ public class WebappActivity extends BaseCustomTabActivity {
     }
 
     @Override
-    public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
+    public boolean onMenuOrKeyboardAction(
+            int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent) {
         // Disable creating bookmark.
         if (id == R.id.bookmark_this_page_id) {
             return true;
@@ -80,7 +83,7 @@ public class WebappActivity extends BaseCustomTabActivity {
             }
             return true;
         }
-        return super.onMenuOrKeyboardAction(id, fromMenu);
+        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotionEvent);
     }
 
     @Override

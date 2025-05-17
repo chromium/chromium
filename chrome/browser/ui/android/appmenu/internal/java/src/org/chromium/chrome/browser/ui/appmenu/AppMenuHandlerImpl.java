@@ -14,6 +14,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -379,14 +380,23 @@ class AppMenuHandlerImpl
         hideAppMenu();
     }
 
+    /**
+     * Called when a menu item is selected.
+     *
+     * @param itemId The menu item ID.
+     * @param triggeringMotionEvent The {@link MotionEvent} that triggered the click; it is {@code
+     *     null} if {@link MotionEvent} wasn't available when the click was detected, such as in
+     *     {@link android.view.View.OnClickListener}.
+     */
     @VisibleForTesting
-    void onOptionsItemSelected(int itemId) {
+    void onOptionsItemSelected(int itemId, @Nullable MotionEvent triggeringMotionEvent) {
         if (mTestOptionsItemSelectedListener != null) {
             mTestOptionsItemSelectedListener.onResult(itemId);
             return;
         }
 
-        mAppMenuDelegate.onOptionsItemSelected(itemId, mDelegate.getBundleForMenuItem(itemId));
+        mAppMenuDelegate.onOptionsItemSelected(
+                itemId, mDelegate.getBundleForMenuItem(itemId), triggeringMotionEvent);
     }
 
     /**
