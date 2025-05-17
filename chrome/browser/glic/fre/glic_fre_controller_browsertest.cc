@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,7 +22,7 @@
 namespace glic {
 namespace {
 
-class GlicFreControllerBrowserTest : public glic::test::InteractiveGlicTest {
+class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
  public:
   GlicFreControllerBrowserTest() = default;
   ~GlicFreControllerBrowserTest() override = default;

@@ -19,6 +19,8 @@ source_set("test_support") {
     "interactive_test_util.h",
     "mock_glic_window_controller.cc",
     "mock_glic_window_controller.h",
+    "non_interactive_glic_test.cc",
+    "non_interactive_glic_test.h",
   ]
   deps = [
     "//chrome/browser/glic",

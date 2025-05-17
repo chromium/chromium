@@ -249,6 +249,7 @@ source_set("browser_tests") {
     "glic_profile_manager_browsertest.cc",
     "glic_user_status_browsertest.cc",
     "host/context/glic_page_context_eligibility_observer_browsertest.cc",
+    "host/glic_api_browsertest.cc",
     "host/guest_util_browsertest.cc",
     "widget/application_hotkey_delegate_browsertest.cc",
   ]
@@ -259,10 +260,12 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/background/glic",
+    "//chrome/browser/contextual_cueing:test_support",
     "//chrome/browser/extensions:extensions",
     "//chrome/browser/glic/fre:browser_tests",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/permissions:test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/prefs:prefs",
     "//chrome/browser/ui",
@@ -277,6 +280,7 @@ source_set("browser_tests") {
     "//ui/base:ozone_buildflags",
     "//ui/events:test_support",
   ]
+  data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 }
 
 source_set("interactive_ui_tests") {
@@ -287,7 +291,6 @@ source_set("interactive_ui_tests") {
     "glic_settings_util_interactive_uitest.cc",
     "host/glic_actor_controller_interactive_uitest.cc",
     "host/glic_annotation_manager_interactive_uitest.cc",
-    "host/glic_api_uitest.cc",
     "host/glic_permission_enforcement_interactive_uitest.cc",
     "host/glic_ui_interactive_uitest.cc",
     "widget/glic_window_controller_interactive_uitest.cc",

@@ -158,7 +158,7 @@ class ApiTestFixtureBase {
   }
 }
 
-// Test cases here correspond to test cases in glic_api_uitest.cc.
+// Test cases here correspond to test cases in glic_api_browsertest.cc.
 // Since these tests run in the webview, this test can't use normal deps like
 // mocha or chai assert.
 class ApiTests extends ApiTestFixtureBase {
@@ -166,8 +166,8 @@ class ApiTests extends ApiTestFixtureBase {
     await this.client.waitForFirstOpen();
   }
 
-  // WARNING: Remember to update chrome/browser/glic/host/glic_api_uitest.cc
-  // if you add a new test!
+  // WARNING: Remember to update
+  // chrome/browser/glic/host/glic_api_browsertest.cc if you add a new test!
 
   async testDoNothing() {}
 

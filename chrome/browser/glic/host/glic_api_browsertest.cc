@@ -38,7 +38,7 @@
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -148,7 +148,7 @@ struct ExecuteTestOptions {
   bool wait_for_guest = true;
 };
 
-class GlicApiTest : public test::InteractiveGlicTest {
+class GlicApiTest : public NonInteractiveGlicTest {
  public:
   GlicApiTest() {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
@@ -737,6 +737,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testShowProfilePicker) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPanelActive) {
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   ExecuteJsTest();
 
   // Opening a new browser window will deactivate the previous one, and make
@@ -751,6 +752,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPanelActive) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testIsBrowserOpen) {
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
 
@@ -840,6 +842,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   // Note: ideally this test would only open Glic after the main browser is
   // closed. This however crashes in `OpenGlicWindow()`.
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
@@ -1307,8 +1310,6 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
   ExecuteJsTest({.params = base::Value(1)});
 #endif
 }
-
-
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   RunTestSequence(
