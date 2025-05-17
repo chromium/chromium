@@ -146,7 +146,8 @@ ExecutionContext* AdTracker::GetCurrentExecutionContext() {
 void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
                                   const v8::Local<v8::Context>& v8_context,
                                   const String& script_url,
-                                  int script_id) {
+                                  int script_id,
+                                  bool top_level_execution) {
   bool is_ad = false;
 
   // We track scripts with no URL (i.e. dynamically inserted scripts with no
@@ -162,7 +163,8 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
     std::optional<AdScriptIdentifier> ancestor_ad_script;
     if (IsKnownAdScript(execution_context, fake_url)) {
       is_ad = true;
-    } else if (IsAdScriptInStackHelper(StackType::kBottomAndTop,
+    } else if (top_level_execution &&
+               IsAdScriptInStackHelper(StackType::kBottomAndTop,
                                        &ancestor_ad_script)) {
       AppendToKnownAdScripts(*execution_context, fake_url, ancestor_ad_script);
       MaybeLinkKnownAdScriptToAncestor(execution_context, v8_context, fake_url,
@@ -203,7 +205,7 @@ void AdTracker::DidExecuteScript() {
 
 void AdTracker::Will(const probe::ExecuteScript& probe) {
   WillExecuteScript(probe.context, probe.v8_context, probe.script_url,
-                    probe.script_id);
+                    probe.script_id, /*top_level_execution=*/true);
 }
 
 void AdTracker::Did(const probe::ExecuteScript& probe) {
@@ -229,7 +231,7 @@ void AdTracker::Will(const probe::CallFunction& probe) {
       script_url = ToCoreString(isolate, resource_name_string.ToLocalChecked());
   }
   WillExecuteScript(probe.context, probe.v8_context, script_url,
-                    probe.function->ScriptId());
+                    probe.function->ScriptId(), /*top_level_execution=*/false);
 }
 
 void AdTracker::Did(const probe::CallFunction& probe) {

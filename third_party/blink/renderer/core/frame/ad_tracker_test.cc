@@ -268,11 +268,12 @@ class AdTrackerTest : public testing::Test {
   }
 
   void WillExecuteScript(const String& script_url,
-                         int script_id = v8::Message::kNoScriptIdInfo) {
+                         int script_id = v8::Message::kNoScriptIdInfo,
+                         bool top_level = true) {
     auto* execution_context = GetExecutionContext();
     ad_tracker_->WillExecuteScript(
         execution_context, execution_context->GetIsolate()->GetCurrentContext(),
-        String(script_url), script_id);
+        String(script_url), script_id, top_level);
   }
 
   ExecutionContext* GetExecutionContext() {
@@ -1644,6 +1645,78 @@ TEST_F(AdTrackerSimTest, InlineAdScriptWithSourceURLAtTopOfStack_StillTagged) {
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
   EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_image_url));
+}
+
+// Tests that ad-script calling an inline script does not re-tag the inline
+// script as an ad.
+TEST_F(AdTrackerSimTest, InlineAdScriptOnlyTaggedWhenFirstRun) {
+  String add_inline_url = "https://example.com/add_inline.js";
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String script3_url = "https://example.com/script3.js";
+  String script4_url = "https://example.com/script4.js";
+
+  SimSubresourceRequest add_inline(add_inline_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest script3(script3_url, "text/javascript");
+  SimSubresourceRequest script4(script4_url, "text/javascript");
+
+  // Load the main frame, which loads three scripts.
+  // 1. add_inline: creates some dynamically added inline script.
+  // 2. ad_script: calls one of the inline functions which fetches a script.
+  // 3. vanilla_script: calls the other inline function which fetches a script.
+  // The result of (2) should be tagged as an ad but not (3).
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="add_inline.js"></script>
+      // Ad script calls a function in the inline script.
+      <script src="script.js?ad=true"></script>
+      // Vanilla script calls a function in the inline script to fetch an image.
+      <script src="script.js"></script>
+      </body>
+  )HTML");
+
+  // Creates some inline script with 2 methods that can be called.
+  add_inline.Complete(R"SCRIPT(
+    let script = document.createElement("script");
+    script.textContent = `
+        function loadScript3() {
+          let script = document.createElement("script");
+          script.src = "script3.js";
+          document.body.appendChild(script);
+        }
+
+        function loadScript4() {
+          let script = document.createElement("script");
+          script.src = "script4.js";
+          document.body.appendChild(script);
+        }`
+    document.body.appendChild(script);
+  )SCRIPT");
+
+  // Ad script loads and calls one of the inline script's vanilla functions.
+  // This should not retag the inline script as an ad script. The script is run
+  // asynchronously to cause the inline script to be executed directly from
+  // blink.
+  ad_script.Complete("setTimeout(loadScript3, 0);");
+  ad_tracker_->WaitForSubresource(script3_url);
+  script3.Complete();
+
+  // Vanilla code now calls the inline script's other function to fetch an
+  // image, said image should not be tagged as an ad.
+  vanilla_script.Complete("loadScript4();");
+  base::RunLoop().RunUntilIdle();
+  script4.Complete();
+
+  ad_tracker_->WaitForSubresource(script4_url);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // This is what we're really testing.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(script3_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(script4_url));
 }
 
 // Tests that when the script at the top of the stack is an ad script,

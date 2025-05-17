@@ -123,13 +123,16 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       StackType stack_type,
       std::optional<AdScriptIdentifier>* out_ad_script);
 
-  // |script_name| will be empty in the case of a dynamically added script with
-  // no src attribute set. |script_id| won't be set for module scripts in an
-  // errored state or for non-source text modules.
+  // `script_name` will be empty in the case of a dynamically added script with
+  // no src attribute set. `script_id` won't be set for module scripts in an
+  // errored state or for non-source text modules. `top_level_execution` should
+  // be true if the top-level script is being run, as opposed to a function
+  // being called.
   void WillExecuteScript(ExecutionContext*,
                          const v8::Local<v8::Context>& v8_context,
                          const String& script_name,
-                         int script_id);
+                         int script_id,
+                         bool top_level_execution);
   void DidExecuteScript();
   bool IsKnownAdScript(ExecutionContext*, const String& url);
   bool IsKnownAdScriptForCheckedContext(
