@@ -1568,13 +1568,6 @@ const char kEnableGamepadMultitouchDescription[] =
     "Enables the ability to receive input from multitouch surface "
     "on the gamepad object.";
 
-const char kEnableGenericSensorExtraClassesName[] =
-    "Generic Sensor Extra Classes";
-const char kEnableGenericSensorExtraClassesDescription[] =
-    "Enables an extra set of sensor classes based on Generic Sensor API, which "
-    "expose previously unavailable platform features, i.e. AmbientLightSensor "
-    "and Magnetometer interfaces.";
-
 const char kEnableGpuServiceLoggingName[] = "Enable gpu service logging";
 const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";

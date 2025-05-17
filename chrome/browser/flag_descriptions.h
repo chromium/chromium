@@ -908,9 +908,6 @@ extern const char kNewTabPageCustomizationToolbarButtonName[];
 extern const char kNewTabPageCustomizationToolbarButtonDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
-extern const char kEnableGenericSensorExtraClassesName[];
-extern const char kEnableGenericSensorExtraClassesDescription[];
-
 extern const char kEnableGpuServiceLoggingName[];
 extern const char kEnableGpuServiceLoggingDescription[];
 

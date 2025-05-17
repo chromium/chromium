@@ -6287,10 +6287,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcVmmSwapKBShortcutDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kVmmSwapKeyboardShortcut)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    {"enable-generic-sensor-extra-classes",
-     flag_descriptions::kEnableGenericSensorExtraClassesName,
-     flag_descriptions::kEnableGenericSensorExtraClassesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kGenericSensorExtraClasses)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {ui_devtools::switches::kEnableUiDevTools,
