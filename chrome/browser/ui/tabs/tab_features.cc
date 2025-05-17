@@ -145,6 +145,59 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // dependencies for non-normal browsers.
   side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab);
 
+  // This block instantiate the page action controllers. They do not require any
+  // pre-condition. Because some feature need them during their instantiation,
+  // therefore this block should come before the feature controllers
+  // instantiation.
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
+    CHECK(pinned_actions_model);
+    page_action_controller_ =
+        std::make_unique<page_actions::PageActionController>(
+            pinned_actions_model);
+    page_action_controller_->Initialize(
+        tab,
+        std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
+                                       page_actions::kActionIds.end()),
+        page_actions::PageActionPropertiesProvider());
+
+    if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
+      translate_page_action_controller_ =
+          std::make_unique<TranslatePageActionController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
+      memory_saver_chip_controller_ =
+          std::make_unique<memory_saver::MemorySaverChipController>(
+              *page_action_controller());
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+      intent_picker_view_page_action_controller_ =
+          std::make_unique<IntentPickerViewPageActionController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
+      file_system_access_page_action_controller_ =
+          std::make_unique<FileSystemAccessPageActionController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kZoom)) {
+      zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
+      pwa_install_page_action_controller_ =
+          std::make_unique<PwaInstallPageActionController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
+      commerce_price_insights_page_action_view_controller_ =
+          std::make_unique<commerce::PriceInsightsPageActionViewController>(
+              tab);
+    }
+  }
+
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
   if (tab.IsInNormalWindow()) {
@@ -218,55 +271,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<new_tab_footer::NewTabFooterController>(&tab);
     }
   }     // IsInNormalWindow() end.
-
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
-    auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
-    CHECK(pinned_actions_model);
-    page_action_controller_ =
-        std::make_unique<page_actions::PageActionController>(
-            pinned_actions_model);
-    page_action_controller_->Initialize(
-        tab,
-        std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
-                                       page_actions::kActionIds.end()),
-        page_actions::PageActionPropertiesProvider());
-
-    if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
-      translate_page_action_controller_ =
-          std::make_unique<TranslatePageActionController>(tab);
-    }
-
-    if (IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
-      memory_saver_chip_controller_ =
-          std::make_unique<memory_saver::MemorySaverChipController>(
-              *page_action_controller());
-    }
-
-    if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
-      intent_picker_view_page_action_controller_ =
-          std::make_unique<IntentPickerViewPageActionController>(tab);
-    }
-
-    if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
-      file_system_access_page_action_controller_ =
-          std::make_unique<FileSystemAccessPageActionController>(tab);
-    }
-
-    if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-      zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(tab);
-    }
-
-    if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
-      pwa_install_page_action_controller_ =
-          std::make_unique<PwaInstallPageActionController>(tab);
-    }
-
-    if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
-      commerce_price_insights_page_action_view_controller_ =
-          std::make_unique<commerce::PriceInsightsPageActionViewController>(
-              tab);
-    }
-  }
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
