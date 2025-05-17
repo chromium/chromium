@@ -491,18 +491,6 @@ void LensOverlayController::BindOverlay(
   InitializeOverlay(/*initialization_data=*/nullptr);
 }
 
-void LensOverlayController::BindOverlayGhostLoader(
-    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
-  overlay_ghost_loader_page_.reset();
-  overlay_ghost_loader_page_.Bind(std::move(page));
-}
-
-void LensOverlayController::BindSidePanelGhostLoader(
-    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
-  side_panel_ghost_loader_page_.reset();
-  side_panel_ghost_loader_page_.Bind(std::move(page));
-}
-
 uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
   return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
@@ -1167,18 +1155,6 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
       // contextualization.
       TryUpdatePageContextualization();
     }
-  }
-}
-
-void LensOverlayController::ShowGhostLoaderErrorState() {
-  if (!IsContextualSearchbox()) {
-    return;
-  }
-  if (overlay_ghost_loader_page_) {
-    overlay_ghost_loader_page_->ShowErrorState();
-  }
-  if (side_panel_ghost_loader_page_) {
-    side_panel_ghost_loader_page_->ShowErrorState();
   }
 }
 

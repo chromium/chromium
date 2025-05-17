@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 
+#include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
@@ -32,6 +33,18 @@ class LensSearchboxController : public LensSearchboxClient {
   explicit LensSearchboxController(
       LensSearchController* lens_search_controller);
   ~LensSearchboxController() override;
+
+  // This method is used to set up communication between this instance and the
+  // overlay ghost loader's WebUI. This is called by the WebUIController when
+  // the WebUI is executing javascript and ready to bind.
+  void BindOverlayGhostLoader(
+      mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page);
+
+  // This method is used to set up communication between this instance and the
+  // side panel's ghost loader WebUI. This is called by the WebUIController
+  // when the WebUI is executing javascript and ready to bind.
+  void BindSidePanelGhostLoader(
+      mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page);
 
   // Must be called at the start of a session so the proper state is
   // initialized.
@@ -96,7 +109,7 @@ class LensSearchboxController : public LensSearchboxClient {
   // the callback with the LensOverlaySuggestInputs. Callback will be invoked
   // immediately if the handshake is already complete.
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
-    ::LensOverlaySuggestInputsCallback callback);
+      ::LensOverlaySuggestInputsCallback callback);
 
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
@@ -168,6 +181,16 @@ class LensSearchboxController : public LensSearchboxClient {
   // TODO(crbug.com/404941800): Does this actually need to be kept alive? Its
   // currently unused.
   std::unique_ptr<LensSearchboxHandler> overlay_searchbox_handler_;
+
+  // Connections to the overlay ghost loader WebUI. Only valid while
+  // `overlay_view_` is showing, and after the WebUI has started executing JS
+  // and has bound the connection.
+  mojo::Remote<lens::mojom::LensGhostLoaderPage> overlay_ghost_loader_page_;
+
+  // Connections to the side panel ghost loader WebUI. Only valid when the side
+  // panel is currently open and after the WebUI has started executing JS and
+  // has bound the connection.
+  mojo::Remote<lens::mojom::LensGhostLoaderPage> side_panel_ghost_loader_page_;
 
   // The assembly data needed for the side panel entry to be created and shown.
   std::unique_ptr<LensSearchboxInitializationData> init_data_;

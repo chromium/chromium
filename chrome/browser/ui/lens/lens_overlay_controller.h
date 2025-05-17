@@ -18,7 +18,6 @@
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
-#include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/page_content_type.mojom.h"
@@ -161,18 +160,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   virtual void BindOverlay(
       mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensPage> page);
-
-  // This method is used to set up communication between this instance and the
-  // overlay ghost loader's WebUI. This is called by the WebUIController when
-  // the WebUI is executing javascript and ready to bind.
-  void BindOverlayGhostLoader(
-      mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page);
-
-  // This method is used to set up communication between this instance and the
-  // side panel's ghost loader WebUI. This is called by the WebUIController
-  // when the WebUI is executing javascript and ready to bind.
-  void BindSidePanelGhostLoader(
-      mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page);
 
   // Shows a toast in the side panel with the string provided in `message`. If
   // the side panel connection has not been established or was reset this is a
@@ -541,10 +528,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Called by the searchbox controller when the focus on the searchbox changes.
   void OnSearchboxFocusChanged(bool focused);
-
-  // Called by the searchbox controller when the ghost loader error state should
-  // be shown.
-  void ShowGhostLoaderErrorState();
 
   // Called by the searchbox controller when zero suggest is shown.
   void OnZeroSuggestShown();
@@ -1074,16 +1057,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // and has bound the connection.
   mojo::Receiver<lens::mojom::LensPageHandler> receiver_{this};
   mojo::Remote<lens::mojom::LensPage> page_;
-
-  // Connections to the overlay ghost loader WebUI. Only valid while
-  // `overlay_view_` is showing, and after the WebUI has started executing JS
-  // and has bound the connection.
-  mojo::Remote<lens::mojom::LensGhostLoaderPage> overlay_ghost_loader_page_;
-
-  // Connections to the side panel ghost loader WebUI. Only valid when the side
-  // panel is currently open and after the WebUI has started executing JS and
-  // has bound the connection.
-  mojo::Remote<lens::mojom::LensGhostLoaderPage> side_panel_ghost_loader_page_;
 
   // Observer for the WebContents of the associated tab. Only valid while the
   // overlay view is showing.

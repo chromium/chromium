@@ -194,13 +194,6 @@ LensSearchController& LensSidePanelUntrustedUI::GetLensSearchController() {
   return *controller;
 }
 
-LensOverlayController& LensSidePanelUntrustedUI::GetLensOverlayController() {
-  LensOverlayController* controller =
-      LensOverlayController::FromWebUIWebContents(web_ui()->GetWebContents());
-  CHECK(controller);
-  return *controller;
-}
-
 void LensSidePanelUntrustedUI::CreateSidePanelPageHandler(
     mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
@@ -214,11 +207,13 @@ void LensSidePanelUntrustedUI::CreateSidePanelPageHandler(
 
 void LensSidePanelUntrustedUI::CreateGhostLoaderPage(
     mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
-  LensOverlayController& controller = GetLensOverlayController();
+  LensSearchboxController* controller =
+      GetLensSearchController().lens_searchbox_controller();
 
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
-  controller.BindSidePanelGhostLoader(std::move(page));
+
+  controller->BindSidePanelGhostLoader(std::move(page));
 }
 
 void LensSidePanelUntrustedUI::CreateHelpBubbleHandler(

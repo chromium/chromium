@@ -370,11 +370,12 @@ void LensOverlayUntrustedUI::CreatePageHandler(
 
 void LensOverlayUntrustedUI::CreateGhostLoaderPage(
     mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
-  LensOverlayController& controller = GetLensOverlayController();
+  LensSearchboxController* controller =
+      GetLensSearchController().lens_searchbox_controller();
 
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
-  controller.BindOverlayGhostLoader(std::move(page));
+  controller->BindOverlayGhostLoader(std::move(page));
 }
 
 void LensOverlayUntrustedUI::CreateHelpBubbleHandler(

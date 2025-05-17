@@ -308,7 +308,8 @@ bool LensSearchController::IsClosing() {
 }
 
 bool LensSearchController::IsHandshakeComplete() {
-  const auto& suggest_inputs = lens_searchbox_controller_->GetLensSuggestInputs();
+  const auto& suggest_inputs =
+      lens_searchbox_controller_->GetLensSuggestInputs();
   return AreLensSuggestInputsReady(suggest_inputs);
 }
 

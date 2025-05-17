@@ -4,18 +4,19 @@
 
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 
+#include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
-#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 
 namespace {
 // The url query param key for the search query.
@@ -28,6 +29,18 @@ LensSearchboxController::LensSearchboxController(
     LensSearchController* lens_search_controller)
     : lens_search_controller_(lens_search_controller) {}
 LensSearchboxController::~LensSearchboxController() = default;
+
+void LensSearchboxController::BindOverlayGhostLoader(
+    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+  overlay_ghost_loader_page_.reset();
+  overlay_ghost_loader_page_.Bind(std::move(page));
+}
+
+void LensSearchboxController::BindSidePanelGhostLoader(
+    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+  side_panel_ghost_loader_page_.reset();
+  side_panel_ghost_loader_page_.Bind(std::move(page));
+}
 
 void LensSearchboxController::OnSessionStart() {
   // Initialize any data needed for the searchbox.
@@ -117,6 +130,8 @@ void LensSearchboxController::HandleSuggestInputsResponse(
 void LensSearchboxController::CloseUI() {
   overlay_searchbox_handler_.reset();
   side_panel_searchbox_handler_.reset();
+  overlay_ghost_loader_page_.reset();
+  side_panel_ghost_loader_page_.reset();
   init_data_ = std::make_unique<LensSearchboxInitializationData>();
   pending_text_query_ = std::nullopt;
   pending_thumbnail_uri_ = std::nullopt;
@@ -139,8 +154,9 @@ void LensSearchboxController::GetIsContextualSearchbox(
   std::move(callback).Run(IsContextualSearchbox());
 }
 
-base::CallbackListSubscription LensSearchboxController::GetLensSuggestInputsWhenReady(
-  ::LensOverlaySuggestInputsCallback callback) {
+base::CallbackListSubscription
+LensSearchboxController::GetLensSuggestInputsWhenReady(
+    ::LensOverlaySuggestInputsCallback callback) {
   // Exit early if the overlay is either off or going to soon be off.
   if (lens_search_controller_->IsClosing() ||
       lens_search_controller_->IsOff()) {
@@ -256,9 +272,15 @@ void LensSearchboxController::OnPageBound() {
 }
 
 void LensSearchboxController::ShowGhostLoaderErrorState() {
-  // TODO(crbug.com/413138792): Move ghost loader handling logic to this class.
-  lens_search_controller_->lens_overlay_controller()
-      ->ShowGhostLoaderErrorState();
+  if (!IsContextualSearchbox()) {
+    return;
+  }
+  if (overlay_ghost_loader_page_) {
+    overlay_ghost_loader_page_->ShowErrorState();
+  }
+  if (side_panel_ghost_loader_page_) {
+    side_panel_ghost_loader_page_->ShowErrorState();
+  }
 }
 
 void LensSearchboxController::OnZeroSuggestShown() {
