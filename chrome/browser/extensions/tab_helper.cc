@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -61,6 +62,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/gfx/image/image.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -343,7 +345,7 @@ void TabHelper::OnImageLoaded(const gfx::Image& image) {
   }
 }
 
-WindowController* TabHelper::GetExtensionWindowController() const  {
+WindowController* TabHelper::GetExtensionWindowController() const {
   return ExtensionTabUtil::GetWindowControllerOfTab(web_contents());
 }
 
