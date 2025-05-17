@@ -1099,13 +1099,13 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_viewer_java") {
-    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_viewer/pdf-viewer-1.0.0-SNAPSHOT.aar"
-    info_path = "../androidx/committed/libs/androidx_pdf_pdf_viewer/androidx_pdf_pdf_viewer.info"
+    aar_path = "cipd/libs/androidx_pdf_pdf_viewer/pdf-viewer-1.0.0-alpha06.aar"
+    info_path =
+        "committed/libs/androidx_pdf_pdf_viewer/androidx_pdf_pdf_viewer.info"
     enable_bytecode_checks = false
     deps = [
       ":androidx_annotation_annotation_java",
       ":androidx_core_core_java",
-      ":androidx_customview_customview_java",
       ":androidx_exifinterface_exifinterface_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/android_deps:material_design_java",
@@ -1117,8 +1117,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_viewer_fragment_java") {
-    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_viewer_fragment/pdf-viewer-fragment-1.0.0-SNAPSHOT.aar"
-    info_path = "../androidx/committed/libs/androidx_pdf_pdf_viewer_fragment/androidx_pdf_pdf_viewer_fragment.info"
+    aar_path = "cipd/libs/androidx_pdf_pdf_viewer_fragment/pdf-viewer-fragment-1.0.0-alpha06.aar"
+    info_path = "committed/libs/androidx_pdf_pdf_viewer_fragment/androidx_pdf_pdf_viewer_fragment.info"
     enable_bytecode_checks = false
     deps = [
       ":androidx_core_core_java",
@@ -3143,8 +3143,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_document_service_java") {
-    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_document_service/pdf-document-service-1.0.0-SNAPSHOT.aar"
-    info_path = "../androidx/committed/libs/androidx_pdf_pdf_document_service/androidx_pdf_pdf_document_service.info"
+    aar_path = "cipd/libs/androidx_pdf_pdf_document_service/pdf-document-service-1.0.0-alpha06.aar"
+    info_path = "committed/libs/androidx_pdf_pdf_document_service/androidx_pdf_pdf_document_service.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
