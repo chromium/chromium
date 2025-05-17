@@ -27,6 +27,7 @@
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/cpp/creative_info.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
@@ -352,6 +353,35 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
   return trusted_signals;
 }
 
+std::unique_ptr<TrustedSignals> TrustedSignals::CreateFromBiddingSignalsLoad(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
+    mojom::InProgressAuctionDownloadPtr download,
+    std::set<std::string> interest_group_names,
+    std::set<std::string> bidding_signals_keys,
+    const GURL& trusted_bidding_signals_url,
+    scoped_refptr<AuctionV8Helper> v8_helper,
+    LoadSignalsCallback load_signals_callback) {
+  DCHECK(!interest_group_names.empty());
+
+  std::unique_ptr<TrustedSignals> trusted_signals =
+      base::WrapUnique(new TrustedSignals(
+          std::move(interest_group_names), std::move(bidding_signals_keys),
+          /*render_urls=*/std::nullopt,
+          /*ad_component_render_urls=*/std::nullopt,
+          trusted_bidding_signals_url,
+          std::move(auction_network_events_handler), std::move(v8_helper),
+          std::move(load_signals_callback)));
+
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedBidding",
+      download->url.spec().size());
+  trusted_signals->AdoptDownload(url_loader_factory, std::move(download));
+
+  return trusted_signals;
+}
+
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
@@ -500,6 +530,33 @@ void TrustedSignals::StartDownload(
       AuctionDownloader::DownloadMode::kActualDownload,
       AuctionDownloader::MimeType::kJson,
       /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      /*num_igs_for_trusted_bidding_signals_kvv1=*/
+      interest_group_names_.has_value() ? interest_group_names_->size()
+                                        : std::optional<size_t>(),
+      AuctionDownloader::ResponseStartedCallback(),
+      base::BindOnce(&TrustedSignals::OnDownloadComplete,
+                     base::Unretained(this)),
+      /*network_events_delegate=*/std::move(network_events_delegate));
+}
+
+void TrustedSignals::AdoptDownload(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojom::InProgressAuctionDownloadPtr download) {
+  // This isn't accurate, but it's the closest we have.
+  download_start_time_ = base::TimeTicks::Now();
+
+  std::unique_ptr<MojoNetworkEventsDelegate> network_events_delegate;
+
+  if (auction_network_events_handler_.is_valid()) {
+    network_events_delegate = std::make_unique<MojoNetworkEventsDelegate>(
+        std::move(auction_network_events_handler_),
+        download->devtools_request_id);
+  }
+
+  auction_downloader_ = std::make_unique<AuctionDownloader>(
+      url_loader_factory, std::move(download),
+      AuctionDownloader::DownloadMode::kActualDownload,
+      AuctionDownloader::MimeType::kJson,
       /*num_igs_for_trusted_bidding_signals_kvv1=*/
       interest_group_names_.has_value() ? interest_group_names_->size()
                                         : std::optional<size_t>(),

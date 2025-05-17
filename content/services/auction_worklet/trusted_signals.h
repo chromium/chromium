@@ -22,6 +22,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -175,6 +176,19 @@ class CONTENT_EXPORT TrustedSignals {
       scoped_refptr<AuctionV8Helper> v8_helper,
       LoadSignalsCallback load_signals_callback);
 
+  // Same as LoadBiddingSignals, except it adopts an
+  // existing fetch from `download` instead of starting a new one.
+  static std::unique_ptr<TrustedSignals> CreateFromBiddingSignalsLoad(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
+      mojom::InProgressAuctionDownloadPtr download,
+      std::set<std::string> interest_group_names,
+      std::set<std::string> bidding_signals_keys,
+      const GURL& trusted_bidding_signals_url,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      LoadSignalsCallback load_signals_callback);
+
   // Just like LoadBiddingSignals() above, but for fetching seller signals.
   static std::unique_ptr<TrustedSignals> LoadScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
@@ -223,6 +237,10 @@ class CONTENT_EXPORT TrustedSignals {
   // URL with the query parameter correctly set.
   void StartDownload(network::mojom::URLLoaderFactory* url_loader_factory,
                      const GURL& full_signals_url);
+
+  // Waits for a response from `download`.
+  void AdoptDownload(network::mojom::URLLoaderFactory* url_loader_factory,
+                     mojom::InProgressAuctionDownloadPtr download);
 
   void OnDownloadComplete(std::unique_ptr<std::string> body,
                           scoped_refptr<net::HttpResponseHeaders> headers,

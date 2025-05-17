@@ -24,7 +24,9 @@
 #include "base/test/values_test_util.h"
 #include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/creative_info.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_status_code.h"
@@ -164,51 +166,15 @@ const char kBaseScoringJsonNewAndOldNames[] = R"(
   }
 )";
 
-class TrustedSignalsTest : public testing::Test {
+class TrustedSignalsTestBase {
  public:
-  TrustedSignalsTest() {
+  TrustedSignalsTestBase() {
     v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
     feature_list_.InitAndEnableFeature(
         features::kInterestGroupUpdateIfOlderThan);
   }
 
-  ~TrustedSignalsTest() override { task_environment_.RunUntilIdle(); }
-
-  // Sets the HTTP response and then fetches bidding signals and waits for
-  // completion. Includes response header indicating later format version ("2")
-  // by default.
-  scoped_refptr<TrustedSignals::Result> FetchBiddingSignalsWithResponse(
-      const std::string& response,
-      std::set<std::string> interest_group_names,
-      std::set<std::string> trusted_bidding_signals_keys,
-      const std::optional<std::string>& format_version_string = "2") {
-    AddBidderJsonResponse(&url_loader_factory_, base_url_with_query_params_,
-                          response,
-                          /*data_version=*/std::nullopt, format_version_string);
-
-    return FetchBiddingSignals(std::move(interest_group_names),
-                               std::move(trusted_bidding_signals_keys));
-  }
-
-  // Fetches bidding signals and waits for completion. Returns nullptr on
-  // failure.
-  scoped_refptr<TrustedSignals::Result> FetchBiddingSignals(
-      std::set<std::string> interest_group_names,
-      std::set<std::string> trusted_bidding_signals_keys) {
-    CHECK(!load_signals_run_loop_);
-
-    DCHECK(!load_signals_result_);
-
-    auto bidding_signals = TrustedSignals::LoadBiddingSignals(
-        &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
-        std::move(interest_group_names),
-        std::move(trusted_bidding_signals_keys), base_url_,
-        base_url_with_query_params_, v8_helper_,
-        base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
-                       base::Unretained(this)));
-    WaitForLoadComplete();
-    return std::move(load_signals_result_);
-  }
+  ~TrustedSignalsTestBase() { task_environment_.RunUntilIdle(); }
 
   // Sets the HTTP response and then fetches scoring signals and waits for
   // completion. Returns nullptr on failure.
@@ -247,7 +213,7 @@ class TrustedSignalsTest : public testing::Test {
         std::move(ads), std::move(ad_components), base_url_,
         base_url_with_query_params_, send_creative_scanning_metadata,
         v8_helper_,
-        base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
+        base::BindOnce(&TrustedSignalsTestBase::LoadSignalsCallback,
                        base::Unretained(this)));
     WaitForLoadComplete();
     histogram_tester.ExpectUniqueSample(
@@ -333,7 +299,6 @@ class TrustedSignalsTest : public testing::Test {
     return result;
   }
 
- protected:
   void LoadSignalsCallback(scoped_refptr<TrustedSignals::Result> result,
                            std::optional<std::string> error_msg) {
     load_signals_result_ = std::move(result);
@@ -347,6 +312,7 @@ class TrustedSignalsTest : public testing::Test {
     load_signals_run_loop_->Quit();
   }
 
+ protected:
   base::test::TaskEnvironment task_environment_;
 
   // URL without query params attached.
@@ -377,7 +343,79 @@ class TrustedSignalsTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TrustedSignalsTest, BiddingSignalsNetworkError) {
+class TrustedBiddingSignalsTest : public TrustedSignalsTestBase,
+                                  public testing::TestWithParam<bool> {
+ public:
+  TrustedBiddingSignalsTest() = default;
+
+  // Fetch bidding signals without waiting for completion.
+  std::unique_ptr<TrustedSignals> LoadBiddingSignals(
+      std::set<std::string> interest_group_names,
+      std::set<std::string> trusted_bidding_signals_keys) {
+    if (GetParam()) {
+      auto in_progress_load = AuctionDownloader::StartDownload(
+          url_loader_factory_, base_url_with_query_params_,
+          AuctionDownloader::MimeType::kJson, auction_network_events_handler_);
+      return TrustedSignals::CreateFromBiddingSignalsLoad(
+          &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
+          std::move(in_progress_load), std::move(interest_group_names),
+          std::move(trusted_bidding_signals_keys), base_url_, v8_helper_,
+          base::BindOnce(&TrustedSignalsTestBase::LoadSignalsCallback,
+                         base::Unretained(this)));
+    } else {
+      return TrustedSignals::LoadBiddingSignals(
+          &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
+          std::move(interest_group_names),
+          std::move(trusted_bidding_signals_keys), base_url_,
+          base_url_with_query_params_, v8_helper_,
+          base::BindOnce(&TrustedSignalsTestBase::LoadSignalsCallback,
+                         base::Unretained(this)));
+    }
+  }
+
+  // Sets the HTTP response and then fetches bidding signals and waits for
+  // completion. Includes response header indicating later format version ("2")
+  // by default.
+  scoped_refptr<TrustedSignals::Result> FetchBiddingSignalsWithResponse(
+      const std::string& response,
+      std::set<std::string> interest_group_names,
+      std::set<std::string> trusted_bidding_signals_keys,
+      const std::optional<std::string>& format_version_string = "2") {
+    AddBidderJsonResponse(&url_loader_factory_, base_url_with_query_params_,
+                          response,
+                          /*data_version=*/std::nullopt, format_version_string);
+
+    return FetchBiddingSignals(std::move(interest_group_names),
+                               std::move(trusted_bidding_signals_keys));
+  }
+
+  // Fetches bidding signals and waits for completion. Returns nullptr on
+  // failure.
+  scoped_refptr<TrustedSignals::Result> FetchBiddingSignals(
+      std::set<std::string> interest_group_names,
+      std::set<std::string> trusted_bidding_signals_keys) {
+    CHECK(!load_signals_run_loop_);
+
+    DCHECK(!load_signals_result_);
+
+    std::unique_ptr<TrustedSignals> signals =
+        LoadBiddingSignals(std::move(interest_group_names),
+                           std::move(trusted_bidding_signals_keys));
+
+    WaitForLoadComplete();
+    return std::move(load_signals_result_);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, TrustedBiddingSignalsTest, testing::Bool());
+
+class TrustedScoringSignalsTest : public TrustedSignalsTestBase,
+                                  public testing::Test {
+ public:
+  TrustedScoringSignalsTest() = default;
+};
+
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsNetworkError) {
   url_loader_factory_.AddResponse(base_url_with_query_params_.spec(),
                                   kBaseBiddingJson, net::HTTP_NOT_FOUND);
   EXPECT_FALSE(FetchBiddingSignals({"name1"}, {"key1"}));
@@ -402,7 +440,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsNetworkError) {
                   "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsNetworkError) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsNetworkError) {
   url_loader_factory_.AddResponse(base_url_with_query_params_.spec(),
                                   kBaseScoringJson, net::HTTP_NOT_FOUND);
   EXPECT_FALSE(FetchScoringSignals(
@@ -429,7 +467,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNetworkError) {
                   "Completion Status: net::ERR_HTTP_RESPONSE_CODE_FAILURE"));
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsResponseNotJsonObject) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsResponseNotJsonObject) {
   const char* kTestCases[] = {
       "",     "Not JSON",           "null",
       "5",    R"("Not an object")", R"(["Also not an object"])",
@@ -446,7 +484,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsResponseNotJsonObject) {
   }
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotJsonObject) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsResponseNotJsonObject) {
   const char* kTestCases[] = {
       "",     "Not JSON",           "null",
       "5",    R"("Not an object")", R"(["Also not an object"])",
@@ -465,7 +503,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotJsonObject) {
   }
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsInvalidVersion) {
   EXPECT_FALSE(FetchBiddingSignalsWithResponse(kBaseBiddingJson, {"name1"},
                                                {"key1"},
                                                /*format_version_string=*/"3"));
@@ -502,14 +540,14 @@ TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
       error_msg_.value());
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsResponseNotObject) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsResponseNotObject) {
   EXPECT_FALSE(FetchBiddingSignalsWithResponse("42", {"name1"}, {"key1"}));
   ASSERT_TRUE(error_msg_.has_value());
   EXPECT_EQ("https://url.test/ Unable to parse as a JSON object.",
             error_msg_.value());
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotObject) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsResponseNotObject) {
   EXPECT_FALSE(FetchScoringSignalsWithResponse(
       "42", /*render_urls=*/{"https://foo.test/"},
       /*ad_component_render_urls=*/{}));
@@ -518,7 +556,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotObject) {
             error_msg_.value());
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsExpectedEntriesNotPresent) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsExpectedEntriesNotPresent) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(R"({"foo":4,"bar":5})", {"name1"},
                                       {"key1"});
@@ -527,7 +565,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsExpectedEntriesNotPresent) {
   EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           R"({"foo":4,"bar":5})",
@@ -544,7 +582,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
   EXPECT_FALSE(error_msg_.has_value());
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsNestedEntriesNotObject) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsNestedEntriesNotObject) {
   const char* kTestCases[] = {
       "4", "[3]",
       // List with a valid priority vector as the first element, which should
@@ -574,7 +612,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsNestedEntriesNotObject) {
   }
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsInvalidPriorityVectors) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsInvalidPriorityVectors) {
   // Test the cases were priority vectors are or contain invalid values.
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
@@ -596,7 +634,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsInvalidPriorityVectors) {
             *priority_vector);
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
+TEST_P(TrustedBiddingSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           R"({"renderUrls":4,"adComponentRenderURLs":5})",
@@ -613,7 +651,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
   EXPECT_FALSE(error_msg_.has_value());
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissing) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsKeyMissing) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(kBaseBiddingJson,
                                       {"name4", "name7", "name8"}, {"key4"});
@@ -635,7 +673,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissing) {
   ASSERT_EQ(name8_per_group_data, nullptr);
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissingNameInProto) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsKeyMissingNameInProto) {
   // Ensure nothing funny happens when the missing signal key name is something
   // in Object.prototype.
   scoped_refptr<TrustedSignals::Result> signals =
@@ -646,7 +684,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissingNameInProto) {
   EXPECT_EQ(nullptr, signals->GetPerGroupData("name4"));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
+TEST_P(TrustedBiddingSignalsTest, ScoringSignalsKeysMissing) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           R"({"renderUrls":{"these":"are not"},")"
@@ -664,7 +702,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
   EXPECT_FALSE(error_msg_.has_value());
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsOneKey) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(kBaseBiddingJson, {"name1"}, {"key1"});
   ASSERT_TRUE(signals);
@@ -691,7 +729,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
                   "Completion Status: net::OK"));
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyOldHeaderName) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsOneKeyOldHeaderName) {
   AddResponse(
       &url_loader_factory_, base_url_with_query_params_, kJsonMimeType,
       std::nullopt, kBaseBiddingJson,
@@ -707,7 +745,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyOldHeaderName) {
             *priority_vector);
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyHeaderName) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsOneKeyHeaderName) {
   AddResponse(
       &url_loader_factory_, base_url_with_query_params_, kJsonMimeType,
       std::nullopt, kBaseBiddingJson,
@@ -724,7 +762,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyHeaderName) {
             *priority_vector);
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyBothOldAndNewHeaderNames) {
+TEST_P(TrustedBiddingSignalsTest,
+       BiddingSignalsOneKeyBothOldAndNewHeaderNames) {
   AddResponse(
       &url_loader_factory_, base_url_with_query_params_, kJsonMimeType,
       std::nullopt, kBaseBiddingJson,
@@ -742,7 +781,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyBothOldAndNewHeaderNames) {
             *priority_vector);
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsForOneRenderUrl) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsForOneRenderUrl) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(kBaseScoringJson,
                                       /*render_urls=*/{"https://foo.test/"},
@@ -769,7 +808,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsForOneRenderUrl) {
                   "Completion Status: net::OK"));
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsMultipleKeys) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsMultipleKeys) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(kBaseBiddingJson,
                                       {"name1", "name2", "name3"},
@@ -813,7 +852,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsMultipleKeys) {
   EXPECT_EQ(std::nullopt, name3_per_group_data->update_if_older_than);
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsMultipleUrls) {
   // URLs are currently added in lexical order.
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
@@ -838,7 +877,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
                  "https://bazsub.test/"}));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsOldNames) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsOldNames) {
   // URLs are currently added in lexical order.
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
@@ -863,7 +902,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsOldNames) {
                  "https://bazsub.test/"}));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsNewAndOldNames) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsNewAndOldNames) {
   // URLs are currently added in lexical order.
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
@@ -888,7 +927,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNewAndOldNames) {
                  "https://bazsub.test/"}));
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsDuplicateKeys) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsDuplicateKeys) {
   // Unlike most bidding signals tests, only test trusted bidding signals keys,
   // and not interest group names. Since the PriorityVector corresponding to
   // only a single interest group can be requested at a time, unlike
@@ -906,7 +945,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsDuplicateKeys) {
             ExtractBiddingSignals(signals.get(), bidder_signals_vector));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsDuplicateKeys) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsDuplicateKeys) {
   std::vector<std::string> ad_component_render_urls_vector{
       "https://barsub.test/", "https://foosub.test/", "https://foosub.test/",
       "https://barsub.test/"};
@@ -933,7 +972,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDuplicateKeys) {
 
 // Test when a single URL is used as both a `renderURL` and
 // `adComponentRenderURL`.
-TEST_F(TrustedSignalsTest, ScoringSignalsSharedUrl) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsSharedUrl) {
   // URLs are currently added in lexical order.
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(kBaseScoringJson,
@@ -954,7 +993,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsSharedUrl) {
                             {"https://shared.test/"}));
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsEscapeQueryParams) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsEscapeQueryParams) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(kBaseBiddingJson,
                                       {"name 5", "name6\xE2\x98\x83"},
@@ -976,7 +1015,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsEscapeQueryParams) {
             *priority_vector);
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsEscapeQueryParams) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsEscapeQueryParams) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
           R"(
@@ -1006,7 +1045,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsEscapeQueryParams) {
 
 // Testcase where the loader is deleted after it queued the parsing of
 // the script on V8 thread, but before it gets to finish.
-TEST_F(TrustedSignalsTest, BiddingSignalsDeleteBeforeCallback) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsDeleteBeforeCallback) {
   GURL url(
       "https://url.test/"
       "?hostname=publisher&keys=key1&interestGroupNames=name1");
@@ -1016,21 +1055,18 @@ TEST_F(TrustedSignalsTest, BiddingSignalsDeleteBeforeCallback) {
   // Wedge the V8 thread to control when the JSON parsing takes place.
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
 
-  auto bidding_signals = TrustedSignals::LoadBiddingSignals(
-      &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
-      {"name1"}, {"key1"}, base_url_, base_url_, v8_helper_,
-      base::BindOnce([](scoped_refptr<TrustedSignals::Result> result,
-                        std::optional<std::string> error_msg) {
-        ADD_FAILURE() << "Callback should not be invoked since loader deleted";
-      }));
+  load_signals_run_loop_ = std::make_unique<base::RunLoop>();
+  auto bidding_signals = LoadBiddingSignals({"name1"}, {"key1"});
   base::RunLoop().RunUntilIdle();
   bidding_signals.reset();
   event_handle->Signal();
+  // LoadSignalsCallback was not invoked.
+  EXPECT_TRUE(load_signals_run_loop_);
 }
 
 // Testcase where the loader is deleted after it queued the parsing of
 // the script on V8 thread, but before it gets to finish.
-TEST_F(TrustedSignalsTest, ScoringSignalsDeleteBeforeCallback) {
+TEST_P(TrustedBiddingSignalsTest, ScoringSignalsDeleteBeforeCallback) {
   GURL url(
       "https://url.test/"
       "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F");
@@ -1055,7 +1091,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDeleteBeforeCallback) {
   event_handle->Signal();
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsWithDataVersion) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsWithDataVersion) {
   const uint32_t kTestCases[] = {0, 2, 42949, 4294967295};
   for (uint32_t test_case : kTestCases) {
     SCOPED_TRACE(test_case);
@@ -1076,7 +1112,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsWithDataVersion) {
   }
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsWithInvalidDataVersion) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsWithInvalidDataVersion) {
   const std::string kTestCases[] = {
       "2.0", "03", "-1", "4294967296", "1 2", "0x4", "", "apple",
   };
@@ -1097,13 +1133,13 @@ TEST_F(TrustedSignalsTest, ScoringSignalsWithInvalidDataVersion) {
   }
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsV1) {
   expect_nonfatal_error_ = true;
 
   scoped_refptr<TrustedSignals::Result> signals =
-      FetchBiddingSignalsWithResponse(
-          kBiddingJsonV1, {"name1"}, {"key1", "key2", "key3", "key5"},
-          /*format_version_string=*/std::nullopt);
+      FetchBiddingSignalsWithResponse(kBiddingJsonV1, {"name1"},
+                                      {"key1", "key2", "key3", "key5"},
+                                      /*format_version_string=*/std::nullopt);
   EXPECT_EQ(error_msg_,
             "Bidding signals URL https://url.test/ is using outdated bidding "
             "signals format. Consumers should be updated to use bidding "
@@ -1121,15 +1157,15 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
   EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsV1WithV1Header) {
   expect_nonfatal_error_ = true;
 
   // Only version 2 officially has a version header, but allow an explicit
   // version of "1" to mean the first version.
   scoped_refptr<TrustedSignals::Result> signals =
-      FetchBiddingSignalsWithResponse(
-          kBiddingJsonV1, {"name1"}, {"key1", "key2", "key3", "key5"},
-          /*format_version_string=*/"1");
+      FetchBiddingSignalsWithResponse(kBiddingJsonV1, {"name1"},
+                                      {"key1", "key2", "key3", "key5"},
+                                      /*format_version_string=*/"1");
   EXPECT_EQ(error_msg_,
             "Bidding signals URL https://url.test/ is using outdated bidding "
             "signals format. Consumers should be updated to use bidding "
@@ -1149,7 +1185,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
 
 // A V2 header with a V1 body treats all values as null (since it can't find
 // keys).
-TEST_F(TrustedSignalsTest, BiddingSignalsV2HeaderV1Body) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsV2HeaderV1Body) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(kBiddingJsonV1, {"name1"}, {"key1"},
                                       /*format_version_string=*/"2");
@@ -1160,7 +1196,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV2HeaderV1Body) {
 
 // A V1 header (i.e., no version header) with a V2 body treats all values as
 // null (since it can't find keys).
-TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
+TEST_P(TrustedBiddingSignalsTest, BiddingSignalsV1HeaderV2Body) {
   expect_nonfatal_error_ = true;
 
   scoped_refptr<TrustedSignals::Result> signals =
@@ -1175,7 +1211,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
   EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
+TEST_F(TrustedScoringSignalsTest, ScoringSignalsCreativeScanning) {
   std::set<CreativeInfo> ads;
   ads.insert(CreativeInfo(
       /*ad_descriptor=*/blink::AdDescriptor(
