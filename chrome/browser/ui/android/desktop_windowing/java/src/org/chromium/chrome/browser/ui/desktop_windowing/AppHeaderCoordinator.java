@@ -87,7 +87,6 @@ public class AppHeaderCoordinator
     private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
     private int mKeyboardInset;
     private int mNavBarInset;
-    private int mControlsTopOffset;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -141,7 +140,6 @@ public class AppHeaderCoordinator
 
         InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
         mCaptionBarRectProvider.addObserver(insetsRectUpdateRunnable);
-        mCaptionBarRectProvider.addSystemBarOverlapObserver(this::onControlsTopOffsetChanged);
 
         // Populate the initial value if the rect provider is ready.
         if (!mCaptionBarRectProvider.getWidestUnoccludedRect().isEmpty()) {
@@ -196,11 +194,6 @@ public class AppHeaderCoordinator
         outState.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
     }
 
-    private void onControlsTopOffsetChanged(int topOffset) {
-        mControlsTopOffset = topOffset;
-        onInsetsRectsUpdated(mCaptionBarRectProvider.getWidestUnoccludedRect());
-    }
-
     private void onInsetsRectsUpdated(Rect widestUnoccludedRect) {
         // mActivity is only set to null in destroy().
         boolean isOnExternalDisplay =
@@ -224,7 +217,6 @@ public class AppHeaderCoordinator
                 new AppHeaderState(
                         mCaptionBarRectProvider.getWindowRect(),
                         widestUnoccludedRect,
-                        mControlsTopOffset,
                         isInDesktopWindow);
         if (appHeaderState.equals(mAppHeaderState)) return;
 

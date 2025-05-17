@@ -92,7 +92,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
         // Consumers will be given the opportunity to process applied insets based on the priority
         // defined here. A lower value of the consumer source means that insets will be forwarded to
-        // this consumer before others with a higher value.
+        // this consumer before others with a higher value. Be cautious about impact on existing
+        // consumers in case a reordering is required while adding a new consumer source.
         @IntDef({
             InsetConsumerSource.TEST_SOURCE,
             InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK,
@@ -108,6 +109,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             int TEST_SOURCE = 0;
 
             int DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK = 1;
+            // The AppHeaderCoordinator should get highest priority to process and potentially
+            // consume caption bar insets (and overlapping status bar insets) because this is
+            // critical to drawing the tab strip in the caption bar area in a desktop window
+            // correctly.
             int APP_HEADER_COORDINATOR_CAPTION = 2;
             int EDGE_TO_EDGE_CONTROLLER_IMPL = 3;
             int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 4;

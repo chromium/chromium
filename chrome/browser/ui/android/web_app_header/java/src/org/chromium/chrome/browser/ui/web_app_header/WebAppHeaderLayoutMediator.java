@@ -156,11 +156,11 @@ class WebAppHeaderLayoutMediator
         // Some vendors provide caption bar insets as caption bar + status bar
         // insets, to layout properly we need to add status bar insets to the
         // padding.
-        int controlsTopOffset = mCurrentHeaderState.getControlsTopOffset();
-        int adjustedAppHeaderHeight = mCurrentHeaderState.getAppHeaderHeight() - controlsTopOffset;
+        int controlsTopOffset = mCurrentHeaderState.getCaptionControlsTopOffset();
+        int captionControlsHeight = mCurrentHeaderState.getCaptionControlsHeight();
 
-        if (adjustedAppHeaderHeight < mHeaderButtonHeight) {
-            mButtonBottomInset = mHeaderButtonHeight - adjustedAppHeaderHeight;
+        if (captionControlsHeight < mHeaderButtonHeight) {
+            mButtonBottomInset = mHeaderButtonHeight - captionControlsHeight;
         } else {
             mButtonBottomInset = 0;
         }

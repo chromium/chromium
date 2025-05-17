@@ -305,7 +305,7 @@ public class InsetsRectProviderTest {
     @Test
     public void testCaptionBarInsetsRectProvider_captionBarNoOverlap() {
         // Assume caption bar has top insets.
-        Insets captionBarInsets = Insets.of(0, 0, 30, 0);
+        Insets captionBarInsets = Insets.of(0, 30, 0, 0);
         Insets statusBarInsets = Insets.of(0, 0, 0, 0);
         Insets navigationBarInsets = Insets.of(0, 0, 0, 15);
 
@@ -386,7 +386,7 @@ public class InsetsRectProviderTest {
         CallbackHelper observer = new CallbackHelper();
         mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
-        Rect availableArea = new Rect(0, 0, WINDOW_WIDTH - 20, 30);
+        Rect availableArea = new Rect(0, 10, WINDOW_WIDTH - 20, 30);
         List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
         WindowInsetsCompat newWindowInsets =
                 buildTestWindowInsets(
@@ -411,11 +411,6 @@ public class InsetsRectProviderTest {
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
-        assertEquals(
-                "Status bar should overlap with caption bar.",
-                10,
-                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
-                        .getOverlappingStatusBarHeightForTesting());
 
         appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals(
@@ -430,14 +425,67 @@ public class InsetsRectProviderTest {
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
-        assertEquals(
-                "Status bar should overlap with caption bar.",
-                10,
-                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
-                        .getOverlappingStatusBarHeightForTesting());
 
         assertEquals("Observer should be called once.", 1, observer.getCallCount());
-        assertSuppliedValues(captionBarInsets, availableArea, blockingRects);
+        var finalBlockedRects =
+                List.of(
+                        new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30),
+                        new Rect(0, 0, WINDOW_WIDTH, 10));
+        assertSuppliedValues(captionBarInsets, availableArea, finalBlockedRects);
+    }
+
+    @Test
+    public void testCaptionBarInsetsRectProvider_captionBarCoversStatusBarCompletely() {
+        // Declare insets.
+        Insets captionBarInsets = Insets.of(0, 30, 0, 0);
+        Insets statusBarInsets = Insets.of(0, 30, 0, 0);
+        Insets navigationBarInsets = Insets.of(0, 0, 0, 15);
+
+        // Initialize with empty window insets.
+        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
+        mInsetsRectProvider =
+                Mockito.spy(
+                        new CaptionBarInsetsRectProvider(
+                                mInsetObserver,
+                                emptyWindowInsets,
+                                InsetConsumerSource.TEST_SOURCE));
+        doAnswer(mBuildNewMockInsets).when(mInsetsRectProvider).buildInsets(any(), anyInt(), any());
+
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
+
+        // Available area should be empty because of the status-caption overlap.
+        Rect availableArea = new Rect(0, 0, 0, 0);
+        List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
+        WindowInsetsCompat newWindowInsets =
+                buildTestWindowInsets(
+                        captionBar(),
+                        captionBarInsets,
+                        availableArea,
+                        INSETS_FRAME_SIZE,
+                        blockingRects);
+        doReturn(statusBarInsets).when(newWindowInsets).getInsets(eq(statusBars()));
+        doReturn(navigationBarInsets).when(newWindowInsets).getInsets(eq(navigationBars()));
+
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+        assertEquals(
+                "Caption bar insets should not be consumed.",
+                captionBarInsets,
+                appliedInsets.getInsets(captionBar()));
+        assertEquals(
+                "Status bar insets should be unaffected.",
+                statusBarInsets,
+                appliedInsets.getInsets(statusBars()));
+        assertEquals(
+                "Navigation bar insets should be unaffected.",
+                navigationBarInsets,
+                appliedInsets.getInsets(navigationBars()));
+
+        var finalBlockedRects =
+                List.of(
+                        new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30),
+                        new Rect(0, 0, WINDOW_WIDTH, 30));
+        assertSuppliedValues(captionBarInsets, availableArea, finalBlockedRects);
     }
 
     @Test
@@ -460,8 +508,10 @@ public class InsetsRectProviderTest {
         CallbackHelper observer = new CallbackHelper();
         mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
-        Rect availableArea = new Rect(0, 0, WINDOW_WIDTH - 20, 30);
-        List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
+        // Available area should be empty because of the status-caption overlap.
+        Rect availableArea = new Rect(0, 0, 0, 0);
+        List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 10));
+
         WindowInsetsCompat newWindowInsets =
                 buildTestWindowInsets(
                         captionBar(),
@@ -474,44 +524,38 @@ public class InsetsRectProviderTest {
 
         var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals(
-                "Caption bar insets should be consumed.",
-                Insets.NONE,
+                "Caption bar insets should not be consumed.",
+                captionBarInsets,
                 appliedInsets.getInsets(captionBar()));
         assertEquals(
-                "Status bar insets should be reduced.",
-                Insets.of(0, 20, 0, 0),
+                "Status bar insets should be unaffected.",
+                statusBarInsets,
                 appliedInsets.getInsets(statusBars()));
         assertEquals(
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
-        assertEquals(
-                "Status bar should not overlap with caption bar.",
-                0,
-                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
-                        .getOverlappingStatusBarHeightForTesting());
 
         appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals(
-                "Caption bar insets should be consumed.",
-                Insets.NONE,
+                "Caption bar insets should not be consumed.",
+                captionBarInsets,
                 appliedInsets.getInsets(captionBar()));
         assertEquals(
-                "Status bar insets should be reduced.",
-                Insets.of(0, 20, 0, 0),
+                "Status bar insets should be unaffected.",
+                statusBarInsets,
                 appliedInsets.getInsets(statusBars()));
         assertEquals(
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
-        assertEquals(
-                "Status bar should not overlap with caption bar.",
-                0,
-                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
-                        .getOverlappingStatusBarHeightForTesting());
 
         assertEquals("Observer should be called once.", 1, observer.getCallCount());
-        assertSuppliedValues(captionBarInsets, availableArea, blockingRects);
+        var finalBlockedRects =
+                List.of(
+                        new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 10),
+                        new Rect(0, 0, WINDOW_WIDTH, 30));
+        assertSuppliedValues(captionBarInsets, availableArea, finalBlockedRects);
     }
 
     private WindowInsetsCompat buildTestWindowInsets(
@@ -586,7 +630,7 @@ public class InsetsRectProviderTest {
         }
 
         @Implementation
-        protected static Rect getWidestUnoccludedRect(Rect regionRect, List<Rect> blockRects) {
+        protected static Rect getWidestUnoccludedRect(Rect regionRect, List<Rect> blockedRects) {
             return sWidestUnoccludedRect != null ? sWidestUnoccludedRect : new Rect();
         }
 

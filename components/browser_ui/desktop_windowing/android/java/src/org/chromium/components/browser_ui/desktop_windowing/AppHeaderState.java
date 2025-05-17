@@ -17,39 +17,19 @@ public class AppHeaderState {
     private final Rect mAppWindowRect;
     private final Rect mWidestUnoccludedRect;
     private final boolean mIsInDesktopWindow;
-    private final int mControlsTopOffset;
 
     /**
      * Create an instance representing the app header state.
      *
      * @param appWindowRect Rect representing the app window.
      * @param widestUnoccludedRect Rect representing the available area in the app header.
-     * @param controlsTopOffset The top offset for the app header controls within the caption bar.
      * @param isInDesktopWindow Whether the app header state is used in desktop windowing mode.
      */
     public AppHeaderState(
-            Rect appWindowRect,
-            Rect widestUnoccludedRect,
-            int controlsTopOffset,
-            boolean isInDesktopWindow) {
+            Rect appWindowRect, Rect widestUnoccludedRect, boolean isInDesktopWindow) {
         mIsInDesktopWindow = isInDesktopWindow;
         mAppWindowRect = new Rect(appWindowRect);
         mWidestUnoccludedRect = new Rect(widestUnoccludedRect);
-        mControlsTopOffset = controlsTopOffset;
-    }
-
-    /**
-     * Create an instance representing the app header state with no top offset for the controls.
-     *
-     * @param appWindowRect Rect representing the app window.
-     * @param widestUnoccludedRect Rect representing the available area in the app header.
-     * @param isInDesktopWindow Whether the app header state is used in desktop windowing mode.
-     * @deprecated TODO(b/417296815): Remove this constructor.
-     */
-    @Deprecated
-    public AppHeaderState(
-            Rect appWindowRect, Rect widestUnoccludedRect, boolean isInDesktopWindow) {
-        this(appWindowRect, widestUnoccludedRect, 0, isInDesktopWindow);
     }
 
     /** Create an empty AppHeaderState. */
@@ -78,16 +58,26 @@ public class AppHeaderState {
         return mWidestUnoccludedRect.width();
     }
 
-    /** Return the height of the app header region. */
+    /**
+     * Return the height of the app header region. This includes height of the system caption
+     * controls region and its position from the top of the app window.
+     */
     public int getAppHeaderHeight() {
+        assertValid();
+        return getCaptionControlsTopOffset() + getCaptionControlsHeight();
+    }
+
+    /** Return the height of the system caption controls region. */
+    public int getCaptionControlsHeight() {
         assertValid();
         if (mWidestUnoccludedRect.isEmpty()) return 0;
         return mWidestUnoccludedRect.height();
     }
 
-    /** Return the top offset of the app header controls with the caption bar. */
-    public int getControlsTopOffset() {
-        return mControlsTopOffset;
+    /** Return the offset of the system caption controls from the top of the app window. */
+    public int getCaptionControlsTopOffset() {
+        assertValid();
+        return mWidestUnoccludedRect.top - mAppWindowRect.top;
     }
 
     /** Return whether the app header state is used in desktop window mode. */
@@ -103,7 +93,6 @@ public class AppHeaderState {
 
         return mAppWindowRect.equals(other.mAppWindowRect)
                 && mWidestUnoccludedRect.equals(other.mWidestUnoccludedRect)
-                && mControlsTopOffset == other.mControlsTopOffset
                 && mIsInDesktopWindow == other.mIsInDesktopWindow;
     }
 
@@ -113,8 +102,6 @@ public class AppHeaderState {
                 + mAppWindowRect
                 + " widestUnoccludedRect: "
                 + mWidestUnoccludedRect
-                + " controlsTopOffset: "
-                + mControlsTopOffset
                 + " isInDesktopWindow: "
                 + mIsInDesktopWindow;
     }

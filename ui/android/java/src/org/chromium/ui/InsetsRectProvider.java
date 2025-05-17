@@ -147,6 +147,17 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     }
 
     /**
+     * Gets the system bounding rects for the current inset type.
+     *
+     * @param windowInsetsCompat The current system {@link WindowInsetsCompat}.
+     * @return The list of system bounding rects for the given inset type.
+     */
+    protected List<Rect> getBoundingRectsFromInsets(WindowInsetsCompat windowInsetsCompat) {
+        return WindowInsetsUtils.getBoundingRectsFromInsets(
+                windowInsetsCompat.toWindowInsets(), mInsetType);
+    }
+
+    /**
      * Build a new {@link WindowInsetsCompat} object. This is exposed to allow testing to override
      * this method, as the {@link WindowInsetsCompat.Builder} does not work in Robolectric tests.
      */
@@ -178,21 +189,31 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mCachedInsets = windowInsetsCompat;
         mWindowRect.set(windowRect);
 
-        Insets insets = windowInsetsCompat.getInsets(mInsetType);
-        Rect insetRectInWindow = WindowInsetsUtils.toRectInWindow(mWindowRect, insets);
-        if (!insetRectInWindow.isEmpty()) {
-            mBoundingRects = WindowInsetsUtils.getBoundingRectsFromInsets(windowInsets, mInsetType);
-            mWidestUnoccludedRect =
-                    WindowInsetsUtils.getWidestUnoccludedRect(insetRectInWindow, mBoundingRects);
-        } else {
-            mBoundingRects = List.of();
-            mWidestUnoccludedRect = new Rect();
-        }
+        updateWidestUnoccludedRect(windowInsetsCompat);
 
         // Notify observers about the update.
         for (Observer observer : mObservers) {
             observer.onBoundingRectsUpdated(mWidestUnoccludedRect);
         }
         return !mWidestUnoccludedRect.isEmpty();
+    }
+
+    /**
+     * Determines the widest rect within the system inset region of the current inset type that is
+     * not occluded by system controls.
+     *
+     * @param windowInsetsCompat The current system {@link WindowInsetsCompat}.
+     */
+    private void updateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
+        Insets insets = windowInsetsCompat.getInsets(mInsetType);
+        Rect insetRectInWindow = WindowInsetsUtils.toRectInWindow(mWindowRect, insets);
+        if (!insetRectInWindow.isEmpty()) {
+            mBoundingRects = getBoundingRectsFromInsets(windowInsetsCompat);
+            mWidestUnoccludedRect =
+                    WindowInsetsUtils.getWidestUnoccludedRect(insetRectInWindow, mBoundingRects);
+        } else {
+            mBoundingRects = List.of();
+            mWidestUnoccludedRect = new Rect();
+        }
     }
 }

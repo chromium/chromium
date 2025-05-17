@@ -98,13 +98,11 @@ public class WebAppHeaderLayoutMediatorTest {
         mShadowLooper.idle();
     }
 
-    private void setupDesktopWindowing(
-            boolean isInDesktopWindow, Rect widestUnoccludedRect, int controlsTopOffset) {
+    private void setupDesktopWindowing(boolean isInDesktopWindow, Rect widestUnoccludedRect) {
         mAppHeaderState =
                 new AppHeaderState(
                         new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT),
                         widestUnoccludedRect,
-                        controlsTopOffset,
                         isInDesktopWindow);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
     }
@@ -119,7 +117,7 @@ public class WebAppHeaderLayoutMediatorTest {
     public void testButtonBottomInset_headerHeightEqualButtonHeight() {
         Rect widestUnoccludedRect =
                 new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, HEADER_BUTTON_HEIGHT);
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, widestUnoccludedRect, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, widestUnoccludedRect);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
 
         assertEquals(
@@ -130,7 +128,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testButtonBottomInset_headerHeightLessThanButtonHeight() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
 
         assertEquals(
@@ -144,11 +142,15 @@ public class WebAppHeaderLayoutMediatorTest {
         final int statusBarHeight = HEADER_BUTTON_HEIGHT - SYS_APP_HEADER_HEIGHT;
 
         // The caption bar is large enough to fit the buttons, but part of the caption bar is
-        // occipied by the status bar.
+        // occupied by the status bar.
         final Rect widestUnoccludedRect =
-                new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, HEADER_BUTTON_HEIGHT);
+                new Rect(
+                        LEFT_INSET,
+                        statusBarHeight,
+                        SCREEN_WIDTH - RIGHT_INSET,
+                        HEADER_BUTTON_HEIGHT);
 
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, widestUnoccludedRect, statusBarHeight);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, widestUnoccludedRect);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
 
         assertEquals(
@@ -159,7 +161,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testHasAppHeaderStateOnInit_setPaddingsMatchingInsets() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         mModel,
@@ -187,7 +189,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testAppHeaderStateUpdated_setPaddingsMatchingInsets() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
 
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
         assertEquals(
@@ -207,9 +209,7 @@ public class WebAppHeaderLayoutMediatorTest {
     public void testAppHeaderStateUpdated_setNewPaddingsMatchingInsets() {
         // initial state with empty paddings
         setupDesktopWindowing(
-                /* isInDesktopWindow= */ true,
-                new Rect(0, 0, SCREEN_WIDTH, SYS_APP_HEADER_HEIGHT),
-                0);
+                /* isInDesktopWindow= */ true, new Rect(0, 0, SCREEN_WIDTH, SYS_APP_HEADER_HEIGHT));
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         mModel,
@@ -227,7 +227,7 @@ public class WebAppHeaderLayoutMediatorTest {
                 mModel.get(WebAppHeaderLayoutProperties.PADDINGS));
 
         // second update with updated caption paddings
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
 
         assertEquals(
@@ -238,7 +238,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testNotInDesktopWindow_hideHeader() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ false, new Rect(), 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ false, new Rect());
         WebAppHeaderLayoutMediator.setMinHeightForTesting(SYS_APP_HEADER_HEIGHT);
 
         final Rect initialPaddings = new Rect(0, 0, 0, 0);
@@ -259,7 +259,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testAppHeaderHeightIsLessThanMin_noTopPaddingsSet() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
 
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
         assertEquals(
@@ -277,8 +277,8 @@ public class WebAppHeaderLayoutMediatorTest {
         final int statusBarHeight = 10;
         final int headerHeight = SYS_APP_HEADER_HEIGHT + statusBarHeight;
         final Rect widestUnoccludedRect =
-                new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, headerHeight);
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, widestUnoccludedRect, statusBarHeight);
+                new Rect(LEFT_INSET, statusBarHeight, SCREEN_WIDTH - RIGHT_INSET, headerHeight);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, widestUnoccludedRect);
         WebAppHeaderLayoutMediator.setMinHeightForTesting(SYS_APP_HEADER_HEIGHT);
 
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
@@ -331,7 +331,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testInDWButNotInWindow_AllAreaIsDraggable() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ false, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ false, WIDEST_UNOCCLUDED_RECT);
 
         final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
         mNonDraggableAreasSupplier.set(nonDraggableAreas);
@@ -349,7 +349,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testInDWInWindowWithLaidOutView_SetNonDraggableAreas() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
 
         final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
         mNonDraggableAreasSupplier.set(nonDraggableAreas);
@@ -368,7 +368,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testInDwLayoutStructureChanges_SetNonDraggableAreaOnEachUpdate() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
 
         // Setup layout without children.
         final List<Rect> initialNonDraggableArea = List.of();
@@ -400,7 +400,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testSetInitialTheme() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         assertEquals(
                 "Light color should be set initially",
                 LIGHT_COLOR,
@@ -410,7 +410,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testThemeChanges_SetNewTheme() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         when(mThemeColorProvider.getThemeColor()).thenReturn(DARK_COLOR);
 
         mMediator.onThemeColorChanged(DARK_COLOR, /* shouldAnimate= */ false);
@@ -423,14 +423,14 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testScrimOverlaysWebContent_DisableHeaderControls() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator.getScrimVisibilityObserver().onResult(true);
         verify(mHeaderDelegate).disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
     }
 
     @Test
     public void testClearPreviousTokenAndAcquireNewOnSecondScrimOverlay() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         when(mHeaderDelegate.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN))
                 .thenReturn(0);
         mMediator.getScrimVisibilityObserver().onResult(true);
@@ -444,7 +444,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testScrimOverlaysAndThenHides_EnableHeaderControls() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT, 0);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         when(mHeaderDelegate.disableControlsAndClearOldToken(TokenHolder.INVALID_TOKEN))
                 .thenReturn(0);
 
