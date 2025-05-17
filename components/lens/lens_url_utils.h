@@ -6,6 +6,7 @@
 #define COMPONENTS_LENS_LENS_URL_UTILS_H_
 
 #include <string>
+#include <vector>
 
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -16,31 +17,31 @@ class GURL;
 namespace lens {
 
 // Query parameter for the payload.
-constexpr char kPayloadQueryParameter[] = "p";
+inline constexpr char kPayloadQueryParameter[] = "p";
 // Query parameter for the translate source language.
-constexpr char kTranslateSourceQueryParameter[] = "sourcelang";
+inline constexpr char kTranslateSourceQueryParameter[] = "sourcelang";
 // Query parameter for the translate target language.
-constexpr char kTranslateTargetQueryParameter[] = "targetlang";
+inline constexpr char kTranslateTargetQueryParameter[] = "targetlang";
 // Query parameter for the filter type.
-constexpr char kFilterTypeQueryParameter[] = "filtertype";
-constexpr char kTranslateFilterTypeQueryParameterValue[] = "tr";
-constexpr char kLensRequestQueryParameter[] = "vsrid";
+inline constexpr char kFilterTypeQueryParameter[] = "filtertype";
+inline constexpr char kTranslateFilterTypeQueryParameterValue[] = "tr";
+inline constexpr char kLensRequestQueryParameter[] = "vsrid";
 inline constexpr char kUnifiedDrillDownQueryParameter[] = "udm";
 inline constexpr char kLensSurfaceQueryParameter[] = "lns_surface";
 
 // Appends logs to query param as a string
-extern void AppendLogsQueryParam(
+void AppendLogsQueryParam(
     std::string* query_string,
     const std::vector<lens::mojom::LatencyLogPtr>& log_data);
 
 // Returns a modified GURL with appended or replaced parameters depending on the
 // entrypoint and other parameters.
-extern GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
-                                                         lens::EntryPoint ep);
+GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
+                                                  EntryPoint ep);
 
 // Returns a query string with all relevant query parameters. Needed for when a
 // GURL is unavailable to append to.
-extern std::string GetQueryParametersForLensRequest(lens::EntryPoint ep);
+std::string GetQueryParametersForLensRequest(EntryPoint ep);
 
 // Check if the lens URL is a valid results page. This is done by checking if
 // the URL has a payload parameter.

@@ -8,27 +8,29 @@
 namespace lens {
 
 // Histogram for recording ambient search queries.
-constexpr char kAmbientSearchQueryHistogramName[] = "Search.Ambient.Query";
+inline constexpr char kAmbientSearchQueryHistogramName[] =
+    "Search.Ambient.Query";
 
 // Histogram for recording camera open events.
-constexpr char kSearchCameraOpenHistogramName[] = "Search.Image.Camera.Open";
+inline constexpr char kSearchCameraOpenHistogramName[] =
+    "Search.Image.Camera.Open";
 
 // Histogram for recording camera result events.
-constexpr char kSearchCameraResultHistogramName[] =
+inline constexpr char kSearchCameraResultHistogramName[] =
     "Search.Image.Camera.Result";
 
 // Histogram for recording the capture result of Lens Region Search. See enum
 // below for types of results.
-constexpr char kLensRegionSearchCaptureResultHistogramName[] =
+inline constexpr char kLensRegionSearchCaptureResultHistogramName[] =
     "Search.RegionSearch.Lens.Result";
 
 // Histogram for recording the viewport proportion in relation to region
 // selected for the Lens Region Search feature.
-constexpr char kLensRegionSearchRegionViewportProportionHistogramName[] =
+inline constexpr char kLensRegionSearchRegionViewportProportionHistogramName[] =
     "Search.RegionSearch.Lens.RegionViewportProportion";
 
 // Histogram for recording the aspect ratio of the captured region.
-constexpr char kLensRegionSearchRegionAspectRatioHistogramName[] =
+inline constexpr char kLensRegionSearchRegionAspectRatioHistogramName[] =
     "Search.RegionSearch.Lens.RegionAspectRatio";
 
 // Needs to be kept in sync with CameraOpenEntryPoint enum in
@@ -125,13 +127,13 @@ enum class LensRegionSearchCaptureResult {
 };
 
 // Record an ambient search query along with the entry point that initiated.
-extern void RecordAmbientSearchQuery(AmbientSearchEntryPoint entry_point);
+void RecordAmbientSearchQuery(AmbientSearchEntryPoint entry_point);
 
 // Record a camera open event with the entry point.
-extern void RecordCameraOpen(CameraOpenEntryPoint entry_point);
+void RecordCameraOpen(CameraOpenEntryPoint entry_point);
 
 // Record a camera result.
-extern void RecordCameraResult(CameraResult result);
+void RecordCameraResult(CameraResult result);
 
 }  // namespace lens
 
