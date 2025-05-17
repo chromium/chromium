@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/unique_ids.h"
