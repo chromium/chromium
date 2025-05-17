@@ -23,6 +23,7 @@ source_set("lens") {
   ]
   friend = [ ":*" ]
   sources = [
+    "lens_help_menu_utils.h",
     "lens_overlay_blur_layer_delegate.h",
     "lens_overlay_colors.h",
     "lens_overlay_event_handler.h",
@@ -79,6 +80,7 @@ source_set("lens") {
 
 source_set("impl") {
   sources = [
+    "lens_help_menu_utils.cc",
     "lens_overlay_blur_layer_delegate.cc",
     "lens_overlay_controller.cc",
     "lens_overlay_entry_point_controller.cc",

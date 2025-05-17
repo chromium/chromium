@@ -11,6 +11,7 @@
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/lens/lens_help_menu_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -47,6 +48,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
@@ -413,7 +415,8 @@ void LensOverlaySidePanelCoordinator::GetIsContextualSearchbox(
 }
 
 void LensOverlaySidePanelCoordinator::RequestSendFeedback() {
-  GetLensOverlayController()->FeedbackRequestedByEvent(ui::EF_NONE);
+  FeedbackRequestedByEvent(lens_search_controller_->GetTabInterface(),
+                           ui::EF_NONE);
 }
 
 void LensOverlaySidePanelCoordinator::OnScrollToMessage(
@@ -458,19 +461,22 @@ void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
     case COMMAND_MY_ACTIVITY: {
       lens::RecordSidePanelMenuOptionSelected(
           lens::LensOverlaySidePanelMenuOption::kMyActivity);
-      GetLensOverlayController()->ActivityRequestedByEvent(event_flags);
+      ActivityRequestedByEvent(lens_search_controller_->GetTabInterface(),
+                               event_flags);
       break;
     }
     case COMMAND_LEARN_MORE: {
       lens::RecordSidePanelMenuOptionSelected(
           lens::LensOverlaySidePanelMenuOption::kLearnMore);
-      GetLensOverlayController()->InfoRequestedByEvent(event_flags);
+      InfoRequestedByEvent(lens_search_controller_->GetTabInterface(),
+                           event_flags);
       break;
     }
     case COMMAND_SEND_FEEDBACK: {
       lens::RecordSidePanelMenuOptionSelected(
           lens::LensOverlaySidePanelMenuOption::kSendFeedback);
-      GetLensOverlayController()->FeedbackRequestedByEvent(event_flags);
+      FeedbackRequestedByEvent(lens_search_controller_->GetTabInterface(),
+                               event_flags);
       break;
     }
     default: {

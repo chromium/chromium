@@ -25,7 +25,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
@@ -40,6 +39,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/lens/lens_help_menu_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -2420,17 +2420,6 @@ void LensOverlayController::ActivityRequestedByOverlay(
           WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
-void LensOverlayController::ActivityRequestedByEvent(int event_flags) {
-  // The tab is expected to be in the foreground.
-  if (!tab_->IsActivated()) {
-    return;
-  }
-  tab_->GetBrowserWindowInterface()->OpenGURL(
-      GURL(lens::features::GetLensOverlayActivityURL()),
-      ui::DispositionFromEventFlags(event_flags,
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
-}
-
 void LensOverlayController::AddBackgroundBlur() {
   // We do not blur unless the overlay is currently active and the blur delegate
   // was created.
@@ -2459,19 +2448,7 @@ void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
 }
 
 void LensOverlayController::FeedbackRequestedByOverlay() {
-  chrome::ShowFeedbackPage(
-      tab_->GetContents()->GetLastCommittedURL(),
-      tab_->GetBrowserWindowInterface()->GetProfile(),
-      feedback::kFeedbackSourceLensOverlay,
-      /*description_template=*/std::string(),
-      /*description_placeholder_text=*/
-      l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK_PLACEHOLDER),
-      /*category_tag=*/"lens_overlay",
-      /*extra_diagnostics=*/std::string());
-}
-
-void LensOverlayController::FeedbackRequestedByEvent(int event_flags) {
-  FeedbackRequestedByOverlay();
+  lens::FeedbackRequestedByEvent(tab_, ui::EF_NONE);
 }
 
 void LensOverlayController::GetOverlayInvocationSource(
@@ -2492,17 +2469,6 @@ void LensOverlayController::InfoRequestedByOverlay(
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
           WindowOpenDisposition::NEW_FOREGROUND_TAB));
-}
-
-void LensOverlayController::InfoRequestedByEvent(int event_flags) {
-  // The tab is expected to be in the foreground.
-  if (!tab_->IsActivated()) {
-    return;
-  }
-  tab_->GetBrowserWindowInterface()->OpenGURL(
-      GURL(lens::features::GetLensOverlayHelpCenterURL()),
-      ui::DispositionFromEventFlags(event_flags,
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
 void LensOverlayController::IssueLensRegionRequest(

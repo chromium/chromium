@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_help_menu_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -222,15 +223,18 @@ void LensPreselectionBubble::ExecuteCommand(int command_id, int event_flags) {
   CHECK(lens_overlay_controller_);
   switch (command_id) {
     case COMMAND_MY_ACTIVITY: {
-      lens_overlay_controller_->ActivityRequestedByEvent(event_flags);
+      ActivityRequestedByEvent(lens_overlay_controller_->GetTabInterface(),
+                               event_flags);
       break;
     }
     case COMMAND_LEARN_MORE: {
-      lens_overlay_controller_->InfoRequestedByEvent(event_flags);
+      InfoRequestedByEvent(lens_overlay_controller_->GetTabInterface(),
+                           event_flags);
       break;
     }
     case COMMAND_SEND_FEEDBACK: {
-      lens_overlay_controller_->FeedbackRequestedByEvent(event_flags);
+      FeedbackRequestedByEvent(lens_overlay_controller_->GetTabInterface(),
+                               event_flags);
       break;
     }
     default: {

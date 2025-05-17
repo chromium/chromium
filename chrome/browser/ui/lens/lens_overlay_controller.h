@@ -161,11 +161,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensPage> page);
 
-  // Shows a toast in the side panel with the string provided in `message`. If
-  // the side panel connection has not been established or was reset this is a
-  // no-op.
-  void ShowToastInSidePanel(std::string message);
-
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
     // This is the default state. There should be no performance overhead as
@@ -289,13 +284,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Whether it's possible to capture a screenshot. virtual for testing.
   virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
-  // Called before the lens results panel begins hiding. This is called before
-  // any side panel closing animations begin.
-  void OnSidePanelWillHide(SidePanelEntryHideReason reason);
-
-  // Called when the lens side panel has been hidden.
-  void OnSidePanelHidden();
-
   // Returns the tab interface that that owns the search controller that owns
   // this overlay controller.
   tabs::TabInterface* GetTabInterface();
@@ -311,15 +299,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Hides preselection toast bubble. Used when backgrounding the overlay. This
   // hides the widget associated with the bubble.
   void HidePreselectionBubble();
-
-  // Shows the feedback page.
-  void FeedbackRequestedByEvent(int event_flags);
-
-  // Shows the info page.
-  void InfoRequestedByEvent(int event_flags);
-
-  // Shows My Activity.
-  void ActivityRequestedByEvent(int event_flags);
 
   // Queues a tutorial IPH to be shown if the given URL is eligible. Cancels any
   // queued IPH.
