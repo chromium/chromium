@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "content/browser/loader/keep_alive_request_browsertest_util.h"
 
+#include "base/strings/stringprintf.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/back_forward_cache_util.h"

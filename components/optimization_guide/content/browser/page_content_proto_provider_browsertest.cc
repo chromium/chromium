@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"

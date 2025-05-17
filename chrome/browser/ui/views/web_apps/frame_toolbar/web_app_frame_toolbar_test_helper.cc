@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_policy_container_builder.h"
 
+#include "base/strings/stringprintf.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"

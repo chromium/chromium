@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_tracker.h"

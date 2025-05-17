@@ -5,6 +5,7 @@
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 
 #include <vulkan/vulkan.h>
+
 // vulkan.h includes <X11/Xlib.h> when VK_USE_PLATFORM_XLIB_KHR is defined
 // after https://github.com/KhronosGroup/Vulkan-Headers/pull/534.
 // This defines some macros which break build, so undefine them here.
@@ -21,6 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"

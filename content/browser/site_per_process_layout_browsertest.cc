@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
 #include "build/build_config.h"

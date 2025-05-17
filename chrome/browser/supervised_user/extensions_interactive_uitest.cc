@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"

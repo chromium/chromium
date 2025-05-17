@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"

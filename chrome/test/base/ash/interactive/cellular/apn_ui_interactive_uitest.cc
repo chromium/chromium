@@ -5,6 +5,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"

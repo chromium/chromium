@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

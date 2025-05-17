@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"

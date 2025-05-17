@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/preloading_decider.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"

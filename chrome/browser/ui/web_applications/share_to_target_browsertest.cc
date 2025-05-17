@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"

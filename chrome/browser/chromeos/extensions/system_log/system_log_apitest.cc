@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"

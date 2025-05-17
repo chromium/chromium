@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
 #include "chrome/browser/ui/browser.h"
