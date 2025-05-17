@@ -5,7 +5,6 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 
 #include <string_view>
-#include <tuple>
 
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
@@ -77,21 +76,6 @@ bool ExtractOptions(const std::string& device_id,
 namespace content {
 
 const char kWebContentsCaptureScheme[] = "web-contents-media-stream://";
-
-bool WebContentsMediaCaptureId::operator<(
-    const WebContentsMediaCaptureId& other) const {
-  return std::tie(render_process_id, main_render_frame_id, disable_local_echo) <
-         std::tie(other.render_process_id, other.main_render_frame_id,
-                  other.disable_local_echo);
-}
-
-bool WebContentsMediaCaptureId::operator==(
-    const WebContentsMediaCaptureId& other) const {
-  return std::tie(render_process_id, main_render_frame_id,
-                  disable_local_echo) == std::tie(other.render_process_id,
-                                                  other.main_render_frame_id,
-                                                  other.disable_local_echo);
-}
 
 bool WebContentsMediaCaptureId::is_null() const {
   return (render_process_id < 0) || (main_render_frame_id < 0);

@@ -51,9 +51,10 @@ struct CONTENT_EXPORT DesktopMediaID {
       : type(type), id(id), audio_share(audio_share) {}
 
   // Operators so that DesktopMediaID can be used with STL containers.
-  bool operator<(const DesktopMediaID& other) const;
-  bool operator==(const DesktopMediaID& other) const;
-  bool operator!=(const DesktopMediaID& other) const;
+  friend bool operator==(const DesktopMediaID&,
+                         const DesktopMediaID&) = default;
+  friend auto operator<=>(const DesktopMediaID&,
+                          const DesktopMediaID&) = default;
 
   bool is_null() const { return type == TYPE_NONE; }
   std::string ToString() const;
@@ -69,11 +70,11 @@ struct CONTENT_EXPORT DesktopMediaID {
   Id id = kNullId;
   Id window_id = kNullId;
 
-  // This records whether the desktop share has sound or not.
-  bool audio_share = false;
-
   // This id contains information for WebContents capture.
   WebContentsMediaCaptureId web_contents_id;
+
+  // This records whether the desktop share has sound or not.
+  bool audio_share = false;
 };
 
 }  // namespace content

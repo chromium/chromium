@@ -263,12 +263,6 @@ inline bool operator==(NavigationThrottle::ThrottleAction lhs,
                        const NavigationThrottle::ThrottleCheckResult& rhs) {
   return lhs == rhs.action();
 }
-// Test-only operator!= to enable assertions like:
-//   EXPECT_NE(NavigationThrottle::PROCEED, throttle->WillProcessResponse())
-inline bool operator!=(NavigationThrottle::ThrottleAction lhs,
-                       const NavigationThrottle::ThrottleCheckResult& rhs) {
-  return lhs != rhs.action();
-}
 #endif
 
 }  // namespace content

@@ -14,20 +14,4 @@ MediaPlayerId MediaPlayerId::CreateMediaPlayerIdForTests() {
   return MediaPlayerId(GlobalRenderFrameHostId(), 0);
 }
 
-bool MediaPlayerId::operator==(const MediaPlayerId& other) const {
-  return frame_routing_id == other.frame_routing_id &&
-         player_id == other.player_id;
-}
-
-bool MediaPlayerId::operator!=(const MediaPlayerId& other) const {
-  return frame_routing_id != other.frame_routing_id ||
-         player_id != other.player_id;
-}
-
-bool MediaPlayerId::operator<(const MediaPlayerId& other) const {
-  if (frame_routing_id == other.frame_routing_id)
-    return player_id < other.player_id;
-  return frame_routing_id < other.frame_routing_id;
-}
-
 }  // namespace content
