@@ -17,7 +17,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
 import org.chromium.components.tab_group_sync.TriggerSource;
 
 /**
- * An {@link ObservableSupplier} which manages the total tab count in the archived surface, which
+ * An {@link ObservableSupplier} which manages the total item count in the archived surface, which
  * includes tab counts in the archived {@link TabModel} and any tab groups from the {@link
  * TabGroupSyncService}.
  */
@@ -91,26 +91,26 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
     }
 
     private void updateArchivedTabCount() {
-        int totalTabCount = getArchivedTabGroupTabCount();
+        int totalTabCount = getArchivedTabGroupCount();
         if (mArchivedTabModel != null) {
             totalTabCount += mArchivedTabModel.getCount();
         }
         super.set(totalTabCount);
     }
 
-    private int getArchivedTabGroupTabCount() {
-        int archivedTabGroupTabCount = 0;
+    private int getArchivedTabGroupCount() {
+        int archivedTabGroupCount = 0;
         if (mTabGroupSyncService != null) {
             for (String syncId : mTabGroupSyncService.getAllGroupIds()) {
                 SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
 
                 if (savedTabGroup != null && savedTabGroup.archivalTimeMs != null) {
-                    archivedTabGroupTabCount += savedTabGroup.savedTabs.size();
+                    archivedTabGroupCount += 1;
                 }
             }
         }
 
-        return archivedTabGroupTabCount;
+        return archivedTabGroupCount;
     }
 
     @Override

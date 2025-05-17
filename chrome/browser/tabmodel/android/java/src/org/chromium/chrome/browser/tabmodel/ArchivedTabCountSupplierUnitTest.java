@@ -21,11 +21,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
-
-import java.util.List;
 
 /** Unit tests for {@link ArchivedTabCountSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,10 +55,8 @@ public class ArchivedTabCountSupplierUnitTest {
 
     @Test
     public void testTabModelUpdate() {
-        SavedTabGroupTab savedTab = new SavedTabGroupTab();
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = SYNC_GROUP_ID;
-        savedTabGroup.savedTabs = List.of(savedTab);
         savedTabGroup.archivalTimeMs = System.currentTimeMillis();
 
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID)).thenReturn(savedTabGroup);
@@ -69,17 +64,13 @@ public class ArchivedTabCountSupplierUnitTest {
         when(mTabModel.getCount()).thenReturn(TAB_MODEL_TAB_COUNT);
 
         mArchivedTabModelTabCountSupplier.set(TAB_MODEL_TAB_COUNT);
-        assertEquals(
-                TAB_MODEL_TAB_COUNT + savedTabGroup.savedTabs.size(),
-                mArchivedTabCountSupplier.get().intValue());
+        assertEquals(TAB_MODEL_TAB_COUNT + 1, mArchivedTabCountSupplier.get().intValue());
     }
 
     @Test
     public void testTabGroupSyncUpdate() {
-        SavedTabGroupTab savedTab = new SavedTabGroupTab();
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = SYNC_GROUP_ID;
-        savedTabGroup.savedTabs = List.of(savedTab);
         savedTabGroup.archivalTimeMs = System.currentTimeMillis();
 
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID)).thenReturn(savedTabGroup);
@@ -87,17 +78,13 @@ public class ArchivedTabCountSupplierUnitTest {
         when(mTabModel.getCount()).thenReturn(TAB_MODEL_TAB_COUNT);
 
         mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
-        assertEquals(
-                TAB_MODEL_TAB_COUNT + savedTabGroup.savedTabs.size(),
-                mArchivedTabCountSupplier.get().intValue());
+        assertEquals(TAB_MODEL_TAB_COUNT + 1, mArchivedTabCountSupplier.get().intValue());
     }
 
     @Test
     public void testAllObserversUpdate() {
-        SavedTabGroupTab savedTab = new SavedTabGroupTab();
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = SYNC_GROUP_ID;
-        savedTabGroup.savedTabs = List.of(savedTab);
         savedTabGroup.archivalTimeMs = System.currentTimeMillis();
 
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID)).thenReturn(savedTabGroup);
@@ -105,15 +92,11 @@ public class ArchivedTabCountSupplierUnitTest {
         when(mTabModel.getCount()).thenReturn(INITIAL_TAB_COUNT);
 
         mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
-        assertEquals(
-                INITIAL_TAB_COUNT + savedTabGroup.savedTabs.size(),
-                mArchivedTabCountSupplier.get().intValue());
+        assertEquals(INITIAL_TAB_COUNT + 1, mArchivedTabCountSupplier.get().intValue());
 
         when(mTabModel.getCount()).thenReturn(TAB_MODEL_TAB_COUNT);
 
         mArchivedTabModelTabCountSupplier.set(TAB_MODEL_TAB_COUNT);
-        assertEquals(
-                TAB_MODEL_TAB_COUNT + savedTabGroup.savedTabs.size(),
-                mArchivedTabCountSupplier.get().intValue());
+        assertEquals(TAB_MODEL_TAB_COUNT + 1, mArchivedTabCountSupplier.get().intValue());
     }
 }

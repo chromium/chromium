@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionProperties.DESTROYABLE;
 
 import android.content.res.ColorStateList;
@@ -21,16 +20,12 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -400,18 +395,9 @@ public abstract class TabListEditorAction {
                     tabCount++;
                 }
             } else if (itemId.isTabGroupSyncId()) {
-                Profile profile = assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
-                TabGroupSyncService tabGroupSyncService =
-                        TabGroupSyncServiceFactory.getForProfile(profile);
-                assumeNonNull(tabGroupSyncService);
-
                 String syncId = itemId.getTabGroupSyncId();
                 if (syncId == null) continue;
-
-                SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncId);
-                if (savedTabGroup != null) {
-                    tabCount += savedTabGroup.savedTabs.size();
-                }
+                tabCount += 1;
             } else {
                 assert false : "Unexpected itemId type.";
             }
