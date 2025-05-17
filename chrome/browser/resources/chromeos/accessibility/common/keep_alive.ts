@@ -7,6 +7,8 @@
  * chrome.runtime.getPlatformInfo() every 20 seconds.
  */
 
+import {TestImportManager} from './testing/test_import_manager.js';
+
 export class KeepAlive {
   static instance?: KeepAlive;
   private interval?: number;
@@ -37,3 +39,5 @@ export class KeepAlive {
     this.interval = setInterval(() => this.runHeartbeat(), 20 * 1000);
   }
 }
+
+TestImportManager.exportForTesting(KeepAlive);

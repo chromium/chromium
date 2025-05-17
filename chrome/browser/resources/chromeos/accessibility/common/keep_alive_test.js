@@ -10,7 +10,6 @@ AccessibilityExtensionKeepAliveTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('KeepAlive', '/common/keep_alive.js');
 
     // Mock chrome.runtime.getPlatformInfo()
     chrome = chrome || {};

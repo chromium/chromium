@@ -19,6 +19,8 @@ import '/common/cursors/cursor.js';
 import '/common/cursors/range.js';
 // Required for AccessibilityExtensionEventGeneratorTest.
 import '/common/event_generator.js';
+// Required for AccessibilityExtensionKeepAliveTest.
+import '/common/keep_alive.js';
 
 import {EventHandler} from '/common/event_handler.js';
 
