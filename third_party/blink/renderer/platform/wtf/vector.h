@@ -2504,17 +2504,7 @@ void Vector<T, InlineCapacity, Allocator>::Trace(auto visitor) const
     }
 
     // Inline buffer requires tracing immediately.
-    if (visitor->IsConcurrent()) {
-      // For the concurrent marker we're guaranteed to have an on-heap object
-      // (which means that the unused slots are zeroed), since we don't follow
-      // heap->stack references.
-      internal::TraceInlinedBuffer<Allocator>(visitor, buffer, InlineCapacity);
-    } else {
-      // Trace until size, because inlined storages for on-stack collections are
-      // not zeroed out. This path covers both main-thread marking and the write
-      // barrier.
-      internal::TraceInlinedBuffer<Allocator>(visitor, buffer, size());
-    }
+    internal::TraceInlinedBuffer<Allocator>(visitor, buffer, InlineCapacity);
   }
 }
 
