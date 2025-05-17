@@ -148,6 +148,10 @@ TEST(ContentSecurityPolicyConversionUtilTest,
             network::mojom::blink::CSPHashSource::New(
                 network::mojom::blink::IntegrityAlgorithm::kSha384,
                 Vector<uint8_t>({'c', 'd', 'e'})));
+        source_list.eval_hashes.emplace_back(
+            network::mojom::blink::CSPHashSource::New(
+                network::mojom::blink::IntegrityAlgorithm::kSha384,
+                Vector<uint8_t>({'f', 'g', 'h'})));
       },
       [](CSPSourceList& source_list) { source_list.allow_self = true; },
       [](CSPSourceList& source_list) { source_list.allow_star = true; },

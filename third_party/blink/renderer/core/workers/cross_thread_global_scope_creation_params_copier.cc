@@ -56,12 +56,18 @@ network::mojom::blink::CSPSourceListPtr CSPSourceListIsolatedCopy(
     url_hashes.push_back(CSPHashSourceIsolatedCopy(hash));
   }
 
+  Vector<network::mojom::blink::CSPHashSourcePtr> eval_hashes;
+  for (const auto& hash : in->eval_hashes) {
+    eval_hashes.push_back(CSPHashSourceIsolatedCopy(hash));
+  }
+
   return network::mojom::blink::CSPSourceList::New(
       std::move(sources), CrossThreadCopier<Vector<String>>::Copy(in->nonces),
-      std::move(hashes), std::move(url_hashes), in->allow_self, in->allow_star,
-      in->allow_inline, in->allow_inline_speculation_rules, in->allow_eval,
-      in->allow_wasm_eval, in->allow_wasm_unsafe_eval, in->allow_dynamic,
-      in->allow_unsafe_hashes, in->report_sample, in->report_hash_algorithm);
+      std::move(hashes), std::move(url_hashes), std::move(eval_hashes),
+      in->allow_self, in->allow_star, in->allow_inline,
+      in->allow_inline_speculation_rules, in->allow_eval, in->allow_wasm_eval,
+      in->allow_wasm_unsafe_eval, in->allow_dynamic, in->allow_unsafe_hashes,
+      in->report_sample, in->report_hash_algorithm);
 }
 
 HashMap<network::mojom::blink::CSPDirectiveName,
