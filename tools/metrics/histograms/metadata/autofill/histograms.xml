@@ -1095,6 +1095,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType"
+    enum="AutofilledFieldUserEditingStatusByFieldType"
+    expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    On submission time, this metric emits for every field that was autofilled
+    with Autofill AI, if the filling was accepted or subsequently corrected, and
+    also split the buckets by the Autofill AI type of the field.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.Funnel.{SubmissionState}.{FunnelStage}"
     enum="Boolean" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>

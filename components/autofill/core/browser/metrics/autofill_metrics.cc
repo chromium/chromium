@@ -567,6 +567,13 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
   if (field.filling_product() == FillingProduct::kAutofillAi) {
     base::UmaHistogramEnumeration(
         "Autofill.Ai.EditedAutofilledFieldAtSubmission", editing_metric);
+    if (std::optional<FieldType> ai_type =
+            field.GetAutofillAiServerTypePredictions()) {
+      // Record the type specific UMA statistics.
+      base::UmaHistogramSparse(
+          "Autofill.Ai.EditedAutofilledFieldAtSubmission.ByFieldType",
+          GetFieldTypeUserEditStatusMetric(*ai_type, editing_metric));
+    }
   }
 
   // Record the UMA statistics spliced by the autocomplete attribute value.
