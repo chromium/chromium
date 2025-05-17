@@ -5,4 +5,4 @@ per-file SelectFileDialog.java=finnur@chromium.org
 per-file SelectFileDialog.java=peter@chromium.org
 
 # Clipboard
-per-file Clipboard*.java=gangwu@chromium.org
+per-file Clipboard*.java=ender@chromium.org

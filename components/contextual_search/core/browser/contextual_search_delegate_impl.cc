@@ -224,7 +224,7 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
             }
             internal {
               contacts {
-                email: "gangwu@chromium.org"
+                email: "ender@chromium.org"
               }
               contacts {
                 email: "contextual-search-dev@chromium.org"
@@ -266,7 +266,7 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
             }
             internal {
               contacts {
-                email: "gangwu@chromium.org"
+                email: "ender@chromium.org"
               }
               contacts {
                 email: "contextual-search-dev@chromium.org"
