@@ -76,6 +76,8 @@ class BocaAppHandler : public mojom::PageHandler,
                              ExtendSessionDurationCallback callback) override;
   void RemoveStudent(const std::string& id,
                      RemoveStudentCallback callback) override;
+  void RenotifyStudent(const std::string& id,
+                       RenotifyStudentCallback callback) override;
   void AddStudents(const std::vector<mojom::IdentityPtr> students,
                    AddStudentsCallback callback) override;
   void UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
@@ -176,6 +178,10 @@ class BocaAppHandler : public mojom::PageHandler,
                         ::boca::Session* current_session,
                         std::string id,
                         base::expected<bool, google_apis::ApiErrorCode> result);
+
+  void OnRenotifiedStudent(
+      RenotifyStudentCallback callback,
+      base::expected<bool, google_apis::ApiErrorCode> result);
 
   void OnStudentsAdded(AddStudentsCallback callback,
                        ::boca::Session* current_session,

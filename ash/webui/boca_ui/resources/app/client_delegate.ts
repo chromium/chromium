@@ -341,6 +341,10 @@ export class ClientDelegateFactory {
         return getSpeechRecognitionInstallStateMojomToUI(
             (await pageHandler.getSpeechRecognitionInstallationStatus()).state);
       },
+      renotifyStudent: async (id: string) => {
+        const result = await pageHandler.renotifyStudent(id);
+        return !resultHasError(result);
+      },
     };
   }
 

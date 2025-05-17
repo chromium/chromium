@@ -45,6 +45,7 @@
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/join_session_request.h"
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
+#include "chromeos/ash/components/boca/session_api/renotify_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -439,6 +440,25 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
 
   request->set_student_ids({id});
   session_client_impl_->RemoveStudent(std::move(request));
+}
+
+void BocaAppHandler::RenotifyStudent(const std::string& id,
+                                     RenotifyStudentCallback callback) {
+  auto* session = GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
+    std::move(callback).Run(mojom::RenotifyStudentError::kInvalid);
+    return;
+  }
+
+  std::unique_ptr<RenotifyStudentRequest> request =
+      std::make_unique<RenotifyStudentRequest>(
+          session_client_impl_->sender(), base_url_,
+          GaiaId(user_identity_.gaia_id()), session->session_id(),
+          base::BindOnce(&BocaAppHandler::OnRenotifiedStudent,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  request->set_student_ids({id});
+  session_client_impl_->RenotifyStudent(std::move(request));
 }
 
 void BocaAppHandler::AddStudents(const std::vector<mojom::IdentityPtr> students,
@@ -942,6 +962,17 @@ void BocaAppHandler::OnStudentRemoved(
       }
     }
   }
+}
+
+void BocaAppHandler::OnRenotifiedStudent(
+    RenotifyStudentCallback callback,
+    base::expected<bool, google_apis::ApiErrorCode> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(mojom::RenotifyStudentError::kHTTPError);
+    return;
+  }
+
+  std::move(callback).Run(std::nullopt);
 }
 
 void BocaAppHandler::OnStudentsAdded(

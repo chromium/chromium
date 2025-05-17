@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config, Course, CreateSessionError, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config, Course, CreateSessionError, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, RenotifyStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {PageHandlerRemote, SubmitAccessCodeError} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
@@ -355,6 +355,12 @@ class MockRemoteHandler extends PageHandlerRemote {
 
   override refreshWorkbook() {
     return Promise.resolve();
+  }
+
+  override renotifyStudent(id: string):
+      Promise<{error: RenotifyStudentError | null}> {
+    id;
+    return Promise.resolve({error: null});
   }
 }
 
@@ -868,5 +874,13 @@ suite('ClientDelegateTest', function() {
           refreshWorkbookResponded = true;
         });
         assertTrue(refreshWorkbookResponded);
+      });
+
+  test(
+      'client delegate should translate data for renotify student',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().renotifyStudent('1');
+        assertTrue(result);
       });
 });

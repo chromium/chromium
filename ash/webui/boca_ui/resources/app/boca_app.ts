@@ -407,6 +407,11 @@ export declare interface ClientApiDelegate {
    */
   getSpeechRecognitionInstallationStatus():
       Promise<SpeechRecognitionInstallState>;
+
+  /**
+   * Renotify the student to connect to the session.
+   */
+  renotifyStudent(id: string): Promise<boolean>;
 }
 
 /**

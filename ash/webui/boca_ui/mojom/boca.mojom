@@ -260,7 +260,14 @@ enum UpdateSessionError{
 };
 
 enum RemoveStudentError{
-  // Invalid access code.
+  // Invalid request state.
+  kInvalid,
+  // HTTP request failure.
+  kHTTPError,
+};
+
+enum RenotifyStudentError{
+  // Invalid request state.
   kInvalid,
   // HTTP request failure.
   kHTTPError,
@@ -332,7 +339,9 @@ interface PageHandler {
   ExtendSessionDuration(mojo_base.mojom.TimeDelta extended_duration)
   => (UpdateSessionError? error);
   // Remove student from session.
-  RemoveStudent(string id) => (RemoveStudentError? error);
+  RemoveStudent(string student_id) => (RemoveStudentError? error);
+  // Resend notification to student to join session.
+  RenotifyStudent(string student_id) => (RenotifyStudentError? error);
   // Add students to a session.
   AddStudents(array<Identity> students) => (AddStudentsError? error);
   // Update OnTask config.
