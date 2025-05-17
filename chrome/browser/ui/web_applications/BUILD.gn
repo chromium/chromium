@@ -166,3 +166,20 @@ source_set("app_service_browser_tests") {
     deps += [ "//chrome/browser/ash/fileapi" ]
   }
 }
+
+source_set("pwa_install_page_action") {
+  public = [ "pwa_install_page_action.h" ]
+
+  sources = [
+    "pwa_install_page_action.cc",
+    "pwa_install_page_action.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/views/page_action:page_action",
+    "//chrome/browser/web_applications:web_applications",
+  ]
+}

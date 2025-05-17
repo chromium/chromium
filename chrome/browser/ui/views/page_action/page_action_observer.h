@@ -27,7 +27,6 @@ struct PageActionState {
 };
 
 // PageActionObserver observes for events on a tab's page action.
-// It is scoped to a specific action_id, provided in the constructor.
 class PageActionObserver {
  public:
   explicit PageActionObserver(actions::ActionId action_id);
@@ -35,12 +34,12 @@ class PageActionObserver {
   PageActionObserver(const PageActionObserver&) = delete;
   PageActionObserver& operator=(const PageActionObserver&) = delete;
 
-  // Invoked when the specified page action icon becomes visible/hidden.
+  // Invoked when the page action icon becomes visible/hidden.
   // This includes page actions in their chip state (see comment below).
   virtual void OnPageActionIconShown(const PageActionState& page_action) {}
   virtual void OnPageActionIconHidden(const PageActionState& page_action) {}
 
-  // Invoked when the specified page action chip becomes visible/hidden.
+  // Invoked when the page action chip becomes visible/hidden.
   // If the chip animates, the chip is considered shown at the start of
   // its expanding animation, and considered hidden at the end of its
   // collapsing animation.

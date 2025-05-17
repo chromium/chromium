@@ -353,6 +353,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/web_applications:pwa_install_page_action",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/web_applications",
       "//components/browsing_topics",
