@@ -24,6 +24,7 @@ import java.util.Set;
 @NullMarked
 public final class ToolbarFeatures {
     private static @Nullable Boolean sHeaderCustomizationDisallowedForOem;
+    private static @Nullable Boolean sHeaderCustomizationAllowedForOem;
 
     private static @Nullable Boolean sTabStripLayoutOptimizationEnabledForTesting;
 
@@ -70,6 +71,23 @@ public final class ToolbarFeatures {
                                     Build.MANUFACTURER.toLowerCase(Locale.US));
         }
         if (sHeaderCustomizationDisallowedForOem) {
+            return false;
+        }
+
+        // Determine if app header customization will be allowed for specific OEMs.
+        if (sHeaderCustomizationAllowedForOem == null) {
+            Set<String> customHeadersOemAllowlist = new HashSet<>();
+            String allowlistStr =
+                    ChromeFeatureList.sTabStripLayoutOptimizationOemAllowlist.getDefaultValue();
+            if (!TextUtils.isEmpty(allowlistStr)) {
+                Collections.addAll(customHeadersOemAllowlist, allowlistStr.split(","));
+            }
+            sHeaderCustomizationAllowedForOem =
+                    customHeadersOemAllowlist.isEmpty()
+                            || customHeadersOemAllowlist.contains(
+                                    Build.MANUFACTURER.toLowerCase(Locale.US));
+        }
+        if (!sHeaderCustomizationAllowedForOem) {
             return false;
         }
 

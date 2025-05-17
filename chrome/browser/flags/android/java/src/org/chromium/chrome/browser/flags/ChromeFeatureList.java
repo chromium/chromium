@@ -1419,6 +1419,10 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sTabStateFlatBufferMigrateStaleTabs =
             newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", true);
 
+    public static final StringCachedFeatureParam sTabStripLayoutOptimizationOemAllowlist =
+            newStringCachedFeatureParam(
+                    TAB_STRIP_LAYOUT_OPTIMIZATION, "custom_headers_oem_allowlist", "");
+
     public static final StringCachedFeatureParam sTabStripLayoutOptimizationOemDenylist =
             newStringCachedFeatureParam(
                     TAB_STRIP_LAYOUT_OPTIMIZATION, "custom_headers_oem_denylist", "");
@@ -1507,6 +1511,7 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabGroupListContainment,
                     sTabStateFlatBufferMigrateStaleTabs,
+                    sTabStripLayoutOptimizationOemAllowlist,
                     sTabStripLayoutOptimizationOemDenylist,
                     sTabStripLayoutOptimizationOnExternalDisplay,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
