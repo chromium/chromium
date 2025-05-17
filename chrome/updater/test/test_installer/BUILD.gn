@@ -8,8 +8,6 @@ import("//chrome/updater/branding.gni")
 import("//components/crx_file/crx3.gni")
 
 if (is_win) {
-  import("//build/toolchain/win/toolchain.gni")
-
   executable("test_meta_installer") {
     testonly = true
 
@@ -31,9 +29,7 @@ if (is_win) {
     sources = [
       "$root_build_dir/test_meta_installer.exe",
       "//chrome/tools/build/win/resedit.py",
-      "//chrome/updater/win/signing/sign.py",
       "create_test_installer_gn_wrapper.py",
-      "create_test_standalone_msi_installer_gn_wrapper.py",
       "embed_install_scripts.py",
     ]
 
@@ -193,58 +189,6 @@ if (is_win) {
     deps = [ ":copy_test_msi_installer2.0.0.0" ]
   }
 
-  action("test_standalone_msi_installer") {
-    testonly = true
-    base_dir = "$root_build_dir/test_installer"
-    msi_base_name = "TestSystemMsiInstaller"
-    certificate_path = "//chrome/updater/test/data/test_certificate.pfx"
-    offline_manifest = "//chrome/updater/test/data/offline_manifest.gup"
-    tag_exe = "//chrome/updater/test/data/tag.exe"
-    appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
-    script = "$base_dir/create_test_standalone_msi_installer_gn_wrapper.py"
-    output = "$base_dir/${msi_base_name}StandaloneSetup.exe"
-
-    inputs = [ script ] + get_target_outputs(":copy_test_msi_installer2.0.0.0")
-    outputs = [ output ]
-
-    deps = [
-      ":copy_test_msi_installer2.0.0.0",
-      ":test_installer",
-      "//chrome/updater/tools:tag",
-      "//chrome/updater/win/installer:installer_test",
-    ]
-
-    data = [
-      certificate_path,
-      offline_manifest,
-      tag_exe,
-    ]
-
-    args = [
-      "--in_file",
-      "UpdaterSetup_test.exe",
-      "--out_file",
-      rebase_path(output, root_build_dir),
-      "--certificate_file_path",
-      rebase_path(certificate_path, root_build_dir),
-      "--appid",
-      appid,
-      "--installer_path",
-      rebase_path("$base_dir/${msi_base_name}.msi", root_build_dir),
-      "--manifest_path",
-      rebase_path(offline_manifest, root_build_dir),
-      "--lzma_7z",
-      rebase_path("//third_party/lzma_sdk/bin/win64/7za.exe", root_build_dir),
-      "--signtool",
-      rebase_path("$windows_sdk_path/bin/$windows_sdk_version/x64/signtool.exe",
-                  root_build_dir),
-      "--tagging_exe",
-      rebase_path(tag_exe, root_build_dir),
-      "--manifest_dict_replacements",
-      "{'\${INSTALLER_VERSION}':'2.0.0.0', '\${ARCH_REQUIREMENT}':'x86'}",
-    ]
-  }
-
   group("app_installers") {
     testonly = true
 
@@ -255,12 +199,6 @@ if (is_win) {
       ":test_msi_installer1.0.0.0",
       ":test_msi_installer_crx",
     ]
-
-    # TODO(crbug.com/413081282): cross-compile support, since the resource
-    # editing script does not work on non-Windows platform.
-    if (host_os == "win") {
-      data_deps += [ ":test_standalone_msi_installer" ]
-    }
   }
 } else {
   copy("test_installer") {
