@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="6109251075362363230">ନିକଟରେ ବ୍ୟବହାର କରାଯାଇଥିବା କପି ବ୍ୟତୀତ ସମସ୍ତ ନକଲି ଟାବ ମଧ୍ୟ ବର୍ତ୍ତମାନ ଆର୍କାଇଭ ହେବ।</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
+<translation id="6220820548421939212">ହଁ। ମୁଁ ରାଜି ଅଛି</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="6271513594716432922">ସମସ୍ତ ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ନୂଆ ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ନୂଆ ଗ୍ରୁପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା}}</translation>
 <translation id="7885132941432959125">ଟାବ୍‍କୁ ଡାହାଣକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
+<translation id="788914896430720926">ଆପଣଙ୍କର ନିଷ୍କ୍ରିୟ ବିଭାଗକୁ ବ୍ୟବସ୍ଥିତ ରଖିବେ?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> ଚୟନ କରାଯାଇନାହିଁ</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7961015016161918242">ଆଦୌ ନୁହେଁ</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">ଏହି ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_MONTHS_MANY" /> ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="8820741577754260431">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ସୂଚନା ଦେଖନ୍ତୁ</translation>
+<translation id="883379923675618699">ଆପଣ 3 ମାସ ଧରି ବ୍ୟବହାର କରିନଥିବା ନିଷ୍କ୍ରିୟ ବିଭାଗର ଆଇଟମଗୁଡ଼ିକୁ Chrome ସ୍ୱତଃ ବନ୍ଦ କରିଦିଏ। ଆପଣ ଏହାକୁ ବର୍ତ୍ତମାନ କିମ୍ବା ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="8887921976452567404">ବନ୍ଦ କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଓ ଗ୍ରୁପଗୁଡ଼ିକ ବର୍ତ୍ତମାନର ଟାବ ବିଭାଗ ଓ ଟାବ ଗ୍ରୁପ ବିଭାଗରୁ ପୁଣି ଖୋଲାଯାଇପାରିବ।</translation>
 <translation id="8915916167043355778">ସବୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}other{ଅନ୍ୟ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}}</translation>

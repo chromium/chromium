@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Цената за производов е спуштена од <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
 <translation id="6193448654517602979">Изберете картички</translation>
+<translation id="6220820548421939212">Да. Прифаќам</translation>
 <translation id="6228793724645064692">(оцена за продавницата)</translation>
 <translation id="6271513594716432922">Затвори ги сите неактивни картички</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додајте картичка во нова група}one{Додајте картички во нова група}other{Додајте картички во нова група}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_ONE" /> рецензија}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_MANY" /> рецензија}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_MANY" /> рецензии}}</translation>
 <translation id="7885132941432959125">Премести ја картичката надесно</translation>
+<translation id="788914896430720926">Да се чува делот со неактивни картички уреден?</translation>
 <translation id="7939917283308035850">Не е избрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7961015016161918242">Никогаш</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Вашата активност во картичкиве „Инкогнито“ ќе се отстрани од уредов</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Создадено пред <ph name="NUM_MONTHS_ONE" /> месец}one{Создадено пред <ph name="NUM_MONTHS_MANY" /> месец}other{Создадено пред <ph name="NUM_MONTHS_MANY" /> месеци}}</translation>
 <translation id="8820741577754260431">Гледајте ги попустите на вашите картички</translation>
+<translation id="883379923675618699">Chrome автоматски ќе ги затвора ставките што не сте ги користеле 3 месеци во делот со неактивни картички. Ова може да го исклучите сега или кога сакате во „Поставки“.</translation>
 <translation id="8887921976452567404">Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“.</translation>
 <translation id="8915916167043355778">Затвори ги сите</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Преместете во нов прозорец}one{Преместете во друг прозорец}other{Преместете во друг прозорец}}</translation>

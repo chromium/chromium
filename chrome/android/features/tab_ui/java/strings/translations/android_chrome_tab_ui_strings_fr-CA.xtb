@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Tous les onglets en double seront désormais également archivés, à l'exception de la copie la plus récemment utilisée.</translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
+<translation id="6220820548421939212">Oui. Accepter</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ajouter un onglet au nouveau groupe}one{Ajouter un onglet au nouveau groupe}other{Ajouter des onglets au nouveau groupe}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> avis}one{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}other{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}}</translation>
 <translation id="7885132941432959125">Déplacer l'onglet vers la droite</translation>
+<translation id="788914896430720926">Garder votre section inactive bien rangée?</translation>
 <translation id="7939917283308035850">Couleur non sélectionnée : <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7961015016161918242">Jamais</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera retirée de cet appareil</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>
+<translation id="883379923675618699">Chrome ferme automatiquement les éléments de la section inactive que vous n'avez pas utilisés depuis trois mois. Vous pouvez désactiver cette fonctionnalité en tout temps dans les paramètres.</translation>
 <translation id="8887921976452567404">Vos onglets et groupes fermés peuvent être rouverts à partir de la section Onglets récents et de la section Groupes d'onglets.</translation>
 <translation id="8915916167043355778">Tout fermer</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Déplacer un onglet vers une nouvelle fenêtre}one{Déplacer un onglet vers une autre fenêtre}other{Déplacer des onglets vers une autre fenêtre}}</translation>

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Hierdie item se prys het onlangs van <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /> gedaal</translation>
 <translation id="6109251075362363230">Alle duplikaatoortjies sal nou ook geargiveer word, met die uitsondering van die mees onlangse kopie.</translation>
 <translation id="6193448654517602979">Kies oortjies</translation>
+<translation id="6220820548421939212">Ja. Ek is in</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
 <translation id="6271513594716432922">Maak alle onaktiewe oortjies toe</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Voeg oortjie by nuwe groep}other{Voeg oortjies by nuwe groep}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktiwiteit</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> gradering, <ph name="REVIEWS_COUNT_ONE" /> resensie}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> gradering, <ph name="REVIEWS_COUNT_MANY" /> resensies}}</translation>
 <translation id="7885132941432959125">Skuif oortjie na regs</translation>
+<translation id="788914896430720926">Wil jy jou onaktiewe afdeling netjies hou?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> is nie gekies nie.</translation>
 <translation id="7942349550061667556">Rooi</translation>
 <translation id="7961015016161918242">Nooit</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Jou aktiwiteit in hierdie Incognito-oortjies sal van hierdie toestel af verwyder word</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand gelede geskep}other{<ph name="NUM_MONTHS_MANY" /> maande gelede geskep}}</translation>
 <translation id="8820741577754260431">Sien prysdalings in jou oortjies</translation>
+<translation id="883379923675618699">Chrome sluit outomaties items in die onaktiewe afdeling wat jy vir 3 maande nie gebruik het nie. Jy kan dit nou of enige tyd in Instellings afskakel.</translation>
 <translation id="8887921976452567404">Jou toegemaakte oortjies en groepe kan weer van die Onlangse oortjies-afdeling en die Oortjiegroepe-afdeling af oopgemaak word.</translation>
 <translation id="8915916167043355778">Maak alles toe</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Skuif na ’n nuwe venster}other{Skuif na ’n ander venster}}</translation>

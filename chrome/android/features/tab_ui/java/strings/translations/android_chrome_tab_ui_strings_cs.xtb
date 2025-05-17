@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Cena této položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Všechny duplicitní karty s výjimkou naposledy použité kopie teď budou archivovány.</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
+<translation id="6220820548421939212">Ano</translation>
 <translation id="6228793724645064692">(hodnocení v obchodu)</translation>
 <translation id="6271513594716432922">Zavřít všechny neaktivní karty</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Přidat kartu do nové skupiny}few{Přidat karty do nové skupiny}many{Přidat karty do nové skupiny}other{Přidat karty do nové skupiny}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenze}few{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenze}many{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenze}other{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzí}}</translation>
 <translation id="7885132941432959125">Přesunout kartu doprava</translation>
+<translation id="788914896430720926">Udržovat v neaktivní sekci pořádek?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />, nevybráno</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7961015016161918242">Nikdy</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Vaše aktivita na těchto anonymních kartách bude z tohoto zařízení vymazána</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vytvořeno před <ph name="NUM_MONTHS_ONE" /> měsícem}few{Vytvořeno před <ph name="NUM_MONTHS_MANY" /> měsíci}many{Vytvořeno před <ph name="NUM_MONTHS_MANY" /> měsíce}other{Vytvořeno před <ph name="NUM_MONTHS_MANY" /> měsíci}}</translation>
 <translation id="8820741577754260431">Zobrazit pokles ceny na kartách</translation>
+<translation id="883379923675618699">Chrome automaticky zavírá položky v neaktivní sekci, které jste 3 měsíce nepoužili. Tuto funkci můžete teď nebo kdykoli jindy v Nastavení vypnout.</translation>
 <translation id="8887921976452567404">Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet.</translation>
 <translation id="8915916167043355778">Zavřít vše</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Přesunout do nového okna}few{Přesunout do jiného okna}many{Přesunout do jiného okna}other{Přesunout do jiného okna}}</translation>

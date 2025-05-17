@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Šai precei nesen tika pazemināta cena no <ph name="PREVIOUS_PRICE" /> uz <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Tagad tiks arhivētas arī visas dublētās cilnes, atstājot tikai to, kuru izmantojāt pēdējo.</translation>
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
+<translation id="6220820548421939212">Jā, labi</translation>
 <translation id="6228793724645064692">(veikala vērtējums)</translation>
 <translation id="6271513594716432922">Aizvērt visas neaktīvās cilnes</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktivitāte</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> atsauksme}zero{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmju}one{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksme}other{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmes}}</translation>
 <translation id="7885132941432959125">Pārvietot cilni pa labi</translation>
+<translation id="788914896430720926">Vai vēlaties kārtot neaktīvo sadaļu?</translation>
 <translation id="7939917283308035850">Nav atlasīta: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Sarkana</translation>
 <translation id="7961015016161918242">Nekad</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Jūsu darbības šajās inkognito cilnēs tiks noņemtas no šīs ierīces</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_MONTHS_ONE" /> mēneša}zero{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}one{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēneša}other{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}}</translation>
 <translation id="8820741577754260431">Skatiet cenu kritumu savās cilnēs.</translation>
+<translation id="883379923675618699">Pārlūkā Chrome tiek automātiskas aizvērtas neaktīvās sadaļas cilnes, kuras neesat izmantojis trīs mēnešus. Iestatījumos varat to izslēgt tūlīt vai jebkurā laikā.</translation>
 <translation id="8887921976452567404">Aizvērtās cilnes un grupas var atkārtoti atvērt sadaļās “Nesen atvērtās cilnes” un “Ciļņu grupas”.</translation>
 <translation id="8915916167043355778">Aizvērt visu</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Pārvietot uz jaunu logu}zero{Pārvietot uz citu logu}one{Pārvietot uz citu logu}other{Pārvietot uz citu logu}}</translation>

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">O prezo deste artigo baixou recentemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Agora tamén se arquivarán todas as pestanas duplicadas, a excepción da copia usada máis recentemente.</translation>
 <translation id="6193448654517602979">Selecciona pestanas</translation>
+<translation id="6220820548421939212">Si. Acepto</translation>
 <translation id="6228793724645064692">(valoración da tenda)</translation>
 <translation id="6271513594716432922">Pechar todas as pestanas inactivas</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Actividade</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> (<ph name="REVIEWS_COUNT_ONE" /> recensión)}other{Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> (<ph name="REVIEWS_COUNT_MANY" /> recensións)}}</translation>
 <translation id="7885132941432959125">Mover pestana cara á dereita</translation>
+<translation id="788914896430720926">Queres manter a túa sesión inactiva ordenada?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />, opción non seleccionada</translation>
 <translation id="7942349550061667556">Vermello</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">A túa actividade nestas pestanas do modo de incógnito quitarase deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creouse hai <ph name="NUM_MONTHS_ONE" /> mes}other{Creouse hai <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8820741577754260431">Consulta as baixadas de prezo nas túas pestanas</translation>
+<translation id="883379923675618699">Chrome pechará automaticamente os elementos da sesión inactiva que non usases en tres meses. Podes desactivar esta opción agora ou en calquera momento en Configuración.</translation>
 <translation id="8887921976452567404">As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas.</translation>
 <translation id="8915916167043355778">Pechar todo</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mover a unha nova ventá}other{Mover a outra ventá}}</translation>

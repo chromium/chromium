@@ -2311,6 +2311,7 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
 <translation id="2652747206827086936">Désactiver la carte de fichiers SharePoint et OneDrive pour la page "Nouvel onglet"</translation>
 <translation id="2656559539624760733">Ne pas utiliser pas le Chrome Root Store.</translation>
 <translation id="2658653824183107970">Utiliser l'ancienne mise en œuvre de <ph name="CORS" /> plutôt que la nouvelle mise en œuvre de <ph name="CORS" /></translation>
+<translation id="2659581762274047663">Activer le service <ph name="PRODUCT_NAME" /></translation>
 <translation id="2660846099862559570">Ne jamais utiliser de proxy</translation>
 <translation id="2661628029848851543">L'utilisation des comptes gérés n'est pas limitée</translation>
 <translation id="2664391398878045611">La page "Nouvel onglet" n'affichera pas l'annonce d'espace intermédiaire, même si elle est disponible</translation>
@@ -2948,6 +2949,7 @@ Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottan
 <translation id="3143203373436771188">Ouvrir dans <ph name="BASIC_EDITOR_NAME" /> les documents Office gérés par <ph name="BASIC_EDITOR_NAME" />, auxquels l'utilisateur accède</translation>
 <translation id="3144173889708944482">Si <ph name="PRINTERS_BLOCKLIST" /> est choisi pour <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Ne pas autoriser la synthèse vocale améliorée via le réseau pour Sélectionner pour écouter</translation>
+<translation id="315013437951136266">Activer la fonctionnalité <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">Ne pas afficher par défaut l'icône <ph name="PRODUCT_NAME" /> dans la barre d'outils, mais laisser les utilisateurs choisir</translation>
 <translation id="3152135410085709340">Autoriser l'accès aux fichiers locaux aux URL file:// sur ces sites dans le lecteur PDF</translation>
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
@@ -4139,6 +4141,7 @@ Il s'agit de l'équivalent de la règle <ph name="RELATED_WEBSITE_SETS_ENABLED_P
 Vous pouvez utiliser l'une ou l'autre de ces règles, mais celle-ci sera bientôt abandonnée. La règle <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> est donc à privilégier.
 Ces deux règles ont le même effet sur le comportement du navigateur.</translation>
 <translation id="4016700865356669962">Si cette règle est activée, elle permet aux utilisateurs de se servir de modèles de bureau.  Si elle est désactivée ou si elle n'est pas configurée, ces modèles seront indisponibles.</translation>
+<translation id="4018536413833147396">Autoriser les utilisateurs à activer ou désactiver le paramètre <ph name="IP_PROTECTION_NAME" /> sur leur appareil. Cette fonctionnalité sera activée par défaut.</translation>
 <translation id="4020682745012723568">Les applications Android n'ont pas accès aux cookies transférés vers le profil de l'utilisateur.</translation>
 <translation id="4021684548211845008">Désactiver les sons en mode Sans distractions.</translation>
 <translation id="4025500273782820766">Autoriser les utilisateurs à sélectionner "Toujours autoriser" quand une boîte de dialogue de protocole externe s'affiche pour permettre à l'utilisateur d'ignorer les futures invites de confirmation</translation>
@@ -4739,6 +4742,7 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 
       La valeur de cette règle doit être indiquée en jours.</translation>
 <translation id="4525328580251166229">Contrôle les règles liées au sous-système Bruschetta.</translation>
+<translation id="4528981768990874684">Désactiver la fonctionnalité <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Cette règle est obsolète.</translation>
 <translation id="4531706050939927436">L'installation des applications Android peut être forcée depuis la Console d'administration Google via Google Play. Elles n'utilisent pas cette règle.</translation>
 <translation id="4534500438517478692">Nom de la restriction Android :</translation>
@@ -7596,6 +7600,23 @@ Les fonctionnalités d'IA générative des outils de développement incluent les
 
 Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Cette règle a été supprimée à partir de la version 29 de <ph name="PRODUCT_OS_NAME" />. Veuillez utiliser la règle PresentationScreenDimDelayScale à la place.</translation>
+<translation id="6397424663361748439">Règle permettant de contrôler si la fonctionnalité <ph name="IP_PROTECTION_NAME" /> de la <ph name="PRIVACY_SANDBOX_NAME" /> doit être activée.
+
+<ph name="IP_PROTECTION_NAME" /> est une fonctionnalité qui limite la disponibilité de l'adresse IP d'origine d'un utilisateur pour certaines requêtes réseau tierces effectuées en mode navigation privée, ce qui renforce la protection contre le suivi intersites pendant les sessions de navigation privée.
+
+Si la règle est désactivée, la fonctionnalité <ph name="IP_PROTECTION_NAME" /> sera désactivée et les utilisateurs ne pourront pas l'activer via les paramètres de l'UI.
+Si la règle est activée, la fonctionnalité <ph name="IP_PROTECTION_NAME" /> sera activée et les utilisateurs ne pourront pas la désactiver dans les paramètres de l'UI.
+Si cette règle n'est pas configurée, la fonctionnalité <ph name="IP_PROTECTION_NAME" /> sera activée par défaut et les utilisateurs pourront la contrôler sur leur appareil via les paramètres de l'UI.
+
+Voici quelques points à prendre en compte pour savoir si les entreprises doivent désactiver <ph name="IP_PROTECTION_NAME" /> :
+- Les résolutions DNS ne seront pas effectuées pour les requêtes qui sont acheminées via un proxy, ce qui peut avoir un impact sur la surveillance ou le filtrage basés sur le DNS.
+- Les applications d'entreprise pourraient ne pas fonctionner correctement lorsqu'elles sont utilisées en mode navigation privée si elles dépendent de requêtes vers des domaines (ou des sous-domaines de ces domaines) figurant dans la liste des domaines masqués (<ph name="MASKED_DOMAIN_LIST_URL" />) et exigent que ces requêtes proviennent de plages d'adresses IP spécifiques.
+- Il est possible que le trafic ne soit pas acheminé via un proxy en mode navigation privée dans certaines conditions, par exemple lorsque les utilisateurs lancent le mode navigation privée à partir d'un profil Chrome auquel ils ne sont pas connectés. En général, cette fonctionnalité nécessite que l'utilisateur soit connecté à Chrome avec un compte Google personnel au moment de lancer le mode navigation privée.
+- La liste des domaines de la liste des domaines masqués peut changer avec le temps. Les nouvelles versions sont automatiquement envoyées aux utilisateurs. Pour en savoir plus sur la liste des domaines masqués, consultez <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Pour en savoir plus sur <ph name="IP_PROTECTION_NAME" />, consultez <ph name="IP_PROTECTION_README_URL" />.
+
+La fonctionnalité <ph name="IP_PROTECTION_NAME" /> ne sera pas lancée avant M139.</translation>
 <translation id="6397588391180665797">Signale la configuration du réseau des utilisateurs sur les appareils enregistrés.
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.

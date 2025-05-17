@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Hivi majuzi, bei ya kipengee hiki ilipunguzwa kutoka <ph name="PREVIOUS_PRICE" /> ikawa <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Vichupo vyote vinavyojirudia sasa vitahifadhiwa kwenye kumbukumbu, isipokuwa nakala ulizotumia hivi majuzi.</translation>
 <translation id="6193448654517602979">Chagua vichupo</translation>
+<translation id="6220820548421939212">Ndiyo. Ninakubali</translation>
 <translation id="6228793724645064692">(ukadiriaji wa duka)</translation>
 <translation id="6271513594716432922">Funga vichupo vyote visivyotumika</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Weka kichupo kwenye kikundi kipya}other{Weka vichupo kwenye kikundi kipya}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Shughuli</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, maoni <ph name="REVIEWS_COUNT_ONE" />}other{Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, maoni <ph name="REVIEWS_COUNT_MANY" />}}</translation>
 <translation id="7885132941432959125">Sogeza kichupo kulia</translation>
+<translation id="788914896430720926">Ungependa kusafisha sehemu ya vipengee usivyotumia?</translation>
 <translation id="7939917283308035850">Hujachagua <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Nyekundu</translation>
 <translation id="7961015016161918242">Katu</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Shughuli yako katika vichupo fiche hivi itaondolewa kwenye kifaa hiki</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Kiliundwa mwezi <ph name="NUM_MONTHS_ONE" /> uliopita}other{Kiliundwa miezi <ph name="NUM_MONTHS_MANY" /> iliyopita}}</translation>
 <translation id="8820741577754260431">Angalia puzungo la bei kwenye vichupo vyako</translation>
+<translation id="883379923675618699">Chrome hufunga vipengee kiotomatiki katika sehemu ya vipengee visivyotumika ambavyo hujatumia kwa miezi 3. Unaweza kuzima hali hii sasa au wakati wowote kwenye Mipangilio.</translation>
 <translation id="8887921976452567404">Vichupo na vikundi ulivyofunga vinaweza kufunguliwa upya katika sehemu ya Vichupo vya hivi karibuni na sehemu ya Vikundi vya vichupo.</translation>
 <translation id="8915916167043355778">Funga vyote</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Hamishia kwenye dirisha jipya}other{Hamishia kwenye dirisha jingine}}</translation>

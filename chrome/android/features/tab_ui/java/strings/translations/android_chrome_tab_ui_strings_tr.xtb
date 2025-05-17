@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6109251075362363230">En son kullanılan kopya hariç tüm kopya sekmeler artık arşivlenecek.</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
+<translation id="6220820548421939212">Evet. İstiyorum</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6271513594716432922">Etkin olmayan tüm sekmeleri kapat</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Sekmeyi yeni gruba ekle}other{Sekmeleri yeni gruba ekle}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Etkinlik</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_ONE" /> yorum}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>
 <translation id="7885132941432959125">Sekmeyi sağa taşı</translation>
+<translation id="788914896430720926">Etkin olmayan bölümünüz düzenli tutulsun mu?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> seçili değil</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay önce oluşturuldu}other{<ph name="NUM_MONTHS_MANY" /> ay önce oluşturuldu}}</translation>
 <translation id="8820741577754260431">Sekmelerinizde fiyat düşüşlerini görün</translation>
+<translation id="883379923675618699">Chrome, etkin olmayan bölümdeki ve 3 aydır kullanmadığınız öğeleri otomatik olarak kapatır. Bu özelliği şimdi veya dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="8887921976452567404">Kapattığınız sekmeleri ve grupları, Son sekmeler bölümünden ve Sekme grupları bölümünden yeniden açabilirsiniz.</translation>
 <translation id="8915916167043355778">Tümünü kapat</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Yeni pencereye taşı}other{Diğer pencereye taşı}}</translation>

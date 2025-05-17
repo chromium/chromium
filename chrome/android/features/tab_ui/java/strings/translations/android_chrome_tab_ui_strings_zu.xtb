@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Intengo yale nto isanda kwehla kusuka ku-<ph name="PREVIOUS_PRICE" /> ukuya ku-<ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Wonke amathebhu ayimpinda nawo azofakwa kungobo yomlando, kuyokwenzeka okuhlukile ngamakhophi asanda kusetshenziswa.</translation>
 <translation id="6193448654517602979">Khetha amathebhu</translation>
+<translation id="6220820548421939212">Yebo. Ngingenile</translation>
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6271513594716432922">Vala wonke amathebhu angasebenzi</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Engeza ithebhu eqenjini elisha}one{Engeza amathebhu eqenjini elisha}other{Engeza amathebhu eqenjini elisha}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Umsebenzi</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_ONE" /> isibuyekezo}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_MANY" /> izibuyekezo}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_MANY" /> izibuyekezo}}</translation>
 <translation id="7885132941432959125">Yisa ithebhu kwesokudla</translation>
+<translation id="788914896430720926">Gcina isigaba sakho esingasebenzi sicocekile?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> Ayikhethiwe</translation>
 <translation id="7942349550061667556">Okubomvu</translation>
 <translation id="7961015016161918242">Ngeke</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Umsebenzi wakho kula mathebhu we-Incognito uzosuswa kule divayisi</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Kusungulwe enyangeni engu-<ph name="NUM_MONTHS_ONE" /> edlule}one{Kusungulwe ezinyangeni ezingu-<ph name="NUM_MONTHS_MANY" /> ezedlule}other{Kusungulwe ezinyangeni ezingu-<ph name="NUM_MONTHS_MANY" /> ezedlule}}</translation>
 <translation id="8820741577754260431">Bona ukwehla kwentengo kumathebhu wakho</translation>
+<translation id="883379923675618699">IChrome ivala ngokuzenzakalelayo izinto ezisesigabeni esingasebenzi ongakazisebenzisi ezinyangeni ezi-3. Ungavala lokhu manje noma ngesinye isikhathi kumasethingi.</translation>
 <translation id="8887921976452567404">Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu.</translation>
 <translation id="8915916167043355778">Vala konke</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Iya kuwindi elisha}one{Iya kwelinye iwindi}other{Iya kwelinye iwindi}}</translation>

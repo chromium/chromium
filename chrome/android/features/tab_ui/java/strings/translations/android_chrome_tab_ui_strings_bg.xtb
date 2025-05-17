@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Всички дублиращи се раздели вече ще бъдат архивирани с изключение на най-скоро използваното копие.</translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
+<translation id="6220820548421939212">Да. Ще участвам</translation>
 <translation id="6228793724645064692">(оценка на магазина)</translation>
 <translation id="6271513594716432922">Затваряне на всички неактивни раздели</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Добавяне на раздела към нова група}other{Добавяне на разделите към нова група}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзив}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзива}}</translation>
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
+<translation id="788914896430720926">Искате ли да се поддържа подредена секцията с неактивни раздели?</translation>
 <translation id="7939917283308035850">Не сте избрали: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Червено</translation>
 <translation id="7961015016161918242">Никога</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Активността ви в съответните раздели в режим „инкогнито“ ще бъде премахната от това устройство</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_MONTHS_ONE" /> месец}other{Създадено преди <ph name="NUM_MONTHS_MANY" /> месеца}}</translation>
 <translation id="8820741577754260431">Преглед на пониженията на цените от разделите ви</translation>
+<translation id="883379923675618699">Chrome автоматично затваря елементите в секцията с неактивни раздели, които не сте използвали от 3 месеца. Можете да изключите това сега или по всяко време от настройките.</translation>
 <translation id="8887921976452567404">Затворените раздели и групи могат да бъдат отворени отново от секциите „Скорошни раздели“ и „Групи раздели“.</translation>
 <translation id="8915916167043355778">Затваряне на всички</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Преместване в нов прозорец}other{Преместване в друг прозорец}}</translation>

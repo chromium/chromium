@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Të gjitha skedat dublikata tani do të arkivohen gjithashtu, me përjashtim të kopjes së përdorur më së fundi.</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
+<translation id="6220820548421939212">Po. Jam dakord</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6271513594716432922">Mbyll të gjitha skedat joaktive</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Shto skedën te grupi i ri}other{Shto skedat te grupi i ri}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> koment}other{Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> komente}}</translation>
 <translation id="7885132941432959125">Lëviz skedën djathtas</translation>
+<translation id="788914896430720926">Dëshiron ta mbash të organizuar seksionin tënd joaktiv?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> - nuk është zgjedhur</translation>
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Aktiviteti yt në këto skeda "të fshehta" do të hiqet nga kjo pajisje</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_MONTHS_ONE" /> muaj më parë}other{Krijuar <ph name="NUM_MONTHS_MANY" /> muaj më parë}}</translation>
 <translation id="8820741577754260431">Shiko rëniet e çmimeve në skeda</translation>
+<translation id="883379923675618699">Chrome i mbyll automatikisht artikujt në seksionin joaktiv që nuk i ke përdorur për 3 muaj. Mund ta çaktivizosh këtë tani ose në çdo kohë te "Cilësimet"</translation>
 <translation id="8887921976452567404">Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave".</translation>
 <translation id="8915916167043355778">Mbylli të gjitha</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Zhvendos te një dritare e re}other{Zhvendos te dritarja tjetër}}</translation>

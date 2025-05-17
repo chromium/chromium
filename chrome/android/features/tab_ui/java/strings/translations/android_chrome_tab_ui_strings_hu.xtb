@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Mostantól az összes ismétlődő lap is archiválva lesz a legutóbb használt példány kivételével.</translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
+<translation id="6220820548421939212">Igen, benne vagyok</translation>
 <translation id="6228793724645064692">(az üzlet értékelése)</translation>
 <translation id="6271513594716432922">Az összes inaktív lap bezárása</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lap hozzáadása új csoporthoz}other{Lapok hozzáadása új csoporthoz}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktivitás</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_ONE" /> vélemény}other{Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_MANY" /> vélemény}}</translation>
 <translation id="7885132941432959125">Lap mozgatása jobbra</translation>
+<translation id="788914896430720926">Rendben szeretné tartani az inaktív szakaszt?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />: nincs kiválasztva</translation>
 <translation id="7942349550061667556">Piros</translation>
 <translation id="7961015016161918242">Soha</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Az ezeken az inkognitó lapokon végzett tevékenységei el lesznek távolítva erről az eszközről.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> hónapja létrehozva}other{<ph name="NUM_MONTHS_MANY" /> hónapja létrehozva}}</translation>
 <translation id="8820741577754260431">Láthatja az árcsökkenéseket a megnyitott lapokon</translation>
+<translation id="883379923675618699">A Chrome automatikusan bezárja az inaktív szakaszban található olyan elemeket, amelyeket Ön három hónapja nem használt. Ezt most vagy bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="8887921976452567404">A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban.</translation>
 <translation id="8915916167043355778">Az összes bezárása</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Áthelyezés új ablakba}other{Áthelyezés másik ablakba}}</translation>

@@ -1165,6 +1165,7 @@
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1797117170091578105">‏يمكنك اللعب باستخدام لوحة مفاتيح Chromebook. ويمكنك تخصيص مفاتيح لتنفيذ إجراءات محدَّدة.</translation>
 <translation id="1798335429200675510">‏انقر بزر الماوس الأيمن في مربّع نص لإنشاء مسودة أو تحسين نص حالي، وذلك باستخدام تكنولوجيات الذكاء الاصطناعي من Google. تتوفّر هذه الميزة حاليًا بشكل محدود.</translation>
+<translation id="1799852120691957794">تتعذّر استعادة النوافذ من الجلسة السابقة</translation>
 <translation id="180203835522132923">‏مفتاح البحث + O، ثم W</translation>
 <translation id="1802624026913571222">السكون عند غلق الغطاء
 </translation>
@@ -2358,6 +2359,7 @@
 <translation id="2610374175948698697">يمكنها قراءة الملفات أو المجلدات على جهازك</translation>
 <translation id="2610780100389066815">‏توقيع قائمة الثقة لـ Microsoft</translation>
 <translation id="261114180663074524">‏سجِّل الدخول إلى حسابك على Microsoft ثم أعِد المحاولة.</translation>
+<translation id="2611702650078660078">حدث خطأ</translation>
 <translation id="2611776654555141051">أداة رسم المستطيل</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
 <translation id="261305050785128654">يمكنك السماح للمواقع الإلكترونية بمعرفة اللغات التي تتحدّث بها. وستعرض لك المحتوى بتلك اللغات إن أمكن ذلك.</translation>
@@ -2718,6 +2720,7 @@
 <translation id="2849936225196189499">مهمة</translation>
 <translation id="285033512555869047">مغلقة</translation>
 <translation id="2850541429955027218">إضافة مظهر</translation>
+<translation id="2852045827873867442">يجب توفُّر اتصال بالإنترنت.</translation>
 <translation id="285237063405807022">(جارٍ تحميله)</translation>
 <translation id="2853121255651601031">تم حفظ كلمة المرور.</translation>
 <translation id="2855243985454069333">سيتم حذف السجلّ من جميع الأجهزة التي تمت مزامنتها</translation>
@@ -5430,6 +5433,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • علامة تبويب واحدة مكرّرة</translation>
 <translation id="4780321648949301421">حفظ صفحة باسم...</translation>
 <translation id="4780558987886269159">للعمل</translation>
+<translation id="4781633367688946589">المتابعة إلى جلسة جديدة</translation>
 <translation id="4784349455504343791">يريد <ph name="WEBSITE_ORIGIN" /> استخدام معلومات شخصية من محفظتك الرقمية.</translation>
 <translation id="4785719467058219317">أنت تستخدم مفتاح أمان غير مُسجَّل مع هذا الموقع الإلكتروني</translation>
 <translation id="4785914069240823137">إلغاء الاقتصاص</translation>

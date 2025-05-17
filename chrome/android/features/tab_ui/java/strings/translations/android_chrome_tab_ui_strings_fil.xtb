@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
+<translation id="6220820548421939212">Oo. Sige</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6271513594716432922">Isara ang lahat ng hindi aktibong tab</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Magdagdag ng tab sa bagong grupo}one{Magdagdag ng mga tab sa bagong grupo}other{Magdagdag ng mga tab sa bagong grupo}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> na review}}</translation>
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
+<translation id="788914896430720926">Panatilihing maayos ang iyong seksyon ng mga hindi aktibong item?</translation>
 <translation id="7939917283308035850">Hindi pinili ang <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Maaalis sa device na ito ang iyong aktibidad sa mga tab na Incognito na ito</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ginawa <ph name="NUM_MONTHS_ONE" /> buwan ang nakalipas}one{Ginawa <ph name="NUM_MONTHS_MANY" /> buwan ang nakalipas}other{Ginawa <ph name="NUM_MONTHS_MANY" /> na buwan ang nakalipas}}</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
+<translation id="883379923675618699">Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng 3 buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.</translation>
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>
 <translation id="8915916167043355778">Isara lahat</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Ilipat sa bagong window}one{Ilipat sa ibang window}other{Ilipat sa ibang window}}</translation>

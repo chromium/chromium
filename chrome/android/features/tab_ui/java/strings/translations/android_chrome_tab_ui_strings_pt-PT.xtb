@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
+<translation id="6220820548421939212">Sim. Aceito</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6271513594716432922">Fechar todos os separadores inativos</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> crítica}other{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> críticas}}</translation>
 <translation id="7885132941432959125">Mover separador para a direita</translation>
+<translation id="788914896430720926">Quer manter a sua secção inativa organizada?</translation>
 <translation id="7939917283308035850">Cor <ph name="COLOR_NAME" /> não selecionada</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">A sua atividade nestes separadores de navegação anónima vai ser removida deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_MONTHS_ONE" /> mês}other{Criado há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8820741577754260431">Veja as descidas de preços nos seus separadores.</translation>
+<translation id="883379923675618699">O Chrome fecha automaticamente os itens na secção inativa que não usa há 3 meses. Pode desativar esta funcionalidade agora ou em qualquer altura nas Definições.</translation>
 <translation id="8887921976452567404">É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores.</translation>
 <translation id="8915916167043355778">Fechar tudo</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mover para nova janela}other{Mover para outra janela}}</translation>

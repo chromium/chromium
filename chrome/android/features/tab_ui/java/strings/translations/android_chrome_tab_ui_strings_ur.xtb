@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
 <translation id="6109251075362363230">حال ہی میں سب سے زیادہ مستعمل کاپی کے استثناء کے ساتھ تمام ڈپلیکیٹ ٹیبز کو بھی آرکائیو کیا جائے گا۔</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
+<translation id="6220820548421939212">ہاں۔ میں تیار ہوں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="6271513594716432922">تمام غیر فعال ٹیبز بند کریں</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ٹیب کو نئے گروپ میں شامل کریں}other{ٹیبز کو نئے گروپ میں شامل کریں}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_ONE" /> جائزہ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_MANY" /> جائزے}}</translation>
 <translation id="7885132941432959125">ٹیب کو دائیں منتقل کریں</translation>
+<translation id="788914896430720926">کیا آپ اپنے غیر فعال سیکشن کو صاف ستھرا رکھتے ہیں؟</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> کا انتخاب نہیں کیا گیا</translation>
 <translation id="7942349550061667556">سرخ</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">ان پوشیدگی ٹیبز میں موجود آپ کی سرگرمی اس آلے سے ہٹائی جائے گی</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ماہ پہلے تخلیق کیا گیا}other{<ph name="NUM_MONTHS_MANY" /> ماہ پہلے تخلیق کیا گیا}}</translation>
 <translation id="8820741577754260431">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں</translation>
+<translation id="883379923675618699">‏‫Chrome غیر فعال سیکشن میں موجود ان آئٹمز کو خودکار طور پر بند کر دیتا ہے جنہیں آپ نے 3 ماہ سے استعمال نہیں کیا ہے۔ آپ ترتیبات میں اسے ابھی یا کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="8887921976452567404">آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔</translation>
 <translation id="8915916167043355778">تمام بند کریں</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{نئی ونڈو میں منتقل کریں}other{دوسری ونڈو میں منتقل کریں}}</translation>

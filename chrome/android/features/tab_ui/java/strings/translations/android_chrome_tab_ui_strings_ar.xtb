@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">انخفض مؤخرًا سعر هذا المنتج من <ph name="PREVIOUS_PRICE" /> إلى <ph name="NEW_PRICE" />.</translation>
 <translation id="6109251075362363230">ستتم أرشفة جميع علامات التبويب المكرّرة أيضًا، باستثناء آخر نسخة تم استخدامها.</translation>
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
+<translation id="6220820548421939212">نعم، أريد ذلك</translation>
 <translation id="6228793724645064692">(تقييم المتجر)</translation>
 <translation id="6271513594716432922">إغلاق جميع علامات التبويب غير النشطة</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">النشاط</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />)، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}zero{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}two{مراجعتان (<ph name="REVIEWS_COUNT_MANY" />)، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}few{<ph name="REVIEWS_COUNT_MANY" /> مراجعات، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}many{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}other{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}}</translation>
 <translation id="7885132941432959125">نقل علامة التبويب إلى اليسار</translation>
+<translation id="788914896430720926">هل تريد تنظيم القسم غير النشط؟</translation>
 <translation id="7939917283308035850">لم يتم اختيار اللون <ph name="COLOR_NAME" />.</translation>
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">ستتم إزالة نشاطك في علامات التبويب في وضع التصفُّح المتخفي من هذا الجهاز.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{تم إنشاء المجموعة قبل شهر واحد (<ph name="NUM_MONTHS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_MONTHS_MANY" /> شهر}two{تم إنشاء المجموعة قبل شهرَين (<ph name="NUM_MONTHS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_MONTHS_MANY" /> أشهر}many{تم إنشاء المجموعة قبل <ph name="NUM_MONTHS_MANY" /> شهرًا}other{تم إنشاء المجموعة قبل <ph name="NUM_MONTHS_MANY" /> شهر}}</translation>
 <translation id="8820741577754260431">الاطّلاع على الأسعار المنخفضة في علامات التبويب</translation>
+<translation id="883379923675618699">‏يغلق متصفّح Chrome تلقائيًا علامات التبويب في القسم غير النشط التي لم يتم استخدامها منذ 3 أشهر. يمكنك إيقاف هذه الميزة الآن أو في أي وقت من خلال "الإعدادات".</translation>
 <translation id="8887921976452567404">يمكن إعادة فتح علامات التبويب والمجموعات المغلقة من قسمَي "علامات التبويب الأخيرة" و"مجموعات علامات التبويب".</translation>
 <translation id="8915916167043355778">إغلاق الكل</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{النقل إلى نافذة جديدة}zero{النقل إلى نافذة أخرى}two{النقل إلى نافذة أخرى}few{النقل إلى نافذة أخرى}many{النقل إلى نافذة أخرى}other{النقل إلى نافذة أخرى}}</translation>

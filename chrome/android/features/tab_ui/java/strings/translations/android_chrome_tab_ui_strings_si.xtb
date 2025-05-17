@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
 <translation id="6109251075362363230">මෑතක දී භාවිතා කළ පිටපත ව්‍යතිරේකය හැර, සියලු ම අනුපත් පටිති දැන් ලේඛනාරක්ෂණය කරනු ලැබේ.</translation>
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
+<translation id="6220820548421939212">ඔව්. මම සහභාගි වෙමි</translation>
 <translation id="6228793724645064692">(වෙළඳසැල් ඇගයීම)</translation>
 <translation id="6271513594716432922">සියලුම අක්‍රිය පටිති වසන්න</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{නව කණ්ඩායමට පටිත්ත එක් කරන්න}one{නව කණ්ඩායමට පටිති එක් කරන්න}other{නව කණ්ඩායමට පටිති එක් කරන්න}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">ක්‍රියාකාරකම</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, සමාලෝචන <ph name="REVIEWS_COUNT_ONE" />}one{ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />}other{ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />}}</translation>
 <translation id="7885132941432959125">පටිත්ත දකුණට ගෙන යන්න</translation>
+<translation id="788914896430720926">ඔබේ අක්‍රිය කොටස පිළිවෙලට තබා ගන්න ද?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> තෝරා නැත</translation>
 <translation id="7942349550061667556">රතු</translation>
 <translation id="7961015016161918242">කිසිවිට එපා</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">මෙම අප්‍රකට පටිතිවල ඔබේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{මාස <ph name="NUM_MONTHS_ONE" />ට පෙර තනන ලදි}one{මාස <ph name="NUM_MONTHS_MANY" />ට පෙර තනන ලදි}other{මාස <ph name="NUM_MONTHS_MANY" />ට පෙර තනන ලදි}}</translation>
 <translation id="8820741577754260431">ඔබගේ ටැබවල මිල පහත වැටීම් බලන්න</translation>
+<translation id="883379923675618699">ඔබ මාස 3ක් තිස්සේ භාවිතා නොකළ අක්‍රිය කොටසේ අයිතම Chrome ස්වයංක්‍රීයව වසා දමයි. ඔබට මෙය දැන් හෝ ඕනෑම වේලාවක සැකසීම් තුළ ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="8887921976452567404">ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක.</translation>
 <translation id="8915916167043355778">සියල්ල වසන්න</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{නව කවුළුවකට ගෙන යන්න}one{වෙනත් කවුළුවක් වෙත යන්න}other{වෙනත් කවුළුවක් වෙත යන්න}}</translation>

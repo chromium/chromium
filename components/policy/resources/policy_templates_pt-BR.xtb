@@ -2436,6 +2436,7 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="2652747206827086936">Desativar o card de arquivos do SharePoint e do OneDrive na página "Nova guia"</translation>
 <translation id="2656559539624760733">Não usar a Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usar a implementação legada de <ph name="CORS" /> em vez do novo <ph name="CORS" /></translation>
+<translation id="2659581762274047663">Ativar o serviço <ph name="PRODUCT_NAME" /></translation>
 <translation id="2660846099862559570">Nunca usar um proxy</translation>
 <translation id="2661628029848851543">Todos os usos de contas gerenciadas são permitidos</translation>
 <translation id="2664391398878045611">A página "Nova guia" não vai mostrar o aviso abaixo da caixa de pesquisa, mesmo se ele estiver disponível</translation>
@@ -3083,6 +3084,7 @@ Se a política for definida como desativada ou não for definida, o menu de aces
 <translation id="3143203373436771188">Ao navegar para documentos do Office gerenciados pelo <ph name="BASIC_EDITOR_NAME" />, abri-los no <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3144173889708944482">Se <ph name="PRINTERS_BLOCKLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Todas as impressoras estão disponíveis para os usuários, com exceção dos IDs listados nesta política. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Proibir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para ouvir</translation>
+<translation id="315013437951136266">Ativar o recurso <ph name="IP_PROTECTION_NAME" /></translation>
 <translation id="3150351525324499342">Não mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas por padrão, mas permitir que os usuários escolham</translation>
 <translation id="3152135410085709340">Permitir que os arquivos locais sejam acessados pelos URLs file:// nesses sites no Visualizador de PDF</translation>
 <translation id="3152425128389603870">Disponibilizar e ativar por padrão a área de trabalho unificada</translation>
@@ -4314,6 +4316,7 @@ Ela é equivalente à política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NA
 Qualquer uma dessas políticas pode ser usada, mas esta será descontinuada em breve. Portanto, a <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> é a opção mais recomendada.
 Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="4016700865356669962">Se a política for ativada, os usuários poderão usar modelos de layout do espaço de trabalho.  Se ela for desativada ou deixada sem definição, esses modelos não ficarão disponíveis.</translation>
+<translation id="4018536413833147396">Permitir que os usuários ativem ou desativem a configuração de <ph name="IP_PROTECTION_NAME" /> no dispositivo. O recurso será ativado por padrão.</translation>
 <translation id="4020682745012723568">Os cookies transferidos para o perfil do usuário não podem ser acessados por apps Android.</translation>
 <translation id="4021684548211845008">Desativar sons no "Modo sem distrações".</translation>
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
@@ -4941,6 +4944,7 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 
       Especifique o valor da política em dias.</translation>
 <translation id="4525328580251166229">Controlar políticas relacionadas ao subsistema da Bruschetta.</translation>
+<translation id="4528981768990874684">Desativar o recurso <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Essa política está obsoleta.</translation>
 <translation id="4531706050939927436">Os apps Android podem ser instalados forçadamente a partir do Google Admin Console usando o Google Play. Eles não usam esta política.</translation>
 <translation id="4534500438517478692">Nome de restrição Android:</translation>
@@ -7922,6 +7926,23 @@ Os recursos da IA generativa do DevTools incluem:
 
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Esta política teve o uso suspenso a partir da versão 29 do <ph name="PRODUCT_OS_NAME" />. Em vez dela, use a política PresentationScreenDimDelayScale.</translation>
+<translation id="6397424663361748439">É uma política para controlar se o recurso <ph name="IP_PROTECTION_NAME" /> do <ph name="PRIVACY_SANDBOX_NAME" /> deve ser ativado.
+
+<ph name="IP_PROTECTION_NAME" /> é um recurso que limita a disponibilidade do endereço IP original de um usuário para determinadas solicitações de rede de terceiros feitas durante o modo de navegação anônima. Isso melhora as proteções contra o rastreamento entre sites durante as sessões de navegação anônima.
+
+Se a política for desativada, <ph name="IP_PROTECTION_NAME" /> também será, e os usuários não poderão ativar esse recurso nas configurações da interface.
+Se a política for ativada, <ph name="IP_PROTECTION_NAME" /> também será, e os usuários não poderão desativar esse recurso nas configurações da interface.
+Se a política for deixada sem definição, <ph name="IP_PROTECTION_NAME" /> será ativada por padrão, e os usuários poderão controlar esse recurso no dispositivo nas configurações da interface.
+
+Algumas considerações sobre as empresas desativarem o recurso <ph name="IP_PROTECTION_NAME" />:
+– As buscas DNS não serão realizadas para solicitações que passam por um servidor proxy, o que pode afetar o monitoramento ou a filtragem baseada em DNS.
+– Os aplicativos empresariais poderão apresentar falhas quando usados no modo de navegação anônima se dependerem de solicitações a domínios (ou subdomínios deles) na lista de domínios mascarados (<ph name="MASKED_DOMAIN_LIST_URL" />) e exigirem que essas solicitações venham de intervalos de endereços IP específicos.
+– Em determinadas condições, o tráfego talvez não passe por um servidor proxy no modo de navegação anônima. Por exemplo, quando os usuários abrem esse modo em um perfil do Chrome no qual não fizeram login. Em geral, o recurso exige que o usuário tenha feito login no Chrome com uma Conta do Google pessoal ao iniciar o modo de navegação anônima.
+– A lista de domínios na lista de domínios mascarados pode mudar com o tempo, com as novas versões sendo enviadas aos usuários automaticamente. Para mais informações sobre a lista de domínios mascarados, acesse: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Para mais informações sobre <ph name="IP_PROTECTION_NAME" />, acesse: <ph name="IP_PROTECTION_README_URL" />.
+
+O lançamento de <ph name="IP_PROTECTION_NAME" /> vai acontecer antes da versão M139.</translation>
 <translation id="6397588391180665797">Informar a configuração de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.

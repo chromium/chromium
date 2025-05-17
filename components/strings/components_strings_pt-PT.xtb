@@ -1842,6 +1842,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4165422751765527461">Abre um artigo do Centro de Ajuda num novo separador</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
+<translation id="4169189393773057143">Faça a gestão de cartões de fidelidade ou desative estas sugestões na Carteira do Google</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4171400957073367226">Assinatura de verificação incorreta</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -3429,6 +3430,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="692638818576287323">Veículos comerciais</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chrome<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de busca não a suportar.</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
+<translation id="6935077351544118151">Agora, pode preencher automaticamente cartões de fidelidade da Carteira do Google</translation>
 <translation id="6935082727755903526">Empregos na área de contabilidade e finanças</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="6936976777388162184">Este é um dispositivo integrado e não é possível inscrevê-lo com uma atualização de quiosque e sinalização.</translation>
@@ -4253,6 +4255,7 @@ Detalhes adicionais:
 <translation id="833262891116910667">Realçar</translation>
 <translation id="8339163506404995330">As páginas em <ph name="LANGUAGE" /> não serão traduzidas</translation>
 <translation id="8339275256517065202">Conclua a compra com o Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, obrigatório</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Inscrição de cartão virtual aberta à altura total</translation>

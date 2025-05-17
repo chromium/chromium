@@ -4716,6 +4716,7 @@ Questa policy è stata rimossa nella versione M112.</translation>
 Se la policy viene impostata su Disattivata, i file PDF vengono aperti con il plug-in di PDF, a meno che disattivato dagli utenti.
 
 Se la policy viene configurata, gli utenti non possono modificarla in <ph name="PRODUCT_NAME" />. Se non viene impostata, gli utenti possono scegliere se aprire o meno i file PDF esternamente.</translation>
+<translation id="4413764344717830250">Controlla la visibilità dell'attribuzione dell'estensione nella pagina Nuova scheda per i browser gestiti</translation>
 <translation id="4415603335307944578">Se questa norma è impostata su true o non è configurata, il browser mostrerà di nuovo la pagina di benvenuto al primo avvio successivo a un upgrade del sistema operativo.
 
       Se la norma è impostata su false, il browser non mostrerà di nuovo la pagina di benvenuto in occasione del primo avvio successivo a un upgrade del sistema operativo.</translation>
@@ -6634,6 +6635,11 @@ Per maggiori dettagli, consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_
 <translation id="5670249935663090320">Se la policy viene attivata o se non viene configurata, si attiva <ph name="PRODUCT_NAME" /> e gli utenti possono avviarlo dal menu delle app, dai menu contestuali delle pagine, dai controlli multimediali nei siti web compatibili con Google Cast e (se presente) dall'icona Trasmetti nella barra degli strumenti.
 
 Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> viene disattivato.</translation>
+<translation id="5671392367521500075">Questa policy consente di stabilire la visibilità dell'attribuzione dell'estensione nel piè di pagina della pagina Nuova scheda quando quest'ultima è controllata da un'estensione. Per impostazione predefinita, il piè di pagina nella pagina Nuova scheda mostra informazioni sull'estensione che controlla la pagina Nuova scheda.
+
+Se questa policy viene lasciata vuota o impostata su true, i browser con una pagina Nuova scheda controllata da un'estensione mostreranno il nome dell'estensione e un link a quest'ultima.
+
+Se questa policy viene impostata su false, l'attribuzione dell'estensione verrà nascosta.</translation>
 <translation id="5673254755365419402">Attiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Se la policy viene impostata su True, Google riceverà rapporti sui principali eventi di installazione delle estensioni attivati dalla policy. Se la policy viene impostata su False, non viene acquisito alcun evento. Se la policy non viene impostata, il valore predefinito è True.</translation>
 <translation id="5673780539191375049">Consente di impostare l'intervallo di tempo (in minuti) utilizzato per ricaricare automaticamente il flusso di autenticazione dell'utente su <ph name="PRODUCT_OS_NAME" />. Questa policy viene introdotta per gestire la scadenza di alcuni servizi utilizzati nei flussi di autenticazione quando il dispositivo rimane inattivo per un po' di tempo.

@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Allir tvíteknir flipar verða nú einnig settir í geymslu, fyrir utan það afrit sem síðast var notað.</translation>
 <translation id="6193448654517602979">Velja flipa</translation>
+<translation id="6220820548421939212">Já. Ég vil vera með</translation>
 <translation id="6228793724645064692">(einkunn verslunar)</translation>
 <translation id="6271513594716432922">Loka öllum óvirkum flipum</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Virkni</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn, <ph name="REVIEWS_COUNT_ONE" /> umsögn}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn, <ph name="REVIEWS_COUNT_MANY" /> umsögn}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunnir, <ph name="REVIEWS_COUNT_MANY" /> umsagnir}}</translation>
 <translation id="7885132941432959125">Færa flipa til hægri</translation>
+<translation id="788914896430720926">Halda hlutanum með óvirkum flipum hreinum?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> er ekki valinn</translation>
 <translation id="7942349550061667556">Rauður</translation>
 <translation id="7961015016161918242">Aldrei</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Virknin þín í þessum huliðsflipum verður fjarlægð úr þessu tæki</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Búinn til fyrir <ph name="NUM_MONTHS_ONE" /> mánuði}one{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuði}other{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuðum}}</translation>
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>
+<translation id="883379923675618699">Chrome lokar sjálfkrafa flipum í óvirka hlutanum sem hafa ekki verið notaðir í þrjá mánuði. Þú getur slökkt á þessu núna eða síðar í stillingunum.</translation>
 <translation id="8887921976452567404">Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“.</translation>
 <translation id="8915916167043355778">Loka öllu</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Færa yfir í nýjan glugga}one{Færa yfir í nýjan glugga}other{Færa yfir í nýjan glugga}}</translation>

@@ -1161,6 +1161,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1796588414813960292">As funcións que necesiten reproducir sons non estarán dispoñibles</translation>
 <translation id="1797117170091578105">Xoga usando o teclado do teu Chromebook. Podes personalizar as teclas para realizar accións específicas.</translation>
 <translation id="1798335429200675510">Fai clic co botón dereito nunha caixa de texto para preparar borradores ou puír o traballo que xa teñas feito, con tecnoloxía da IA de Google. Actualmente ten dispoñibilidade limitada.</translation>
+<translation id="1799852120691957794">Non se poden restaurar as ventás da sesión anterior</translation>
 <translation id="180203835522132923">Buscar + O e despois W</translation>
 <translation id="1802624026913571222">Activar suspensión cando se peche a tapa</translation>
 <translation id="1802687198411089702">A páxina non responde. Podes esperar ou saír da páxina.</translation>
@@ -2352,6 +2353,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2610374175948698697">Permiso para ver os ficheiros ou os cartafoles do teu dispositivo</translation>
 <translation id="2610780100389066815">Sinatura da lista de confianza de Microsoft</translation>
 <translation id="261114180663074524">Inicia sesión na túa conta de Microsoft e téntao de novo</translation>
+<translation id="2611702650078660078">Produciuse un erro</translation>
 <translation id="2611776654555141051">Ferramenta de rectángulos</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="261305050785128654">Permite que os sitios web saiban que idiomas falas. Mostraranche contido nesas linguas cando sexa posible.</translation>
@@ -2712,6 +2714,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2849936225196189499">Esencial</translation>
 <translation id="285033512555869047">Pechado</translation>
 <translation id="2850541429955027218">Engadir tema</translation>
+<translation id="2852045827873867442">Cómpre ter conexión a Internet.</translation>
 <translation id="285237063405807022">(cargando)</translation>
 <translation id="2853121255651601031">Gardouse o contrasinal</translation>
 <translation id="2855243985454069333">Elimina o historial de todos os dispositivos sincronizados</translation>
@@ -5429,6 +5432,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplicado</translation>
 <translation id="4780321648949301421">Gardar páxina como...</translation>
 <translation id="4780558987886269159">Para o traballo</translation>
+<translation id="4781633367688946589">Continuar na nova sesión</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quere usar información persoal do teu moedeiro dixital.</translation>
 <translation id="4785719467058219317">Estás utilizando unha chave de seguranza que non está rexistrada neste sitio web</translation>
 <translation id="4785914069240823137">Cancelar recorte</translation>
