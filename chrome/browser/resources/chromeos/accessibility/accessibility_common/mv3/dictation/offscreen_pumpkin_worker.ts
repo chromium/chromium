@@ -49,13 +49,28 @@ class OffscreenPumpkinWorker {
   }
 
   private sendToSandboxedPumpkinTagger_(
-      command: PumpkinConstants.ToPumpkinTagger): void {
+      toPumpkinTagger: PumpkinConstants.ToPumpkinTagger): void {
     if (!this.worker_) {
       throw new Error(
           `Worker not ready, cannot send command to SandboxedPumpkinTagger: ${
-              command.type}`);
+              toPumpkinTagger.type}`);
     }
-    this.worker_.postMessage(command);
+
+    // Deseriazlie ArrayBuffer fields in pumpkinData before sending it to
+    // tagger worker.
+    // 1. Traverse the `pumpkinData` object and convert each value (an array
+    // [v1, v2, ...]) back into a Uint8Array, then extract its underlying
+    // ArrayBuffer.
+    // 2. Reconstruct a new object with the original keys and the deserialized
+    // values.
+    toPumpkinTagger.pumpkinData = toPumpkinTagger.pumpkinData ?
+        Object.fromEntries(
+            Object.entries(toPumpkinTagger.pumpkinData)
+                .map(([key, array]) => [key, new Uint8Array(array).buffer])) as
+            PumpkinConstants.PumpkinData :
+        null;
+
+    this.worker_.postMessage(toPumpkinTagger);
   }
 }
 

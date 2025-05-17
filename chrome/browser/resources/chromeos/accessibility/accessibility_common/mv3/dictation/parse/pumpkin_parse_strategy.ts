@@ -147,8 +147,22 @@ export class PumpkinParseStrategy extends ParseStrategy {
 
   private sendToSandboxedPumpkinTagger_(
       toPumpkinTagger: PumpkinConstants.ToPumpkinTagger): void {
+    // Seriazlie ArrayBuffer fields in pumpkinData to send it to the offscren
+    // document.
+    // 1. Traverse pumpkinData object keys and convert each ArrayBuffer value to
+    // a Uint8Array, then to a plain array [v1, v2, ...], making it
+    // serializable.
+    // 2. Construct a new object with the same keys but serialized values.
+    const pumpkinData = toPumpkinTagger.pumpkinData ?
+        Object.fromEntries(
+            Object.entries(toPumpkinTagger.pumpkinData)
+                .map(([key,
+                       buffer]) => [key, Array.from(new Uint8Array(buffer))])) :
+        null;
+
     this.sendToOffscreen_(
-        OffscreenCommandType.DICTATION_PUMPKIN_SEND, {toPumpkinTagger});
+        OffscreenCommandType.DICTATION_PUMPKIN_SEND,
+        {toPumpkinTagger: {...toPumpkinTagger, pumpkinData}});
   }
 
   /**
