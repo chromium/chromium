@@ -5,7 +5,7 @@ Version: 33.4.8-jre
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
-Security Critical: yes
+Security Critical: no
 Shipped: yes
 
 Description:

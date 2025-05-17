@@ -32,7 +32,6 @@ template("define_autorolled_targets") {
     jar_path =
         "autorolled/cipd/libs/com_google_guava_guava/guava-33.4.8-android.jar"
     output_name = "com_google_guava_guava"
-    supports_android = true
     enable_bytecode_checks = false
     deps = [
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
@@ -46,6 +45,9 @@ template("define_autorolled_targets") {
       jar_excluded_patterns += [ "com/google/common/base/Preconditions.class" ]
       deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
     }
+
+    # Only allow android targets to depend on this if there is no internal alias.
+    supports_android = !defined(guava_android_java)
 
     # Dep needed to fix:
     #   warning: unknown enum constant ReflectionSupport$Level.FULL
