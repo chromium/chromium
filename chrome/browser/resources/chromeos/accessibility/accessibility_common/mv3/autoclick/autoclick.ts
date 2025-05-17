@@ -21,6 +21,8 @@ import '/common/cursors/range.js';
 import '/common/event_generator.js';
 // Required for AccessibilityExtensionKeepAliveTest.
 import '/common/keep_alive.js';
+// Required for AccessibilityExtensionLocalStorageTest.
+import '/common/local_storage.js';
 
 import {EventHandler} from '/common/event_handler.js';
 
