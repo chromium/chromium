@@ -50,7 +50,7 @@ public class DataSharingMetrics {
         int PREVIEW_FETCHED = 10;
         int PREVIEW_FAVICONS_FETCHED = 11;
         int ALL_FAVICONS_FETCHED = 12;
-        int COUNT = 9;
+        int COUNT = 13;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/data_sharing/enums.xml:JoinActionStateAndroid)
