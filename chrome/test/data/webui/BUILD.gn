@@ -360,6 +360,12 @@ grit("resources") {
     "test/data/grit/${grd_prefix}_resources_map.h",
     "${grd_prefix}_resources.pak",
   ]
+
+  grit_flags = [
+    "-E",
+    "add_filepath_to_resource_map=${load_webui_from_disk}",
+  ]
+
   output_dir = "$root_gen_dir/chrome"
 }
 
