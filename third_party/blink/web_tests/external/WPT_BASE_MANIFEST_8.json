@@ -128862,8 +128862,21 @@
        {}
       ]
      ],
-     "stretched-child-in-nested-flexbox.html": [
+     "stretched-child-in-nested-flexbox-001.html": [
       "325d79e7c63f3e301c21f53f8bc97b48ae15c6b5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "stretched-child-in-nested-flexbox-002.html": [
+      "9a00b3c40a35ca6c80965d6266252489e18b665d",
       [
        null,
        [
@@ -426103,14 +426116,6 @@
       "c9f2b41b552855d6cbd049008c314fe4c953464b",
       []
      ]
-    },
-    "smoke": {
-     "tentative": {
-      "almost-soft-navigation-expected.txt": [
-       "f07548e0b0223fc4305eafc9e07c93dcd02b6c8e",
-       []
-      ]
-     }
     }
    },
    "speculation-rules": {
