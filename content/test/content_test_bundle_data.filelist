@@ -2624,6 +2624,8 @@ data/accessibility/event/description-changed-pane-title-expected-android.txt
 data/accessibility/event/description-changed-pane-title.html
 data/accessibility/event/description-changed-subtree-expected-android.txt
 data/accessibility/event/description-changed-subtree.html
+data/accessibility/event/dialog-pane-name-change-expected-android.txt
+data/accessibility/event/dialog-pane-name-change.html
 data/accessibility/event/disabled-state-changed-expected-android.txt
 data/accessibility/event/disabled-state-changed-expected-auralinux.txt
 data/accessibility/event/disabled-state-changed-expected-win.txt

@@ -344,6 +344,14 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
             android_node->GetUniqueId(),
             ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_TEXT);
       }
+
+      // If the name of a dialog changes, its pane title also changes.
+      // Notify the Android framework about the pane title change.
+      if (ui::IsDialog(android_node->GetRole())) {
+        wcax->HandleWindowContentChange(
+            android_node->GetUniqueId(),
+            ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_PANE_TITLE);
+      }
       break;
     }
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:

@@ -824,6 +824,13 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
+    public void test_dialogPaneNameChanged() {
+        performTest("dialog-pane-name-change.html", "dialog-pane-name-change-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/414363686")
     public void test_disabledStateChanged() {
         performTest("disabled-state-changed.html", "disabled-state-changed-expected-android.txt");
     }
