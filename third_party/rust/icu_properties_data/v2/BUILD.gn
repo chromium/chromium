@@ -259,9 +259,6 @@ cargo_crate("lib") {
   cargo_pkg_name = "icu_properties_data"
   cargo_pkg_description = "Data for the icu_properties crate"
   deps = [ "//third_party/rust/icu_provider_baked/v2:lib" ]
-  rustflags = [
-    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
-  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
@@ -276,11 +273,13 @@ cargo_crate("lib") {
     # We don't need code coverage data for any `chromium_crates_io` crates.
     "//build/config/coverage:default_coverage",
 
-    # This is third-party code, so remove `chromium_code` config and instead
-    # add `no_chromium_code` config (a few lines below).
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
     "//build/config/compiler:chromium_code",
   ]
-  _configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  _configs_to_add = []
 
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from

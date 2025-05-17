@@ -45,9 +45,9 @@ cargo_crate("lib") {
     "min_const_generics",
     "nightly_portable_simd",
   ]
-  rustflags = [
-    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
-  ]
+
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  rustflags = [ "-Zallow-features=portable_simd" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
@@ -57,16 +57,21 @@ cargo_crate("lib") {
     # We don't need code coverage data for any `chromium_crates_io` crates.
     "//build/config/coverage:default_coverage",
 
-    # This is third-party code, so remove `chromium_code` config and instead
-    # add `no_chromium_code` config (a few lines below).
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
     "//build/config/compiler:chromium_code",
   ]
-  _configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  _configs_to_add = []
+
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
 
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
   # `gnrt_config.toml`).
-  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
+  _configs_to_remove += []
   _configs_to_add += []
 
   # Applying config changes.

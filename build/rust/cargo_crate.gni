@@ -287,10 +287,6 @@ template("cargo_crate") {
 
       rustc_metadata = _rustc_metadata
 
-      # TODO(crbug.com/40259764): don't default to true. This requires changes to
-      # third_party.toml and gnrt when generating third-party build targets.
-      allow_unsafe = true
-
       configs = []
       configs = _configs
       if (_crate_type == "rlib") {
@@ -302,6 +298,12 @@ template("cargo_crate") {
         rustflags = []
       }
       rustenv = _rustenv
+
+      # TODO(crbug.com/40259764): don't default to true. This requires changes to
+      # third_party.toml and gnrt when generating third-party build targets.
+      allow_unsafe = true
+      rustflags +=
+          [ "-Awarnings" ]  # Suppress other warnings in 3rd-party crates.
 
       if (!defined(build_native_rust_unit_tests)) {
         build_native_rust_unit_tests = _crate_type != "proc-macro"
@@ -385,12 +387,14 @@ template("cargo_crate") {
       }
     }
   } else {
-    not_needed(invoker, "*", [
-                                   "build_root",
-                                   "build_deps",
-                                   "build_sources",
-                                   "build_script_inputs",
-                                   "build_script_outputs",
+    not_needed(invoker,
+               "*",
+               [
+                 "build_root",
+                 "build_deps",
+                 "build_sources",
+                 "build_script_inputs",
+                 "build_script_outputs",
                ])
     not_needed("*")
   }

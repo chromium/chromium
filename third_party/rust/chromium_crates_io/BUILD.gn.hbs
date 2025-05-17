@@ -120,9 +120,6 @@ cargo_crate("{{this.name}}") {
       ]
     {{/if}}
   {{/if}}
-  rustflags = [
-    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
-  ]
   {{#if output_dir}}
   output_dir = "{{output_dir}}"
   {{/if}}
@@ -154,6 +151,15 @@ cargo_crate("{{this.name}}") {
   testonly = true
   {{/if}}
 
+  {{#if detail.extra_kv.allow_unstable_features}}
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  rustflags = [
+    {{#each detail.extra_kv.allow_unstable_features}}
+      "-Zallow-features={{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
 
@@ -162,11 +168,18 @@ cargo_crate("{{this.name}}") {
     # We don't need code coverage data for any `chromium_crates_io` crates.
     "//build/config/coverage:default_coverage",
 
-    # This is third-party code, so remove `chromium_code` config and instead
-    # add `no_chromium_code` config (a few lines below).
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
     "//build/config/compiler:chromium_code",
   ]
-  _configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  _configs_to_add = []
+
+  {{#if detail.extra_kv.allow_unstable_features}}
+  # `gnrt_config.toml` for this crate specifies `allow_unstable_features`.
+  _configs_to_remove += [ "//build/config/compiler:disallow_unstable_features" ]
+  {{/if}}
 
   # Changing (if needed) which configs apply to this specific crate (based on
   # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
