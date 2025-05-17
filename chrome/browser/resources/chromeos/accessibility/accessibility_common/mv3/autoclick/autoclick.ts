@@ -17,6 +17,8 @@ import '/common/rect_util.js';
 // Required for AccessibilityExtensionCursorsTest.
 import '/common/cursors/cursor.js';
 import '/common/cursors/range.js';
+// Required for AccessibilityExtensionEventGeneratorTest.
+import '/common/event_generator.js';
 
 import {EventHandler} from '/common/event_handler.js';
 
