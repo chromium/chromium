@@ -87,6 +87,9 @@ vs-chromium-project.txt
 # VS Code Bazel Extension
 /MODULE.bazel
 /MODULE.bazel.lock
+# Github Copilot
+.github/copilot-instructions.md
+.github/**/user*.md
 
 /_chrome
 /_out
