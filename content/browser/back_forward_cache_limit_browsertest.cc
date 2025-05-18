@@ -194,7 +194,8 @@ const char kPrioritizedPageURL[] = "search.result";
 }  // namespace
 
 class BackForwardCacheLimitForPrioritizedPagesBrowserTest
-    : public BackgroundForegroundProcessLimitBackForwardCacheBrowserTest {
+    : public BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
+      public testing::WithParamInterface<std::string> {
  protected:
   // Mock subclass of ContentBrowserClient that will determine if the url is
   // prioritized by checking against `kPrioritizedPageURL`.
@@ -216,25 +217,59 @@ class BackForwardCacheLimitForPrioritizedPagesBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(kBackForwardCachePrioritizedEntry, "level",
+                              GetParam());
     BackgroundForegroundProcessLimitBackForwardCacheBrowserTest::
         SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeature(
-        content::kBackForwardCachePrioritizedEntry);
+  }
+
+  bool ShouldPrioritizeWhenClearAllUnlessNoEviction() {
+    return GetParam() == "prioritize-unless-should-clear-all-and-no-eviction";
   }
 
  private:
   std::unique_ptr<MockContentBrowserClientWithPrioritizedBackForwardCacheEntry>
       test_client_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-// Test that both prioritized entries and non-prioritized entries would be
-// evicted when pruning with size 0.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
-                       PruneToZero) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+    testing::Values("prioritize-unless-should-clear-all",
+                    "prioritize-unless-should-clear-all-and-no-eviction"));
+
+// Test that both when pruning with size 0, if no other eviction happens, the
+// prioritized entry would be evicted.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+                       PruneToZero_NoOtherEvictionHappens) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // We need at least 4 entries in the BFCache list for this test.
+  // We need at least 1 entries in the BFCache list for this test.
+  CHECK_GE(kBackForwardCacheSize, 1u);
+
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+
+  // Now the BFCache entry list is: [pp, b].
+  // Prune the BFCache entries to 0.
+  web_contents()->GetController().GetBackForwardCache().Prune(0, kPruneReason);
+  // All the entries should be evicted
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
+}
+
+// Test that both when pruning with size 0, if there is another entry evicted,
+// the prioritized entry would be:
+// - evicted if the level is prioritize-unless-should-clear-all
+// - not evicted if the level is
+// prioritize-unless-should-clear-all-and-no-eviction.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+                       PruneToZero_OtherEvictionHappens) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // We need at least 2 entries in the BFCache list for this test.
   CHECK_GE(kBackForwardCacheSize, 2u);
 
   ASSERT_TRUE(NavigateToURL(
@@ -247,16 +282,24 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [a, pp, b].
   // Prune the BFCache entries to 0.
   web_contents()->GetController().GetBackForwardCache().Prune(0, kPruneReason);
-  // All the entries should be evicted
-  for (size_t i = 0; i < 2; ++i) {
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  if (ShouldPrioritizeWhenClearAllUnlessNoEviction()) {
+    // If the level is prioritize-unless-should-clear-all-and-no-eviction, the
+    // prioritized entry should be restored since the some other eviction
+    // happens.
+    ExpectRestored(FROM_HERE);
+  } else {
+    // Otherwise the prioritized entry should be evicted as well.
     ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
   }
+  // The non-prioritized entry should always be evicted.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
 }
 
 // Test that when pruning with a positive number size, the last prioritized
 // entry outside the limit will not be evicted.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
                        PruneToNonZero_PrioritizedEntryOutsideLimit) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -296,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
 
 // Test that when pruning with a positive number size, the last prioritized
 // entry inside the limit should be counted as the regular cache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
                        PruneToNonZero_PrioritizedEntryInsideLimit) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -323,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
 // Test that when pruning with a positive number size while there is already an
 // old prioritized entry kept in cache before, it will be replaced by the newer
 // prioritized entry.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
                        PruneToNonZeroTwice) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -382,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
 
 // Test that the prioritized BFCache entry will not be evicted even when another
 // entry is stored and exceeds the limit.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
                        CacheLimitReached) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
