@@ -56,11 +56,6 @@ String LayoutThemeMobile::ExtraDefaultStyleSheet() {
       LayoutThemeDefault::ExtraDefaultStyleSheet() +
       UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS) +
       UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS);
-  // This can't check for origin trials, unfortunately.
-  if (HTMLSelectElement::CustomizableSelectEnabledNoDocument()) {
-    stylesheet = stylesheet + UncompressResourceAsASCIIString(
-                                  IDR_UASTYLE_CUSTOMIZABLE_SELECT_LINUX_CSS);
-  }
   return stylesheet;
 }
 
