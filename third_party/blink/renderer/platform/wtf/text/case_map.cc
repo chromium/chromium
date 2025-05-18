@@ -160,6 +160,7 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
 const char* CaseMap::Locale::turkic_or_azeri_ = "tr";
 const char* CaseMap::Locale::greek_ = "el";
 const char* CaseMap::Locale::lithuanian_ = "lt";
+const char* CaseMap::Locale::dutch_ = "nl";
 
 CaseMap::Locale::Locale(const AtomicString& locale) {
   // Use the more optimized code path most of the time.
@@ -172,6 +173,8 @@ CaseMap::Locale::Locale(const AtomicString& locale) {
   //
   // Only Turkic (tr and az) languages, Greek and Lithuanian require
   // locale-specific uppercasing rules.
+  //
+  // Only Dutch language requires locale-specific titlecasing rules.
   if (LocaleIdMatchesLang(locale, "tr") || LocaleIdMatchesLang(locale, "az"))
       [[unlikely]] {
     case_map_locale_ = turkic_or_azeri_;
@@ -179,6 +182,8 @@ CaseMap::Locale::Locale(const AtomicString& locale) {
     case_map_locale_ = greek_;
   } else if (LocaleIdMatchesLang(locale, "lt")) [[unlikely]] {
     case_map_locale_ = lithuanian_;
+  } else if (LocaleIdMatchesLang(locale, "nl")) [[unlikely]] {
+    case_map_locale_ = dutch_;
   } else {
     case_map_locale_ = nullptr;
   }

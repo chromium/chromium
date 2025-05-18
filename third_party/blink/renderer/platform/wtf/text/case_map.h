@@ -33,6 +33,7 @@ class WTF_EXPORT CaseMap {
     static const char* turkic_or_azeri_;
     static const char* greek_;
     static const char* lithuanian_;
+    static const char* dutch_;
 
     friend class CaseMap;
   };

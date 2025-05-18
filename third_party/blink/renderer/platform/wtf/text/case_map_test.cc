@@ -63,6 +63,10 @@ static struct CaseMapTestData {
     {u"xi\u0307z", "lt", u"xi\u0307z", u"XIZ", u"Xi\u0307z", {}, {{3, 2}}},
     // Lithuanian. Lowercasing can make the string longer.
     {u"\u00CC", "lt", u"\u0069\u0307\u0300", u"\u00CC", u"\u00CC", {{1, 3}}},
+    // Dutch.
+    {u"ij", "nl", u"ij", u"IJ", u"IJ"},
+    {u"ijsland", "nl", u"ijsland", u"IJSLAND", u"IJsland"},
+    {u"aij", "nl", u"aij", u"AIJ", u"Aij"},
     // Mix of longer ones and shorter ones.
     {u"\u00DFi\u0307",
      "lt",
@@ -453,6 +457,12 @@ TEST(CaseMapTest, ToTitleWithPreviousCharacter) {
   String input5 = String::FromUTF8("abc");
   String result5 = de_case_map.ToTitle(input5, nullptr, u'\u00DF');
   EXPECT_EQ(result5, String::FromUTF8("abc"));
+
+  CaseMap nl_case_map(AtomicString("nl"));
+
+  String input6 = String::FromUTF8("ja");
+  String result6 = nl_case_map.ToTitle(input6, nullptr, u'i');
+  EXPECT_EQ(result6, String::FromUTF8("ja"));
 }
 
 }  // namespace WTF
