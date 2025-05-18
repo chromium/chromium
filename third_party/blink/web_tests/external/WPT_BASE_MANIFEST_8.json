@@ -146889,7 +146889,7 @@
        ]
       ],
       "conic-gradient-001.html": [
-       "37e41094fb28a03d3dbbcd6e88c0c36e1e520b62",
+       "949f955e552d875f6dd8cfade934cae2442332b9",
        [
         null,
         [
@@ -146898,7 +146898,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             40000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "css-color-4-colors-default-to-oklab-gradient.html": [
@@ -146931,7 +146947,7 @@
        ]
       ],
       "gradient-analogous-missing-components-001.html": [
-       "0bfd7bb615f7f8d2e5b8b1b1ce11deb3643121d9",
+       "53f14e857c77e397666b135526f576b43d03c41f",
        [
         null,
         [
@@ -146940,11 +146956,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             40000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "gradient-analogous-missing-components-002.html": [
-       "96038650136fb48d49c3951c2c4433d5fe205650",
+       "881ba723f9153021465535df502b9d18091a34f4",
        [
         null,
         [
@@ -146957,7 +146989,7 @@
        ]
       ],
       "gradient-analogous-missing-components-003.html": [
-       "c4c8995c1ef840f7f42424743643d2aedfd62270",
+       "c97571f54b98be03dfa9cec630b65d6db5763b54",
        [
         null,
         [
@@ -146966,7 +146998,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             40000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "gradient-analogous-missing-components-004.html": [
@@ -148374,7 +148422,7 @@
        ]
       ],
       "gradient-single-stop-none-interpolation.html": [
-       "14cd9d763021800a8c4c2898c770bc4015a88f92",
+       "449bde6e25aaaeca8c9072a12295e79bfb0b0236",
        [
         null,
         [
@@ -149980,7 +150028,7 @@
       ]
      },
      "infinite-radial-gradient-refcrash.html": [
-      "a3a1e7fb069d311162c5cfa427125bac524ffaa2",
+      "a150b619116be7b2c3917347a6794da65b39e9a2",
       [
        null,
        [
@@ -149989,7 +150037,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "linear-gradient-1.html": [
@@ -150155,7 +150219,7 @@
       ]
      ],
      "multiple-position-color-stop-radial.html": [
-      "4b4fd95c4ec21307eee1e2f287f1b0db1d6d1490",
+      "1cb8c5ce03968b283b58bbc1f4d0a92969cf46e5",
       [
        null,
        [
@@ -150164,7 +150228,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-conic-2.html": [
@@ -150255,7 +150335,7 @@
       ]
      ],
      "normalization-linear-2.html": [
-      "e3feeeb49a650beab8783d79ff8003ac011d3842",
+      "9f914cd1240727f367d4607fa158f55be1bb4872",
       [
        null,
        [
@@ -150264,11 +150344,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-linear-degenerate.html": [
-      "26647290fb4e891ebe1fa667687ac7cf0f1c3eed",
+      "c485f111a1f26605d12a80d33e0c1fc6f380892e",
       [
        null,
        [
@@ -150277,11 +150373,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-linear.html": [
-      "e46645631afa45fc031ffc5fb092d7b6c1e7e660",
+      "8a4e74ddab383beaaf6b8c420da140034ea0c14f",
       [
        null,
        [
@@ -150290,11 +150402,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-radial-2.html": [
-      "5ea50a5e035df1807db83ed5a1242253425fc797",
+      "a7ae26865f8f616d773f4cb1f17d3e682b3d5690",
       [
        null,
        [
@@ -150303,11 +150431,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-radial-3.html": [
-      "927917ced606cca63ace976c23943fcecab5db64",
+      "c6fcfa8888c7fe933d26f3e5fdaa306871b82bca",
       [
        null,
        [
@@ -150316,11 +150460,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-radial-4.html": [
-      "e9d948f062ec70e3e2c73a5211a770facd23b12d",
+      "49a6dbf6a9615249178e0638087ecab915ef40aa",
       [
        null,
        [
@@ -150329,11 +150489,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-radial-degenerate.html": [
-      "4fff3ac909a04779a36310fb19c002c6b75d2d3a",
+      "04f04c40bb533d1e42fba31ceedd0dca29b6007d",
       [
        null,
        [
@@ -150342,11 +150518,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "normalization-radial.html": [
-      "6a510aa52f38a46d91114b5bc0fc3f8b19156097",
+      "e8bab92afb46a43c1b14afd7f0c24371b04f72f2",
       [
        null,
        [
@@ -150355,7 +150547,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "object-fit-contain-png-001c.html": [
@@ -153591,7 +153799,7 @@
       ]
      ],
      "tiled-gradients.html": [
-      "fdafa1fe99f0db25cca55ce3c13787803e138b49",
+      "46cc842648138b30274b5ee3f18ce7c636e37462",
       [
        null,
        [
@@ -153607,11 +153815,11 @@
           [
            [
             0,
-            255
+            1
            ],
            [
             0,
-            564
+            40000
            ]
           ]
          ]
