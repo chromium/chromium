@@ -193,14 +193,13 @@ class ApiTests extends ApiTestFixtureBase {
   async testCreateTabFailsWithUnsupportedScheme() {
     assertTrue(!!this.host.createTab);
 
-    this.assertCreateTabWithUnsupportedSchemeFails('chrome://settings');
-    this.assertCreateTabWithUnsupportedSchemeFails('ftps://www.google.com');
-    this.assertCreateTabWithUnsupportedSchemeFails(
-        'chrome-extension://www.google.com');
-    this.assertCreateTabWithUnsupportedSchemeFails('mailto:user@google.com');
-    this.assertCreateTabWithUnsupportedSchemeFails(
+    this.assertCreateTabFails('chrome://settings');
+    this.assertCreateTabFails('ftps://www.google.com');
+    this.assertCreateTabFails('chrome-extension://www.google.com');
+    this.assertCreateTabFails('mailto:user@google.com');
+    this.assertCreateTabFails(
         'data:text/html;charset=utf-8,<html>Hello World</html>');
-    this.assertCreateTabWithUnsupportedSchemeFails('file:///tmp/test.html');
+    this.assertCreateTabFails('file:///tmp/test.html');
   }
 
   async testCreateTabInBackground() {
@@ -227,6 +226,13 @@ class ApiTests extends ApiTestFixtureBase {
 
     await this.advanceToNextStep();
     this.host.setAudioDucking(false);
+  }
+
+  async testCreateTabFailsIfNotActive() {
+    assertTrue(!!this.host.closePanel);
+    assertTrue(!!this.host.createTab);
+    await this.closePanelAndWaitUntilInactive();
+    this.assertCreateTabFails(location.href);
   }
 
   async testOpenGlicSettingsPage() {
@@ -295,6 +301,15 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(0, suggestions.suggestions.length);
   }
 
+  async testGetZeroStateSuggestionsFailsWhenHidden() {
+    assertTrue(!!this.host.getZeroStateSuggestionsForFocusedTab);
+    assertTrue(!!this.host.closePanel);
+    await this.closePanelAndWaitUntilInactive();
+    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
+    assertTrue(!!suggestions);
+    assertEquals(0, suggestions.suggestions.length);
+  }
+
   async testGetFocusedTabState() {
     assertTrue(!!this.host.getFocusedTabState);
     const sequence = observeSequence(this.host.getFocusedTabState());
@@ -356,6 +371,53 @@ class ApiTests extends ApiTestFixtureBase {
         focus3.hasFocus.tabData.url.endsWith('glic/test.html'),
         `url=${focus3.hasFocus.tabData.url}`);
     assertFalse(!!focus3.hasNoFocus);
+  }
+
+  async testGetFocusedTabStateV2WithNavigationWhenInactive() {
+    // Initial state.
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    await this.closePanelAndWaitUntilInactive();
+    const sequence = observeSequence(this.host.getFocusedTabStateV2());
+    const focus = await sequence.next();
+    assertTrue(!!focus.hasFocus);
+    assertTrue(
+        focus.hasFocus.tabData.url.endsWith('glic/test.html'),
+        `url=${focus.hasFocus.tabData.url}`);
+    assertFalse(!!focus.hasNoFocus);
+
+    await this.closePanelAndWaitUntilInactive();
+
+    // After we hide, two navigations will occur. The second in a new tab.
+    await this.advanceToNextStep();
+
+    const focus2 = await runUntil(async () => {
+      const nextFocus = await sequence.next();
+
+      // After a navigation occurs in a new tab, there could first exist a
+      // transitory states where the focus is not yet available, is empty, or
+      // still previous page.
+      if (!nextFocus || !!nextFocus.hasNoFocus || !nextFocus.hasFocus) {
+        return undefined;
+      }
+
+      const focused_url = nextFocus.hasFocus.tabData.url;
+      if (focused_url === '' ||
+          focused_url.endsWith('scrollable_page_with_content.html')) {
+        return undefined;
+      }
+      return nextFocus;
+    });
+
+    // Final state, after the tab is fully loaded.
+    assertFalse(
+        !!focus2.hasFocus &&
+        focus2.hasFocus.tabData.url.endsWith(
+            'scrollable_page_with_content.html'));
+    assertTrue(!!focus2.hasFocus);
+    assertTrue(
+        focus2.hasFocus.tabData.url.endsWith('glic/test.html'),
+        `url=${focus2.hasFocus.tabData.url}`);
+    assertFalse(!!focus2.hasNoFocus);
   }
 
   async testGetFocusedTabStateV2BrowserClosed() {
@@ -552,6 +614,23 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
   }
 
+  async testGetUserProfileInfoDefersWhenInactive() {
+    assertTrue(!!this.host.getUserProfileInfo);
+    assertTrue(!!this.host.closePanel);
+    await this.closePanelAndWaitUntilInactive();
+    const promise = this.host.getUserProfileInfo();
+    try {
+      await waitFor(promise, 200);
+      // We should have thrown here as the promise should not resolve until
+      // advancing to the next step.
+      assertTrue(false);
+    } catch {
+    }
+    await this.advanceToNextStep();
+    const profileInfo = await promise;
+    assertEquals('glic-test@example.com', profileInfo.email);
+  }
+
   async testRefreshSignInCookies() {
     assertTrue(!!this.host.refreshSignInCookies);
 
@@ -647,6 +726,21 @@ class ApiTests extends ApiTestFixtureBase {
       assertEquals(
           ScrollToErrorReason.TAB_CONTEXT_PERMISSION_DISABLED,
           (e as ScrollToError).reason);
+      return;
+    }
+    assertTrue(false, 'scrollTo should have thrown an error');
+  }
+
+  async testScrollToFailsWhenInactive() {
+    assertTrue(!!this.host.scrollTo);
+    assertTrue(!!this.host.closePanel);
+    await this.closePanelAndWaitUntilInactive();
+    try {
+      await this.host.scrollTo(
+          {selector: {exactText: {text: 'Abracadabra'}}, highlight: true});
+    } catch (e) {
+      assertEquals(
+          ScrollToErrorReason.NOT_SUPPORTED, (e as ScrollToError).reason);
       return;
     }
     assertTrue(false, 'scrollTo should have thrown an error');
@@ -834,13 +928,19 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  private async assertCreateTabWithUnsupportedSchemeFails(url: string) {
+  private async assertCreateTabFails(url: string) {
     assertTrue(!!this.host.createTab);
     try {
       await this.host.createTab(url, {openInBackground: false});
     } catch (e) {
       assertEquals('createTab: failed', (e as Error).message);
     }
+  }
+
+  private async closePanelAndWaitUntilInactive() {
+    assertTrue(!!this.host.closePanel);
+    await this.host.closePanel();
+    await observeSequence(this.host.panelActive()).waitForValue(false);
   }
 }
 

@@ -541,6 +541,14 @@ const base::FeatureParam<bool> kGlicPageContextEligibilityAllowNoMetadata{
 BASE_FEATURE(kGlicUnloadOnClose,
              "GlicUnloadOnClose",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicApiActivationGating,
+             "GlicApiActivationGating",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicGetUserProfileInfoApiActivationGating,
+             "GlicGetUserProfileInfoApiActivationGating",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Force Privacy Guide to be available even if it would be unavailable

@@ -172,7 +172,8 @@ class GlicApiTest : public NonInteractiveGlicTest {
           }},
          {features::kGlicScrollTo, {}},
          {features::kGlicUserResize, {}},
-         {features::kGlicClosedCaptioning, {}}},
+         {features::kGlicClosedCaptioning, {}},
+         {features::kGlicApiActivationGating, {}}},
         /*disabled_features=*/
         {
             features::kGlicWarming,
@@ -335,6 +336,7 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
               {features::kGlicPreLoadingTimeMs.name, "20"},
               {features::kGlicMinLoadingTimeMs.name, "40"},
           }},
+         {features::kGlicApiActivationGating, {}},
          {contextual_cueing::kGlicZeroStateSuggestions, {}}},
         /*disabled_features=*/
         {
@@ -713,6 +715,12 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabByClickingOnLink) {
   }));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabFailsIfNotActive) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
 
@@ -812,6 +820,15 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
+                       testGetZeroStateSuggestionsFailsWhenHidden) {
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestions(_, _, _))
+      .Times(0);
+
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
   ExecuteJsTest();
 }
@@ -838,6 +855,29 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 
   // Confirm that the observer is notified through getFocusedTabState that due
   // to a page navigation in a new tab, a new tab has gained focus.
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testGetFocusedTabStateV2WithNavigationWhenInactive) {
+  // Confirm that the observer is notified through getFocusedTabState of the
+  // initial state, i.e. the first page navigation. It should then hide.
+  ExecuteJsTest();
+
+  // Navigate to another page in the existing tab.
+  RunTestSequence(NavigateWebContents(
+      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
+                     "/scrollable_page_with_content.html")));
+
+  // Open a new tab, navigate to a another page, and open the glic window.
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab,
+                         InProcessBrowserTest::embedded_test_server()->GetURL(
+                             "/glic/test.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached,
+                     GlicInstrumentMode::kHostAndContents));
+
+  // Confirm that the observer only notified of this last state.
   ContinueJsTest();
 }
 
@@ -904,6 +944,14 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetUserProfileInfo) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testGetUserProfileInfoDefersWhenInactive) {
+  ExecuteJsTest();
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testRefreshSignInCookies) {
   ExecuteJsTest();
 }
@@ -946,6 +994,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testScrollToFindsTextNoTabContextPermission) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFailsWhenInactive) {
   ExecuteJsTest();
 }
 
