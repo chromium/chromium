@@ -70,4 +70,30 @@ template("define_override_androidx_targets") {
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
+
+  android_library("pdf_cherry_pick_crbug_394147799_java") {
+    resources_package = "androidx.pdf"
+    sources = [
+      "local_modifications/pdf/java/androidx/pdf/viewer/fragment/PdfViewerFragment.kt",
+
+      # Need to include this due to "internal" visibilty.
+      "local_modifications/pdf/java/androidx/pdf/viewer/fragment/insets/TranslateInsetsAnimationCallback.kt",
+    ]
+
+    jar_excluded_patterns = [ "*TranslateInsetsAnimationCallback*" ]
+
+    deps = [
+      ":androidx_annotation_annotation_jvm_java",
+      ":androidx_core_core_java",
+      ":androidx_fragment_fragment_ktx_java",
+      ":androidx_pdf_pdf_viewer_fragment_java",
+      ":androidx_pdf_pdf_viewer_java",
+      "//third_party/android_deps:material_design_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+      "//third_party/androidx:androidx_fragment_fragment_java",
+      "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
+      "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_android_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
 }

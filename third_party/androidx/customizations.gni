@@ -164,6 +164,11 @@ template("androidx_android_aar_prebuilt") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
     }
+
+    if (target_name == "androidx_pdf_pdf_viewer_fragment_java") {
+      jar_excluded_patterns =
+          [ "androidx/pdf/viewer/fragment/PdfViewerFragment*" ]
+    }
   }
 }
 
