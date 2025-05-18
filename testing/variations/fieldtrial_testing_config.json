@@ -14656,6 +14656,21 @@
             ]
         }
     ],
+    "MvcUpdateViewWhenModelChanged": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MvcUpdateViewWhenModelChanged"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbyBleV2": [
         {
             "platforms": [

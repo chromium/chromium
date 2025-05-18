@@ -428,6 +428,7 @@ public abstract class ChromeFeatureList {
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
+    public static final String MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED = "MvcUpdateViewWhenModelChanged";
     public static final String NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE =
             "NativePageTransitionHardwareCapture";
     public static final String NAVIGATION_CAPTURE_REFACTOR = "NavigationCaptureRefactorAndroid";
@@ -799,6 +800,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
+    public static final CachedFlag sMvcUpdateViewWhenModelChanged =
+            newCachedFlag(
+                    MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sNavBarColorAnimation =
             newCachedFlag(NAV_BAR_COLOR_ANIMATION, false);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
@@ -966,6 +972,7 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
                     sMultiInstanceApplicationStatusCleanup,
+                    sMvcUpdateViewWhenModelChanged,
                     sNavBarColorAnimation,
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,

@@ -9,6 +9,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -50,6 +51,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     private final PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
     private final Callback<Long> mNewFrameCallback;
     private final @Nullable Set<PropertyKey> mExclusions;
+    private boolean mViewOutdated;
 
     /**
      * Construct a new CompositorModelChangeProcessor.
@@ -72,7 +74,10 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
         mView = view;
         mViewBinder = viewBinder;
         mFrameSupplier = frameSupplier;
-        mNewFrameCallback = this::onNewFrame;
+        mNewFrameCallback =
+                ChromeFeatureList.sMvcUpdateViewWhenModelChanged.isEnabled()
+                        ? this::onNewFrameUpdateWhenOutdated
+                        : this::onNewFrame;
         mFrameSupplier.addObserver(mNewFrameCallback);
         mExclusions = exclusions;
 
@@ -153,6 +158,13 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
         pushUpdate();
     }
 
+    private void onNewFrameUpdateWhenOutdated(Long time) {
+        if (mViewOutdated) {
+            pushUpdate();
+            mViewOutdated = false;
+        }
+    }
+
     private void pushUpdate() {
         mViewBinder.bind(mModel, mView, null);
     }
@@ -163,6 +175,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
         if (mExclusions != null && mExclusions.contains(propertyKey)) {
             return;
         }
+        mViewOutdated = true;
 
         mFrameSupplier.request();
     }
