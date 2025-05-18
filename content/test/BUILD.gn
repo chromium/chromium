@@ -1425,6 +1425,7 @@ test("content_browsertests") {
     "../browser/back_forward_cache_browsertest.h",
     "../browser/back_forward_cache_features_browsertest.cc",
     "../browser/back_forward_cache_internal_browsertest.cc",
+    "../browser/back_forward_cache_limit_browsertest.cc",
     "../browser/back_forward_cache_network_request_browsertest.cc",
     "../browser/back_forward_cache_no_store_browsertest.cc",
     "../browser/back_forward_cache_not_restored_reasons_browsertest.cc",
