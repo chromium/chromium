@@ -1768,7 +1768,7 @@
 <translation id="8282657446819506217">タブグループで開く</translation>
 <translation id="828291969289324795">{count,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
 <translation id="8283172974887967105">設定…</translation>
-<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> の通知をオフにしました</translation>
+<translation id="8289930144142009940">「<ph name="FEATURE_NAME" />」の通知をオフにしました</translation>
 <translation id="8290077367744012649">タブから価格をトラッキング</translation>
 <translation id="8299417921174340354">パスワードを使用するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="8307481894409578819">このファイルはアップロードできません</translation>
