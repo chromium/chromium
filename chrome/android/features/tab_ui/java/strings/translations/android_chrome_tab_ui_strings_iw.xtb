@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">עכשיו גם כל הכרטיסיות הכפולות יועברו לארכיון, חוץ מהעותק האחרון שנעשה בו שימוש.</translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
+<translation id="6220820548421939212">כן. אני בעניין</translation>
 <translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6271513594716432922">סגירה של כל הכרטיסיות הלא פעילות</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{הוספת כרטיסייה לקבוצה חדשה}one{הוספת כרטיסיות לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">פעילות</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />)}one{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}two{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}other{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}}</translation>
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
+<translation id="788914896430720926">לשמור על סדר בקטגוריה הלא פעילה?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />, לא נבחר</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7961015016161918242">אף פעם</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">הפעילות שלך בכרטיסיות הפרטיות האלה תוסר מהמכשיר הזה</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{נוצרה לפני חודש (<ph name="NUM_MONTHS_ONE" />)}one{נוצרה לפני <ph name="NUM_MONTHS_MANY" /> חודשים}two{נוצרה לפני חודשיים (<ph name="NUM_MONTHS_MANY" />)}other{נוצרה לפני <ph name="NUM_MONTHS_MANY" /> חודשים}}</translation>
 <translation id="8820741577754260431">הצגת הנחות בכרטיסיות</translation>
+<translation id="883379923675618699">‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך 3 חודשים. אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.</translation>
 <translation id="8887921976452567404">אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'.</translation>
 <translation id="8915916167043355778">סגירת הכול</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{העברה לחלון חדש}one{העברה לחלון אחר}two{העברה לחלון אחר}other{העברה לחלון אחר}}</translation>
