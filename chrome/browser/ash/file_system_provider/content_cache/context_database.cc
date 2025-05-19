@@ -130,10 +130,6 @@ bool ContextDatabase::AddItem(const base::FilePath& fsp_path,
 
   std::unique_ptr<sql::Statement> statement = std::make_unique<sql::Statement>(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertItemSql));
-  if (!statement) {
-    LOG(ERROR) << "Couldn't create SQL statement";
-    return false;
-  }
 
   statement->BindString(0, fsp_path.value());
   statement->BindString(1, version_tag);
