@@ -86,8 +86,7 @@ class TabStripCollection : public TabCollection {
   TabGroupTabCollection* AddTabGroup(
       std::unique_ptr<TabGroupTabCollection> group,
       int index);
-  std::unique_ptr<TabGroupTabCollection> RemoveGroup(
-      TabGroupTabCollection* group);
+  std::unique_ptr<TabCollection> RemoveGroup(TabGroupTabCollection* group);
   TabGroupTabCollection* GetTabGroupCollection(tab_groups::TabGroupId group_id);
 
   void MoveTabGroupTo(const tab_groups::TabGroupId& group, int to_index);
@@ -111,8 +110,7 @@ class TabStripCollection : public TabCollection {
                         int index,
                         int pinned,
                         std::optional<tab_groups::TabGroupId> group);
-  std::unique_ptr<SplitTabCollection> RemoveSplit(SplitTabCollection* split);
-
+  std::unique_ptr<TabCollection> RemoveSplit(SplitTabCollection* split);
   void ValidateData() const;
 
  private:

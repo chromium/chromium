@@ -825,10 +825,16 @@ class TabStripModel : public TabGroupController {
   // Notify observers that `group` is moved.
   void NotifyTabGroupMoved(const tab_groups::TabGroupId& group);
 
-  // Notify observers that `group` is detached from the model.
-  void NotifyTabGroupDetached(tabs::TabGroupTabCollection* group_collection);
+  // Notify observers that `group` is detached from the model. This also sends
+  // split related observations within the group.
+  void NotifyTabGroupDetached(
+      tabs::TabGroupTabCollection* group_collection,
+      std::map<split_tabs::SplitTabId,
+               std::vector<std::pair<tabs::TabInterface*, int>>>
+          splits_in_group);
 
-  // Notify observers that `group` is attached to the model.
+  // Notify observers that `group` is attached to the model. This also sends
+  // split related observations within the group.
   void NotifyTabGroupAttached(tabs::TabGroupTabCollection* group_collection);
 
   // Notify observers that split with `split_id` has been created.
@@ -879,11 +885,44 @@ class TabStripModel : public TabGroupController {
       TabStripModelChange::RemoveReason web_contents_remove_reason,
       tabs::TabInterface::DetachReason tab_detach_reason);
 
-  std::unique_ptr<DetachedTabCollection> DetachTabGroupImpl(
-      const tab_groups::TabGroupId& group);
+  // Removes a tab collection from `contents_data_` using
+  // `execute_detach_collection_operation`. Also sends collection specific
+  // observation using `execute_tabs_notify_observer_operation` like group and
+  // split related observation calls. `TabStripModelChange` and
+  // `TabStripSelectionChange` observation calls are handled as common code.
+  std::unique_ptr<tabs::TabCollection> DetachTabCollectionImpl(
+      tabs::TabCollection* collection,
+      base::OnceCallback<std::unique_ptr<tabs::TabCollection>()>
+          execute_detach_collection_operation,
+      base::OnceClosure execute_tabs_notify_observer_operation);
 
-  gfx::Range InsertDetachedTabGroupImpl(
-      std::unique_ptr<DetachedTabCollection> detached_group,
+  // Helper method performing tasks like notification, fixing opener and
+  // returning back a Remove struct before actually detaching the set of
+  // tab_indices.
+  TabStripModelChange::Remove ProcessTabsForDetach(gfx::Range tab_indices);
+
+  // Helper method for updating the selection model after detaching a collection
+  // from `contents_data_`.
+  void UpdateSelectionModelForDetach(gfx::Range tab_indices,
+                                     std::optional<int> next_selected_index);
+
+  // Attaches a tab collection to `contents_data_` using
+  // `execute_insert_detached_tabs_operation`. Also sends collection specific
+  // observation using `execute_tabs_notify_observer_operation` like group and
+  // split related observation calls. `TabStripModelChange` and
+  // `TabStripSelectionChange` observation calls are handled as common code.
+  gfx::Range InsertDetachedCollectionImpl(
+      tabs::TabCollection* collection,
+      std::optional<int> active_index,
+      base::OnceClosure execute_insert_detached_tabs_operation,
+      base::OnceClosure execute_tabs_notify_observer_operation);
+
+  // This is the callback used as `execute_insert_detached_tabs_operation` in
+  // `InsertDetachedCollectionImpl` when a group is inserted into a tabstrip. It
+  // updates the `group_model_` and inserts the `group_collection` into
+  // `contents_data_`.
+  void InsertDetachedTabGroupImpl(
+      std::unique_ptr<tabs::TabGroupTabCollection> group_collection,
       int index);
 
   // We batch send notifications. This has two benefits:

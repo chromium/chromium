@@ -242,12 +242,11 @@ TabGroupTabCollection* TabStripCollection::AddTabGroup(
   return unpinned_collection_->AddCollection(std::move(group), dst_index);
 }
 
-std::unique_ptr<TabGroupTabCollection> TabStripCollection::RemoveGroup(
+std::unique_ptr<TabCollection> TabStripCollection::RemoveGroup(
     TabGroupTabCollection* group) {
   CHECK(group_mapping_.contains(group->GetTabGroupId()));
   RemoveCollectionMapping(group);
-  return base::WrapUnique(static_cast<TabGroupTabCollection*>(
-      unpinned_collection_->MaybeRemoveCollection(group).release()));
+  return unpinned_collection_->MaybeRemoveCollection(group);
 }
 
 TabGroupTabCollection* TabStripCollection::GetTabGroupCollection(
@@ -404,13 +403,12 @@ void TabStripCollection::InsertSplitTabAt(
   tab_collection_ptr->AddCollection(std::move(split_collection), insert_index);
 }
 
-std::unique_ptr<SplitTabCollection> TabStripCollection::RemoveSplit(
+std::unique_ptr<TabCollection> TabStripCollection::RemoveSplit(
     SplitTabCollection* split) {
   CHECK(split_mapping_.contains(split->GetSplitTabId()));
   RemoveCollectionMapping(split);
 
-  return base::WrapUnique(static_cast<SplitTabCollection*>(
-      split->GetParentCollection()->MaybeRemoveCollection(split).release()));
+  return split->GetParentCollection()->MaybeRemoveCollection(split);
 }
 
 void TabStripCollection::ValidateData() const {
@@ -460,7 +458,9 @@ TabStripCollection::PopDetachedGroupCollection(
 void TabStripCollection::MaybeRemoveGroupCollection(
     TabGroupTabCollection* group_collection) {
   if (group_collection && group_collection->TabCountRecursive() == 0) {
-    detached_group_collections_.push_back(RemoveGroup(group_collection));
+    detached_group_collections_.push_back(
+        base::WrapUnique(static_cast<TabGroupTabCollection*>(
+            RemoveGroup(group_collection).release())));
   }
 }
 
