@@ -13667,5 +13667,5 @@ experimental domain BluetoothEmulation
   event descriptorOperationReceived
     parameters
       string descriptorId
-      CharacteristicOperationType type
+      DescriptorOperationType type
       optional binary data
