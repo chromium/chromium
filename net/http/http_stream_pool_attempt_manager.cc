@@ -505,12 +505,17 @@ void HttpStreamPool::AttemptManager::CancelTcpBasedAttempts(
   }
 
   const size_t num_cancel_attempts = tcp_based_attempts_.size();
-  for (auto& attempt : tcp_based_attempts_) {
+  const size_t num_total_connecting_before =
+      pool()->TotalConnectingStreamCount();
+  while (!tcp_based_attempts_.empty()) {
+    std::unique_ptr<TcpBasedAttempt> attempt =
+        ExtractTcpBasedAttempt(tcp_based_attempts_.begin()->get());
     attempt->SetCancelReason(reason);
+    attempt.reset();
   }
-  pool()->DecrementTotalConnectingStreamCount(num_cancel_attempts);
-  tcp_based_attempts_.clear();
-  slow_tcp_based_attempt_count_ = 0;
+  CHECK_EQ(pool()->TotalConnectingStreamCount(),
+           num_total_connecting_before - num_cancel_attempts);
+  CHECK_EQ(slow_tcp_based_attempt_count_, 0u);
 
   base::UmaHistogramCounts100(
       base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptCancelCount.",
@@ -1727,12 +1732,8 @@ raw_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::RemoveJobFromQueue(
     while (group_->ActiveStreamSocketCount() >
                pool()->max_stream_sockets_per_group() &&
            !tcp_based_attempts_.empty()) {
-      std::unique_ptr<TcpBasedAttempt> attempt = std::move(
-          tcp_based_attempts_.extract(tcp_based_attempts_.begin()).value());
-      if (attempt->is_slow()) {
-        --slow_tcp_based_attempt_count_;
-      }
-      pool()->DecrementTotalConnectingStreamCount();
+      std::unique_ptr<TcpBasedAttempt> attempt =
+          ExtractTcpBasedAttempt(tcp_based_attempts_.begin()->get());
       attempt.reset();
     }
   }
@@ -1757,25 +1758,34 @@ void HttpStreamPool::AttemptManager::SetJobPriority(Job* job,
   MaybeChangeServiceEndpointRequestPriority();
 }
 
+std::unique_ptr<HttpStreamPool::AttemptManager::TcpBasedAttempt>
+HttpStreamPool::AttemptManager::ExtractTcpBasedAttempt(
+    TcpBasedAttempt* raw_attempt) {
+  auto it = tcp_based_attempts_.find(raw_attempt);
+  CHECK(it != tcp_based_attempts_.end());
+  std::unique_ptr<TcpBasedAttempt> attempt =
+      std::move(tcp_based_attempts_.extract(it).value());
+
+  pool()->DecrementTotalConnectingStreamCount();
+  if (attempt->is_slow()) {
+    CHECK_GT(slow_tcp_based_attempt_count_, 0u);
+    --slow_tcp_based_attempt_count_;
+  }
+
+  return attempt;
+}
+
 void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
     TcpBasedAttempt* raw_attempt,
     int rv) {
-  if (raw_attempt->is_slow()) {
-    CHECK_GT(slow_tcp_based_attempt_count_, 0u);
-    --slow_tcp_based_attempt_count_;
-
-    if (rv == OK) {
-      auto it = ip_endpoint_states_.find(raw_attempt->ip_endpoint());
-      CHECK(it != ip_endpoint_states_.end());
-      it->second = IPEndPointState::kSlowSucceeded;
-    }
+  if (rv == OK && raw_attempt->is_slow()) {
+    auto it = ip_endpoint_states_.find(raw_attempt->ip_endpoint());
+    CHECK(it != ip_endpoint_states_.end());
+    it->second = IPEndPointState::kSlowSucceeded;
   }
 
-  auto it = tcp_based_attempts_.find(raw_attempt);
-  CHECK(it != tcp_based_attempts_.end());
   std::unique_ptr<TcpBasedAttempt> tcp_based_attempt =
-      std::move(tcp_based_attempts_.extract(it).value());
-  pool()->DecrementTotalConnectingStreamCount();
+      ExtractTcpBasedAttempt(raw_attempt);
 
   if (rv != OK) {
     HandleTcpBasedAttemptFailure(std::move(tcp_based_attempt), rv);

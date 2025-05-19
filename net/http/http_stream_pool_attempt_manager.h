@@ -488,6 +488,10 @@ class HttpStreamPool::AttemptManager
   // limit.
   raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
 
+  // Transfers the ownership of `raw_attempt` to the caller.
+  std::unique_ptr<TcpBasedAttempt> ExtractTcpBasedAttempt(
+      TcpBasedAttempt* raw_attempt);
+
   void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
   void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
 
