@@ -110,6 +110,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kPendingStateSignin";
     case SuggestionType::kLoyaltyCardEntry:
       return "kLoyaltyCardEntry";
+    case SuggestionType::kHomeAndWorkAddressEntry:
+      return "kHomeAndWorkAddressEntry";
   }
   NOTREACHED();
 }

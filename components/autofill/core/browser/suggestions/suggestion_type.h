@@ -120,6 +120,9 @@ enum class SuggestionType {
   // Loyalty card suggestions.
   kLoyaltyCardEntry = 67,
 
+  // Home & Work suggestions.
+  kHomeAndWorkAddressEntry = 69,
+
   // Webauthn suggestions.
   kWebauthnCredential = 43,
   kWebauthnSignInWithAnotherDevice = 44,
@@ -155,8 +158,8 @@ enum class SuggestionType {
   // state. On click the user will be directed to sign in.
   kPendingStateSignin = 65,
 
-  // Next ID: 69
-  kMaxValue = kManageLoyaltyCard
+  // Next ID: 70
+  kMaxValue = kHomeAndWorkAddressEntry
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

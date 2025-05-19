@@ -52,6 +52,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kManageAddress:
+    case SuggestionType::kHomeAndWorkAddressEntry:
       return FillingProduct::kAddress;
     case SuggestionType::kBnplEntry:
     case SuggestionType::kCreditCardEntry:

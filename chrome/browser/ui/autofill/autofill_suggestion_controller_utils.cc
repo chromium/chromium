@@ -77,6 +77,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kHomeAndWorkAddressEntry:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kLoyaltyCardEntry:
