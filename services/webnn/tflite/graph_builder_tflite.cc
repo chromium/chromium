@@ -1790,6 +1790,38 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Reshape& reshape) {
   return SerializeQuantizedOutput(*next_op);
 }
 
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Slice& slice) {
+  if (!IsDequantizeOutput(slice.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate, the scale and zero point of input and output have to
+  // be scaler.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=5302;drc=02446d66622a0a811448be7bb4ac8939c5b00aa9
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(slice.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>> next_op =
+      IsNextOpQuantize(slice.output_operand_id,
+                       {GetOperand(input_dequantize.input_operand_id)
+                            .descriptor.data_type()});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(next_op->first);
+  if (!IsInts8AndScalarScale(output_quantize)) {
+    return std::nullopt;
+  }
+
+  return SerializeQuantizedOutput(*next_op);
+}
+
 std::optional<base::FixedArray<GraphBuilderTflite::TensorInfo>>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Split& split) {
   if (!IsDequantizeOutput(split.input_operand_id)) {
@@ -6546,10 +6578,18 @@ auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
     slice_strides[i] = checked_stride.ValueOrDie();
   }
 
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(slice);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(slice.input_operand_id));
+                   SerializeInputTensorInfo(
+                       slice.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
   const TensorIndex output_tensor_index =
-      SerializeOutputTensorInfo(slice.output_operand_id).index;
+      fuse_dequantize
+          ? quantized_output->index
+          : SerializeOutputTensorInfo(slice.output_operand_id).index;
 
   auto checked_number = base::MakeCheckedNum<int32_t>(slice.ranges.size());
   if (!checked_number.IsValid()) {
