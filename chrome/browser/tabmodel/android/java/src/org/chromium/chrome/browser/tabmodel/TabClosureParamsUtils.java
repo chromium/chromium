@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.view.MotionEvent;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
@@ -36,5 +38,32 @@ public final class TabClosureParamsUtils {
 
         // Allow undo as long as the last "single tap up" was *not* from a mouse.
         return !MotionEventUtils.isMouseEvent(lastSingleTapUp.source, lastSingleTapUp.toolType[0]);
+    }
+
+    /**
+     * Whether tab / tab group closure should allow undo, depending on the {@link MotionEvent} that
+     * triggered the closure.
+     *
+     * @param triggeringMotionEvent {@link MotionEvent} that triggered the closure.
+     * @return true if undo is allowed.
+     */
+    public static boolean shouldAllowUndo(@Nullable MotionEvent triggeringMotionEvent) {
+        if (triggeringMotionEvent == null) {
+            return true;
+        }
+
+        // Allow undo as long as the triggering motion was *not* from a mouse.
+        return !MotionEventUtils.isMouseEvent(triggeringMotionEvent);
+    }
+
+    /**
+     * Whether tab / tab group closure should allow undo, depending on the button state of the
+     * "down" motion that initiated the closure.
+     *
+     * @param downMotionButtonState the "down" motion's {@link MotionEvent#getButtonState()}
+     * @return true if undo is allowed.
+     */
+    public static boolean shouldAllowUndo(int downMotionButtonState) {
+        return downMotionButtonState == MotionEventUtils.MOTION_EVENT_BUTTON_NONE;
     }
 }

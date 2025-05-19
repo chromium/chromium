@@ -117,7 +117,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
@@ -1199,8 +1198,7 @@ class TabListMediator implements TabListNotificationHandler {
                         Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
                         Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
                         boolean allowUndo =
-                                triggeringMotionEvent == null
-                                        || !MotionEventUtils.isMouseEvent(triggeringMotionEvent);
+                                TabClosureParamsUtils.shouldAllowUndo(triggeringMotionEvent);
                         TabClosureParams closureParams =
                                 TabClosureParams.closeTab(closingTab)
                                         .recommendedNextTab(nextTab)

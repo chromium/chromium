@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -2919,10 +2920,7 @@ public class StripLayoutHelper
                     handleCloseTab(tab, tabClosureParams.allowUndo);
                 };
 
-        // Allow undo of tab closure only when the click wasn't from a button on peripherals like
-        // mouses, trackpads, etc.
-        boolean allowUndo = (motionEventButtonState == MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-
+        boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(motionEventButtonState);
         TabClosureParams params = TabClosureParams.closeTab(realTab).allowUndo(allowUndo).build();
         mTabGroupModelFilter
                 .getTabModel()

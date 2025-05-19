@@ -18,18 +18,20 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
+import org.chromium.ui.util.MotionEventUtils;
 
 @RunWith(RobolectricTestRunner.class)
 public class TabClosureParamsUtilsUnitTest {
 
     @Test
-    public void shouldAllowUndo_nullListViewTouchTracker_returnTrue() {
-        assertTrue(TabClosureParamsUtils.shouldAllowUndo(/* listViewTouchTracker= */ null));
+    public void shouldAllowUndo_forListViewTouchTracker_nullListViewTouchTracker_returnTrue() {
+        assertTrue(TabClosureParamsUtils.shouldAllowUndo((ListViewTouchTracker) null));
     }
 
     @Test
-    public void shouldAllowUndo_nullLastSingleTapUp_returnTrue() {
+    public void shouldAllowUndo_forListViewTouchTracker_nullLastSingleTapUp_returnTrue() {
         FakeListViewTouchTracker fakeListViewTouchTracker = new FakeListViewTouchTracker();
         fakeListViewTouchTracker.setLastSingleTapUpInfo(null);
 
@@ -37,7 +39,8 @@ public class TabClosureParamsUtilsUnitTest {
     }
 
     @Test
-    public void shouldAllowUndo_lastSingleTapUpFromTouchScreen_returnTrue() {
+    public void
+            shouldAllowUndo_forListViewTouchTracker_lastSingleTapUpFromTouchScreen_returnTrue() {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker fakeListViewTouchTracker = new FakeListViewTouchTracker();
         fakeListViewTouchTracker.setLastSingleTapUpInfo(
@@ -55,7 +58,7 @@ public class TabClosureParamsUtilsUnitTest {
     }
 
     @Test
-    public void shouldAllowUndo_lastSingleTapUpFromMouse_returnFalse() {
+    public void shouldAllowUndo_forListViewTouchTracker_lastSingleTapUpFromMouse_returnFalse() {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker fakeListViewTouchTracker = new FakeListViewTouchTracker();
         fakeListViewTouchTracker.setLastSingleTapUpInfo(
@@ -70,6 +73,54 @@ public class TabClosureParamsUtilsUnitTest {
                                 MotionEvent.TOOL_TYPE_MOUSE)));
 
         assertFalse(TabClosureParamsUtils.shouldAllowUndo(fakeListViewTouchTracker));
+    }
+
+    @Test
+    public void shouldAllowUndo_forTriggeringMotion_nullMotion_returnTrue() {
+        assertTrue(TabClosureParamsUtils.shouldAllowUndo((MotionEvent) null));
+    }
+
+    @Test
+    public void shouldAllowUndo_forTriggeringMotion_touchScreenMotion_returnTrue() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        MotionEvent triggeringMotionEvent =
+                createMotionEvent(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0.0f,
+                        /* y= */ 0.0f,
+                        InputDevice.SOURCE_TOUCHSCREEN,
+                        MotionEvent.TOOL_TYPE_FINGER);
+
+        assertTrue(TabClosureParamsUtils.shouldAllowUndo(triggeringMotionEvent));
+    }
+
+    @Test
+    public void shouldAllowUndo_forTriggeringMotion_mouseMotion_returnFalse() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        MotionEvent triggeringMotionEvent =
+                createMotionEvent(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP,
+                        /* x= */ 0.0f,
+                        /* y= */ 0.0f,
+                        InputDevice.SOURCE_MOUSE,
+                        MotionEvent.TOOL_TYPE_MOUSE);
+
+        assertFalse(TabClosureParamsUtils.shouldAllowUndo(triggeringMotionEvent));
+    }
+
+    @Test
+    public void shouldAllowUndo_forDownMotionButtonState_buttonStateAbsent_returnTrue() {
+        assertTrue(
+                TabClosureParamsUtils.shouldAllowUndo(MotionEventUtils.MOTION_EVENT_BUTTON_NONE));
+    }
+
+    @Test
+    public void shouldAllowUndo_forDownMotionButtonState_buttonStatePresent_returnFalse() {
+        assertFalse(TabClosureParamsUtils.shouldAllowUndo(MotionEvent.BUTTON_PRIMARY));
     }
 
     /**
