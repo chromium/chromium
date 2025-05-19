@@ -258,6 +258,13 @@ class DisruptiveNotificationPermissionsManager
   // notification informing the users about revoked notification permissions.
   void UpdateNotificationCount();
 
+  // Updates content settings for notification permissions.
+  void UpdateNotificationPermission(const GURL& url,
+                                    ContentSetting setting_value);
+
+  // Ignores this url for future revocation and reports regrant metrics.
+  void OnPermissionRegranted(const GURL& url, RevocationEntry revocation_entry);
+
   scoped_refptr<HostContentSettingsMap> hcsm_;
 
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
@@ -268,11 +275,11 @@ class DisruptiveNotificationPermissionsManager
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
-  // Returns true if the revocation of disruptive notification
-  // permissions is happening.
   bool is_revocation_running_ = false;
 
-  bool is_regrant_or_undo_running_ = false;
+  // Track whether this service is responsible for changing notification
+  // permissions, in order to ignore this case inside OnContentSettingChanged.
+  bool is_changing_notification_permission_ = false;
 
   std::unique_ptr<SafetyHubNotificationWrapper> notification_wrapper_;
 };

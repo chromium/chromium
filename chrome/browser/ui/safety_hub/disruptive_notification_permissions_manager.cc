@@ -45,15 +45,6 @@ constexpr char kTimestampStr[] = "timestamp";
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
 
-void UpdateNotificationPermission(HostContentSettingsMap* hcsm,
-                                  const GURL& url,
-                                  ContentSetting setting_value) {
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      setting_value);
-}
-
 DisruptiveNotificationPermissionsManager::RevocationState GetRevocationState(
     const base::Value::Dict& dict) {
   const std::string* revocation_state =
@@ -342,8 +333,7 @@ void DisruptiveNotificationPermissionsManager::RevokeNotifications(
   revocation_entry.created_at = clock_->Now();
   revocation_entry.lifetime = safety_hub_util::GetCleanUpThreshold();
   ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, revocation_entry);
-  UpdateNotificationPermission(hcsm_.get(), url,
-                               ContentSetting::CONTENT_SETTING_DEFAULT);
+  UpdateNotificationPermission(url, ContentSetting::CONTENT_SETTING_DEFAULT);
   base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                 RevocationResult::kRevoke);
   base::UmaHistogramCounts100(
@@ -372,7 +362,8 @@ void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
           ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS) {
     UpdateNotificationCount();
   }
-  if (!IsRunning() && !content_type_set.ContainsAllTypes() &&
+  if (!IsRunning() && !is_changing_notification_permission_ &&
+      !content_type_set.ContainsAllTypes() &&
       content_type_set.GetType() == ContentSettingsType::NOTIFICATIONS &&
       content_settings::PatternAppliesToSingleOrigin(primary_pattern,
                                                      secondary_pattern)) {
@@ -387,27 +378,7 @@ void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
         hcsm_->GetContentSetting(url, url,
                                  ContentSettingsType::NOTIFICATIONS) ==
             ContentSetting::CONTENT_SETTING_ALLOW) {
-      base::AutoReset<bool> is_regrant_running(&is_regrant_or_undo_running_,
-                                               true);
-
-      revocation_entry->revocation_state = RevocationState::kIgnore;
-      // Clear the lifetime so that this won't expire.
-      revocation_entry->lifetime = base::TimeDelta();
-      ContentSettingHelper(*hcsm_).PersistRevocationEntry(url,
-                                                          *revocation_entry);
-
-      base::UmaHistogramCounts100(
-          "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-          "DaysSinceProposedRevocation",
-          (clock_->Now() - revocation_entry->timestamp).InDays());
-      base::UmaHistogramCounts100(
-          "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-          "NewSiteEngagement",
-          site_engagement_service_->GetScore(url));
-      base::UmaHistogramCounts100(
-          "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-          "PreviousNotificationCount",
-          revocation_entry->daily_notification_count);
+      OnPermissionRegranted(url, *revocation_entry);
     }
   }
 }
@@ -441,7 +412,7 @@ DisruptiveNotificationPermissionsManager::GetRevokedNotifications() {
 }
 
 bool DisruptiveNotificationPermissionsManager::IsRunning() {
-  return is_revocation_running_ || is_regrant_or_undo_running_;
+  return is_revocation_running_;
 }
 
 void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
@@ -456,14 +427,30 @@ void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
     return;
   }
 
-  base::AutoReset<bool> is_regrant_running(&is_regrant_or_undo_running_, true);
+  UpdateNotificationPermission(url, ContentSetting::CONTENT_SETTING_ALLOW);
+  OnPermissionRegranted(url, *revocation_entry);
+}
 
-  UpdateNotificationPermission(hcsm_.get(), url,
-                               ContentSetting::CONTENT_SETTING_ALLOW);
-  revocation_entry->revocation_state = RevocationState::kIgnore;
+void DisruptiveNotificationPermissionsManager::OnPermissionRegranted(
+    const GURL& url,
+    RevocationEntry revocation_entry) {
+  revocation_entry.revocation_state = RevocationState::kIgnore;
   // Clear the lifetime so that this won't expire.
-  revocation_entry->lifetime = base::TimeDelta();
-  ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, *revocation_entry);
+  revocation_entry.lifetime = base::TimeDelta();
+  ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, revocation_entry);
+
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "DaysSinceProposedRevocation",
+      (clock_->Now() - revocation_entry.timestamp).InDays());
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "NewSiteEngagement",
+      site_engagement_service_->GetScore(url));
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "PreviousNotificationCount",
+      revocation_entry.daily_notification_count);
 }
 
 void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
@@ -485,10 +472,7 @@ void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
     return;
   }
 
-  base::AutoReset<bool> is_regrant_running(&is_regrant_or_undo_running_, true);
-
-  UpdateNotificationPermission(hcsm_.get(), url,
-                               ContentSetting::CONTENT_SETTING_DEFAULT);
+  UpdateNotificationPermission(url, ContentSetting::CONTENT_SETTING_DEFAULT);
   revocation_entry->revocation_state = RevocationState::kRevoked;
   revocation_entry->created_at =
       constraints.expiration() - constraints.lifetime();
@@ -664,6 +648,18 @@ bool DisruptiveNotificationPermissionsManager::
       ContentSettingHelper(*hcsm).GetRevocationEntry(url);
   return revocation_entry &&
          revocation_entry->revocation_state == RevocationState::kRevoked;
+}
+
+void DisruptiveNotificationPermissionsManager::UpdateNotificationPermission(
+    const GURL& url,
+    ContentSetting setting_value) {
+  base::AutoReset<bool> is_changing_notification_permission(
+      &is_changing_notification_permission_, true);
+
+  hcsm_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+      setting_value);
 }
 
 void DisruptiveNotificationPermissionsManager::SetClockForTesting(

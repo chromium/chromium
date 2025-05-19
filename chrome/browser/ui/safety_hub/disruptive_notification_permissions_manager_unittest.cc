@@ -617,8 +617,11 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                .revocation_state = RevocationState::kRevoked,
                .site_engagement = 0.0,
                .daily_notification_count = 3,
+               .timestamp = clock()->Now(),
                .lifetime = safety_hub_util::GetCleanUpThreshold(),
            });
+
+  clock()->Advance(base::Days(5));
 
   manager()->RegrantPermissionForUrl(url);
   // Notifications are again allowed.
@@ -640,6 +643,19 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                              RevocationState::kIgnore)));
   EXPECT_THAT(revocation_entry, Optional(Field(&RevocationEntry::lifetime,
                                                Eq(base::TimeDelta()))));
+
+  t.ExpectUniqueSample(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "DaysSinceProposedRevocation",
+      5, 1);
+  t.ExpectUniqueSample(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "NewSiteEngagement",
+      0, 1);
+  t.ExpectUniqueSample(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "PreviousNotificationCount",
+      3, 1);
 
   manager()->RevokeDisruptiveNotifications();
   // The site is reported as ignored for revocation and not revoked.
