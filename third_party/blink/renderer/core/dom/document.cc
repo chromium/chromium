@@ -40,10 +40,12 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
@@ -7222,6 +7224,7 @@ KURL Document::CompleteURLWithOverride(
   if (url.IsNull())
     return KURL();
 
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.Document.CompleteURLTime");
   KURL result = url_cache_.Get(base_url_override, url);
   if (result.IsEmpty()) {
     result = Encoding().IsValid() ? KURL(base_url_override, url, Encoding())
