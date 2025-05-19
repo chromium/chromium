@@ -469,6 +469,7 @@ ScriptPromise<IDLString> LanguageModel::prompt(
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
       WTF::BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
+                    WrapPersistent(script_state), WrapPersistent(resolver),
                     std::move(*processed_constraint),
                     std::move(pending_remote)),
       WTF::BindOnce(&RejectResolver, WrapPersistent(resolver)));
@@ -501,6 +502,7 @@ ReadableStream* LanguageModel::promptStreaming(
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
       WTF::BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
+                    WrapPersistent(script_state), WrapPersistent(stream),
                     std::move(*processed_constraint), std::move(remote)),
       WTF::BindOnce(
           [](ReadableStream* readable_stream, ScriptState* script_state,
@@ -519,11 +521,33 @@ ReadableStream* LanguageModel::promptStreaming(
 
   return stream;
 }
+
 void LanguageModel::ExecutePrompt(
+    ScriptState* script_state,
+    ResolverOrStream resolver_or_stream,
     on_device_model::mojom::blink::ResponseConstraintPtr constraint,
     mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
         pending_responder,
     WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
+  if (!language_model_remote_) {
+    if (std::holds_alternative<ScriptPromiseResolverBase*>(
+            resolver_or_stream)) {
+      ScriptPromiseResolverBase* resolver =
+          std::get<ScriptPromiseResolverBase*>(resolver_or_stream);
+      resolver->Reject(CreateSessionDestroyedException());
+      return;
+    }
+    CHECK(std::holds_alternative<ReadableStream*>(resolver_or_stream));
+    ReadableStream* stream = std::get<ReadableStream*>(resolver_or_stream);
+    ReadableStreamController* controller = stream->GetController();
+    // TODO(crbug.com/414906618): Make this more elegant (i.e.
+    // crrev.com/c/6528669).
+    CHECK(controller->IsDefaultController());
+    MakeGarbageCollected<ReadableStreamDefaultControllerWithScriptScope>(
+        script_state, To<ReadableStreamDefaultController>(controller))
+        ->Error(CreateSessionDestroyedException()->Wrap(script_state));
+    return;
+  }
   language_model_remote_->Prompt(std::move(prompts), std::move(constraint),
                                  std::move(pending_responder));
 }

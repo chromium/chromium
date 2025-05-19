@@ -14,6 +14,7 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
+class CanvasImageSource;
 
 // Returns the SkBitmap data from a V8ImageBitmapSource. Throws an exception
 // and returns nullopt if the source is inaccessible, incompatible, etc.
@@ -21,6 +22,11 @@ class ScriptState;
 std::optional<SkBitmap> GetBitmapFromV8ImageBitmapSource(
     ScriptState* script_state,
     const V8ImageBitmapSource* image_source,
+    ExceptionState& exception_state);
+
+// Performs CanvasImageSource handling for GetBitmapFromV8ImageBitmapSource.
+std::optional<SkBitmap> GetBitmapFromCanvasImageSource(
+    CanvasImageSource& canvas_image_source,
     ExceptionState& exception_state);
 
 }  // namespace blink

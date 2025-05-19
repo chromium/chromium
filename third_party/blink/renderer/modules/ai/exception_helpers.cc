@@ -106,6 +106,12 @@ DOMException* CreateInternalErrorException() {
       DOMException::GetErrorName(DOMExceptionCode::kOperationError));
 }
 
+DOMException* CreateSessionDestroyedException() {
+  return DOMException::Create(
+      kExceptionMessageSessionDestroyed,
+      DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
+}
+
 bool HandleAbortSignal(AbortSignal* signal,
                        ScriptState* script_state,
                        ExceptionState& exception_state) {

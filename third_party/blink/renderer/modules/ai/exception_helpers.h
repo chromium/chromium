@@ -39,6 +39,7 @@ void ThrowAbortedException(ExceptionState& exception_state);
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);
 
 DOMException* CreateInternalErrorException();
+DOMException* CreateSessionDestroyedException();
 
 DOMException* ConvertModelStreamingResponseErrorToDOMException(
     ModelStreamingResponseStatus error);
