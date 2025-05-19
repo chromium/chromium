@@ -137,6 +137,11 @@ class OmniboxEditModel {
   // icon.
   ui::ImageModel GetSuperGIcon(int image_size, bool dark_mode) const;
 
+  // Returns the Agentspace icon for chrome builds. Otherwise return an empty
+  // Image. If `dark_mode` is enabled, return the monochrome version of the
+  // icon.
+  gfx::Image GetAgentspaceIcon(bool dark_mode) const;
+
   // Sets the state of user_input_in_progress_, and notifies the observer if
   // that state has changed.
   void SetInputInProgress(bool in_progress);
@@ -390,7 +395,8 @@ class OmniboxEditModel {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Gets the icon for the given `match`.
   gfx::Image GetMatchIcon(const AutocompleteMatch& match,
-                          SkColor vector_icon_color) const;
+                          SkColor vector_icon_color,
+                          bool dark_mode = false) const;
   // Gets the icon for the given `match` if the match was provided by an omnibox
   // API extension, otherwise returns empty image.
   gfx::Image GetMatchIconIfExtension(const AutocompleteMatch& match) const;

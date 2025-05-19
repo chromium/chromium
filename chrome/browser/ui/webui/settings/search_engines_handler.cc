@@ -260,6 +260,12 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   GURL icon_url = template_url->favicon_url();
   if (icon_url.is_valid()) {
     dict.Set("iconURL", icon_url.spec());
+  } else if (template_url->CreatedByEnterpriseSearchAggregatorPolicy()) {
+    // The icon used for search aggregator is bundled with Chrome and should be
+    // used as a fallback if the icon_url is not set.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    dict.Set("iconPath", "chrome://theme/IDR_GOOGLE_AGENTSPACE_LOGO");
+#endif
   }
 
   // The icons that are used for search engines in the EEA region are bundled

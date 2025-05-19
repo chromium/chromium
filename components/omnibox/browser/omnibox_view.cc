@@ -206,7 +206,9 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
           controller_->client()->GetSizedIcon(bitmap));
     }
   }
-  if (AutocompleteMatch::IsSearchType(match.type)) {
+  if (AutocompleteMatch::IsSearchType(match.type) ||
+      match.enterprise_search_aggregator_type ==
+          AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
     const TemplateURL* turl =
         !match.keyword.empty() ? controller_->client()
                                      ->GetTemplateURLService()
@@ -218,7 +220,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     if (turl && search::TemplateURLIsGoogle(turl, controller_->client()
                                                       ->GetTemplateURLService()
                                                       ->search_terms_data())) {
-      // For non chrome builds this would return an empty image model. In
+      // For non-chrome builds this would return an empty image model. In
       // those cases revert to using the favicon.
       ui::ImageModel icon = model()->GetSuperGIcon(dip_size, dark_mode);
       if (!icon.IsEmpty()) {
@@ -231,6 +233,12 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
       if (bitmap) {
         return ui::ImageModel::FromImage(
             controller_->client()->GetSizedIcon(bitmap));
+      }
+      // For non-chrome builds this would return an empty image model. In
+      // those cases revert to using the favicon.
+      gfx::Image icon = model()->GetAgentspaceIcon(dark_mode);
+      if (!icon.IsEmpty()) {
+        return ui::ImageModel::FromImage(icon);
       }
     }
     favicon = controller_->client()->GetFaviconForKeywordSearchProvider(

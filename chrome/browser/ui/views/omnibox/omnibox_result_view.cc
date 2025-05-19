@@ -681,7 +681,8 @@ gfx::Image OmniboxResultView::GetIcon() const {
   // kColorOmniboxResultsUrl[Selected] color which is intended for the URL text
   // in suggestion texts.
   ui::ColorId vector_icon_color_id;
-  if (match_.type == AutocompleteMatchType::STARTER_PACK) {
+  if (match_.type == AutocompleteMatchType::STARTER_PACK ||
+      match_.type == AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH) {
     vector_icon_color_id = kColorOmniboxResultsStarterPackIcon;
   } else if (match_.type == AutocompleteMatchType::HISTORY_CLUSTER ||
              match_.type == AutocompleteMatchType::PEDAL) {

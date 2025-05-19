@@ -287,6 +287,7 @@ if (current_toolchain == default_toolchain) {
 
     if (is_chrome_branded) {
       sources += [
+        "google_chrome/google_agentspace_monochrome_logo.icon",
         "google_chrome/google_calendar.icon",
         "google_chrome/google_chrome_webstore.icon",
         "google_chrome/google_docs.icon",

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/omnibox/browser/autocomplete_match.h"
+
 #include "third_party/omnibox_proto/types.pb.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
 #endif
-
-#include "components/omnibox/browser/autocomplete_match.h"
 
 #include <algorithm>
 #include <string>
@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -563,7 +564,6 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TILE_MOST_VISITED_SITE:
     case Type::OPEN_TAB:
     case Type::HISTORY_EMBEDDINGS:
-    case Type::FEATURED_ENTERPRISE_SEARCH:
       return omnibox::kPageChromeRefreshIcon;
 
     case Type::SEARCH_SUGGEST:
@@ -674,6 +674,14 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         }
       }
       return omnibox::kProductChromeRefreshIcon;
+
+    case Type::FEATURED_ENTERPRISE_SEARCH:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
+        return vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
+      }
+#endif
+      return omnibox::kPageChromeRefreshIcon;
 
     case Type::NUM_TYPES:
       NOTREACHED() << "Unexpected AutocompleteMatchType value: "

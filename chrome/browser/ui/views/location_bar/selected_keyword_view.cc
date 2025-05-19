@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 
 #include "base/check.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -104,8 +106,8 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
     return;
   }
 
-  // Use the search icon for most keywords. Use special icons for '@gemini' and
-  // @history'.
+  // Use the search icon for most keywords. Use special icons for '@gemini',
+  // '@history', and search aggregator.
   const TemplateURL* template_url =
       TemplateURLServiceFactory::GetForProfile(profile_)
           ->GetTemplateURLForKeyword(keyword_);
@@ -121,6 +123,12 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
              template_url->starter_pack_id() ==
                  TemplateURLStarterPackData::kHistory) {
     vector_icon = &omnibox::kSearchSparkIcon;
+  } else if (template_url &&
+             template_url->policy_origin() ==
+                 TemplateURLData::PolicyOrigin::kSearchAggregator) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    vector_icon = &vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
+#endif
   }
 
   IconLabelBubbleView::SetImageModel(ui::ImageModel::FromVectorIcon(

@@ -241,7 +241,13 @@ OmniboxPopupViewViews::~OmniboxPopupViewViews() {
 gfx::Image OmniboxPopupViewViews::GetMatchIcon(
     const AutocompleteMatch& match,
     SkColor vector_icon_color) const {
-  return model()->GetMatchIcon(match, vector_icon_color);
+  bool dark_mode = false;
+  auto* color_provider = GetColorProvider();
+  if (color_provider) {
+    dark_mode = color_utils::IsDark(
+        color_provider->GetColor(kColorOmniboxResultsBackground));
+  }
+  return model()->GetMatchIcon(match, vector_icon_color, dark_mode);
 }
 
 void OmniboxPopupViewViews::SetSelectedIndex(size_t index) {

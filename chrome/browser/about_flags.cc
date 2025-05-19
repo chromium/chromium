@@ -1378,6 +1378,17 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorProdParams[] = {
      "https://discoveryengine.googleapis.com/v1alpha/projects/862721868538/"
      "locations/global/collections/default_collection/engines/"
      "teamfood-v11_1720671063545/completionConfig:completeQuery"}};
+const FeatureEntry::FeatureParam
+    kOmniboxSearchAggregatorProdWithFallbackIconParams[] = {
+        {"name", "Agentspace (prod with fallback icon)"},
+        {"shortcut", "agentspace"},
+        {"search_url",
+         "https://vertexaisearch.cloud.google.com/home/cid/"
+         "8884f744-aae1-4fbc-8a64-b8bf7cbf270e?q={searchTerms}"},
+        {"suggest_url",
+         "https://discoveryengine.googleapis.com/v1alpha/projects/862721868538/"
+         "locations/global/collections/default_collection/engines/"
+         "teamfood-v11_1720671063545/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorStagingParams[] = {
     {"name", "Agentspace (staging)"},
     {"shortcut", "agentspace"},
@@ -1416,6 +1427,9 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorDemoParams[] = {
 const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"prod", kOmniboxSearchAggregatorProdParams,
      std::size(kOmniboxSearchAggregatorProdParams), nullptr},
+    {"prod (with fallback icon)",
+     kOmniboxSearchAggregatorProdWithFallbackIconParams,
+     std::size(kOmniboxSearchAggregatorProdWithFallbackIconParams), nullptr},
     {"staging", kOmniboxSearchAggregatorStagingParams,
      std::size(kOmniboxSearchAggregatorStagingParams), nullptr},
     {"alternate", kOmniboxSearchAggregatorAlternateParams,
