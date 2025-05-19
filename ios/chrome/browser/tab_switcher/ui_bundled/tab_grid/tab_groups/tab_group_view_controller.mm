@@ -52,6 +52,7 @@ constexpr CGFloat kTopToolbarMargin = 16;
 
 // Bottom toolbar.
 constexpr CGFloat kGradientHeight = 86;
+constexpr CGFloat kBottomToolbarMargin = 8;
 
 // Button.
 constexpr CGFloat kButtonSpacing = 10;
@@ -947,8 +948,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   bottomToolbar.page =
       _incognito ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;
   bottomToolbar.mode = TabGridMode::kNormal;
-  [bottomToolbar
-      setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
+  if (!IsContainedTabGroupEnabled()) {
+    [bottomToolbar
+        setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
+  }
   [bottomToolbar setEditButtonHidden:YES];
   [bottomToolbar setDoneButtonHidden:YES];
 
@@ -958,9 +961,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
   [_container addSubview:bottomToolbar];
 
+  CGFloat bottomMargin =
+      IsContainedTabGroupEnabled() ? -kBottomToolbarMargin : 0;
+
   [NSLayoutConstraint activateConstraints:@[
-    [bottomToolbar.bottomAnchor
-        constraintEqualToAnchor:_container.bottomAnchor],
+    [bottomToolbar.bottomAnchor constraintEqualToAnchor:_container.bottomAnchor
+                                               constant:bottomMargin],
     [bottomToolbar.leadingAnchor
         constraintEqualToAnchor:_container.leadingAnchor],
     [bottomToolbar.trailingAnchor
@@ -1192,7 +1198,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)updateGridInsets {
   if (IsContainedTabGroupEnabled()) {
     _gridViewController.contentInsets = UIEdgeInsetsMake(
-        kTopToolbarHeight, 0, _bottomToolbar.intrinsicContentSize.height, 0);
+        kTopToolbarHeight, 0,
+        _bottomToolbar.intrinsicContentSize.height + kBottomToolbarMargin, 0);
     return;
   }
   CGFloat bottomToolbarInset = 0;
