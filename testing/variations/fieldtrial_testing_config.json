@@ -1722,6 +1722,25 @@
             ]
         }
     ],
+    "AutofillAiTeamfoodInternal": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAiServerModel",
+                        "AutofillAiUploadModelRequestAndResponse"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAiTeamfoodV2": [
         {
             "platforms": [
