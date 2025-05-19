@@ -804,7 +804,7 @@ void LongPressTabWithTitle(NSString* title) {
   NSString* versionTabTitle = [ChromeEarlGrey currentTabTitle];
 
   GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
-                  @"Three tabs were expected to be open");
+                  @"Two tabs were expected to be open");
 
   // Add the first tab to a new group.
   AddTabToNewGroup(TabStripTabCellMatcher(aboutTabTitle), kGroupTitle1);
@@ -829,6 +829,58 @@ void LongPressTabWithTitle(NSString* title) {
   // Check that the snackbar is displayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1UL, @"One tab remaining");
+}
+
+// Tests the "Close Other Tabs" action when a tab group is involved in
+// incognito.
+- (void)testTabStripCloseOtherTabsWithGroupIncognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  // Open tabs.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://about")];
+  NSString* aboutTabTitle = [ChromeEarlGrey currentTabTitle];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  NSString* versionTabTitle = [ChromeEarlGrey currentTabTitle];
+
+  GREYAssertEqual([ChromeEarlGrey incognitoTabCount], 2UL,
+                  @"Two tabs were expected to be open");
+
+  // Add the first tab to a new group.
+  AddTabToNewGroup(TabStripTabCellMatcher(aboutTabTitle), kGroupTitle1);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
+                                                          kGroupTitle1)];
+
+  // Long press the non grouped tab and tap "Close Other Tabs".
+  [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(versionTabTitle)]
+      performAction:grey_longPress()];
+  [[EarlGrey
+      selectElementWithMatcher:ContextMenuButtonMatcher(
+                                   IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS)]
+      performAction:grey_tap()];
+
+  // Wait for other tabs to disappear.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabStripGroupCellMatcher(
+                                                 kGroupTitle1)];
+  [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(versionTabTitle)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the snackbar is displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
+      assertWithMatcher:grey_nil()];
+
+  GREYAssertEqual([ChromeEarlGrey incognitoTabCount], 1UL,
+                  @"One tab remaining");
 }
 
 // Tests the "Close Other Tabs" action when a tab group is not involved.

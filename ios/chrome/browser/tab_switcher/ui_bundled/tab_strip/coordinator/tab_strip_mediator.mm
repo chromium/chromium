@@ -924,7 +924,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                      WebStateSearchCriteria(item.identifier));
 
   int closedGroupCount = 0;
-  if (IsTabGroupSyncEnabled()) {
+  if (IsTabGroupSyncEnabled() && _tabGroupSyncService) {
     for (const TabGroup* group : _webStateList->GetGroups()) {
       // Remove the local tab group mapping if the `indexToKeep` is not in the
       // group.
