@@ -165,6 +165,7 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     CVBufferSetAttachment(cv_pixel_buffer.get(), kCVImageBufferYCbCrMatrixKey,
                           kCVImageBufferYCbCrMatrix_ITU_R_2020,
                           kCVAttachmentMode_ShouldPropagate);
+
     switch (io_surface_color_space.GetTransferID()) {
       case gfx::ColorSpace::TransferID::HLG:
         CVBufferSetAttachment(cv_pixel_buffer.get(),
@@ -1130,6 +1131,13 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         break;
       case CALayerType::kVideo:
         av_layer_ = [[AVSampleBufferDisplayLayer alloc] init];
+        // Workaround for https://crbug.com/398425794. The documentation for
+        // geometryFlipped specifies that "The value of this property does not
+        // affect the rendering of the layer’s content." If this is not
+        // specified, then AVSampleBufferDisplayLayer, when rendering HDR
+        // content that is transformed (by, e.g, a 90 degree rotation), will
+        // be flipped vertically.
+        av_layer_.geometryFlipped = YES;
         ca_layer_ = av_layer_;
         av_layer_.videoGravity = AVLayerVideoGravityResize;
         if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
