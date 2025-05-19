@@ -129,6 +129,7 @@ buffered-rendering: auto
 caption-side: top
 caret-animation: auto
 caret-color: rgb(0, 0, 0)
+caret-shape: auto
 clear: none
 clip: auto
 clip-path: none

@@ -1188,6 +1188,11 @@
       status: "experimental",
     },
     {
+      // Need a feature entry
+      name: "CSSCaretShape",
+      status: "test",
+    },
+    {
       // Support case-sensitive attribute selector modifier
       // https://drafts.csswg.org/selectors-4/#attribute-case
       name: "CSSCaseSensitiveSelector",

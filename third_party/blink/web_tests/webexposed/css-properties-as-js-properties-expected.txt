@@ -127,6 +127,7 @@ bufferedRendering
 captionSide
 caretAnimation
 caretColor
+caretShape
 clear
 clip
 clipPath

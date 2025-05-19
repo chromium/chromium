@@ -512,6 +512,7 @@
     //none
     //
     // The order must match the order found in IsDisplayOutside().
+    // "block" also a keyword for caret-shape
     "inline",
     "block",
     // The order must match the order found in IsDisplayInside().
@@ -2013,5 +2014,10 @@
     "if",
     "else",
     "media",
+
+    // caret-shape
+    // block is elsewhere
+    "bar",
+    "underscore",
   ],
 }

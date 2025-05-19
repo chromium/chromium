@@ -1965,6 +1965,14 @@ const CSSValue* CaretColor::ParseSingleValue(
   return css_parsing_utils::ConsumeColor(stream, context);
 }
 
+const CSSValue* CaretShape::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.CaretShape());
+}
+
 const blink::Color CaretColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style,

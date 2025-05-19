@@ -2740,6 +2740,17 @@
       includes_currentcolor: true,
     },
     {
+      name: "caret-shape",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_template: "keyword",
+      keywords: ["auto", "bar", "block", "underscore"],
+      default_value: "auto",
+      typedom_types: ["Keyword"],
+      invalidate: ["paint"],
+      runtime_flag: "CSSCaretShape",
+    },
+    {
       name: "clear",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",

@@ -135,6 +135,7 @@ All changes to this list should go through Blink's feature review process: http:
     caption-side
     caret-animation
     caret-color
+    caret-shape
     clear
     clip
     clip-path
