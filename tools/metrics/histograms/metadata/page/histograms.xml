@@ -4345,7 +4345,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Incognito"
-    units="ms" expires_after="2025-06-21">
+    units="ms" expires_after="2026-01-21">
   <owner>kjarosz@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
