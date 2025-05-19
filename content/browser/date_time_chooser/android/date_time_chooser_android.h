@@ -10,7 +10,6 @@
 #include "content/browser/date_time_chooser/date_time_chooser.h"
 #include "content/common/content_export.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 

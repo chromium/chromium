@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_MAC)
 #if __OBJC__
