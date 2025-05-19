@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
+
 import type {DestinationStore, PrintPreviewDestinationDialogElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, DestinationStoreEventType, NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -45,30 +47,17 @@ suite('DestinationSearchTest', function() {
     });
   });
 
-  /** @param destination The destination to simulate selection of. */
-  function simulateDestinationSelect(destination: Destination) {
-    // Fake destinationListItem.
-    const item = document.createElement('print-preview-destination-list-item');
-    item.destination = destination;
+  function simulateDestinationSelect(destId: string) {
+    const destination =
+        new Destination(destId, DestinationOrigin.LOCAL, 'displayName');
 
     // Get print list and fire event.
     const list =
-        dialog.shadowRoot.querySelector('print-preview-destination-list')!;
+        dialog.shadowRoot.querySelector('print-preview-destination-list');
+    assertTrue(!!list);
     list.dispatchEvent(new CustomEvent(
-        'destination-selected', {bubbles: true, composed: true, detail: item}));
-  }
-
-  /**
-   * Adds a destination to the dialog and simulates selection of the
-   * destination.
-   * @param destId The ID for the destination.
-   */
-  function requestSetup(destId: string) {
-    const dest =
-        new Destination(destId, DestinationOrigin.LOCAL, 'displayName');
-
-    // Add the destination to the list.
-    simulateDestinationSelect(dest);
+        'destination-selected',
+        {bubbles: true, composed: true, detail: destination}));
   }
 
   // Tests that a destination is selected if the user clicks on it and
@@ -80,7 +69,7 @@ suite('DestinationSearchTest', function() {
 
         const waiter = eventToPromise(
             DestinationStoreEventType.DESTINATION_SELECT, destinationStore);
-        requestSetup(destId);
+        simulateDestinationSelect(destId);
         const results = await Promise.all(
             [nativeLayer.whenCalled('getPrinterCapabilities'), waiter]);
         const actualId = results[0].destinationId;
@@ -96,7 +85,7 @@ suite('DestinationSearchTest', function() {
   test('GetCapabilitiesFails', async function() {
     const destId = '001122DEADBEEF';
     nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId), true);
-    requestSetup(destId);
+    simulateDestinationSelect(destId);
     const args = await nativeLayer.whenCalled('getPrinterCapabilities');
     assertEquals(destId, args.destinationId);
     // The destination is selected even though capabilities cannot be

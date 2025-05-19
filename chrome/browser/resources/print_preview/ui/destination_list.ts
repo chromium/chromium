@@ -11,12 +11,14 @@ import '/strings.m.js';
 import './throbber.css.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Destination} from '../data/destination.js';
 
 import {getTemplate} from './destination_list.html.js';
+import type {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
 
 const DESTINATION_ITEM_HEIGHT = 32;
 
@@ -176,9 +178,12 @@ export class PrintPreviewDestinationListElement extends
       return;
     }
 
+    const listItem = e.target as PrintPreviewDestinationListItemElement;
+    assert(listItem.destination);
+
     this.dispatchEvent(new CustomEvent(
         'destination-selected',
-        {bubbles: true, composed: true, detail: e.target}));
+        {bubbles: true, composed: true, detail: listItem.destination}));
   }
 
   /**

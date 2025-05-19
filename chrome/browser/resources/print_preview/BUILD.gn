@@ -91,7 +91,7 @@ build_webui("build") {
     "ui/button_strip.css",
     "ui/copies_settings.css",
     "ui/destination_dialog.css",
-    "ui/destination_list_item_style.css",
+    "ui/destination_list_item.css",
     "ui/destination_select.css",
     "ui/dpi_settings.css",
     "ui/duplex_settings.css",

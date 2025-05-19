@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Destination, DestinationStore, LocalDestinationInfo,
-             PrintPreviewDestinationDialogElement,
-             PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
-import {
-  GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl} from 'chrome://print/print_preview.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://print/print_preview.js';
+
+import type {Destination, DestinationStore, LocalDestinationInfo, PrintPreviewDestinationDialogElement, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getExtensionDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
@@ -57,7 +56,7 @@ suite('DestinationDialogTest', function() {
     const printerItems = list!.shadowRoot!.querySelectorAll(
         'print-preview-destination-list-item');
     const getDisplayedName = (item: PrintPreviewDestinationListItemElement) =>
-        item.shadowRoot!.querySelector('.name')!.textContent;
+        item.shadowRoot.querySelector('.name')!.textContent;
     // 5 local printers + 3 extension printers + Save as PDF
     assertEquals(9, printerItems.length);
     // Save as PDF shows up first.
@@ -88,7 +87,7 @@ suite('DestinationDialogTest', function() {
     // This should trigger 1 new getPrinters() call, for extension printers.
     finishSetup();
     await whenPrinterListReady;
-    flush();
+    await microtasksFinished();
     validatePrinterList();
   });
 
@@ -108,7 +107,7 @@ suite('DestinationDialogTest', function() {
             ] /* recentDestinations */);
         await whenAllPreloaded;
         finishSetup();
-        flush();
+        await microtasksFinished();
         validatePrinterList();
       });
 });

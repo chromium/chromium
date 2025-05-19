@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
+
 import type {PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, getTrustedHTML} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,14 +34,12 @@ suite('DestinationListTest', function() {
 
     // Set up list
     document.body.innerHTML = getTrustedHTML`
-          <print-preview-destination-list id="testList" has-action-link=true
-              loading-destinations=false list-name="test">
+          <print-preview-destination-list id="testList">
           </print-preview-destination-list>`;
     list = document.body.querySelector<PrintPreviewDestinationListElement>(
         '#testList')!;
     list.searchQuery = null;
     list.destinations = destinations;
-    list.loadingDestinations = false;
     flush();
   });
 
@@ -64,8 +64,8 @@ suite('DestinationListTest', function() {
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
-          (item.destination.displayName === 'Two' ||
-           item.destination.displayName === 'Four');
+          (item.destination!.displayName === 'Two' ||
+           item.destination!.displayName === 'Four');
     }));
     assertTrue(noMatchHint.hidden);
 
@@ -75,8 +75,8 @@ suite('DestinationListTest', function() {
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
-          item.destination.displayName !== 'One' &&
-          item.destination.displayName !== 'Three';
+          item.destination!.displayName !== 'One' &&
+          item.destination!.displayName !== 'Three';
     }));
     assertTrue(noMatchHint.hidden);
 
@@ -86,8 +86,8 @@ suite('DestinationListTest', function() {
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
-          item.destination.displayName !== 'Four' &&
-          item.destination.displayName !== 'Five';
+          item.destination!.displayName !== 'Four' &&
+          item.destination!.displayName !== 'Five';
     }));
     assertTrue(noMatchHint.hidden);
 
@@ -104,8 +104,8 @@ suite('DestinationListTest', function() {
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
-          (item.destination.displayName === 'One' ||
-           item.destination.displayName === 'Two');
+          (item.destination!.displayName === 'One' ||
+           item.destination!.displayName === 'Two');
     }));
     assertTrue(noMatchHint.hidden);
 
@@ -129,14 +129,14 @@ suite('DestinationListTest', function() {
         items[0]!.click();
         return whenDestinationSelected
             .then(event => {
-              assertEquals(items[0]!, event.detail);
+              assertEquals(items[0]!.destination, event.detail);
               whenDestinationSelected =
                   eventToPromise('destination-selected', list);
               keyEventOn(items[1]!, 'keydown', 13, undefined, 'Enter');
               return whenDestinationSelected;
             })
             .then(event => {
-              assertEquals(items[1]!, event.detail);
+              assertEquals(items[1]!.destination, event.detail);
             });
       });
 });
