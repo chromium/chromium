@@ -1,17 +1,18 @@
 <style include="settings-shared settings-columned-section">
+  #description {
+    padding: 0 var(--cr-section-padding) 16px;
+  }
+
   #explanationText,
-  #generalControls {
+  .settings-columned-section {
+    padding: 16px var(--cr-section-padding) 0;
+  }
+
+  settings-toggle-button,
+  .settings-columned-section .column {
     padding: 0 var(--cr-section-padding);
   }
 
-  #description {
-    padding-bottom: 14px;
-  }
-
-  settings-toggle-button {
-    padding-inline-end: 0;
-    padding-inline-start: 0;
-  }
 </style>
 <div id="explanationText" class="secondary">
   $i18n{incognitoTrackingProtectionsPageDescription}
