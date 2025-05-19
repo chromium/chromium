@@ -9,12 +9,16 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/part.h"
+#include "third_party/liburlpattern/utils.h"
 
 namespace liburlpattern {
 
@@ -68,6 +72,23 @@ class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
                    std::vector<std::pair<std::string_view,
                                          std::optional<std::string_view>>>*
                        group_list_out) const;
+
+  // Generates a valid component string by filling non-fixed-text parts using
+  // `groups` as a look-up table from names to substituting strings.  Every
+  // used strings in `groups` will be encoded by the `callback` function.  This
+  // function fails and returns an unexpected value when substitusion for names
+  // in the pattern is not provided, any encoding attempt fail, or the pattern
+  // contains unsupported syntax.  Currently, patterns only with SegmentWildcard
+  // that have custom names are supported.  For example, `/foo/:bar` is
+  // supported, but `/foo/*` is not.
+  // TODO(crbug.com/414682820): Support more features.
+  //
+  // `groups` should not have overlaps in their names (first elements).  If
+  // names have overlapped, the first appeared candidate will be used, but this
+  // behavior is not guaranteed.
+  base::expected<std::string, absl::Status> Generate(
+      const std::unordered_map<std::string, std::string>& groups,
+      EncodeCallback callback) const;
 
  private:
   // Compute the expected size of the string that will be returned by
