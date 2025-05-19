@@ -17,6 +17,7 @@
 #endif
 
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
 }
 
@@ -39,10 +40,7 @@ void AddStrings(PdfViewerContext context, base::Value::Dict* dict);
 
 // Adds additional data used by the PDF Viewer UI in `dict`, for example
 // whether certain features are enabled/disabled.
-// `enable_printing` only applies for ChromeOS Ash.
-// `enable_annotations` only applies on platforms that supports annotations.
-void AddAdditionalData(bool enable_printing,
-                       bool enable_annotations,
+void AddAdditionalData(content::BrowserContext* context,
                        base::Value::Dict* dict);
 
 // For OOPIF PDF viewer only. Returns true if successfully sends a save event to

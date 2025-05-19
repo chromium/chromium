@@ -44,6 +44,10 @@ source_set("pdf") {
     "//url",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
+
   if (enable_print_preview) {
     deps += [ "//chrome/common" ]
   }
