@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/address_tracker_linux_test_util.h"
 
 #include <linux/if.h>
@@ -15,14 +10,16 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "net/base/ip_address.h"
 
 bool operator==(const struct ifaddrmsg& lhs, const struct ifaddrmsg& rhs) {
-  return memcmp(&lhs, &rhs, sizeof(struct ifaddrmsg)) == 0;
+  return base::byte_span_from_ref(lhs) == base::byte_span_from_ref(rhs);
 }
 
 namespace net::test {
@@ -34,22 +31,21 @@ NetlinkMessage::NetlinkMessage(uint16_t type) : buffer_(NLMSG_HDRLEN) {
 
 NetlinkMessage::~NetlinkMessage() = default;
 
-void NetlinkMessage::AddPayload(const void* data, size_t length) {
+void NetlinkMessage::AddPayload(base::span<const uint8_t> data) {
   CHECK_EQ(static_cast<size_t>(NLMSG_HDRLEN), buffer_.size())
       << "Payload must be added first";
-  Append(data, length);
+  Append(data);
   Align();
 }
 
 void NetlinkMessage::AddAttribute(uint16_t type,
-                                  const void* data,
-                                  size_t length) {
+                                  base::span<const uint8_t> data) {
   struct nlattr attr;
-  attr.nla_len = NLA_HDRLEN + length;
+  attr.nla_len = NLA_HDRLEN + data.size();
   attr.nla_type = type;
-  Append(&attr, sizeof(attr));
+  Append(base::byte_span_from_ref(attr));
   Align();
-  Append(data, length);
+  Append(data);
   Align();
 }
 
@@ -58,9 +54,8 @@ void NetlinkMessage::AppendTo(NetlinkBuffer* output) const {
   output->insert(output->end(), buffer_.begin(), buffer_.end());
 }
 
-void NetlinkMessage::Append(const void* data, size_t length) {
-  const char* chardata = reinterpret_cast<const char*>(data);
-  buffer_.insert(buffer_.end(), chardata, chardata + length);
+void NetlinkMessage::Append(base::span<const uint8_t> data) {
+  buffer_.insert(buffer_.end(), data.begin(), data.end());
 }
 
 void NetlinkMessage::Align() {
@@ -80,21 +75,21 @@ void MakeAddrMessageWithCacheInfo(uint16_t type,
                                   uint32_t preferred_lifetime,
                                   NetlinkBuffer* output) {
   NetlinkMessage nlmsg(type);
-  struct ifaddrmsg msg = {};
+  ifaddrmsg msg = {};
   msg.ifa_family = family;
   msg.ifa_flags = flags;
   msg.ifa_index = index;
-  nlmsg.AddPayload(msg);
+  nlmsg.AddPayload(base::byte_span_from_ref(msg));
   if (address.size()) {
-    nlmsg.AddAttribute(IFA_ADDRESS, address.bytes().data(), address.size());
+    nlmsg.AddAttribute(IFA_ADDRESS, address.bytes().span());
   }
   if (local.size()) {
-    nlmsg.AddAttribute(IFA_LOCAL, local.bytes().data(), local.size());
+    nlmsg.AddAttribute(IFA_LOCAL, local.bytes().span());
   }
-  struct ifa_cacheinfo cache_info = {};
+  ifa_cacheinfo cache_info = {};
   cache_info.ifa_prefered = preferred_lifetime;
   cache_info.ifa_valid = INFINITY_LIFE_TIME;
-  nlmsg.AddAttribute(IFA_CACHEINFO, &cache_info, sizeof(cache_info));
+  nlmsg.AddAttribute(IFA_CACHEINFO, base::byte_span_from_ref(cache_info));
   nlmsg.AppendTo(output);
 }
 
@@ -115,11 +110,11 @@ void MakeLinkMessage(uint16_t type,
                      NetlinkBuffer* output,
                      bool clear_output) {
   NetlinkMessage nlmsg(type);
-  struct ifinfomsg msg = {};
+  ifinfomsg msg = {};
   msg.ifi_index = index;
   msg.ifi_flags = flags;
   msg.ifi_change = 0xFFFFFFFF;
-  nlmsg.AddPayload(msg);
+  nlmsg.AddPayload(base::byte_span_from_ref(msg));
   if (clear_output) {
     output->clear();
   }
@@ -134,13 +129,13 @@ void MakeWirelessLinkMessage(uint16_t type,
                              NetlinkBuffer* output,
                              bool clear_output) {
   NetlinkMessage nlmsg(type);
-  struct ifinfomsg msg = {};
+  ifinfomsg msg = {};
   msg.ifi_index = index;
   msg.ifi_flags = flags;
   msg.ifi_change = 0;
-  nlmsg.AddPayload(msg);
-  char data[8] = {};
-  nlmsg.AddAttribute(IFLA_WIRELESS, data, sizeof(data));
+  nlmsg.AddPayload(base::byte_span_from_ref(msg));
+  std::array<uint8_t, 8u> data = {};
+  nlmsg.AddAttribute(IFLA_WIRELESS, data);
   if (clear_output) {
     output->clear();
   }

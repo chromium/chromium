@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -380,13 +381,13 @@ TEST_F(AddressTrackerLinuxTest, IgnoredMessage) {
 
   // Valid message after ignored messages.
   NetlinkMessage nlmsg(RTM_NEWADDR);
-  struct ifaddrmsg msg = {};
+  ifaddrmsg msg = {};
   msg.ifa_family = AF_INET;
-  nlmsg.AddPayload(msg);
+  nlmsg.AddPayload(base::byte_span_from_ref(msg));
   // Ignored attribute.
-  struct ifa_cacheinfo cache_info = {};
-  nlmsg.AddAttribute(IFA_CACHEINFO, &cache_info, sizeof(cache_info));
-  nlmsg.AddAttribute(IFA_ADDRESS, kAddr0.bytes().data(), kAddr0.size());
+  ifa_cacheinfo cache_info = {};
+  nlmsg.AddAttribute(IFA_CACHEINFO, base::byte_span_from_ref(cache_info));
+  nlmsg.AddAttribute(IFA_ADDRESS, kAddr0.bytes().span());
   nlmsg.AppendTo(&buffer);
 
   EXPECT_TRUE(HandleAddressMessage(buffer));
