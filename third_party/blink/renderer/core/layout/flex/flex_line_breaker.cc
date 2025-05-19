@@ -200,29 +200,62 @@ FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
   //   sums[j] - sums[i-1]
   //
   // [1] https://en.wikipedia.org/wiki/Prefix_sum
-  wtf_size_t line_count = 1u;
   {
-    LayoutUnit line_size;
-    wtf_size_t item_count = 0u;
     for (wtf_size_t i = 0u; i < all_items.size(); ++i) {
-      // TODO(ikilpatrick): Subsequent items can be "negative" in size, and the
-      // prefix-sums array needs to be strictly monotonic for the algorithm to
-      // work.
-      const LayoutUnit item_size =
-          all_items[i].HypotheticalMainAxisMarginBoxSize();
+      // NOTE: The prefix-sums array needs to be strictly monotonically
+      // increasing for any of the "fast" balancing algorithms to work
+      // correctly. Negative margins can potentially break this assumption.
+      //
+      // To guard against this (at the moment) we just clamp the margin-box
+      // size to zero when this situation occurs. There are potentially more
+      // advanced schemes (e.g. a forward scan through any negative items,
+      // which reduce the size of the current item); but we'll start with this
+      // simple approximation and see what feedback we get.
+      const LayoutUnit item_size = all_items[i]
+                                       .HypotheticalMainAxisMarginBoxSize()
+                                       .ClampNegativeToZero();
       ctx.sums[i] = (i == 0 ? kZero : ctx.sums[i - 1]) +
                     (item_size + gap_between_items).RawValue();
-
-      if (line_size + item_size > line_break_size && item_count > 0) {
-        line_size = LayoutUnit();
-        item_count = 0;
-        ++line_count;
-      }
-
-      line_size += item_size + gap_between_items;
-      ++item_count;
     }
   }
+
+  // Using the prefix-sums array returns how many flex-lines would result with
+  // greedy packing given `line_break_size`.
+  auto greedy_line_count = [&ctx](ScoreUnit line_break_size) -> wtf_size_t {
+    const auto begin = ctx.sums.begin();
+    const auto end = ctx.sums.end();
+    auto it = begin;
+    ScoreUnit previous_sum = kZero;
+    wtf_size_t line_count = 1u;
+    for (;;) {
+      // Get the first value that has a size *greater* than the breakpoint.
+      auto next = std::upper_bound(
+          it, end, previous_sum + line_break_size + ctx.gap_between_items);
+
+      // Check if we are at the end, there is no additional line.
+      if (next == end) {
+        break;
+      }
+
+      // `next` is past our breakpoint. There are two scenarios:
+      //  - We are a single item which exceeds the line-break size, don't
+      //    backtrack for this case.
+      //  - There is more than one item, backtrack one item so the content fits
+      //    on the line.
+      const bool is_single_item =
+          ((line_count == 1 ? 1 : 0) + std::distance(it, next)) <= 1;
+      it = is_single_item ? next : std::prev(next);
+      previous_sum = *it;
+
+      // Only increment our line-count if we have content following `it`.
+      if (std::next(it) != end) {
+        ++line_count;
+      }
+    }
+    return line_count;
+  };
+
+  const wtf_size_t line_count = greedy_line_count(ctx.line_break_size);
 
   // TODO(ikilpatrick): Bisect `line_break_size` to a smaller value with the
   // same number of lines. We also need this for the "min-lines" feature.
@@ -258,17 +291,18 @@ FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
 
   // Next retrieve the number of items on each line (in reverse).
   Vector<wtf_size_t> item_counts;
-  item_counts.ReserveInitialCapacity(line_count);
-  wtf_size_t previous_index = all_items.size() - 1;
-  wtf_size_t index = ctx.scores[previous_index].best_break;
-  while (index != kNotFound) {
-    item_counts.push_back(previous_index - index);
-    previous_index = index;
-    index = ctx.scores[index].best_break;
+  {
+    item_counts.ReserveInitialCapacity(line_count);
+    wtf_size_t previous_index = all_items.size() - 1;
+    wtf_size_t index = ctx.scores[previous_index].best_break;
+    while (index != kNotFound) {
+      item_counts.push_back(previous_index - index);
+      previous_index = index;
+      index = ctx.scores[index].best_break;
+    }
+    item_counts.push_back(previous_index + 1);
+    DCHECK_EQ(line_count, item_counts.size());
   }
-  item_counts.push_back(previous_index + 1);
-
-  DCHECK_EQ(line_count, item_counts.size());
 
   // Build up the final result, just break based on our pre-computed line-count.
   auto it = item_counts.rbegin();
