@@ -14,6 +14,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -21,7 +22,13 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
 #include "ui/base/resource/resource_handle.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#endif
 
 namespace base {
 class FilePath;
@@ -129,9 +136,40 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
   // memory, with the mapping owned by |data_source_|.
   bool LoadFromPath(const base::FilePath& path);
 
-  // The static part of the implementation in LoadFromPath().
-  static std::unique_ptr<DataSource> LoadFromPathInternal(
+  enum class FailureReason {
+    kOpenFile,
+    kMapFile,
+    kUnzip,
+    kIncompleteHeader,
+    kBadPakVersion,
+    kBadEncodingType,
+    kTooShort,
+    kBoundsExceeded,
+    kOrderingViolation,
+    kAliasTableCorrupt,
+  };
+
+  struct ErrorState {
+    FailureReason reason;
+#if BUILDFLAG(IS_WIN)
+    DWORD error;
+#else
+    int error;
+#endif
+    base::File::Error file_error;
+
+    friend bool operator==(const ErrorState& lhs,
+                           const ErrorState& rhs) = default;
+  };
+
+  // As LoadFromPath, but returns an ErrorState on failure.
+  base::expected<void, DataPack::ErrorState> LoadFromPathWithError(
       const base::FilePath& path);
+
+  // The static part of the implementation in LoadFromPath().
+  static base::expected<std::unique_ptr<DataPack::DataSource>,
+                        DataPack::ErrorState>
+  LoadFromPathInternal(const base::FilePath& path);
 
   // Invokes LoadFromFileRegion with the entire contents of |file|. Compressed
   // files are not supported.
@@ -192,7 +230,8 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   // Does the actual loading of a pack file.
   // Called by Load and LoadFromFile and LoadFromBuffer.
-  bool LoadImpl(std::unique_ptr<DataSource> data_source);
+  base::expected<void, DataPack::FailureReason> LoadImpl(
+      std::unique_ptr<DataSource> data_source);
   const Entry* LookupEntryById(uint16_t resource_id) const;
 
   // Sanity check the file. If it passed the check, register `resource_table_`
@@ -200,10 +239,12 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
   // `margin_to_skip` represents the size of the margin in bytes before
   // resource_table information starts.
   // If there is no extra data in data pack, `margin_to_skip` is equal to the
-  // length of file header.
-  bool SanityCheckFileAndRegisterResources(size_t margin_to_skip,
-                                           const uint8_t* data,
-                                           size_t data_length);
+  // length of file header. Returns std::nullopt on success or a FailureReason
+  // on failure.
+  base::expected<void, DataPack::FailureReason>
+  SanityCheckFileAndRegisterResources(size_t margin_to_skip,
+                                      const uint8_t* data,
+                                      size_t data_length);
 
   // Returns the string between `target_offset` and `next_offset` in data pack.
   static std::string_view GetStringViewFromOffset(uint32_t target_offset,

@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/test/gmock_expected_support.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -227,6 +228,9 @@ TEST(DataPackTest, LoadFileWithTruncatedHeader) {
 
   DataPack pack(k100Percent);
   ASSERT_FALSE(pack.LoadFromPath(data_path));
+  ASSERT_THAT(pack.LoadFromPathWithError(data_path),
+              base::test::ErrorIs(DataPack::ErrorState{
+                  DataPack::FailureReason::kIncompleteHeader}));
 }
 
 TEST_P(DataPackTest, Write) {
