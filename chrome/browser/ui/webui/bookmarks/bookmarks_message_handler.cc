@@ -245,6 +245,12 @@ bool BookmarksMessageHandler::CanUploadBookmarkToAccountStorage(
   }
 
   Profile* profile = Profile::FromWebUI(web_ui());
+  // Incognito profile should not show the upload button. The action is
+  // possible, but it should not be promoted.
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   const bookmarks::BookmarkNode* node =

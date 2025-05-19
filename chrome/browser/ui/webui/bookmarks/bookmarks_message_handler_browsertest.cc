@@ -34,14 +34,7 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    webui_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
-    web_ui_.set_web_contents(webui_contents_.get());
-
-    auto handler_owner = std::make_unique<BookmarksMessageHandler>();
-    handler_ = handler_owner.get();
-    web_ui_.AddMessageHandler(std::move(handler_owner));
-
+    ResetWithProfile(browser()->profile());
     SignInAndEnableAccountBookmarkNodes(browser()->profile());
   }
 
@@ -58,6 +51,16 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
     base::Value::List args;
     args.Append(id_string);
     handler_->HandleSingleUploadClicked(args);
+  }
+
+  void ResetWithProfile(Profile* profile) {
+    webui_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile));
+    web_ui_.set_web_contents(webui_contents_.get());
+
+    auto handler_owner = std::make_unique<BookmarksMessageHandler>();
+    handler_ = handler_owner.get();
+    web_ui_.AddMessageHandler(std::move(handler_owner));
   }
 
  private:
@@ -200,6 +203,25 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                     GURL("http://test.com"));
   const std::string id_string = base::NumberToString(node->id());
 
+  EXPECT_FALSE(SendCanUploadBookmarkToAccountStorage(id_string));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
+                       CanNotUploadInIncognitoMode) {
+  // Add a bookmark that can be uploaded.
+  Profile* original_profile = browser()->profile();
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(original_profile);
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  const bookmarks::BookmarkNode* node = model->AddURL(
+      model->other_node(), 0, std::u16string(), GURL("http://test.com"));
+  const std::string id_string = base::NumberToString(node->id());
+  ASSERT_TRUE(SendCanUploadBookmarkToAccountStorage(id_string));
+
+  // Simulate opening the webui in Incognito mode.
+  Profile* otr_profile =
+      original_profile->GetPrimaryOTRProfile(/*create_if_needed*/ true);
+  ResetWithProfile(otr_profile);
   EXPECT_FALSE(SendCanUploadBookmarkToAccountStorage(id_string));
 }
 
