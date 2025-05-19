@@ -290,7 +290,8 @@ NSString* const kRectangleGroupBubble = @"rectangle.3.group.bubble";
 NSString* const kHomeSymbol = @"house";
 NSString* const kWorkSymbol = @"case";
 NSString* const kShieldedEnvelope = @"envelope.badge.shield.half.filled";
-NSString* const kReaderModeSymbol = @"text.page";
+NSString* const kReaderModeSymbolPreIOS18 = @"doc.plaintext";
+NSString* const kReaderModeSymbolPostIOS18 = @"text.page";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

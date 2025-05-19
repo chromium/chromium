@@ -7,8 +7,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -37,7 +37,7 @@ void ReaderModeModel::FetchConfigurationForWebState(
   item_configuration->accessibility_label = l10n_util::GetStringUTF8(
       IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
   item_configuration->entrypoint_image_name =
-      base::SysNSStringToUTF8(kReaderModeSymbol);
+      base::SysNSStringToUTF8(GetReaderModeSymbolName());
   item_configuration->image_type =
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
   item_configuration->relevance =

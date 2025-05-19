@@ -79,7 +79,10 @@ source_set("constants") {
     "constants.h",
     "constants.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
 }
 
 source_set("unit_tests") {

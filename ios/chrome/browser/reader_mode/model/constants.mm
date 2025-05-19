@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 const char kReaderModeHeuristicResultHistogram[] =
     "IOS.ReaderMode.Heuristic.Result";
 
@@ -18,3 +20,11 @@ const char kReaderModeDistillerLatencyHistogram[] =
 
 const char kReaderModeAmpClassificationHistogram[] =
     "IOS.ReaderMode.Distiller.Amp";
+
+NSString* GetReaderModeSymbolName() {
+  if (@available(iOS 18, *)) {
+    return kReaderModeSymbolPostIOS18;
+  } else {
+    return kReaderModeSymbolPreIOS18;
+  }
+}

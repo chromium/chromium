@@ -23,6 +23,7 @@ include_rules = [
   "+ios/chrome/browser/follow/model/follow_tab_helper.h",
   "+ios/chrome/browser/follow/model/follow_util.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/reader_mode/model/constants.h",
   "+ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h",
   "+ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
