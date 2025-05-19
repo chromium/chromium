@@ -51,9 +51,9 @@ typedef void (^MockValueForHTTPHeaderField)(NSInvocation*);
 MockValueForHTTPHeaderField GetMockMethodWithHeader(
     NSDictionary<NSString*, NSString*>* headers) {
   void (^output_block)(NSInvocation*) = ^(NSInvocation* invocation) {
-    __weak NSString* arg;
+    __unsafe_unretained NSString* arg;
     [invocation getArgument:&arg atIndex:2];
-    __weak NSString* value = headers[arg];
+    __unsafe_unretained NSString* value = headers[arg];
     [invocation setReturnValue:&value];
   };
   return output_block;
