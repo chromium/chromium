@@ -95,7 +95,7 @@ void DragDropCellInPinnedView(NSString* cell_identifier) {
   // The pinned view is hidden when there is no pinned tabs. We can't determine
   // its position precisely.
   XCUICoordinate* end_point =
-      [dst_element coordinateWithNormalizedOffset:CGVectorMake(-0.8, -0.5)];
+      [dst_element coordinateWithNormalizedOffset:CGVectorMake(-1.5, -0.5)];
 
   [start_point pressForDuration:1.5
            thenDragToCoordinate:end_point

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation TabGridBottomToolbar {
@@ -31,7 +32,6 @@
   UIBarButtonItem* _spaceItem;
   NSArray<NSLayoutConstraint*>* _compactConstraints;
   NSArray<NSLayoutConstraint*>* _floatingConstraints;
-  NSLayoutConstraint* _largeNewTabButtonBottomAnchor;
   TabGridNewTabButton* _smallNewTabButton;
   TabGridNewTabButton* _largeNewTabButton;
   UIBarButtonItem* _doneButton;
@@ -372,18 +372,37 @@
   _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _largeNewTabButton.page = self.page;
 
-  CGFloat floatingButtonVerticalInset = kTabGridFloatingButtonVerticalInset;
+  // Try to force the button to be aligned with the safe area. Lower priority to
+  // avoid clashing with the constraints with the actual sides when there is no
+  // safe area.
+  NSLayoutConstraint* largeButtonTrailingSafeAreaConstraint =
+      [_largeNewTabButton.trailingAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor];
+  largeButtonTrailingSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* largeButtonBottomSafeAreaConstraint =
+      [_largeNewTabButton.bottomAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor];
+  largeButtonBottomSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
 
-  _largeNewTabButtonBottomAnchor = [_largeNewTabButton.bottomAnchor
-      constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor
-                     constant:-floatingButtonVerticalInset];
+  CGFloat largeButtonHorizontalInset =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+          ? kTabGridFloatingButtonInsetIPad
+          : kTabGridFloatingButtonInset;
+  CGFloat largeButtonVerticalInset =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+          ? kTabGridFloatingButtonInsetIPad
+          : kTabGridFloatingButtonInset;
 
   _floatingConstraints = @[
     [_largeNewTabButton.topAnchor constraintEqualToAnchor:self.topAnchor],
-    _largeNewTabButtonBottomAnchor,
+    [_largeNewTabButton.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.bottomAnchor
+                                 constant:-largeButtonVerticalInset],
+    largeButtonBottomSafeAreaConstraint,
     [_largeNewTabButton.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor
-                       constant:-kTabGridFloatingButtonHorizontalInset],
+        constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                 constant:-largeButtonHorizontalInset],
+    largeButtonTrailingSafeAreaConstraint,
   ];
 
   _newTabButtonItem.title = _largeNewTabButton.accessibilityLabel;
@@ -406,8 +425,6 @@
     [self updateBackgroundVisibility];
     return;
   }
-  _largeNewTabButtonBottomAnchor.constant =
-      -kTabGridFloatingButtonVerticalInset;
 
   if (self.mode == TabGridMode::kSelection) {
     [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
@@ -467,8 +484,7 @@
 
 // Returns YES if the `_largeNewTabButton` is showing on the toolbar.
 - (BOOL)isShowingFloatingButton {
-  return _largeNewTabButton.superview &&
-         _largeNewTabButtonBottomAnchor.isActive;
+  return _largeNewTabButton.superview;
 }
 
 // Returns YES if should use compact bottom toolbar layout.
