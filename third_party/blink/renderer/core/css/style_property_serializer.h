@@ -64,6 +64,8 @@ class CORE_EXPORT StylePropertySerializer {
                            String separator = " ") const;
   String GetShorthandValueForBidirectionalGapRules(
       const StylePropertyShorthand&) const;
+  String GetShorthandValueForGapDecorationsRule(
+      const StylePropertyShorthand&) const;
   String GetShorthandValueForColumnRule(const StylePropertyShorthand&) const;
   String GetShorthandValueForColumns(const StylePropertyShorthand&) const;
   // foo || bar || ... || baz

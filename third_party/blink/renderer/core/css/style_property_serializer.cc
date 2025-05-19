@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
@@ -587,7 +588,7 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kBorderStyle:
       return Get4Values(borderStyleShorthand());
     case CSSPropertyID::kColumnRule:
-      return GetShorthandValueForColumnRule(columnRuleShorthand());
+      return GetShorthandValueForGapDecorationsRule(columnRuleShorthand());
     case CSSPropertyID::kColumns:
       return GetShorthandValueForColumns(columnsShorthand());
     case CSSPropertyID::kContainIntrinsicSize:
@@ -1920,6 +1921,211 @@ String StylePropertySerializer::GetShorthandValueForBidirectionalGapRules(
   }
   if (!column_rule_data->IsInitialValue()) {
     result.Append(column_rule_data->CssText());
+  }
+
+  return result.ReleaseString();
+}
+
+// TODO(crbug.com/357648037): A lot of logic in this function is similar to
+// ComputedStyleUtils::ValueForGapDecorationRuleShorthand(). Look to refactor to
+// avoid duplicated logic when possible.
+String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
+    const StylePropertyShorthand& shorthand) const {
+  // If the CSSGapDecorations feature is not enabled, fallback to legacy
+  // behavior of serializing the shorthand since values are stored as single
+  // values and not lists.
+  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    return GetShorthandValueForColumnRule(shorthand);
+  }
+
+  CHECK_EQ(shorthand.length(), 3u);
+  CHECK(shorthand.properties()[0]->IDEquals(CSSPropertyID::kColumnRuleWidth));
+  CHECK(shorthand.properties()[1]->IDEquals(CSSPropertyID::kColumnRuleStyle));
+  CHECK(shorthand.properties()[2]->IDEquals(CSSPropertyID::kColumnRuleColor));
+
+  const CSSValueList* width_values = DynamicTo<CSSValueList>(
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));
+
+  // When CSSGapDecorations feature is enabled, the `style` and `color`
+  // properties might still be represented as a single CSSValue instead of a
+  // CSSValueList. This can happen when the properties are parsed via the fast
+  // parsing path rather than the standard `ParseSingleValue()` method. In such
+  // cases, wrap the single value in a list to ensure consistent handling.
+  auto getValueAsList = [&](const CSSValue* value) -> const CSSValueList* {
+    if (const CSSValueList* value_list = DynamicTo<CSSValueList>(value)) {
+      return value_list;
+    }
+    CSSValueList* wrapper_list = CSSValueList::CreateSpaceSeparated();
+    wrapper_list->Append(*value);
+    return wrapper_list;
+  };
+
+  const CSSValueList* style_values = getValueAsList(
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]));
+  const CSSValueList* color_values = getValueAsList(
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]));
+
+  // Builds a string for a single segment of the shorthand. A segment represents
+  // a <gap-rule>, which is defined as [ <line-width> || <line-style> || <color>
+  // ]. Seriaizing the segment requires the shortest form possible so we skip
+  // defaults and initial values.
+  auto serializeSegment = [&](const CSSValue& width_value,
+                              const CSSValue& style_value,
+                              const CSSValue& color_value) {
+    StringBuilder segment_result;
+    if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(width_value);
+        !(ident_value && ident_value->GetValueID() == CSSValueID::kMedium) &&
+        !width_value.IsInitialValue()) {
+      String width_text = width_value.CssText();
+      segment_result.Append(width_text);
+    }
+
+    if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(style_value);
+        !(ident_value && ident_value->GetValueID() == CSSValueID::kNone) &&
+        !style_value.IsInitialValue()) {
+      String style_text = style_value.CssText();
+      if (!segment_result.empty()) {
+        segment_result.Append(" ");
+      }
+
+      segment_result.Append(style_text);
+    }
+    if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(color_value);
+        !(ident_value &&
+          ident_value->GetValueID() == CSSValueID::kCurrentcolor) &&
+        !color_value.IsInitialValue()) {
+      String color_text = color_value.CssText();
+      if (!segment_result.empty()) {
+        segment_result.Append(" ");
+      }
+
+      segment_result.Append(color_text);
+    }
+
+    if (segment_result.empty()) {
+      segment_result.Append("medium");
+    }
+
+    return segment_result.ReleaseString();
+  };
+
+  StringBuilder result;
+  const wtf_size_t count = width_values->length();
+
+  // If the longhands differ in length, return an empty string.
+  // Constructing a shorthand from misaligned longhands is non-trivial and
+  // currently not supported.
+  //
+  // TODO(crbug.com/416535734): Figure out a way to handle cases where we
+  // need to construct the shorthand from individual separate longhands that
+  // don't align.
+  if (count != style_values->length() || count != color_values->length()) {
+    return String();
+  }
+
+  for (wtf_size_t i = 0; i < count; ++i) {
+    if (i > 0) {
+      result.Append(", ");
+    }
+
+    const auto* style_repeat_value =
+        DynamicTo<cssvalue::CSSRepeatValue>(style_values->Item(i));
+    const auto* color_repeat_value =
+        DynamicTo<cssvalue::CSSRepeatValue>(color_values->Item(i));
+
+    if (const auto* width_repeat_value =
+            DynamicTo<cssvalue::CSSRepeatValue>(width_values->Item(i))) {
+      // Return an empty string if values don't align.
+      //
+      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
+      // need to construct the shorthand from individual separate longhands that
+      // don't align.
+      if (!style_repeat_value || !color_repeat_value) {
+        return String();
+      }
+
+      const bool is_auto_repeater = width_repeat_value->IsAutoRepeatValue();
+      // Return an empty string if values don't align.
+      //
+      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
+      // need to construct the shorthand from individual separate longhands that
+      // don't align.
+      if (is_auto_repeater != style_repeat_value->IsAutoRepeatValue() ||
+          is_auto_repeater != color_repeat_value->IsAutoRepeatValue()) {
+        return String();
+      }
+
+      const CSSPrimitiveValue* repetitions = nullptr;
+      if (!is_auto_repeater) {
+        repetitions = width_repeat_value->Repetitions();
+        // Return an empty string if values don't align.
+        //
+        // TODO(crbug.com/416535734): Figure out a way to handle cases where we
+        // need to construct the shorthand from individual separate longhands
+        // that don't align.
+        if (!base::ValuesEquivalent(repetitions,
+                                    style_repeat_value->Repetitions()) ||
+            !base::ValuesEquivalent(repetitions,
+                                    color_repeat_value->Repetitions())) {
+          return String();
+        }
+      }
+
+      const size_t repeated_values_count =
+          width_repeat_value->Values().length();
+
+      // Return an empty string if values don't align.
+      //
+      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
+      // need to construct the shorthand from individual separate longhands that
+      // don't align.
+      if (repeated_values_count != style_repeat_value->Values().length() ||
+          repeated_values_count != color_repeat_value->Values().length()) {
+        return String();
+      }
+
+      // For repeat values, we need to unpack sub-values and serialize the
+      // nested gap-rule(s).
+      StringBuilder segment_result;
+      for (wtf_size_t j = 0; j < repeated_values_count; ++j) {
+        if (j > 0) {
+          segment_result.Append(", ");
+        }
+
+        String segment_string =
+            serializeSegment(width_repeat_value->Values().Item(j),
+                             style_repeat_value->Values().Item(j),
+                             color_repeat_value->Values().Item(j));
+        segment_result.Append(segment_string);
+      }
+
+      // Wrap in repeat('auto'/<integer>, `segment_string`)
+      StringBuilder repeat_result;
+      repeat_result.Append("repeat(");
+      if (repetitions) {
+        repeat_result.Append(repetitions->CssText());
+      } else {
+        repeat_result.Append("auto");
+      }
+      repeat_result.Append(", ");
+      repeat_result.Append(segment_result.ReleaseString());
+      repeat_result.Append(")");
+      result.Append(repeat_result.ReleaseString());
+    } else {
+      // Return an empty string if values don't align.
+      //
+      // TODO(crbug.com/416535734): Figure out a way to handle cases where we
+      // need to construct the shorthand from individual separate longhands
+      // that don't align.
+      if (style_repeat_value || color_repeat_value) {
+        return String();
+      }
+      // A simple <gap-rule> serializes directly to its width, style and color
+      // values.
+      String segment_string = serializeSegment(
+          width_values->Item(i), style_values->Item(i), color_values->Item(i));
+      result.Append(segment_string);
+    }
   }
 
   return result.ReleaseString();

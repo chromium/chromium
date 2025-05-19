@@ -3,7 +3,8 @@
   <meta charset="utf-8">
   <title>CSS Gap Decorations: individual separate longhands form shorthand</title>
   <link rel="help" href="https://drafts.csswg.org/css-multicol/#propdef-column-rule">
-  <meta name="assert" content="Setting *-rule-width, *-rule-style, and *-rule-color results in the misaligned column-rule shorthand.">
+  <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12201">
+  <meta name="assert" content="Setting *-rule-width, *-rule-style, and *-rule-color results in the misaligned *-rule shorthand.">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -63,14 +64,24 @@ const testCases = [
   },
 ];
 
-for (const {width, style, color, expected} of testCases) {
-  let div = document.querySelector('#target');
+// TODO(samomekarajr): Add `row-rule` to this test.
+const rule_properties = {
+    'column-rule': ['columnRuleWidth',
+                    'columnRuleStyle',
+                    'columnRuleColor'],
+};
 
-  div.style.columnRuleWidth = width;
-  div.style.columnRuleStyle = style;
-  div.style.columnRuleColor = color;
+for(rule_property in rule_properties) {
+  const [widthProperty, styleProperty, colorProperty] = rule_properties[rule_property];
+  for (const {width, style, color, expected} of testCases) {
+  let div = document.querySelector('#target');
+  div.style[widthProperty] = width;
+  div.style[styleProperty] = style;
+  div.style[colorProperty]= color;
   test(() => {
-    assert_equals(window.getComputedStyle(div).columnRule, expected);
-  }, `column-rule computed from width: ${width}, style: ${style}, color: ${color}`);
+    assert_equals(window.getComputedStyle(div)[rule_property], expected);
+    assert_equals(div.style[rule_property], expected);
+    }, `${rule_property} computed from width: ${width}, style: ${style}, color: ${color}`);
+  }
 }
 </script>

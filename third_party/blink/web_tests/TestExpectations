@@ -6555,8 +6555,6 @@ crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customi
 crbug.com/357648037 virtual/css-gap-decorations/animations/interpolation/webkit-column-rule-color-interpolation.html [ Crash Failure Timeout ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-animations/responsive/column-rule-color-001.html [ Failure ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/animation/column-rule-color-interpolation.html [ Failure ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-valid.html [ Failure ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-shorthand.html [ Crash Failure Timeout ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-001.html [ Crash Failure Timeout ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/addition-per-property-001.html [ Crash Failure Timeout ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html [ Crash Failure Timeout ]
