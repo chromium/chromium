@@ -614,17 +614,26 @@ mojom::IntegrityAlgorithm StrongestHashAlgorithm(
   return current;
 }
 
-bool ParseURLHash(std::string_view expression, mojom::CSPHashSource* hash) {
-  constexpr char prefix[] = "'url-";
-  constexpr size_t prefix_length = 5u;
+bool ParsePrefixedHash(std::string_view prefix,
+                       std::string_view expression,
+                       mojom::CSPHashSource* hash) {
   if (!base::StartsWith(expression, prefix,
                         base::CompareCase::INSENSITIVE_ASCII) ||
       expression[expression.length() - 1] != '\'') {
     return false;
   }
   return ParseUnquotedHash(
-      expression.substr(prefix_length, expression.length() - prefix_length - 1),
+      expression.substr(prefix.length(),
+                        expression.length() - prefix.length() - 1),
       hash);
+}
+
+bool ParseURLHash(std::string_view expression, mojom::CSPHashSource* hash) {
+  return ParsePrefixedHash("'url-", expression, hash);
+}
+
+bool ParseEvalHash(std::string_view expression, mojom::CSPHashSource* hash) {
+  return ParsePrefixedHash("'eval-", expression, hash);
 }
 
 // Parse source-list grammar.
@@ -781,6 +790,20 @@ mojom::CSPSourceListPtr ParseSourceList(
     if (ParseURLHash(expression, url_hash.get())) {
       if (directive_name == CSPDirectiveName::ScriptSrcV2) {
         directive->url_hashes.push_back(std::move(url_hash));
+      } else {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive '%s' contains %s as a "
+            "source expression that is permitted only for 'script-src-v2' "
+            "directive. It will be ignored.",
+            ToString(directive_name).c_str(), std::string(expression).c_str()));
+      }
+      continue;
+    }
+
+    auto eval_hash = mojom::CSPHashSource::New();
+    if (ParseEvalHash(expression, eval_hash.get())) {
+      if (directive_name == CSPDirectiveName::ScriptSrcV2) {
+        directive->eval_hashes.push_back(std::move(eval_hash));
       } else {
         parsing_errors.emplace_back(base::StringPrintf(
             "The Content-Security-Policy directive '%s' contains %s as a "

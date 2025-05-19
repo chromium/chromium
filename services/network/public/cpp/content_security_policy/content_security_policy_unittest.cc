@@ -1346,6 +1346,24 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "'script-src-v2' directive. It will be ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'eval-sha256-Y2Q='",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'a', 'b', 'c'}));
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->nonces.push_back("cde");
+            return csp;
+          }),
+          "The Content-Security-Policy directive 'script-src' contains "
+          "'eval-sha256-Y2Q=' as a source expression that is permitted only "
+          "for 'script-src-v2' directive. It will be ignored.",
+      },
+      {
           mojom::CSPDirectiveName::ScriptSrcV2,
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q='",
           base::BindOnce([] {
@@ -1359,6 +1377,26 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->nonces.push_back("cde");
 
             csp->url_hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'c', 'd'}));
+            return csp;
+          }),
+          "",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrcV2,
+          "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'eval-sha256-Y2Q='",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'a', 'b', 'c'}));
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->nonces.push_back("cde");
+
+            csp->eval_hashes.push_back(
                 mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
                                           std::vector<uint8_t>{'c', 'd'}));
             return csp;
