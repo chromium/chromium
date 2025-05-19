@@ -44,23 +44,25 @@ CollaborationMessagingPageActionIconView::
     ~CollaborationMessagingPageActionIconView() = default;
 
 void CollaborationMessagingPageActionIconView::UpdateImpl() {
+  // Get the current tab data.
   auto* tab_data = GetCollaborationTabData();
-  bool should_show_page_action = tab_data && tab_data->HasMessage();
-
-  if (should_show_page_action) {
-    UpdateContent(tab_data);
-  }
-
   if (tab_data) {
+    // Set a weak pointer to the current tab data. This will be used to get the
+    // icon when the page action needs it.
+    collaboration_messaging_tab_data_ = tab_data->GetWeakPtr();
+
+    // If the message changes, call this function again to update the page
+    // action.
     message_changed_callback_ =
         tab_data->RegisterMessageChangedCallback(base::BindRepeating(
             &CollaborationMessagingPageActionIconView::UpdateImpl,
             base::Unretained(this)));
   } else {
+    // Reset the callback.
     message_changed_callback_ = {};
   }
 
-  SetVisible(should_show_page_action);
+  UpdateContent(tab_data);
 }
 
 CollaborationMessagingTabData*
@@ -80,6 +82,13 @@ CollaborationMessagingPageActionIconView::GetCollaborationTabData() const {
 
 void CollaborationMessagingPageActionIconView::UpdateContent(
     CollaborationMessagingTabData* collaboration_messaging_tab_data) {
+  bool should_show_page_action = collaboration_messaging_tab_data &&
+                                 collaboration_messaging_tab_data->HasMessage();
+  if (!should_show_page_action) {
+    SetVisible(false);
+    return;
+  }
+
   std::u16string label_text;
   switch (collaboration_messaging_tab_data->collaboration_event()) {
     case CollaborationEvent::TAB_ADDED:
@@ -95,13 +104,15 @@ void CollaborationMessagingPageActionIconView::UpdateContent(
       NOTREACHED();
   }
 
-  collaboration_messaging_tab_data_ =
-      collaboration_messaging_tab_data->GetWeakPtr();
+  // If the label text is empty, there is nothing to show.
+  if (label_text.empty()) {
+    SetVisible(false);
+    return;
+  }
 
-  // Label is always visible.
+  SetVisible(true);
   SetLabel(label_text);
   label()->SetVisible(true);
-
   UpdateIconImage();
 }
 
