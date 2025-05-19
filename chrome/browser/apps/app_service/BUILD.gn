@@ -89,6 +89,7 @@ source_set("app_service") {
   if (enable_extensions) {
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
       "//chrome/browser/web_applications/extensions",
       "//extensions/browser",
       "//extensions/common",

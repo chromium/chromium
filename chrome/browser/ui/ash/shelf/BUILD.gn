@@ -69,6 +69,7 @@ static_library("shelf") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
 

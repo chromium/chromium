@@ -4486,7 +4486,10 @@ if (!is_android) {
         "../browser/user_bypass/user_bypass_web_contents_observer_browsertest.cc",
       ]
 
-      public_deps += [ "//chrome/test/supervised_user:live_tests" ]
+      public_deps += [
+        "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
+        "//chrome/test/supervised_user:live_tests",
+      ]
 
       data += [
         "//chrome/test/data/controlled_frame/resources/expected_properties.json",

@@ -54,6 +54,7 @@ source_set("app_home") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common",

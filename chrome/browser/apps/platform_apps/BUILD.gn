@@ -90,6 +90,7 @@ source_set("platform_apps") {
     deps += [
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/profiles",
+      "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
     ]
   }
 
