@@ -35,6 +35,7 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -88,11 +89,15 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
 class BookmarkBrowsertest : public InProcessBrowserTest {
  public:
   BookmarkBrowsertest() {
-    // This needs to be disabled so that animations are guaranteed to work.
-#if BUILDFLAG(IS_WIN)
     feature_list_.InitWithFeatures(
-        {}, {features::kApplyNativeOcclusionToCompositor});
+        /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode},
+        /*disabled_features=*/{
+#if BUILDFLAG(IS_WIN)
+            // This needs to be disabled so that animations are guaranteed to
+            // work.
+            features::kApplyNativeOcclusionToCompositor
 #endif
+        });
   }
 
   BookmarkBrowsertest(const BookmarkBrowsertest&) = delete;
@@ -130,9 +135,7 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list_;
-#endif
 
   // We make the histogram tester a member field to make sure it starts
   // recording as early as possible.
@@ -782,6 +785,62 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, NonCommitURLNavigation) {
   EXPECT_FALSE(manager.was_committed());
   EXPECT_TRUE(bookmark_observer.is_starred());
 }
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
+                       BookmarkCurrentTab_WithoutAccountNodes) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+
+  // If no folders have been modified, bookmarks are saved to other bookmarks by
+  // default.
+  ASSERT_EQ(bookmark_model->other_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->other_node()->children().size());
+
+  // Add a bookmark to the local bookmark bar node, so that it becomes the most
+  // recently modified one.
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
+                         GURL("http://google.com"));
+  ASSERT_EQ(bookmark_model->bookmark_bar_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  // After the bookmarks bar was modified, it should be the new default save
+  // location.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->bookmark_bar_node()->children().size());
+}
+
+// Account nodes don't exist on ChromeOS, so this test does not apply.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
+                       BookmarkCurrentTab_WithAccountNodes) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  bookmark_model->CreateAccountPermanentFolders();
+
+  // If no folders have been modified, bookmarks are saved to account other
+  // bookmarks by default.
+  ASSERT_EQ(bookmark_model->account_other_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->account_other_node()->children().size());
+
+  // Add a bookmark to the local bookmark bar node, so that it becomes the most
+  // recently modified one.
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
+                         GURL("http://google.com"));
+  ASSERT_EQ(bookmark_model->bookmark_bar_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  // After the bookmarks bar was modified, it should be the new default save
+  // location.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->bookmark_bar_node()->children().size());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
  public:
