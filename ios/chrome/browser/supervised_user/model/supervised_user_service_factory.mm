@@ -62,6 +62,8 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(SupervisedUserSettingsServiceFactory::GetForProfile(profile)),
       &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
-      std::make_unique<FilterDelegateImpl>(),
+      std::make_unique<supervised_user::SupervisedUserURLFilter>(
+          CHECK_DEREF(profile->GetPrefs()),
+          std::make_unique<FilterDelegateImpl>()),
       std::make_unique<SupervisedUserServicePlatformDelegate>(profile));
 }

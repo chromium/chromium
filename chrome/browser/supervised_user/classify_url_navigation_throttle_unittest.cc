@@ -14,6 +14,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -56,30 +57,33 @@ void ExpectNoLatencyRecorded(base::HistogramTester* tester) {
 
 class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
  public:
-  explicit MockSupervisedUserURLFilter(PrefService& prefs)
-      : SupervisedUserURLFilter(prefs,
-                                std::make_unique<FakeURLFilterDelegate>()) {}
+  explicit MockSupervisedUserURLFilter(
+      PrefService& prefs,
+      std::unique_ptr<SupervisedUserURLFilter::Delegate> delegate)
+      : SupervisedUserURLFilter(prefs, std::move(delegate)) {}
   MOCK_METHOD(bool,
               RunAsyncChecker,
               (const GURL& url, ResultCallback callback),
               (const));
 };
-}  // namespace
 
 class ClassifyUrlNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-
-    SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile());
-    service->SetURLFilterForTesting(
-        std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs()));
     // In unit tests, the service is not automatically initialized but is
     // required to ensure proper flow of preference values.
-    service->Init();
+    SupervisedUserServiceFactory::GetForProfile(profile())->Init();
     EnableParentalControls(*profile()->GetPrefs());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        SupervisedUserServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &supervised_user_test_util::BuildSupervisedUserService<
+                MockSupervisedUserURLFilter>)}};
   }
 
   std::unique_ptr<content::MockNavigationThrottleRegistry>
@@ -133,7 +137,8 @@ class ClassifyUrlNavigationThrottleTest
   }
 
   MockSupervisedUserURLFilter* GetSupervisedUserURLFilter() {
-    // Cast is safe, see this::SetUp() to see how the object was created.
+    // Cast is safe, see this::GetTestingFactories() to see how the object was
+    // created.
     return static_cast<MockSupervisedUserURLFilter*>(
         SupervisedUserServiceFactory::GetForProfile(profile())->GetURLFilter());
   }
@@ -227,21 +232,17 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
        BlockedMatureSitesRecordedInBlockSafeSitesBucket) {
-  std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
-  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
+  ON_CALL(*GetSupervisedUserURLFilter(),
+          RunAsyncChecker(testing::_, testing::_))
       .WillByDefault([](const GURL& url,
                         MockSupervisedUserURLFilter::ResultCallback callback) {
         std::move(callback).Run({url, FilteringBehavior::kBlock,
                                  FilteringBehaviorReason::ASYNC_CHECKER});
         return true;
       });
-  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(GURL(kExampleURL), testing::_))
+  EXPECT_CALL(*GetSupervisedUserURLFilter(),
+              RunAsyncChecker(GURL(kExampleURL), testing::_))
       .Times(1);
-
-  SupervisedUserServiceFactory::GetForProfile(profile())
-      ->SetURLFilterForTesting(std::move(mock_url_filter));
-
   std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
       CreateNavigationThrottle(GURL(kExampleURL));
   ASSERT_EQ(content::NavigationThrottle::DEFER,
@@ -793,4 +794,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          [](const testing::TestParamInfo<TestCase>& info) {
                            return info.param.name;
                          });
+
+}  // namespace
 }  // namespace supervised_user

@@ -111,7 +111,7 @@ class SupervisedUserService : public KeyedService {
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
-  supervised_user::SupervisedUserURLFilter* GetURLFilter() const;
+  SupervisedUserURLFilter* GetURLFilter() const;
 
   std::optional<Custodian> GetCustodian() const;
   std::optional<Custodian> GetSecondCustodian() const;
@@ -142,49 +142,13 @@ class SupervisedUserService : public KeyedService {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
-      supervised_user::SupervisedUserSettingsService& settings_service,
+      SupervisedUserSettingsService& settings_service,
       syncer::SyncService* sync_service,
-      std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
-          url_filter_delegate,
-      std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
+      std::unique_ptr<SupervisedUserURLFilter> url_filter,
+      std::unique_ptr<SupervisedUserService::PlatformDelegate>
           platform_delegate);
 
  private:
-  friend class SupervisedUserServiceExtensionTestBase;
-  friend class ::SupervisedUserServiceFactory;
-  friend class ClassifyUrlNavigationThrottleTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      SupervisedUserServiceExtensionTest,
-      ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls);
-  FRIEND_TEST_ALL_PREFIXES(
-      SupervisedUserServiceExtensionTest,
-      ExtensionManagementPolicyProviderWithSUInitiatedInstalls);
-  FRIEND_TEST_ALL_PREFIXES(SupervisedUserServiceTest, InterstitialBannerState);
-  FRIEND_TEST_ALL_PREFIXES(SupervisedUserNavigationThrottleTest,
-                           BlockedMatureSitesRecordedInBlockSafeSitesBucket);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
-                           BlockedMatureSitesRecordedInBlockSafeSitesBucket);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
-                           ClassificationIsFasterThanHttp);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
-                           ClassificationIsSlowerThanHttp);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
-                           ReverseOrderOfResponsesAfterContentIsReady);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
-                           ClassificationIsFasterThanHttp);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
-                           ClassificationIsSlowerThanHttp);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
-                           ShortCircuitsSynchronousBlock);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
-                           HandlesLateAsynchronousBlock);
-  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
-                           OutOfOrderClassification);
-
-  // Method used in testing to set the given test_filter as the url_filter_
-  void SetURLFilterForTesting(
-      std::unique_ptr<SupervisedUserURLFilter> test_filter);
-
   void SetActive(bool active);
 
   void SetSettingsServiceActive(bool active);
@@ -209,8 +173,7 @@ class SupervisedUserService : public KeyedService {
 
   const raw_ref<PrefService> user_prefs_;
 
-  const raw_ref<supervised_user::SupervisedUserSettingsService>
-      settings_service_;
+  const raw_ref<SupervisedUserSettingsService> settings_service_;
 
   const raw_ptr<syncer::SyncService> sync_service_;
 

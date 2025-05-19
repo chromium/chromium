@@ -76,7 +76,8 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
-      std::make_unique<FilterDelegateImpl>(),
+      std::make_unique<supervised_user::SupervisedUserURLFilter>(
+          *profile->GetPrefs(), std::make_unique<FilterDelegateImpl>()),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile));
 }
 

@@ -15,11 +15,14 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/common:constants",
     "//components/content_settings/core/browser",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/test_support",
   ]
   if (is_android) {
     sources += [ "android/supervised_user_settings_test_bridge.cc" ]

@@ -7,24 +7,16 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/keyed_service/core/keyed_service_factory.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -42,29 +34,17 @@ class FakeURLFilterDelegate : public SupervisedUserURLFilter::Delegate {
   }
 };
 
-std::unique_ptr<KeyedService> BuildSupervisedUserService(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return std::make_unique<SupervisedUserService>(
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      *profile->GetPrefs(),
-      *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
-          profile->GetProfileKey()),
-      SyncServiceFactory::GetInstance()->GetForProfile(profile),
-      std::make_unique<FakeURLFilterDelegate>(),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile));
-}
-
 class SupervisedUserURLFilterExtensionsTest
     : public ChromeRenderViewHostTestHarness {
  protected:
   std::unique_ptr<TestingProfile> CreateTestingProfile() override {
     return TestingProfile::Builder()
         .SetIsSupervisedProfile()
-        .AddTestingFactory(SupervisedUserServiceFactory::GetInstance(),
-                           base::BindRepeating(&BuildSupervisedUserService))
+        .AddTestingFactory(
+            SupervisedUserServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &supervised_user_test_util::BuildSupervisedUserService<
+                    SupervisedUserURLFilter, FakeURLFilterDelegate>))
         .Build();
   }
 

@@ -108,11 +108,6 @@ SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
   return url_filter_.get();
 }
 
-void SupervisedUserService::SetURLFilterForTesting(
-    std::unique_ptr<SupervisedUserURLFilter> test_filter) {
-  url_filter_ = std::move(test_filter);
-}
-
 std::optional<Custodian> SupervisedUserService::GetCustodian() const {
   return GetCustodianFromPrefs(user_prefs_.get(),
                                prefs::kSupervisedUserCustodianEmail,
@@ -154,17 +149,15 @@ SupervisedUserService::SupervisedUserService(
     PrefService& user_prefs,
     SupervisedUserSettingsService& settings_service,
     syncer::SyncService* sync_service,
-    std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate,
+    std::unique_ptr<SupervisedUserURLFilter> url_filter,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      platform_delegate_(std::move(platform_delegate)) {
-  url_filter_ = std::make_unique<SupervisedUserURLFilter>(
-      user_prefs, std::move(url_filter_delegate));
-}
+      platform_delegate_(std::move(platform_delegate)),
+      url_filter_(std::move(url_filter)) {}
 
 void SupervisedUserService::SetSettingsServiceActive(bool active) {
   settings_service_->SetActive(active);

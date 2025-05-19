@@ -39,7 +39,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "supervised_user_metrics_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,7 +79,8 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), syncable_pref_service_,
         settings_service_, &sync_service_,
-        std::make_unique<FakeURLFilterDelegate>(),
+        std::make_unique<SupervisedUserURLFilter>(
+            syncable_pref_service_, std::make_unique<FakeURLFilterDelegate>()),
         std::make_unique<FakePlatformDelegate>());
     service_->Init();
 
