@@ -418,6 +418,22 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   return true;
 }
 
+bool HTMLCanvasElement::IsResourceValid() {
+  if (IsHibernating()) {
+    return true;
+  }
+
+  if (IsContextLost()) {
+    return false;
+  }
+
+  if (ResourceProvider() && !ResourceProvider()->IsValid()) {
+    return false;
+  }
+
+  return !!GetOrCreateCanvasResourceProvider();
+}
+
 void HTMLCanvasElement::Dispose() {
   disposing_ = true;
   // We need to record metrics before we dispose of anything

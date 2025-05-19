@@ -656,7 +656,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
         canvas()->GetHibernationHandler()->GetImage());
   }
 
-  if (!Host()->IsResourceValid()) {
+  if (!canvas()->IsResourceValid()) {
     return nullptr;
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to

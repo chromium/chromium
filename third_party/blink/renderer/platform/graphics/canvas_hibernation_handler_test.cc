@@ -229,7 +229,7 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
 
   EXPECT_TRUE(host.GetRasterMode() == RasterMode::kGPU);
   EXPECT_FALSE(handler.IsHibernating());
-  EXPECT_TRUE(host.IsResourceValid());
+  EXPECT_TRUE(host.ResourceProvider()->IsValid());
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {

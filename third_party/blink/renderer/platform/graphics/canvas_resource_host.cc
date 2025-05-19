@@ -129,20 +129,4 @@ void CanvasResourceHost::FlushRecording(FlushReason reason) {
   }
 }
 
-bool CanvasResourceHost::IsResourceValid() {
-  if (IsHibernating()) {
-    return true;
-  }
-
-  if (IsContextLost()) {
-    return false;
-  }
-
-  if (resource_provider_ && !resource_provider_->IsValid()) {
-    return false;
-  }
-
-  return !!GetOrCreateCanvasResourceProvider();
-}
-
 }  // namespace blink

@@ -58,7 +58,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void InitializeLayerWithCSSProperties(cc::Layer* layer) {}
 
   bool IsComposited() const;
-  bool IsResourceValid();
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 
