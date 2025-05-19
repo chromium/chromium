@@ -165,7 +165,7 @@ export class CpuCardElement extends CpuCardElementBase {
   }
 
   private convertKhzToGhz(num: number): string {
-    return (num / 1000000).toFixed(2);
+    return (num / 1000000).toFixed(3);
   }
 
   protected getCurrentCpuSpeed(): string {
