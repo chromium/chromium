@@ -73,6 +73,7 @@ namespace payments {
 
 struct BnplIssuerContext;
 class MandatoryReauthManager;
+class MultipleRequestPaymentsNetworkInterface;
 class PaymentsWindowManager;
 class SelectBnplIssuerDialogControllerImpl;
 
@@ -158,6 +159,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  MultipleRequestPaymentsNetworkInterface*
+  GetMultipleRequestPaymentsNetworkInterface() override;
   void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
   PaymentsWindowManager* GetPaymentsWindowManager() override;
   void ShowUnmaskPrompt(
@@ -291,6 +294,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 #endif
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
+
+  std::unique_ptr<MultipleRequestPaymentsNetworkInterface>
+      multiple_request_payments_network_interface_;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;

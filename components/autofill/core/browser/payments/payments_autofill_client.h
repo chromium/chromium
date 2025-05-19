@@ -59,6 +59,7 @@ namespace payments {
 
 struct BnplIssuerContext;
 class MandatoryReauthManager;
+class MultipleRequestPaymentsNetworkInterface;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
 class SaveAndFillManager;
@@ -426,6 +427,18 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Gets the payments::PaymentsNetworkInterface instance owned by the client.
   virtual PaymentsNetworkInterface* GetPaymentsNetworkInterface();
+
+  // Same as above. However this network interface can support multiple active
+  // requests at a time. Sending a request will not affect other ongoing
+  // requests. This is a complete upgrade of the
+  // `PaymentsNetworkInterface` so all new flows should use this
+  // function. All existing flows should be migrated to this. Note that since
+  // each flow should migrate in its own effort, we would need to keep these
+  // functions separate, instead of updating the logic inside
+  // GetPaymentsNetworkInterface. When all migrations are finished, above
+  // function and the PaymentsNetworkInterface class should be cleaned up.
+  virtual MultipleRequestPaymentsNetworkInterface*
+  GetMultipleRequestPaymentsNetworkInterface();
 
   // Shows an error dialog when card retrieval errors happen. The type of error
   // dialog that is shown will match the `type` in `context`. If the

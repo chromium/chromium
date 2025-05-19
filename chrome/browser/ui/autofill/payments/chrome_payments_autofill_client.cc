@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
@@ -592,6 +593,20 @@ ChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
             ->IsOffTheRecord());
   }
   return payments_network_interface_.get();
+}
+
+MultipleRequestPaymentsNetworkInterface*
+ChromePaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
+  if (!multiple_request_payments_network_interface_) {
+    multiple_request_payments_network_interface_ =
+        std::make_unique<MultipleRequestPaymentsNetworkInterface>(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+                ->GetURLLoaderFactory(),
+            *client_->GetIdentityManager(),
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+                ->IsOffTheRecord());
+  }
+  return multiple_request_payments_network_interface_.get();
 }
 
 void ChromePaymentsAutofillClient::ShowAutofillErrorDialog(

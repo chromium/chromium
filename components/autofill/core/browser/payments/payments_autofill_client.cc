@@ -139,6 +139,11 @@ PaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return nullptr;
 }
 
+MultipleRequestPaymentsNetworkInterface*
+PaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
+  return nullptr;
+}
+
 void PaymentsAutofillClient::ShowAutofillErrorDialog(
     AutofillErrorDialogContext context) {}
 
