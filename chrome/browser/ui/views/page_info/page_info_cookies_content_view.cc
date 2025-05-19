@@ -52,8 +52,8 @@ const ui::ImageModel GetThirdPartyCookiesIcon(
 // TODO(crbug.com/388294499): Move this logic into the privacy_sandbox/
 // directory.
 bool IsActUi(CookieControlsState controls_state) {
-  return controls_state == CookieControlsState::kTpActive ||
-         controls_state == CookieControlsState::kTpPaused;
+  return controls_state == CookieControlsState::kActiveTp ||
+         controls_state == CookieControlsState::kPausedTp;
 }
 
 class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
@@ -288,13 +288,13 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
   std::u16string title_text;
   int description;
   switch (controls_state) {
-    case CookieControlsState::k3pcsBlocked:
+    case CookieControlsState::kBlocked3pc:
       title_text = l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
       description =
           IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY;
       break;
-    case CookieControlsState::k3pcsAllowed:
+    case CookieControlsState::kAllowed3pc:
       if (expiration.is_null() ||
           enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
         // Handle permanent site exception.
@@ -313,13 +313,13 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
             IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION;
       }
       break;
-    case CookieControlsState::kTpActive:
+    case CookieControlsState::kActiveTp:
       title_text = l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
       description =
           IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION;
       break;
-    case CookieControlsState::kTpPaused:
+    case CookieControlsState::kPausedTp:
       title_text = l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_TITLE);
       description =
@@ -337,7 +337,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
     CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status) {
   std::u16string subtitle;
-  if (controls_state == CookieControlsState::k3pcsBlocked) {
+  if (controls_state == CookieControlsState::kBlocked3pc) {
     subtitle = l10n_util::GetStringUTF16(
         blocking_status == CookieBlocking3pcdStatus::kLimited
             ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE
@@ -347,7 +347,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
         IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE);
   }
   third_party_cookies_toggle_->SetIsOn(controls_state ==
-                                       CookieControlsState::k3pcsAllowed);
+                                       CookieControlsState::kAllowed3pc);
   third_party_cookies_toggle_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
   third_party_cookies_toggle_->GetViewAccessibility().SetName(subtitle);
@@ -357,7 +357,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
 void PageInfoCookiesContentView::SetTrackingProtectionButtonLabel(
     CookieControlsState controls_state) {
   auto label = l10n_util::GetStringUTF16(
-      controls_state == CookieControlsState::kTpPaused
+      controls_state == CookieControlsState::kPausedTp
           ? IDS_TRACKING_PROTECTION_BUBBLE_RESUME_PROTECTIONS_LABEL
           : IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL);
   tracking_protection_button_->SetText(label);
@@ -368,7 +368,7 @@ void PageInfoCookiesContentView::SetIncognitoTrackingProtectionsDescription(
     CookieControlsEnforcement enforcement,
     CookieControlsState controls_state) {
   // No description exists for when protections are paused.
-  if (controls_state == CookieControlsState::kTpPaused) {
+  if (controls_state == CookieControlsState::kPausedTp) {
     cookies_description_label_->SetVisible(false);
     return;
   }
@@ -436,7 +436,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
                                           blocking_status, expiration);
   SetThirdPartyCookiesToggle(controls_state, blocking_status);
   third_party_cookies_row_->SetIcon(GetThirdPartyCookiesIcon(
-      controls_state == CookieControlsState::k3pcsAllowed));
+      controls_state == CookieControlsState::kAllowed3pc));
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 

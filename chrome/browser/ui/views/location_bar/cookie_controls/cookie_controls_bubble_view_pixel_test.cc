@@ -196,7 +196,7 @@ class CookieControlsBubbleViewPixelTest
  protected:
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
-  CookieControlsState controls_state_ = CookieControlsState::k3pcsBlocked;
+  CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
 
   int days_to_expiration_ = 0;
   // Overriding `base::Time::Now()` to obtain a consistent X days until
@@ -220,35 +220,35 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_PermanentException) {
   set_baseline("6229914");
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_TemporaryException) {
   set_baseline("6229914");
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   days_to_expiration_ = 90;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByCookieSetting) {
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByPolicy) {
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByExtension) {
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
   ShowAndVerifyUi();
 }

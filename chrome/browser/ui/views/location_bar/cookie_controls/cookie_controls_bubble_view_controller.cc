@@ -165,8 +165,8 @@ void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
     CookieControlsEnforcement enforcement,
     base::Time expiration) {
   // TODO(crbug.com/388294499): Add support for ACT UI separately.
-  bool tpcs_allowed = controls_state_ == CookieControlsState::k3pcsAllowed ||
-                      controls_state_ == CookieControlsState::kTpPaused;
+  bool tpcs_allowed = controls_state_ == CookieControlsState::kAllowed3pc ||
+                      controls_state_ == CookieControlsState::kPausedTp;
   if (tpcs_allowed) {
     ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
   } else {

@@ -1540,7 +1540,7 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
   // its call chain.
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
-  page_info()->OnStatusChanged(CookieControlsState::k3pcsBlocked,
+  page_info()->OnStatusChanged(CookieControlsState::kBlocked3pc,
                                CookieControlsEnforcement::kNoEnforcement,
                                CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());
@@ -1563,7 +1563,7 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
   Mock::VerifyAndClearExpectations(mock_ui());
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
-  page_info()->OnStatusChanged(CookieControlsState::k3pcsAllowed,
+  page_info()->OnStatusChanged(CookieControlsState::kAllowed3pc,
                                CookieControlsEnforcement::kNoEnforcement,
                                CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());

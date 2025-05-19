@@ -79,8 +79,8 @@ void CookieControlsBridge::OnStatusChanged(
   Java_CookieControlsBridge_onStatusChanged(
       env, jobject_,
       static_cast<bool>(controls_state_ != CookieControlsState::kHidden),
-      static_cast<bool>(controls_state_ == CookieControlsState::kTpActive ||
-                        controls_state_ == CookieControlsState::k3pcsBlocked),
+      static_cast<bool>(controls_state_ == CookieControlsState::kActiveTp ||
+                        controls_state_ == CookieControlsState::kBlocked3pc),
       static_cast<int>(enforcement_), static_cast<int>(blocking_status),
       expiration.InMillisecondsSinceUnixEpoch());
 }

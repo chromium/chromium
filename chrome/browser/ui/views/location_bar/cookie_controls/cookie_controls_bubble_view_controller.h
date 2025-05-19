@@ -89,7 +89,7 @@ class CookieControlsBubbleViewController
       CookieBlocking3pcdStatus::kNotIn3pcd;
 
   // The state of the controls to display.
-  CookieControlsState controls_state_ = CookieControlsState::k3pcsBlocked;
+  CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
 
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
 

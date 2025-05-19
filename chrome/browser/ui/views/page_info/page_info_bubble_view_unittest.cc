@@ -1260,8 +1260,8 @@ TEST_P(PageInfoBubbleViewCookiesSubpageTitleTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PageInfoBubbleViewCookiesSubpageTitleTest,
-    testing::Combine(testing::Values(CookieControlsState::k3pcsAllowed,
-                                     CookieControlsState::k3pcsBlocked),
+    testing::Combine(testing::Values(CookieControlsState::kAllowed3pc,
+                                     CookieControlsState::kBlocked3pc),
                      testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
                                      CookieBlocking3pcdStatus::kAll),
                      /*is_otr*/ testing::Bool()));

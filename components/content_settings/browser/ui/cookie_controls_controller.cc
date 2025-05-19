@@ -221,11 +221,11 @@ CookieControlsController::Status CookieControlsController::GetStatus(
     controls_state =
         tracking_protection_settings_->HasTrackingProtectionException(url,
                                                                       &info)
-            ? CookieControlsState::kTpPaused
-            : CookieControlsState::kTpActive;
+            ? CookieControlsState::kPausedTp
+            : CookieControlsState::kActiveTp;
   } else {
-    controls_state = cookies_allowed ? CookieControlsState::k3pcsAllowed
-                                     : CookieControlsState::k3pcsBlocked;
+    controls_state = cookies_allowed ? CookieControlsState::kAllowed3pc
+                                     : CookieControlsState::kBlocked3pc;
   }
 
   return {controls_state, enforcement, blocking_status,
@@ -461,7 +461,7 @@ void CookieControlsController::UpdateLastVisitedSitesMap() {
   // exception, update the last visited time, otherwise clear it.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
   auto status = GetStatus(GetWebContents());
-  if (status.controls_state == CookieControlsState::k3pcsAllowed) {
+  if (status.controls_state == CookieControlsState::kAllowed3pc) {
     metadata.Set(kLastVisitedActiveException,
                  base::TimeToValue(base::Time::Now()));
   } else {
@@ -579,7 +579,7 @@ bool CookieControlsController::ShouldHighlightUserBypass(
   // Highlighting is meant to draw attention to bypassing, so just return if
   // bypass has already happened.
   if (controls_state == CookieControlsState::kHidden ||
-      controls_state == CookieControlsState::k3pcsAllowed) {
+      controls_state == CookieControlsState::kAllowed3pc) {
     return false;
   }
 
@@ -634,8 +634,8 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   // allow the user to opt into sending SameSite=None cookies again in those
   // contexts.
   return HasOriginSandboxedTopLevelDocument() ||
-         controls_state == CookieControlsState::k3pcsAllowed ||
-         controls_state == CookieControlsState::kTpPaused ||
+         controls_state == CookieControlsState::kAllowed3pc ||
+         controls_state == CookieControlsState::kPausedTp ||
          // If no 3P sites have attempted to access site data, nor were any
          // stateful bounces recorded, the icon should not be displayed. Take
          // into account both allow and blocked counts, since the breakage might

@@ -44,7 +44,7 @@ void RecordOpenedAction(bool icon_visible, CookieControlsState controls_state) {
   if (!icon_visible) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
-  } else if (controls_state == CookieControlsState::k3pcsBlocked) {
+  } else if (controls_state == CookieControlsState::kBlocked3pc) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.Bubble.CookiesBlocked.Opened"));
   } else {
@@ -184,7 +184,7 @@ void CookieControlsIconView::SetLabelForStatus() {
 }
 
 int CookieControlsIconView::GetLabelForStatus() const {
-  if (controls_state_ == CookieControlsState::k3pcsAllowed) {
+  if (controls_state_ == CookieControlsState::kAllowed3pc) {
     return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
   } else if (blocking_status_ == CookieBlocking3pcdStatus::kLimited) {
     return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL;
@@ -250,7 +250,7 @@ void CookieControlsIconView::UpdateIcon() {
   custom_tooltip_text_ = l10n_util::GetStringUTF16(GetLabelForStatus());
   SetTooltipText(custom_tooltip_text_);
 
-  if (controls_state_ == CookieControlsState::k3pcsBlocked &&
+  if (controls_state_ == CookieControlsState::kBlocked3pc &&
       should_highlight_) {
     if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
       MaybeShowIPH();
@@ -333,7 +333,7 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
-  return controls_state_ == CookieControlsState::k3pcsBlocked
+  return controls_state_ == CookieControlsState::kBlocked3pc
              ? views::kEyeCrossedRefreshIcon
              : views::kEyeRefreshIcon;
 }

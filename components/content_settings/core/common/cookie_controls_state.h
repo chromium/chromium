@@ -8,17 +8,17 @@
 // Enum representing the state of in-context cookie controls.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum class CookieControlsState {
-  // Controls not visible
+  // Controls not visible.
   kHidden = 0,
-  // Third-party cookies UI with 3PC toggle off
-  k3pcsBlocked = 1,
-  // Third-party cookies UI with 3PC toggle on
-  k3pcsAllowed = 2,
-  // Tracking protections UI with tracking protections active button
-  kTpActive = 3,
-  // Tracking protections UI with tracking protections paused button
-  kTpPaused = 4,
-  kMaxValue = kTpPaused,
+  // Third-party cookies UI with toggle off.
+  kBlocked3pc = 1,
+  // Third-party cookies UI with toggle on.
+  kAllowed3pc = 2,
+  // Tracking protections UI with button to pause protections.
+  kActiveTp = 3,
+  // Tracking protections UI with button to resume protections.
+  kPausedTp = 4,
+  kMaxValue = kPausedTp,
 };
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_COOKIE_CONTROLS_STATE_H_

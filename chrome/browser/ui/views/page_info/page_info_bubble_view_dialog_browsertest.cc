@@ -840,7 +840,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       CookieControlsEnforcement::kNoEnforcement;
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
-  CookieControlsState controls_state_ = CookieControlsState::k3pcsBlocked;
+  CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
   bool rws_enabled_ = false;
   bool rws_managed_ = false;
   bool is_temporary_exception_ = false;
@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesAllowedByCookieSetting) {
   blocking_status_ = GetParam();
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   ShowAndVerifyUi();
 }
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_TemporaryException) {
   is_temporary_exception_ = true;
   blocking_status_ = GetParam();
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   ShowAndVerifyUi();
 }
 

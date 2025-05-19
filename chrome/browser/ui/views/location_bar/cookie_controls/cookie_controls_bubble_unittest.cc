@@ -221,7 +221,7 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
   std::unique_ptr<CookieControlsBubbleViewController> view_controller_;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
-  CookieControlsState controls_state_ = CookieControlsState::k3pcsBlocked;
+  CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
 };
@@ -264,7 +264,7 @@ TEST_F(CookieControlsBubbleViewControllerTest,
               UpdateTitle(l10n_util::GetStringUTF16(
                   IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE)));
   blocking_status_ = CookieBlocking3pcdStatus::kLimited;
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged(kDaysToExpiration);
 }
 
@@ -283,7 +283,7 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
               SetCookiesLabel(l10n_util::GetStringUTF16(
                   IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE)));
   blocking_status_ = GetParam();
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged();
 }
 
@@ -307,7 +307,7 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
        FeedbackSectionIsVisibleWhenSiteHasExceptionAndNoEnforcement) {
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
   blocking_status_ = GetParam();
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged();
 }
 
@@ -343,7 +343,7 @@ TEST_F(CookieControlsBubbleViewControllerTest,
           l10n_util::GetStringUTF16(
               IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)));
   blocking_status_ = CookieBlocking3pcdStatus::kLimited;
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged(kDaysToExpiration);
 }
 
@@ -358,7 +358,7 @@ TEST_F(CookieControlsBubbleViewControllerTest,
           l10n_util::GetStringUTF16(
               IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)));
   blocking_status_ = CookieBlocking3pcdStatus::kAll;
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged(kDaysToExpiration);
 }
 
@@ -372,7 +372,7 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
           l10n_util::GetStringUTF16(
               IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
   blocking_status_ = GetParam();
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged();
 }
 
@@ -415,7 +415,7 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
               IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
 }
 
@@ -426,7 +426,7 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
                           IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY);
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
 }
 
@@ -436,7 +436,7 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
                           IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION);
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
 }
 
@@ -499,7 +499,7 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
                                            views::kEyeRefreshIcon.name)));
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   OnStatusChanged();
 }
 
@@ -524,7 +524,7 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
                                            views::kEyeRefreshIcon.name)));
-  controls_state_ = CookieControlsState::k3pcsAllowed;
+  controls_state_ = CookieControlsState::kAllowed3pc;
 
   OnStatusChanged(kDaysToExpiration);
 }

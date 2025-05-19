@@ -506,7 +506,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
 
-  CookieControlsState controls_state_ = CookieControlsState::k3pcsBlocked;
+  CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
 
   base::Time cookie_exception_expiration_;
 
