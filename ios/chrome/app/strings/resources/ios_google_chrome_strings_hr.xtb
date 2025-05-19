@@ -47,6 +47,7 @@ Važne napomene:
 <translation id="1917964099031477364">Taj račun i svi nespremljeni podaci uklonit će se iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
 <translation id="1919130412786645364">Dopusti prijavu u Chrome</translation>
 <translation id="1965935827552890526">Dovršite ono što ste radili u drugom otvorenom Chromeovom prozoru.</translation>
+<translation id="1966638102563776885">Savjet za Chrome: dohvatite svoje zaporke u bilo kojoj aplikaciji</translation>
 <translation id="1973910962341002002">U postavkama aplikacije <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> uključite Chrome</translation>
 <translation id="1984705450038014246">Sinkroniziraj podatke iz Chromea</translation>
 <translation id="1987779152850321833">Dovršite predložene radnje u nastavku da biste iskoristili sve prednosti Chromea.</translation>
@@ -137,6 +138,7 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="4724297637870447613">Koristite Chrome na svim uređajima</translation>
 <translation id="4738647308035481133">Stranica Google Chromea</translation>
 <translation id="4742795653798179840">Izbrisani Chromeovi podaci</translation>
+<translation id="4749294594657945639">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrebljavajte Chrome za automatsko popunjavanje.</translation>
 <translation id="4761869838909035636">Pokreni Chromeovu sigurnosnu provjeru</translation>
 <translation id="4798859546468762093">Da biste dobili personalizaciju i druge značajke, uključite Chrome u <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Radi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
