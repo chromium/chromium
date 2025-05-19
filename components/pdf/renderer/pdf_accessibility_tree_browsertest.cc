@@ -2889,18 +2889,6 @@ TEST_P(PdfOcrHelperTest, UMAMetrics) {
   histograms.ExpectTotalCount("Accessibility.PdfOcr.PDFImages",
                               /*expected_count=*/page_count * 4);
 
-  // TODO(crbug.com/40267312): The current test fixture does not trigger
-  // `PdfAccessibilityTree::MaybeHandleAccessibilityChange` when OCR is enabled
-  // after tree load, and hence does result in calling
-  // `PdfAccessibilityTree::SetAccessibilityPageInfo` for the second time.
-  // Either update text fixture to be more realistic, or add metrics test to
-  // browser test without fake OCR helper.
-  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
-                               /*sample=*/false,
-                               /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
-                              /*expected_count=*/1);
-
   histograms.ExpectBucketCount("Accessibility.PdfOcr.InaccessiblePdfPageCount",
                                page_count_,
                                /*expected_count=*/1);

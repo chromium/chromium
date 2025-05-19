@@ -714,14 +714,13 @@ void PdfAccessibilityTree::UnserializeNodes() {
   nodes_.clear();
 
   if (!sent_metrics_once_) {
+    // TODO(crbug.com/360803943): Update comment and behavior when removing PDF
+    // OCR support code.
     // If the user turns on PDF OCR after opening a PDF, its PDF a11y tree gets
     // created again. `sent_metrics_once_` helps to determine whether
     // it's first time to create a PDF a11y tree. When a PDF is opened, the UMA
     // metrics need be recorded once.
     sent_metrics_once_ = true;
-
-    base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText2",
-                              had_accessible_text_);
 
     // TODO(accessibility): remove this dependency.
     content::RenderAccessibility* render_accessibility =

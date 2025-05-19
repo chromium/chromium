@@ -2255,23 +2255,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.PDF.HasAccessibleText2" enum="BooleanExists"
-    expires_after="2025-11-04">
-  <owner>dtseng@chromium.org</owner>
-  <owner>nektar@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    When a PDF is constructed for accessibility, true if any page of the PDF
-    contains any accessible text derived from a text run. Note that a PDF
-    containing a mix of images and text will record true even though the images
-    may themselves contain inaccessible text. This metric (previously recorded
-    as HasAccessibleText) was affected by PDF Searchify feature before M133 as
-    when PDF searchify is enabled, all PDFs are made accessible before recording
-    the metric. It is updated in M133 to consider text availablity without
-    searchify's effect.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.PDF.IsPDFTagged" enum="BooleanExists"
     expires_after="2025-09-14">
   <owner>dtseng@chromium.org</owner>
@@ -2324,7 +2307,8 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the number of pages in an inaccessible PDF when a PDF accessibility
-    tree gets created for the PDF.
+    tree gets created for the PDF. This metric is only recorded when
+    accessibility features are enabled.
   </summary>
 </histogram>
 
