@@ -5276,7 +5276,7 @@
     // Prototyping https://github.com/w3c/webauthn/issues/2228
     {
       name: "WebAuthenticationImmediateGet",
-      status: "experimental",
+      origin_trial_feature_name: "WebAuthenticationImmediateGet",
       base_feature: "none",
       public: true,
     },

@@ -109,6 +109,18 @@ void OnGetClientCapabilitiesComplete(
       [](const std::pair<String, bool>& a, const std::pair<String, bool>& b) {
         return CodeUnitCompare(a.first, b.first) < 0;
       });
+
+  // TODO(crbug.com/393055190): Remove this when the feature is graduated from
+  // origin trials.
+  if (!RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(
+          resolver->GetExecutionContext())) {
+    for (wtf_size_t i = 0; i < results.size(); ++i) {
+      if (results[i].first == "immediateGet") {
+        results.EraseAt(i);
+        break;
+      }
+    }
+  }
   resolver->Resolve(std::move(results));
 }
 

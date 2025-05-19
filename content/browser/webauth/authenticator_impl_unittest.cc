@@ -1096,6 +1096,9 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
 }
 
 TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(device::kWebAuthnImmediateGet, false);
+
   NavigateAndCommit(GURL(kTestOrigin1));
 
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();

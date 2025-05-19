@@ -1546,7 +1546,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
       mediation = Mediation::CONDITIONAL;
     } else if (options->mediation() == "immediate") {
-      if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled()) {
+      if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(
+              context)) {
         mediation = Mediation::IMMEDIATE;
         EmitImmediateMediationUseCounters(context, options);
       } else {
