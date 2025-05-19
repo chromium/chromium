@@ -222,6 +222,19 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaColCustomMargins) {
   TestMediaColValue(gfx::Size(29700, 42000), 6, 5, 3, 4);
 }
 
+// This test checks that if custom margins are provided, but they are not
+// obtained from media-col (in other words, they cannot be converted back to
+// PWG units), the default margins are used.
+TEST_F(PrintingContextTest,
+       SettingsToIPPOptions_MediaColUnsupportedCustomMargins) {
+  settings_.set_requested_media(
+      {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
+  settings_.SetCustomMargins({0, 0, 123, 321, 231, 132});
+  printable_area_ =
+      gfx::Rect(2000, 1000, 297000 - (2000 + 3000), 420000 - (1000 + 4000));
+  TestMediaColValue(gfx::Size(29700, 42000), 100, 200, 300, 400);
+}
+
 TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaColZeroMargins) {
   settings_.set_requested_media(
       {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
