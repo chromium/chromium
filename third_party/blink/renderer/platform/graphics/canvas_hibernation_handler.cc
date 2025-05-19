@@ -419,7 +419,7 @@ void CanvasHibernationHandler::Hibernate() {
     return;
   }
 
-  if (!resource_host_->IsResourceValid()) {
+  if (!provider->IsValid() || resource_host_->IsContextLost()) {
     ReportHibernationEvent(
         HibernationEvent::kHibernationAbortedDueGpuContextLoss);
     return;
