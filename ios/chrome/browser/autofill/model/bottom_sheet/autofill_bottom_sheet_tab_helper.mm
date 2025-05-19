@@ -20,6 +20,10 @@
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -559,25 +563,65 @@ void AutofillBottomSheetTabHelper::AttachListenersForPaymentsForm(
           .empty()) {
     return;
   }
-  std::vector<autofill::FieldRendererId> renderer_ids;
-  for (const auto& field : form_structure->fields()) {
-    if (IsPaymentsBottomSheetTriggeringField(field->Type().GetStorableType())) {
-      renderer_ids.push_back(field->renderer_id());
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    const autofill::AutofillDriverRouter& router =
+        static_cast<autofill::AutofillClientIOS&>(manager.client())
+            .GetAutofillDriverFactory()
+            .router();
+    // Break the browser form into renderer forms when the fix is enabled. Use
+    // the entire browser form as the renderer form otherwise.
+    auto renderer_forms = router.GetRendererForms(form_structure->ToFormData());
+
+    for (const auto& renderer_form : renderer_forms) {
+      std::vector<autofill::FieldRendererId> renderer_ids;
+      for (const auto& field : renderer_form.fields()) {
+        if (IsPaymentsBottomSheetTriggeringField(
+                form_structure->GetFieldById(field.global_id())
+                    ->Type()
+                    .GetStorableType())) {
+          renderer_ids.push_back(field.renderer_id());
+        }
+      }
+
+      if (renderer_ids.empty()) {
+        continue;
+      }
+
+      std::string renderer_form_frame_id =
+          base::ToLowerASCII(renderer_form.host_frame()->ToString());
+
+      // TODO(crbug.com/40266699): Remove `frame` once `renderer_ids` are
+      // FieldGlobalIds.
+
+      AttachListeners(renderer_ids,
+                      registered_payments_renderer_ids_[renderer_form_frame_id],
+                      renderer_form_frame_id, /*allow_autofocus=*/false,
+                      only_new);
     }
+  } else {
+    std::vector<autofill::FieldRendererId> renderer_ids;
+    for (const auto& field : form_structure->fields()) {
+      if (IsPaymentsBottomSheetTriggeringField(
+              field->Type().GetStorableType())) {
+        renderer_ids.push_back(field->renderer_id());
+      }
+    }
+    if (renderer_ids.empty()) {
+      return;
+    }
+    // TODO(crbug.com/40266699): Remove `frame` once `renderer_ids` are
+    // FieldGlobalIds.
+    web::WebFrame* frame =
+        static_cast<autofill::AutofillDriverIOS&>(manager.driver()).web_frame();
+    if (!frame) {
+      return;
+    }
+    std::string frame_id = frame->GetFrameId();
+    AttachListeners(renderer_ids, registered_payments_renderer_ids_[frame_id],
+                    frame_id, /*allow_autofocus=*/false, only_new);
   }
-  if (renderer_ids.empty()) {
-    return;
-  }
-  // TODO(crbug.com/40266699): Remove `frame` once `renderer_ids` are
-  // FieldGlobalIds.
-  web::WebFrame* frame =
-      static_cast<autofill::AutofillDriverIOS&>(manager.driver()).web_frame();
-  if (!frame) {
-    return;
-  }
-  std::string frame_id = frame->GetFrameId();
-  AttachListeners(renderer_ids, registered_payments_renderer_ids_[frame_id],
-                  frame_id, /*allow_autofocus=*/false, only_new);
 }
 
 void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
