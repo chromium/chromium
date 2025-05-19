@@ -30,13 +30,8 @@ class IndexedDBDataFormatVersion {
   uint32_t v8_version() const { return v8_version_; }
   uint32_t blink_version() const { return blink_version_; }
 
-  bool operator==(const IndexedDBDataFormatVersion& other) const {
-    return v8_version_ == other.v8_version_ &&
-           blink_version_ == other.blink_version_;
-  }
-  bool operator!=(const IndexedDBDataFormatVersion& other) const {
-    return !operator==(other);
-  }
+  friend bool operator==(const IndexedDBDataFormatVersion&,
+                         const IndexedDBDataFormatVersion&) = default;
 
   bool IsAtLeast(const IndexedDBDataFormatVersion& other) const {
     return v8_version_ >= other.v8_version_ &&
