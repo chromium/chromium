@@ -108,11 +108,13 @@ struct ExtraRequestCompleteInfo {
 struct FailedProvisionalLoadInfo {
   FailedProvisionalLoadInfo(base::TimeDelta interval,
                             net::Error error,
+                            int net_extended_error_code,
                             content::NavigationDiscardReason discard_reason);
   ~FailedProvisionalLoadInfo();
 
   base::TimeDelta time_to_failed_provisional_load;
   net::Error error;
+  int net_extended_error_code;
   content::NavigationDiscardReason discard_reason;
 };
 

@@ -53,9 +53,11 @@ ExtraRequestCompleteInfo::~ExtraRequestCompleteInfo() = default;
 FailedProvisionalLoadInfo::FailedProvisionalLoadInfo(
     base::TimeDelta interval,
     net::Error error,
+    int net_extended_error_code,
     content::NavigationDiscardReason discard_reason)
     : time_to_failed_provisional_load(interval),
       error(error),
+      net_extended_error_code(net_extended_error_code),
       discard_reason(discard_reason) {}
 
 FailedProvisionalLoadInfo::~FailedProvisionalLoadInfo() = default;

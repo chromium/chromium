@@ -686,6 +686,7 @@ void PageLoadTracker::FailedProvisionalLoad(
   failed_provisional_load_info_ = std::make_unique<FailedProvisionalLoadInfo>(
       failed_load_time - navigation_handle->NavigationStart(),
       navigation_handle->GetNetErrorCode(),
+      navigation_handle->GetNetExtendedErrorCode(),
       navigation_handle->GetNavigationDiscardReason().value());
 }
 

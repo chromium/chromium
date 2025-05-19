@@ -9159,6 +9159,10 @@ net::Error NavigationRequest::GetNetErrorCode() {
   return net_error_;
 }
 
+int NavigationRequest::GetNetExtendedErrorCode() {
+  return extended_error_code_;
+}
+
 // The RenderFrameHost that will commit the navigation or an error page.
 // This is computed when the response is received, or when the navigation
 // fails and error page should be displayed.
