@@ -2665,6 +2665,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Intent.OverrideBrowserAuxiliaryNavigation"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>muratori@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    It records whether a new auxiliary browsing context navigation would be
+    overridden by preventing any intent launch and causing the navigation to
+    stay in the browser by opening a new tab instead.
+  </summary>
+</histogram>
+
 <histogram name="Android.Intent.ShareIntentUrlCount" units="URLs"
     expires_after="2025-09-14">
   <owner>mthiesse@chromium.org</owner>

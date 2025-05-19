@@ -431,7 +431,6 @@ public abstract class ChromeFeatureList {
     public static final String MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED = "MvcUpdateViewWhenModelChanged";
     public static final String NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE =
             "NativePageTransitionHardwareCapture";
-    public static final String NAVIGATION_CAPTURE_REFACTOR = "NavigationCaptureRefactorAndroid";
     public static final String NAV_BAR_COLOR_ANIMATION = "NavBarColorAnimation";
     public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
             "NavBarColorMatchesTabBackground";

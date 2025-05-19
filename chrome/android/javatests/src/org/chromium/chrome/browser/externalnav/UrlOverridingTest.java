@@ -137,6 +137,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Test suite for verifying the behavior of various URL overriding actions. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER_NAME)
 public class UrlOverridingTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -170,6 +171,8 @@ public class UrlOverridingTest {
     private static final String FALLBACK_LANDING_PATH = BASE_PATH + "hello.html";
     private static final String OPEN_WINDOW_FROM_USER_GESTURE_PAGE =
             BASE_PATH + "open_window_from_user_gesture.html";
+    private static final String OPEN_AUXILIARY_WINDOW_FROM_USER_GESTURE_PAGE =
+            BASE_PATH + "open_auxiliary_window_from_user_gesture.html";
     private static final String OPEN_WINDOW_FROM_LINK_USER_GESTURE_PAGE =
             BASE_PATH + "open_window_from_link_user_gesture.html";
     private static final String OPEN_WINDOW_FROM_SVG_USER_GESTURE_PAGE =
@@ -944,6 +947,20 @@ public class UrlOverridingTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestParams params =
                 new TestParams(mTestServer.getURL(OPEN_WINDOW_FROM_USER_GESTURE_PAGE), true, true);
+        params.createsNewTab = true;
+        params.expectedFinalUrl = null;
+        loadUrlAndWaitForIntentUrl(params);
+    }
+
+    @Test
+    @SmallTest
+    public void testAuxiliaryNavigationShouldStayInBrowser() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        TestParams params =
+                new TestParams(
+                        mTestServer.getURL(OPEN_AUXILIARY_WINDOW_FROM_USER_GESTURE_PAGE),
+                        true,
+                        false);
         params.createsNewTab = true;
         params.expectedFinalUrl = null;
         loadUrlAndWaitForIntentUrl(params);

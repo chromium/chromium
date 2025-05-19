@@ -2720,6 +2720,14 @@
     "expiry_milestone": 138
   },
   {
+    "name": "enable-auxiliary-navigation-stays-in-browser",
+    "owners": [
+      "muratori@google.org",
+      "cros-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-ax-tree-fixing",
     "owners": [ "mschillaci@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 150

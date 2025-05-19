@@ -4632,6 +4632,12 @@ const char kAppSpecificHistoryName[] = "Allow app specific history";
 const char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";
 
+const char kAuxiliaryNavigationStaysInBrowserName[] =
+    "Prevent app opening for auxiliary navigations that start in the browser";
+const char kAuxiliaryNavigationStaysInBrowserDescription[] =
+    "If enabled, any new auxiliary browsing context navigation started in "
+    "the browser will open in a new tab.";
+
 const char kBackgroundNotPerceptibleBindingName[] =
     "Enable not perceptible binding without cpu priority boosting";
 const char kBackgroundNotPerceptibleBindingDescription[] =

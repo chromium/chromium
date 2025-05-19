@@ -9790,6 +9790,7 @@ from previous Chrome versions.
   <int value="-1617392895" label="OfflineAutoFetch:disabled"/>
   <int value="-1617183455" label="OfflineRecentPages:disabled"/>
   <int value="-1616855537" label="enable-manual-password-generation:disabled"/>
+  <int value="-1616676326" label="AuxiliaryNavigationStaysInBrowser:enabled"/>
   <int value="-1616638720" label="AutofillShadowDOM:enabled"/>
   <int value="-1615901413" label="NewMacNotificationAPI:enabled"/>
   <int value="-1615727417" label="OmniboxSearchReadyIncognito:enabled"/>
@@ -11719,6 +11720,7 @@ from previous Chrome versions.
   <int value="-894185031" label="HighDynamicRange:disabled"/>
   <int value="-893673593" label="BentoOffline:disabled"/>
   <int value="-893625763" label="AutofillEnableManualFallbackIPH:disabled"/>
+  <int value="-893566933" label="AuxiliaryNavigationStaysInBrowser:disabled"/>
   <int value="-893505053"
       label="AccessibilityMagnifierFollowsChromeVox:disabled"/>
   <int value="-892468335" label="Pompano:disabled"/>

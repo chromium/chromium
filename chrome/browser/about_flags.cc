@@ -3742,6 +3742,20 @@ const FeatureEntry::FeatureVariation kAndroidThemeModuleVariations[] = {
      std::size(sAndroidThemeModuleParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kAuxiliaryNavigationStaysInBrowserOnForDesktopWindowing[] = {
+        {"auxiliary_navigation_stays_in_browser", "desktop_wm"}};
+const FeatureEntry::FeatureParam kAuxiliaryNavigationStaysInBrowserOn[] = {
+    {"auxiliary_navigation_stays_in_browser", "all_wm"}};
+const FeatureEntry::FeatureVariation
+    kAuxiliaryNavigationStaysInBrowserVariations[] = {
+        {" - desktop windowing mode",
+         kAuxiliaryNavigationStaysInBrowserOnForDesktopWindowing,
+         std::size(kAuxiliaryNavigationStaysInBrowserOnForDesktopWindowing),
+         nullptr},
+        {" - all windowing modes", kAuxiliaryNavigationStaysInBrowserOn,
+         std::size(kAuxiliaryNavigationStaysInBrowserOn), nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -7459,6 +7473,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNavigationCaptureRefactorAndroidDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(external_intents::kNavigationCaptureRefactorAndroid)},
+
+    {"enable-auxiliary-navigation-stays-in-browser",
+     flag_descriptions::kAuxiliaryNavigationStaysInBrowserName,
+     flag_descriptions::kAuxiliaryNavigationStaysInBrowserDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         external_intents::kAuxiliaryNavigationStaysInBrowser,
+         kAuxiliaryNavigationStaysInBrowserVariations,
+         "AuxiliaryNavigationStaysInBrowser")},
 
     {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,

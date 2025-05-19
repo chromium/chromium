@@ -341,7 +341,7 @@ public interface Tab extends TabLifecycle {
     boolean isTabInPWA();
 
     /**
-     * @return true if the {@link Tab} is in a Browser.
+     * @return true if the {@link Tab} is in the main browser app (i.e. not a CCT, TWA, or WebApk).
      */
     boolean isTabInBrowser();
 

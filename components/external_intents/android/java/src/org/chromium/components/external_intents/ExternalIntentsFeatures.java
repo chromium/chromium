@@ -18,35 +18,69 @@ import org.chromium.build.annotations.NullMarked;
  */
 @JNINamespace("external_intents")
 @NullMarked
-public class ExternalIntentsFeatures extends Features {
+public class ExternalIntentsFeatures {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
     public static final String BLOCK_INTENTS_TO_SELF_NAME = "BlockIntentsToSelf";
     public static final String NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME =
             "NavigationCaptureRefactorAndroid";
+    // Feature instance declared in AuxiliaryNavigationStaysInBrowserFeature
+    public static final String AUXILIARY_NAVIGATION_STAYS_IN_BROWSER_NAME =
+            "AuxiliaryNavigationStaysInBrowser";
 
-    public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
-            new ExternalIntentsFeatures(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
+    public static final ExternalIntentsFeature EXTERNAL_NAVIGATION_DEBUG_LOGS =
+            new ExternalIntentsFeature(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
 
-    public static final ExternalIntentsFeatures BLOCK_INTENTS_TO_SELF =
-            new ExternalIntentsFeatures(1, BLOCK_INTENTS_TO_SELF_NAME);
+    public static final ExternalIntentsFeature BLOCK_INTENTS_TO_SELF =
+            new ExternalIntentsFeature(1, BLOCK_INTENTS_TO_SELF_NAME);
 
-    public static final ExternalIntentsFeatures NAVIGATION_CAPTURE_REFACTOR_ANDROID =
-            new ExternalIntentsFeatures(2, NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME);
+    public static final ExternalIntentsFeature NAVIGATION_CAPTURE_REFACTOR_ANDROID =
+            new ExternalIntentsFeature(2, NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME);
 
-    private final int mOrdinal;
+    public static final AuxiliaryNavigationStaysInBrowserFeature
+            AUXILIARY_NAVIGATION_STAYS_IN_BROWSER =
+                    new AuxiliaryNavigationStaysInBrowserFeature(
+                            3, AUXILIARY_NAVIGATION_STAYS_IN_BROWSER_NAME);
 
-    private ExternalIntentsFeatures(int ordinal, String name) {
-        super(name);
-        mOrdinal = ordinal;
-    }
+    public static class ExternalIntentsFeature extends Features {
+        private final int mOrdinal;
 
-    @Override
-    protected long getFeaturePointer() {
-        return ExternalIntentsFeaturesJni.get().getFeature(mOrdinal);
+        private ExternalIntentsFeature(int ordinal, String name) {
+            super(name);
+            mOrdinal = ordinal;
+        }
+
+        @Override
+        protected long getFeaturePointer() {
+            return ExternalIntentsFeaturesJni.get().getFeature(mOrdinal);
+        }
     }
 
     @NativeMethods
     interface Natives {
         long getFeature(int ordinal);
+    }
+
+    public static class AuxiliaryNavigationStaysInBrowserFeature extends ExternalIntentsFeature {
+        private static final String PARAM_NAME = "auxiliary_navigation_stays_in_browser";
+        private static final String DESKTOP_WM_FIELD = "desktop_wm";
+        private static final String ALL_WM_FIELD = "all_wm";
+
+        private AuxiliaryNavigationStaysInBrowserFeature(int ordinal, String name) {
+            super(ordinal, name);
+        }
+
+        public boolean isEnabled(boolean isInDesktopWindowingMode) {
+            String featureString = getFieldTrialParamByFeatureAsString(PARAM_NAME);
+
+            // Arbitrary way to enable the feature (e.g. for testing)
+            boolean isEnabled = isEnabled();
+            // The feature is supposed to work for desktop windowing only
+            boolean isValidDesktopWindowingMode =
+                    featureString.equals(DESKTOP_WM_FIELD) && isInDesktopWindowingMode;
+            // The feature is supposed to work independently of windowing mode.
+            boolean isValidAllWindowingMode = featureString.equals(ALL_WM_FIELD);
+
+            return isEnabled || isValidDesktopWindowingMode || isValidAllWindowingMode;
+        }
     }
 }

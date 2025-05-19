@@ -75,16 +75,16 @@ public class InterceptNavigationDelegateCustomTabTest {
     public void testNavigationWasReparented() throws Exception {
         launchTwa(TWA_PACKAGE_NAME, mTestServer.getURL(NAVIGATION_TO_AUXILIARY_TAB));
 
-        CustomTabActivity mActivity = sCustomTabActivityTestRule.getActivity();
+        CustomTabActivity activity = sCustomTabActivityTestRule.getActivity();
 
-        Assert.assertTrue(mActivity.getActivityTab().isTabInPWA());
-        Assert.assertFalse(mActivity.getActivityTab().getWebContents().hasOpener());
+        Assert.assertTrue(activity.getActivityTab().isTabInPWA());
+        Assert.assertFalse(activity.getActivityTab().getWebContents().hasOpener());
 
         ChromeTabbedActivity newActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
                         Stage.STARTED,
-                        () -> TouchCommon.singleClickView(mActivity.getActivityTab().getView()));
+                        () -> TouchCommon.singleClickView(activity.getActivityTab().getView()));
 
         ApplicationTestUtils.waitForActivityState(newActivity, Stage.RESUMED);
 
