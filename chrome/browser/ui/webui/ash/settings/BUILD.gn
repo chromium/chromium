@@ -74,6 +74,7 @@ static_library("settings") {
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/settings_shared:resources",
     "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/webui/app_management:app_management",
     "//chrome/browser/ui/webui/ash/settings/pages/apps",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time",
     "//chrome/browser/ui/webui/ash/settings/pages/device",
@@ -120,6 +121,7 @@ static_library("settings") {
     "//chrome/browser/ui/webui/ash/settings/pages/storage",
     "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
     "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/app_management",
   ]
 
   if (is_chrome_branded) {
