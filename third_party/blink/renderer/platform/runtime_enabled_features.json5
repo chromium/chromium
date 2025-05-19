@@ -1521,7 +1521,7 @@
     },
     {
       name: "CSSSignRelatedFunctions",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Explainer: https://drafts.csswg.org/css-values/#round-func
