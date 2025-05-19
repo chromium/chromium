@@ -72,6 +72,11 @@ void CloneBookmarkNodeImpl(BookmarkModel* model,
   }
 }
 
+// Comparison function that compares based on date modified of the two nodes.
+bool MoreRecentlyModified(const BookmarkNode* n1, const BookmarkNode* n2) {
+  return n1->date_folder_modified() > n2->date_folder_modified();
+}
+
 // Returns true if `text` contains each string in `words`. This is used when
 // searching for bookmarks.
 bool DoesBookmarkTextContainWords(const std::u16string& text,
@@ -148,6 +153,18 @@ void GetMostRecentEntries(
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Returns whether or not a bookmark model contains any bookmarks aside of the
+// permanent nodes.
+bool HasUserCreatedBookmarks(BookmarkModel* model) {
+  const BookmarkNode* root_node = model->root_node();
+
+  return std::ranges::any_of(root_node->children(), [](const auto& node) {
+    return !node->children().empty();
+  });
+}
+#endif
+
 }  // namespace
 
 QueryFields::QueryFields() = default;
@@ -195,36 +212,26 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
     nodes.push_back(iterator.Next());
   }
 
-  const std::array<const BookmarkNode*, 3>
-      account_permanent_nodes_possibly_null = {
-          model->account_mobile_node(), model->account_bookmark_bar_node(),
-          model->account_other_node()};
+  std::ranges::stable_sort(nodes, &MoreRecentlyModified);
 
-  const BookmarkNode* default_node =
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      model->account_mobile_node() ? model->account_mobile_node()
-                                   : model->mobile_node();
-#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS).
-      model->account_other_node() ? model->account_other_node()
-                                  : model->other_node();
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // If the account nodes were added after the most recently modified node was
+  // last used (e.g. through sign-in or activating account storage for bookmarks
+  // from the settings), move the permanent account nodes to the front. The
+  // account other node becomes the first in order to make it the default save
+  // location.
+  if (model->account_other_node() && !nodes.empty() &&
+      model->account_other_node()->date_added() >
+          nodes.front()->date_folder_modified()) {
+    for (const BookmarkNode* node :
+         {model->account_mobile_node(), model->account_bookmark_bar_node(),
+          model->account_other_node()}) {
+      if (!PruneFoldersForDisplay(model, node)) {
+        std::erase(nodes, node);
+        nodes.insert(nodes.begin(), node);
+      }
+    }
+  }
 
-  auto more_recently_modified = [account_permanent_nodes_possibly_null,
-                                 default_node](const BookmarkNode* n1,
-                                               const BookmarkNode* n2) {
-    base::Time t1 = base::Contains(account_permanent_nodes_possibly_null, n1)
-                        ? std::max(n1->date_folder_modified(), n1->date_added())
-                        : n1->date_folder_modified();
-
-    base::Time t2 = base::Contains(account_permanent_nodes_possibly_null, n2)
-                        ? std::max(n2->date_folder_modified(), n2->date_added())
-                        : n2->date_folder_modified();
-
-    // If no node has been modified more recently, choose a default folder.
-    return t1 == t2 ? (n1 == default_node || n2 != default_node) : (t1 > t2);
-  };
-
-  std::ranges::stable_sort(nodes, more_recently_modified);
   return nodes;
 }
 
@@ -544,6 +551,11 @@ bool HasDescendantsOf(
 
 const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
                                          const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!HasUserCreatedBookmarks(model)) {
+    return model->mobile_node();
+  }
+#endif
   const BookmarkNode* parent = model->client()->GetSuggestedSaveLocation(url);
   if (parent) {
     return parent;
@@ -552,8 +564,13 @@ const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
   // Return the last modified folder if there is no save location suggestion.
   std::vector<const BookmarkNode*> nodes =
       GetMostRecentlyModifiedUserFolders(model);
-  CHECK(!nodes.empty());
-  return nodes[0];
+  if (!nodes.empty()) {
+    return nodes[0];
+  }
+
+  // Default save location.
+  return model->account_other_node() ? model->account_other_node()
+                                     : model->other_node();
 }
 
 bool PruneFoldersForDisplay(const BookmarkModel* model,

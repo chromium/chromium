@@ -783,62 +783,6 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, NonCommitURLNavigation) {
   EXPECT_TRUE(bookmark_observer.is_starred());
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
-                       BookmarkCurrentTab_WithoutAccountNodes) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
-
-  // If no folders have been modified, bookmarks are saved to other bookmarks by
-  // default.
-  ASSERT_EQ(bookmark_model->other_node(),
-            bookmarks::GetParentForNewNodes(bookmark_model));
-
-  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
-  EXPECT_THAT(1u, bookmark_model->other_node()->children().size());
-
-  // Add a bookmark to the local bookmark bar node, so that it becomes the most
-  // recently modified one.
-  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
-                         GURL("http://google.com"));
-  ASSERT_EQ(bookmark_model->bookmark_bar_node(),
-            bookmarks::GetParentForNewNodes(bookmark_model));
-
-  // After the bookmarks bar was modified, it should be the new default save
-  // location.
-  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
-  EXPECT_THAT(1u, bookmark_model->bookmark_bar_node()->children().size());
-}
-
-// Account nodes don't exist on ChromeOS, so this test does not apply.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
-                       BookmarkCurrentTab_WithAccountNodes) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
-  bookmark_model->CreateAccountPermanentFolders();
-
-  // If no folders have been modified, bookmarks are saved to account other
-  // bookmarks by default.
-  ASSERT_EQ(bookmark_model->account_other_node(),
-            bookmarks::GetParentForNewNodes(bookmark_model));
-
-  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
-  EXPECT_THAT(1u, bookmark_model->account_other_node()->children().size());
-
-  // Add a bookmark to the local bookmark bar node, so that it becomes the most
-  // recently modified one.
-  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
-                         GURL("http://google.com"));
-  ASSERT_EQ(bookmark_model->bookmark_bar_node(),
-            bookmarks::GetParentForNewNodes(bookmark_model));
-
-  // After the bookmarks bar was modified, it should be the new default save
-  // location.
-  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
-  EXPECT_THAT(1u, bookmark_model->bookmark_bar_node()->children().size());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
  public:
   BookmarkPrerenderBrowsertest()
