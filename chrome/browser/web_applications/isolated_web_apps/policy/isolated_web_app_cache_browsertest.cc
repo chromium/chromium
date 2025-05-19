@@ -279,7 +279,6 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
     const WebApp* app = GetIsolatedWebApp();
     ASSERT_TRUE(app);
-    ASSERT_TRUE(app->isolation_data());
     ASSERT_EQ(app->isolation_data()->version().GetString(), version);
   }
 
@@ -355,7 +354,11 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   void DestroyCacheDir() { cache_root_dir_override_.reset(); }
 
   const WebApp* GetIsolatedWebApp() {
-    return provider().registrar_unsafe().GetAppById(GetAppId());
+    ASSIGN_OR_RETURN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), GetAppId()),
+        [](const std::string&) { return nullptr; });
+    return &iwa;
   }
 
   size_t GetNumOpenedWindowsForIwa() {
@@ -503,6 +506,50 @@ IN_PROC_BROWSER_TEST_P(IwaCacheTest, UpdateNotFound) {
   AssertAppInstalledAtVersion(kBaseVersion);
 }
 
+// Install base version from the Internet.
+IN_PROC_BROWSER_TEST_P(IwaCacheTest,
+                       PRE_PRE_UpdateTaskIsTriggeredAutomatically) {
+  LaunchSession();
+  AssertAppInstalledAtVersion(kBaseVersion);
+  WaitUntilPathExists(GetCachedBundlePath(kBaseVersion));
+  CheckPathDoesNotExist(GetCachedBundlePath(kUpdateVersion));
+}
+
+// Add new version to the manifest, but the installation will be done from cache
+// with the base version first. Then the IWA cache manager will automatically
+// trigger the update check. On the session exit the new version will be copied
+// to cache. On the 3rd session start new IWA version will be installed.
+IN_PROC_BROWSER_TEST_P(IwaCacheTest, PRE_UpdateTaskIsTriggeredAutomatically) {
+  AddNewVersionToUpdateServer(kUpdateVersion);
+  LaunchSession();
+
+  AssertAppInstalledAtVersion(kBaseVersion);
+  if (IsManagedGuestSession()) {
+    // Only open app in MGS, in kiosk app is always opened after the session
+    // started.
+    OpenIwa();
+  }
+
+  // If the apply update task is not completed, wait at least until the discover
+  // update task has completed.
+  const WebApp* app = GetIsolatedWebApp();
+  ASSERT_TRUE(app);
+  if (app->isolation_data()->version().GetString() == kBaseVersion) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return app->isolation_data()->pending_update_info().has_value();
+    }));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(IwaCacheTest, UpdateTaskIsTriggeredAutomatically) {
+  WaitUntilPathExists(GetCachedBundlePath(kUpdateVersion));
+
+  RemoveBundleFromUpdateServer();
+  LaunchSession();
+
+  AssertAppInstalledAtVersion(kUpdateVersion);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IwaCacheTest,
@@ -528,8 +575,8 @@ IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
   WaitUntilPathExists(GetCachedBundlePath(kBaseVersion, kWebBundleId));
 }
 
-// When IWA is no longer in the policy list, `IwaCacheManager` will remove it's
-// cache on session start.
+// When IWA is no longer in the policy list, `IwaCacheManager` will remove
+// it's cache on session start.
 IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
                        RemoveCachedBundleForUninstalledIwa) {
   AddNewIwaToServer(kPublicKeyPair2, kBaseVersion);
