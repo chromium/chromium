@@ -6045,11 +6045,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "launcher-system-info-answer-cards",
-    "owners": ["laurencom@chromium.org", "chenjih@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "left-click-opens-tab-group-bubble",
     "owners": [ "dpenning@chromium.org" ],
     "expiry_milestone": 137

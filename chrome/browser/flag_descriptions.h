@@ -4546,9 +4546,6 @@ extern const char kLauncherSearchControlDescription[];
 extern const char kLauncherNudgeSessionResetName[];
 extern const char kLauncherNudgeSessionResetDescription[];
 
-extern const char kLauncherSystemInfoAnswerCardsName[];
-extern const char kLauncherSystemInfoAnswerCardsDescription[];
-
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 

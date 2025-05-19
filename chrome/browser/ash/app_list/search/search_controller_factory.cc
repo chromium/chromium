@@ -77,10 +77,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         profile, base::FileEnumerator::FileType::FILES |
                      base::FileEnumerator::FileType::DIRECTORIES));
     controller->AddProvider(std::make_unique<DriveSearchProvider>(profile));
-    if (search_features::IsLauncherSystemInfoAnswerCardsEnabled()) {
-      controller->AddProvider(
-          std::make_unique<SystemInfoCardProvider>(profile));
-    }
+    controller->AddProvider(std::make_unique<SystemInfoCardProvider>(profile));
     if (search_features::IsLauncherImageSearchEnabled()) {
       controller->AddProvider(
           std::make_unique<LocalImageSearchProvider>(profile));

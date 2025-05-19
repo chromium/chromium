@@ -7710,12 +7710,6 @@ const char kLauncherNudgeSessionResetDescription[] =
     "When enabled, this will reset the launcher nudge shown data on every new "
     "user session, allowing the nudge to be shown again.";
 
-const char kLauncherSystemInfoAnswerCardsName[] =
-    "System Info Answer Cards in launcher";
-const char kLauncherSystemInfoAnswerCardsDescription[] =
-    "Enables System info answer cards in the launcher to provide system "
-    "performance metrics";
-
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "

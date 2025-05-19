@@ -47,10 +47,6 @@ BASE_FEATURE(kLauncherImageSearchDebug,
              "kLauncherImageSearchDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLauncherSystemInfoAnswerCards,
-             "LauncherSystemInfoAnswerCards",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLauncherSearchFileScan,
              "kLauncherSearchFileScan",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -92,10 +88,6 @@ bool IsLauncherImageSearchIndexingLimitEnabled() {
 
 bool IsLauncherImageSearchDebugEnabled() {
   return base::FeatureList::IsEnabled(kLauncherImageSearchDebug);
-}
-
-bool IsLauncherSystemInfoAnswerCardsEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherSystemInfoAnswerCards);
 }
 
 bool IsLauncherSearchFileScanEnabled() {

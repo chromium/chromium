@@ -39,8 +39,6 @@ BASE_DECLARE_FEATURE(kLauncherImageSearchIndexingLimit);
 // certain tast test and will introduce extra logs to help debug.
 BASE_DECLARE_FEATURE(kLauncherImageSearchDebug);
 
-BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
-
 // Enables file scan in launcher. This is used as a stopper if the file scan ran
 // into any issues.
 BASE_DECLARE_FEATURE(kLauncherSearchFileScan);
@@ -55,7 +53,6 @@ bool IsLauncherImageSearchIcaEnabled();
 bool IsLauncherImageSearchOcrEnabled();
 bool IsLauncherImageSearchIndexingLimitEnabled();
 bool IsLauncherImageSearchDebugEnabled();
-bool IsLauncherSystemInfoAnswerCardsEnabled();
 bool IsLauncherSearchFileScanEnabled();
 bool IskLauncherKeyShortcutInBestMatchEnabled();
 }  // namespace search_features
