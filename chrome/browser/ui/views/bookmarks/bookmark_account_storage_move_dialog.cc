@@ -12,8 +12,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -22,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -73,28 +76,22 @@ void RecordDialogShown(BookmarkAccountStorageMoveDialogType type,
   RecordDialogMetrics("Shown", type, is_local_node);
 }
 
-}  // namespace
-
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogOkButton);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogCancelButton);
-
-void ShowBookmarkAccountStorageMoveDialog(
+void ShowBookmarkAccountStorageMoveDialogInternal(
     Browser* browser,
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* target_folder,
     size_t index,
     BookmarkAccountStorageMoveDialogType dialog_type,
     base::OnceClosure closed_callback) {
-  // Note: All keyed services are retrieved for GetOriginalProfile() because the
-  // dialog can be shown in incognito.
   CHECK(browser);
+  Profile* profile = browser->GetProfile();
+  CHECK(!profile->IsOffTheRecord());
   CHECK(node);
   CHECK(target_folder);
   CHECK(target_folder->is_folder());
   CHECK(!node->is_permanent_node());
   bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(
-          browser->GetProfile()->GetOriginalProfile());
+      BookmarkModelFactory::GetForBrowserContext(profile);
   bool is_local_node = bookmark_model->IsLocalOnlyNode(*node);
   CHECK_NE(is_local_node, bookmark_model->IsLocalOnlyNode(*target_folder));
 
@@ -159,8 +156,7 @@ void ShowBookmarkAccountStorageMoveDialog(
     // account as a "custom view" (the part between the dialog's subtitle and
     // buttons).
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(
-            browser->profile()->GetOriginalProfile());
+        IdentityManagerFactory::GetForProfile(profile);
     AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
     CHECK(!account_info.IsEmpty());
@@ -187,4 +183,69 @@ void ShowBookmarkAccountStorageMoveDialog(
 
   chrome::ShowBrowserModal(browser, builder.Build());
   RecordDialogShown(dialog_type, is_local_node);
+}
+
+// Redirect Incognito to the Original Profile, and show the dialog over the
+// Bookmarks Manager page.
+void OpenDialogInOriginalProfileBookmarksManager(
+    const bookmarks::BookmarkNode* node,
+    const bookmarks::BookmarkNode* target_folder,
+    size_t index,
+    BookmarkAccountStorageMoveDialogType dialog_type,
+    base::OnceClosure closed_callback,
+    Browser* browser) {
+  // `browser` may be null in case of failure to instantiate a window.
+  if (!browser) {
+    return;
+  }
+
+  CHECK(!browser->GetProfile()->IsOffTheRecord());
+  // Open BookmarksManager page.
+  browser->OpenURL(content::OpenURLParams(
+                       GURL(chrome::kChromeUIBookmarksURL), content::Referrer(),
+                       WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                       ui::PAGE_TRANSITION_LINK, false),
+                   /*navigation_handle_callback=*/{});
+
+  ShowBookmarkAccountStorageMoveDialogInternal(browser, node, target_folder,
+                                               index, dialog_type,
+                                               std::move(closed_callback));
+}
+
+}  // namespace
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogOkButton);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogCancelButton);
+
+void ShowBookmarkAccountStorageMoveDialog(
+    Browser* browser,
+    const bookmarks::BookmarkNode* node,
+    const bookmarks::BookmarkNode* target_folder,
+    size_t index,
+    BookmarkAccountStorageMoveDialogType dialog_type,
+    base::OnceClosure closed_callback) {
+  CHECK(browser);
+  if (browser->GetProfile()->IsOffTheRecord()) {
+    // If we cannot open an original profile window, just ignore the request. If
+    // we do not do this, a new empty incognito browser opens as result of
+    // `profiles::OpenBrowserWindowForProfile()`, which is confusing, so it is
+    // better to exit early.
+    if (IncognitoModePrefs::GetAvailability(
+            browser->GetProfile()->GetPrefs()) ==
+        policy::IncognitoModeAvailability::kForced) {
+      return;
+    }
+    base::OnceCallback<void(Browser*)> on_browser_ready = base::BindOnce(
+        &OpenDialogInOriginalProfileBookmarksManager, node, target_folder,
+        index, dialog_type, std::move(closed_callback));
+    profiles::OpenBrowserWindowForProfile(
+        std::move(on_browser_ready), /*always_create=*/false,
+        /*is_new_profile=*/false, /*unblock_extensions=*/false,
+        browser->GetProfile()->GetOriginalProfile());
+    return;
+  }
+
+  ShowBookmarkAccountStorageMoveDialogInternal(browser, node, target_folder,
+                                               index, dialog_type,
+                                               std::move(closed_callback));
 }

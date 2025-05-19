@@ -44,6 +44,9 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogCancelButton);
 // Must only be called if there is a signed-in account, and if `node` and
 // `target_folder` have different storages, otherwise the call will crash.
 // `dialog_type` specifies which version of the dialog should be displayed.
+// Note: In incognito mode, the dialog will be shown on top of a browser for the
+// Original Profile instead of `browser`. It will create a new browser window if
+// one doesn't exist already.
 void ShowBookmarkAccountStorageMoveDialog(
     Browser* browser,
     const bookmarks::BookmarkNode* node,
