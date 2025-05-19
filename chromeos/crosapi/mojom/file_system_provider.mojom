@@ -190,9 +190,6 @@ interface FileSystemProvider {
 // fileSystemProvider extension API.
 [Uuid="82db93f7-e0a5-4a9c-a09f-db92f9e45348"]
 interface FileSystemProviderService {
-  // File system providers use this interface to receive operation requests.
-  RegisterFileSystemProvider@0(pending_remote<FileSystemProvider> provider);
-
   // Makes a filesystem provided by an extension visible to the operating system
   // and other consumers.
   Mount@1(FileSystemMetadata metadata, bool persistent) => (string error);

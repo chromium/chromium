@@ -101,9 +101,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindFileSystemAccessCloudIdentifierProvider(
       mojo::PendingReceiver<mojom::FileSystemAccessCloudIdentifierProvider>
           receiver) override;
-  void BindFileSystemProviderService(
-      mojo::PendingReceiver<mojom::FileSystemProviderService> receiver)
-      override;
   void BindFullscreenController(
       mojo::PendingReceiver<mojom::FullscreenController> receiver) override;
   void BindHidManager(

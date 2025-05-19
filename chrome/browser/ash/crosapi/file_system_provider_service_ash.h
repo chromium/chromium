@@ -7,9 +7,6 @@
 
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -17,8 +14,7 @@ namespace crosapi {
 
 // Implements the ash side of the file_system_provider interface. This interface
 // allows extensions to implement file systems. Extensions call into this class
-// either directly via c++ (ash) or via crosapi (lacros) to fulfill information
-// requests about the file system.
+// directly via c++ (ash) to fulfill information requests about the file system.
 class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
  public:
   FileSystemProviderServiceAsh();
@@ -27,12 +23,6 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
       delete;
   ~FileSystemProviderServiceAsh() override;
 
-  void BindReceiver(
-      mojo::PendingReceiver<mojom::FileSystemProviderService> receiver);
-
-  // crosapi::mojom::FileSystemProviderService:
-  void RegisterFileSystemProvider(
-      mojo::PendingRemote<mojom::FileSystemProvider> provider) override;
   void Mount(mojom::FileSystemMetadataPtr metadata,
              bool persistent,
              MountCallback callback) override;
@@ -81,9 +71,8 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                        const gfx::ImageSkia& icon32x32) override;
   void ExtensionUnloaded(const std::string& id, bool due_to_shutdown) override;
 
-  // In order to support multi-login in ash, a legacy feature that is going
-  // away in Lacros, all methods above are redirected to a variation that
-  // supports directly passing in a Profile*.
+  // In order to support multi-login in ash, all methods above are redirected to
+  // a variation that supports directly passing in a Profile*.
   void MountWithProfile(mojom::FileSystemMetadataPtr metadata,
                         bool persistent,
                         MountCallback callback,
@@ -120,15 +109,6 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                                 base::Value::List args,
                                 MountFinishedCallback callback,
                                 Profile* profile);
-
-  // Exposed so that ash clients can work with Lacros file system providers.
-  mojo::RemoteSet<mojom::FileSystemProvider>& remotes() { return remotes_; }
-
- private:
-  // Each separate Lacros process owns its own remote.
-  mojo::RemoteSet<mojom::FileSystemProvider> remotes_;
-  // Receives events from Lacros file system provider extensions.
-  mojo::ReceiverSet<mojom::FileSystemProviderService> receivers_;
 };
 
 }  // namespace crosapi

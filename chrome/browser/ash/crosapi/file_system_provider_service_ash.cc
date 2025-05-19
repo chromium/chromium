@@ -252,16 +252,6 @@ std::optional<GURL> ToPNGDataURL(const gfx::ImageSkia& image) {
 FileSystemProviderServiceAsh::FileSystemProviderServiceAsh() = default;
 FileSystemProviderServiceAsh::~FileSystemProviderServiceAsh() = default;
 
-void FileSystemProviderServiceAsh::BindReceiver(
-    mojo::PendingReceiver<mojom::FileSystemProviderService> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
-void FileSystemProviderServiceAsh::RegisterFileSystemProvider(
-    mojo::PendingRemote<mojom::FileSystemProvider> provider) {
-  remotes_.Add(mojo::Remote<mojom::FileSystemProvider>(std::move(provider)));
-}
-
 void FileSystemProviderServiceAsh::Mount(mojom::FileSystemMetadataPtr metadata,
                                          bool persistent,
                                          MountCallback callback) {

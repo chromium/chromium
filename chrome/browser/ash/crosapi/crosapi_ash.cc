@@ -214,11 +214,6 @@ void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(
       std::move(receiver));
 }
 
-void CrosapiAsh::BindFileSystemProviderService(
-    mojo::PendingReceiver<crosapi::mojom::FileSystemProviderService> receiver) {
-  file_system_provider_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindFullscreenController(
     mojo::PendingReceiver<crosapi::mojom::FullscreenController> receiver) {
   fullscreen_controller_ash_->BindReceiver(std::move(receiver));

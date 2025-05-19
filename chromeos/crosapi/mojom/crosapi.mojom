@@ -173,12 +173,7 @@ interface Crosapi {
   BindFileSystemAccessCloudIdentifierProvider@117(
     pending_receiver<FileSystemAccessCloudIdentifierProvider> receiver);
 
-  // This interface allows Lacros extensions to implement file systems.
-  // Added in M104.
-  [MinVersion=78]
-  BindFileSystemProviderService@81(
-      pending_receiver<FileSystemProviderService> receiver);
-
+  // BindFileSystemProviderService@81 was removed.
   // BindForceInstalledTracker@57 was removed.
   // BindFullRestore@137 was removed.
 
