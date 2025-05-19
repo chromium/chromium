@@ -99,7 +99,6 @@ export class ViewerToolbarElement extends CrLitElement {
 
       displayAnnotations_: {type: Boolean},
       fittingType_: {type: Number},
-      pdfAnnotationsEnabled_: {type: Boolean},
       printingEnabled_: {type: Boolean},
       viewportZoomPercent_: {type: Number},
 
@@ -112,8 +111,9 @@ export class ViewerToolbarElement extends CrLitElement {
       // </if>
 
       // <if expr="enable_ink">
+      pdfInk1AnnotationsEnabled_: {type: Boolean},
       showAnnotationsModeDialog_: {type: Boolean},
-      // </if> enable_ink
+      // </if>
 
       // <if expr="enable_pdf_ink2">
       enableUndoRedo: {type: Boolean},
@@ -144,7 +144,6 @@ export class ViewerToolbarElement extends CrLitElement {
   private accessor fittingType_: FittingType = FittingType.FIT_TO_PAGE;
   protected accessor moreMenuOpen_: boolean = false;
   protected accessor loading_: boolean = true;
-  private accessor pdfAnnotationsEnabled_: boolean = false;
   protected accessor printingEnabled_: boolean = false;
   private accessor viewportZoomPercent_: number = 0;
 
@@ -156,6 +155,7 @@ export class ViewerToolbarElement extends CrLitElement {
 
   // <if expr="enable_ink">
   // Ink reactive properties
+  private accessor pdfInk1AnnotationsEnabled_: boolean = false;
   protected accessor showAnnotationsModeDialog_: boolean = false;
   // </if>
 
@@ -222,8 +222,10 @@ export class ViewerToolbarElement extends CrLitElement {
 
   private updateLoadTimeData_() {
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
-    this.pdfAnnotationsEnabled_ =
-        loadTimeData.getBoolean('pdfAnnotationsEnabled');
+    // <if expr="enable_ink">
+    this.pdfInk1AnnotationsEnabled_ =
+        loadTimeData.getBoolean('pdfInk1AnnotationsEnabled');
+    // </if>
     // <if expr="enable_pdf_ink2">
     this.pdfTextAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfTextAnnotationsEnabled');
@@ -259,19 +261,19 @@ export class ViewerToolbarElement extends CrLitElement {
     }
     // </if> enable_pdf_ink2
 
-    return this.pdfAnnotationsEnabled_;
+    return this.pdfInk1AnnotationsEnabled_;
   }
   // </if> enable_ink
 
   // <if expr="enable_pdf_ink2">
   protected showInk2Buttons_(): boolean {
-    return this.pdfInk2Enabled && this.pdfAnnotationsEnabled_;
+    return this.pdfInk2Enabled;
   }
   // </if>
 
   // <if expr="enable_ink">
   protected showAnnotationsBar_(): boolean {
-    return this.pdfAnnotationsEnabled_ && !this.loading_ &&
+    return this.pdfInk1AnnotationsEnabled_ && !this.loading_ &&
         this.isInInk1AnnotationMode_();
   }
 

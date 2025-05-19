@@ -30,7 +30,8 @@ function isAnnotationMode(): boolean {
 chrome.test.runTests([
   function testAnnotationsEnabled() {
     const toolbar = viewer.$.toolbar;
-    chrome.test.assertTrue(loadTimeData.getBoolean('pdfAnnotationsEnabled'));
+    chrome.test.assertTrue(
+        loadTimeData.getBoolean('pdfInk1AnnotationsEnabled'));
     chrome.test.assertTrue(
         toolbar.shadowRoot.querySelector('#annotate') != null);
     chrome.test.succeed();

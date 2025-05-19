@@ -7,8 +7,7 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 chrome.test.runTests([
   async function testPrintingEnabled() {
-    loadTimeData.overrideValues(
-        {'pdfAnnotationsEnabled': true, 'printingEnabled': true});
+    loadTimeData.overrideValues({'printingEnabled': true});
     const viewer = document.body.querySelector('pdf-viewer')!;
     const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar')!;
     // Reset strings so toolbar picks up the new loadTimeData values.
@@ -20,8 +19,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   async function testPrintingDisabled() {
-    loadTimeData.overrideValues(
-        {'pdfAnnotationsEnabled': true, 'printingEnabled': false});
+    loadTimeData.overrideValues({'printingEnabled': false});
     const viewer = document.body.querySelector('pdf-viewer')!;
     const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar')!;
     // Reset strings so toolbar picks up the new loadTimeData values.

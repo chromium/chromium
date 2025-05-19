@@ -223,17 +223,21 @@ bool IsPrintingEnabled(content::BrowserContext* context) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool IsPdfAnnotationsEnabled(content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS)
+bool IsPdfInk1AnnotationsEnabled(content::BrowserContext* context) {
   PrefService* prefs =
       context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
-  if (prefs && prefs->IsManagedPreference(prefs::kPdfAnnotationsEnabled) &&
-      !prefs->GetBoolean(prefs::kPdfAnnotationsEnabled)) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  return true;
+  return !prefs || !prefs->IsManagedPreference(prefs::kPdfAnnotationsEnabled) ||
+         prefs->GetBoolean(prefs::kPdfAnnotationsEnabled);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+bool IsPdfInk2AnnotationsEnabled() {
+  // TODO(crbug.com/414844437): Support `kPdfAnnotationsEnabled` policy.
+  return base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2);
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace
 
@@ -273,22 +277,17 @@ void AddAdditionalData(content::BrowserContext* context,
   // above instead.
   dict->Set("printingEnabled", IsPrintingEnabled(context));
 
-  bool annotations_enabled = false;
 #if BUILDFLAG(IS_CHROMEOS)
-  annotations_enabled = IsPdfAnnotationsEnabled(context);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  dict->Set("pdfInk1AnnotationsEnabled", IsPdfInk1AnnotationsEnabled(context));
+#endif
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  bool use_ink2 = base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2);
-  if (use_ink2) {
-    annotations_enabled = IsPdfAnnotationsEnabled(context);
-  }
+  const bool use_ink2 = IsPdfInk2AnnotationsEnabled();
   dict->Set("pdfInk2Enabled", use_ink2);
-  bool text_annotations_enabled =
-      use_ink2 && chrome_pdf::features::kPdfInk2TextAnnotations.Get();
-  dict->Set("pdfTextAnnotationsEnabled", text_annotations_enabled);
+  dict->Set("pdfTextAnnotationsEnabled",
+            use_ink2 && chrome_pdf::features::kPdfInk2TextAnnotations.Get());
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
-  dict->Set("pdfAnnotationsEnabled", annotations_enabled);
   dict->Set("PdfGetSaveDataInBlocks",
             base::FeatureList::IsEnabled(
                 chrome_pdf::features::kPdfGetSaveDataInBlocks));

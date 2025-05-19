@@ -10,7 +10,6 @@ chrome.test.runTests([
   // Test that the annotate controls aren't shown when annotation mode is
   // disabled.
   function testAnnotationsDisabled() {
-    chrome.test.assertFalse(loadTimeData.getBoolean('pdfAnnotationsEnabled'));
     chrome.test.assertFalse(loadTimeData.getBoolean('pdfInk2Enabled'));
 
     const viewerToolbar = viewer.$.toolbar;

@@ -15,9 +15,8 @@ setupTestMockPluginForInk();
 const mockMetricsPrivate = setupMockMetricsPrivate();
 
 chrome.test.runTests([
-  // Test that PDF annotations and the new ink mode are enabled.
+  // Test that Ink2 mode are enabled.
   function testAnnotationsEnabled() {
-    chrome.test.assertTrue(loadTimeData.getBoolean('pdfAnnotationsEnabled'));
     chrome.test.assertTrue(loadTimeData.getBoolean('pdfInk2Enabled'));
     // When ink2 and annotations are enabled in loadTimeData, the ink2
     // button section displays.
