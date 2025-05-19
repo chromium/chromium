@@ -15602,6 +15602,29 @@
             ]
         }
     ],
+    "OptimizeHTMLElementUrls": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "cache_size": "100"
+                    },
+                    "enable_features": [
+                        "OptimizeHTMLElementUrls"
+                    ]
+                }
+            ]
+        }
+    ],
     "OrcaEnabled": [
         {
             "platforms": [
