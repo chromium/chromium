@@ -37,6 +37,7 @@ class BrowserAction;
 namespace actor {
 
 // Coordinates the execution of a multi-step task.
+// This class is misnamed. It's a specific type of execution engine.
 class ActorCoordinator {
  public:
   using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;

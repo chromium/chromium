@@ -2171,6 +2171,7 @@ if (!is_android) {
       "//chrome/browser:shell_integration",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility:utils",
+      "//chrome/browser/actor:browser_tests",
       "//chrome/browser/affiliations",
       "//chrome/browser/ai",
       "//chrome/browser/apps/app_service",
@@ -3625,7 +3626,6 @@ if (!is_android) {
       ]
 
       deps += [
-        "//chrome/browser/actor:browser_tests",
         "//chrome/browser/background/glic:glic",
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
@@ -7075,10 +7075,7 @@ test("unit_tests") {
   ]
 
   if (enable_glic) {
-    deps += [
-      "//chrome/browser/actor",
-      "//chrome/browser/glic:glic",
-    ]
+    deps += [ "//chrome/browser/glic:glic" ]
   }
 
   if (chrome_root_store_cert_management_ui) {
@@ -7120,7 +7117,6 @@ test("unit_tests") {
 
   if (enable_glic) {
     deps += [
-      "//chrome/browser/actor:unit_tests",
       "//chrome/browser/background/glic:unit_tests",
       "//chrome/browser/glic:unit_tests",
       "//chrome/browser/glic/test_support",
@@ -8072,6 +8068,8 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/actor:unit_tests",
       "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",

@@ -45,10 +45,10 @@ source_set("ai") {
     "//content/public/browser",
   ]
   if (enable_glic) {
-    public_deps += [
-      "//chrome/browser/actor:actor",
-      "//chrome/browser/glic:glic",
-    ]
+    public_deps += [ "//chrome/browser/glic:glic" ]
+  }
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/actor:actor" ]
   }
 }
 

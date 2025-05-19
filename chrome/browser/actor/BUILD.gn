@@ -4,18 +4,27 @@
 
 import("//chrome/common/features.gni")
 
-assert(enable_glic)
+assert(!is_android)
 
 source_set("actor") {
   friend = [
     ":unit_tests",
     ":browser_tests",
   ]
-  public = [ "actor_coordinator.h" ]
+  public = [
+    "actor_coordinator.h",
+    "actor_keyed_service.h",
+    "actor_keyed_service_factory.h",
+    "actor_task.h",
+  ]
+
   sources = [
     "actor_coordinator.cc",
     "actor_features.cc",
     "actor_features.h",
+    "actor_keyed_service.cc",
+    "actor_keyed_service_factory.cc",
+    "actor_task.cc",
     "site_policy.cc",
     "site_policy.h",
     "tools/history_tool.cc",
@@ -75,7 +84,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "actor_coordinator_unittest.cc",
+    "actor_keyed_service_unittest.cc",
     "site_policy_unittest.cc",
   ]
   deps = [
@@ -86,21 +95,19 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//testing/gtest",
   ]
+  if (enable_glic) {
+    sources += [ "actor_coordinator_unittest.cc" ]
+  }
 }
 
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "actor_coordinator_browsertest.cc",
-    "site_policy_browsertest.cc",
-    "tools/tools_browsertest.cc",
-  ]
+  sources = [ "site_policy_browsertest.cc" ]
   deps = [
     ":actor",
     ":test_support",
     "//base/test:test_support",
-    "//chrome/browser/glic:glic",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui",
@@ -113,4 +120,12 @@ source_set("browser_tests") {
     "//components/safe_browsing/core/common:features",
     "//testing/gtest",
   ]
+
+  if (enable_glic) {
+    sources += [
+      "actor_coordinator_browsertest.cc",
+      "tools/tools_browsertest.cc",
+    ]
+    deps += [ "//chrome/browser/glic:glic" ]
+  }
 }

@@ -246,10 +246,6 @@ static_library("renderer") {
     ]
   }
 
-  if (enable_glic) {
-    deps += [ "//chrome/renderer/actor" ]
-  }
-
   if (enable_nacl) {
     deps += [ "//components/nacl/renderer" ]
 
@@ -393,6 +389,7 @@ static_library("renderer") {
 
     deps += [
       "//chrome/common/read_anything:mojo_bindings",
+      "//chrome/renderer/actor",
       "//components/crx_file",
       "//components/trusted_vault",
       "//services/screen_ai/buildflags",

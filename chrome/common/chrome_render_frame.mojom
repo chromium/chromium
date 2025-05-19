@@ -4,7 +4,7 @@
 
 module chrome.mojom;
 
-[EnableIf=enable_glic]
+[EnableIfNot=is_android]
 import "chrome/common/actor.mojom";
 import "components/lens/lens_metadata.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -103,7 +103,7 @@ interface ChromeRenderFrame {
 
   // Requests invoking of a tool from the actor automation framework. See
   // chrome/browser/actor
-  [EnableIf=enable_glic]
+  [EnableIfNot=is_android]
   InvokeTool(actor.mojom.ToolInvocation request) =>
       (actor.mojom.ActionResult result);
 };

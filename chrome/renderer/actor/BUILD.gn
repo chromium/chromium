@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 
-assert(enable_glic)
+assert(!is_android)
 
 source_set("actor") {
   sources = [

@@ -1652,6 +1652,7 @@ static_library("ui") {
       "//chrome/app/vector_icons",
       "//chrome/browser:shell_integration",
       "//chrome/browser/accessibility:utils",
+      "//chrome/browser/actor",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_icon:util",
@@ -1924,6 +1925,7 @@ static_library("ui") {
 
       "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/media_router:impl",
+      "//chrome/browser/actor",
       "//chrome/browser/ui/window_sizer:impl",
       "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/search_engine_choice:impl",
@@ -5714,7 +5716,6 @@ static_library("ui") {
       "webui/settings/glic_handler.h",
     ]
     deps += [
-      "//chrome/browser/actor",
       "//chrome/browser/ai:ai",
       "//chrome/browser/background/glic",
       "//chrome/browser/glic",
@@ -5723,7 +5724,6 @@ static_library("ui") {
       "//chrome/browser/glic/fre",
     ]
     allow_circular_includes_from += [
-      "//chrome/browser/actor",
       "//chrome/browser/glic:impl",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/browser_ui",

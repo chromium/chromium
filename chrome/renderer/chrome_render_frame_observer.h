@@ -19,7 +19,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/actor.mojom.h"
 #endif
 
@@ -120,7 +120,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
   void SetShouldDeferMediaLoad(bool should_defer) override;
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if !BUILDFLAG(IS_ANDROID)
   void InvokeTool(actor::mojom::ToolInvocationPtr request,
                   InvokeToolCallback callback) override;
 #endif

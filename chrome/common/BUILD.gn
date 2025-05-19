@@ -359,6 +359,9 @@ static_library("common_lib") {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
     sources += [
+      "actor/action_result.cc",
+      "actor/action_result.h",
+      "actor/actor_logging.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",
     ]
@@ -443,14 +446,6 @@ static_library("common_lib") {
 
   if (enable_bound_session_credentials) {
     sources += [ "bound_session_request_throttled_handler.h" ]
-  }
-
-  if (enable_glic) {
-    sources += [
-      "actor/action_result.cc",
-      "actor/action_result.h",
-      "actor/actor_logging.h",
-    ]
   }
 }
 
@@ -704,6 +699,8 @@ mojom("mojo_bindings") {
 
   if (is_android) {
     sources += [ "sandbox_status_extension_android.mojom" ]
+  } else {
+    sources += [ "actor.mojom" ]
   }
 
   if (is_mac) {
@@ -740,7 +737,6 @@ mojom("mojo_bindings") {
   enabled_features = []
 
   if (enable_glic) {
-    sources += [ "actor.mojom" ]
     enabled_features += [ "enable_glic" ]
   }
 
