@@ -70,6 +70,7 @@ class FromGWSAbandonedPageLoadMetricsObserver
   uint64_t redirect_num_ = 0;
   std::optional<blink::Impression> impression_;
   bool is_committed_ = false;
+  std::optional<net::Error> net_error_;
 
   base::TimeTicks second_redirect_request_start_time_;
   base::TimeTicks second_redirect_response_start_time_;

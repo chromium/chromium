@@ -15532,6 +15532,12 @@ be describing additional metrics about the same event.
       The last milestone before the navigation is abandoned.
     </summary>
   </metric>
+  <metric name="Net.ErrorCode" enum="NetErrorCodes">
+    <summary>
+      The `net::Error` code for this page load. Only logged for failed
+      provisional navigations (i.e. abandoned before commit).
+    </summary>
+  </metric>
   <metric name="PreviousBackgroundedTime">
     <summary>
       If we've experienced backgrounding while the navigation/page load is
