@@ -417,6 +417,8 @@ target(libcxx_target_type, "libc++") {
   configs -= configs_to_remove
   configs += configs_to_add
 
+  deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
+
   if (use_libcxx_modules) {
     # TODO(https://github.com/llvm/llvm-project/issues/127012): We don't enable
     # Clang modules for libc++ as libc++'s iostream.cpp has ODR issue
@@ -428,6 +430,8 @@ target(libcxx_target_type, "libc++") {
     # This removes deps to libc++'s modules from libc++'s build as libc++
     # doesn't support modules build itself.
     use_libcxx_modules = false
+
+    deps += [ ":copy_custom_headers" ]
   }
   if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
@@ -470,8 +474,6 @@ target(libcxx_target_type, "libc++") {
       defines += [ "_LIBCPP_OVERRIDABLE_FUNC_VIS=__attribute__((__visibility__(\"default\")))" ]
     }
   }
-
-  deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
 
   if (!is_win) {
     defines += [ "LIBCXX_BUILDING_LIBCXXABI" ]
