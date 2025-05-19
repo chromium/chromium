@@ -276,6 +276,27 @@ class PreinstalledWebAppManagerBrowserTestBase
     return code;
   }
 
+  struct SyncResults {
+    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results;
+    std::map<GURL, webapps::UninstallResultCode> uninstall_results;
+  };
+  SyncResults SyncPreinstalledApps() {
+    base::test::TestFuture<
+        std::map<GURL, ExternallyManagedAppManager::InstallResult>,
+        std::map<GURL, webapps::UninstallResultCode>>
+        future;
+
+    WebAppProvider::GetForTest(profile())
+        ->preinstalled_web_app_manager()
+        .LoadAndSynchronizeForTesting(future.GetCallback());
+    return {
+        .install_results = future.Get<
+            std::map<GURL, ExternallyManagedAppManager::InstallResult>>(),
+        .uninstall_results =
+            future.Get<std::map<GURL, webapps::UninstallResultCode>>(),
+    };
+  }
+
   ~PreinstalledWebAppManagerBrowserTestBase() override = default;
 
  protected:
@@ -539,6 +560,73 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerExtensionBrowserTest,
       uninstall_observer.WaitForExtensionUninstalled();
   EXPECT_EQ(app, uninstalled_app.get());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PreinstalledWebAppManagerExtensionAlwaysMigrateBrowserTest
+    : public PreinstalledWebAppManagerExtensionBrowserTest {
+ public:
+  PreinstalledWebAppManagerExtensionAlwaysMigrateBrowserTest() = default;
+  ~PreinstalledWebAppManagerExtensionAlwaysMigrateBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPreinstalledWebAppAlwaysMigrate};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledWebAppManagerExtensionAlwaysMigrateBrowserTest,
+    AlwaysUninstallAndReplace) {
+  GURL app_url = GURL("https://example.org/");
+  std::optional<extensions::ExtensionId> chrome_app_id;
+
+  base::HistogramTester tester;
+
+  ScopedTestingPreinstalledAppData scoped_preinstalls;
+  scoped_preinstalls.apps.push_back([&] {
+    ExternalInstallOptions options(
+        app_url, /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
+        ExternalInstallSource::kExternalDefault);
+    options.user_type_allowlist = {"unmanaged"};
+    options.only_use_app_info_factory = true;
+    options.app_info_factory = base::BindLambdaForTesting([=] {
+      auto info = std::make_unique<WebAppInstallInfo>(
+          GenerateManifestIdFromStartUrlOnly(app_url), app_url);
+      info->title = u"Test app";
+      return info;
+    });
+    return options;
+  }());
+
+  // Preinstall web app.
+  EXPECT_EQ(SyncPreinstalledApps().install_results[app_url].code,
+            webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
+  tester.ExpectUniqueSample("WebApp.Preinstalled.ChromeAppMigrationNeeded",
+                            false, 1);
+
+  // Install Chrome app to be replaced after web app is already preinstalled.
+  const extensions::Extension* app = InstallExtensionWithSourceAndFlags(
+      test_data_dir_.AppendASCII("app"), 1,
+      extensions::mojom::ManifestLocation::kInternal,
+      extensions::Extension::NO_FLAGS);
+  scoped_preinstalls.apps[0].uninstall_and_replace.push_back(app->id());
+
+  // Start listening for Chrome app uninstall.
+  extensions::TestExtensionRegistryObserver uninstall_observer(
+      extensions::ExtensionRegistry::Get(browser()->profile()));
+
+  // Trigger preinstall sync again.
+  EXPECT_EQ(SyncPreinstalledApps().install_results[app_url].code,
+            webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
+  tester.ExpectBucketCount("WebApp.Preinstalled.ChromeAppMigrationNeeded", true,
+                           1);
+
+  // Chrome app should get uninstalled.
+  scoped_refptr<const extensions::Extension> uninstalled_app =
+      uninstall_observer.WaitForExtensionUninstalled();
+  EXPECT_EQ(app, uninstalled_app.get());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PreinstalledAppsPrefInstall) {

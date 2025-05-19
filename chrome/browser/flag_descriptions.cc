@@ -550,6 +550,12 @@ const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[] =
     "sync-enable-bookmarks-in-transport-mode. Enables the bookmarks "
     "UserSelectableType upon sign-in";
 
+const char kPreinstalledWebAppAlwaysMigrateCalculatorName[] =
+    "Preinstalled web app always migrate - Calculator";
+const char kPreinstalledWebAppAlwaysMigrateCalculatorDescription[] =
+    "Whether the calculator web app preinstall should always attempt to migrate"
+    " the Calculator Chrome app if it is detected as present.";
+
 const char kPreloadingOnPerformancePageName[] =
     "Preloading Settings on Performance Page";
 const char kPreloadingOnPerformancePageDescription[] =

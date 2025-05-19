@@ -207,6 +207,19 @@ BASE_FEATURE(kDbdRevampDesktop,
 BASE_FEATURE(kPreinstalledWebAppInstallation,
              "DefaultWebAppInstallation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether to force migrate preinstalled web apps whenever the old Chrome app
+// they're replacing is detected, even if the web app is already installed.
+BASE_FEATURE(kPreinstalledWebAppAlwaysMigrate,
+             "PreinstalledWebAppAlwaysMigrate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to force migrate the calculator preinstalled web app whenever the
+// old Chrome app is detected, even if the calculator web app is already
+// installed.
+BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateCalculator,
+             "PreinstalledWebAppAlwaysMigrateCalculator",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

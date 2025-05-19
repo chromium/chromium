@@ -12398,7 +12398,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotebookLmAppShelfPinResetName,
      flag_descriptions::kNotebookLmAppShelfPinResetDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppShelfPinReset)},
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+    {"preinstalled-web-app-always-migrate-calculator",
+     flag_descriptions::kPreinstalledWebAppAlwaysMigrateCalculatorName,
+     flag_descriptions::kPreinstalledWebAppAlwaysMigrateCalculatorDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kPreinstalledWebAppAlwaysMigrateCalculator)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
     {"tablet-tab-strip-animation",

@@ -599,6 +599,7 @@ source_set("web_applications") {
         "preinstalled_web_apps/notebook_lm.cc",
         "preinstalled_web_apps/notebook_lm.h",
       ]
+      deps += [ "//extensions/common:common_constants" ]
     }
 
     deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]

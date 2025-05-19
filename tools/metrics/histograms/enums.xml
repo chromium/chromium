@@ -11563,6 +11563,8 @@ from previous Chrome versions.
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
   <int value="-958340040" label="GtsCloseTabAnimation:enabled"/>
   <int value="-958159088" label="RestoreTabsOnFRE:enabled"/>
+  <int value="-957490473"
+      label="PreinstalledWebAppAlwaysMigrateCalculator:disabled"/>
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
   <int value="-956563847" label="QueryTilesDisableCountryOverride:enabled"/>
@@ -17969,6 +17971,8 @@ from previous Chrome versions.
       label="AutofillEnableSyncingOfPixBankAccounts:enabled"/>
   <int value="1476781717" label="AutofillUpstreamUpdatedUi:disabled"/>
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
+  <int value="1478086342"
+      label="PreinstalledWebAppAlwaysMigrateCalculator:enabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1478835676" label="VcRelightingInferenceBackend:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>

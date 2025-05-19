@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
+#include "extensions/common/constants.h"
 
 namespace web_app {
 
@@ -22,7 +23,7 @@ ExternalInstallOptions GetConfigForCalculator() {
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
-  options.uninstall_and_replace.push_back("joodangkbfjnajiiifokapkpmhfnpleo");
+  options.uninstall_and_replace.push_back(extension_misc::kCalculatorAppId);
   options.expected_app_id = ash::kCalculatorAppId;
   return options;
 }

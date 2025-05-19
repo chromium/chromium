@@ -7569,6 +7569,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "preinstalled-web-app-always-migrate-calculator",
+    "owners": ["alancutter@chromium.org", "crosdev-commerce-eng@google.com"],
+    "expiry_milestone": 148
+  },
+  {
     "name": "prerender-early-document-lifecycle-update",
     "owners": [ "lingqi@chromium.org", "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 140

@@ -1927,6 +1927,9 @@ extern const char kEnableOmniboxSearchPrefetchDescription[];
 extern const char kEnableOmniboxClientSearchPrefetchName[];
 extern const char kEnableOmniboxClientSearchPrefetchDescription[];
 
+extern const char kPreinstalledWebAppAlwaysMigrateCalculatorName[];
+extern const char kPreinstalledWebAppAlwaysMigrateCalculatorDescription[];
+
 extern const char kPreloadingOnPerformancePageName[];
 extern const char kPreloadingOnPerformancePageDescription[];
 

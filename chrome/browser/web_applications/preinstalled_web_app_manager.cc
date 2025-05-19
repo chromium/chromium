@@ -69,6 +69,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/constants.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touchscreen_device.h"
@@ -77,6 +78,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(http://b/333583704): Revert CL which added this include after migration.
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -486,6 +488,79 @@ bool ShouldForceReinstall(const ExternalInstallOptions& options,
 
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Modifies ExternalInstallOptions to be force_reinstall = true if they are
+// already installed but their uninstall_and_replace apps are also installed,
+// this is to re-trigger the migration logic that happens at the end of
+// installation. May not do anything depending on feature flags and platform.
+void MaybeForceInstallForRemigration(
+    std::vector<ExternalInstallOptions>* options_list,
+    Profile* profile,
+    const WebAppRegistrar& registrar) {
+  bool always_migrate_calculator = base::FeatureList::IsEnabled(
+      features::kPreinstalledWebAppAlwaysMigrateCalculator);
+  bool always_migrate =
+      base::FeatureList::IsEnabled(features::kPreinstalledWebAppAlwaysMigrate);
+  if (!always_migrate_calculator && !always_migrate) {
+    return;
+  }
+
+  // Record Calculator remigration metrics.
+  bool calculator_web_app_installed =
+      registrar.IsInstalledByDefaultManagement(ash::kCalculatorAppId);
+  bool calculator_chrome_app_installed = extensions::IsExtensionInstalled(
+      profile, extension_misc::kCalculatorAppId);
+  base::UmaHistogramBoolean(
+      "WebApp.Preinstalled.CalculatorForceMigration.WebAppInstalled",
+      calculator_web_app_installed);
+  base::UmaHistogramBoolean(
+      "WebApp.Preinstalled.CalculatorForceMigration."
+      "ChromeAppAndWebAppInstalled",
+      calculator_chrome_app_installed && calculator_web_app_installed);
+  base::UmaHistogramBoolean(
+      "WebApp.Preinstalled.CalculatorForceMigration.ChromeAppNoWebAppInstalled",
+      calculator_chrome_app_installed && !calculator_web_app_installed);
+
+  bool any_migration_needed = false;
+  bool calculator_migration_needed = false;
+  for (ExternalInstallOptions& options : *options_list) {
+    // Ignore preinstalled apps that aren't currently installed.
+    if (!registrar.LookUpAppByInstallSourceInstallUrl(
+            WebAppManagement::Type::kDefault, options.install_url)) {
+      continue;
+    }
+
+    // Force migration if corresponding Chrome app is installed, according to
+    // feature flags.
+    for (const std::string& app_id : options.uninstall_and_replace) {
+      bool migration_needed = false;
+
+      if (always_migrate_calculator &&
+          app_id == extension_misc::kCalculatorAppId) {
+        calculator_migration_needed = true;
+        migration_needed = true;
+      }
+
+      if (always_migrate && extensions::IsExtensionInstalled(profile, app_id)) {
+        migration_needed = true;
+      }
+
+      if (migration_needed) {
+        any_migration_needed = true;
+        options.force_reinstall = true;
+        break;
+      }
+    }
+  }
+
+  base::UmaHistogramBoolean("WebApp.Preinstalled.ChromeAppMigrationNeeded",
+                            any_migration_needed);
+  base::UmaHistogramBoolean(
+      "WebApp.Preinstalled.CalculatorForceMigration.MigrationTriggered",
+      calculator_migration_needed);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -898,6 +973,11 @@ void PreinstalledWebAppManager::PostProcessConfigs(
       options.force_reinstall = true;
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  MaybeForceInstallForRemigration(&parsed_configs.options_list, profile_.get(),
+                                  provider_->registrar_unsafe());
+#endif
 
   base::UmaHistogramCounts100(kHistogramEnabledCount,
                               parsed_configs.options_list.size());
