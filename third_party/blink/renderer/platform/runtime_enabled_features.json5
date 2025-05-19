@@ -5484,7 +5484,7 @@
     },
     {
       name: "XMLSerializerConsistentDefaultNsDeclMatching",
-      status: "stable",
+      status: "test",
     },
     {
       // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12
