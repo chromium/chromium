@@ -11,6 +11,26 @@
         background-color: var(--cr-hover-background-color);
       }
 
+      #non-home-work-address-row-icon {
+        --iron-icon-fill-color: var(--google-grey-700);
+        padding-inline-end: var(--cr-icon-button-margin-start);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #non-home-work-address-row-icon {
+          --iron-icon-fill-color: var(--google-grey-500);
+        }
+      }
+
+      .home-work-address-link-row {
+        align-items: center;
+        border-top: var(--cr-separator-line);
+        display: flex;
+        min-height: var(--cr-section-min-height);
+        padding-inline-end: 0;
+        padding-inline-start: 0;
+      }
+
       #addressList .start {
         display: flex;
         overflow: hidden;
@@ -69,6 +89,11 @@
             <!-- If it's NOT a home nor a work address. -->
             <template is="dom-if" if="[[!isAccountHomeOrWorkAddress_(item)]]">
               <div class="start">
+                <cr-icon id="non-home-work-address-row-icon" icon="settings20:location-on"
+                    hidden="[[!shouldShowAddressRowIcon_(item)]]"
+                    aria-label="$i18n{localAddressIconA11yLabel}"
+                    role="img">
+                </cr-icon>
                 <span id="addressSummary">
                   <span class="ellipses">
                     [[item.metadata.summaryLabel]]
@@ -92,7 +117,7 @@
 
             <!-- If it is a home address. -->
             <template is="dom-if" if="[[isAccountHomeAddress_(item)]]">
-              <cr-link-row class="cr-row hr"
+              <cr-link-row class="home-work-address-link-row hr"
                   id="homeAddress"
                   start-icon="settings20:home"
                   label="[[item.metadata.summaryLabel]][[item.metadata.summarySublabel]]"
@@ -104,7 +129,7 @@
 
             <!-- If it is a work address. -->
             <template is="dom-if" if="[[isAccountWorkAddress_(item)]]">
-              <cr-link-row class="cr-row hr"
+              <cr-link-row class="home-work-address-link-row hr"
                   id="workAddress"
                   start-icon="settings20:work"
                   label="[[item.metadata.summaryLabel]][[item.metadata.summarySublabel]]"

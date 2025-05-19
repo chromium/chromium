@@ -277,6 +277,12 @@ export class SettingsAutofillSectionElement extends
         this.i18n('googleAccountWorkAddressUrl'));
   }
 
+  private shouldShowAddressRowIcon_(
+      address: chrome.autofillPrivate.AddressEntry) {
+    return loadTimeData.getBoolean('enableSupportForHomeAndWork') &&
+        !this.isAccountHomeOrWorkAddress_(address);
+  }
+
   private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
