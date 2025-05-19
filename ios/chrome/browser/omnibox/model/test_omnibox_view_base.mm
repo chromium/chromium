@@ -33,21 +33,9 @@ void TestOmniboxViewBase::SetWindowTextAndCaretPos(const std::u16string& text,
   selection_ = gfx::Range(caret_pos);
 }
 
-bool TestOmniboxViewBase::IsSelectAll() const {
-  return selection_.EqualsIgnoringDirection(gfx::Range(0, text_.size()));
-}
-
 void TestOmniboxViewBase::GetSelectionBounds(size_t* start, size_t* end) const {
   *start = selection_.start();
   *end = selection_.end();
-}
-
-void TestOmniboxViewBase::SelectAll(bool reversed) {
-  if (reversed) {
-    selection_ = gfx::Range(text_.size(), 0);
-  } else {
-    selection_ = gfx::Range(0, text_.size());
-  }
 }
 
 void TestOmniboxViewBase::OnInlineAutocompleteTextMaybeChanged(
@@ -65,26 +53,6 @@ void TestOmniboxViewBase::OnInlineAutocompleteTextMaybeChanged(
   }
 }
 
-void TestOmniboxViewBase::OnInlineAutocompleteTextCleared() {
-  inline_autocompletion_.clear();
-}
-
 bool TestOmniboxViewBase::OnAfterPossibleChange() {
   return false;
-}
-
-gfx::NativeView TestOmniboxViewBase::GetNativeView() const {
-  return gfx::NativeView();
-}
-
-gfx::NativeView TestOmniboxViewBase::GetRelativeWindowForPopup() const {
-  return gfx::NativeView();
-}
-
-bool TestOmniboxViewBase::IsImeComposing() const {
-  return false;
-}
-
-int TestOmniboxViewBase::GetOmniboxTextLength() const {
-  return 0;
 }

@@ -152,13 +152,6 @@ std::u16string OmniboxViewBase::SanitizeTextForPaste(
 
 OmniboxViewBase::~OmniboxViewBase() = default;
 
-bool OmniboxViewBase::IsEditingOrEmpty() const {
-  return model()->user_input_in_progress() || GetOmniboxTextLength() == 0 ||
-         (OmniboxFieldTrial::IsOnFocusZeroSuggestEnabledInContext(
-              model()->GetPageClassification()) &&
-          model()->PopupIsOpen());
-}
-
 void OmniboxViewBase::SetUserText(const std::u16string& text) {
   SetUserText(text, true);
 }
@@ -185,23 +178,6 @@ void OmniboxViewBase::RevertAll() {
 
 void OmniboxViewBase::CloseOmniboxPopup() {
   controller()->StopAutocomplete(/*clear_result=*/true);
-}
-
-bool OmniboxViewBase::IsImeShowingPopup() const {
-  // Default to claiming that the IME is not showing a popup, since hiding the
-  // omnibox dropdown is a bad user experience when we don't know for sure that
-  // we have to.
-  return false;
-}
-
-void OmniboxViewBase::ShowVirtualKeyboardIfEnabled() {}
-
-void OmniboxViewBase::HideImeIfNeeded() {}
-
-bool OmniboxViewBase::IsIndicatingQueryRefinement() const {
-  // The default implementation always returns false.  Mobile ports can override
-  // this method and implement as needed.
-  return false;
 }
 
 void OmniboxViewBase::GetState(State* state) {
@@ -264,76 +240,5 @@ const OmniboxControllerIOS* OmniboxViewBase::controller() const {
 }
 
 void OmniboxViewBase::TextChanged() {
-  EmphasizeURLComponents();
   model()->OnChanged();
-}
-
-void OmniboxViewBase::UpdateTextStyle(
-    const std::u16string& display_text,
-    const bool text_is_url,
-    const AutocompleteSchemeClassifier& classifier) {
-  if (!text_is_url) {
-    SetEmphasis(true, gfx::Range::InvalidRange());
-    return;
-  }
-
-  enum DemphasizeComponents {
-    EVERYTHING,
-    ALL_BUT_SCHEME,
-    ALL_BUT_HOST,
-    NOTHING,
-  } deemphasize = NOTHING;
-
-  url::Component scheme, host;
-  AutocompleteInput::ParseForEmphasizeComponents(display_text, classifier,
-                                                 &scheme, &host);
-
-  const std::u16string url_scheme =
-      display_text.substr(scheme.begin, scheme.len);
-
-  const bool is_extension_url =
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      base::EqualsASCII(url_scheme, extensions::kExtensionScheme);
-#else
-      false;
-#endif
-
-  // Extension IDs are not human-readable, so deemphasize everything to draw
-  // attention to the human-readable name in the location icon text.
-  // Data URLs are rarely human-readable and can be used for spoofing, so draw
-  // attention to the scheme to emphasize "this is just a bunch of data".
-  // For normal URLs, the host is the best proxy for "identity".
-  if (is_extension_url) {
-    deemphasize = EVERYTHING;
-  } else if (url_scheme == url::kDataScheme16) {
-    deemphasize = ALL_BUT_SCHEME;
-  } else if (host.is_nonempty()) {
-    deemphasize = ALL_BUT_HOST;
-  }
-
-  gfx::Range scheme_range = scheme.is_nonempty()
-                                ? gfx::Range(scheme.begin, scheme.end())
-                                : gfx::Range::InvalidRange();
-  switch (deemphasize) {
-    case EVERYTHING:
-      SetEmphasis(false, gfx::Range::InvalidRange());
-      break;
-    case NOTHING:
-      SetEmphasis(true, gfx::Range::InvalidRange());
-      break;
-    case ALL_BUT_SCHEME:
-      DCHECK(scheme_range.IsValid());
-      SetEmphasis(false, gfx::Range::InvalidRange());
-      SetEmphasis(true, scheme_range);
-      break;
-    case ALL_BUT_HOST:
-      SetEmphasis(false, gfx::Range::InvalidRange());
-      SetEmphasis(true, gfx::Range(host.begin, host.end()));
-      break;
-  }
-
-  // Emphasize the scheme for security UI display purposes (if necessary).
-  if (!model()->user_input_in_progress() && scheme_range.IsValid()) {
-    UpdateSchemeStyle(scheme_range);
-  }
 }

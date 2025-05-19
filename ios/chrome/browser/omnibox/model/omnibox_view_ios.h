@@ -53,20 +53,9 @@ class OmniboxViewIOS : public OmniboxViewBase {
       const std::u16string& inline_autocompletion) override;
   void OnBeforePossibleChange() override;
   bool OnAfterPossibleChange() override;
-  bool IsImeComposing() const override;
-  bool IsIndicatingQueryRefinement() const override;
   void SetAdditionalText(const std::u16string& text) override;
-
-  // OmniboxView stubs.
-  void Update() override {}
-  bool IsSelectAll() const override;
   void GetSelectionBounds(std::u16string::size_type* start,
                           std::u16string::size_type* end) const override;
-  void SelectAll(bool reversed) override {}
-  void SetFocus(bool is_user_initiated) override {}
-  void OnInlineAutocompleteTextCleared() override {}
-  gfx::NativeView GetNativeView() const override;
-  gfx::NativeView GetRelativeWindowForPopup() const override;
 
   // OmniboxTextChange methods.
 
@@ -86,14 +75,7 @@ class OmniboxViewIOS : public OmniboxViewBase {
   // Returns the current selection.
   NSRange GetCurrentSelection() const { return current_selection_; }
 
- protected:
-  int GetOmniboxTextLength() const override;
-  void EmphasizeURLComponents() override {}
-
  private:
-  void SetEmphasis(bool emphasize, const gfx::Range& range) override {}
-  void UpdateSchemeStyle(const gfx::Range& scheme_range) override {}
-
   OmniboxTextFieldIOS* field_;
 
   State state_before_change_;

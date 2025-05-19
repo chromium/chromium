@@ -634,9 +634,6 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
   current_match_ = new_match;
 
   inline_autocompletion_ = inline_autocompletion;
-  if (inline_autocompletion_.empty() && view_) {
-    view_->OnInlineAutocompleteTextCleared();
-  }
 
   const std::u16string& user_text =
       user_input_in_progress_ ? user_text_ : input_.text();
@@ -718,9 +715,6 @@ void OmniboxEditModelIOS::InternalSetUserText(const std::u16string& text) {
   user_text_ = text;
   just_deleted_text_ = false;
   inline_autocompletion_.clear();
-  if (view_) {
-    view_->OnInlineAutocompleteTextCleared();
-  }
 }
 
 void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,

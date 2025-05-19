@@ -28,7 +28,6 @@ class TestOmniboxViewBase : public OmniboxViewBase {
   static State CreateState(std::string text, size_t sel_start, size_t sel_end);
 
   // OmniboxViewBase:
-  void Update() override {}
   std::u16string GetText() const override;
   void SetWindowTextAndCaretPos(const std::u16string& text,
                                 size_t caret_pos,
@@ -36,24 +35,13 @@ class TestOmniboxViewBase : public OmniboxViewBase {
                                 bool notify_text_changed) override;
   void SetCaretPos(size_t caret_pos) override {}
   void SetAdditionalText(const std::u16string& text) override {}
-  bool IsSelectAll() const override;
   void GetSelectionBounds(size_t* start, size_t* end) const override;
-  void SelectAll(bool reversed) override;
   void UpdatePopup() override {}
-  void SetFocus(bool is_user_initiated) override {}
   void OnInlineAutocompleteTextMaybeChanged(
       const std::u16string& user_text,
       const std::u16string& inline_autocompletion) override;
-  void OnInlineAutocompleteTextCleared() override;
   void OnBeforePossibleChange() override {}
   bool OnAfterPossibleChange() override;
-  gfx::NativeView GetNativeView() const override;
-  gfx::NativeView GetRelativeWindowForPopup() const override;
-  bool IsImeComposing() const override;
-  int GetOmniboxTextLength() const override;
-  void EmphasizeURLComponents() override {}
-  void SetEmphasis(bool emphasize, const gfx::Range& range) override {}
-  void UpdateSchemeStyle(const gfx::Range& range) override {}
   using OmniboxViewBase::GetStateChanges;
 
  private:

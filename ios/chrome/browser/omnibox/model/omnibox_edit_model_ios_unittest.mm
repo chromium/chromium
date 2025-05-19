@@ -366,7 +366,6 @@ TEST_F(OmniboxEditModelIOSTest, DisplayText) {
   EXPECT_EQ(u"https://www.example.com/", model()->GetPermanentDisplayText());
   EXPECT_EQ(u"https://www.example.com/", view()->GetText());
   EXPECT_FALSE(model()->user_input_in_progress());
-  EXPECT_FALSE(view()->IsSelectAll());
 
   EXPECT_EQ(u"https://www.example.com/", view()->GetText());
   EXPECT_TRUE(model()->CurrentTextIsURL());

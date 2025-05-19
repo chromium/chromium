@@ -131,18 +131,6 @@ bool OmniboxViewIOS::OnAfterPossibleChange() {
   return something_changed;
 }
 
-bool OmniboxViewIOS::IsImeComposing() const {
-  return [field_ markedTextRange] != nil;
-}
-
-bool OmniboxViewIOS::IsIndicatingQueryRefinement() const {
-  return false;
-}
-
-bool OmniboxViewIOS::IsSelectAll() const {
-  return false;
-}
-
 void OmniboxViewIOS::GetSelectionBounds(std::u16string::size_type* start,
                                         std::u16string::size_type* end) const {
   if ([field_ isFirstResponder]) {
@@ -152,14 +140,6 @@ void OmniboxViewIOS::GetSelectionBounds(std::u16string::size_type* start,
   } else {
     *start = *end = 0;
   }
-}
-
-gfx::NativeView OmniboxViewIOS::GetNativeView() const {
-  return gfx::NativeView();
-}
-
-gfx::NativeView OmniboxViewIOS::GetRelativeWindowForPopup() const {
-  return gfx::NativeView();
 }
 
 bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
@@ -291,8 +271,4 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
 void OmniboxViewIOS::OnAcceptAutocomplete() {
   current_selection_ = [field_ selectedNSRange];
   OnDidChange(/*processing_user_event=*/true);
-}
-
-int OmniboxViewIOS::GetOmniboxTextLength() const {
-  return [field_ displayedText].length;
 }
