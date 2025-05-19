@@ -23,6 +23,10 @@ const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton{
 const base::FeatureParam<bool> kDsePreload2OnPressTouchDown{
     &kDsePreload2, "kDsePreload2OnPressTouchDown", true};
 
+BASE_FEATURE(kDsePreload2OnSuggestNonDefalutMatch,
+             "kDsePreload2OnSuggestNonDefalutMatch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDsePreload2Enabled() {
   return base::FeatureList::IsEnabled(kDsePreload2);
 }

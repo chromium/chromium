@@ -76,13 +76,27 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     return;
   }
 
-  // TODO(crbug.com/409457832): Allow preloads for non-default match with
-  // feature flag.
-  if (!result.default_match()) {
-    return;
+  if (base::FeatureList::IsEnabled(
+          features::kDsePreload2OnSuggestNonDefalutMatch)) {
+    // TODO(crbug.com/403198750): Limit the number of active pipelines.
+    for (const auto& match : result) {
+      OnAutocompleteResultChangedProcessOne(profile, *template_url_service,
+                                            match);
+    }
+  } else {
+    if (!result.default_match()) {
+      return;
+    }
+    const auto& match = *result.default_match();
+    OnAutocompleteResultChangedProcessOne(profile, *template_url_service,
+                                          match);
   }
-  const auto& match = *result.default_match();
+}
 
+void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
+    Profile& profile,
+    TemplateURLService& template_url_service,
+    const AutocompleteMatch& match) {
   const bool should_prefetch = BaseSearchProvider::ShouldPrefetch(match) ||
                                BaseSearchProvider::ShouldPrerender(match);
   const bool should_prerender = BaseSearchProvider::ShouldPrerender(match);
@@ -120,7 +134,7 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
 
   CHECK(should_prefetch);
   const GURL prefetch_url =
-      GetPrefetchUrlFromMatch(*match.search_terms_args, *template_url_service,
+      GetPrefetchUrlFromMatch(*match.search_terms_args, template_url_service,
                               /*is_navigation_likely=*/false);
   pipelines_[canonical_url]->StartPrefetch(
       GetWebContents(), prefetch_url,
@@ -132,7 +146,7 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
   // https://docs.google.com/document/d/1IAIVrDBE-FnO14Qnghr8hsrxUeoFfeob5QIsV_UNRck/edit?tab=t.0#heading=h.vpxgrp4zne09
   if (should_prerender) {
     const GURL prerender_url = GetPrerenderUrlFromMatch(
-        *match.search_terms_args, *template_url_service);
+        *match.search_terms_args, template_url_service);
     pipelines_[canonical_url]->StartPrerender(
         GetWebContents(), prerender_url,
         chrome_preloading_predictor::kDefaultSearchEngine);

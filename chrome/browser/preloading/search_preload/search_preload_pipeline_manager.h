@@ -11,8 +11,9 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
-class Profile;
 class AutocompleteResult;
+class Profile;
+class TemplateURLService;
 struct AutocompleteMatch;
 
 namespace content {
@@ -65,6 +66,11 @@ class SearchPreloadPipelineManager
   friend content::WebContentsUserData<SearchPreloadPipelineManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   explicit SearchPreloadPipelineManager(content::WebContents* contents);
+
+  void OnAutocompleteResultChangedProcessOne(
+      Profile& profile,
+      TemplateURLService& template_url_service,
+      const AutocompleteMatch& match);
 
   // Manages pipeline per canonical URL.
   base::flat_map<GURL, std::unique_ptr<SearchPreloadPipeline>> pipelines_;
