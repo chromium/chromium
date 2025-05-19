@@ -368,6 +368,16 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools panel was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.PerformanceAI.NetworkSummaryResponseSize"
+    units="count" expires_after="2026-06-16">
+  <owner>jacktfranklin@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    The size (in bytes) of the response of the `getNetworkActivitySummary`
+    function in the Performance Insights agent.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"
     expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>
