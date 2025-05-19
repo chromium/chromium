@@ -271,6 +271,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingRemote<network::mojom::URLLoaderClient>
           dest_url_loader_client) override;
 
+  void SetTLS13EarlyDataEnabled(bool enabled) override;
+
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
                           net::NetLogCaptureMode capture_mode,

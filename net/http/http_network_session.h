@@ -295,6 +295,8 @@ class NET_EXPORT HttpNetworkSession : public base::PowerSuspendObserver {
     return application_settings_;
   }
 
+  void SetTLS13EarlyDataEnabled(bool enabled);
+
   // Evaluates if QUIC is enabled for new streams.
   bool IsQuicEnabled() const;
 
