@@ -165,7 +165,7 @@ const char kEnableIdleTracing[] = "enable-idle-tracing";
 
 // Forces the DeviceInfo.isDesktop() check to return true. Can be used to enable
 // desktop-only features on other form factors.
-const char kForceDesktopAndroid[] = "force-desktop-android";
+const char kForceAndroidDesktop[] = "force-android-desktop";
 
 // When we retrieve the package name within the SDK Runtime, we need to use
 // a bit of a hack to do this by taking advantage of the fact that the pid

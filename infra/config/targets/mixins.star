@@ -752,6 +752,14 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "force-android-desktop",
+    generate_pyl_entry = False,
+    args = [
+        "--force-android-desktop",
+    ],
+)
+
+targets.mixin(
     name = "fuchsia-code-coverage",
     generate_pyl_entry = False,
     args = [

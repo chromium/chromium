@@ -178,7 +178,7 @@ public final class DeviceInfo {
 
         mIsDesktop =
                 pm.hasSystemFeature(PackageManager.FEATURE_PC)
-                        || CommandLine.getInstance().hasSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
+                        || CommandLine.getInstance().hasSwitch(BaseSwitches.FORCE_ANDROID_DESKTOP);
 
         int vulkanLevel = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

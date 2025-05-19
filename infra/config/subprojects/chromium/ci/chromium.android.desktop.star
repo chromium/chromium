@@ -264,6 +264,7 @@ ci.thin_tester(
                 mixins = [
                     "15-desktop-x64-emulator",
                     "emulator-8-cores",
+                    "force-android-desktop",
                 ],
             ),
         ],
