@@ -46,6 +46,8 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 StorageArea* StorageArea::Create(LocalDOMWindow* window,
@@ -111,13 +113,41 @@ String StorageArea::getItem(const String& key,
     exception_state.ThrowSecurityError("access is denied for this document.");
     return String();
   }
-  return cached_area_->GetItem(key);
+  String rval = cached_area_->GetItem(key);
+
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
+    std::string annotationContents;
+    if (recordreplay::IsReplaying()) {
+      base::Value::Dict info;
+      info.Set("kind", "getItem");
+      info.Set("type", (int)storage_type_);
+      info.Set("key", key.Utf8());
+      info.Set("result", rval.Utf8());
+      base::JSONWriter::Write(info, &annotationContents);
+    }
+    recordreplay::OnAnnotation("StorageArea", annotationContents.c_str());
+  }
+
+  return rval;
 }
 
 NamedPropertySetterResult StorageArea::setItem(
     const String& key,
     const String& value,
     ExceptionState& exception_state) {
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
+    std::string annotationContents;
+    if (recordreplay::IsReplaying()) {
+      base::Value::Dict info;
+      info.Set("kind", "setItem");
+      info.Set("type", (int)storage_type_);
+      info.Set("key", key.Utf8());
+      info.Set("value", value.Utf8());
+      base::JSONWriter::Write(info, &annotationContents);
+    }
+    recordreplay::OnAnnotation("StorageArea", annotationContents.c_str());
+  }
+
   recordreplay::Assert("[RUN-1307-1773] StorageArea::setItem A %s", key.Utf8().c_str());
   if (!CanAccessStorage()) {
     exception_state.ThrowSecurityError("access is denied for this document.");
@@ -140,6 +170,18 @@ NamedPropertySetterResult StorageArea::setItem(
 NamedPropertyDeleterResult StorageArea::removeItem(
     const String& key,
     ExceptionState& exception_state) {
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
+    std::string annotationContents;
+    if (recordreplay::IsReplaying()) {
+      base::Value::Dict info;
+      info.Set("kind", "removeItem");
+      info.Set("type", (int)storage_type_);
+      info.Set("key", key.Utf8());
+      base::JSONWriter::Write(info, &annotationContents);
+    }
+    recordreplay::OnAnnotation("StorageArea", annotationContents.c_str());
+  }
+
   if (!CanAccessStorage()) {
     exception_state.ThrowSecurityError("access is denied for this document.");
     return NamedPropertyDeleterResult::kDidNotDelete;
@@ -150,6 +192,17 @@ NamedPropertyDeleterResult StorageArea::removeItem(
 }
 
 void StorageArea::clear(ExceptionState& exception_state) {
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
+    std::string annotationContents;
+    if (recordreplay::IsReplaying()) {
+      base::Value::Dict info;
+      info.Set("kind", "clear");
+      info.Set("type", (int)storage_type_);
+      base::JSONWriter::Write(info, &annotationContents);
+    }
+    recordreplay::OnAnnotation("StorageArea", annotationContents.c_str());
+  }
+
   if (!CanAccessStorage()) {
     exception_state.ThrowSecurityError("access is denied for this document.");
     return;
