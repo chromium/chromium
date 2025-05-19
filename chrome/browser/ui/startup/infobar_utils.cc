@@ -144,41 +144,44 @@ void AddInfoBarsIfNecessary(Browser* browser,
   // These info bars are not shown when the browser is being controlled by
   // automated tests, so that they don't interfere with tests that assume no
   // info bars.
-  if (!startup_command_line.HasSwitch(switches::kTestType) &&
-      !IsAutomationEnabled()) {
-    // The below info bars are only added to the first profile which is
-    // launched. Other profiles might be restoring the browsing sessions
-    // asynchronously, so we cannot add the info bars to the focused tabs here.
-    //
-    // We cannot use `chrome::startup::IsProcessStartup` to determine whether
-    // this is the first profile that launched: The browser may be started
-    // without a startup window (`kNoStartupWindow`), or open the profile
-    // picker, which means that `chrome::startup::IsProcessStartup` will already
-    // be `kNo` when the first browser window is opened.
-    static bool infobars_shown = false;
-    if (infobars_shown) {
-      return;
-    }
-    infobars_shown = true;
+  if (startup_command_line.HasSwitch(switches::kTestType) ||
+      IsAutomationEnabled()) {
+    return;
+  }
 
-    if (show_bad_flags_security_warnings) {
-      ShowBadFlagsPrompt(web_contents);
-    }
+  // The below info bars are only added to the first profile which is
+  // launched. Other profiles might be restoring the browsing sessions
+  // asynchronously, so we cannot add the info bars to the focused tabs here.
+  //
+  // We cannot use `chrome::startup::IsProcessStartup` to determine whether
+  // this is the first profile that launched: The browser may be started
+  // without a startup window (`kNoStartupWindow`), or open the profile
+  // picker, which means that `chrome::startup::IsProcessStartup` will already
+  // be `kNo` when the first browser window is opened.
+  static bool infobars_shown = false;
+  if (infobars_shown) {
+    return;
+  }
+  infobars_shown = true;
 
-    infobars::ContentInfoBarManager* infobar_manager =
-        infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (show_bad_flags_security_warnings) {
+    ShowBadFlagsPrompt(web_contents);
+  }
 
-    if (!google_apis::HasAPIKeyConfigured()) {
-      GoogleApiKeysInfoBarDelegate::Create(infobar_manager);
-    }
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
 
-    if (ObsoleteSystem::IsObsoleteNowOrSoon()) {
-      PrefService* local_state = g_browser_process->local_state();
-      if (!local_state ||
-          !local_state->GetBoolean(prefs::kSuppressUnsupportedOSWarning)) {
-        ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
-      }
+  if (!google_apis::HasAPIKeyConfigured()) {
+    GoogleApiKeysInfoBarDelegate::Create(infobar_manager);
+  }
+
+  if (ObsoleteSystem::IsObsoleteNowOrSoon()) {
+    PrefService* local_state = g_browser_process->local_state();
+    if (!local_state ||
+        !local_state->GetBoolean(prefs::kSuppressUnsupportedOSWarning)) {
+      ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
     }
+  }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (auto* controller = g_browser_process->GetFeatures()
@@ -188,24 +191,26 @@ void AddInfoBarsIfNecessary(Browser* browser,
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-    if (!is_web_app &&
-        !startup_command_line.HasSwitch(switches::kNoDefaultBrowserCheck)) {
-      base::OnceCallback<void(bool)> default_browser_prompt_shown_callback =
-          base::DoNothing();
+  if (is_web_app ||
+      startup_command_line.HasSwitch(switches::kNoDefaultBrowserCheck) ||
+      startup_command_line.HasSwitch(switches::kNoFirstRun)) {
+    return;
+  }
+
+  base::OnceCallback<void(bool)> default_browser_prompt_shown_callback =
+      base::DoNothing();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
-        default_browser_prompt_shown_callback =
-            base::BindOnce(&PdfInfoBarController::MaybeShowInfoBarAtStartup,
-                           browser->GetWeakPtr());
-      }
+  if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
+    default_browser_prompt_shown_callback =
+        base::BindOnce(&PdfInfoBarController::MaybeShowInfoBarAtStartup,
+                       browser->GetWeakPtr());
+  }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-      // The default browser prompt should only be shown after the first run.
-      if (is_first_run == chrome::startup::IsFirstRun::kNo) {
-        ShowDefaultBrowserPrompt(
-            profile, std::move(default_browser_prompt_shown_callback));
-      }
-    }
-#endif
+  // The default browser prompt should only be shown after the first run.
+  if (is_first_run == chrome::startup::IsFirstRun::kNo) {
+    ShowDefaultBrowserPrompt(profile,
+                             std::move(default_browser_prompt_shown_callback));
   }
+#endif
 }

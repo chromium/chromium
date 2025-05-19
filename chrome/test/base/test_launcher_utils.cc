@@ -29,12 +29,8 @@
 namespace test_launcher_utils {
 
 void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
-  // Don't show the first run ui.
+  // Don't show the first run ui and disable the default browser check.
   command_line->AppendSwitch(switches::kNoFirstRun);
-
-  // No default browser check, it would create an info-bar (if we are not the
-  // default browser) that could conflicts with some tests expectations.
-  command_line->AppendSwitch(switches::kNoDefaultBrowserCheck);
 
   // Enable info level logging to stderr by default so that we can see when bad
   // stuff happens, but honor the flags specified from the command line. Use the
