@@ -373,6 +373,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_engines_page/search_engine_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
+    "site_settings/site_settings_shared.css",
     "site_settings_page/site_review_shared.css",
   ]
 
