@@ -1470,8 +1470,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointSlowSuccessSlow) {
   const IPEndPoint ip_endpoint = MakeIPEndPoint("2001:db8::1");
 
   resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(
+      ->ConfigureDefaultResolution()
+      .add_endpoint(
           ServiceEndpointBuilder().add_ip_endpoint(ip_endpoint).endpoint())
       .CompleteStartSynchronously(OK);
 
@@ -1543,11 +1543,11 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreferNonSlowIPEndPoint) {
   const IPEndPoint ip_endpoint_v4 = MakeIPEndPoint("192.0.2.1");
 
   resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder()
-                         .add_ip_endpoint(ip_endpoint_v6)
-                         .add_ip_endpoint(ip_endpoint_v4)
-                         .endpoint())
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_ip_endpoint(ip_endpoint_v6)
+                        .add_ip_endpoint(ip_endpoint_v4)
+                        .endpoint())
       .CompleteStartSynchronously(OK);
 
   auto get_remote_ip_endpoint = [&](StreamRequester& requester) -> IPEndPoint {
@@ -1616,11 +1616,11 @@ TEST_F(HttpStreamPoolAttemptManagerTest, UseSlowAttemptingIPEndPoint) {
   const IPEndPoint ip_endpoint_failure = MakeIPEndPoint("192.0.2.1");
 
   resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder()
-                         .add_ip_endpoint(ip_endpoint_slow)
-                         .add_ip_endpoint(ip_endpoint_failure)
-                         .endpoint())
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_ip_endpoint(ip_endpoint_slow)
+                        .add_ip_endpoint(ip_endpoint_failure)
+                        .endpoint())
       .CompleteStartSynchronously(OK);
 
   // Socket data preparation, see the following comments for the scenario.
@@ -1714,11 +1714,11 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreferSlowSucceededToSlowAttempting) {
   const IPEndPoint ip_endpoint_slow = MakeIPEndPoint("192.0.2.1");
 
   resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder()
-                         .add_ip_endpoint(ip_endpoint_slow_success)
-                         .add_ip_endpoint(ip_endpoint_slow)
-                         .endpoint())
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_ip_endpoint(ip_endpoint_slow_success)
+                        .add_ip_endpoint(ip_endpoint_slow)
+                        .endpoint())
       .CompleteStartSynchronously(OK);
 
   // Socket data preparation, see the following comments for the scenario.
