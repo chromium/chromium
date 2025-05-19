@@ -6,7 +6,6 @@
 
 #include <AppKit/AppKit.h>
 
-#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 
@@ -15,7 +14,6 @@ void ExtensionActionTestHelper::WaitForPopup() {
   ASSERT_TRUE(window);
 
   if (!window.keyWindow) {
-    content::HandleMissingKeyWindow();
     WindowedNSNotificationObserver* waiter =
         [[WindowedNSNotificationObserver alloc]
             initForNotification:NSWindowDidBecomeKeyNotification
