@@ -80,12 +80,6 @@ void VideoCaptureDeviceLinux::AllocateAndStart(
       TranslatePowerLineFrequencyToV4L2(GetPowerLineFrequency(params));
   capture_impl_ = std::make_unique<V4L2CaptureDelegate>(
       v4l2_.get(), device_descriptor_, task_runner_, line_frequency, rotation_);
-  if (!capture_impl_) {
-    client->OnError(VideoCaptureError::
-                        kDeviceCaptureLinuxFailedToCreateVideoCaptureDelegate,
-                    FROM_HERE, "Failed to create VideoCaptureDelegate");
-    return;
-  }
 
   task_runner_->PostTask(
       FROM_HERE,
