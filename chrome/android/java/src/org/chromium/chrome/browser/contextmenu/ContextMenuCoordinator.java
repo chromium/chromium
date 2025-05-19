@@ -345,6 +345,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                 new LayoutViewBuilder(R.layout.context_menu_share_row),
                 ContextMenuItemWithIconButtonViewBinder::bind);
+        adapter.registerType(
+                ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
+                new LayoutViewBuilder<>(R.layout.checkbox_layout),
+                ContextMenuItemWithCheckboxViewBinder::bind);
 
         mListView.setOnItemClickListener(
                 (p, v, pos, id) -> {
