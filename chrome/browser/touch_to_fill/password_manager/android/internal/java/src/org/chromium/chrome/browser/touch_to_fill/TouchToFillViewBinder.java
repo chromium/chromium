@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
@@ -172,10 +171,6 @@ class TouchToFillViewBinder {
         } else if (propertyKey == ON_CLICK_LISTENER) {
             view.setOnClickListener(
                     clickedView -> model.get(ON_CLICK_LISTENER).onResult(credential));
-        } else if (propertyKey == FORMATTED_ORIGIN) {
-            TextView pslOriginText = view.findViewById(R.id.credential_origin);
-            pslOriginText.setText(model.get(FORMATTED_ORIGIN));
-            pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
         } else if (propertyKey == CREDENTIAL || propertyKey == ITEM_COLLECTION_INFO) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             pslOriginText.setText(credential.getDisplayName());
@@ -341,7 +336,6 @@ class TouchToFillViewBinder {
                                             ? R.string.touch_to_fill_signin
                                             : R.string.touch_to_fill_continue));
         } else if (propertyKey == FAVICON_OR_FALLBACK
-                || propertyKey == FORMATTED_ORIGIN
                 || propertyKey == CREDENTIAL
                 || propertyKey == WEBAUTHN_CREDENTIAL
                 || propertyKey == WEBAUTHN_FAVICON_OR_FALLBACK
