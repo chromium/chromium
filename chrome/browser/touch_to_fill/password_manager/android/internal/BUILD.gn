@@ -59,7 +59,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillCoordinator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillMediator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillProperties.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillResourceProvider.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillView.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewBinder.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewHolder.java",
