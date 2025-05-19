@@ -243,12 +243,6 @@ BASE_FEATURE(kStableDeviceId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_MIRROR) && !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
-             "VerifyRequestInitiatorForMirrorHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_MIRROR) && !BUILDFLAG(IS_IOS)
-
 BASE_FEATURE(kProfilesReordering,
              "ProfilesReordering",
              base::FEATURE_DISABLED_BY_DEFAULT);

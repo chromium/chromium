@@ -233,8 +233,7 @@ void ProcessMirrorHeader(
   // Do not allow non-Google origins to open incognito windows.
   // TODO(crbug.com/40064889): Expand this check to all Mirror headers,
   //                          regardless of `service_type`.
-  if (service_type == GAIA_SERVICE_TYPE_INCOGNITO &&
-      base::FeatureList::IsEnabled(kVerifyRequestInitiatorForMirrorHeaders)) {
+  if (service_type == GAIA_SERVICE_TYPE_INCOGNITO) {
     GURL initiator_url =
         request_initiator ? request_initiator->GetURL() : GURL();
     bool is_request_initiated_by_google_domain =
