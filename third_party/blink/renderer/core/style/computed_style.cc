@@ -2906,30 +2906,6 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
   return false;
 }
 
-bool ComputedStyle::GapRuleColorIsTransparent(
-    const GapDataList<StyleColor>& gap_rule_color) const {
-  const blink::Color& current_color = GetCurrentColor();
-  const mojom::blink::ColorScheme& color_scheme = UsedColorScheme();
-  return std::ranges::all_of(
-      gap_rule_color.GetGapDataList(),
-      [&](const GapData<StyleColor>& gap_data) {
-        // If it’s a simple value, just test it directly.
-        if (!gap_data.IsRepeaterData()) {
-          const StyleColor& v = gap_data.GetValue();
-          return v.Resolve(current_color, color_scheme).IsFullyTransparent();
-        }
-
-        // Otherwise it’s a repeater: walk through its RepeatedValues(), and
-        // only return true if all values are transparent.
-        const auto* rep = gap_data.GetValueRepeater();
-        return std::ranges::all_of(
-            rep->RepeatedValues(), [&](const StyleColor& v) {
-              return v.Resolve(current_color, color_scheme)
-                  .IsFullyTransparent();
-            });
-      });
-}
-
 bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
   return (element.IsInTopLayer() && Overlay() == EOverlay::kAuto) ||
          StyleType() == kPseudoIdBackdrop;

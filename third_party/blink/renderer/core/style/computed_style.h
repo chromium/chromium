@@ -1003,7 +1003,10 @@ class ComputedStyle final : public ComputedStyleBase {
            !HasAutoColumnHeight();
   }
   bool ColumnRuleIsTransparent() const {
-    return GapRuleColorIsTransparent(ColumnRuleColor());
+    return ColumnRuleColor()
+        .GetLegacyValue()
+        .Resolve(GetCurrentColor(), UsedColorScheme())
+        .IsFullyTransparent();
   }
   bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {
@@ -1016,7 +1019,10 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   bool RowRuleIsTransparent() const {
-    return GapRuleColorIsTransparent(RowRuleColor());
+    return RowRuleColor()
+        .GetLegacyValue()
+        .Resolve(GetCurrentColor(), UsedColorScheme())
+        .IsFullyTransparent();
   }
   bool HasRowRule() const {
     // `SpecifiesColumns()` signifies we are in a multicol context. Return false
@@ -2765,9 +2771,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Derived flags:
   bool CalculateIsStackingContextWithoutContainment() const;
-
-  bool GapRuleColorIsTransparent(
-      const GapDataList<StyleColor>& gap_rule_color) const;
 
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest, CustomPropertiesEqual_Values);
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest, CustomPropertiesEqual_Data);
