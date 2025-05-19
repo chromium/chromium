@@ -152,6 +152,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/google_one/test:eg_app_support+eg2",
     "//ios/chrome/browser/history/ui_bundled:constants",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
+    "//ios/chrome/browser/history/ui_bundled:test_support",
     "//ios/chrome/browser/https_upgrades/model:eg_app_support+eg2",
     "//ios/chrome/browser/incognito_interstitial/ui_bundled:constants",
     "//ios/chrome/browser/infobars/ui_bundled:eg_app_support+eg2",

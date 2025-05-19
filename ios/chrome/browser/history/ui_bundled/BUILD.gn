@@ -153,6 +153,14 @@ source_set("clear_browsing_data") {
   ]
 }
 
+source_set("test_support") {
+  sources = [
+    "stub_history_coordinator_delegate.h",
+    "stub_history_coordinator_delegate.mm",
+  ]
+  deps = [ ":coordinator" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "history_entry_inserter_unittest.mm" ]
