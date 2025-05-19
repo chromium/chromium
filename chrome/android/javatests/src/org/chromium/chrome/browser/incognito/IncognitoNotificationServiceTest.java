@@ -224,6 +224,7 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
+    @DisabledTest(message = "https://crbug.com/418782004")
     public void testCloseAllIncognitoNotificationIsDisplayed() {
         launchIncognitoTabAndEnsureNotificationDisplayed();
     }
@@ -231,6 +232,7 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
+    @DisabledTest(message = "https://crbug.com/418782004")
     public void testCloseAllIncognitoNotificationForIncognitoCct_DoesNotCloseCct()
             throws PendingIntent.CanceledException {
         launchIncognitoTabAndEnsureNotificationDisplayed();
