@@ -43,7 +43,8 @@ struct FlexLineBreakerResult {
 FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
     base::span<FlexItem> all_items,
     LayoutUnit line_break_size,
-    LayoutUnit gap_between_items);
+    LayoutUnit gap_between_items,
+    wtf_size_t min_line_count);
 FlexLineBreakerResult GreedyBreakFlexItemsIntoLines(
     base::span<FlexItem> all_items,
     LayoutUnit line_break_size,
@@ -55,14 +56,14 @@ inline FlexLineBreakerResult BreakFlexItemsIntoLines(
     LayoutUnit line_break_size,
     LayoutUnit gap_between_items,
     bool is_multi_line,
-    bool is_balanced) {
+    std::optional<wtf_size_t> balance_min_line_count) {
   if (all_items.empty()) {
     return FlexLineBreakerResult();
   }
 
-  if (is_balanced) {
-    return BalanceBreakFlexItemsIntoLines(all_items, line_break_size,
-                                          gap_between_items);
+  if (balance_min_line_count) {
+    return BalanceBreakFlexItemsIntoLines(
+        all_items, line_break_size, gap_between_items, *balance_min_line_count);
   }
 
   return GreedyBreakFlexItemsIntoLines(all_items, line_break_size,

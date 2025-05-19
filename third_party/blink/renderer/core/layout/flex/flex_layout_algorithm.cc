@@ -680,10 +680,10 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
       is_wrap_reverse_(Style().ResolvedIsFlexWrapReverse()),
       is_reverse_direction_(Style().ResolvedIsReverseFlexDirection()),
       is_multi_line_(!Style().ResolvedIsFlexNowrap()),
-      is_balanced_(Style().ResolvedIsFlexBalanced()),
       is_horizontal_flow_(Style().IsHorizontalWritingMode() ? !is_column_
                                                             : is_column_),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
+      balance_min_line_count_(Style().ResolvedFlexBalanceMinLineCount()),
       child_percentage_size_(
           CalculateChildPercentageSize(GetConstraintSpace(),
                                        Node(),
@@ -1939,9 +1939,9 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   ConstructAndAppendFlexItems(phase, oof_children);
 
   const LayoutUnit line_break_size = MainAxisContentExtent(LayoutUnit::Max());
-  const FlexLineBreakerResult result =
-      BreakFlexItemsIntoLines(base::span(flex_items_), line_break_size,
-                              gap_between_items_, is_multi_line_, is_balanced_);
+  const FlexLineBreakerResult result = BreakFlexItemsIntoLines(
+      base::span(flex_items_), line_break_size, gap_between_items_,
+      is_multi_line_, balance_min_line_count_);
 
   // For column flexboxes we can now determine the intrinsic block-size, which
   // we use to flex all the lines to.

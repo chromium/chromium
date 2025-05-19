@@ -183,7 +183,8 @@ FlexLineBreakerResult BreakIntoLines(base::span<FlexItem> all_items,
 FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
     base::span<FlexItem> all_items,
     const LayoutUnit line_break_size,
-    const LayoutUnit gap_between_items) {
+    const LayoutUnit gap_between_items,
+    wtf_size_t min_line_count) {
   ScoreContext ctx = {
       .line_break_size = static_cast<uint64_t>(line_break_size.RawValue()),
       .gap_between_items = static_cast<uint64_t>(gap_between_items.RawValue()),
