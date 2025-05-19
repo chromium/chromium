@@ -397,6 +397,7 @@ enum WebDXFeature {
   kClearSiteData = 339,
   kLinkRelExpect = 340,
   kUaClientHints = 341,
+  kCustomizableSelect = 342,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
