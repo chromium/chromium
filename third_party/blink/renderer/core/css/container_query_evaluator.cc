@@ -402,10 +402,10 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollState() {
   if (scroll_state_snapshot_) {
     change = StickyContainerChanged(scroll_state_snapshot_->StuckHorizontal(),
                                     scroll_state_snapshot_->StuckVertical());
-    Change overflow_change = ScrollableContainerChanged(
+    Change scrollable_change = ScrollableContainerChanged(
         scroll_state_snapshot_->ScrollableHorizontal(),
         scroll_state_snapshot_->ScrollableVertical());
-    change = std::max(change, overflow_change);
+    change = std::max(change, scrollable_change);
     if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
       Change scroll_direction_change = ScrollDirectionContainerChanged(
           scroll_state_snapshot_->ScrollDirectionHorizontal(),
@@ -460,7 +460,7 @@ ContainerQueryEvaluator::ScrollableContainerChanged(
   }
 
   UpdateContainerScrollable(scrollable_horizontal, scrollable_vertical);
-  Change change = ComputeOverflowChange();
+  Change change = ComputeScrollableChange();
   if (change != Change::kNone) {
     ClearResults(change, kScrollableContainer);
   }
@@ -527,11 +527,11 @@ ContainerQueryEvaluator::StyleAffectingScrollStateChanged() {
   }
   change = std::max(change, sticky_change);
 
-  Change overflow_change = ComputeOverflowChange();
-  if (overflow_change != Change::kNone) {
-    ClearResults(overflow_change, kScrollableContainer);
+  Change scrollable_change = ComputeScrollableChange();
+  if (scrollable_change != Change::kNone) {
+    ClearResults(scrollable_change, kScrollableContainer);
   }
-  change = std::max(change, overflow_change);
+  change = std::max(change, scrollable_change);
 
   if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
     Change scroll_direction_change = ComputeScrollDirectionChange();
@@ -792,8 +792,8 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeSnapChange()
   return change;
 }
 
-ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeOverflowChange()
-    const {
+ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::ComputeScrollableChange() const {
   Change change = Change::kNone;
 
   for (const auto& result : results_) {

@@ -670,14 +670,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateViewport();
   void UpdateViewportStyle();
   void UpdateStyleAndLayoutTree();
-  // To be called from layout when container queries change for the container.
-  void UpdateStyleAndLayoutTreeForContainer(Element& container,
-                                            const LogicalSize&,
-                                            LogicalAxes contained_axes);
+  // To be called from layout when size queries change for the container.
+  void UpdateStyleAndLayoutTreeForSizeContainer(Element& container,
+                                                const LogicalSize&,
+                                                LogicalAxes contained_axes);
   // To be called from layout-tree building for subtree skipped for style
   // recalcs when we found out the container is eligible for size containment
   // after all.
-  void UpdateStyleForNonEligibleContainer(Element& container);
+  void UpdateStyleForNonEligibleSizeContainer(Element& container);
   // Updates the style of `element`, and descendants if needed.
   // The provided `try_set` represents the declaration block from
   // a @position-try rule. The specified TryTacticList will cause
@@ -712,7 +712,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // return nullptr if the interleaving root is a PseudoElement, because such
   // elements can't be recalc roots.
   //
-  // See StyleEngine::UpdateStyleAndLayoutTreeForContainer.
+  // See StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer.
   // See StyleEngine::UpdateStyleForOutOfFlow.
   Element* GetInterleavingRecalcRoot() const {
     if (InContainerQueryStyleRecalc() || InPositionTryStyleRecalc()) {

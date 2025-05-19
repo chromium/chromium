@@ -163,7 +163,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Update the CSSContainerValues with the new stuck state.
   void UpdateContainerSnapped(ContainerSnappedFlags snapped);
 
-  // Update the CSSContainerValues with the new overflowing state.
+  // Update the CSSContainerValues with the new scrollable state.
   void UpdateContainerScrollable(ContainerScrollableFlags scrollable_horizontal,
                                  ContainerScrollableFlags scrollable_vertical);
 
@@ -219,9 +219,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // which elements need to be invalidated if necessary.
   Change ComputeSnapChange() const;
 
-  // Re-evaluate cached query results after a overflowing state change and
+  // Re-evaluate cached query results after a scrollable state change and
   // return which elements need to be invalidated if necessary.
-  Change ComputeOverflowChange() const;
+  Change ComputeScrollableChange() const;
 
   // Re-evaluate cached query results after a scroll-direction state change and
   // return which elements need to be invalidated if necessary.

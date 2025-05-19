@@ -59,18 +59,18 @@ enum class ContainerScrollable {
 
 using ContainerScrollableFlags = unsigned;
 
-inline ContainerScrollableFlags Flip(ContainerScrollableFlags overflowing) {
-  if (overflowing ==
+inline ContainerScrollableFlags Flip(ContainerScrollableFlags scrollable) {
+  if (scrollable ==
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone)) {
-    return overflowing;
+    return scrollable;
   }
   ContainerScrollableFlags flipped =
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
-  if (overflowing &
+  if (scrollable &
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart)) {
     flipped |= static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
   }
-  if (overflowing &
+  if (scrollable &
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd)) {
     flipped |=
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);

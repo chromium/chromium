@@ -3575,7 +3575,7 @@ bool ContainerStyleChangesAllowed(Element& container,
   }
   if (!new_layout_style || !old_element_style) {
     // Container may not have a LayoutObject when called from
-    // UpdateStyleForNonEligibleContainer(), but then make sure the style is
+    // UpdateStyleForNonEligibleSizeContainer(), but then make sure the style is
     // null for both cases.
     return new_layout_style == old_element_style;
   }
@@ -3626,7 +3626,7 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
 #endif  // DCHECK_IS_ON()
 }
 
-void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
+void StyleEngine::UpdateStyleForNonEligibleSizeContainer(Element& container) {
   DCHECK(InRebuildLayoutTree());
   // This method is called from AttachLayoutTree() when we skipped style recalc
   // for descendants of a size query container but figured that the LayoutObject
@@ -3666,7 +3666,7 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
   RecalcStyleForContainer(container, change);
 }
 
-void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
+void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
     Element& container,
     const LogicalSize& logical_size,
     LogicalAxes contained_axes) {

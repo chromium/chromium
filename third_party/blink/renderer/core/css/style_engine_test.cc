@@ -4540,7 +4540,8 @@ TEST_F(StyleEngineSimTest, IFramePreferredColorScheme) {
             frame_document->GetStyleEngine().GetPreferredColorScheme());
 }
 
-TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
+TEST_F(StyleEngineContainerQueryTest,
+       UpdateStyleAndLayoutTreeForSizeContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
@@ -4587,14 +4588,14 @@ TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
   ASSERT_TRUE(container2);
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
-  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+  GetStyleEngine().UpdateStyleAndLayoutTreeForSizeContainer(
       *container1, LogicalSize(200, 100), kLogicalAxesBoth);
 
   // The first span.affected child and #container2
   EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+  GetStyleEngine().UpdateStyleAndLayoutTreeForSizeContainer(
       *container2, LogicalSize(200, 100), kLogicalAxesBoth);
 
   // Three direct span.affected children, and the two display:none elements.
@@ -4651,7 +4652,7 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
-  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+  GetStyleEngine().UpdateStyleAndLayoutTreeForSizeContainer(
       *container, LogicalSize(200, 100), kLogicalAxesBoth);
 
   // Even though none of the inner containers are eligible for containment,
@@ -4687,7 +4688,7 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
   ASSERT_TRUE(span);
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
-  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+  GetStyleEngine().UpdateStyleAndLayoutTreeForSizeContainer(
       *container, LogicalSize(200, 100), kLogicalAxesBoth);
 
   // The two ::before elements + #span.
@@ -4724,12 +4725,12 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   EXPECT_TRUE(old_inner_style);
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
-  GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+  GetStyleEngine().UpdateStyleAndLayoutTreeForSizeContainer(
       *container, LogicalSize(200, 100), kLogicalAxesBoth);
 
   // Input elements mark their InnerEditorElement() style-dirty when they are
-  // recalculated. That means the UpdateStyleAndLayoutTreeForContainer() call
-  // above will involve marking ChildNeedsStyleRecalc all the way up to the
+  // recalculated. That means the UpdateStyleAndLayoutTreeForSizeContainer()
+  // call above will involve marking ChildNeedsStyleRecalc all the way up to the
   // documentElement. Check that we don't leave anything dirty.
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
   EXPECT_FALSE(GetDocument().documentElement()->ChildNeedsStyleRecalc());

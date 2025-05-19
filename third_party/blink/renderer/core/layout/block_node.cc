@@ -504,7 +504,7 @@ const LayoutResult* BlockNode::Layout(
       const LogicalSize available_size = CalculateChildAvailableSize(
           constraint_space, *this, fragment_geometry->border_box_size,
           fragment_geometry->border + scrollbar + fragment_geometry->padding);
-      GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForSizeContainer(
           *element, available_size, ContainedAxes());
 
       // Try the cache again. Container query matching may have affected

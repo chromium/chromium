@@ -170,7 +170,7 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
   // kSuppressRecalc should only take effect for the query container itself, not
   // for children. Also make sure the kMarkReattach flag survives one level past
   // the container for ::first-line re-attachments initiated from
-  // UpdateStyleAndLayoutTreeForContainer().
+  // UpdateStyleAndLayoutTreeForSizeContainer().
   if (result & kSuppressRecalc) {
     result &= ~kSuppressRecalc;
   } else {
@@ -182,9 +182,9 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
 
 bool StyleRecalcChange::IndependentInherit(
     const ComputedStyle& old_style) const {
-  // During UpdateStyleAndLayoutTreeForContainer(), if the old_style is marked
-  // as depending on container queries, we need to do a proper recalc for the
-  // element.
+  // During UpdateStyleAndLayoutTreeForSizeContainer(), if the old_style is
+  // marked as depending on container queries, we need to do a proper recalc for
+  // the element.
   return propagate_ == kIndependentInherit &&
          (!RecalcSizeContainerQueryDependent() ||
           !old_style.DependsOnSizeContainerQueries()) &&

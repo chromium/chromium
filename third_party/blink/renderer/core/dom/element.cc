@@ -525,7 +525,7 @@ void EnqueueAutofocus(Element& element) {
 bool WillUpdateSizeContainerDuringLayout(const LayoutObject& layout_object) {
   // When a size-container LayoutObject is marked as needs layout,
   // BlockNode::Layout() will resume style recalc with an up-to-date size in
-  // StyleEngine::UpdateStyleAndLayoutTreeForContainer().
+  // StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer().
   return layout_object.NeedsLayout() &&
          layout_object.IsEligibleForSizeContainment();
 }
@@ -3788,7 +3788,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
     // size queries. This recalc must be resumed now, since we're not going to
     // create a LayoutObject for the Element after all.
     if (skipped_container_descendants) {
-      style_engine.UpdateStyleForNonEligibleContainer(*this);
+      style_engine.UpdateStyleForNonEligibleSizeContainer(*this);
       skipped_container_descendants = false;
     }
     // The above recalc may have marked some descendant for reattach, which
@@ -3833,7 +3833,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
   if (skipped_container_descendants &&
       (!layout_object || !layout_object->IsEligibleForSizeContainment())) {
-    style_engine.UpdateStyleForNonEligibleContainer(*this);
+    style_engine.UpdateStyleForNonEligibleSizeContainer(*this);
     skipped_container_descendants = false;
   }
 
@@ -4319,7 +4319,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
         !style->ScrollMarkerGroupNone();
     if (style->CanMatchSizeContainerQueries(*this)) {
       // IsSuppressed() means we are at the root of a container subtree called
-      // from UpdateStyleAndLayoutTreeForContainer(). If so, we can not skip
+      // from UpdateStyleAndLayoutTreeForSizeContainer(). If so, we can not skip
       // recalc again. Otherwise, we may skip recalc of the subtree if we can
       // guarantee that we will be able to resume during layout later.
       if (!change.IsSuppressed()) {
