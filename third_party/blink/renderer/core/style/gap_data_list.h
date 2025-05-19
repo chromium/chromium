@@ -17,8 +17,6 @@ namespace blink {
 // https://drafts.csswg.org/css-gaps-1/#color-style-width
 template <typename T>
 class CORE_EXPORT GapDataList {
-  DISALLOW_NEW();
-
   using VectorType = ValueRepeater<T>::VectorType;
 
  public:

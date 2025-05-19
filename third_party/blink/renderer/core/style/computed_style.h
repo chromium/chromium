@@ -597,7 +597,7 @@ class ComputedStyle final : public ComputedStyleBase {
     const GapDataList<EBorderStyle> rule_style = ColumnRuleStyle();
     if (rule_style.HasSingleValue() &&
         ColumnRuleWidthInternal().HasSingleValue() &&
-        !BorderStyleIsVisible(rule_style)) {
+        !BorderStyleIsVisible(rule_style.GetLegacyValue())) {
       return GapDataList<int>(0);
     }
 
@@ -605,7 +605,9 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // row-rule-width
-  GapDataList<int> RowRuleWidth() const { return RowRuleWidthInternal(); }
+  const GapDataList<int>& RowRuleWidth() const {
+    return RowRuleWidthInternal();
+  }
 
   bool HasGapDecoration() const {
     // Various layouts in CSS such as multicol containers, flex containers, grid
@@ -1027,7 +1029,12 @@ class ComputedStyle final : public ComputedStyleBase {
            BorderStyleIsVisible(RowRuleStyle());
   }
 
-  bool HasGapRule() const { return HasColumnRule() || HasRowRule(); }
+  bool HasGapRule() const {
+    if (!MaybeHasGapDecorations()) {
+      return false;
+    }
+    return HasColumnRule() || HasRowRule();
+  }
 
   // Flex utility functions.
   bool ResolvedIsColumnFlexDirection() const {
@@ -2258,7 +2265,8 @@ class ComputedStyle final : public ComputedStyleBase {
     return style != EBorderStyle::kNone && style != EBorderStyle::kHidden;
   }
 
-  static bool BorderStyleIsVisible(GapDataList<EBorderStyle> styles) {
+  // Rule utility functions.
+  static bool BorderStyleIsVisible(const GapDataList<EBorderStyle>& styles) {
     for (const auto& style : styles.GetGapDataList()) {
       if (!style.IsRepeaterData()) {
         // Simple single value, check directly.
@@ -2279,7 +2287,7 @@ class ComputedStyle final : public ComputedStyleBase {
     return false;
   }
 
-  static bool HasRuleWidth(GapDataList<int> widths) {
+  static bool HasRuleWidth(const GapDataList<int>& widths) {
     for (const auto& width : widths.GetGapDataList()) {
       if (!width.IsRepeaterData()) {
         // Simple single value, check directly.
@@ -2973,11 +2981,41 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetColumnCountInternal(ComputedStyleInitialValues::InitialColumnCount());
   }
 
+  // column-rule-color
+  void SetColumnRuleColor(const GapDataList<StyleColor>& colors) {
+    SetMaybeHasGapDecorations();
+    SetColumnRuleColorInternal(colors);
+  }
+
+  // row-rule-color
+  void SetRowRuleColor(const GapDataList<StyleColor>& colors) {
+    SetMaybeHasGapDecorations();
+    SetRowRuleColorInternal(colors);
+  }
+
+  // column-rule-style
+  void SetColumnRuleStyle(const GapDataList<EBorderStyle>& styles) {
+    SetMaybeHasGapDecorations();
+    SetColumnRuleStyleInternal(styles);
+  }
+
+  // row-rule-style
+  void SetRowRuleStyle(const GapDataList<EBorderStyle>& styles) {
+    SetMaybeHasGapDecorations();
+    SetRowRuleStyleInternal(styles);
+  }
+
   // column-rule-width
-  void SetColumnRuleWidth(GapDataList<int> w) { SetColumnRuleWidthInternal(w); }
+  void SetColumnRuleWidth(const GapDataList<int>& widths) {
+    SetMaybeHasGapDecorations();
+    SetColumnRuleWidthInternal(widths);
+  }
 
   // row-rule-width
-  void SetRowRuleWidth(GapDataList<int> w) { SetRowRuleWidthInternal(w); }
+  void SetRowRuleWidth(const GapDataList<int>& widths) {
+    SetMaybeHasGapDecorations();
+    SetRowRuleWidthInternal(widths);
+  }
 
   // column-width
   void SetColumnWidth(float f) {

@@ -6553,6 +6553,7 @@
       default_value: "GapDataList<StyleColor>::DefaultGapColorDataList()",
       type_name: "GapDataList<StyleColor>",
       keywords: ["currentcolor"],
+      computed_style_custom_functions: ["setter"],
       includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationColorDataList",
@@ -6569,6 +6570,7 @@
       default_value: "GapDataList<StyleColor>::DefaultGapColorDataList()",
       type_name: "GapDataList<StyleColor>",
       keywords: ["currentcolor"],
+      computed_style_custom_functions: ["setter"],
       includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationColorDataList",
@@ -6585,6 +6587,7 @@
         "none", "hidden", "inset", "groove", "outset", "ridge", "dotted",
         "dashed", "solid", "double"
       ],
+      computed_style_custom_functions: ["setter"],
       default_value: "GapDataList<EBorderStyle>::DefaultGapStyleDataList()",
       type_name: "GapDataList<EBorderStyle>",
       typedom_types: ["Keyword"],
@@ -6601,6 +6604,7 @@
         "none", "hidden", "inset", "groove", "outset", "ridge", "dotted",
         "dashed", "solid", "double"
       ],
+      computed_style_custom_functions: ["setter"],
       default_value: "GapDataList<EBorderStyle>::DefaultGapStyleDataList()",
       type_name: "GapDataList<EBorderStyle>",
       typedom_types: ["Keyword"],

@@ -366,6 +366,13 @@
       field_group: "visual",
     },
     {
+      name: "MaybeHasGapDecorations",
+      field_template: "monotonic_flag",
+      type_name: "bool",
+      default_value: "false",
+      field_group: "visual",
+    },
+    {
       name: "HasAutoClip",
       field_template: "primitive",
       type_name: "bool",
