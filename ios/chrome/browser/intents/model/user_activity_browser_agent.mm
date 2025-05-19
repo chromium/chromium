@@ -843,13 +843,15 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
             LensEntrypoint::ContextMenu,
             search_engines::SupportsSearchImageWithLens(template_url_service));
     if (!useLens) {
-      NSData* image_data =
-          connection_information_.startupParameters.imageSearchData;
-      web::NavigationManager::WebLoadParams web_load_params =
-          ImageSearchParamGenerator::LoadParamsForImageData(
-              image_data, GURL(), template_url_service);
+      if (search_engines::SupportsSearchByImage(template_url_service)) {
+        NSData* image_data =
+            connection_information_.startupParameters.imageSearchData;
+        web::NavigationManager::WebLoadParams web_load_params =
+            ImageSearchParamGenerator::LoadParamsForImageData(
+                image_data, GURL(), template_url_service);
 
-      params.web_params = web_load_params;
+        params.web_params = web_load_params;
+      }
     } else {
       connection_information_.startupParameters.postOpeningAction =
           START_LENS_FROM_SHARE_EXTENSION;
