@@ -343,8 +343,7 @@ void Tab::Layout(PassKey) {
       MaybeAdjustLeftForPinnedTab(&favicon_bounds, gfx::kFaviconSize);
     }
     icon_->EnlargeDiscardIndicatorRadius(
-        controller()->GetInactiveTabWidth() -
-                    2 * tab_style()->GetBottomCornerRadius() >=
+        width() - 2 * tab_style()->GetBottomCornerRadius() >=
                 gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
             ? kIncreasedDiscardIndicatorRadiusDp
             : 0);
