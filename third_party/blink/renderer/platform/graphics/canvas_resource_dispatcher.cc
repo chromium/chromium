@@ -39,7 +39,11 @@ constexpr base::TimeDelta kSyntheticFrameDelay = base::Hertz(60);
 namespace blink {
 
 struct CanvasResourceDispatcher::FrameResource {
-  FrameResource() = default;
+ public:
+  FrameResource(scoped_refptr<CanvasResource> resource,
+                CanvasResource::ReleaseCallback callback)
+      : canvas_resource(std::move(resource)),
+        release_callback(std::move(callback)) {}
   ~FrameResource() {
     if (canvas_resource && release_callback) {
       std::move(release_callback)
@@ -274,22 +278,22 @@ bool CanvasResourceDispatcher::PrepareFrame(
               /*fast_rounded_corner=*/false);
 
   viz::TransferableResource resource;
-  auto frame_resource = std::make_unique<FrameResource>();
 
   // This property will be overridden by the embedding SurfaceLayer, so this
   // value will have no effect.
   const bool nearest_neighbor = false;
 
+  CanvasResource::ReleaseCallback release_callback;
   canvas_resource->PrepareTransferableResource(
-      &resource, &frame_resource->release_callback,
+      &resource, &release_callback,
       /*needs_verified_synctoken=*/true);
 
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 
-  frame_resource->canvas_resource = canvas_resource;
-  resources_.insert(resource_id, std::move(frame_resource));
-
+  resources_.insert(resource_id,
+                    std::make_unique<FrameResource>(
+                        canvas_resource, std::move(release_callback)));
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
 
   // TODO(crbug.com/645993): this should be inherited from WebGL context's
