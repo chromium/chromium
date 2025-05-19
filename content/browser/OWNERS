@@ -20,7 +20,6 @@ per-file browser_child_process_host_impl_receiver_bindings.*=set noparent
 per-file browser_child_process_host_impl_receiver_bindings.*=file://ipc/SECURITY_OWNERS
 per-file child_process_launcher_helper_ios.mm=file://ipc/SECURITY_OWNERS
 
-per-file host_zoom_*=wjmaclean@chromium.org
 per-file site_per_process_*=kenrb@chromium.org
 
 # Mac Sandbox parameters and unit tests.
