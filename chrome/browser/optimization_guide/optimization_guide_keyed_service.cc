@@ -660,6 +660,21 @@ void OptimizationGuideKeyedService::AddHintForTesting(
   hints_manager_->AddHintForTesting(url, optimization_type, metadata);
 }
 
+void OptimizationGuideKeyedService::AddOnDemandHintForTesting(
+    const GURL& url,
+    optimization_guide::proto::OptimizationType optimization_type,
+    const optimization_guide::OptimizationGuideDecisionWithMetadata& decision) {
+  hints_manager_->AddOnDemandHintForTesting(url, optimization_type,  // IN-TEST
+                                            decision);
+}
+
+void OptimizationGuideKeyedService::AddExecutionResultForTesting(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::OptimizationGuideModelExecutionResult result) {
+  model_execution_manager_->AddExecutionResultForTesting(feature,  // IN-TEST
+                                                         std::move(result));
+}
+
 void OptimizationGuideKeyedService::ClearData() {
   hints_manager_->ClearFetchedHints();
 }

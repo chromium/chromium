@@ -86,6 +86,12 @@ class ModelExecutionManager final {
   // no model is available.
   on_device_model::Capabilities GetOnDeviceCapabilities();
 
+  // Records a fake model execution response to be returned when ExecuteModel is
+  // called for the given feature.
+  void AddExecutionResultForTesting(
+      ModelBasedCapabilityKey feature,
+      OptimizationGuideModelExecutionResult result);
+
   void Shutdown();
 
  private:
@@ -117,6 +123,10 @@ class ModelExecutionManager final {
   // The active fetchers per ModelExecutionFeature.
   std::map<ModelBasedCapabilityKey, ModelExecutionFetcher>
       active_model_execution_fetchers_;
+
+  // Model execution results to override in tests.
+  std::map<ModelBasedCapabilityKey, OptimizationGuideModelExecutionResult>
+      test_execution_results_;
 
   // The URL Loader Factory that will be used by the fetchers.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

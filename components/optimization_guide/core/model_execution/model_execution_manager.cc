@@ -128,6 +128,12 @@ void ModelExecutionManager::Shutdown() {
   active_model_execution_fetchers_.clear();
 }
 
+void ModelExecutionManager::AddExecutionResultForTesting(
+    ModelBasedCapabilityKey feature,
+    OptimizationGuideModelExecutionResult result) {
+  test_execution_results_.insert({feature, std::move(result)});
+}
+
 void ModelExecutionManager::ExecuteModel(
     ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request_metadata,
@@ -135,6 +141,13 @@ void ModelExecutionManager::ExecuteModel(
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (test_execution_results_.find(feature) != test_execution_results_.end()) {
+    std::move(callback).Run(std::move(test_execution_results_[feature]),
+                            nullptr);
+    test_execution_results_.erase(feature);
+    return;
+  }
 
   auto previous_fetcher_it = active_model_execution_fetchers_.find(feature);
   if (previous_fetcher_it != active_model_execution_fetchers_.end()) {

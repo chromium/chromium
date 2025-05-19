@@ -228,6 +228,21 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationType optimization_type,
       const std::optional<optimization_guide::OptimizationMetadata>& metadata);
 
+  // Adds hints for a URL with provided metadata to the optimization guide.
+  // Hints added via this method will work for `CanApplyOptimizationOnDemand`
+  // calls. For testing purposes only.
+  void AddOnDemandHintForTesting(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      const optimization_guide::OptimizationGuideDecisionWithMetadata&
+          decision);
+
+  // Adds a model execution result to be provided when an execution request
+  // comes in with the given `feature`.
+  void AddExecutionResultForTesting(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OptimizationGuideModelExecutionResult result);
+
   // Override the model file sent to observers of |optimization_target|. Use
   // |TestModelInfoBuilder| to construct the model metadata. For
   // testing purposes only.
