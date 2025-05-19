@@ -62,6 +62,9 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
     source->AddBoolean("navSettingsDialog",
                        features::IsBocaNavSettingsDialogEnabled());
     source->AddBoolean("captionToggle", features::IsBocaCaptionToggleEnabled());
+
+    source->AddBoolean("spotlightNativeClientUpdate",
+                       features::IsBocaSpotlightRobotRequesterEnabled());
   }
 
  private:

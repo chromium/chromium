@@ -312,6 +312,12 @@ BASE_FEATURE(kBocaCaptionToggle,
              "BocaCaptionToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables using the native ChromeOS implementation of the CRD
+// client for Spotlight within the Boca SWA.
+BASE_FEATURE(kBocaSpotlightRobotRequester,
+             "BocaSpotlightRobotRequester",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3542,6 +3548,10 @@ bool IsBocaNavSettingsDialogEnabled() {
 
 bool IsBocaCaptionToggleEnabled() {
   return base::FeatureList::IsEnabled(kBocaCaptionToggle);
+}
+
+bool IsBocaSpotlightRobotRequesterEnabled() {
+  return base::FeatureList::IsEnabled(kBocaSpotlightRobotRequester);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
