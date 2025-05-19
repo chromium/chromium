@@ -64,7 +64,6 @@ class OmniboxViewIOS : public OmniboxViewBase {
                           std::u16string::size_type* end) const override;
   void SelectAll(bool reversed) override {}
   void SetFocus(bool is_user_initiated) override {}
-  void ApplyCaretVisibility() override {}
   void OnInlineAutocompleteTextCleared() override {}
   gfx::NativeView GetNativeView() const override;
   gfx::NativeView GetRelativeWindowForPopup() const override;

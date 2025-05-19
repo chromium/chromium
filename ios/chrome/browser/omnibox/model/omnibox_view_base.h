@@ -115,15 +115,6 @@ class OmniboxViewBase {
   // automatically focused (like for browser startup or NTP load).
   virtual void SetFocus(bool is_user_initiated) = 0;
 
-  // Shows or hides the caret based on whether the model's is_caret_visible() is
-  // true.
-  virtual void ApplyCaretVisibility() = 0;
-
-  // Updates the accessibility state by enunciating any on-focus text.
-  virtual void SetAccessibilityLabel(const std::u16string& display_text,
-                                     const AutocompleteMatch& match,
-                                     bool notify_text_changed) {}
-
   // Called when the inline autocomplete text in the model may have changed.
   // `user_text` is the portion of omnibox text the user typed.
   // `inline`_autocompletion` is the autocompleted part.

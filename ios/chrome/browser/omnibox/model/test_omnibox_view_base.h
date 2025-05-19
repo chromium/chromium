@@ -41,7 +41,6 @@ class TestOmniboxViewBase : public OmniboxViewBase {
   void SelectAll(bool reversed) override;
   void UpdatePopup() override {}
   void SetFocus(bool is_user_initiated) override {}
-  void ApplyCaretVisibility() override {}
   void OnInlineAutocompleteTextMaybeChanged(
       const std::u16string& user_text,
       const std::u16string& inline_autocompletion) override;

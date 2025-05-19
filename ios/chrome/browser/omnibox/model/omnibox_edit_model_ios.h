@@ -17,7 +17,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
-#import "build/build_config.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
@@ -26,16 +25,11 @@
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
-#import "third_party/skia/include/core/SkColor.h"
 #import "ui/base/window_open_disposition.h"
-#import "ui/gfx/native_widget_types.h"
 #import "url/gurl.h"
 
 class OmniboxControllerIOS;
 class OmniboxPopupViewBase;
-namespace gfx {
-class Image;
-}
 
 class OmniboxEditModelIOS {
  public:
@@ -55,12 +49,6 @@ class OmniboxEditModelIOS {
   // alternate nav URL, if `alternate_nav_url` is non-NULL and there is such a
   // URL. Virtual for testing.
   virtual AutocompleteMatch CurrentMatch(GURL* alternate_nav_url) const;
-
-  // Called when the user wants to export the entire current text as a URL.
-  // Sets the url, and if known, the title and favicon.
-  void GetDataForURLExport(GURL* url,
-                           std::u16string* title,
-                           gfx::Image* favicon);
 
   // Returns true if the current edit contents will be treated as a
   // URL/navigation, as opposed to a search.
@@ -129,20 +117,6 @@ class OmniboxEditModelIOS {
   void StartAutocomplete(bool has_selected_text,
                          bool prevent_inline_autocomplete);
 
-  // Determines whether the user can "paste and go", given the specified text.
-  bool CanPasteAndGo(const std::u16string& text) const;
-
-  // Navigates to the destination last supplied to CanPasteAndGo.
-  void PasteAndGo(
-      const std::u16string& text,
-      base::TimeTicks match_selection_timestamp = base::TimeTicks());
-
-  // Sets `match` and `alternate_nav_url` based on classifying `text`.
-  // `alternate_nav_url` may be nullptr.
-  void ClassifyString(const std::u16string& text,
-                      AutocompleteMatch* match,
-                      GURL* alternate_nav_url) const;
-
   // Opens given selection. Most kinds of selection invoke an action or
   // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
   // guaranteed to open a match or commit the omnibox.
@@ -162,11 +136,6 @@ class OmniboxEditModelIOS {
 
   base::TimeTicks last_omnibox_focus() const { return last_omnibox_focus_; }
 
-  // This is the same as when the Omnibox is visibly focused.
-  bool is_caret_visible() const {
-    return focus_state_ == OMNIBOX_FOCUS_VISIBLE;
-  }
-
   // Clears additional text.
   void ClearAdditionalText();
 
@@ -178,18 +147,6 @@ class OmniboxEditModelIOS {
   // harm, since it will early-exit if an earlier request is in progress or
   // done.
   void StartZeroSuggestRequest(bool user_clobbered_permanent_text = false);
-
-  // Sets the visibility of the caret in the omnibox, if it has focus. The
-  // visibility of the caret is reset to visible if either
-  //   - The user starts typing, or
-  //   - We explicitly focus the omnibox again.
-  // The latter case must be handled in three separate places--OnSetFocus(),
-  // OmniboxViewBase::SetFocus(), and the mouse handlers in OmniboxViewBase. See
-  // accompanying comments for why each of these is necessary.
-  //
-  // Caret visibility is tracked per-tab and updates automatically upon
-  // switching tabs.
-  void SetCaretVisibility(bool visible);
 
   // Sent before `OnKillFocus` and before the popup is closed.
   void OnWillKillFocus();
@@ -234,22 +191,6 @@ class OmniboxEditModelIOS {
 
   // Name of the histogram tracking cut or copy omnibox commands.
   static const char kCutOrCopyAllTextHistogram[];
-
-  // Just forwards the call to the OmniboxViewBase referred within.
-  void SetAccessibilityLabel(const AutocompleteMatch& match);
-
-  // Returns true if the destination URL of the match is bookmarked.
-  bool IsStarredMatch(const AutocompleteMatch& match) const;
-
-  // Gets the suggestion group header text associated with the given suggestion
-  // group ID.
-  // In addition to calling `AutocompleteResult::GetHeaderForSuggestionGroup()`,
-  // this function takes into account certain header visibility criteria (e.g.
-  // experiment flags) to determine the proper header text, which will then be
-  // used by the relevant code to conditionally show suggestion group headers
-  // in the Omnibox/Realbox popup.
-  std::u16string GetSuggestionGroupHeaderText(
-      const std::optional<omnibox::GroupId>& suggestion_group_id) const;
 
   // Returns true if the popup exists and is open. Virtual for testing.
   virtual bool PopupIsOpen() const;
@@ -297,10 +238,6 @@ class OmniboxEditModelIOS {
   };
 
   AutocompleteController* autocomplete_controller() const;
-
-  // If no query is in progress, starts working on an autocomplete query.
-  // Returns true if started; false otherwise.
-  bool MaybeStartQueryForPopup();
 
   // Asks the browser to load the popup's currently selected item, using the
   // supplied disposition.  This may close the popup.
@@ -352,16 +289,12 @@ class OmniboxEditModelIOS {
 
   // If focus_state_ does not match `state`, we update it and notify the
   // InstantController about the change (passing along the `reason` for the
-  // change). If the caret visibility changes, we call ApplyCaretVisibility() on
-  // the view.
+  // change).
   void SetFocusState(OmniboxFocusState state, OmniboxFocusChangeReason reason);
 
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;
-
-  // Closes lens if still needed.
-  void MaybeCloseLens();
 
   // Owns this.
   raw_ptr<OmniboxControllerIOS> controller_;
@@ -406,23 +339,6 @@ class OmniboxEditModelIOS {
   // This should be valid whenever user_input_in_progress_ is true.
   base::TimeTicks time_user_first_modified_omnibox_;
 
-  // When the user closes the popup, we need to remember the URL for their
-  // desired choice, so that if they hit enter without reopening the popup we
-  // know where to go.  We could simply rerun autocomplete in this case, but
-  // we'd need to either wait for all results to come in (unacceptably slow) or
-  // do the wrong thing when the user had chosen some provider whose results
-  // were not returned instantaneously.
-  //
-  // This variable is only valid when user_input_in_progress_ is true, since
-  // when it is false the user has either never input anything (so there won't
-  // be a value here anyway) or has canceled their input, which should be
-  // treated the same way.  Also, since this is for preserving a desired URL
-  // after the popup has been closed, we ignore this if the popup is open, and
-  // simply ask the popup for the desired URL directly.  As a result, the
-  // contents of this variable only need to be updated when the popup is closed
-  // but user_input_in_progress_ is not being cleared.
-  std::u16string url_for_remembered_user_selection_;
-
   // Inline autocomplete is allowed if the user has not just deleted text. In
   // this case, inline_autocompletion_ is appended to the user_text_ and
   // displayed selected (at least initially).
@@ -442,12 +358,6 @@ class OmniboxEditModelIOS {
   // presses escape.
   bool in_revert_;
 
-  // When exiting the scope or committing the omnibox, it should
-  // be closed again, unless lens is invoked by taking a contextual search
-  // match. In that case, the omnibox relinquishes the obligation to close so
-  // as to not interfere with lens match fulfillment and continued use.
-  bool close_lens_;
-
   // The input that was sent to the AutocompleteController. Since no
   // autocomplete query is started after a tab switch, it is possible for this
   // `input_` to differ from the one currently stored in AutocompleteController.
@@ -456,16 +366,6 @@ class OmniboxEditModelIOS {
   // The popup view is nullptr when there's no popup, and is non-null when
   // a popup view exists (i.e. between calls to `set_popup_view`).
   raw_ptr<OmniboxPopupViewBase> popup_view_ = nullptr;
-
-  // The current popup selection; set to normal kNoMatch when there's no popup.
-  OmniboxPopupSelection popup_selection_ =
-      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                            OmniboxPopupSelection::NORMAL);
-
-  // When a result changes, this informs of the URL in the previously selected
-  // suggestion whose tab switch button was focused, so that we may compare
-  // if equal.
-  GURL old_focused_url_;
 
   base::WeakPtrFactory<OmniboxEditModelIOS> weak_factory_{this};
 };
