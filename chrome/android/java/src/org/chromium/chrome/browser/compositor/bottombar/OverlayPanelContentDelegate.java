@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
-/**
- * An base class for tracking events on the overlay panel.
- */
+/** An base class for tracking events on the overlay panel. */
+@NullMarked
 public class OverlayPanelContentDelegate {
     /**
      * Called when the panel's WebContents navigates in the main frame.
+     *
      * @param url The URL being navigated to.
      * @param isExternalUrl Whether the URL is different from the initially loaded URL.
      */

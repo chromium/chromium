@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.compositor.resources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.resources.SystemUIResourceType;
 
 /**
  * List of high priority system resources that should be loaded at startup to be used by CC layers.
  */
+@NullMarked
 public class SystemResourcePreloads {
     private static final int[] sEmptyList = new int[] {};
 

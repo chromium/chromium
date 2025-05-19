@@ -7,21 +7,23 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /**
  * Implementation of {@link TabModelActionListener} for the tab strip that helps manage the correct
  * event sequence for {@link TabRemover} and {@link TabUngrouper} invocations.
  */
+@NullMarked
 public class StripTabModelActionListener implements TabModelActionListener {
     /** An enum representing the type of event. */
     @IntDef({ActionType.DRAG_OFF_STRIP, ActionType.REORDER, ActionType.CLOSE})
@@ -58,7 +60,7 @@ public class StripTabModelActionListener implements TabModelActionListener {
     public StripTabModelActionListener(
             int rootId,
             @ActionType int actionType,
-            @NonNull ObservableSupplierImpl<Integer> groupIdToHideSupplier,
+            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             @Nullable View toolbarContainerView,
             @Nullable Runnable beforeSyncDialogRunnable,
             @Nullable Runnable onSuccess) {
@@ -83,7 +85,7 @@ public class StripTabModelActionListener implements TabModelActionListener {
             mToolbarContainerView.cancelDragAndDrop();
         }
 
-        assert mGroupIdToHideSupplier.get() == Tab.INVALID_TAB_ID;
+        assert Objects.equals(mGroupIdToHideSupplier.get(), Tab.INVALID_TAB_ID);
         mGroupIdToHideSupplier.set(mRootId);
     }
 

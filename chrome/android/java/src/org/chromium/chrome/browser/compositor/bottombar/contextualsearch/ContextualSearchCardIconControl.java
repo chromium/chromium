@@ -4,24 +4,28 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceInflater;
 
 /**
  * Manages an icon to display in the {@link ContextualSearchBarControl} in a non-action card
- * returned by the server. A Card is a structured result from the CoCa backend that can
- * be rendered directly in the Bar. Action cards have associated intents, like dialing
- * a phone number. This class handles some special cases for the general
- * {@link ContextualSearchImageControl} that is responsible for any image that is rendered
- * in the Bar.
+ * returned by the server. A Card is a structured result from the CoCa backend that can be rendered
+ * directly in the Bar. Action cards have associated intents, like dialing a phone number. This
+ * class handles some special cases for the general {@link ContextualSearchImageControl} that is
+ * responsible for any image that is rendered in the Bar.
  */
+@NullMarked
 public class ContextualSearchCardIconControl extends ViewResourceInflater {
     private final Context mContext;
 
@@ -52,7 +56,8 @@ public class ContextualSearchCardIconControl extends ViewResourceInflater {
         Drawable drawable = AppCompatResources.getDrawable(mContext, resId);
         if (drawable != null) {
             inflate();
-            ((ImageView) getView()).setImageDrawable(drawable);
+            View view = assumeNonNull(getView());
+            ((ImageView) view).setImageDrawable(drawable);
             invalidate();
         }
     }

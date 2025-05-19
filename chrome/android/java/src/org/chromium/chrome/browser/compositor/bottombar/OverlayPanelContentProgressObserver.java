@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Default implementation of an observer of events on the progress bar. */
+@NullMarked
 public class OverlayPanelContentProgressObserver {
 
     /** Called when the progress bar would start showing (loading started). */

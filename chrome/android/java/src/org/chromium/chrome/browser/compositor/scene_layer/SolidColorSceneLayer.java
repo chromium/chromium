@@ -10,12 +10,14 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 
 /**
  * A solid color scene layer to use as a background for a layout without other composited content.
  */
 @JNINamespace("android")
+@NullMarked
 public class SolidColorSceneLayer extends SceneLayer {
     // NOTE: If you use SceneLayer's native pointer here, the JNI generator will try to
     // downcast using reinterpret_cast<>. We keep a separate pointer to avoid it.
