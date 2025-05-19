@@ -20,6 +20,10 @@ class ReaderModeModelTest : public PlatformTest {
     PlatformTest::SetUp();
     profile_ = TestProfileIOS::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
+  }
+
+  // Attaches a ReaderModeTabHelper to `web_state_`.
+  void AttachReaderModeTabHelper() {
     ReaderModeTabHelper::CreateForWebState(
         web_state_.get(),
         DistillerServiceFactory::GetForProfile(profile_.get()));
@@ -33,6 +37,7 @@ class ReaderModeModelTest : public PlatformTest {
 
 // NTP should return a null configuration.
 TEST_F(ReaderModeModelTest, FetchConfigurationForNTP) {
+  AttachReaderModeTabHelper();
   ReaderModeModel model;
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
@@ -53,6 +58,7 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForNTP) {
 
 // Non-HTML content should return a null configuration.
 TEST_F(ReaderModeModelTest, FetchConfigurationForNonHTMLContent) {
+  AttachReaderModeTabHelper();
   ReaderModeModel model;
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
@@ -73,6 +79,7 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForNonHTMLContent) {
 
 // HTML content should return the expected non-null configuration.
 TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
+  AttachReaderModeTabHelper();
   ReaderModeModel model;
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
@@ -95,4 +102,22 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
             ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol);
   EXPECT_EQ(configuration->relevance,
             ContextualPanelItemConfiguration::high_relevance);
+}
+
+// WebState without a ReaderModeTabHelper should return a null configuration.
+TEST_F(ReaderModeModelTest, FetchConfigurationWithoutReaderModeTabHelper) {
+  ReaderModeModel model;
+  __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
+
+  model.FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(
+          ^(base::OnceClosure quit_closure,
+            std::unique_ptr<ContextualPanelItemConfiguration> config) {
+            configuration = std::move(config);
+            std::move(quit_closure).Run();
+          },
+          task_environment_.QuitClosure()));
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(configuration, nullptr);
 }

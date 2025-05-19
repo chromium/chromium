@@ -22,7 +22,8 @@ void ReaderModeModel::FetchConfigurationForWebState(
     FetchConfigurationForWebStateCallback callback) {
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);
-  if (!reader_mode_tab_helper->CurrentPageSupportsReaderMode()) {
+  if (!reader_mode_tab_helper ||
+      !reader_mode_tab_helper->CurrentPageSupportsReaderMode()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(nullptr)));
     return;
