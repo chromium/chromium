@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
 namespace WTF {
 
 String StrCat(base::span<const StringView> pieces) {
@@ -16,7 +14,6 @@ String StrCat(base::span<const StringView> pieces) {
     is_8bit = is_8bit && view.Is8Bit();
   }
 
-  StringBuilder builder;
   if (is_8bit) {
     base::span<LChar> buffer;
     auto impl = StringImpl::CreateUninitialized(size, buffer);
