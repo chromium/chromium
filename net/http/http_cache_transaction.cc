@@ -1533,13 +1533,6 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
     return OK;
   }
 
-  // TODO(crbug.com/40516423) Access timestamp for histograms only if entry is
-  // already written, to avoid data race since cache thread can also access
-  // this.
-  if (entry_ && !entry_->IsWritingInProgress()) {
-    open_entry_last_used_ = entry_->GetEntry()->GetLastUsed();
-  }
-
   if (result != OK) {
     NOTREACHED();
   }
@@ -3959,9 +3952,6 @@ void HttpCache::Transaction::OnCacheIOComplete(int result) {
 
     if (result == OK) {
       entry_ = std::move(new_entry_);
-      if (!entry_->IsWritingInProgress()) {
-        open_entry_last_used_ = entry_->GetEntry()->GetLastUsed();
-      }
     } else {
       // The HttpCache transaction failed or timed out. Bypass the cache in
       // this case independent of the state of the network IO callback.

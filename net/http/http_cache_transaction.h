@@ -730,7 +730,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   base::TimeTicks first_cache_access_since_;
   base::TimeTicks send_request_since_;
   base::TimeTicks read_headers_since_;
-  base::Time open_entry_last_used_;
   base::TimeTicks last_disk_cache_access_start_time_;
   base::TimeDelta total_disk_cache_read_time_;
   base::TimeDelta total_disk_cache_write_time_;
