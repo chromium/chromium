@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
@@ -3873,7 +3874,8 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
-    CSSValuePhase value_phase) {
+    CSSValuePhase value_phase,
+    CSSGapDecorationPropertyDirection direction) {
   // If the CSSGapDecorations feature is not enabled, fallback to legacy
   // behavior of handling the shorthand since values are stored as single
   // values and not lists.
@@ -3883,9 +3885,15 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
   }
 
   CHECK_EQ(shorthand.length(), 3u);
-  CHECK(shorthand.properties()[0]->IDEquals(CSSPropertyID::kColumnRuleWidth));
-  CHECK(shorthand.properties()[1]->IDEquals(CSSPropertyID::kColumnRuleStyle));
-  CHECK(shorthand.properties()[2]->IDEquals(CSSPropertyID::kColumnRuleColor));
+  CHECK(shorthand.properties()[0]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kWidth)));
+  CHECK(shorthand.properties()[1]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kStyle)));
+  CHECK(shorthand.properties()[2]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kColor)));
 
   const CSSValueList* width_values = DynamicTo<CSSValueList>(
       shorthand.properties()[0]->CSSValueFromComputedStyle(

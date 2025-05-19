@@ -7796,6 +7796,7 @@ Called by update_use_counter_css.py.-->
   <int value="852" label="rule-width"/>
   <int value="853" label="rule-style"/>
   <int value="854" label="caret-shape"/>
+  <int value="855" label="row-rule"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

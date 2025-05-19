@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
@@ -588,7 +589,11 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kBorderStyle:
       return Get4Values(borderStyleShorthand());
     case CSSPropertyID::kColumnRule:
-      return GetShorthandValueForGapDecorationsRule(columnRuleShorthand());
+      return GetShorthandValueForGapDecorationsRule(
+          columnRuleShorthand(), CSSGapDecorationPropertyDirection::kColumn);
+    case CSSPropertyID::kRowRule:
+      return GetShorthandValueForGapDecorationsRule(
+          rowRuleShorthand(), CSSGapDecorationPropertyDirection::kRow);
     case CSSPropertyID::kColumns:
       return GetShorthandValueForColumns(columnsShorthand());
     case CSSPropertyID::kContainIntrinsicSize:
@@ -1930,7 +1935,8 @@ String StylePropertySerializer::GetShorthandValueForBidirectionalGapRules(
 // ComputedStyleUtils::ValueForGapDecorationRuleShorthand(). Look to refactor to
 // avoid duplicated logic when possible.
 String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
-    const StylePropertyShorthand& shorthand) const {
+    const StylePropertyShorthand& shorthand,
+    CSSGapDecorationPropertyDirection direction) const {
   // If the CSSGapDecorations feature is not enabled, fallback to legacy
   // behavior of serializing the shorthand since values are stored as single
   // values and not lists.
@@ -1939,9 +1945,15 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
   }
 
   CHECK_EQ(shorthand.length(), 3u);
-  CHECK(shorthand.properties()[0]->IDEquals(CSSPropertyID::kColumnRuleWidth));
-  CHECK(shorthand.properties()[1]->IDEquals(CSSPropertyID::kColumnRuleStyle));
-  CHECK(shorthand.properties()[2]->IDEquals(CSSPropertyID::kColumnRuleColor));
+  CHECK(shorthand.properties()[0]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kWidth)));
+  CHECK(shorthand.properties()[1]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kStyle)));
+  CHECK(shorthand.properties()[2]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kColor)));
 
   const CSSValueList* width_values = DynamicTo<CSSValueList>(
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));

@@ -34,6 +34,8 @@ class StyleIntrinsicLength;
 class StylePropertyShorthand;
 class StyleTimeline;
 
+enum class CSSGapDecorationPropertyDirection : int;
+
 namespace cssvalue {
 class CSSContentDistributionValue;
 }
@@ -338,7 +340,8 @@ class CORE_EXPORT ComputedStyleUtils {
       const ComputedStyle&,
       const LayoutObject*,
       bool allow_visited_style,
-      CSSValuePhase value_phase);
+      CSSValuePhase value_phase,
+      CSSGapDecorationPropertyDirection direction);
   static CSSValuePair* ValuesForGapShorthand(const StylePropertyShorthand&,
                                              const ComputedStyle&,
                                              const LayoutObject*,

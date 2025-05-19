@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
-#include "third_party/blink/renderer/core/css/css_gap_decoration_property_enums.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -43,6 +42,9 @@ class CSSValue;
 class CSSValueList;
 class CSSValuePair;
 class StylePropertyShorthand;
+
+enum class CSSGapDecorationPropertyDirection : int;
+enum class CSSGapDecorationPropertyType : int;
 
 // "Consume" functions, when successful, should consume all the relevant tokens
 // as well as any trailing whitespace. When the start of the stream doesn't
@@ -556,6 +558,7 @@ bool ConsumeGridTemplateShorthand(bool important,
 CSSValue* ConsumeItemTolerance(CSSParserTokenStream&, const CSSParserContext&);
 
 bool ConsumeGapDecorationsRuleShorthand(
+    CSSGapDecorationPropertyDirection direction,
     bool important,
     const CSSParserContext&,
     CSSParserTokenStream&,

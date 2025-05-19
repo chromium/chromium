@@ -8776,6 +8776,14 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "row-rule",
+      longhands: [
+        "row-rule-width", "row-rule-style", "row-rule-color"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "columns",
       longhands: ["column-width", "column-count"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

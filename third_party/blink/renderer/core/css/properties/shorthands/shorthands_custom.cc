@@ -5,6 +5,7 @@
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
@@ -1196,7 +1197,8 @@ bool ColumnRule::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
-      important, context, stream, properties);
+      CSSGapDecorationPropertyDirection::kColumn, important, context, stream,
+      properties);
 }
 
 const CSSValue* ColumnRule::CSSValueFromComputedStyleInternal(
@@ -1206,7 +1208,28 @@ const CSSValue* ColumnRule::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
       columnRuleShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
+      value_phase, CSSGapDecorationPropertyDirection::kColumn);
+}
+
+bool RowRule::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
+      CSSGapDecorationPropertyDirection::kRow, important, context, stream,
+      properties);
+}
+
+const CSSValue* RowRule::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
+      rowRuleShorthand(), style, layout_object, allow_visited_style,
+      value_phase, CSSGapDecorationPropertyDirection::kRow);
 }
 
 bool Columns::ParseShorthand(

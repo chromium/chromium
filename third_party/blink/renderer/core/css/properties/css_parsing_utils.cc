@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
@@ -7025,13 +7026,15 @@ bool ConsumeGapDecorationsShorthandRepeatFunction(
 // Top level parsing function for the gap-decorations shorthand, which handles
 // the parsing of simple <gap-rule> or repeat <gap-rule> values.
 bool ConsumeGapDecorationsRuleShorthand(
+    CSSGapDecorationPropertyDirection direction,
     bool important,
     const CSSParserContext& context,
     CSSParserTokenStream& stream,
     HeapVector<CSSPropertyValue, 64>& properties) {
-  // TODO(samomekarajr): Add support for `row-rule` shorthand when implemented.
   const StylePropertyShorthand& gapDecorationsRuleShorthand =
-      columnRuleShorthand();
+      direction == CSSGapDecorationPropertyDirection::kRow
+          ? rowRuleShorthand()
+          : columnRuleShorthand();
   DCHECK_EQ(gapDecorationsRuleShorthand.length(), 3u);
 
   // If the CSSGapDecorations feature is not enabled, consume greedily since
@@ -7090,15 +7093,23 @@ bool ConsumeGapDecorationsRuleShorthand(
   }
 
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kColumnRule, *rule_widths,
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kWidth),
+      CSSGapDecorationUtils::GetShorthandProperty(direction), *rule_widths,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
+
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleStyle, CSSPropertyID::kColumnRule, *rule_styles,
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kStyle),
+      CSSGapDecorationUtils::GetShorthandProperty(direction), *rule_styles,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
+
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleColor, CSSPropertyID::kColumnRule, *rule_colors,
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kColor),
+      CSSGapDecorationUtils::GetShorthandProperty(direction), *rule_colors,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
 
