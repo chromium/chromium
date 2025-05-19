@@ -10,6 +10,8 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './privacy_guide_fragment_shared.css.js';
+import '../../icons.html.js';
+import '../../privacy_icons.html.js';
 import '../../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
