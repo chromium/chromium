@@ -81,7 +81,6 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
   }
 
  protected:
-  int GetInactiveTabWidth() { return tab_strip_->GetInactiveTabWidth(); }
   void CompleteAnimationAndLayout() {
     views::test::RunScheduledLayout(tab_strip_region_view_);
   }
@@ -251,7 +250,7 @@ TEST_F(TabStripRegionViewTestWithScrollingDisabled,
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full.
-  while (GetInactiveTabWidth() > minimum_active_width) {
+  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
     controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
@@ -291,7 +290,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (GetInactiveTabWidth() > minimum_active_width) {
+  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
     controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
@@ -318,7 +317,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (GetInactiveTabWidth() > minimum_active_width) {
+  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
     controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
   }

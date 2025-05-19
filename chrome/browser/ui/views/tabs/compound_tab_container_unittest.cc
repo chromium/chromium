@@ -224,6 +224,12 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
     tab_container_->SetSize(size);
   }
 
+  int GetWidthOfActiveTab() {
+    return tab_container_
+        ->GetTabAtModelIndex(tab_strip_controller_->GetActiveIndex().value())
+        ->width();
+  }
+
   std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
   std::unique_ptr<FakeTabContainerController> tab_container_controller_;
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
@@ -413,7 +419,7 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {
   // Create just enough tabs so tabs are not full size.
   const int standard_width =
       TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
-  while (tab_container_->GetActiveTabWidth() == standard_width) {
+  while (tab_container_->GetTabAtModelIndex(0)->width() == standard_width) {
     AddTab(0, TabPinned::kUnpinned);
     tab_container_->CompleteAnimationAndLayout();
   }
@@ -429,13 +435,13 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {
   // constraining tab widths to below full size.
   RemoveTab(tab_container_->GetTabCount() - 2);
   tab_container_->CompleteAnimationAndLayout();
-  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+  ASSERT_LT(GetWidthOfActiveTab(), standard_width);
 
   // Close the last tab; tab closing mode should allow tabs to resize to full
   // size.
   RemoveTab(tab_container_->GetTabCount() - 1);
   tab_container_->CompleteAnimationAndLayout();
-  EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
+  EXPECT_EQ(GetWidthOfActiveTab(), standard_width);
 }
 
 TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
@@ -449,7 +455,8 @@ TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
   // Create just enough (pinned) tabs so the active tab is not full size.
   const int standard_width =
       TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
-  while (tab_container_->GetActiveTabWidth() == standard_width) {
+  while (tab_container_->GetTabAtModelIndex(tab_container_->GetTabCount() - 1)
+             ->width() == standard_width) {
     AddTab(0, TabPinned::kPinned, std::nullopt, TabActive::kInactive);
     tab_container_->CompleteAnimationAndLayout();
   }
@@ -465,13 +472,13 @@ TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
   // should constrain tab widths to below full size.
   RemoveTab(tab_container_->GetTabCount() - 3);
   tab_container_->CompleteAnimationAndLayout();
-  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+  ASSERT_LT(GetWidthOfActiveTab(), standard_width);
 
   // Close the last tab, which is the inactive unpinned tab; tab closing mode
   // should allow tabs to resize to full size.
   RemoveTab(tab_container_->GetTabCount() - 1);
   tab_container_->CompleteAnimationAndLayout();
-  EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
+  EXPECT_EQ(GetWidthOfActiveTab(), standard_width);
 }
 
 TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
@@ -482,7 +489,8 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
   // Create just enough (pinned) tabs so the active tab is not full size.
   const int standard_width =
       TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
-  while (tab_container_->GetActiveTabWidth() == standard_width) {
+  while (tab_container_->GetTabAtModelIndex(tab_container_->GetTabCount() - 1)
+             ->width() == standard_width) {
     AddTab(0, TabPinned::kPinned);
     tab_container_->CompleteAnimationAndLayout();
   }
@@ -499,7 +507,7 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
   // size.
   RemoveTab(tab_container_->GetTabCount() - 2);
   tab_container_->CompleteAnimationAndLayout();
-  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+  ASSERT_LT(GetWidthOfActiveTab(), standard_width);
 
   // Close the last tab, which is the active unpinned tab; tab closing mode
   // should exit.
