@@ -435,10 +435,6 @@ public class DragAndDropDelegateImplUnitTest {
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration",
                 false,
                 "Only tracking drag started by mDragAndDropDelegateImpl#startDragAndDrop.");
-        assertHistogramRecorded(
-                "Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip",
-                false,
-                "Only tracking drag started by mDragAndDropDelegateImpl#startDragAndDrop.");
     }
 
     @Test
@@ -458,16 +454,9 @@ public class DragAndDropDelegateImplUnitTest {
 
         mDragAndDropDelegateImpl.onDrag(
                 mContainerView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
-        Assert.assertEquals(
-                "Recorded drag start X dp should match.",
-                DRAG_START_X_DP,
-                mDragAndDropDelegateImpl.getDragStartXDp(),
-                0.0f);
-        Assert.assertEquals(
-                "Recorded drag start Y dp should match.",
-                DRAG_START_Y_DP,
-                mDragAndDropDelegateImpl.getDragStartYDp(),
-                0.0f);
+        Assert.assertTrue(
+                "There should be an active drag process started.",
+                mDragAndDropDelegateImpl.isDragStarted());
     }
 
     @Test
@@ -723,20 +712,12 @@ public class DragAndDropDelegateImplUnitTest {
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration",
                 false,
                 "Drop outside of web content.");
-        assertHistogramRecorded(
-                "Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip",
-                false,
-                "Drop outside of web content.");
     }
 
     private void assertDropInWebContentHistogramsRecorded() {
         // Verify drop inside metrics recorded.
         assertHistogramRecorded(
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration",
-                true,
-                "Drop inside web content.");
-        assertHistogramRecorded(
-                "Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip",
                 true,
                 "Drop inside web content.");
 

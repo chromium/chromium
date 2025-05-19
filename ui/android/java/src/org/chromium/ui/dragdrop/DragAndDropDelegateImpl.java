@@ -26,13 +26,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -87,9 +85,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
     /** The type of drag target from the view this object tracks. */
     private @DragTargetType int mDragTargetType;
-
-    private float mDragStartXDp;
-    private float mDragStartYDp;
 
     private long mDragStartSystemElapsedTime;
 
@@ -213,11 +208,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         }
 
         switch (dragEvent.getAction()) {
-            case DragEvent.ACTION_DRAG_STARTED:
-                onDragStarted(dragEvent);
-                break;
             case DragEvent.ACTION_DROP:
-                onDrop(dragEvent);
+                onDrop();
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 onDragEnd(dragEvent);
@@ -417,21 +409,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         mShadowHeight = targetHeight + borderSize * 2;
     }
 
-    private void onDragStarted(DragEvent dragStartEvent) {
-        mDragStartXDp = dragStartEvent.getX();
-        mDragStartYDp = dragStartEvent.getY();
-    }
-
-    private void onDrop(DragEvent dropEvent) {
+    private void onDrop() {
         mIsDropOnView = true;
-
-        final int dropDistance =
-                Math.round(
-                        MathUtils.distance(
-                                mDragStartXDp, mDragStartYDp, dropEvent.getX(), dropEvent.getY()));
-        RecordHistogram.recordExactLinearHistogram(
-                "Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip", dropDistance, 51);
-
         long dropDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
         RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration", dropDuration);
@@ -509,15 +488,5 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         String histogramPrefix = "Android.DragDrop.FromWebContent.Duration.";
         String suffix = result ? "Success" : "Canceled";
         RecordHistogram.deprecatedRecordMediumTimesHistogram(histogramPrefix + suffix, duration);
-    }
-
-    @VisibleForTesting
-    float getDragStartXDp() {
-        return mDragStartXDp;
-    }
-
-    @VisibleForTesting
-    float getDragStartYDp() {
-        return mDragStartYDp;
     }
 }
