@@ -22,5 +22,15 @@ public interface TouchToFillResourceProvider {
      *
      * @return A {@link DrawableRes} that is never 0.
      */
-    public @DrawableRes int getHeaderImageDrawableId();
+    @DrawableRes
+    int getHeaderImageDrawableId();
+
+    /**
+     * Returns the drawable id to be displayed as a loyalty card bottom sheet header image.
+     *
+     * @return A {@link DrawableRes} that is never 0.
+     */
+    default @DrawableRes int getLoyaltyCardHeaderDrawableId() {
+        return 0;
+    }
 }
