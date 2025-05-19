@@ -26315,6 +26315,21 @@
             ]
         }
     ],
+    "WidgetsForMultiprofileExperiment": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WidgetsForMultiprofile"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinPlatformLocationProvider": [
         {
             "platforms": [
