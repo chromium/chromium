@@ -12,8 +12,11 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
