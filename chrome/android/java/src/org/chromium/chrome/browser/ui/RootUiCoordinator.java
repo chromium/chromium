@@ -19,16 +19,20 @@ import android.view.ViewStub;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -95,6 +99,7 @@ import org.chromium.chrome.browser.messages.MessageContainerObserver;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -141,6 +146,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -205,6 +211,22 @@ public class RootUiCoordinator
                 AppMenuBlocker,
                 ContextualSearchTabPromotionDelegate,
                 WindowFocusChangedObserver {
+    private static final String MISSING_NAVBAR_INSETS_HISTOGRAM =
+            "Android.EdgeToEdge.MissingNavbarInsets";
+
+    @IntDef({
+        MissingNavbarInsetsReason.OTHER,
+        MissingNavbarInsetsReason.IN_MULTI_WINDOW,
+        MissingNavbarInsetsReason.IN_DESKTOP_WINDOW,
+        MissingNavbarInsetsReason.NUM_ENTRIES
+    })
+    @interface MissingNavbarInsetsReason {
+        int OTHER = 0;
+        int IN_MULTI_WINDOW = 1;
+        int IN_DESKTOP_WINDOW = 2;
+        int NUM_ENTRIES = 3;
+    }
+
     protected final UnownedUserDataSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier =
             new TabObscuringHandlerSupplier();
 
@@ -1815,6 +1837,34 @@ public class RootUiCoordinator
                             mFullscreenManager);
             mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
             mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
+
+            recordIfMissingNavigationBar();
+        }
+    }
+
+    private void recordIfMissingNavigationBar() {
+        var rootInsets = mActivity.getWindow().getDecorView().getRootWindowInsets();
+        assert rootInsets != null;
+        Insets navigationBarInsets =
+                WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
+                        .getInsets(WindowInsetsCompat.Type.navigationBars());
+        if (!navigationBarInsets.equals(Insets.NONE)) return;
+
+        if (AppHeaderUtils.isAppInDesktopWindow(getDesktopWindowStateManager())) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    MISSING_NAVBAR_INSETS_HISTOGRAM,
+                    MissingNavbarInsetsReason.IN_DESKTOP_WINDOW,
+                    MissingNavbarInsetsReason.NUM_ENTRIES);
+        } else if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    MISSING_NAVBAR_INSETS_HISTOGRAM,
+                    MissingNavbarInsetsReason.IN_MULTI_WINDOW,
+                    MissingNavbarInsetsReason.NUM_ENTRIES);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    MISSING_NAVBAR_INSETS_HISTOGRAM,
+                    MissingNavbarInsetsReason.OTHER,
+                    MissingNavbarInsetsReason.NUM_ENTRIES);
         }
     }
 

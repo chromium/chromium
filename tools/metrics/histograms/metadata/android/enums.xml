@@ -1198,6 +1198,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Device lock restored"/>
 </enum>
 
+<enum name="MissingNavbarInsetsReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="InMultiWindow"/>
+  <int value="2" label="InDesktopWindow"/>
+</enum>
+
 <enum name="MotionEventAction">
   <int value="0" label="NONE"/>
   <int value="1" label="DOWN"/>

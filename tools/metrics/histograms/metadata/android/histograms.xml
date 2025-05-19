@@ -1908,6 +1908,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.EdgeToEdge.MissingNavbarInsets"
+    enum="MissingNavbarInsetsReason" expires_after="2025-12-01">
+  <owner>clhager@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records once during the initialization of the EdgeToEdgeControllerImpl
+    whether there were no navigation bar insets at all, which may indicate an
+    incorrect value from the OS.
+  </summary>
+</histogram>
+
 <histogram name="Android.EdgeToEdge.SupportedConfigurationSwitch"
     enum="SupportedConfigurationSwitch" expires_after="2025-12-01">
   <owner>clhager@google.com</owner>
