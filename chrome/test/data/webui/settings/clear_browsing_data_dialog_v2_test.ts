@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -135,9 +134,11 @@ suite('DeleteBrowsingDataDialog', function() {
   });
 
   test('DeleteButton', async function() {
-    // Initially the button is disabled because no checkbox is selected.
+    // Initially the button is disabled because no checkbox is selected and the
+    // spinner is not visible.
     assertTrue(dialog.$.deleteButton.disabled);
     assertFalse(dialog.$.cancelButton.disabled);
+    assertFalse(isVisible(dialog.$.spinner));
 
     // The button should be enabled if a checkbox is selected.
     const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
@@ -151,12 +152,13 @@ suite('DeleteBrowsingDataDialog', function() {
         promiseResolver.promise);
 
     // While the deletion is in progress, the Cancel and Delete button should be
-    // disabled.
+    // disabled and the spinner should be visible.
     dialog.$.deleteButton.click();
     await testClearBrowsingDataBrowserProxy.whenCalled('clearBrowsingData');
     await flushTasks();
     assertTrue(dialog.$.deleteButton.disabled);
     assertTrue(dialog.$.cancelButton.disabled);
+    assertTrue(isVisible(dialog.$.spinner));
 
     promiseResolver.resolve(
         {showHistoryNotice: false, showPasswordsNotice: false});

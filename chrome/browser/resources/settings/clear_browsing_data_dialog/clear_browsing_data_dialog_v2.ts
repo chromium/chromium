@@ -8,6 +8,7 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import '../controls/settings_checkbox.js';
 import '../settings_shared.css.js';
 // <if expr="not is_chromeos">
@@ -35,8 +36,9 @@ export interface SettingsClearBrowsingDataDialogV2Element {
     cancelButton: CrButtonElement,
     deleteButton: CrButtonElement,
     deleteBrowsingDataDialog: CrDialogElement,
-    showMoreButton: CrButtonElement,
     manageOtherGoogleDataRow: HTMLElement,
+    showMoreButton: CrButtonElement,
+    spinner: HTMLElement,
     timePicker: SettingsClearBrowsingDataTimePicker,
   };
 }

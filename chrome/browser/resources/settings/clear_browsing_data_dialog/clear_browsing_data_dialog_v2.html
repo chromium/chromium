@@ -1,6 +1,6 @@
-<style include="settings-shared">
+<style include="settings-shared cr-spinner-style">
   :host {
-    /* TODO(crbug.com/397187800): Handle background color for dark mode. */
+    /* TODO(crbug.com/397187800): Use surface3 color. */
     --dbd-container-color: var(--cr-fallback-color-surface2);
     --dbd-container-border-radius: 12px;
     --dbd-container-stacked-border-radius: 4px;
@@ -40,6 +40,12 @@
     border-top-right-radius: var(--dbd-container-stacked-border-radius);
     padding: var(--cr-section-vertical-padding) 16px;
     width: 100%;
+  }
+
+  #spinner {
+    margin-bottom: auto;
+    margin-inline-end: 16px;
+    margin-top: auto;
   }
 
   .checkbox-title {
@@ -99,6 +105,7 @@
     <settings-clear-browsing-data-account-indicator>
     </settings-clear-browsing-data-account-indicator>
 </if>
+    <div id="spinner" class="spinner" hidden="[[!isDeletionInProgress_]]"></div>
     <cr-button id="cancelButton" class="cancel-button" autofocus
         on-click="onCancelClick_" disabled="[[isDeletionInProgress_]]">
       $i18n{cancel}
