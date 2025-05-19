@@ -69,6 +69,7 @@ using ::permissions::PermissionsAiv3Handler;
 using ::permissions::PredictionRequestFeatures;
 using ::permissions::PredictionService;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
@@ -612,11 +613,17 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
 
   // The server side model fetches a lot of history actions, but we are only
   // interested in the permission relevance field, that is populated by the
-  // on-device model.
+  // on-device model. We also check that the feature id is set correctly.
   auto expected_relevance =
       Field(&PredictionRequestFeatures::permission_relevance,
             Eq(GetParam().expected_relevance));
-  EXPECT_CALL(prediction_service(), StartLookup(expected_relevance, _, _))
+  auto expected_experiment_id =
+      Field(&PredictionRequestFeatures::experiment_id,
+            PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId);
+  auto expected_prediction_request_features =
+      AllOf(expected_relevance, expected_relevance);
+  EXPECT_CALL(prediction_service(),
+              StartLookup(expected_prediction_request_features, _, _))
       .WillRepeatedly(WithArg<2>(Invoke(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)

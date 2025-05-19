@@ -243,6 +243,8 @@ void InitializeProtoHelperObjects() {
           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY);
 }
 
+constexpr auto kCpssV3ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kCpssV3ExperimentId;
 }  // namespace
 
 namespace permissions {
@@ -469,11 +471,11 @@ TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
   kRequestAllCountsZero.mutable_site_features()->set_origin(
       "https://www.test.example/");
 
-  kFeaturesAllCountsZero.experiment_id = 1;
-  kFeaturesCountsNeedingRounding.experiment_id = 1;
-  kFeaturesEvenCountsOver100.experiment_id = 1;
-  kFeaturesEvenCountsOver100Alt.experiment_id = 1;
-  kFeaturesDifferentCounts.experiment_id = 1;
+  kFeaturesAllCountsZero.experiment_id = kCpssV3ExperimentId;
+  kFeaturesCountsNeedingRounding.experiment_id = kCpssV3ExperimentId;
+  kFeaturesEvenCountsOver100.experiment_id = kCpssV3ExperimentId;
+  kFeaturesEvenCountsOver100Alt.experiment_id = kCpssV3ExperimentId;
+  kFeaturesDifferentCounts.experiment_id = kCpssV3ExperimentId;
 
   kRequestAllCountsZero.mutable_permission_features()
       ->at(0)

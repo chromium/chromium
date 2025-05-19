@@ -14,8 +14,9 @@
 namespace permissions {
 
 float GetRoundedRatio(int numerator, int denominator) {
-  if (denominator == 0)
+  if (denominator == 0) {
     return 0;
+  }
   return roundf(numerator / kRoundToMultiplesOf / denominator) *
          kRoundToMultiplesOf;
 }
@@ -26,8 +27,9 @@ int GetRoundedRatioForUkm(int numerator, int denominator) {
 
 int BucketizeValue(int count) {
   for (const int bucket : kCountBuckets) {
-    if (count >= bucket)
+    if (count >= bucket) {
       return bucket;
+    }
   }
   return 0;
 }
@@ -156,7 +158,7 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
 
   ClientFeatures_ExperimentConfig* experiment_config =
       client_features->mutable_experiment_config();
-  experiment_config->set_experiment_id(entity.experiment_id);
+  experiment_config->set_experiment_id(static_cast<int>(entity.experiment_id));
 
   return proto_request;
 }

@@ -452,13 +452,19 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   }
 #endif
 
-  features.experiment_id = 0;
-
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1) ||
-      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
+  features.experiment_id =
+      PredictionRequestFeatures::ExperimentId::kNoExperimentId;
+  bool use_aiv1 =
+      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1);
+  bool use_aiv3 =
+      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3);
+  if (use_aiv1 || use_aiv3) {
     // Init `permission_relevance` here to avoid a crash during
     // `ConvertToProtoRelevance` execution.
     features.permission_relevance = PermissionRequestRelevance::kUnspecified;
+    features.experiment_id =
+        use_aiv1 ? PredictionRequestFeatures::ExperimentId::kAiV1ExperimentId
+                 : PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
   }
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
