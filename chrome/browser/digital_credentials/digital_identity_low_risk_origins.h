@@ -14,6 +14,10 @@ namespace digital_credentials {
 // credential being requested.
 bool IsLowRiskOrigin(const url::Origin& to_check);
 
+bool IsLowRiskOriginMatcherForTesting(
+    const url::Origin& to_check,
+    const std::vector<std::string>& known_origins);
+
 }  // namespace digital_credentials
 
 #endif  // CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_LOW_RISK_ORIGINS_H_
