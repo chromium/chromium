@@ -131,23 +131,20 @@ class AutofillProfileEditTableViewControllerTest
         .textFieldValue;
   }
 
-  NSString* GetFooterTextForModal() {
-    return base::apple::ObjCCastStrict<TableViewTextItem>(
-               GetTableViewItem(0, 10))
-        .text;
-  }
-
-  NSAttributedString* GetErrorFooterString(int num_of_errors) {
+  NSAttributedString* GetErrorFooterString(int num_of_errors,
+                                           bool show_update_string) {
     NSString* error = l10n_util::GetPluralNSStringF(
         IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
         num_of_errors);
 
-    NSString* finalErrorString =
-        [NSString stringWithFormat:
-                      @"%@\n%@", error,
-                      l10n_util::GetNSStringF(
-                          IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-                          kTestSyncingEmail)];
+    NSString* finalErrorString = [NSString
+        stringWithFormat:
+            @"%@\n%@", error,
+            l10n_util::GetNSStringF(
+                show_update_string
+                    ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
+                    : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+                kTestSyncingEmail)];
 
     NSMutableParagraphStyle* paragraphStyle =
         [[NSMutableParagraphStyle alloc] init];
@@ -303,62 +300,56 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
 }
 
 // Test the contents of the view when the value requirements fail.
-// TODO(crbug.com/416030990): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
-TEST_P(AutofillProfileEditTableViewControllerTest, DISABLED_TestRequirements) {
+TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
   TableViewTextEditItem* city_item =
-      static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 4));
+      static_cast<TableViewTextEditItem*>(GetTableViewItem(1, 1));
   // Remove the city field value.
   city_item.textFieldValue = @"";
   [autofill_profile_edit_table_view_controller_
       tableViewItemDidChange:city_item];
 
   auto test_case = GetParam();
-  if (test_case.is_settings) {
-    if (test_case.account_profile) {
-      // Check the error message.
-      TableViewAttributedStringHeaderFooterItem* footer =
-          static_cast<TableViewAttributedStringHeaderFooterItem*>(
-              [[controller() tableViewModel] footerForSectionIndex:1]);
-      EXPECT_NSEQ(GetErrorFooterString(1), footer.attributedString);
-    }
-  } else {
-    // The button in the save prompt should be disabled.
-    TableViewTextButtonItem* button_item =
-        static_cast<TableViewTextButtonItem*>(
-            GetTableViewItem(0, NumberOfItemsInSection(0) - 1));
+  BOOL show_update_string =
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kUpdateProfile ||
+      test_case.is_settings;
+  if (test_case.account_profile ||
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
+    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
+                                             : (NumberOfSections() - 2);
+    TableViewAttributedStringHeaderFooterItem* footer_item =
+        static_cast<TableViewAttributedStringHeaderFooterItem*>(
+            [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);
+    EXPECT_NSEQ(GetErrorFooterString(1, show_update_string),
+                footer_item.attributedString);
+  }
+
+  if (!test_case.is_settings) {
+    AutofillEditProfileButtonFooterItem* button_item =
+        static_cast<AutofillEditProfileButtonFooterItem*>([[controller()
+            tableViewModel] footerForSectionIndex:NumberOfSections() - 1]);
     EXPECT_EQ(button_item.enabled,
               !test_case.account_profile &&
                   test_case.prompt_mode !=
                       AutofillSaveProfilePromptMode::kMigrateProfile);
-
-    // Footer text remains unchanged for the save prompts.
-    if (test_case.account_profile ||
-        test_case.prompt_mode ==
-            AutofillSaveProfilePromptMode::kMigrateProfile) {
-      int expected_text_id =
-          (test_case.prompt_mode ==
-                   AutofillSaveProfilePromptMode::kUpdateProfile
-               ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
-               : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER);
-      EXPECT_NSEQ(GetFooterTextForModal(),
-                  l10n_util::GetNSStringF(expected_text_id, kTestSyncingEmail));
-    }
   }
 
   TableViewTextEditItem* zip_item =
-      static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 6));
+      static_cast<TableViewTextEditItem*>(GetTableViewItem(1, 3));
   // Remove the zip field value.
   zip_item.textFieldValue = @"";
   [autofill_profile_edit_table_view_controller_
       tableViewItemDidChange:zip_item];
 
-  if (test_case.is_settings && test_case.account_profile) {
-    TableViewAttributedStringHeaderFooterItem* footer =
+  // Check that the error message has been updated.
+  if (test_case.account_profile ||
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
+    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
+                                             : (NumberOfSections() - 2);
+    TableViewAttributedStringHeaderFooterItem* footer_item =
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
-            [[controller() tableViewModel] footerForSectionIndex:1]);
-    // Check that the error message has been updated.
-    EXPECT_NSEQ(GetErrorFooterString(2), footer.attributedString);
+            [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);
+    EXPECT_NSEQ(GetErrorFooterString(2, show_update_string),
+                footer_item.attributedString);
   }
 }
 
@@ -381,7 +372,10 @@ TEST_P(AutofillProfileEditTableViewControllerTest,
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
             [[controller() tableViewModel] footerForSectionIndex:1]);
     // Check that the error message has been updated.
-    EXPECT_NSEQ(GetErrorFooterString(1), footer.attributedString);
+    EXPECT_NSEQ(GetErrorFooterString(
+                    1, test_case.prompt_mode ==
+                           AutofillSaveProfilePromptMode::kUpdateProfile),
+                footer.attributedString);
   }
 
   [autofill_profile_edit_table_view_controller_
@@ -409,7 +403,10 @@ TEST_P(AutofillProfileEditTableViewControllerTest,
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
             [[controller() tableViewModel] footerForSectionIndex:1]);
     // Check that the error message has been updated.
-    EXPECT_NSEQ(GetErrorFooterString(1), footer.attributedString);
+    EXPECT_NSEQ(GetErrorFooterString(
+                    1, test_case.prompt_mode ==
+                           AutofillSaveProfilePromptMode::kUpdateProfile),
+                footer.attributedString);
   }
 }
 
