@@ -14,6 +14,12 @@ enum DeletedAccountUIConstants {
   static let padding: CGFloat = 8
 }
 
+// Store in NSUserDefaults that the deleted account view appeared.
+func CollectMetricsInfo() {
+  guard let sharedDefaults = AppGroupHelper.groupUserDefaults() else { return }
+  sharedDefaults.set(true, forKey: "DeletedAccountUiDisplayed")
+}
+
 func SmallWidgetDeletedAccountView() -> some View {
   VStack {
     ZStack {
@@ -33,7 +39,9 @@ func SmallWidgetDeletedAccountView() -> some View {
     }
   }
   .crContainerBackground(Color("widget_background_color").unredacted())
-
+  .onAppear {
+    CollectMetricsInfo()
+  }
 }
 
 func MediumWidgetDeletedAccountView() -> some View {
@@ -61,5 +69,7 @@ func MediumWidgetDeletedAccountView() -> some View {
     }
   }
   .crContainerBackground(Color("widget_background_color").unredacted())
-
+  .onAppear {
+    CollectMetricsInfo()
+  }
 }

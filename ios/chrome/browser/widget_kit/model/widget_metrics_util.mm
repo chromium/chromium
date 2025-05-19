@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/widget_kit/model/model_swift.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 using base::UmaHistogramEnumeration;
 
@@ -29,6 +30,15 @@ enum class WidgetKitExtensionKind {
   kShortcuts = 8,
   kSearchPasswords = 9,
   kMaxValue = kSearchPasswords,
+};
+
+// Values of the UMA IOS.WidgetsForMIM.DeletedAccountUiDisplayed histogram. Must
+// be kept up to date with IOSWidgetKitExtensionKind in enums.xml. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class WidgetKitDeletedUiCount {
+  kDeletedUiDisplayed = 0,
+  kMaxValue = kDeletedUiDisplayed,
 };
 
 WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
@@ -87,6 +97,16 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
                             UMAKindForWidgetKind(kind));
   };
   [WidgetsMetricLogger logInstalledWidgets];
+}
+
++ (void)logWidgetDeletedUiCount {
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  bool ui_presented = [shared_defaults boolForKey:@"DeletedAccountUiDisplayed"];
+  if (ui_presented) {
+    base::UmaHistogramEnumeration("IOS.WidgetsForMIM.DeletedAccountUiDisplayed",
+                                  WidgetKitDeletedUiCount::kDeletedUiDisplayed);
+    [shared_defaults setBool:false forKey:@"DeletedAccountUiDisplayed"];
+  }
 }
 
 @end

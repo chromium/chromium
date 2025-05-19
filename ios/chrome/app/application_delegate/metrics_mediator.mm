@@ -549,6 +549,7 @@ BOOL _credentialExtensionWasUsed = NO;
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
   [WidgetMetricsUtil logInstalledWidgets];
+  [WidgetMetricsUtil logWidgetDeletedUiCount];
 #endif
 
   // Create the first user action recorder and schedule a task to expire it

@@ -1266,6 +1266,10 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Search Passwords Widget - Search Passwords"/>
 </enum>
 
+<enum name="IOSWidgetKitDeletedUiCount">
+  <int value="0" label="Deleted account ui displayed"/>
+</enum>
+
 <enum name="IOSWidgetKitExtensionKind">
   <int value="0" label="Dino game widget"/>
   <int value="1" label="Search widget"/>

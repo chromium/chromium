@@ -23,6 +23,7 @@ if (ios_enable_widget_kit_extension) {
     deps = [
       ":model_swift",
       "//base",
+      "//ios/chrome/common/app_group",
     ]
     frameworks = [ "Foundation.framework" ]
   }
