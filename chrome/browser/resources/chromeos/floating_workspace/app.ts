@@ -25,7 +25,7 @@ import {CrosNetworkConfig, StartConnectResult} from 'chrome://resources/mojo/chr
 
 import {getTemplate} from './app.html.js';
 
-const EXPECTED_LOAD_TIME_MILLISEC = 5000;
+const EXPECTED_LOAD_TIME_MILLISEC = 10000;
 
 interface NetworkCustomItem {
   customItemType: NetworkList.CustomItemType;

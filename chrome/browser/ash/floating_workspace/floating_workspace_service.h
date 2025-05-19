@@ -45,6 +45,10 @@ struct SyncedSession;
 
 namespace ash {
 
+// How long do we wait before showing the network screen in case there is no
+// connection.
+inline constexpr base::TimeDelta kFwsNetworkScreenDelay = base::Seconds(2);
+
 // A keyed service to support floating workspace. Note that a periodical
 // task `CaptureAndUploadActiveDesk` will be dispatched during service
 // initialization.
@@ -270,6 +274,13 @@ class FloatingWorkspaceService
   void LaunchWhenAppCacheIsReady();
 
   void LaunchWhenDeskTemplatesAreReadyOnFirstSync();
+
+  // When there is no connection, we slightly delay showing the network screen,
+  // because on startup ChromeOS might be connecting to a new network, and we
+  // want to avoid showing the network screen for a few seconds only for it to
+  // immediately go away.
+  void ScheduleShowingNetworkScreen();
+  void MaybeShowNetworkScreen();
 
   // When syncing for the very first time, Chrome can assume that all Chrome
   // Sync data for a given Sync type is downloaded once corresponding Sync

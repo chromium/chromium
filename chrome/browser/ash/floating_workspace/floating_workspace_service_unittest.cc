@@ -435,6 +435,14 @@ class FloatingWorkspaceServiceTest : public testing::Test {
         []() { return !FloatingWorkspaceDialog::IsShown(); });
   }
 
+  bool WaitForNetworkScreenToAppear() {
+    task_environment().FastForwardBy(ash::kFwsNetworkScreenDelay);
+    return base::test::RunUntil([]() {
+      return FloatingWorkspaceDialog::IsShown() ==
+             FloatingWorkspaceDialog::State::kNetwork;
+    });
+  }
+
   void CloseStartupDialogIfNeeded() {
     if (!FloatingWorkspaceDialog::IsShown()) {
       return;
@@ -873,7 +881,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
             base::UTF8ToUTF16(template_name));
 }
 
-TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkForFloatingWorkspaceTemplate) {
+TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkOnFloatingWorkspaceInit) {
   SkipOnFirstSyncCallback();
   PopulateAppsCache();
   CleanUpTestNetworkDevices();
@@ -883,9 +891,38 @@ TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkForFloatingWorkspaceTemplate) {
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
+  // We always show the default UI first and then show the network screen (if
+  // still needed) after a short delay, to account for possible race condition
+  // between initializing FloatingWorkspaceService and connecting to network
+  // when entering the session.
+  EXPECT_EQ(FloatingWorkspaceDialog::State::kDefault,
+            FloatingWorkspaceDialog::IsShown());
+  WaitForNetworkScreenToAppear();
+}
 
+TEST_F(FloatingWorkspaceServiceV2Test, NetworkConnectingShortlyAfterFwsInit) {
+  SkipOnFirstSyncCallback();
+  PopulateAppsCache();
+  CleanUpTestNetworkDevices();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service(),
+                                   fake_device_info_sync_service());
+  EXPECT_EQ(FloatingWorkspaceDialog::State::kDefault,
+            FloatingWorkspaceDialog::IsShown());
+  AddTestNetworkDevice();
+  network_handler_test_helper()->ResetDevicesAndServices();
+  network_handler_test_helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "online",
+            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID":
+            false})");
   task_environment().RunUntilIdle();
-  EXPECT_EQ(FloatingWorkspaceDialog::State::kNetwork,
+  task_environment().FastForwardBy(ash::kFwsNetworkScreenDelay);
+  // We went online in the short delay before showing the network screen -
+  // verify that we are still showing the default UI as a result.
+  EXPECT_EQ(FloatingWorkspaceDialog::State::kDefault,
             FloatingWorkspaceDialog::IsShown());
 }
 
@@ -909,9 +946,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, NetworkConnectedButOffline) {
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
 
-  task_environment().RunUntilIdle();
-  EXPECT_EQ(FloatingWorkspaceDialog::State::kNetwork,
-            FloatingWorkspaceDialog::IsShown());
+  WaitForNetworkScreenToAppear();
 
   // Switch wifi to online and check that Floating Workspace service
   // detects it and switches the startup UI back to default.
@@ -943,8 +978,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
       base::Milliseconds(1));
   CleanUpTestNetworkDevices();
   task_environment().RunUntilIdle();
-  EXPECT_EQ(FloatingWorkspaceDialog::State::kNetwork,
-            FloatingWorkspaceDialog::IsShown());
+  WaitForNetworkScreenToAppear();
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test, ConnectAfterNotHavingNetworkInitially) {
@@ -970,8 +1004,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, ConnectAfterNotHavingNetworkInitially) {
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
   task_environment().RunUntilIdle();
-  EXPECT_EQ(FloatingWorkspaceDialog::State::kNetwork,
-            FloatingWorkspaceDialog::IsShown());
+  WaitForNetworkScreenToAppear();
 
   // While offline, Sync might report that download status is up to date, while
   // upload state indicates we are not active yet. Check that we are not

@@ -126,10 +126,31 @@ void FloatingWorkspaceService::OnDeviceInfoShutdown() {
   device_info_sync_service_ = nullptr;
 }
 
+void FloatingWorkspaceService::MaybeShowNetworkScreen() {
+  if (!should_run_restore_) {
+    return;
+  }
+  if (floating_workspace_util::IsInternetConnected()) {
+    return;
+  }
+  FloatingWorkspaceDialog::ShowNetworkScreen();
+}
+
+void FloatingWorkspaceService::ScheduleShowingNetworkScreen() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FloatingWorkspaceService::MaybeShowNetworkScreen,
+                     weak_pointer_factory_.GetWeakPtr()),
+      kFwsNetworkScreenDelay);
+}
+
 void FloatingWorkspaceService::InitiateSigninTask() {
+  if (should_run_restore_) {
+    FloatingWorkspaceDialog::ShowDefaultScreen();
+  }
   if (!floating_workspace_util::IsInternetConnected()) {
     if (should_run_restore_) {
-      FloatingWorkspaceDialog::ShowNetworkScreen();
+      ScheduleShowingNetworkScreen();
     }
   } else {
     syncer::LocalDeviceInfoProviderImpl* local_device_info_provider =
@@ -141,9 +162,6 @@ void FloatingWorkspaceService::InitiateSigninTask() {
             base::BindRepeating(
                 &FloatingWorkspaceService::OnLocalDeviceInfoProviderReady,
                 weak_pointer_factory_.GetWeakPtr()));
-    if (should_run_restore_) {
-      FloatingWorkspaceDialog::ShowDefaultScreen();
-    }
   }
   if (should_run_restore_) {
     // We need to run restore and we've started showing the startup UI
@@ -390,10 +408,10 @@ void FloatingWorkspaceService::OnNetworkStateOrSyncServiceStateChanged() {
   if (!should_run_restore_) {
     return;
   }
+  // In the calls below there is no need to double check if UI is already shown
+  // - the dialog is smart enough to recognize when there is no change.
   if (!floating_workspace_util::IsInternetConnected()) {
-    // No need to double check if UI is already shown - the
-    // dialog is smart enough to recognize when there is no change.
-    FloatingWorkspaceDialog::ShowNetworkScreen();
+    ScheduleShowingNetworkScreen();
   } else if (sync_service_ && !sync_service_->IsSyncFeatureActive()) {
     // If Sync is not active, show a generic error UI.
     // TODO(crbug.com/411121762): write a test for this code path.
