@@ -971,9 +971,6 @@ int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
     control_buffer.buf = core_->read_control_buffer_;
     control_buffer.len = sizeof(core_->read_control_buffer_);
     message = std::make_unique<WSAMSG>();
-    if (message == nullptr) {
-      return WSA_NOT_ENOUGH_MEMORY;
-    }
     PopulateWSAMSG(*message, storage, &read_buffer, control_buffer, false);
     rv = wsa_recv_msg_(socket_, message.get(), &num, &core_->read_overlapped_,
                        nullptr);

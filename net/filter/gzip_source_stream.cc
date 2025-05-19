@@ -64,8 +64,6 @@ GzipSourceStream::GzipSourceStream(std::unique_ptr<SourceStream> upstream,
 
 bool GzipSourceStream::Init() {
   zlib_stream_ = std::make_unique<z_stream>();
-  if (!zlib_stream_)
-    return false;
   memset(zlib_stream_.get(), 0, sizeof(z_stream));
 
   int ret;
