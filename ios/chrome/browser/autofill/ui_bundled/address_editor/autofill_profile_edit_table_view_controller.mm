@@ -103,6 +103,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _settingsView = settingsView;
     _addManualAddress = addManualAddress;
     _moveToAccountFromSettings = NO;
+    _hasSaveButton = NO;
+    _hasUpdateButton = NO;
     _dynamicallyLoadInputFieldsEnabled = base::FeatureList::IsEnabled(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
@@ -154,9 +156,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)loadModel {
-  _hasSaveButton = NO;
-  _hasUpdateButton = NO;
-
   TableViewModel* model = _controller.tableViewModel;
 
   AutofillProfileDetailsSectionIdentifier nameSection =

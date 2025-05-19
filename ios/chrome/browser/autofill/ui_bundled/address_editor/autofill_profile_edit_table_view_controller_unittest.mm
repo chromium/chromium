@@ -354,28 +354,28 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
 }
 
 // Tests the items in the view when the country value changes.
-// TODO(crbug.com/40281788): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_P(AutofillProfileEditTableViewControllerTest,
-       DISABLED_TestItemsOnCountrySelection) {
+       TestItemsOnCountrySelection) {
   auto test_case = GetParam();
   TableViewTextEditItem* city_item =
-      static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 4));
+      static_cast<TableViewTextEditItem*>(GetTableViewItem(1, 1));
   // Remove the city field value.
   city_item.textFieldValue = @"";
   [autofill_profile_edit_table_view_controller_
       tableViewItemDidChange:city_item];
 
-  // Check the error message is shown.
-  if (test_case.is_settings && test_case.account_profile) {
-    TableViewAttributedStringHeaderFooterItem* footer =
+  BOOL show_update_string =
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kUpdateProfile ||
+      test_case.is_settings;
+  if (test_case.account_profile ||
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
+    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
+                                             : (NumberOfSections() - 2);
+    TableViewAttributedStringHeaderFooterItem* footer_item =
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
-            [[controller() tableViewModel] footerForSectionIndex:1]);
-    // Check that the error message has been updated.
-    EXPECT_NSEQ(GetErrorFooterString(
-                    1, test_case.prompt_mode ==
-                           AutofillSaveProfilePromptMode::kUpdateProfile),
-                footer.attributedString);
+            [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);
+    EXPECT_NSEQ(GetErrorFooterString(1, show_update_string),
+                footer_item.attributedString);
   }
 
   [autofill_profile_edit_table_view_controller_
@@ -388,25 +388,31 @@ TEST_P(AutofillProfileEditTableViewControllerTest,
 
   [autofill_profile_edit_mediator_ didSelectCountry:countryItem];
 
-  bool multiple_sections = (test_case.is_settings && test_case.account_profile);
-  EXPECT_EQ(NumberOfSections(), multiple_sections ? 2 : 1);
-  if (test_case.account_profile ||
-      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 10 : 12);
+  int numOfSections;
+  if (test_case.is_settings) {
+    numOfSections = test_case.account_profile ? 4 : 3;
   } else {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 10 : 11);
+    numOfSections = test_case.account_profile ||
+                            test_case.prompt_mode ==
+                                AutofillSaveProfilePromptMode::kMigrateProfile
+                        ? 5
+                        : 4;
   }
 
-  // Check the error message persists.
-  if (test_case.is_settings && test_case.account_profile) {
-    TableViewAttributedStringHeaderFooterItem* footer =
+  EXPECT_EQ(NumberOfSections(), numOfSections);
+  EXPECT_EQ(NumberOfItemsInSection(0), 2);
+  EXPECT_EQ(NumberOfItemsInSection(1), 5);
+  EXPECT_EQ(NumberOfItemsInSection(2), 2);
+
+  if (test_case.account_profile ||
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
+    int sectionIndex = test_case.is_settings ? (NumberOfSections() - 1)
+                                             : (NumberOfSections() - 2);
+    TableViewAttributedStringHeaderFooterItem* footer_item =
         static_cast<TableViewAttributedStringHeaderFooterItem*>(
-            [[controller() tableViewModel] footerForSectionIndex:1]);
-    // Check that the error message has been updated.
-    EXPECT_NSEQ(GetErrorFooterString(
-                    1, test_case.prompt_mode ==
-                           AutofillSaveProfilePromptMode::kUpdateProfile),
-                footer.attributedString);
+            [[controller() tableViewModel] footerForSectionIndex:sectionIndex]);
+    EXPECT_NSEQ(GetErrorFooterString(1, show_update_string),
+                footer_item.attributedString);
   }
 }
 
