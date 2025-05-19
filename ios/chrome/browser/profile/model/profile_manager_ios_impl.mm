@@ -143,7 +143,7 @@ class ProfileManagerIOSImpl::ProfileInfo {
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<ProfileIOS> profile_;
   std::vector<ProfileLoadedCallback> callbacks_;
-  uint32_t keep_alive_counter_ = 1;
+  uint32_t keep_alive_counter_ = 0;
   bool is_loaded_ = false;
 };
 
@@ -184,18 +184,14 @@ ProfileManagerIOSImpl::~ProfileManagerIOSImpl() {
 void ProfileManagerIOSImpl::PrepareForDestruction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   will_be_destroyed_ = true;
+
+  // Drops the ScopedProfileKeepAliveIOS for all profiles that are still
+  // loading before notifying the observers. Then check that there are
+  // no profiles still kept alive.
+  loading_profiles_map_.clear();
+
   for (auto& observer : observers_) {
     observer.OnProfileManagerWillBeDestroyed(this);
-  }
-
-  // If a profile has not been fully loaded, then the ProfileManagerIOSImpl
-  // will have kept an implicit reference (via the keep alive counter being
-  // initialized to 1). This should only be the case for profiles still in
-  // the loading stage. Unload them now.
-  while (!profiles_map_.empty()) {
-    auto iter = profiles_map_.begin();
-    CHECK(!iter->second.is_loaded());
-    MaybeUnloadProfile(iter->first);
   }
 
   CHECK(profiles_map_.empty());
@@ -439,11 +435,11 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
     }
   }
 
-  // The ProfileInfo is initialized with a keep alive counter of 1.
-  // Decrement the counter now that the load has completed (this will
-  // unload the profile unless one of the invoked callback stored the
-  // ScopedProfileKeepAliveIOS object).
-  MaybeUnloadProfile(name);
+  // The profile is fully loaded, so drop the ScopedProfileKeepAliveIOS
+  // owned by this instance. If no other code keeps the profile alive,
+  // it will be unloaded at this point.
+  CHECK(base::Contains(loading_profiles_map_, name));
+  loading_profiles_map_.erase(name);
 }
 
 bool ProfileManagerIOSImpl::CreateOrLoadProfile(
@@ -502,10 +498,9 @@ bool ProfileManagerIOSImpl::CreateOrLoadProfile(
       DCHECK(HasProfileWithName(name));
     }
 
-    std::tie(iter, inserted) = profiles_map_.insert(std::make_pair(
-        std::string(name), ProfileInfo(ProfileIOS::CreateProfile(
-                               profile_data_dir_.Append(name), name,
-                               CreationMode::kAsynchronous, this))));
+    std::tie(iter, inserted) = profiles_map_.emplace(
+        name, ProfileIOS::CreateProfile(profile_data_dir_.Append(name), name,
+                                        CreationMode::kAsynchronous, this));
 
     DCHECK(inserted);
   }
@@ -513,6 +508,14 @@ bool ProfileManagerIOSImpl::CreateOrLoadProfile(
   DCHECK(iter != profiles_map_.end());
   ProfileInfo& profile_info = iter->second;
   DCHECK(profile_info.profile());
+
+  // Ensure the profile is kept alive until it is fully loaded or
+  // the current instance is destroyed.
+  if (inserted) {
+    CHECK(!base::Contains(loading_profiles_map_, name));
+    loading_profiles_map_.emplace(name,
+                                  CreateScopedProfileKeepAlive(&profile_info));
+  }
 
   if (!created_callback.is_null()) {
     std::move(created_callback)

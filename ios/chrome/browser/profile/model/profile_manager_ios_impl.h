@@ -122,6 +122,10 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   // Holds the Profile instances that this instance has created.
   std::map<std::string, ProfileInfo, std::less<>> profiles_map_;
 
+  // Holds the ScopedProfileKeepAliveIOS for the profiles that are loading.
+  std::map<std::string, ScopedProfileKeepAliveIOS, std::less<>>
+      loading_profiles_map_;
+
   // The owned ProfileAttributesStorageIOS instance.
   MutableProfileAttributesStorageIOS profile_attributes_storage_;
 
