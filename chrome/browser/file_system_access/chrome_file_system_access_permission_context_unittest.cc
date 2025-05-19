@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
@@ -491,6 +492,13 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   const PathInfo kTestPathInfo2 = PathInfo(FILE_PATH_LITERAL("/baz/"));
   const url::Origin kChromeOrigin = url::Origin::Create(GURL("chrome://test"));
 
+  void ResetBlockPath() {
+    permission_context_->ResetBlockPathsForTesting();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return permission_context_->GetIsBlockPathRulesInitCompleteForTesting();
+    }));
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
@@ -566,6 +574,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
+  ResetBlockPath();
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -592,6 +601,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_BlockAllChildren) {
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
+  ResetBlockPath();
 
   // The App directory itself should not be allowed.
   EXPECT_TRUE(IsOpenAbort(app_dir, HandleType::kDirectory));
@@ -605,6 +615,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath app_data_dir = temp_dir_.GetPath().AppendASCII("app_data");
   base::ScopedPathOverride app_data_override(base::DIR_ANDROID_APP_DATA,
                                              app_data_dir, true, true);
+  ResetBlockPath();
 
   // The android app data directory, its parent and paths inside should not be
   // allowed.
@@ -617,6 +628,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath cache_dir = temp_dir_.GetPath().AppendASCII("cache");
   base::ScopedPathOverride cache_override(base::DIR_CACHE, cache_dir, true,
                                           true);
+  ResetBlockPath();
   // The android cache directory, its parent and paths inside should not be
   // allowed.
   EXPECT_TRUE(IsOpenAbort(cache_dir, HandleType::kDirectory));
@@ -637,6 +649,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
     base::FilePath download_dir = user_data_dir.AppendASCII("downloads");
     base::ScopedPathOverride download_override(chrome::DIR_DEFAULT_DOWNLOADS,
                                                download_dir, true, true);
+    ResetBlockPath();
 
     // The User Data directory itself should not be allowed.
     EXPECT_FALSE(IsOpenAllowed(user_data_dir, HandleType::kDirectory));
@@ -662,6 +675,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
     base::FilePath download_dir = profile_path.AppendASCII("downloads");
     base::ScopedPathOverride download_override(chrome::DIR_DEFAULT_DOWNLOADS,
                                                download_dir, true, true);
+    ResetBlockPath();
 
     EXPECT_FALSE(IsOpenAllowed(profile_path, HandleType::kDirectory));
     EXPECT_FALSE(
@@ -681,6 +695,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath internet_cache = user_data_dir.AppendASCII("INetCache");
   base::ScopedPathOverride internet_cache_override(base::DIR_IE_INTERNET_CACHE,
                                                    internet_cache, true, true);
+  ResetBlockPath();
 
   // The nested INetCache directory itself should not be allowed.
   EXPECT_FALSE(IsOpenAllowed(internet_cache, HandleType::kDirectory));
@@ -703,6 +718,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride app_override(base::DIR_EXE, temp_dir_.GetPath(),
                                         true, true);
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+  ResetBlockPath();
 
   // `base::DIR_HOME` and paths inside of it should not be allowed.
   EXPECT_FALSE(IsOpenAllowed(home_dir, HandleType::kDirectory));
@@ -727,6 +743,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_RelativePathBlock) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
+  ResetBlockPath();
 
   // ~/.ssh should be blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -779,6 +796,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockAllChildren_Overlapping) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
+  ResetBlockPath();
 
   // The Home directory itself should not be allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
@@ -843,6 +861,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_BlockAllChildren_UserApplicationsDir) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
+  ResetBlockPath();
 
   // User's Applications directory should be blocked.
   base::FilePath user_applications_dir(home_dir.AppendASCII("Applications"));
@@ -866,6 +885,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   ASSERT_FALSE(outer_bundle_path.empty());
   base::ScopedPathOverride bundle_override(chrome::DIR_OUTER_BUNDLE,
                                            outer_bundle_path, true, true);
+  ResetBlockPath();
 
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(outer_bundle_path),
@@ -980,6 +1000,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
   ASSERT_TRUE(base::CreateDirectory(app_dir));
 
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
+  ResetBlockPath();
 
   CreateSymbolicLinkResult result =
       CreateSymbolicLinkForTesting(app_dir, symlink1);
@@ -1026,7 +1047,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
 
   // Set the blocked path to a symbolic link.
   base::ScopedPathOverride app_override(base::DIR_EXE, symlink1, true, true);
-
+  ResetBlockPath();
   // The target of the blocked symbolic link should be blocked.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(permission_context(), PathInfo(app_dir),
@@ -1038,6 +1059,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
+  ResetBlockPath();
 
   // Saving files with a harmless extension should be allowed.
   EXPECT_EQ(
@@ -1327,6 +1349,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWellKnownDirectoryPath_Base_OK) {
   base::ScopedPathOverride user_desktop_override(
       base::DIR_USER_DESKTOP, temp_dir_.GetPath(), true, true);
+  ResetBlockPath();
   EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
                 blink::mojom::WellKnownDirectory::kDirDesktop, kTestOrigin),
             temp_dir_.GetPath());
@@ -1336,6 +1359,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWellKnownDirectoryPath_Chrome_OK) {
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
+  ResetBlockPath();
   EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
                 blink::mojom::WellKnownDirectory::kDirDocuments, kTestOrigin),
             temp_dir_.GetPath());
@@ -1348,6 +1372,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       ->SkipSanitizeDownloadTargetPathForTesting();
   DownloadPrefs::FromBrowserContext(browser_context())
       ->SetDownloadPath(temp_dir_.GetPath());
+  ResetBlockPath();
+
 #if BUILDFLAG(IS_ANDROID)
   // Android always uses the system Download directory (/storage/emulated/...).
   ASSERT_TRUE(base::android::GetDownloadsDirectory(&expected_downloads));
