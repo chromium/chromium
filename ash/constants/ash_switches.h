@@ -400,6 +400,11 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldSkipNewUserCheckForTesting();
 // Returns true if we should skip all other OOBE pages after user login.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldSkipOobePostLogin();
 
+// Returns true if we should disable pre-consent metrics for testing. Consent
+// won't be enabled by CrosPreConsentMetricsManager.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool ShouldDisablePreConsentMetricsForTesting();
+
 // Returns true if we should skip split modifier check on the split modifier
 // info screen.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldSkipSplitModifierCheckForTesting();

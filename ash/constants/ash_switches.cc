@@ -35,7 +35,6 @@ constexpr char kMantisHashKey[] =
     "\x7c\x8c\x82\x6f\x3e\xcd\x16\xf0\xfb\xfe\xfc\x9c\x2a\x48\x07\x75\x7e\xea"
     "\x46\xf2";
 
-
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -844,6 +843,10 @@ const char kOobeSkipNewUserCheckForTesting[] =
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
+// Disable metrics consent for testing.
+const char kOobeDisablePreConsentMetricsForTesting[] =
+    "oobe-disable-pre-consent-metrics-for-testing";
+
 // Returns true if we should skip split modifier check on the split modifier
 // info screen.
 const char kOobeSkipSplitModifierCheckForTesting[] =
@@ -1112,6 +1115,11 @@ bool ShouldSkipSplitModifierCheckForTesting() {
 
 bool ShouldSkipOobePostLogin() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kOobeSkipPostLogin);
+}
+
+bool ShouldDisablePreConsentMetricsForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOobeDisablePreConsentMetricsForTesting);
 }
 
 bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting() {

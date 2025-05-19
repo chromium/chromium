@@ -3652,6 +3652,9 @@ void WizardController::MaybeAbortQuickStartFlow(
 }
 
 void WizardController::MaybeEnablePreConsentMetrics() {
+  if (switches::ShouldDisablePreConsentMetricsForTesting()) {
+    return;
+  }
   // Enable pre-consent metrics if this device is in oobe and is the first
   // user.
   Profile* profile = ProfileManager::GetActiveUserProfile();
