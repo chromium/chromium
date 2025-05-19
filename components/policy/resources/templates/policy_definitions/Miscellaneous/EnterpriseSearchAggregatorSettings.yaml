@@ -1,7 +1,5 @@
-caption: Enterprise search aggregator settings (Beta)
+caption: Enterprise search aggregator settings
 desc: |-
-  This is a beta feature. As this is a feature in development, available to our trusted testers, please be aware that it may undergo changes and updates.
-
   This policy allows administrators to set a designated enterprise search aggregator that will provide search recommendations and results within the address bar when triggered by a specific keyword. Users can initiate a search by typing the keyword specified in the <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> field with or without the @ prefix (e.g. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS">@work</ph>), followed by Space or Tab, in the address bar.
 
   The following fields are required: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD">name</ph>, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph>, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph>, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph>.
