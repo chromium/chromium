@@ -347,8 +347,9 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         // is 12-bit. However we don't know the bit depth or pixel format until
         // too late. In these cases we'll end up initializing the decoder and
         // failing on the first decode (which will trigger software fallback).
-        supported_resolutions[AV1PROFILE_PROFILE_PRO] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+        supported_resolutions[AV1PROFILE_PROFILE_PRO] =
+            GetResolutionsForGUID(video_device_wrapper, profile_id,
+                                  kModernResolutions, DXGI_FORMAT_YUY2);
         continue;
       }
     }
@@ -380,6 +381,12 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
         auto supported_resolution = GetResolutionsForGUID(
             video_device_wrapper, profile_id, kModernResolutions);
+
+        if (supported_resolution.max_landscape_resolution.IsEmpty()) {
+          supported_resolution = GetResolutionsForGUID(
+              video_device_wrapper, profile_id, {gfx::Size(1920, 1080)});
+        }
+
         supported_resolutions[HEVCPROFILE_MAIN] = supported_resolution;
         supported_resolutions[HEVCPROFILE_MAIN_STILL_PICTURE] =
             supported_resolution;
