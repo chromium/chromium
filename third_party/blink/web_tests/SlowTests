@@ -1462,3 +1462,6 @@ crbug.com/378014598 external/wpt/nav-tracking-mitigations/* [ Slow ]
 
 # Gardener 2025-05-02
 crbug.com/387598611 fast/overflow/scrollbar-drag-origin.html [ Slow ]
+
+# Gardener 2025-05-19
+crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Slow ]
