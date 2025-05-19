@@ -662,6 +662,7 @@ suite('<bookmarks-item> CommandManager integration', function() {
         const modifier = isMac ? 'meta' : 'ctrl';
 
         store.data.selection.items = new Set(['12', '13']);
+        store.data.folderOpenState.set('1', true);
         store.notifyObservers();
         await microtasksFinished();
         const targetNode = findFolderNode(rootNode, '11');

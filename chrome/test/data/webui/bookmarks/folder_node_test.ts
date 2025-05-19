@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksFolderNodeElement, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
-import {selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, LOCAL_HEADING_NODE_ID, ROOT_NODE_ID, selectFolder} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -41,7 +41,7 @@ suite('<bookmarks-folder-node>', function() {
     store.replaceSingleton();
 
     rootNode = document.createElement('bookmarks-folder-node');
-    rootNode.itemId = '0';
+    rootNode.itemId = ROOT_NODE_ID;
     rootNode.depth = -1;
     replaceBody(rootNode);
     return microtasksFinished();
@@ -129,21 +129,89 @@ suite('<bookmarks-folder-node>', function() {
     assertEquals('2', getFolderNode('1')!.getLastVisibleDescendant().itemId);
   });
 
-  test('deep folders are hidden by default', async () => {
+  test('non-permanent folders are hidden by default', async () => {
     store.data.folderOpenState = new Map();
     store.notifyObservers();
     await microtasksFinished();
+
     assertTrue(getFolderNode('0')!.isOpen);
-    assertTrue(getFolderNode('1')!.isOpen);
-    assertTrue(getFolderNode('2')!.isOpen);
-    assertFalse(getFolderNode('3')!.isOpen);
-    assertFalse(getFolderNode('4')!.isOpen);
+    assertFalse(getFolderNode('1')!.isOpen);
+    assertFalse(getFolderNode('7')!.isOpen);
   });
 
+  test(
+      'local folders are collapsed by default with account and local nodes',
+      async () => {
+        // This creates the following structure:
+        //
+        // Root node
+        // -- Account Heading
+        // ---- Account Bookmarks Bar ('5')
+        // ------ Folder ('7')
+        // ------ Folder ('8')
+        // ---- Account Other Node ('6')
+        // -- Local Heading
+        // ---- Bookmarks Bar ('1')
+        // ------ Folder ('3')
+        // ------ Folder ('4')
+        // ---- Other Node ('2')
+
+        store = new TestStore({
+          nodes: testTree(
+              createFolder(
+                  ACCOUNT_HEADING_NODE_ID,
+                  [
+                    createFolder(
+                        '5',
+                        [
+                          createFolder('7', [], {syncing: true}),
+                          createFolder('8', [], {syncing: true}),
+                        ],
+                        {
+                          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+                          syncing: true,
+                        }),
+                    createFolder('6', [], {
+                      folderType: chrome.bookmarks.FolderType.OTHER,
+                      syncing: true,
+                    }),
+                  ],
+                  {syncing: true}),
+              createFolder(
+                  LOCAL_HEADING_NODE_ID,
+                  [
+                    createFolder(
+                        '1',
+                        [
+                          createFolder('3', []),
+                          createFolder('4', []),
+                        ],
+                        {
+                          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+                        }),
+                    createFolder(
+                        '2', [],
+                        {folderType: chrome.bookmarks.FolderType.OTHER}),
+                  ],
+                  )),
+        });
+
+        store.replaceSingleton();
+        replaceBody(rootNode);
+        await microtasksFinished();
+
+        assertTrue(getFolderNode(ROOT_NODE_ID)!.isOpen);
+        assertTrue(getFolderNode(ACCOUNT_HEADING_NODE_ID)!.isOpen);
+        assertFalse(getFolderNode('5')!.isOpen);
+        assertFalse(getFolderNode('6')!.isOpen);
+        assertFalse(getFolderNode(LOCAL_HEADING_NODE_ID)!.isOpen);
+      });
+
   test('get node parent', function() {
-    assertEquals(getFolderNode('0'), getFolderNode('1')!.getParentFolderNode());
+    assertEquals(
+        getFolderNode(ROOT_NODE_ID), getFolderNode('1')!.getParentFolderNode());
     assertEquals(getFolderNode('2'), getFolderNode('4')!.getParentFolderNode());
-    assertEquals(null, getFolderNode('0')!.getParentFolderNode());
+    assertEquals(null, getFolderNode(ROOT_NODE_ID)!.getParentFolderNode());
   });
 
   test('next/previous folder nodes', async () => {
@@ -153,6 +221,12 @@ suite('<bookmarks-folder-node>', function() {
           reverse, getFolderNode(targetId)!);
     }
 
+    // Initially open the tree up to two levels.
+    store.data.folderOpenState.set('1', true);
+    store.data.folderOpenState.set('2', true);
+    store.notifyObservers();
+    await microtasksFinished();
+
     // Forwards.
     assertEquals('4', getNextChild('2', '3', false)!.itemId);
     assertEquals(null, getNextChild('2', '4', false));
@@ -160,7 +234,7 @@ suite('<bookmarks-folder-node>', function() {
     // Backwards.
     assertEquals(null, getNextChild('1', '2', true));
     assertEquals('3', getNextChild('2', '4', true)!.itemId);
-    assertEquals('4', getNextChild('0', '7', true)!.itemId);
+    assertEquals('4', getNextChild(ROOT_NODE_ID, '7', true)!.itemId);
 
     // Skips closed folders.
     store.data.folderOpenState.set('2', false);
@@ -168,7 +242,7 @@ suite('<bookmarks-folder-node>', function() {
     await microtasksFinished();
 
     assertEquals(null, getNextChild('1', '2', false));
-    assertEquals('2', getNextChild('0', '7', true)!.itemId);
+    assertEquals('2', getNextChild(ROOT_NODE_ID, '7', true)!.itemId);
   });
 
   test('right click opens context menu', function() {

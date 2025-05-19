@@ -91,8 +91,3 @@ export const BOOKMARKS_BAR_ID: string = '1';
 
 export const OPEN_CONFIRMATION_LIMIT: number = 15;
 
-/**
- * Folders that are beneath this depth will be closed by default in the folder
- * tree (where the Bookmarks Bar folder is at depth 0).
- */
-export const FOLDER_OPEN_BY_DEFAULT_DEPTH: number = 1;

@@ -26,7 +26,7 @@ import {destroy as destroyApiListener, init as initApiListener} from './api_list
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
-import {LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, ROOT_NODE_ID} from './constants.js';
+import {ACCOUNT_HEADING_NODE_ID, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, ROOT_NODE_ID} from './constants.js';
 import {DndManager} from './dnd_manager.js';
 import {BookmarksRouter} from './router.js';
 import {Store} from './store.js';
@@ -115,7 +115,22 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       const nodeMap = normalizeNodes(results[0]!);
       const initialState = createEmptyState();
       initialState.nodes = nodeMap;
-      initialState.selectedFolder = nodeMap[ROOT_NODE_ID]!.children![0]!;
+
+      // Select the account bookmarks bar if it exists. If not, do not set the
+      // initial state so that the default is selected instead.
+      const selectedFolderParent =
+          nodeMap[ACCOUNT_HEADING_NODE_ID] || nodeMap[ROOT_NODE_ID];
+      assert(selectedFolderParent && selectedFolderParent.children);
+
+      for (const id of selectedFolderParent.children) {
+        if (nodeMap[id]!.folderType! ===
+                chrome.bookmarks.FolderType.BOOKMARKS_BAR &&
+            nodeMap[id]!.syncing) {
+          initialState.selectedFolder = id;
+          break;
+        }
+      }
+
       const folderStateString =
           window.localStorage[LOCAL_STORAGE_FOLDER_STATE_KEY];
       initialState.folderOpenState = folderStateString ?
