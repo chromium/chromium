@@ -4,9 +4,9 @@
 
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 
-#include <optional>
-
 #import "base/apple/foundation_util.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
@@ -204,22 +204,38 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 
 // NSMenu delegate method: called just before menu is displayed.
 - (void)menuNeedsUpdate:(NSMenu*)menu {
-  NSMenuItem* item = GetItemWithSubmenu(menu);
   Profile* profile = _bridge->GetProfile();
   if (!profile) {
     // Unfortunately, we can't update a menu with a dead profile.
     return;
   }
 
+  // The root menu does not have a corresponding bookmark node.
+  if (_bridge->IsMenuRoot(menu)) {
+    _bridge->UpdateRootMenuIfInvalid();
+    return;
+  }
+
+  // Find the bookmark node corresponding to this menu.
   const BookmarkModel* model =
       BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)
           ->bookmark_model();
+  NSMenuItem* item = GetItemWithSubmenu(menu);
   base::Uuid guid = _bridge->TagToGUID([item tag]);
   const BookmarkNode* node = GetNodeByUuid(model, guid);
-  auto folder = node ? std::optional<BookmarkParentFolder>(
-                           BookmarkParentFolder::FromFolderNode(node))
-                     : std::nullopt;
-  _bridge->UpdateMenu(menu, folder, /*recurse=*/false);
+
+  if (!(node && node->is_folder())) {
+    // TODO(crbug.com/417269167): every non-root menu must correspond to a
+    // bookmark folder by construction.
+    SCOPED_CRASH_KEY_NUMBER("BookmarkMenuCocoaController", "NSMenuItem",
+                            [item tag]);
+    SCOPED_CRASH_KEY_STRING32("BookmarkMenuCocoaController", "NSMenuItem",
+                              base::SysNSStringToUTF8([item title]));
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  _bridge->UpdateNonRootMenu(menu, BookmarkParentFolder::FromFolderNode(node));
 }
 
 - (BOOL)menuHasKeyEquivalent:(NSMenu*)menu

@@ -66,12 +66,15 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
       const BookmarkParentFolder& folder) override;
   void BookmarkAllUserNodesRemoved() override;
 
-  // Rebuilds the main bookmark menu, if it has been marked invalid. Or builds
-  // a bookmark folder submenu on demand. If |recurse| is true, also fills all
-  // submenus recursively.
-  void UpdateMenu(NSMenu* menu,
-                  std::optional<BookmarkParentFolder> folder,
-                  bool recurse);
+  bool IsMenuRoot(NSMenu* menu);
+
+  // Builds the main bookmark menu if it has been marked invalid. Its submenus
+  // will NOT be built recursively.
+  void UpdateRootMenuIfInvalid();
+
+  // Builds a bookmark folder submenu on demand. Submenus of `menu` will NOT be
+  // built recursively.
+  void UpdateNonRootMenu(NSMenu* menu, const BookmarkParentFolder& folder);
 
   // I wish I had a "friend @class" construct.
   bookmarks::BookmarkModel* GetBookmarkModelForTesting();

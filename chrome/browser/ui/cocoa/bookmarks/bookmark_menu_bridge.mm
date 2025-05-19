@@ -85,22 +85,26 @@ void BookmarkMenuBridge::BookmarkMergedSurfaceServiceLoaded() {
   InvalidateMenu();
 }
 
-void BookmarkMenuBridge::UpdateMenu(NSMenu* menu,
-                                    std::optional<BookmarkParentFolder> folder,
-                                    bool recurse) {
+bool BookmarkMenuBridge::IsMenuRoot(NSMenu* menu) {
   CHECK(menu);
+  return menu == menu_root_;
+}
+
+void BookmarkMenuBridge::UpdateRootMenuIfInvalid() {
+  CHECK(menu_root_);
+  if (!IsMenuValid()) {
+    BuildRootMenu(/*recurse=*/false);
+  }
+}
+
+void BookmarkMenuBridge::UpdateNonRootMenu(NSMenu* menu,
+                                           const BookmarkParentFolder& folder) {
+  CHECK(menu);
+  CHECK(!IsMenuRoot(menu));
   CHECK(controller_);
   CHECK_EQ([menu delegate], controller_);
 
-  if (menu == menu_root_) {
-    if (!IsMenuValid()) {
-      BuildRootMenu(recurse);
-    }
-    return;
-  }
-
-  CHECK(folder);
-  AddChildrenToMenu(folder.value(), menu, recurse);
+  AddChildrenToMenu(folder, menu, /*recurse=*/false);
 
   // Clear the delegate to prevent further refreshes.
   [menu setDelegate:nil];
