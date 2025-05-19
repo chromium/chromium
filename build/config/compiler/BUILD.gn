@@ -318,6 +318,16 @@ config("compiler") {
     ":clang_warning_suppression",
   ]
 
+  # TODO(https://crbug.com/404297941): Disable clang_warning_suppression
+  # configuration because the ICECC build doesn't distribute the
+  # warning_suppression.txt file to other ICECC nodes. As a result, the nodes
+  # cannot locate the file during target compilation. Therefore, we are
+  # disabling the clang_warning_suppression configuration for ICECC builds for
+  # now.
+  if (cc_wrapper == "icecc") {
+    configs -= [ ":clang_warning_suppression" ]
+  }
+
   # Here we enable -fno-delete-null-pointer-checks, which makes various nullptr
   # operations (e.g. dereferencing) into defined behavior. This avoids deletion
   # of some security-critical code: see https://crbug.com/1139129.
