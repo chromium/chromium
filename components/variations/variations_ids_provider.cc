@@ -22,11 +22,6 @@
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_features.h"
 
-// TODO: remove this feature flag after milestone 110.
-BASE_FEATURE(kSendLowEntropySourceVariationIDInAnyContext,
-             "SendLowEntropySourceVariationIDInAnyContext",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace variations {
 namespace {
 
@@ -541,11 +536,8 @@ VariationsIdsProvider::GetAllVariationIds() {
                        kLowEntropySourceVariationIdRangeMin;
     DCHECK_GE(source_value, kLowEntropySourceVariationIdRangeMin);
     DCHECK_LE(source_value, kLowEntropySourceVariationIdRangeMax);
-    auto context = base::FeatureList::IsEnabled(
-                       kSendLowEntropySourceVariationIDInAnyContext)
-                       ? GOOGLE_WEB_PROPERTIES_ANY_CONTEXT
-                       : GOOGLE_WEB_PROPERTIES_FIRST_PARTY;
-    all_variation_ids_set.insert(VariationIDEntry(source_value, context));
+    all_variation_ids_set.insert(
+        VariationIDEntry(source_value, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
   }
 
   return all_variation_ids_set;
