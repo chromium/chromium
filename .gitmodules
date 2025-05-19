@@ -542,6 +542,10 @@
 [submodule "third_party/search_engines_data/resources"]
 	path = third_party/search_engines_data/resources
 	url = https://chromium.googlesource.com/external/search_engines_data
+[submodule "third_party/search_engines_data/resources_internal"]
+	path = third_party/search_engines_data/resources_internal
+	url = https://chrome-internal.googlesource.com/external/search_engines_data_internal
+	gclient-condition = checkout_src_internal
 [submodule "third_party/skia"]
 	path = third_party/skia
 	url = https://skia.googlesource.com/skia
