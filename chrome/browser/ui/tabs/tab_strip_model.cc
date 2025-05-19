@@ -551,7 +551,7 @@ std::unique_ptr<DetachedTabCollection> TabStripModel::DetachTabGroupImpl(
 
   // Send possible split detach notification.
   for (auto const& [split_id, tabs_with_indices] : splits_in_group) {
-    OnSplitTabRemoved(
+    NotifySplitTabRemoved(
         split_id, tabs_with_indices,
         SplitTabChange::SplitTabRemoveReason::kDetachedToAnotherTabstrip);
   }
@@ -664,7 +664,7 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
 
   // Send split attach notification
   for (const split_tabs::SplitTabId& split_id : splits_in_group) {
-    OnSplitTabCreated(
+    NotifySplitTabCreated(
         split_id, GetTabsAndIndicesInSplit(split_id),
         SplitTabChange::SplitTabAddReason::kInsertedFromAnotherTabstrip,
         *GetSplitData(split_id)->visual_data());
@@ -1596,8 +1596,8 @@ void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
 
   split_data->visual_data()->set_split_layout(tab_layout);
 
-  OnSplitTabVisualsChanged(split_id, old_visual_data,
-                           *split_data->visual_data());
+  NotifySplitTabVisualsChanged(split_id, old_visual_data,
+                               *split_data->visual_data());
 }
 
 void TabStripModel::UpdateSplitRatio(split_tabs::SplitTabId split_id,
@@ -1611,8 +1611,8 @@ void TabStripModel::UpdateSplitRatio(split_tabs::SplitTabId split_id,
   split_tabs::SplitTabVisualData old_visual_data = *split_data->visual_data();
   split_data->visual_data()->set_split_ratio(split_ratio);
 
-  OnSplitTabVisualsChanged(split_id, old_visual_data,
-                           *split_data->visual_data());
+  NotifySplitTabVisualsChanged(split_id, old_visual_data,
+                               *split_data->visual_data());
 }
 
 void TabStripModel::UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
@@ -1919,7 +1919,7 @@ void TabStripModel::NotifyTabGroupAttached(
   }
 }
 
-void TabStripModel::OnSplitTabCreated(
+void TabStripModel::NotifySplitTabCreated(
     split_tabs::SplitTabId split_id,
     const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
     SplitTabChange::SplitTabAddReason reason,
@@ -1933,7 +1933,7 @@ void TabStripModel::OnSplitTabCreated(
   }
 }
 
-void TabStripModel::OnSplitTabVisualsChanged(
+void TabStripModel::NotifySplitTabVisualsChanged(
     split_tabs::SplitTabId split_id,
     const split_tabs::SplitTabVisualData& old_visual_data,
     const split_tabs::SplitTabVisualData& new_visual_data) {
@@ -1946,7 +1946,7 @@ void TabStripModel::OnSplitTabVisualsChanged(
   }
 }
 
-void TabStripModel::OnSplitTabContentsUpdated(
+void TabStripModel::NotifySplitTabContentsUpdated(
     split_tabs::SplitTabId split_id,
     const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
     const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs) {
@@ -1958,7 +1958,7 @@ void TabStripModel::OnSplitTabContentsUpdated(
   }
 }
 
-void TabStripModel::OnSplitTabRemoved(
+void TabStripModel::NotifySplitTabRemoved(
     split_tabs::SplitTabId split_id,
     const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
     SplitTabChange::SplitTabRemoveReason reason) {
@@ -3366,7 +3366,7 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
   TabStripModelChange change;
   OnChange(change, selection);
 
-  OnSplitTabCreated(split_id, tabs_with_indices, reason, visual_data);
+  NotifySplitTabCreated(split_id, tabs_with_indices, reason, visual_data);
 
   return split_id;
 }
@@ -3395,7 +3395,7 @@ void TabStripModel::RemoveSplitImpl(
     OnChange(change, selection);
   }
 
-  OnSplitTabRemoved(split_id, tabs_with_indices, reason);
+  NotifySplitTabRemoved(split_id, tabs_with_indices, reason);
 }
 
 void TabStripModel::AddToNewGroupImpl(
@@ -3722,7 +3722,7 @@ void TabStripModel::MoveTabToIndexImpl(
   }
 
   if (move_within_split) {
-    OnSplitTabContentsUpdated(
+    NotifySplitTabContentsUpdated(
         tab->GetSplit().value(), initial_split_tabs,
         GetTabsAndIndicesInSplit(tab->GetSplit().value()));
   }

@@ -832,26 +832,26 @@ class TabStripModel : public TabGroupController {
   void NotifyTabGroupAttached(tabs::TabGroupTabCollection* group_collection);
 
   // Notify observers that split with `split_id` has been created.
-  void OnSplitTabCreated(
+  void NotifySplitTabCreated(
       split_tabs::SplitTabId split_id,
       const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
       SplitTabChange::SplitTabAddReason reason,
       const split_tabs::SplitTabVisualData& visual_data);
 
   // Notify observers that visual data for a split has changed.
-  void OnSplitTabVisualsChanged(
+  void NotifySplitTabVisualsChanged(
       split_tabs::SplitTabId split_id,
       const split_tabs::SplitTabVisualData& old_visual_data,
       const split_tabs::SplitTabVisualData& new_visual_data);
 
   // Notify observers that contents of a split has been reordered.
-  void OnSplitTabContentsUpdated(
+  void NotifySplitTabContentsUpdated(
       split_tabs::SplitTabId split_id,
       const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
       const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs);
 
   // Notify observers that split with `split_id` has been removed.
-  void OnSplitTabRemoved(
+  void NotifySplitTabRemoved(
       split_tabs::SplitTabId split_id,
       const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
       SplitTabChange::SplitTabRemoveReason reason);
