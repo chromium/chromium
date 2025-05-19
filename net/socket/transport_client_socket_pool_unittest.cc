@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/transport_client_socket_pool.h"
 
 #include <memory>
@@ -83,26 +78,23 @@ const RequestPriority kDefaultPriority = LOW;
 class SOCKS5MockData {
  public:
   explicit SOCKS5MockData(IoMode mode) {
-    writes_ = std::make_unique<MockWrite[]>(2);
     writes_[0] =
         MockWrite(mode, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength);
     writes_[1] = MockWrite(mode, kSOCKS5OkRequest, kSOCKS5OkRequestLength);
 
-    reads_ = std::make_unique<MockRead[]>(2);
     reads_[0] =
         MockRead(mode, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength);
     reads_[1] = MockRead(mode, kSOCKS5OkResponse, kSOCKS5OkResponseLength);
 
-    data_ = std::make_unique<StaticSocketDataProvider>(
-        base::span(reads_.get(), 2u), base::span(writes_.get(), 2u));
+    data_ = std::make_unique<StaticSocketDataProvider>(reads_, writes_);
   }
 
   SocketDataProvider* data_provider() { return data_.get(); }
 
  private:
   std::unique_ptr<StaticSocketDataProvider> data_;
-  std::unique_ptr<MockWrite[]> writes_;
-  std::unique_ptr<MockRead[]> reads_;
+  std::array<MockWrite, 2> writes_;
+  std::array<MockRead, 2> reads_;
 };
 
 class TransportClientSocketPoolTest : public ::testing::Test,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/tcp_socket.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
@@ -263,11 +259,10 @@ class TCPSocketTest
     for (size_t i = 0; i < num_messages; ++i) {
       // Use a 1 byte message so that the watcher is notified at most once per
       // message.
-      const std::string message("t");
+      static constexpr std::string_view message = "t";
 
-      scoped_refptr<IOBufferWithSize> write_buffer =
-          base::MakeRefCounted<IOBufferWithSize>(message.size());
-      memmove(write_buffer->data(), message.data(), message.size());
+      auto write_buffer =
+          base::MakeRefCounted<VectorIOBuffer>(base::as_byte_span(message));
 
       TestCompletionCallback write_callback;
       int write_result = accepted_socket->Write(
@@ -1208,12 +1203,22 @@ TEST_P(TCPSocketTest, IsConnected) {
 
   // Wait until |connecting_socket| is signalled as having data to read.
   fd_set read_fds;
-  FD_ZERO(&read_fds);
+  // SAFETY: The implementations are different on different platforms. However,
+  // they are all operations on the read_fds object itself. No out-of-bounds
+  // behavior will occur.
+  UNSAFE_BUFFERS(FD_ZERO(&read_fds));
   SocketDescriptor connecting_fd =
       connecting_socket.SocketDescriptorForTesting();
-  FD_SET(connecting_fd, &read_fds);
+  // SAFETY: There is an fd array in read_fds, which has different sizes on
+  // different platforms, but is always greater than 1. It will record and check
+  // the number of current fds internally. Since the memory layout and structure
+  // of different platforms are inconsistent, we still use the system standard
+  // interface.
+  UNSAFE_BUFFERS(FD_SET(connecting_fd, &read_fds));
   ASSERT_EQ(select(FD_SETSIZE, &read_fds, nullptr, nullptr, nullptr), 1);
-  ASSERT_TRUE(FD_ISSET(connecting_fd, &read_fds));
+  // SAFETY: Check if this fd exists in read_fds. The system has already handled
+  // the edge cases.
+  ASSERT_TRUE(UNSAFE_BUFFERS(FD_ISSET(connecting_fd, &read_fds)));
 
   // It should now be reported as connected, but not as idle.
   EXPECT_TRUE(connecting_socket.IsConnected());

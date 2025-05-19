@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/ssl_server_socket_impl.h"
 
 #include <memory>
@@ -137,15 +132,11 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
                                                              size_t* out_len,
                                                              size_t max_out);
 
-  ssl_private_key_result_t PrivateKeySignCallback(uint8_t* out,
-                                                  size_t* out_len,
-                                                  size_t max_out,
-                                                  uint16_t algorithm,
-                                                  const uint8_t* in,
-                                                  size_t in_len);
-  ssl_private_key_result_t PrivateKeyCompleteCallback(uint8_t* out,
-                                                      size_t* out_len,
-                                                      size_t max_out);
+  ssl_private_key_result_t PrivateKeySignCallback(
+      uint16_t algorithm,
+      base::span<const uint8_t> input);
+  ssl_private_key_result_t PrivateKeyCompleteCallback(base::span<uint8_t> buf,
+                                                      size_t* out_len);
   void OnPrivateKeyComplete(Error error, const std::vector<uint8_t>& signature);
 
   static int ALPNSelectCallback(SSL* ssl,
@@ -256,8 +247,13 @@ SSLServerContextImpl::SocketImpl::PrivateKeySignCallback(SSL* ssl,
                                                          uint16_t algorithm,
                                                          const uint8_t* in,
                                                          size_t in_len) {
-  return FromSSL(ssl)->PrivateKeySignCallback(out, out_len, max_out, algorithm,
-                                              in, in_len);
+  return FromSSL(ssl)->PrivateKeySignCallback(
+      algorithm,
+      // SAFETY:
+      // https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#ssl_private_key_method_st
+      // `ssl_private_key_method_st::sign` implies that the value of `in_len`
+      // is equal to the actual size of `in`.
+      UNSAFE_BUFFERS(base::span(in, in_len)));
 }
 
 // static
@@ -278,41 +274,43 @@ SSLServerContextImpl::SocketImpl::PrivateKeyCompleteCallback(SSL* ssl,
                                                              uint8_t* out,
                                                              size_t* out_len,
                                                              size_t max_out) {
-  return FromSSL(ssl)->PrivateKeyCompleteCallback(out, out_len, max_out);
+  return FromSSL(ssl)->PrivateKeyCompleteCallback(
+      // SAFETY:
+      // https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#ssl_private_key_method_st
+      // The comment of `ssl_private_key_method_st::complete` indicates that
+      // `max_out` is the actual size of the buffer.
+      UNSAFE_BUFFERS(base::span(out, max_out)), out_len);
 }
 
 ssl_private_key_result_t
-SSLServerContextImpl::SocketImpl::PrivateKeySignCallback(uint8_t* out,
-                                                         size_t* out_len,
-                                                         size_t max_out,
-                                                         uint16_t algorithm,
-                                                         const uint8_t* in,
-                                                         size_t in_len) {
+SSLServerContextImpl::SocketImpl::PrivateKeySignCallback(
+    uint16_t algorithm,
+    base::span<const uint8_t> input) {
   DCHECK(context_);
   DCHECK(context_->private_key_);
   signature_result_ = ERR_IO_PENDING;
   context_->private_key_->Sign(
-      algorithm, base::span(in, in_len),
+      algorithm, input,
       base::BindOnce(&SSLServerContextImpl::SocketImpl::OnPrivateKeyComplete,
                      weak_factory_.GetWeakPtr()));
   return ssl_private_key_retry;
 }
 
 ssl_private_key_result_t
-SSLServerContextImpl::SocketImpl::PrivateKeyCompleteCallback(uint8_t* out,
-                                                             size_t* out_len,
-                                                             size_t max_out) {
+SSLServerContextImpl::SocketImpl::PrivateKeyCompleteCallback(
+    base::span<uint8_t> buf,
+    size_t* out_len) {
   if (signature_result_ == ERR_IO_PENDING)
     return ssl_private_key_retry;
   if (signature_result_ != OK) {
     OpenSSLPutNetError(FROM_HERE, signature_result_);
     return ssl_private_key_failure;
   }
-  if (signature_.size() > max_out) {
+  if (signature_.size() > buf.size()) {
     OpenSSLPutNetError(FROM_HERE, ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED);
     return ssl_private_key_failure;
   }
-  memcpy(out, signature_.data(), signature_.size());
+  buf.copy_prefix_from(signature_);
   *out_len = signature_.size();
   signature_.clear();
   return ssl_private_key_success;

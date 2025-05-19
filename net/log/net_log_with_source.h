@@ -113,6 +113,12 @@ class NET_EXPORT NetLogWithSource {
   // Logs a byte transfer event to the NetLog.  Determines whether to log the
   // received bytes or not based on the current logging level.
   void AddByteTransferEvent(NetLogEventType event_type,
+                            base::span<const uint8_t> bytes) const;
+
+  // DEPRECATED: Use the above `base::span` variant to avoid unsafe buffer
+  // usage.
+  // TODO(https://crbug.com/40284755): Remove this once the callers are gone.
+  void AddByteTransferEvent(NetLogEventType event_type,
                             int byte_count,
                             const char* bytes) const;
 

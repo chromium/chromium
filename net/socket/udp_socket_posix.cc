@@ -5,12 +5,6 @@
 #include "net/socket/udp_socket_posix.h"
 
 #include "base/notimplemented.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -779,7 +773,9 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
     last_tos_ = 0;
     if (bytes_transferred > 0 && msg.msg_controllen > 0) {
       for (struct cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg != nullptr;
-           cmsg = CMSG_NXTHDR(&msg, cmsg)) {
+           // SAFETY: Size and null pointer checks are done in system header
+           // files.
+           cmsg = UNSAFE_BUFFERS(CMSG_NXTHDR(&msg, cmsg))) {
 #if BUILDFLAG(IS_APPLE)
         if ((cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_RECVTOS) ||
             (cmsg->cmsg_level == IPPROTO_IPV6 &&
@@ -789,7 +785,11 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
             (cmsg->cmsg_level == IPPROTO_IPV6 &&
              cmsg->cmsg_type == IPV6_TCLASS)) {
 #endif  // BUILDFLAG(IS_APPLE)
-          last_tos_ = *(reinterpret_cast<uint8_t*>(CMSG_DATA(cmsg)));
+          auto cmsg_data_as_span =
+              // SAFETY: `CMSG_DATA` points to `control_buffer`. Its size is
+              // 512.
+              UNSAFE_BUFFERS(base::span(CMSG_DATA(cmsg), sizeof(uint8_t)));
+          base::byte_span_from_ref(last_tos_).copy_from(cmsg_data_as_span);
         }
       }
     }
