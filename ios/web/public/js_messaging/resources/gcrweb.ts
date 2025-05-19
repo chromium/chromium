@@ -48,6 +48,12 @@ class CrWeb {
    * Registers and frame by sending its frameId to the native application.
    */
   registerFrame() {
+    if (!document.documentElement) {
+      // Prevent registering frames if there is no document element created.
+      // This is true when rendering non-web content, such as PDFs.
+      return;
+    }
+
     sendWebKitMessage(
       'FrameBecameAvailable', {'crwFrameId': this.getFrameId()});
   }
