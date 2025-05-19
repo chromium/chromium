@@ -1740,14 +1740,16 @@ TEST_F(MetricsServiceTest, PurgeLogsOnClonedInstallDetected) {
 
   // Save a machine id that will not cause a clone to be detected.
   GetLocalState()->SetInteger(prefs::kMetricsMachineId, kTestHashedId);
-  cloned_install_detector->SaveMachineId(GetLocalState(), kTestRawId);
+  cloned_install_detector->SaveMachineId(GetLocalState(), base::Time::Now(),
+                                         kTestRawId);
   // Verify that the logs are still present.
   EXPECT_TRUE(test_log_store->has_staged_log());
   EXPECT_TRUE(test_log_store->has_unsent_logs());
 
   // Save a machine id that will cause a clone to be detected.
   GetLocalState()->SetInteger(prefs::kMetricsMachineId, kTestHashedId + 1);
-  cloned_install_detector->SaveMachineId(GetLocalState(), kTestRawId);
+  cloned_install_detector->SaveMachineId(GetLocalState(), base::Time::Now(),
+                                         kTestRawId);
   // Verify that the logs were purged.
   EXPECT_FALSE(test_log_store->has_staged_log());
   EXPECT_FALSE(test_log_store->has_unsent_logs());

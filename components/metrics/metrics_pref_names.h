@@ -37,6 +37,7 @@ extern const char kUsePostFREFixSamplingTrial[];
 extern const char kClonedResetCount[];
 extern const char kFirstClonedResetTimestamp[];
 extern const char kLastClonedResetTimestamp[];
+extern const char kSessionStartTimestampForLastClonedDetection[];
 
 // For finding out whether metrics and crash reporting is enabled use the
 // relevant embedder-specific subclass of MetricsServiceAccessor instead of

@@ -57,16 +57,19 @@ void ClonedInstallDetector::CheckForClonedInstall(PrefService* local_state) {
   if (!MachineIdProvider::HasId())
     return;
 
+  base::Time check_initiated_timestamp = base::Time::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&MachineIdProvider::GetMachineId),
       base::BindOnce(&ClonedInstallDetector::SaveMachineId,
-                     weak_ptr_factory_.GetWeakPtr(), local_state));
+                     weak_ptr_factory_.GetWeakPtr(), local_state,
+                     check_initiated_timestamp));
 }
 
 void ClonedInstallDetector::SaveMachineId(PrefService* local_state,
+                                          base::Time check_initiated_timestamp,
                                           const std::string& raw_id) {
   if (raw_id.empty()) {
     LogMachineIdState(ID_GENERATION_FAILED);
@@ -82,7 +85,11 @@ void ClonedInstallDetector::SaveMachineId(PrefService* local_state,
       DCHECK(!detected_this_session_);
       id_state = ID_CHANGED;
       detected_this_session_ = true;
+
       local_state->SetBoolean(prefs::kMetricsResetIds, true);
+      local_state->SetInt64(prefs::kSessionStartTimestampForLastClonedDetection,
+                            check_initiated_timestamp.ToTimeT());
+
       callback_list_.Notify();
     } else {
       id_state = ID_UNCHANGED;
@@ -126,7 +133,7 @@ ClonedInstallDetector::AddOnClonedInstallDetectedCallback(
 
 void ClonedInstallDetector::SaveMachineIdForTesting(PrefService* local_state,
                                                     const std::string& raw_id) {
-  SaveMachineId(local_state, raw_id);
+  SaveMachineId(local_state, base::Time::Now(), raw_id);
 }
 
 // static
@@ -136,11 +143,15 @@ void ClonedInstallDetector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kClonedResetCount, 0);
   registry->RegisterInt64Pref(prefs::kFirstClonedResetTimestamp, 0);
   registry->RegisterInt64Pref(prefs::kLastClonedResetTimestamp, 0);
+  registry->RegisterInt64Pref(
+      prefs::kSessionStartTimestampForLastClonedDetection, 0);
 }
 
 ClonedInstallInfo ClonedInstallDetector::ReadClonedInstallInfo(
     PrefService* local_state) {
   return ClonedInstallInfo{
+      .last_detection_timestamp = local_state->GetInt64(
+          prefs::kSessionStartTimestampForLastClonedDetection),
       .last_reset_timestamp =
           local_state->GetInt64(prefs::kLastClonedResetTimestamp),
       .first_reset_timestamp =
@@ -152,8 +163,10 @@ void ClonedInstallDetector::ClearClonedInstallInfo(PrefService* local_state) {
   local_state->ClearPref(prefs::kClonedResetCount);
   local_state->ClearPref(prefs::kFirstClonedResetTimestamp);
   local_state->ClearPref(prefs::kLastClonedResetTimestamp);
+  local_state->ClearPref(prefs::kSessionStartTimestampForLastClonedDetection);
 }
 
+// static
 void ClonedInstallDetector::RecordClonedInstallInfo(PrefService* local_state) {
   ClonedInstallInfo cloned = ReadClonedInstallInfo(local_state);
 
@@ -168,6 +181,20 @@ void ClonedInstallDetector::RecordClonedInstallInfo(PrefService* local_state) {
   }
   local_state->SetInt64(prefs::kLastClonedResetTimestamp, time);
   local_state->SetInteger(prefs::kClonedResetCount, cloned.reset_count + 1);
+
+  if (!cloned.last_detection_timestamp) {
+    // `prefs::kSessionStartTimestampForLastClonedDetection` (which is read to
+    // `last_detection_timestamp`) is expected to be set when we flag the
+    // client as a clone to be reset. This timestamp might be missing,
+    // especially on older milestones that did not set the timestamp yet, or if
+    // the user toggled UMA opt-in during the session that detected the clone.
+    // In this case, we can use the reset time as a fallback value. We might
+    // then mistakenly attribute some events that happened on the current
+    // (cloned) install as having taken place on the original install. That's
+    // acceptable.
+    local_state->SetInt64(prefs::kSessionStartTimestampForLastClonedDetection,
+                          time);
+  }
 }
 
 }  // namespace metrics
