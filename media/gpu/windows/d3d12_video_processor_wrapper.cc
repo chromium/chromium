@@ -169,8 +169,9 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
       .Transform = {.SourceRectangle = input_rectangle.ToRECT(),
                     .DestinationRectangle = output_rectangle.ToRECT()}};
   D3D12_VIDEO_PROCESS_OUTPUT_STREAM_ARGUMENTS output_stream_arguments{
-      .OutputStream = {
-          {.pTexture2D = output_texture, .Subresource = output_subresource}}};
+      .OutputStream = {{.pTexture2D = output_texture,
+                        .Subresource = output_subresource}},
+      .TargetRectangle = output_rectangle.ToRECT()};
   command_list_->ProcessFrames(video_processor_.Get(), &output_stream_arguments,
                                1, &input_stream_arguments);
 
