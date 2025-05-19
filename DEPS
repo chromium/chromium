@@ -266,11 +266,11 @@ vars = {
   'reclient_version': 're_client_version:0.178.0.5ee9d3e8-gomaip',
 
   # screen-ai CIPD packages
-  'screen_ai_linux': 'version:138.00',
-  'screen_ai_macos_amd64': 'version:138.00',
-  'screen_ai_macos_arm64': 'version:138.00',
-  'screen_ai_windows_amd64': 'version:138.00',
-  'screen_ai_windows_386': 'version:138.00',
+  'screen_ai_linux': 'version:138.01',
+  'screen_ai_macos_amd64': 'version:138.01',
+  'screen_ai_macos_arm64': 'version:138.01',
+  'screen_ai_windows_amd64': 'version:138.01',
+  'screen_ai_windows_386': 'version:138.01',
 
   # siso CIPD package version.
   'siso_version': 'git_revision:3753a55d0911b4ea3dd000263088f60edb8d947b',
