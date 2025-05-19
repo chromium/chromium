@@ -64,7 +64,7 @@ class ParseArgsTest(unittest.TestCase):
 
     # No logs to the mock result in an exception trying to assert
     # Verify nothing new is logged instead
-    mock_random.return_value = 0.02
+    mock_random.return_value = 0.051
     with self.assertLogs() as info_log:
       logging.info('')
       run.maybe_print_survey_link()

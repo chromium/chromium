@@ -36,8 +36,8 @@ _SURVEY_LINK = 'https://forms.gle/tA41evzW5goqR5WF9'
 
 
 def maybe_print_survey_link():
-  # Only print the link every 100 runs
-  if random.random() < 0.01:
+  # Only print the link every 5% of runs
+  if random.random() < 0.05:
     logging.info('Help us improve by sharing your feedback in this short '
                  'survey: %s' % _SURVEY_LINK)
 
