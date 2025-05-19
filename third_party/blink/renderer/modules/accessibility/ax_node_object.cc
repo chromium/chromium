@@ -438,22 +438,6 @@ String GetTitle(blink::Element* element) {
   return element->title();
 }
 
-bool CanHaveInlineTextBoxChildren(const blink::AXObject* obj) {
-  if (!ui::CanHaveInlineTextBoxChildren(obj->RoleValue())) {
-    return false;
-  }
-
-  // Requires a layout object for there to be any inline text boxes.
-  if (!obj->GetLayoutObject()) {
-    return false;
-  }
-
-  // Inline text boxes are included if and only if the parent is unignored.
-  // If the parent is ignored but included in tree, the inline textbox is
-  // still withheld.
-  return !obj->IsIgnored();
-}
-
 bool HasLayoutText(const blink::AXObject* obj) {
   // This method should only be used when layout is clean.
 #if DCHECK_IS_ON()
@@ -5674,28 +5658,6 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
 // Inline text boxes.
 //
 
-bool AXNodeObject::ShouldLoadInlineTextBoxes() const {
-  CHECK(!IsDetached());
-
-  if (!CanHaveInlineTextBoxChildren(this)) {
-    return false;
-  }
-
-  if (!AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes)) {
-    return false;
-  }
-
-#if defined(REDUCE_AX_INLINE_TEXTBOXES)
-  // On Android, once an object has loaded inline text boxes, it will keep
-  // them refreshed.
-  return always_load_inline_text_boxes_;
-#else
-  // Other platforms keep all inline text boxes in the tree and refreshed,
-  // depending on the AXMode.
-  return true;
-#endif
-}
-
 void AXNodeObject::LoadInlineTextBoxes() {
 #if DCHECK_IS_ON()
   DCHECK(GetDocument()->Lifecycle().GetState() >=
@@ -5744,7 +5706,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
   // Keep inline text box children up-to-date for this object in the future.
   // This is only necessary on Android, which tries to skip inline text boxes
   // for most objects.
-  always_load_inline_text_boxes_ = true;
+  SetAlwaysLoadInlineTextBoxes(true);
 #endif
 
   if (AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates()) {

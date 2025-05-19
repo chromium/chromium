@@ -708,8 +708,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // false. Must be called with clean layout.
   virtual void LoadInlineTextBoxes();
   virtual void LoadInlineTextBoxesHelper();
-  // When adding children to this node, consider inline textboxes.
-  virtual bool ShouldLoadInlineTextBoxes() const { return false; }
 
   // Walk the AXObjects on the same line.
   virtual AXObject* NextOnLine() const;
@@ -1501,6 +1499,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
                                 bool* clips_children) const;
 
+  // Should inline text boxes be considered when adding children to this node.
+  bool ShouldLoadInlineTextBoxes() const;
+
  protected:
   AXID id_;
   // Any parent, regardless of whether it's ignored or not included in the tree.
@@ -1611,6 +1612,16 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     ax_object_cache_ = &ax_object_cache;
   }
 
+  // Is it possible for inline textboxes to be attached to these type of node?
+  bool CanHaveInlineTextBoxChildren(const blink::AXObject* obj) const;
+
+#if defined(REDUCE_AX_INLINE_TEXTBOXES)
+  // Used on Android. On other platforms, this is effectively always true.
+  void SetAlwaysLoadInlineTextBoxes(bool should_load) {
+    always_load_inline_text_boxes_ = should_load;
+  }
+#endif
+
  private:
   bool ComputeCanSetFocusAttribute();
   String KeyboardShortcut() const;
@@ -1644,6 +1655,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool cached_is_descendant_of_disabled_node_ : 1 = false;
   bool cached_can_set_focus_attribute_ : 1 = false;
   bool cached_is_in_menu_list_subtree_ : 1 = false;
+  bool always_load_inline_text_boxes_ : 1 = false;  // Used for Android only.
   std::optional<bool> cached_is_on_screen_;
 
   Member<AXObject> cached_live_region_root_;

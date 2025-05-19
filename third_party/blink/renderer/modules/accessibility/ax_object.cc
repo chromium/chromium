@@ -5574,6 +5574,44 @@ void AXObject::LoadInlineTextBoxes() {}
 
 void AXObject::LoadInlineTextBoxesHelper() {}
 
+bool AXObject::CanHaveInlineTextBoxChildren(const blink::AXObject* obj) const {
+  if (!ui::CanHaveInlineTextBoxChildren(obj->RoleValue())) {
+    return false;
+  }
+
+  // Requires a layout object for there to be any inline text boxes.
+  if (!obj->GetLayoutObject()) {
+    return false;
+  }
+
+  // Inline text boxes are included if and only if the parent is unignored.
+  // If the parent is ignored but included in tree, the inline textbox is
+  // still withheld.
+  return !obj->IsIgnored();
+}
+
+bool AXObject::ShouldLoadInlineTextBoxes() const {
+  CHECK(!IsDetached());
+
+  if (!CanHaveInlineTextBoxChildren(this)) {
+    return false;
+  }
+
+  if (!AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes)) {
+    return false;
+  }
+
+#if defined(REDUCE_AX_INLINE_TEXTBOXES)
+  // On Android, once an object has loaded inline text boxes, it will keep
+  // them refreshed.
+  return always_load_inline_text_boxes_;
+#else
+  // Other platforms keep all inline text boxes in the tree and refreshed,
+  // depending on the AXMode.
+  return true;
+#endif
+}
+
 AXObject* AXObject::NextOnLine() const {
   return nullptr;
 }
