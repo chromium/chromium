@@ -95,7 +95,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                      const SkIRect& damage_rect,
                      bool is_opaque);
   // virtual for mocking
-  virtual void OnPlaceholderReleasedResource();
+  virtual void OnMainThreadReceivedImage();
   void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
                          base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,

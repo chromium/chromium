@@ -39,12 +39,12 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
             placeholder_id,
             /*canvas_size=*/{kWidth, kHeight}) {}
 
-  void OnPlaceholderReleasedResource() override {
-    PlaceholderReleasedResource();
-    CanvasResourceDispatcher::OnPlaceholderReleasedResource();
+  void OnMainThreadReceivedImage() override {
+    MainThreadReceivedImage();
+    CanvasResourceDispatcher::OnMainThreadReceivedImage();
   }
 
-  MOCK_METHOD0(PlaceholderReleasedResource, void());
+  MOCK_METHOD0(MainThreadReceivedImage, void());
 };
 
 unsigned GenPlaceholderId() {
@@ -136,19 +136,19 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameCleared) {
   DrawSomething();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(1);
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(0);
   DrawSomething();
   CanvasResource* frame2_raw_ptr = DispatchOneFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(1);
   // Propagate second frame to the placeholder, causing frame 1 to be
   // cleared.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
@@ -167,7 +167,7 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameClearedWithExtraRef) {
   DrawSomething();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(1);
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
@@ -176,23 +176,23 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameClearedWithExtraRef) {
       placeholder()->OffscreenCanvasFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(0);
   DrawSomething();
   CanvasResource* frame2_raw_ptr = DispatchOneFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(1);
   // Propagate second frame to the placeholder. First frame will be cleared.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   platform->RunUntilIdle();
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(0);
   extra_ref = nullptr;
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
+  EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(0);
   platform->RunUntilIdle();
   Mock::VerifyAndClearExpectations(dispatcher());
 }

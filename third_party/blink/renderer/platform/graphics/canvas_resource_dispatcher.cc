@@ -111,7 +111,7 @@ void UpdatePlaceholderImage(
                                                    resource_id);
     task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(&CanvasResourceDispatcher::OnPlaceholderReleasedResource,
+        base::BindOnce(&CanvasResourceDispatcher::OnMainThreadReceivedImage,
                        dispatcher));
   }
 }
@@ -443,7 +443,7 @@ void CanvasResourceDispatcher::ReclaimResources(
   }
 }
 
-void CanvasResourceDispatcher::OnPlaceholderReleasedResource() {
+void CanvasResourceDispatcher::OnMainThreadReceivedImage() {
   num_unreclaimed_frames_posted_--;
 
   // The main thread has become unblocked recently and we have an image that

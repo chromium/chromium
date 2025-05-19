@@ -184,17 +184,17 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderRunsNormally) {
    * the resources in order. */
   // Reclaim first frame
   viz::ResourceId reclaim_resource_id(1u);
-  Dispatcher()->OnPlaceholderReleasedResource();
+  Dispatcher()->OnMainThreadReceivedImage();
   EXPECT_EQ(2u, GetNumUnreclaimedFramesPosted());
 
   // Reclaim second frame
   reclaim_resource_id = NextId(reclaim_resource_id);
-  Dispatcher()->OnPlaceholderReleasedResource();
+  Dispatcher()->OnMainThreadReceivedImage();
   EXPECT_EQ(1u, GetNumUnreclaimedFramesPosted());
 
   // Reclaim third frame
   reclaim_resource_id = NextId(reclaim_resource_id);
-  Dispatcher()->OnPlaceholderReleasedResource();
+  Dispatcher()->OnMainThreadReceivedImage();
   EXPECT_EQ(0u, GetNumUnreclaimedFramesPosted());
 }
 
@@ -250,7 +250,7 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
    * Resource reclaim happens in the same order as frame posting. */
   viz::ResourceId reclaim_resource_id(1u);
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
-  Dispatcher()->OnPlaceholderReleasedResource();
+  Dispatcher()->OnMainThreadReceivedImage();
   // Reclaim 1 frame and post 1 frame, so numPostImagesUnresponded remains as 3
   EXPECT_EQ(CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames,
             GetNumUnreclaimedFramesPosted());
@@ -262,7 +262,7 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
 
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _)).Times(0);
   reclaim_resource_id = NextId(reclaim_resource_id);
-  Dispatcher()->OnPlaceholderReleasedResource();
+  Dispatcher()->OnMainThreadReceivedImage();
   EXPECT_EQ(CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames - 1,
             GetNumUnreclaimedFramesPosted());
   Mock::VerifyAndClearExpectations(Dispatcher());
@@ -446,7 +446,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   Dispatcher()->DispatchFrame(canvas_resource, base::TimeTicks::Now(),
                               damage_rect, !context_alpha /* is_opaque */);
   platform->RunUntilIdle();
-  Dispatcher()->OnPlaceholderReleasedResource();
+  Dispatcher()->OnMainThreadReceivedImage();
 }
 
 const TestParams kTestCases[] = {
