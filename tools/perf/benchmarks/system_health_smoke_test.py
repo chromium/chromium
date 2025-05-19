@@ -79,6 +79,9 @@ _DISABLED_TESTS = frozenset({
     # crbug.com/401513455
     'system_health.memory_desktop/load_accessibility:tech:codesearch:2025',
 
+    # crbug.com/418717796 - flaky
+    'system_health.memory_desktop/load:media:youtubelivingroom:2020',
+
     # The following tests are disabled because they are disabled on the perf
     # waterfall (using tools/perf/expectations.config) on one platform or
     # another. They may run fine on the CQ, but it isn't worth the bot time to
@@ -119,7 +122,7 @@ class SystemHealthBenchmarkSmokeTest(unittest.TestCase):
 
 def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
 
-  # NOTE TO SHERIFFS: DO NOT DISABLE THIS TEST.
+  # NOTE TO GARDENERS: DO NOT DISABLE THIS TEST.
   #
   # This smoke test dynamically tests all system health user stories. So
   # disabling it for one failing or flaky benchmark would disable a much
