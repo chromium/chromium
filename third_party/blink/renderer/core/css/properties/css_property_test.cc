@@ -477,6 +477,12 @@ TEST_F(CSSPropertyTest, AnchorModeHeight) {
             ComputedValue("max-height", "anchor-size(width, 0px)", context));
 }
 
+TEST_F(CSSPropertyTest, IdentFunctionFeatureDisabled) {
+  ScopedCSSIdentFunctionForTest scoped_feature(false);
+
+  EXPECT_FALSE(Parse("view-transition-name", "ident(a)"));
+}
+
 struct DirectionAwarePropertyData {
   CSSPropertyID physical;
   CSSPropertyID logical;

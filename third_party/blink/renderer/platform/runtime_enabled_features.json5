@@ -1261,6 +1261,11 @@
       status: "stable",
     },
     {
+      // // https://drafts.csswg.org/css-values-5/#ident
+      name: "CSSIdentFunction",
+      status: "test",
+    },
+    {
       // Support making elements inert through the interactivity property.
       name: "CSSInert",
       status: "stable",

@@ -43,7 +43,12 @@ CSSValueList::CSSValueList(ValueListSeparator list_separator)
 
 CSSValueList::CSSValueList(ValueListSeparator list_separator,
                            HeapVector<Member<const CSSValue>, 4> values)
-    : CSSValue(kValueListClass), values_(std::move(values)) {
+    : CSSValueList(kValueListClass, list_separator, std::move(values)) {}
+
+CSSValueList::CSSValueList(ClassType class_type,
+                           ValueListSeparator list_separator,
+                           HeapVector<Member<const CSSValue>, 4> values)
+    : CSSValue(class_type), values_(std::move(values)) {
   value_list_separator_ = list_separator;
 }
 

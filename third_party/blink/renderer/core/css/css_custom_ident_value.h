@@ -13,20 +13,24 @@
 
 namespace blink {
 
-class TreeScope;
+class CSSFunctionValue;
+class CSSLengthResolver;
 class ScopedCSSName;
+class TreeScope;
 
 class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
  public:
   explicit CSSCustomIdentValue(const AtomicString&);
   explicit CSSCustomIdentValue(CSSPropertyID);
   explicit CSSCustomIdentValue(const ScopedCSSName&);
+  explicit CSSCustomIdentValue(const CSSFunctionValue& ident_function);
 
   const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
   const AtomicString& Value() const {
     DCHECK(!IsKnownPropertyID());
     return string_;
   }
+  AtomicString ComputeIdent(const CSSLengthResolver&) const;
   bool IsKnownPropertyID() const {
     return property_id_ != CSSPropertyID::kInvalid;
   }
@@ -40,18 +44,13 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
 
   const CSSCustomIdentValue& PopulateWithTreeScope(const TreeScope*) const;
 
-  bool Equals(const CSSCustomIdentValue& other) const {
-    if (IsKnownPropertyID()) {
-      return property_id_ == other.property_id_;
-    }
-    return IsScopedValue() == other.IsScopedValue() &&
-           tree_scope_ == other.tree_scope_ && string_ == other.string_;
-  }
+  bool Equals(const CSSCustomIdentValue& other) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   WeakMember<const TreeScope> tree_scope_;
+  Member<const CSSFunctionValue> ident_function_;
   AtomicString string_;
   CSSPropertyID property_id_;
 };

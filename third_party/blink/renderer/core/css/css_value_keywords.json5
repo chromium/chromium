@@ -1997,6 +1997,9 @@
     "sibling-count",
     "sibling-index",
 
+    // https://drafts.csswg.org/css-values-5/#ident
+    "ident",
+
     // @function
     "returns",
 
