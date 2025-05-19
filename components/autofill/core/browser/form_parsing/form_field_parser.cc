@@ -67,6 +67,7 @@ AutofillRegexCache& GetAutofillRegexCache() {
 }
 
 void MaybePrintMatchLogs(LogManager* log_manager,
+                         const AutofillField& field,
                          std::string_view regex_name,
                          std::string_view match_attribute_str,
                          std::u16string_view value,
@@ -77,7 +78,13 @@ void MaybePrintMatchLogs(LogManager* log_manager,
   }
   CHECK(!matches.empty());
   LogBuffer table_rows;
-  LOG_AF(table_rows) << Tr{} << "Match type: Match in " << match_attribute_str;
+  LOG_AF(table_rows) << Tr{} << "Match in: " << match_attribute_str;
+  LOG_AF(table_rows) << Tr{} << "Field identifiers: "
+                     << base::StrCat(
+                            {"renderer id: ",
+                             base::NumberToString(field.renderer_id().value()),
+                             ", host frame: ",
+                             field.renderer_form_id().frame_token.ToString()});
   LOG_AF(table_rows) << Tr{} << "RegEx:" << regex_name
                      << (is_negative_pattern ? " (Negative Pattern)" : "");
   LOG_AF(table_rows) << Tr{} << "Value: " << HighlightValue(value, matches[0]);
@@ -724,8 +731,8 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInLabel(
 
   if (!context.better_placeholder_support || field.placeholder().empty()) {
     if (MatchesRegexWithCache(context, label, pattern, capture_destination)) {
-      MaybePrintMatchLogs(context.log_manager, regex_name, "label", label,
-                          matches, is_negative_pattern);
+      MaybePrintMatchLogs(context.log_manager, field, regex_name, "label",
+                          label, matches, is_negative_pattern);
       return MatchInfo{.matched_attribute =
                            MatchInfo::MatchAttribute::kHighQualityLabel};
     }
@@ -741,15 +748,17 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInLabel(
 
   if (MatchesRegexWithCache(context, high_quality_label, pattern,
                             capture_destination)) {
-    MaybePrintMatchLogs(context.log_manager, regex_name, "high quality label",
-                        high_quality_label, matches, is_negative_pattern);
+    MaybePrintMatchLogs(context.log_manager, field, regex_name,
+                        "high quality label", high_quality_label, matches,
+                        is_negative_pattern);
     return MatchInfo{.matched_attribute =
                          MatchInfo::MatchAttribute::kHighQualityLabel};
   }
   if (MatchesRegexWithCache(context, low_quality_label, pattern,
                             capture_destination)) {
-    MaybePrintMatchLogs(context.log_manager, regex_name, "low quality label",
-                        low_quality_label, matches, is_negative_pattern);
+    MaybePrintMatchLogs(context.log_manager, field, regex_name,
+                        "low quality label", low_quality_label, matches,
+                        is_negative_pattern);
     return MatchInfo{.matched_attribute =
                          MatchInfo::MatchAttribute::kLowQualityLabel};
   }
@@ -770,8 +779,8 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInName(
 
   const std::u16string& name = field.parseable_name();
   if (MatchesRegexWithCache(context, name, pattern, capture_destination)) {
-    MaybePrintMatchLogs(context.log_manager, regex_name, "name", name, matches,
-                        is_negative_pattern);
+    MaybePrintMatchLogs(context.log_manager, field, regex_name, "name", name,
+                        matches, is_negative_pattern);
     return MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName};
   }
   return std::nullopt;
