@@ -429,7 +429,7 @@ class DCompImageBackingFactoryVisualTreeTest
     dcomp_device_ = gl::GetDirectCompositionDevice();
 
     static_cast<ui::PlatformWindow*>(&window_)->Show();
-    child_window_.Initialize(/*remove_redirection_bitmap=*/true);
+    child_window_.Initialize();
     child_window_.Resize(window_size_);
     ::SetParent(child_window_.window(), window_.hwnd());
   }

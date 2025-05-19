@@ -150,10 +150,6 @@ bool GLSurface::IsCurrent() {
   return GetCurrent() == this;
 }
 
-EGLNativeWindowType GLSurface::GetNativeWindow() const {
-  return 0;
-}
-
 // static
 void GLSurface::SetForcedGpuPreference(GpuPreference gpu_preference) {
   DCHECK_EQ(GpuPreference::kDefault, forced_gpu_preference_);

@@ -588,11 +588,14 @@ bool ShouldRemoveRedirectionBitmap() {
   // Limit to Win11 because there are a high number of D3D9 users on Win10;
   // which requires the Redirection Bitmap. Additionally, software GL in tests
   // can take the Swiftshader rendering path, which also needs the Redirection
-  // Bitmap.
+  // Bitmap. On devices with DComp disabled, ANGLE draws to the redirection
+  // bitmap via a blit swap chain, so check for the command line switch as well.
   return base::win::GetVersion() >= base::win::Version::WIN11 &&
          base::FeatureList::IsEnabled(kRemoveRedirectionBitmap) &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kOverrideUseSoftwareGLForTests);
+             switches::kOverrideUseSoftwareGLForTests) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableDirectComposition);
 }
 #endif
 

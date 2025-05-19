@@ -28,7 +28,7 @@ class GL_EXPORT ChildWindowWin {
 
   ~ChildWindowWin();
 
-  void Initialize(bool remove_redirection_bitmap);
+  void Initialize();
   HWND window() const { return window_; }
 
   void Resize(const gfx::Size& size);

@@ -92,8 +92,7 @@ class HiddenPopupWindow : public gfx::WindowImpl {
 // This runs on the window owner thread.
 void CreateWindowsOnThread(base::WaitableEvent* event,
                            HWND* child_window,
-                           HWND* parent_window,
-                           bool remove_redirection_bitmap) {
+                           HWND* parent_window) {
   InitializeWindowClass();
   DCHECK(g_window_class);
 
@@ -101,30 +100,21 @@ void CreateWindowsOnThread(base::WaitableEvent* event,
   *parent_window = HiddenPopupWindow::Create();
   // Create child window.
   // WS_EX_NOPARENTNOTIFY and WS_EX_LAYERED make the window transparent for
-  // input. WS_EX_NOREDIRECTIONBITMAP avoids allocating a bitmap that would
-  // otherwise be allocated with WS_EX_LAYERED, the bitmap is only necessary if
-  // using Gdi objects with the window or if bitBlit swap chains are used. Using
-  // a size of 1x1 is fine because the window will be subsequently resized using
-  // SetWindowPos whenever the parent window size changes.
-  DWORD extended_styles =
-      WS_EX_NOPARENTNOTIFY | WS_EX_LAYERED | WS_EX_TRANSPARENT;
-  if (remove_redirection_bitmap) {
-    extended_styles |= WS_EX_NOREDIRECTIONBITMAP;
-  }
+  // input. WS_EX_NOREDIRECTIONBITMAP avoids allocating a
+  // bitmap that would otherwise be allocated with WS_EX_LAYERED, the bitmap is
+  // only necessary if using Gdi objects with the window.
+  // Using a size of 1x1 is fine because the window will be subsequently resized
+  // using SetWindowPos whenever the parent window size changes.
   const HWND window = CreateWindowEx(
-      extended_styles, reinterpret_cast<wchar_t*>(g_window_class), L"",
+      WS_EX_NOPARENTNOTIFY | WS_EX_LAYERED | WS_EX_TRANSPARENT |
+          WS_EX_NOREDIRECTIONBITMAP,
+      reinterpret_cast<wchar_t*>(g_window_class), L"",
       WS_CHILDWINDOW | WS_DISABLED | WS_VISIBLE, 0, 0, /*width*/ 1,
       /*height*/ 1, *parent_window, nullptr, nullptr, nullptr);
   if (!window) {
     logging::SystemErrorCode error = logging::GetLastSystemErrorCode();
     base::debug::Alias(&error);
     NOTREACHED();
-  }
-  // If the window is created with a Redirection Bitmap, it is being used
-  // as a rendering surface for bitBlt swap chains. Therefore ensure that this
-  // window is not transparent.
-  if (!remove_redirection_bitmap) {
-    SetLayeredWindowAttributes(window, 0, 255, LWA_ALPHA);
   }
   *child_window = window;
   event->Signal();
@@ -171,7 +161,7 @@ class ChildWindowWin::ChildWindowThread {
 
 ChildWindowWin::ChildWindowWin() = default;
 
-void ChildWindowWin::Initialize(bool remove_redirection_bitmap) {
+void ChildWindowWin::Initialize() {
   if (window_)
     return;
 
@@ -179,9 +169,8 @@ void ChildWindowWin::Initialize(bool remove_redirection_bitmap) {
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   ChildWindowThread::GetInstance()->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CreateWindowsOnThread, &event, &window_,
-                     &initial_parent_window_, remove_redirection_bitmap));
+      FROM_HERE, base::BindOnce(&CreateWindowsOnThread, &event, &window_,
+                                &initial_parent_window_));
   event.Wait();
 }
 

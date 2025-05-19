@@ -98,7 +98,7 @@ bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
   switch (context_state_->dawn_context_provider()->backend_type()) {
     case wgpu::BackendType::D3D11:
     case wgpu::BackendType::D3D12:
-      child_window_.Initialize(/*remove_redirection_bitmap=*/true);
+      child_window_.Initialize();
       window_handle_to_draw_to = child_window_.window();
       break;
     default:

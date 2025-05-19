@@ -53,7 +53,7 @@ SoftwareOutputDeviceWinSwapChain::SoftwareOutputDeviceWinSwapChain(
     HWND& child_hwnd,
     OutputDeviceBacking* output_backing)
     : SoftwareOutputDeviceWinBase(hwnd), output_backing_(output_backing) {
-  child_window_.Initialize(/*remove_redirection_bitmap=*/true);
+  child_window_.Initialize();
   child_hwnd = child_window_.window();
   output_backing_->RegisterClient(this);
 }

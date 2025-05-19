@@ -41,7 +41,7 @@ DCompPresenter::DCompPresenter(const Settings& settings)
       use_gpu_vsync_(features::UseGpuVsync()) {
   CHECK(DirectCompositionSupported());
   d3d11_device_ = GetDirectCompositionD3D11Device();
-  child_window_.Initialize(/*remove_redirection_bitmap=*/true);
+  child_window_.Initialize();
   layer_tree_->Initialize(child_window_.window(), d3d11_device_);
 }
 

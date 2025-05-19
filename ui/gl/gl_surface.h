@@ -108,8 +108,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface> {
   // FBO. Otherwise returns 0.
   virtual unsigned int GetBackingFramebufferObject();
 
-  virtual EGLNativeWindowType GetNativeWindow() const;
-
   // The SwapCompletionCallback is used to receive notification about the
   // completion of the swap operation from |SwapBuffersAsync|,
   // |PostSubBufferAsync|, |CommitOverlayPlanesAsync|, etc. If a null gpu fence

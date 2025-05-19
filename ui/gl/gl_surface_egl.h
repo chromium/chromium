@@ -34,10 +34,6 @@
 #include "ui/gl/android/scoped_a_native_window.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/child_window_win.h"
-#endif
-
 namespace gl {
 
 class GLSurfacePresentationHelper;
@@ -111,7 +107,6 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
   void SetVSyncEnabled(bool enabled) override;
   gfx::SurfaceOrigin GetOrigin() const override;
   EGLTimestampClient* GetEGLTimestampClient() override;
-  EGLNativeWindowType GetNativeWindow() const override;
 
   // EGLTimestampClient implementation.
   bool IsEGLTimestampSupported() const override;
@@ -131,12 +126,6 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
 #if BUILDFLAG(IS_ANDROID)
   ScopedANativeWindow scoped_window_;
 #endif
-
-#if BUILDFLAG(IS_WIN)
-  // Rendering surface for a DirectX swap chain.
-  gl::ChildWindowWin child_window_;
-#endif  // BUILDFLAG(IS_WIN)
-
   EGLNativeWindowType window_ = 0;
   gfx::Size size_ = gfx::Size(1, 1);
   bool enable_fixed_size_angle_ = true;

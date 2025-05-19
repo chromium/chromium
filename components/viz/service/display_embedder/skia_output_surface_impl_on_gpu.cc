@@ -1978,13 +1978,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         return false;
       }
 
-#if BUILDFLAG(IS_WIN)
-      if (features::ShouldRemoveRedirectionBitmap() &&
-          gl_surface_->GetNativeWindow() != gpu::kNullSurfaceHandle) {
-        AddChildWindowToBrowser(gl_surface_->GetNativeWindow());
-      }
-#endif  // BUILDFLAG(IS_WIN)
-
       if (gl_surface_->SupportsSwapTimestamps()) {
         gl_surface_->SetEnableSwapTimestamps();
       }
