@@ -44,6 +44,7 @@ class DeviceInfo {
 
   // A struct that holds information regarding to Sharing features.
   struct SharingInfo {
+    // TODO(crbug.com/40253551): remove `vapid_target_info`.
     SharingInfo(SharingTargetInfo vapid_target_info,
                 SharingTargetInfo sharing_target_info,
                 std::string chime_representative_target_id,

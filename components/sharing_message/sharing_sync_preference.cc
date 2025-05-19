@@ -72,6 +72,7 @@ std::optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
 
 using sync_pb::SharingSpecificFields;
 
+// TODO(crbug.com/40253551): Remove `authorized_entity` field.
 SharingSyncPreference::FCMRegistration::FCMRegistration(
     std::optional<std::string> authorized_entity,
     base::Time timestamp)

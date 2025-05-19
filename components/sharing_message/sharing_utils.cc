@@ -30,6 +30,8 @@ bool CanListDevices(syncer::SyncService* sync_service) {
 
 }  // namespace
 
+// TODO(crbug.com/40253551): remove the method (and it should return false by
+// default).
 bool CanSendViaVapid(syncer::SyncService* sync_service) {
   // Can send using VAPID key in sharing.vapid_key preferences.
   return sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES);

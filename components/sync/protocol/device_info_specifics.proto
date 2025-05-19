@@ -125,27 +125,25 @@ message FeatureSpecificFields {
 // devices.
 message SharingSpecificFields {
   // FCM registration token of device subscribed using VAPID key.
-  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-  optional string vapid_fcm_token = 1;
+  // TODO(crbug.com/40253551): Deprecate when VAPID migration is over.
+  optional string vapid_fcm_token = 1 [deprecated = true];
 
   // Public key for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-  optional bytes vapid_p256dh = 2;
+  optional bytes vapid_p256dh = 2 [deprecated = true];
 
   // Auth secret for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-  optional bytes vapid_auth_secret = 3;
+  optional bytes vapid_auth_secret = 3 [deprecated = true];
 
   // Enum defining available Sharing features.
   enum EnabledFeatures {
     reserved 5;
     reserved "PEER_CONNECTION";
+    reserved 1;
+    reserved "CLICK_TO_CALL_VAPID";
+    reserved 2;
+    reserved "SHARED_CLIPBOARD_VAPID";
 
     UNKNOWN = 0;
-    // Supports Click to Call only via VAPID.
-    CLICK_TO_CALL_VAPID = 1;
-    // Supports Shared Clipboard only via VAPID.
-    SHARED_CLIPBOARD_VAPID = 2;
     SMS_FETCHER = 3;
     REMOTE_COPY = 4;
     DISCOVERY = 6;

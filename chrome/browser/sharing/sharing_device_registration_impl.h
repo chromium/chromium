@@ -85,11 +85,11 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   FRIEND_TEST_ALL_PREFIXES(SharingDeviceRegistrationImplTest,
                            RegisterDeviceTest_Success);
 
-  void RetrieveTargetInfo(const std::string& authorized_entity,
+  void RetrieveTargetInfo(const std::string& sender_id,
                           TargetInfoCallback callback);
 
   void OnFCMTokenReceived(TargetInfoCallback callback,
-                          const std::string& authorized_entity,
+                          const std::string& sender_id,
                           const std::string& fcm_token,
                           instance_id::InstanceID::Result result);
 
@@ -98,16 +98,8 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
                                 std::string p256dh,
                                 std::string auth_secret);
 
-  void OnVapidTargetInfoRetrieved(
-      RegistrationCallback callback,
-      std::optional<std::string> authorized_entity,
-      SharingDeviceRegistrationResult result,
-      std::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info);
-
   void OnSharingTargetInfoRetrieved(
       RegistrationCallback callback,
-      std::optional<std::string> authorized_entity,
-      std::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info,
       SharingDeviceRegistrationResult result,
       std::optional<syncer::DeviceInfo::SharingTargetInfo> sharing_target_info);
 
@@ -120,15 +112,9 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   void OnFCMTokenDeleted(RegistrationCallback callback,
                          instance_id::InstanceID::Result result);
 
-  // Returns the authorization entity for FCM registration.
-  std::optional<std::string> GetAuthorizationEntity() const;
-
   // Computes and returns a set of all enabled features on the device.
-  // |supports_vapid|: If set to true, then enabled features with VAPID suffix
-  // will be returned, meaning old clients can send VAPID message to this device
-  // for those features.
-  std::set<sync_pb::SharingSpecificFields_EnabledFeatures> GetEnabledFeatures(
-      bool supports_vapid) const;
+  std::set<sync_pb::SharingSpecificFields_EnabledFeatures> GetEnabledFeatures()
+      const;
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<SharingSyncPreference> sharing_sync_preference_;
