@@ -180,6 +180,7 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful() {
     std::move(callback_).Run(false);
     return;
   }
+  server_request_start_time_ = base::Time::Now();
   optimization_guide::ModelExecutionCallbackWithLogging<
       optimization_guide::proto::PasswordChangeSubmissionLoggingData>
       wrapper_callback = password_manager::metrics_util::TimeCallback(
@@ -228,8 +229,8 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
   }
 
   if (logging_data) {
-    logs_uploader_->SetVerifySubmissionQuality(response,
-                                               std::move(logging_data));
+    logs_uploader_->SetVerifySubmissionQuality(
+        response, std::move(logging_data), server_request_start_time_);
   }
 
   if (!response) {

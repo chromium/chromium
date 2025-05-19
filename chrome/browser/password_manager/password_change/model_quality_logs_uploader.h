@@ -30,18 +30,21 @@ class ModelQualityLogsUploader {
   // Sets quality data for Step=OPEN_FORM_STEP.
   void SetOpenFormQuality(
       const optimization_guide::proto::PasswordChangeResponse& response,
-      std::unique_ptr<LoggingData> logging_data);
+      std::unique_ptr<LoggingData> logging_data,
+      base::Time server_request_start_time);
 
   // Sets quality data for Step=SUBMIT_FORM_STEP.
   void SetSubmitFormQuality(
       const optimization_guide::proto::PasswordChangeResponse& response,
-      std::unique_ptr<LoggingData> logging_data);
+      std::unique_ptr<LoggingData> logging_data,
+      base::Time server_request_start_time);
 
   // Sets quality data for Step=VERIFY_SUBMISSION_STEP.
   void SetVerifySubmissionQuality(
       const std::optional<optimization_guide::proto::PasswordChangeResponse>&
           response,
-      std::unique_ptr<LoggingData> logging_data);
+      std::unique_ptr<LoggingData> logging_data,
+      base::Time server_request_start_time);
 
 #if defined(UNIT_TEST)
   // Used for testing only.

@@ -90,6 +90,8 @@ class PasswordChangeSubmissionVerifier {
   optimization_guide::proto::PasswordChangeRequest
       check_submission_successful_request_;
 
+  base::Time server_request_start_time_;
+
   base::WeakPtrFactory<PasswordChangeSubmissionVerifier> weak_ptr_factory_{
       this};
 };
