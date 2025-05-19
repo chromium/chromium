@@ -320,18 +320,19 @@ public class TemplateUrlService {
     }
 
     /**
-     * Finds the default search engine for the default provider and returns the url query
-     * {@link String} for {@code query} with the contextual search version param set.
+     * Finds the default search engine for the default provider and returns the url query {@link
+     * String} for {@code query} with the contextual search version param set.
+     *
      * @param query The search term to use as the main query in the returned search url.
      * @param alternateTerm The alternate search term to use as an alternate suggestion.
      * @param shouldPrefetch Whether the returned url should include a prefetch parameter.
      * @param protocolVersion The version of the Contextual Search API protocol to use.
-     * @return      A {@link String} that contains the url of the default search engine with
-     *              {@code query} and {@code alternateTerm} inserted as parameters and contextual
-     *              search and prefetch parameters conditionally set.
+     * @return A {@link String} that contains the url of the default search engine with {@code
+     *     query} and {@code alternateTerm} inserted as parameters and contextual search and
+     *     prefetch parameters conditionally set.
      */
     public GURL getUrlForContextualSearchQuery(
-            String query,
+            @Nullable String query,
             @Nullable String alternateTerm,
             boolean shouldPrefetch,
             String protocolVersion) {
@@ -478,7 +479,7 @@ public class TemplateUrlService {
         GURL getUrlForContextualSearchQuery(
                 long nativeTemplateUrlServiceAndroid,
                 TemplateUrlService caller,
-                String query,
+                @Nullable String query,
                 @Nullable String alternateTerm,
                 boolean shouldPrefetch,
                 String protocolVersion);

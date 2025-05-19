@@ -7,14 +7,17 @@ package org.chromium.chrome.browser.contextualsearch;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 /**
- * Manages the Contextual Search disable-able promo tap counter for privacy opt-in/out.
- * This counter stores a single persistent integer preference that can indicate both a count
- * and whether it's been disabled (and remembers the count before being disabled).
- * TODO(donnd): remove this class and its usage since the value is no longer clear.
+ * Manages the Contextual Search disable-able promo tap counter for privacy opt-in/out. This counter
+ * stores a single persistent integer preference that can indicate both a count and whether it's
+ * been disabled (and remembers the count before being disabled). TODO(donnd): remove this class and
+ * its usage since the value is no longer clear.
  */
+@NullMarked
 class DisableablePromoTapCounter {
 
     // --------------------------------------------------------------------------------------------
@@ -30,7 +33,7 @@ class DisableablePromoTapCounter {
     // Amount to bias a disabled value when making it negative (so 0 can be disabled).
     private static final int PROMO_TAPS_DISABLED_BIAS = -1;
 
-    private static DisableablePromoTapCounter sInstance;
+    private static @MonotonicNonNull DisableablePromoTapCounter sInstance;
 
     private final SharedPreferencesManager mPrefsManager;
     private int mCounter;

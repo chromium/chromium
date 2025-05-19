@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
  * Encapsulates the response from the server to a Resolve request (as a single immutable object).
  */
+@NullMarked
 public class ResolvedSearchTerm {
     @IntDef({
         CardTag.CT_NONE,

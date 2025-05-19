@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An interface to be notified when contextual searches are performed or are no longer active. */
+@NullMarked
 public interface ContextualSearchObserver {
     /**
      * Notifies that a contextual search was performed, and provides the selection context if the

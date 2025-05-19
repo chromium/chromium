@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextualsearch;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Centralizes UMA data collection for Related Searches. All calls must be made from the UI thread.
  */
+@NullMarked
 public class RelatedSearchesUma {
     // Constants for user permissions histogram.
     @IntDef({
