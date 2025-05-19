@@ -38,19 +38,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
   static bool ObjectRequiresPrePaint(const LayoutObject&);
   static bool ObjectRequiresTreeBuilderContext(const LayoutObject&);
 
-  // Keeps information about the parent fragment that we need to search inside
-  // to find out-of-flow positioned descendants, and also which fragmentainer
-  // we're inside (which will serve as a fragment ID in FragmentData).
-  struct ContainingFragment {
-    STACK_ALLOCATED();
-
-   public:
-    bool IsInFragmentationContext() const;
-
-    const PhysicalBoxFragment* fragment = nullptr;
-    int fragmentation_nesting_level = 0;
-  };
-
   // This provides a default base copy constructor for PrePaintTreeWalkContext.
   // It contains all fields except for tree_builder_context which needs special
   // treatment in the copy constructor.
@@ -91,9 +78,9 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // fragmented at all).
     bool is_parent_first_for_node = true;
 
-    ContainingFragment current_container;
-    ContainingFragment absolute_positioned_container;
-    ContainingFragment fixed_positioned_container;
+    const PhysicalBoxFragment* current_container;
+    const PhysicalBoxFragment* absolute_positioned_container;
+    const PhysicalBoxFragment* fixed_positioned_container;
   };
 
   struct PrePaintTreeWalkContext : public PrePaintTreeWalkContextBase {
