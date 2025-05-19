@@ -36,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -59,10 +58,11 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
 public class WebAppHeaderLayoutCoordinatorTest {
@@ -213,6 +213,31 @@ public class WebAppHeaderLayoutCoordinatorTest {
                 mActivity.findViewById(R.id.back_button).getVisibility());
     }
 
+    private void verifyHeaderContainsNonDraggableAreas(List<Rect> expectedNonDraggableAreas) {
+        var expectedNonDraggableSet = new HashSet<>(expectedNonDraggableAreas);
+        var headerView = mContentView.findViewById(R.id.web_app_header_layout);
+        var nonDraggableAreas = headerView.getSystemGestureExclusionRects();
+        assertEquals(
+                "Header non-draggable areas size should match expected areas size",
+                expectedNonDraggableAreas.size(),
+                nonDraggableAreas.size());
+
+        for (var rect : nonDraggableAreas) {
+            assertTrue(
+                    String.format(
+                            Locale.US,
+                            "Header should not contain non-draggable area=%s",
+                            rect.toString()),
+                    expectedNonDraggableSet.contains(rect));
+        }
+    }
+
+    private void verifyWholeHeaderIsDraggable() {
+        // Empty rect is expected, because Android SDK keeps previous list of rects if null or empty
+        // list is passed.
+        verifyHeaderContainsNonDraggableAreas(List.of(new Rect(0, 0, 0, 0)));
+    }
+
     @Test
     public void testInitNoAppHeaderState_shouldNotInitCoordinator() {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
@@ -235,29 +260,33 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
     @Test
     public void testMinUiDisplayMode_shouldMakeMinUiVisible() {
+        // Init header in a window with enough space and wait for flexible area and layout updates
+        // to propagate.
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
-
-        // Wait for animation to finish and update the view.
         mShadowLooper.idle();
 
+        // Verify min ui controls are in consistent state and non-draggable area is updated.
+        var reloadButton = mActivity.findViewById(R.id.refresh_button);
+        var backButton = mActivity.findViewById(R.id.back_button);
+
         verifyControlsVisibility(View.VISIBLE);
-        assertTrue(
-                "Reload button should be enabled",
-                mActivity.findViewById(R.id.refresh_button).isEnabled());
-        assertFalse(
-                "Back button should be disabled",
-                mActivity.findViewById(R.id.back_button).isEnabled());
+        assertTrue("Reload button should be enabled", reloadButton.isEnabled());
+        assertFalse("Back button should be disabled", backButton.isEnabled());
+        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectNonDraggableAreas());
     }
 
     @Test
     public void testMinUiMinimizeWindow_ControlsDoNotFit_HideControls() {
+        // Init header in a window with enough space and wait for flexible area and layout updates
+        // to propagate.
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
+        mShadowLooper.idle();
 
         // Emulate minimizing window.
         int flexibleAreaWidth = MIN_HEADER_WIDTH_DP - 1;
@@ -265,9 +294,12 @@ public class WebAppHeaderLayoutCoordinatorTest {
                 new Rect(0, 0, LEFT_INSET + flexibleAreaWidth + RIGHT_INSET, SCREEN_HEIGHT),
                 new Rect(LEFT_INSET, 0, LEFT_INSET + flexibleAreaWidth, SYS_APP_HEADER_HEIGHT),
                 /* isInDesktopWindow= */ true);
-
         notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // Verify buttons are not visible and the whole header is draggable.
         verifyControlsVisibility(View.GONE);
+        verifyWholeHeaderIsDraggable();
     }
 
     @Test
@@ -282,12 +314,16 @@ public class WebAppHeaderLayoutCoordinatorTest {
         setupDisplayMode(DisplayMode.MINIMAL_UI);
         setupTab(/* isLoading= */ false, /* canGoBack= */ false);
         createCoordinator();
+        mShadowLooper.idle();
 
         // Emulate maximizing window.
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
-
         notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // Verify buttons visible and draggable area is updated.
         verifyControlsVisibility(View.VISIBLE);
+        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectNonDraggableAreas());
     }
 
     @Test

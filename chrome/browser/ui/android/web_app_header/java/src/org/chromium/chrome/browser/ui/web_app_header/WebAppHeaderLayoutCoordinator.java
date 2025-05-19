@@ -196,7 +196,8 @@ public class WebAppHeaderLayoutCoordinator
         mControlsEnabledSupplier.set(!mDisabledControlsHolder.hasTokens());
     }
 
-    private List<Rect> collectNonDraggableAreas() {
+    @VisibleForTesting
+    List<Rect> collectNonDraggableAreas() {
         final var areas = new ArrayList<Rect>();
         if (mReloadButtonCoordinator != null && mReloadButtonCoordinator.isVisibile()) {
             areas.add(mReloadButtonCoordinator.getHitRect());
