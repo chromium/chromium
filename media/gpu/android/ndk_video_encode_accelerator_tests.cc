@@ -261,7 +261,7 @@ class NdkVideoEncoderAcceleratorTest
         break;
       }
       case VideoCodec::kVP9: {
-        Vp9Parser parser(true);
+        Vp9Parser parser;
         parser.SetStream(data.data(), data.size(), nullptr);
 
         int num_parsed_frames = 0;

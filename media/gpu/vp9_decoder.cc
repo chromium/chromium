@@ -113,8 +113,7 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
       container_color_space_(container_color_space),
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
-      accelerator_(std::move(accelerator)),
-      parser_(accelerator_->NeedsCompressedHeaderParsed()) {}
+      accelerator_(std::move(accelerator)) {}
 
 VP9Decoder::~VP9Decoder() = default;
 

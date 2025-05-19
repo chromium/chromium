@@ -462,8 +462,7 @@ VP9Validator::VP9Validator(VideoCodecProfile profile,
       next_picture_id_(0) {
   const size_t num_parsed_streams = s_mode_ ? max_num_spatial_layers_ : 1u;
   for (size_t i = 0; i < num_parsed_streams; ++i) {
-    parsers_.push_back(
-        std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false));
+    parsers_.push_back(std::make_unique<Vp9Parser>());
   }
   reference_buffers_.resize(num_parsed_streams);
 }

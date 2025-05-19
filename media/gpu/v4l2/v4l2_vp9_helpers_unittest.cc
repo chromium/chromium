@@ -111,7 +111,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     AppendSideData(*decoder_buffer, frame_sizes);
 
     AppendVP9SuperFrameIndex(decoder_buffer);
-    Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
+    Vp9Parser vp9_parser;
     auto decoder_buffer_span = base::span(*decoder_buffer);
     vp9_parser.SetStream(decoder_buffer_span.data(), decoder_buffer_span.size(),
                          /*stream_config=*/nullptr);

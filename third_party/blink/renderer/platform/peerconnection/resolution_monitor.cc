@@ -58,7 +58,7 @@ class Vp8ResolutionMonitor : public ResolutionMonitor {
 
 class Vp9ResolutionMonitor : public ResolutionMonitor {
  public:
-  Vp9ResolutionMonitor() : parser_(/*parsing_compressed_header=*/false) {}
+  Vp9ResolutionMonitor() = default;
 
   ~Vp9ResolutionMonitor() override = default;
 

@@ -73,12 +73,6 @@ bool VideoToolboxVP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> pic) {
   return true;
 }
 
-bool VideoToolboxVP9Accelerator::NeedsCompressedHeaderParsed() const {
-  DVLOG(4) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return false;
-}
-
 bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

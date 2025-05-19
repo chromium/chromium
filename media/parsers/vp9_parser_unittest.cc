@@ -73,10 +73,9 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
   void TearDown() override {
     stream_.reset();
     vp9_parser_.reset();
-    context_file_.Close();
   }
 
-  void Initialize(std::string_view filename, bool parsing_compressed_header) {
+  void Initialize(std::string_view filename) {
     base::FilePath file_path = GetTestDataFilePath(filename);
 
     stream_ = std::make_unique<base::MemoryMappedFile>();
@@ -88,29 +87,7 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
                                        &ivf_file_header));
     ASSERT_EQ(ivf_file_header.fourcc, 0x30395056u);  // VP90
 
-    vp9_parser_ = std::make_unique<Vp9Parser>(parsing_compressed_header);
-
-    if (parsing_compressed_header) {
-      base::FilePath context_path =
-          GetTestDataFilePath(std::string(filename).append(".context"));
-      context_file_.Initialize(context_path,
-                               base::File::FLAG_OPEN | base::File::FLAG_READ);
-      ASSERT_TRUE(context_file_.IsValid());
-    }
-  }
-
-  bool ReadShouldContextUpdate() {
-    char should_update;
-    int read_num = context_file_.ReadAtCurrentPos(&should_update, 1);
-    EXPECT_EQ(1, read_num);
-    return should_update != 0;
-  }
-
-  void ReadContext(Vp9FrameContext* frame_context) {
-    ASSERT_EQ(
-        static_cast<int>(sizeof(*frame_context)),
-        context_file_.ReadAtCurrentPos(reinterpret_cast<char*>(frame_context),
-                                       sizeof(*frame_context)));
+    vp9_parser_ = std::make_unique<Vp9Parser>();
   }
 
   Vp9Parser::Result ParseNextFrame(struct Vp9FrameHeader* frame_hdr);
@@ -132,7 +109,6 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
   std::unique_ptr<base::MemoryMappedFile> stream_;
 
   std::unique_ptr<Vp9Parser> vp9_parser_;
-  base::File context_file_;
 };
 
 Vp9Parser::Result Vp9ParserTest::ParseNextFrame(Vp9FrameHeader* fhdr) {
@@ -191,7 +167,7 @@ uint8_t make_marker_byte(bool is_superframe, const uint8_t frame_count) {
 // │ clear1 | cipher 1 │ clear 2 | cipher 2 │
 // └───────────────────┴────────────────────┘
 TEST_F(Vp9ParserTest, AlignedFrameSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(true, 2);
   const uint8_t kSuperframe[] = {
@@ -232,7 +208,7 @@ TEST_F(Vp9ParserTest, AlignedFrameSubsampleParsing) {
 // │ clear1                  | cipher 1     │
 // └────────────────────────────────────────┘
 TEST_F(Vp9ParserTest, UnalignedFrameSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(true, 2);
   const uint8_t kSuperframe[] = {
@@ -272,7 +248,7 @@ TEST_F(Vp9ParserTest, UnalignedFrameSubsampleParsing) {
 // │ clear1 | cipher 1 │ clear 2       | cipher 2 │
 // └───────────────────┴──────────────────────────┘
 TEST_F(Vp9ParserTest, ClearSectionRollsOverSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(true, 2);
   const uint8_t kSuperframe[] = {
@@ -315,7 +291,7 @@ TEST_F(Vp9ParserTest, ClearSectionRollsOverSubsampleParsing) {
 // │ clear1 | cipher 1 │ clear 2 | cipher 2 │ clear 3 | cipher 3 │
 // └───────────────────┴────────────────────┴────────────────────┘
 TEST_F(Vp9ParserTest, FirstFrame2xSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(true, 2);
   const uint8_t kSuperframe[] = {
@@ -361,7 +337,7 @@ TEST_F(Vp9ParserTest, FirstFrame2xSubsampleParsing) {
 // │ clear1 | cipher 1 │ clear 2 | cipher 2 │ clear 3 | cipher 3 │
 // └───────────────────┴────────────────────┴────────────────────┘
 TEST_F(Vp9ParserTest, UnalignedBigFrameSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(true, 2);
   const uint8_t kSuperframe[] = {
@@ -411,7 +387,7 @@ TEST_F(Vp9ParserTest, UnalignedBigFrameSubsampleParsing) {
 // │ clear1      | cipher 1                 │
 // └────────────────────────────────────────┘
 TEST_F(Vp9ParserTest, UnalignedInvalidSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(true, 2);
   const uint8_t kSuperframe[] = {
@@ -445,7 +421,7 @@ TEST_F(Vp9ParserTest, UnalignedInvalidSubsampleParsing) {
 // │ clear1 = 0  | cipher 1                        │
 // └───────────────────────────────────────────────┘
 TEST_F(Vp9ParserTest, CipherBytesCoverSuperframeMarkerSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(false, 1);
   const uint8_t kSuperframe[] = {
@@ -480,7 +456,7 @@ TEST_F(Vp9ParserTest, CipherBytesCoverSuperframeMarkerSubsampleParsing) {
 // │ clear1                                        │
 // └───────────────────────────────────────────────┘
 TEST_F(Vp9ParserTest, ClearBytesCoverSuperframeMarkerSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(false, 1);
   const uint8_t kSuperframe[] = {
@@ -515,7 +491,7 @@ TEST_F(Vp9ParserTest, ClearBytesCoverSuperframeMarkerSubsampleParsing) {
 // │ clear 1 | cipher 1 │ clear 2                  │
 // └────────────────────┴──────────────────────────┘
 TEST_F(Vp9ParserTest, SecondClearSubsampleSuperframeMarkerSubsampleParsing) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   const uint8_t superframe_marker_byte = make_marker_byte(false, 1);
   const uint8_t kSuperframe[] = {
@@ -549,7 +525,7 @@ TEST_F(Vp9ParserTest, SecondClearSubsampleSuperframeMarkerSubsampleParsing) {
 }
 
 TEST_F(Vp9ParserTest, TestIncrementIV) {
-  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+  vp9_parser_ = std::make_unique<Vp9Parser>();
 
   std::vector<std::tuple<char const*, uint32_t, char const*>> input_output = {
       {"--------aaaaaaaa", 1, "--------aaaaaaab"},
@@ -567,7 +543,7 @@ TEST_F(Vp9ParserTest, TestIncrementIV) {
 }
 
 TEST_F(Vp9ParserTest, StreamFileParsingWithoutCompressedHeader) {
-  Initialize("test-25fps.vp9", /*parsing_compressed_header=*/false);
+  Initialize("test-25fps.vp9");
 
   // Number of frames in the test stream to be parsed.
   const int num_expected_frames = 269;
@@ -590,7 +566,7 @@ TEST_F(Vp9ParserTest, StreamFileParsingWithoutCompressedHeader) {
 }
 
 TEST_P(Vp9ParserTest, VerifyFirstFrame) {
-  Initialize(GetParam().file_name, /*parsing_compressed_header=*/false);
+  Initialize(GetParam().file_name);
   Vp9FrameHeader fhdr;
 
   ASSERT_EQ(Vp9Parser::kOk, ParseNextFrame(&fhdr));

@@ -43,7 +43,6 @@ class FakeVP9Accelerator : public media::VP9Decoder::VP9Accelerator {
   bool OutputPicture(scoped_refptr<media::VP9Picture> pic) override {
     return true;
   }
-  bool NeedsCompressedHeaderParsed() const override { return true; }
 };
 
 }  // namespace

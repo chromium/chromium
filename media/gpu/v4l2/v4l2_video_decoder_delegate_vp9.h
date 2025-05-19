@@ -35,15 +35,10 @@ class V4L2VideoDecoderDelegateVP9 : public VP9Decoder::VP9Accelerator {
                       const Vp9LoopFilterParams& lf_params,
                       const Vp9ReferenceFrameVector& reference_frames) override;
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
-  bool NeedsCompressedHeaderParsed() const override;
 
  private:
   raw_ptr<V4L2DecodeSurfaceHandler> const surface_handler_;
   raw_ptr<V4L2Device> const device_;
-
-  // True if |device_| supports V4L2_CID_STATELESS_VP9_COMPRESSED_HDR. Not all
-  // implementations are expected to support it (e.g. MTK8195 doesn't).
-  const bool supports_compressed_header_;
 };
 
 }  // namespace media

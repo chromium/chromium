@@ -337,7 +337,7 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   size_t vp9_data_size = 0;
   auto packet = ScopedAVPacket::Allocate();
   size_t num_packets = 0;
-  Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
+  Vp9Parser vp9_parser;
   std::vector<size_t> keyframe_indices;
   std::vector<base::span<const uint8_t>> vp9_data_chunks(num_read_frames);
   while (av_read_frame(glue.format_context(), packet.get()) >= 0 &&

@@ -44,7 +44,7 @@ TemporalScalabilityIdExtractor::TemporalScalabilityIdExtractor(VideoCodec codec,
       break;
 #endif
     case VideoCodec::kVP9:
-      vp9_ = std::make_unique<Vp9Parser>(false);
+      vp9_ = std::make_unique<Vp9Parser>();
       break;
     case VideoCodec::kAV1:
       buffer_pool_ = std::make_unique<libgav1::BufferPool>(

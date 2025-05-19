@@ -25,7 +25,6 @@
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "media/parsers/vp9_compressed_header_parser.h"
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
 namespace media {
@@ -466,8 +465,7 @@ void Vp9Parser::Context::UpdateRefSlot(
   ref_slots_[ref_type] = ref_slot;
 }
 
-Vp9Parser::Vp9Parser(bool parsing_compressed_header)
-    : parsing_compressed_header_(parsing_compressed_header) {
+Vp9Parser::Vp9Parser() {
   Reset();
 }
 
@@ -542,23 +540,6 @@ bool Vp9Parser::ParseUncompressedHeader(const FrameInfo& frame_info,
   return false;
 }
 
-bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
-                                      Result* result) {
-  *result = kInvalidStream;
-
-  Vp9CompressedHeaderParser compressed_parser;
-  bool parse_success;
-  parse_success = compressed_parser.ParseNoContext(
-      frame_info.ptr + curr_frame_header_.uncompressed_header_size,
-      curr_frame_header_.header_size_in_bytes, &curr_frame_header_);
-  if (!parse_success) {
-    *result = kInvalidStream;
-    return true;
-  }
-
-  return false;
-}
-
 Vp9Parser::Result Vp9Parser::ParseNextFrame(
     Vp9FrameHeader* fhdr,
     gfx::Size* allocate_size,
@@ -602,12 +583,6 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
 
   if (ParseUncompressedHeader(frame_info, fhdr, &result, &context_)) {
     return result;
-  }
-
-  if (parsing_compressed_header_) {
-    if (ParseCompressedHeader(frame_info, &result)) {
-      return result;
-    }
   }
 
   if (!SetupSegmentationDequant()) {
@@ -783,11 +758,6 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
 }
 
 base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSVCFrame() {
-  if (parsing_compressed_header_) {
-    LOG(ERROR) << "Vp9Parser doesn't support parsing SVC stream when "
-               << "a compressed header needs to be parsed";
-    return {};
-  }
   if (stream_decrypt_config_) {
     LOG(ERROR) << "Encrypted frame with SVC stream is not supported";
     return {};

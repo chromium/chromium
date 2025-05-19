@@ -29,7 +29,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string key_id = data_provider.ConsumeBytesAsString(4);
   std::string iv = data_provider.ConsumeBytesAsString(16);
 
-  media::Vp9Parser vp9_parser(data_provider.ConsumeBool());
+  media::Vp9Parser vp9_parser;
 
   uint8_t subsample_count_upper_bound = 8;
   uint8_t subsamples_count =

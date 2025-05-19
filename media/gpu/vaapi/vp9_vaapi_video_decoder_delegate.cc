@@ -304,10 +304,6 @@ bool VP9VaapiVideoDecoderDelegate::OutputPicture(
   return true;
 }
 
-bool VP9VaapiVideoDecoderDelegate::NeedsCompressedHeaderParsed() const {
-  return false;
-}
-
 void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   // Destroy the member ScopedVABuffers below since they refer to a VAContextID
   // that will be destroyed soon.
