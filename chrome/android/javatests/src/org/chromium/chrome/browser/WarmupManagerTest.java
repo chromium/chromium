@@ -33,6 +33,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -555,6 +556,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
+    @DisabledTest(message = "https://crbug.com/418750892")
     public void testMetricsRecordedWithSpareTab() {
         Assert.assertNotNull(mActivityTestRule.getActivity().getCurrentTabCreator());
 
