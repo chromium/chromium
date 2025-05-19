@@ -195,10 +195,10 @@ class NetworkTimeTracker {
 
   // Updates network time from a time server response, returning true
   // if successful.
-  bool UpdateTimeFromResponse(std::unique_ptr<std::string> response_body);
+  bool UpdateTimeFromResponse(std::optional<std::string> response_body);
 
   // Called to process responses from the secure time service.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Sets the next time query to be run at the specified time.
   void QueueCheckTime(base::TimeDelta delay);

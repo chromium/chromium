@@ -473,7 +473,7 @@ void NetworkTimeTracker::CheckTime() {
 }
 
 bool NetworkTimeTracker::UpdateTimeFromResponse(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   if (time_fetcher_->ResponseInfo() && time_fetcher_->ResponseInfo()->headers) {
     response_code = time_fetcher_->ResponseInfo()->headers->response_code();
@@ -524,7 +524,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
 }
 
 void NetworkTimeTracker::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(time_fetcher_);
 
