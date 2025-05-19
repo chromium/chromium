@@ -98,6 +98,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_info/core/features.h"
@@ -691,16 +692,28 @@ void LocationBarView::Layout(PassKey) {
   //  - The popup is open.
   //  - The location icon view does *not* display a label.
   //  - The selected keyword view is *not* visible.
-  const bool should_indent = GetOmniboxPopupView()->IsOpen() &&
+  const bool should_indent = (GetOmniboxPopupView()->IsOpen() ||
+                              omnibox_feature_configs::AdjustOmniboxIndent()
+                                  .Get()
+                                  .indent_input_when_popup_closed) &&
                              !location_icon_view_->ShouldShowLabel() &&
                              !ShouldShowKeywordBubble();
   if (should_indent) {
     icon_left += 7 /*icon_indent*/;
+    icon_left += omnibox_feature_configs::AdjustOmniboxIndent()
+                     .Get()
+                     .input_icon_indent_offset;
     text_left += 6 /*text_indent*/;
+    text_left += omnibox_feature_configs::AdjustOmniboxIndent()
+                     .Get()
+                     .input_text_indent_offset;
   } else if (ShouldShowKeywordBubble()) {
     // Otherwise, if in keyword mode, adjust indentation to align the icon and
     // the text with the suggestion icons & texts.
     icon_left += 9;  /*icon_indent_keyword_mode*/
+    icon_left += omnibox_feature_configs::AdjustOmniboxIndent()
+                     .Get()
+                     .input_icon_indent_offset;
     text_left += -9; /*text_indent_keyword_mode*/
   }
 

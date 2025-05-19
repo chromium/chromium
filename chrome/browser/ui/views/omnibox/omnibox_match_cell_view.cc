@@ -607,6 +607,10 @@ int OmniboxMatchCellView::GetImageIndent() const {
   // This applies to both touch-UI and non-touch-UI.
   int indent = 16 + kUniformRowHeightIconSize / 2 - kImageBoundsWidth / 2;
 
+  indent += omnibox_feature_configs::AdjustOmniboxIndent()
+                .Get()
+                .match_icon_indent_offset;
+
   return indent;
 }
 
@@ -636,6 +640,10 @@ int OmniboxMatchCellView::GetTextIndent() const {
   // For normal matches, the gap between the left edge of this view and the
   // left edge of its favicon or answer image.
   int indent = 52;
+
+  indent += omnibox_feature_configs::AdjustOmniboxIndent()
+                .Get()
+                .match_text_indent_offset;
 
   // The IPH row left inset is +`kIphOffset` from other suggestions, so the text
   // indent should be -`kIphOffset` to keep the text aligned. IPH matches seem

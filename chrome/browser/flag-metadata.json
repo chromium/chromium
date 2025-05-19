@@ -6925,6 +6925,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "omnibox-adjust-indentation",
+    "owners": [ "mahmadi@chromium.org", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "omnibox-answer-actions",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 135

@@ -2742,6 +2742,12 @@ const char kOmniboxAdaptiveSuggestionsCountDescription[] =
     "flag to adjust the limit of offered suggestions. The number of shown "
     "suggestions will be no less than the platform default limit.";
 
+const char kOmniboxAdjustIndentationName[] =
+    "Adjust Indentation for Omnibox Text and Suggestions";
+const char kOmniboxAdjustIndentationDescription[] =
+    "Adjusts the indentation of the omnibox and the suggestions to eliminate "
+    "the visual shift when the popup opens.";
+
 const char kOmniboxAnswerActionsName[] = "Answer Actions";
 const char kOmniboxAnswerActionsDescription[] =
     "Answer Actions attaches related Action Chips to Answer suggestions.";

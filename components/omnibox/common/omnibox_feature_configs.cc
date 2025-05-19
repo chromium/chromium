@@ -161,6 +161,39 @@ DocumentProvider::DocumentProvider() {
                          .Get();
 }
 
+BASE_FEATURE(AdjustOmniboxIndent::kAdjustOmniboxIndent,
+             "AdjustOmniboxIndent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+AdjustOmniboxIndent::AdjustOmniboxIndent() {
+  const bool enabled = base::FeatureList::IsEnabled(kAdjustOmniboxIndent);
+  indent_input_when_popup_closed =
+      enabled ? base::FeatureParam<bool>(&kAdjustOmniboxIndent,
+                                         "indent-input-when-popup-closed", true)
+                    .Get()
+              : false;
+  input_icon_indent_offset =
+      enabled ? base::FeatureParam<int>(&kAdjustOmniboxIndent,
+                                        "input-icon-indent-offset", -7)
+                    .Get()
+              : 0;
+  input_text_indent_offset =
+      enabled ? base::FeatureParam<int>(&kAdjustOmniboxIndent,
+                                        "input-text-indent-offset", -2)
+                    .Get()
+              : 0;
+  match_icon_indent_offset =
+      enabled ? base::FeatureParam<int>(&kAdjustOmniboxIndent,
+                                        "match-icon-indent-offset", -7)
+                    .Get()
+              : 0;
+  match_text_indent_offset =
+      enabled ? base::FeatureParam<int>(&kAdjustOmniboxIndent,
+                                        "match-text-indent-offset", -9)
+                    .Get()
+              : 0;
+}
+
 // static
 BASE_FEATURE(ForceAllowedToBeDefault::kForceAllowedToBeDefault,
              "OmniboxForceAllowedToBeDefault",
