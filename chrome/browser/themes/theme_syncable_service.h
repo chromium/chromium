@@ -42,7 +42,6 @@ enum class ThemePrefInMigration {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:ThemePrefInMigration)
 
-std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref);
 void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs);
 
 class ThemeSyncableService final : public syncer::SyncableService,

@@ -13,13 +13,11 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 bool CurrentThemeIsGrayscale(const PrefService* pref_service) {
-  return pref_service->GetBoolean(GetThemePrefNameInMigration(
-      ThemePrefInMigration::kGrayscaleThemeEnabled));
+  return pref_service->GetBoolean(prefs::kGrayscaleThemeEnabled);
 }
 
 std::optional<SkColor> CurrentThemeUserColor(const PrefService* pref_service) {
-  const SkColor user_color = pref_service->GetInteger(
-      GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor));
+  const SkColor user_color = pref_service->GetInteger(prefs::kUserColor);
   return user_color == SK_ColorTRANSPARENT ? std::nullopt
                                            : std::make_optional(user_color);
 }

@@ -178,14 +178,6 @@ bool AreSpecificsNtpBackgroundEquivalent(
 const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
 const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
-// TODO(crbug.com/415290640): Remove this method given that the feature is
-// launched.
-std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref) {
-  const ThemePrefNames& theme_pref_names =
-      kThemePrefsInMigration.at(theme_pref);
-  return theme_pref_names.non_syncing_pref_name;
-}
-
 void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
   const bool already_migrated =
       prefs->GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing);
