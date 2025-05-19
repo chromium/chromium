@@ -1470,7 +1470,7 @@ blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
               *graph_info,
               mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           graph_info->constant_operand_ids_to_handles.insert(
-              operand_id, operand->AsConstantOperand()->handle());
+              operand_id.value(), operand->AsConstantOperand()->handle());
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
@@ -1506,11 +1506,14 @@ blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
 // its reshaped form.
 void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
   // Keep track of new IDs for constant operands.
-  HashMap<webnn::OperandId, webnn::OperandId> constant_id_remappings;
+  // TODO(crbug.com/413722115): Define hash traits for OperandId.
+  HashMap<webnn::OperandId::underlying_type, webnn::OperandId::underlying_type>
+      constant_id_remappings;
 
   for (const auto& [initial_constant_id, handle] :
        graph_info.constant_operand_ids_to_handles) {
-    webnn::OperandId constant_operand_id = initial_constant_id;
+    webnn::OperandId constant_operand_id =
+        webnn::OperandId(initial_constant_id);
 
     // For each constant operand, keep walking down the dependencies until no
     // reshape is found.
@@ -1551,11 +1554,12 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
       // folding and update the graph accordingly.
 
       // Remove the constant and reshape operators, respectively.
-      auto& constant_operand = graph_info.operands.at(constant_operand_id);
+      auto& constant_operand =
+          graph_info.operands.at(constant_operand_id.value());
 
       webnn::OperandId reshape_output_id =
           (*reshape_operation_it)->get_reshape()->output_operand_id;
-      auto& reshape_operand = graph_info.operands.at(reshape_output_id);
+      auto& reshape_operand = graph_info.operands.at(reshape_output_id.value());
 
       // Manually reshape the constant and let the list of operations reflect
       // this.
@@ -1566,9 +1570,10 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
       graph_info.operations.erase(reshape_operation_it);
       // Update graph_info operands to make constant_operand have the reshaped
       // operand id. The reshape operand becomes an dangling operand.
-      std::swap(graph_info.operands[constant_operand_id],
-                graph_info.operands[reshape_output_id]);
-      constant_id_remappings.Set(initial_constant_id, reshape_output_id);
+      std::swap(graph_info.operands[constant_operand_id.value()],
+                graph_info.operands[reshape_output_id.value()]);
+      constant_id_remappings.Set(initial_constant_id,
+                                 reshape_output_id.value());
 
       // Prepare for the next iteration of this loop.
       constant_operand_id = reshape_output_id;

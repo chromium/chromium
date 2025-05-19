@@ -35,7 +35,7 @@ OperandId GraphInfoBuilder::BuildOperand(
   operand->kind = kind;
 
   graph_info_->operands.push_back(std::move(operand));
-  return graph_info_->operands.size() - 1;
+  return OperandId(graph_info_->operands.size() - 1);
 }
 
 OperandId GraphInfoBuilder::BuildIntermediateOperand(
@@ -49,7 +49,7 @@ OperandId GraphInfoBuilder::BuildInput(const std::string& name,
                                        OperandDataType type) {
   OperandId operand_id =
       BuildOperand(dimensions, type, mojom::Operand::Kind::kInput);
-  graph_info_->operands[operand_id]->name = name;
+  graph_info_->operands[operand_id.value()]->name = name;
   graph_info_->input_operands.push_back(operand_id);
   return operand_id;
 }
@@ -64,13 +64,14 @@ OperandId GraphInfoBuilder::BuildConstant(
 
   graph_builder_remote_->get()->CreatePendingConstant(
       handle, type, mojo_base::BigBuffer(values));
-  graph_info_->constant_operand_ids_to_handles[operand_id] = std::move(handle);
+  graph_info_->constant_operand_ids_to_handles[operand_id.value()] =
+      std::move(handle);
   return operand_id;
 }
 
 void GraphInfoBuilder::AddOutput(const std::string& name,
                                  OperandId operand_id) {
-  graph_info_->operands[operand_id]->name = name;
+  graph_info_->operands[operand_id.value()]->name = name;
   graph_info_->output_operands.push_back(operand_id);
 }
 

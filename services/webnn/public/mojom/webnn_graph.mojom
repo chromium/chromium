@@ -27,6 +27,10 @@ struct OperandDescriptor {
   array<uint32> shape;
 };
 
+struct OperandId {
+  uint32 id;
+};
+
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
 struct Operand {
@@ -55,8 +59,8 @@ struct ArgMinMax {
   // The input operand referenced by the input id must be distinct from the
   // output operand referenced by the output id and the output sizes must be
   // the same as the input sizes, except for the reduced axis.
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
 
   // Axis indicates the dimension to reduce. The value must be in the range
   // [0, N-1] where N is the rank of the input tensor.
@@ -75,23 +79,23 @@ struct ArgMinMax {
 struct BatchNormalization {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of mean operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 mean_operand_id;
+  OperandId mean_operand_id;
   // The id of variance operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 variance_operand_id;
+  OperandId variance_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The optional 1-D tensor of the bias values whose size is equal to the
   // size of the input dimension denoted by axis.
-  uint32? scale_operand_id;
+  OperandId? scale_operand_id;
   // The optional 1-D tensor of the scaling values whose is equal to the size
   // of the input dimension denoted by axis.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // A scalar which specifies the index to the feature count dimension of the
   // input shape for which the mean and variance values are.
   uint32 axis = 1;
@@ -107,10 +111,10 @@ struct BatchNormalization {
 struct Clamp {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The minimum value of the range.
   float min_value;
@@ -125,10 +129,10 @@ struct Clamp {
 struct Concat {
   // The ids of input operand are used to get the `Operand` description from
   // `GraphInfo.operands`.
-  array<uint32> input_operand_ids;
+  array<OperandId> input_operand_ids;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // The axis used to concatenate along.
   uint32 axis;
   // User defined label from MLOperatorOptions.
@@ -176,15 +180,15 @@ struct Conv2d {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`. The input must be in the layout defined
   // by ContextProperties.input_operand_layout.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of filter operand is used to get the `Operand` description from
   // `GraphInfo.operands`. The filter must be in OIHW order if the
   // input is in NCHW order. Otherwise, it must be in IHWO if this is a
   // depthwise convolution and OHWI order if it is not.
-  uint32 filter_operand_id;
+  OperandId filter_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The padding for each spatial dimension of input.
   Padding2d padding;
@@ -197,7 +201,7 @@ struct Conv2d {
   uint32 groups = 1;
   // The additional 1-D tensor with the shape of output channels whose values
   // are added to the convolution result.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -207,10 +211,10 @@ struct Conv2d {
 struct CumulativeSum {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The axis used to sum along.
   uint32 axis;
@@ -232,20 +236,20 @@ struct CumulativeSum {
 // This saves space in models and memory during GPU upload/computation.
 struct DequantizeLinear {
   // The id of input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The scale operand (referenced by the scale_operand_id) must be distinct
   // from the input operand (referenced by the input_operand_id), and the
   // scale shape must be broadcastable to the input shape.
-  uint32 scale_operand_id;
+  OperandId scale_operand_id;
   // The zero_point operand (referenced by the zero_point_operand_id) must
   // be distinct from the input operand (referenced by the input_operand_id)
   // and the scale operand (referenced by the scale_operand_id). The data
   // type of zero_point shape must be the same as the input.
-  uint32 zero_point_operand_id;
+  OperandId zero_point_operand_id;
   // The output operand (referenced by output_operand_id) must be distinct
   // from the input operand (referenced by input_operand_id). The data type
   // of the output is the same as the scale.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -279,13 +283,13 @@ struct ElementWiseBinary {
   Kind kind;
   // The id of lhs operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 lhs_operand_id;
+  OperandId lhs_operand_id;
   // The id of rhs operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 rhs_operand_id;
+  OperandId rhs_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -316,10 +320,10 @@ struct ElementWiseUnary {
   Kind kind;
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -331,8 +335,8 @@ struct Expand {
   // The input operand referenced by the input id must be distinct from the
   // output operand referenced by the output id, and the input shape must be
   // broadcastable to the output shape.
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -364,15 +368,15 @@ union PaddingMode {
 struct InstanceNormalization {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
 
   // The optional 1-D tensor of the scale values whose size is equal to the
   // size of the feature dimension of the input.
-  uint32? scale_operand_id;
+  OperandId? scale_operand_id;
   // The optional 1-D tensor of the bias values whose size is equal to the
   // size of the feature dimension of the input.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // A float scalar which specifies a small value to prevent computational
   // error due to divide-by-zero.
   float epsilon = 1e-5;
@@ -385,13 +389,13 @@ struct InstanceNormalization {
 struct Matmul {
   // The id of `a` operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 a_operand_id;
+  OperandId a_operand_id;
   // The id of `b` operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 b_operand_id;
+  OperandId b_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -401,10 +405,10 @@ struct Matmul {
 struct Pad {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // The number of padding values to add at the beginning of each input
   // dimension. The array length should be equal to the rank of input tensor.
   array<uint32> beginning_padding;
@@ -435,10 +439,10 @@ struct Reduce {
   Kind kind;
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // Axes indicates the dimensions to reduce. The values in the sequence
   // must be in the range [0, N-1] where N is the rank of the input tensor.
@@ -467,10 +471,10 @@ struct Pool2d {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`. The input must be in the layout defined
   // by ContextProperties.input_operand_layout.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The dimensions of the sliding window which is supplied by user or the
   // element of input operand height and width.
@@ -499,10 +503,10 @@ struct Range {
 struct Slice {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // An array containing the ranges to slice for each input dimension.
   array<Range> ranges;
   // User defined label from MLOperatorOptions.
@@ -514,10 +518,10 @@ struct Slice {
 struct Elu {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // A float scalar multiplier for (exp(min(0, x)) - 1).
   float alpha = 1.0;
   // User defined label from MLOperatorOptions.
@@ -576,9 +580,9 @@ struct Gather {
   // The input operand (referenced by input_operand_id) and the indices operand
   // (referenced by indices_operand_id) must be distinct from the output
   // operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 indices_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId indices_operand_id;
+  OperandId output_operand_id;
 
   // The axis dimension of the input tensor to gather on.
   uint32 axis = 0;
@@ -609,9 +613,9 @@ struct GatherElements {
   // The input operand (referenced by input_operand_id) and the indices operand
   // (referenced by indices_operand_id) must be distinct from the output
   // operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 indices_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId indices_operand_id;
+  OperandId output_operand_id;
 
   // The axis dimension of the input tensor to gather on.
   uint32 axis = 0;
@@ -652,9 +656,9 @@ struct GatherND {
   // The input operand (referenced by input_operand_id) and the indices operand
   // (referenced by indices_operand_id) must be distinct from the output
   // operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 indices_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId indices_operand_id;
+  OperandId output_operand_id;
 
   // User defined label from MLOperatorOptions.
   string label;
@@ -666,8 +670,8 @@ struct GatherND {
 struct Gelu {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -697,24 +701,24 @@ enum GruWeightLayout {
 // Represents the Gated Recurrent Unit [GRU] recurrent network.
 struct Gru {
   // The id of the input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of the weight operand.
-  uint32 weight_operand_id;
+  OperandId weight_operand_id;
   // The id of the recurrent weight operand.
-  uint32 recurrent_weight_operand_id;
+  OperandId recurrent_weight_operand_id;
   // The number of steps in the recurrent network.
   uint32 steps;
   // The number of features in the hidden state.
   uint32 hidden_size;
   // The ids of the output operands must be distinct from other operand ids.
-  array<uint32> output_operand_ids;
+  array<OperandId> output_operand_ids;
 
   // The id of the bias operand.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // The id of the recurrent bias operand.
-  uint32? recurrent_bias_operand_id;
+  OperandId? recurrent_bias_operand_id;
   // The id of the initial hidden state operand.
-  uint32? initial_hidden_state_operand_id;
+  OperandId? initial_hidden_state_operand_id;
   // Indicates whether to apply the reset gate after or before matrix
   // multiplication.
   bool reset_after;
@@ -735,22 +739,22 @@ struct Gru {
 // Represents a single step of Gated Recurrent Unit [GRU] recurrent network.
 struct GruCell {
   // The id of the input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of the weight operand.
-  uint32 weight_operand_id;
+  OperandId weight_operand_id;
   // The id of the recurrent weight operand.
-  uint32 recurrent_weight_operand_id;
+  OperandId recurrent_weight_operand_id;
   // The id of the hidden state operand.
-  uint32 hidden_state_operand_id;
+  OperandId hidden_state_operand_id;
   // The number of features in the hidden state.
   uint32 hidden_size;
   // The id of the output operand must be distinct from other operand ids.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The id of the bias operand.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // The id of the recurrent bias operand.
-  uint32? recurrent_bias_operand_id;
+  OperandId? recurrent_bias_operand_id;
   // Indicates whether to apply the reset gate after or before matrix
   // multiplication.
   bool reset_after;
@@ -768,17 +772,17 @@ struct GruCell {
 struct Gemm {
   // The id of `A` operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 a_operand_id;
+  OperandId a_operand_id;
   // The id of `B` operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 b_operand_id;
+  OperandId b_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The id of optional `C` operand is used to get the `Operand` description
   // from `GraphInfo.operands`.
-  uint32? c_operand_id;
+  OperandId? c_operand_id;
   // A float scalar multiplier for the `A * B`.
   float alpha = 1.0;
   // A float scalar multiplier for the third tensor.
@@ -798,8 +802,8 @@ struct Gemm {
 struct HardSigmoid {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
 
   // A float scalar multiplier. The default value is 0.2.
   float alpha = 0.2;
@@ -814,8 +818,8 @@ struct HardSigmoid {
 struct HardSwish {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -831,14 +835,14 @@ struct HardSwish {
 struct LayerNormalization {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
 
   // The scale operand (referenced by scale_operand_id) includes the scaling
   // values.
-  uint32? scale_operand_id;
+  OperandId? scale_operand_id;
   // The bias operand (referenced by bias_operand_id) includes the bias values.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // The indices to the input dimensions to reduce along.
   array<uint32> axes;
   // A float scalar which specifies a small value to prevent computational
@@ -853,10 +857,10 @@ struct LayerNormalization {
 struct LeakyRelu {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // A float scalar multiplier for min(0, x).
   float alpha = 0.01;
   // User defined label from MLOperatorOptions.
@@ -868,10 +872,10 @@ struct LeakyRelu {
 struct Linear {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // A float scalar multiplier.
   float alpha = 1.0;
   // A float scalar addition.
@@ -890,13 +894,13 @@ enum LstmWeightLayout {
 // Represents an operation of Long Short-Term Memory (LSTM) recurrent network.
 struct Lstm {
   // The id of the input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of the weight operand.
-  uint32 weight_operand_id;
+  OperandId weight_operand_id;
   // The id of the recurrent weight operand.
-  uint32 recurrent_weight_operand_id;
+  OperandId recurrent_weight_operand_id;
   // The ids of the output operands must be distinct from other operand ids.
-  array<uint32> output_operand_ids;
+  array<OperandId> output_operand_ids;
 
   // The number of steps in the recurrent network.
   uint32 steps;
@@ -904,15 +908,15 @@ struct Lstm {
   uint32 hidden_size;
 
   // The id of the bias operand.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // The id of the recurrent bias operand.
-  uint32? recurrent_bias_operand_id;
+  OperandId? recurrent_bias_operand_id;
   // The id of the peephole weight operand.
-  uint32? peephole_weight_operand_id;
+  OperandId? peephole_weight_operand_id;
   // The id of the initial hidden state operand.
-  uint32? initial_hidden_state_operand_id;
+  OperandId? initial_hidden_state_operand_id;
   // The id of the initial cell state operand.
-  uint32? initial_cell_state_operand_id;
+  OperandId? initial_cell_state_operand_id;
 
   // Indicates whether to return the entire sequence of outputs from each time
   // step.
@@ -930,27 +934,27 @@ struct Lstm {
 // Represents a single step of Long Short-Term Memory (LSTM) recurrent network.
 struct LstmCell {
   // The id of the input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of the weight operand.
-  uint32 weight_operand_id;
+  OperandId weight_operand_id;
   // The id of the recurrent weight operand.
-  uint32 recurrent_weight_operand_id;
+  OperandId recurrent_weight_operand_id;
   // The id of the hidden state operand.
-  uint32 hidden_state_operand_id;
+  OperandId hidden_state_operand_id;
   // The id of the cell state operand.
-  uint32 cell_state_operand_id;
+  OperandId cell_state_operand_id;
   // The ids of the output operands must be distinct from other operand ids.
-  array<uint32, 2> output_operand_ids;
+  array<OperandId, 2> output_operand_ids;
 
   // The number of features in the hidden state.
   uint32 hidden_size;
 
   // The id of the bias operand.
-  uint32? bias_operand_id;
+  OperandId? bias_operand_id;
   // The id of the recurrent bias operand.
-  uint32? recurrent_bias_operand_id;
+  OperandId? recurrent_bias_operand_id;
   // The id of the peephole weight operand.
-  uint32? peephole_weight_operand_id;
+  OperandId? peephole_weight_operand_id;
 
   // The ordering of both weight and bias vectors.
   LstmWeightLayout layout;
@@ -965,13 +969,13 @@ struct LstmCell {
 struct Prelu {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of slope operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 slope_operand_id;
+  OperandId slope_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -981,21 +985,21 @@ struct Prelu {
 //  output = clamp(roundToNearestEvens(input / scale) + zeroPoint, 0, 255).
 struct QuantizeLinear {
   // The id of input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The scale operand (referenced by the scale_operand_id) must be distinct
   // from the input operand (referenced by the input_operand_id), and the
   // scale shape must be broadcastable to the input shape. The data type of
   // scale must be the same as input.
-  uint32 scale_operand_id;
+  OperandId scale_operand_id;
   // The zero_point operand (referenced by the zero_point_operand_id) must
   // be distinct from the input operand (referenced by the input_operand_id)
   // and the scale operand (referenced by the scale_operand_id). The
   // zero_point shape must be broadcastable to the input shape.
-  uint32 zero_point_operand_id;
+  OperandId zero_point_operand_id;
   // The output operand (referenced by output_operand_id) must be distinct
   // from the input operand (referenced by input_operand_id). The data type
   // of output is the same as the zero_point.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1005,10 +1009,10 @@ struct QuantizeLinear {
 struct Relu {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1019,10 +1023,10 @@ struct Relu {
 struct Reshape {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1031,8 +1035,8 @@ struct Reshape {
 struct Reverse {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
   // The axes to reverse along.
   array<uint32> axes;
   // User defined label from MLOperatorOptions.
@@ -1087,10 +1091,10 @@ struct ScatterElements {
   // The `input`, `indices` and `updates` are ScatterElements operator input
   // operands.
   // Their id must be distinct from the output operand id.
-  uint32 input_operand_id;
-  uint32 indices_operand_id;
-  uint32 updates_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId indices_operand_id;
+  OperandId updates_operand_id;
+  OperandId output_operand_id;
 
   // The axis of the output tensor to scatter on.
   uint32 axis = 0;
@@ -1155,10 +1159,10 @@ struct ScatterND {
   // `GraphInfo.operands`.
   // The `input`, `indices` and `updates` are scatterND operator input operands.
   // Their id must be distinct from the output operand id.
-  uint32 input_operand_id;
-  uint32 indices_operand_id;
-  uint32 updates_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId indices_operand_id;
+  OperandId updates_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1168,10 +1172,10 @@ struct ScatterND {
 struct Sigmoid {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1181,10 +1185,10 @@ struct Sigmoid {
 struct Softmax {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   // The dimension the reduction will be performed on.
   uint32 axis;
@@ -1197,8 +1201,8 @@ struct Softmax {
 struct Softplus {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1208,8 +1212,8 @@ struct Softplus {
 struct Softsign {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1228,10 +1232,10 @@ struct Softsign {
 struct Split {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The ids of output operands used to get the `Operand` description from
   // `GraphInfo.operands`.
-  array<uint32> output_operand_ids;
+  array<OperandId> output_operand_ids;
 
   // Axis specifies which input tensor dimension will be split.
   uint32 axis = 0;
@@ -1245,10 +1249,10 @@ struct Split {
 struct Tanh {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.operands`.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1257,9 +1261,9 @@ struct Tanh {
 // times along each axis.
 struct Tile {
   // The id of input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // Each value corresponds to a dimension of the input tensor (in order) and
   // represents the number of tiled copies to make for that dimension. Values
   // must be greater than 0.
@@ -1272,9 +1276,9 @@ struct Tile {
 // input tensor following the given permutation.
 struct Transpose {
   // The id of input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // The values used to permute the dimensions of the input tensor.
   array<uint32> permutation;
   // User defined label from MLOperatorOptions.
@@ -1289,8 +1293,8 @@ struct Transpose {
 struct Triangular {
   // The input operand (referenced by input_operand_id) must be distinct from
   // the output operand (referenced by output_operand_id).
-  uint32 input_operand_id;
-  uint32 output_operand_id;
+  OperandId input_operand_id;
+  OperandId output_operand_id;
 
   // The upper indicates whether the output the upper or the lower part of
   // the input matrix is retained. True indicates that the upper part is
@@ -1308,9 +1312,9 @@ struct Triangular {
 // dimensions.
 struct Resample2d {
   // The id of input operand.
-  uint32 input_operand_id;
+  OperandId input_operand_id;
   // The id of output operand.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
 
   enum InterpolationMode {
     kNearestNeighbor,
@@ -1343,13 +1347,13 @@ struct Where {
   // value and false value operands.
 
   // The id of condition operand.
-  uint32 condition_operand_id;
+  OperandId condition_operand_id;
   // The id of true value operand.
-  uint32 true_value_operand_id;
+  OperandId true_value_operand_id;
   // The id of false value operand.
-  uint32 false_value_operand_id;
+  OperandId false_value_operand_id;
   // The id of output operand.
-  uint32 output_operand_id;
+  OperandId output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1413,12 +1417,12 @@ struct GraphInfo {
   // Array of all operands used in this `GraphInfo`.
   // Operand ids used in operations point to indices in this array.
   array<Operand> operands;
-  // The index array from the `GraphInfo.operands` is used to identify the
+  // The id array from the `GraphInfo.operands` is used to identify the
   // input operands of this graph.
-  array<uint32> input_operands;
-  // The index array from the `GraphInfo.operands` is used to identify the
+  array<OperandId> input_operands;
+  // The id array from the `GraphInfo.operands` is used to identify the
   // output operands of this graph.
-  array<uint32> output_operands;
+  array<OperandId> output_operands;
   // The operations are sorted in the topological order.
   array<Operation> operations;
   // The constant weight data specified through the MLGraphBuilder.constant()

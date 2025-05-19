@@ -8,12 +8,14 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/types/strong_alias.h"
+
 namespace webnn {
 
 // Index into `GraphInfo.operands`.
 // Use uint32_t here because Mojo requires an explicitly sized type and
 // this is big enough.
-using OperandId = uint32_t;
+using OperandId = base::StrongAlias<class OperandIdTag, uint32_t>;
 
 // Index into `GraphInfo.operations`.
 using OperationId = size_t;

@@ -224,9 +224,9 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
       graph_builder_remote.BindNewEndpointAndPassReceiver());
   GraphInfoBuilder builder(graph_builder_remote);
 
-  uint64_t input_operand_id =
+  OperandId input_operand_id =
       builder.BuildInput("input", {1, 2, 3, 4}, OperandDataType::kFloat32);
-  uint64_t output_operand_id =
+  OperandId output_operand_id =
       builder.BuildOutput("output", {1, 2, 3, 4}, OperandDataType::kFloat32);
   builder.BuildRelu(input_operand_id, output_operand_id);
 
@@ -268,8 +268,8 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromDispatch) {
   webnn_context_remote_->CreateGraphBuilder(
       graph_builder_remote.BindNewEndpointAndPassReceiver());
   GraphInfoBuilder builder(graph_builder_remote);
-  uint64_t input_operand_id = builder.BuildInput("input", shape, data_type);
-  uint64_t output_operand_id = builder.BuildOutput("output", shape, data_type);
+  OperandId input_operand_id = builder.BuildInput("input", shape, data_type);
+  OperandId output_operand_id = builder.BuildOutput("output", shape, data_type);
   builder.BuildRelu(input_operand_id, output_operand_id);
 
   // The GraphImplDml should be built successfully.

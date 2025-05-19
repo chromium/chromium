@@ -61,6 +61,10 @@ mojom_component("mojom") {
           default_constructible = false
         },
         {
+          mojom = "webnn.mojom.OperandId"
+          cpp = "::webnn::OperandId"
+        },
+        {
           mojom = "webnn.mojom.Range"
           cpp = "::webnn::Range"
         },
@@ -87,6 +91,7 @@ mojom_component("mojom") {
         "data_type_limits_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
         "range_traits.h",
+        "operand_id_mojom_traits.h",
         "supported_data_types_mojom_traits.h",
         "supported_tensors_mojom_traits.h",
         "tensor_usage_mojom_traits.h",

@@ -668,7 +668,7 @@ class GraphBuilderCoreml {
 
   // Used to generate unique names for internal operands generated for WebNN
   // operations that need to be decomposed into multiple CoreML operations.
-  base::CheckedNumeric<OperandId> internal_operand_id_;
+  base::CheckedNumeric<OperandId::underlying_type> internal_operand_id_;
 
   CoreML::Specification::Model ml_model_;
   raw_ptr<CoreML::Specification::MILSpec::Program> program_;

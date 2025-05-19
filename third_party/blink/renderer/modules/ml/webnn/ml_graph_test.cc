@@ -1280,8 +1280,8 @@ struct SoftmaxTester {
     EXPECT_TRUE(operation->is_softmax());
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
-    ASSERT_LT(output_operand_id, graph_info->operands.size());
-    EXPECT_EQ(graph_info->operands[output_operand_id]->descriptor,
+    ASSERT_LT(output_operand_id.value(), graph_info->operands.size());
+    EXPECT_EQ(graph_info->operands[output_operand_id.value()]->descriptor,
               expected_descriptor);
   }
 };
@@ -1349,8 +1349,8 @@ struct CastTester {
               blink_mojom::ElementWiseUnary::Kind::kCast);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
-    ASSERT_LT(output_operand_id, graph_info->operands.size());
-    EXPECT_EQ(graph_info->operands[output_operand_id]->descriptor,
+    ASSERT_LT(output_operand_id.value(), graph_info->operands.size());
+    EXPECT_EQ(graph_info->operands[output_operand_id.value()]->descriptor,
               expected_descriptor);
   }
 };

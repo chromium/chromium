@@ -909,7 +909,7 @@ GraphBuilderTflite::TensorInfo GraphBuilderTflite::SerializeOutputTensorInfo(
   if (it != operand_to_tensor_info_map_.end()) {
     return it->second;
   }
-  const mojom::Operand& operand = *graph_info_->operands.at(operand_id);
+  const mojom::Operand& operand = *graph_info_->operands.at(operand_id.value());
   bool is_graph_output = operand.name.has_value();
   const OperandDataType data_type = operand.descriptor.data_type();
   auto tensor_type = OperandDataTypeToTFLite(data_type);
@@ -2429,7 +2429,7 @@ GraphBuilderTflite::OperatorCodeIndex GraphBuilderTflite::GetOperatorCodeIndex(
 
 const mojom::Operand& GraphBuilderTflite::GetOperand(
     OperandId operand_id) const {
-  return *graph_info_->operands.at(operand_id);
+  return *graph_info_->operands.at(operand_id.value());
 }
 
 template <typename DataType>

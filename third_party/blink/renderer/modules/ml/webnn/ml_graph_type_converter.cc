@@ -1795,7 +1795,7 @@ OperationPtr CreateWhereOperation(const OperandToIdMap& operand_to_id_map,
 webnn::OperandId AddOperand(webnn::mojom::blink::GraphInfo& graph_info,
                             webnn::mojom::blink::OperandPtr operand) {
   graph_info.operands.push_back(std::move(operand));
-  return graph_info.operands.size() - 1;
+  return webnn::OperandId(graph_info.operands.size() - 1);
 }
 
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
