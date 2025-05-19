@@ -523,13 +523,6 @@ void VideoResourceUpdater::ObtainFrameResource(
     return;
   }
 
-  // TODO(crbug.com/410591523): Move this to where the TransferableResources are
-  // created. Note that it will be necessary to query `external_resource.type`
-  // at that point as `frame_resource_type_` won't yet be assigned.
-  external_resource.resource.alpha_type =
-      (frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED)
-          ? kPremul_SkAlphaType
-          : kUnpremul_SkAlphaType;
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));
@@ -770,6 +763,10 @@ void VideoResourceUpdater::CopyHardwareResource(
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
   transferable_resource.needs_detiling = video_frame->metadata().needs_detiling;
+  transferable_resource.alpha_type =
+      (external_resource->type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
+          ? kPremul_SkAlphaType
+          : kUnpremul_SkAlphaType;
 
   external_resource->resource = std::move(transferable_resource);
   external_resource->release_callback =
@@ -825,6 +822,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }
   transfer_resource.ycbcr_info = video_frame->ycbcr_info();
+  transfer_resource.alpha_type =
+      (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
+          ? kPremul_SkAlphaType
+          : kUnpremul_SkAlphaType;
 
 #if BUILDFLAG(IS_ANDROID)
   transfer_resource.is_backed_by_surface_view =
@@ -1236,6 +1237,8 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
         video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
     transferable_resource.needs_detiling =
         video_frame->metadata().needs_detiling;
+    transferable_resource.alpha_type =
+        software_compositor() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
     external_resource.resource = std::move(transferable_resource);
     external_resource.type = software_compositor()
                                  ? VideoFrameResourceType::RGBA_PREMULTIPLIED
@@ -1260,6 +1263,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
       frame_resource->sync_token());
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
+  transferable_resource.alpha_type = kUnpremul_SkAlphaType;
 
   external_resource.resource = std::move(transferable_resource);
   external_resource.release_callback =
