@@ -40,13 +40,14 @@ class IOSPromosUtilsTest : public SyncTest {
   void SetupSyncForAccount() {
     ASSERT_TRUE(SetupClients());
 
+    const signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
+
     // Sign the profile in.
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSignin));
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(consent_level));
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(GetProfile(0))
-            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+            ->GetPrimaryAccountInfo(consent_level);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
     account_info.account_id = current_info.account_id;
@@ -56,45 +57,30 @@ class IOSPromosUtilsTest : public SyncTest {
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
+    // TODO(crbug.com/417921582): Use SetupClientsAndSignIn() once it exists,
+    // and switch to ConsentLevel::kSignin above.
     ASSERT_TRUE(SetupSync());
   }
 
-  SyncServiceImplHarness* sync_harness() {
-    if (sync_harness_) {
-      return sync_harness_.get();
-    }
-
-    SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-        browser()->profile())
-        ->OverrideNetworkForTest(
-            fake_server::CreateFakeServerHttpPostProviderFactory(
-                GetFakeServer()->AsWeakPtr()));
-    sync_harness_ = SyncServiceImplHarness::Create(
-        browser()->profile(), "user@example.com", "password",
-        SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
-    return sync_harness_.get();
-  }
-
-  std::unique_ptr<SyncServiceImplHarness> sync_harness_;
   feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_passwords) {
-  ASSERT_TRUE(sync_harness()->SetupSync());
+  SetupSyncForAccount();
 
   ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPassword,
-                                              browser());
+                                              GetBrowser(0));
 }
 
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_addresses) {
-  ASSERT_TRUE(sync_harness()->SetupSync());
+  SetupSyncForAccount();
 
   ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress,
                                               browser());
 }
 
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_payments) {
-  ASSERT_TRUE(sync_harness()->SetupSync());
+  SetupSyncForAccount();
 
   ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPayment,
                                               browser());
