@@ -3171,6 +3171,7 @@ static_library("ui") {
       "//chrome/browser/profiles",
       "//chrome/browser/shortcuts",
       "//chrome/browser/ui/webui/app_home",
+      "//chrome/browser/ui/webui/app_home:impl",
       "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:profile_impl",
       "//components/capture_mode",
@@ -3187,7 +3188,7 @@ static_library("ui") {
 
       # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
       # subdirectories such as views and webui which are not modularized yet.
-      "//chrome/browser/ui/webui/app_home",
+      "//chrome/browser/ui/webui/app_home:impl",
     ]
 
     if (enable_dice_support) {

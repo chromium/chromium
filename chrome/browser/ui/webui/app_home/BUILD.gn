@@ -42,16 +42,13 @@ mojom("mojo_bindings") {
 
 source_set("app_home") {
   sources = [
-    "app_home_page_handler.cc",
     "app_home_page_handler.h",
-    "app_home_ui.cc",
     "app_home_ui.h",
   ]
 
   public_deps = [
     ":mojo_bindings",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
@@ -67,19 +64,39 @@ source_set("app_home") {
     "//ui/base",
     "//ui/webui",
   ]
+}
+
+source_set("impl") {
+  sources = [
+    "app_home_page_handler.cc",
+    "app_home_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    ":mojo_bindings_shared_cpp_sources",
+    ":app_home",
+    ":mojo_bindings",
+    "//base",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/app_home:resources",
-    "//chrome/browser/resources/app_home:resources_grit",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
+    "//chrome/common",
     "//chrome/common:chrome_features",
+    "//chrome/common/extensions",
     "//components/webapps/browser:constants",
+    "//content/public/browser",
+    "//extensions/browser",
     "//net",
+    "//ui/base",
+    "//ui/webui",
     "//url",
   ]
 }
@@ -92,6 +109,8 @@ if (enable_extensions) {
       "mock_app_home_page.cc",
       "mock_app_home_page.h",
     ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     public_deps = [
       ":mojo_bindings",
@@ -119,7 +138,5 @@ if (enable_extensions) {
       "//ui/views",
       "//ui/views:test_support",
     ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 }
