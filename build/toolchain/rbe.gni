@@ -27,6 +27,10 @@ declare_args() {
   use_remoteexec = false
 }
 
+if (rbe_exec_root != rebase_path("//")) {
+  assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
+}
+
 use_reclient_default = false
 if (use_remoteexec) {
   if (use_siso) {
@@ -70,7 +74,8 @@ if (use_reclient) {
 }
 
 if (use_remoteexec) {
-  assert(use_reclient || use_siso, "Can't enable remoteexec when use_reclient and use_siso are false")
+  assert(use_reclient || use_siso,
+         "Can't enable remoteexec when use_reclient and use_siso are false")
 }
 
 if (use_remoteexec) {

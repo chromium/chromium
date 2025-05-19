@@ -56,17 +56,11 @@ lld_emit_indexes_and_imports =
 rbe_bug_326584510_missing_input_list = []
 if (clang_use_chrome_plugins && defined(clang_unsafe_buffers_paths) &&
     "$clang_unsafe_buffers_paths" != "") {
-  if (rbe_exec_root != rebase_path("//")) {
-    assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
-  }
   rbe_bug_326584510_missing_input_list +=
       [ rebase_path(clang_unsafe_buffers_paths, rbe_exec_root) ]
 }
 if (defined(clang_warning_suppression_file) &&
     "$clang_warning_suppression_file" != "") {
-  if (rbe_exec_root != rebase_path("//")) {
-    assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
-  }
   rbe_bug_326584510_missing_input_list +=
       [ rebase_path(clang_warning_suppression_file, rbe_exec_root) ]
 }
