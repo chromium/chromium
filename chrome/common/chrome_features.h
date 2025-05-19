@@ -706,6 +706,14 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double>
     kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore;
 
+// The waiting time for a website classified as sending disruptive notifications
+// before notification permission is revoked. The website has to satisfy the
+// disruptive requirements for this amount of time before the revocation is
+// actually enforced.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed;
+
 // Timeout in seconds for the Safety Hub OS notification informing users about
 // revoked notification permissions.
 COMPONENT_EXPORT(CHROME_FEATURES)

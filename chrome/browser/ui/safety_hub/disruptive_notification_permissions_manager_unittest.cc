@@ -188,6 +188,10 @@ class DisruptiveNotificationPermissionsManagerRevocationTest
                   .name,
           "3.0"},
          {features::
+              kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed
+                  .name,
+          "1d"},
+         {features::
               kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
                   .name,
           "7"}});
@@ -255,6 +259,49 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       DoNotRevokeDisruptivePermissionBeforeWaitingTime) {
+  base::HistogramTester t;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL url("https://www.example.com");
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(url, 3);
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kProposed)));
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+
+  // Log metrics (happens when a notification is shown).
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, GURL(url));
+  DisruptiveNotificationPermissionsManager::LogMetrics(profile(), url,
+                                                       source_id);
+
+  // The waiting time of 1 day has not passed yet so the notification permission
+  // won't be revoked.
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ(GetRevokedPermissionsCount(), 1);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kAlreadyInProposedRevokeList, 1);
+
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kProposed)));
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -375,14 +422,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   site_engagement_service()->ResetBaseScoreForURL(url, 10);
 
-  // On the next run, site stays proposed because it is not disruptive anymore.
+  // On the next run, the revocation entry has been cleaned up because the site
+  // is not disruptive anymore.
   manager()->RevokeDisruptiveNotifications();
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
   EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
-              Optional(Field(&RevocationEntry::revocation_state,
-                             RevocationState::kProposed)));
+              Eq(std::nullopt));
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 0);

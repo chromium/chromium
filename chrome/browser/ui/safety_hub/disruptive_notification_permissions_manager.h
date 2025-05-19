@@ -235,7 +235,8 @@ class DisruptiveNotificationPermissionsManager
   // otherwise.
   bool HandleExistingValueAndMaybeRevoke(
       const GURL& url,
-      const RevocationEntry& revocation_entry);
+      const RevocationEntry& revocation_entry,
+      bool is_disruptive);
 
   // If the notifications should be revoked based on whether the metrics were
   // already reported or the cooldown period has run out.

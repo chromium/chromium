@@ -1164,6 +1164,11 @@ constexpr base::FeatureParam<double>
         &kSafetyHubDisruptiveNotificationRevocation,
         /*name=*/"max_engagement_score", /*default_value=*/0.0};
 
+constexpr base::FeatureParam<base::TimeDelta>
+    kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"waiting_time_as_proposed", /*default_value=*/base::Days(0)};
+
 constexpr base::FeatureParam<int>
     kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds{
         &kSafetyHubDisruptiveNotificationRevocation,

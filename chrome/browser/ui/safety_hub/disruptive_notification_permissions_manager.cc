@@ -226,23 +226,21 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         std::make_pair(item.primary_pattern, item.secondary_pattern));
     int notification_count =
         it != notification_count_map.end() ? it->second : 0;
-    if (!IsNotificationDisruptive(url, notification_count)) {
-      base::UmaHistogramEnumeration(kRevocationResultHistogram,
-                                    RevocationResult::kNotDisruptive);
-      continue;
-    }
+    bool is_disruptive = IsNotificationDisruptive(url, notification_count);
 
-    // At this point we know that the url is allowed to send notifications and
-    // is classified as sending disruptive notifications. Now check if we
-    // already have a revocation entry for this url and process it.
-    //
-    // Note that proposed revocations from previous runs will not actually be
-    // revoked if they are not anymore classified are disruptive.
+    // Now check if we already have a revocation entry for this url and process
+    // it.
     std::optional<RevocationEntry> revocation_entry =
         ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
     if (revocation_entry) {
-      revoked_anything |=
-          HandleExistingValueAndMaybeRevoke(url, *revocation_entry);
+      revoked_anything |= HandleExistingValueAndMaybeRevoke(
+          url, *revocation_entry, is_disruptive);
+      continue;
+    }
+
+    if (!is_disruptive) {
+      base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                    RevocationResult::kNotDisruptive);
       continue;
     }
 
@@ -280,7 +278,8 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
 
 bool DisruptiveNotificationPermissionsManager::
     HandleExistingValueAndMaybeRevoke(const GURL& url,
-                                      const RevocationEntry& revocation_entry) {
+                                      const RevocationEntry& revocation_entry,
+                                      bool is_disruptive) {
   switch (revocation_entry.revocation_state) {
     case RevocationState::kNone:
     case RevocationState::kUnknown:
@@ -296,6 +295,13 @@ bool DisruptiveNotificationPermissionsManager::
                                     RevocationResult::kIgnore);
       return false;
     case RevocationState::kProposed:
+      if (!is_disruptive) {
+        // Not disruptive anymore, clean up proposed revocation.
+        ContentSettingHelper(*hcsm_).DeleteRevocationEntry(url);
+        base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                      RevocationResult::kNotDisruptive);
+        return false;
+      }
       if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun
                .Get() &&
           CanRevokeNotifications(url, revocation_entry)) {
@@ -314,14 +320,18 @@ bool DisruptiveNotificationPermissionsManager::CanRevokeNotifications(
     const GURL& url,
     const RevocationEntry& revocation_entry) {
   CHECK_EQ(revocation_entry.revocation_state, RevocationState::kProposed);
-  const int days_since_proposed_revocation =
-      (clock_->Now() - revocation_entry.timestamp).InDays();
+  const base::TimeDelta time_since_proposed_revocation =
+      clock_->Now() - revocation_entry.timestamp;
 
-  return revocation_entry.has_reported_proposal ||
-         days_since_proposed_revocation >=
+  return time_since_proposed_revocation >=
              features::
-                 kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
-                     .Get();
+                 kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed
+                     .Get() &&
+         (revocation_entry.has_reported_proposal ||
+          time_since_proposed_revocation.InDays() >=
+              features::
+                  kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
+                      .Get());
 }
 
 void DisruptiveNotificationPermissionsManager::RevokeNotifications(
