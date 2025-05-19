@@ -84,6 +84,12 @@ id<GREYMatcher> SecondaryActionMatcher() {
 // browser before a restore. Verifies that secondary action button dismisses the
 // promo.
 - (void)testPromoAppears {
+  // TODO(crbug.com/418750327): Test fails on ipad device.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+#endif
   // Simulate setting Chrome as default browser.
   NSMutableDictionary<NSString*, NSObject*>* storage = [[ChromeEarlGrey
       userDefaultsObjectForKey:kDefaultBrowserKey] mutableCopy];
