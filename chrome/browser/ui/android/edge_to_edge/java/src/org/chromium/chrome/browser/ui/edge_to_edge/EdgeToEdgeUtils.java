@@ -49,6 +49,8 @@ public class EdgeToEdgeUtils {
             "Android.EdgeToEdge.IneligibilityReason";
     private static final String PARAM_SAFE_AREA_CONSTRAINT_SCROLLABLE_WHEN_STACKING =
             "scrollable_when_stacking";
+    private static final String MISSING_NAVBAR_INSETS_HISTOGRAM =
+            "Android.EdgeToEdge.MissingNavbarInsets2";
 
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
@@ -65,6 +67,32 @@ public class EdgeToEdgeUtils {
         int NAVIGATION_MODE = 2;
         int DEVICE_TYPE = 3;
         int NUM_TYPES = 4;
+    }
+
+
+    /**
+     * The reason of why the navigation bar insets are missing.
+     */
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        MissingNavbarInsetsReason.OTHER,
+        MissingNavbarInsetsReason.IN_MULTI_WINDOW,
+        MissingNavbarInsetsReason.IN_DESKTOP_WINDOW,
+        MissingNavbarInsetsReason.IN_FULLSCREEN,
+        MissingNavbarInsetsReason.ACTIVITY_NOT_VISIBLE,
+        MissingNavbarInsetsReason.SYSTEM_BAR_INSETS_EMPTY,
+        MissingNavbarInsetsReason.NUM_ENTRIES
+    })
+    public @interface MissingNavbarInsetsReason {
+        int OTHER = 0;
+        int IN_MULTI_WINDOW = 1;
+        int IN_DESKTOP_WINDOW = 2;
+        int IN_FULLSCREEN = 3;
+        int ACTIVITY_NOT_VISIBLE = 4;
+        int SYSTEM_BAR_INSETS_EMPTY = 5;
+
+        int NUM_ENTRIES = 5;
     }
 
     /**
@@ -190,6 +218,17 @@ public class EdgeToEdgeUtils {
         RecordHistogram.recordBooleanHistogram(ELIGIBLE_HISTOGRAM, eligible);
 
         return eligible;
+    }
+
+    /**
+     * Record if the current activity is missing the navigation bar.
+     *
+     * @param reason The reason of why the navigation bar is missing.
+     */
+    public static void recordIfMissingNavigationBar(@MissingNavbarInsetsReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                    MISSING_NAVBAR_INSETS_HISTOGRAM, reason,
+                    MissingNavbarInsetsReason.NUM_ENTRIES);
     }
 
     /**
