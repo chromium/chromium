@@ -427,6 +427,7 @@ config("delayloads") {
     "/DELAYLOAD:hid.dll",
     "/DELAYLOAD:imagehlp.dll",
     "/DELAYLOAD:imm32.dll",
+    "/DELAYLOAD:mmdevapi.dll",
     "/DELAYLOAD:msi.dll",
     "/DELAYLOAD:netapi32.dll",
     "/DELAYLOAD:ncrypt.dll",
