@@ -341,6 +341,7 @@
         "corner-shape",
         "currentcolor",
         "filter-data",
+        "gap-decorations",
         "has-transform",
         "inset",
         "layout",
@@ -6592,7 +6593,7 @@
       type_name: "GapDataList<EBorderStyle>",
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationStyleDataList",
-      invalidate: ["paint"],
+      invalidate: ["paint", "gap-decorations"],
     },
     {
       name: "row-rule-style",
@@ -6609,7 +6610,7 @@
       type_name: "GapDataList<EBorderStyle>",
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationStyleDataList",
-      invalidate: ["paint"],
+      invalidate: ["paint", "gap-decorations"],
       runtime_flag: "CSSGapDecoration",
     },
     {
