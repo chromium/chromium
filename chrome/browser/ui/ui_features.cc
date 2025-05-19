@@ -417,6 +417,15 @@ BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLaunchedTabSearchToolbarButton,
+             "LaunchedTabSearchToolbarButton",
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
     &kTabstripComboButton, "has_background", false};
 
@@ -425,15 +434,6 @@ const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
 
 const base::FeatureParam<bool> kTabSearchToolbarButton{
     &kTabstripComboButton, "tab_search_toolbar_button", false};
-
-const base::FeatureParam<bool> kLaunchedTabSearchToolbarButton{
-    &kTabstripComboButton, "launched_tab_search_toolbar_button",
-#if BUILDFLAG(IS_CHROMEOS)
-    false
-#else
-    true
-#endif
-};
 
 static std::string GetCountryCode() {
   if (!g_browser_process || !g_browser_process->variations_service()) {
@@ -450,7 +450,8 @@ static std::string GetCountryCode() {
 bool IsTabSearchMoving() {
   static const bool is_tab_search_moving = [] {
     if (GetCountryCode() == "us" &&
-        features::kLaunchedTabSearchToolbarButton.Get()) {
+        base::FeatureList::IsEnabled(
+            features::kLaunchedTabSearchToolbarButton)) {
       return true;
     }
     return base::FeatureList::IsEnabled(features::kTabstripComboButton);
@@ -476,10 +477,13 @@ bool HasTabSearchToolbarButton() {
     if (!IsTabSearchMoving()) {
       return false;
     }
-    if (GetCountryCode() == "US") {
-      return features::kLaunchedTabSearchToolbarButton.Get();
+    if (GetCountryCode() == "us" &&
+        base::FeatureList::IsEnabled(
+            features::kLaunchedTabSearchToolbarButton)) {
+      return true;
     }
-    // Gate on server-side Finch config for all other countries.
+    // Gate on server-side Finch config for all other countries
+    // as well as ChromeOS.
     return features::kTabSearchToolbarButton.Get();
   }();
 

@@ -274,10 +274,10 @@ BASE_DECLARE_FEATURE(kTabStripBrowserApi);
 
 // Controls where tab search lives in the browser.
 BASE_DECLARE_FEATURE(kTabstripComboButton);
+BASE_DECLARE_FEATURE(kLaunchedTabSearchToolbarButton);
 extern const base::FeatureParam<bool> kTabstripComboButtonHasBackground;
 extern const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder;
 extern const base::FeatureParam<bool> kTabSearchToolbarButton;
-extern const base::FeatureParam<bool> kLaunchedTabSearchToolbarButton;
 bool IsTabSearchMoving();
 bool HasTabstripComboButtonWithBackground();
 bool HasTabstripComboButtonWithReverseButtonOrder();
