@@ -161,7 +161,7 @@ void HttpStreamPool::Job::Start() {
   if (IsPreconnect()) {
     attempt_manager_->Preconnect(this);
   } else {
-    attempt_manager_->StartJob(this);
+    attempt_manager_->RequestStream(this);
   }
 }
 

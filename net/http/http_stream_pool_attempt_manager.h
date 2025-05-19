@@ -126,8 +126,9 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource& net_log();
 
-  // Starts a Job. Will call one of Job::Delegate methods to notify results.
-  void StartJob(Job* job);
+  // Starts `job` for a stream request. Will call one of Job::Delegate methods
+  // to notify results.
+  void RequestStream(Job* job);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that `job` will be notified once `this` has enough streams/sessions
@@ -143,13 +144,13 @@ class HttpStreamPool::AttemptManager
   // Tries to process a single pending request/preconnect.
   void ProcessPendingJob();
 
-  // Returns the number of jobs that haven't yet been notified success or
-  // failure.
-  size_t JobCount() const { return jobs_.size(); }
+  // Returns the number of request jobs that haven't yet been notified success
+  // or failure.
+  size_t RequestJobCount() const { return request_jobs_.size(); }
 
-  // Returns the number of jobs that have already been notified success or
-  // failure.
-  size_t NotifiedJobCount() const { return notified_jobs_.size(); }
+  // Returns the number of request jobs that have already been notified success
+  // or failure.
+  size_t NotifiedRequestJobCount() const { return notified_jobs_.size(); }
 
   // Returns the number of in-flight TCP based attempts.
   size_t TcpBasedAttemptCount() const { return tcp_based_attempts_.size(); }
@@ -166,10 +167,10 @@ class HttpStreamPool::AttemptManager
   // Cancels the QuicAttempt if it exists.
   void CancelQuicAttempt(int error);
 
-  // Returns the number of pending jobs/preconnects. The number is
+  // Returns the number of pending requests/preconnects. The number is
   // calculated by subtracting the number of in-flight attempts (excluding slow
   // attempts) from the number of total jobs.
-  size_t PendingJobCount() const;
+  size_t PendingRequestJobCount() const;
   size_t PendingPreconnectCount() const;
 
   // Returns the current load state.
@@ -398,7 +399,7 @@ class HttpStreamPool::AttemptManager
   // Calculates the maximum streams counts requested by preconnects.
   size_t CalculateMaxPreconnectCount() const;
 
-  // Helper method to calculate pending jobs/preconnects.
+  // Helper method to calculate pending jobs.
   size_t PendingCountInternal(size_t pending_count) const;
 
   // Returns an IPEndPoint to attempt a connection. If `exclude_ip_endpoint` is
@@ -434,7 +435,7 @@ class HttpStreamPool::AttemptManager
   // the job's methods.
   FailureKind DetermineFailureKind();
 
-  // Notifies a failure to a single job. Used by NotifyFailure().
+  // Notifies a failure to a single request job. Used by NotifyFailure().
   void NotifyJobOfFailure();
 
   // Notifies all preconnects of completion.
@@ -468,22 +469,23 @@ class HttpStreamPool::AttemptManager
                          NextProto negotiated_protocol);
 
   // Called when a SPDY session is ready to use. Cancels in-flight attempts.
-  // Closes idle streams. Completes preconnects and jobs.
+  // Closes idle streams. Completes request/preconnect jobs.
   void HandleSpdySessionReady(base::WeakPtr<SpdySession> spdy_session,
                               StreamSocketCloseReason refresh_group_reason);
 
   // Called when a QUIC session is ready to use. Cancels in-flight attempts.
-  // Closes idle streams. Completes preconnects.
+  // Closes idle streams. Completes request/preconnect jobs.
   void HandleQuicSessionReady(QuicChromiumClientSession* quic_session,
                               StreamSocketCloseReason refresh_group_reason);
 
-  // Extracts an entry from `jobs_` of which priority is highest. The ownership
-  // of the entry is moved to `notified_jobs_`.
+  // Extracts an entry from `request_jobs_` of which priority is highest. The
+  // ownership of the entry is moved to `notified_jobs_`.
   Job* ExtractFirstJobToNotify();
 
-  // Remove the pointeee of `job_pointer` from `jobs_`. May cancel in-flight
-  // TCP based attempts when there are no limit ignoring jobs after removing the
-  // job and in-flight TCP based attempts count is larger than the limit.
+  // Remove the pointeee of `job_pointer` from `request_jobs_`. May cancel
+  // in-flight TCP based attempts when there are no limit ignoring jobs after
+  // removing the job and in-flight TCP based attempts count is larger than the
+  // limit.
   raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
 
   void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
@@ -549,15 +551,15 @@ class HttpStreamPool::AttemptManager
 
   const base::TimeTicks created_time_;
 
-  // Keeps the initial attempt state. Set when `this` starts a job or
-  // preconnect.
+  // Keeps the initial attempt state. Set when `this` attempts a TCP based
+  // attempt for the first time.
   std::optional<InitialAttemptState> initial_attempt_state_;
 
   NextProtoSet allowed_alpns_ = NextProtoSet::All();
 
-  // Holds jobs that are waiting for notifications.
-  JobQueue jobs_;
-  // Holds preconnect requests.
+  // Holds request jobs that are waiting for notifications.
+  JobQueue request_jobs_;
+  // Holds preconnect jobs that are waiting for notifications.
   std::set<raw_ptr<Job>> preconnect_jobs_;
   // Holds jobs that are already notified results. We need to keep them to avoid
   // dangling pointers.
