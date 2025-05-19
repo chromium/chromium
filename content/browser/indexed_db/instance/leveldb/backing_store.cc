@@ -1086,6 +1086,14 @@ Status ReadObjectStores(
   return s;
 }
 
+BackingStore::RecordIdentifier CreateRecordIdentifier(const IndexedDBKey& key,
+                                                      int64_t version) {
+  BackingStore::RecordIdentifier record_identifier;
+  record_identifier.number = version;
+  EncodeIDBKey(key, &record_identifier.data);
+  return record_identifier;
+}
+
 }  // namespace
 
 BackingStore::BackingStore(
@@ -2271,9 +2279,7 @@ Status BackingStore::Transaction::PutRecord(
     return s;
   }
 
-  std::string key_encoded;
-  EncodeIDBKey(key, &key_encoded);
-  record_identifier->Reset(key_encoded, version);
+  *record_identifier = CreateRecordIdentifier(key, version);
   return s;
 }
 
@@ -2514,9 +2520,7 @@ Status BackingStore::Transaction::KeyExistsInObjectStore(
     return InternalInconsistencyStatus();
   }
 
-  std::string encoded_key;
-  EncodeIDBKey(key, &encoded_key);
-  found_record_identifier->Reset(encoded_key, version);
+  *found_record_identifier = CreateRecordIdentifier(key, version);
   return s;
 }
 
@@ -2859,13 +2863,14 @@ Status BackingStore::Transaction::PutIndexDataForRecord(
   std::string encoded_key;
   EncodeIDBKey(key, &encoded_key);
 
+  const std::string& encoded_primary_key = record_identifier.data;
   const std::string index_data_key =
       IndexDataKey::Encode(database_id(), object_store_id, index_id,
-                           encoded_key, record_identifier.primary_key(), 0);
+                           encoded_key, encoded_primary_key, 0);
 
   std::string data;
-  EncodeVarInt(record_identifier.version(), &data);
-  data.append(record_identifier.primary_key());
+  EncodeVarInt(record_identifier.number, &data);
+  data.append(encoded_primary_key);
 
   return Status(transaction()->Put(index_data_key, &data));
 }
@@ -3561,11 +3566,6 @@ bool ObjectStoreKeyCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  // TODO(jsbell): This re-encodes what was just decoded; try and optimize.
-  std::string encoded_key;
-  EncodeIDBKey(*current_key_, &encoded_key);
-  record_identifier_.Reset(encoded_key, version);
-
   return true;
 }
 
@@ -3636,11 +3636,6 @@ bool ObjectStoreCursorImpl::LoadCurrentRow(Status* s) {
     *s = InternalInconsistencyStatus();
     return false;
   }
-
-  // TODO(jsbell): This re-encodes what was just decoded; try and optimize.
-  std::string encoded_key;
-  EncodeIDBKey(*current_key_, &encoded_key);
-  record_identifier_.Reset(encoded_key, version);
 
   *s = transaction_->GetExternalObjectsForRecord(std::string(iterator_->Key()),
                                                  &current_value_);

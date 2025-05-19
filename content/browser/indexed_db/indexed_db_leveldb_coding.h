@@ -561,8 +561,8 @@ class IndexDataKey {
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
-      const std::string& encoded_user_key,
-      const std::string& encoded_primary_key,
+      const std::string_view encoded_user_key,
+      const std::string_view encoded_primary_key,
       int64_t sequence_number);
   static std::string Encode(int64_t database_id,
                             int64_t object_store_id,

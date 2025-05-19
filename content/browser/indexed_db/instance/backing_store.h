@@ -45,32 +45,15 @@ struct IndexedDBValue;
 // than reaching directly into level_db::BackingStore.
 class BackingStore {
  public:
-  class CONTENT_EXPORT RecordIdentifier {
-   public:
-    RecordIdentifier() = default;
-    RecordIdentifier(std::string primary_key, int64_t version)
-        : primary_key_(std::move(primary_key)), version_(version) {
-      DCHECK(!primary_key_.empty());
-    }
-
-    RecordIdentifier(const RecordIdentifier&) = delete;
-    RecordIdentifier& operator=(const RecordIdentifier&) = delete;
-
-    ~RecordIdentifier() = default;
-
-    const std::string& primary_key() const { return primary_key_; }
-    int64_t version() const { return version_; }
-
-    void Reset(std::string primary_key, int64_t version) {
-      primary_key_ = std::move(primary_key);
-      version_ = version;
-    }
-
-   private:
-    // TODO(jsbell): Make it more clear that this is the *encoded* version of
-    // the key.
-    std::string primary_key_;
-    int64_t version_ = -1;
+  // Used to uniquely identify a record in the database. Can be treated as an
+  // opaque token by consumers of the `BackingStore`.
+  struct RecordIdentifier {
+    // The meaning of these fields is backend-specific. Consumer code should
+    // ignore them.
+    // SQLite: a row id. LevelDB: a version.
+    int64_t number;
+    // SQLite: unused. LevelDB: the *encoded* primary key bytes.
+    std::string data;
   };
 
   class Cursor;
