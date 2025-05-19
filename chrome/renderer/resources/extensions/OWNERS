@@ -2,7 +2,6 @@ file://extensions/OWNERS
 
 per-file *.gtestjs=*
 per-file automation_custom_bindings.js=dtseng@chromium.org
-per-file automation_custom_bindings.js=nektar@chromium.org
 per-file chromeos_ime_service_bindings.js=file://chromeos/ash/services/ime/OWNERS
 per-file enterprise_platform_keys*=file://chrome/browser/chromeos/platform_keys/OWNERS
 per-file file_manager_private_custom_bindings.js=file://ui/file_manager/OWNERS
