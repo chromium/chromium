@@ -278,4 +278,10 @@ BASE_FEATURE(kWebViewUseStartupTasksLogic,
 BASE_FEATURE(kWebViewSequencedShouldInterceptRequest,
              "WebViewSequencedShouldInterceptRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, records histograms relating to app's cache size.
+BASE_FEATURE(kWebViewRecordAppCacheHistograms,
+             "WebViewRecordAppCacheHistograms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

@@ -848,6 +848,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
                 "Prefetches the native WebView code to memory during startup."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_RECORD_APP_CACHE_HISTOGRAMS,
+                "When enabled, records histograms relating to app's cache size."),
+        Flag.baseFeature(
                 GfxSwitches.USE_SMART_REF_FOR_GPU_FENCE_HANDLE,
                 "Avoids cloning of gpu fences when possible"),
         Flag.baseFeature(

@@ -56,6 +56,7 @@ BASE_DECLARE_FEATURE(kWebViewInterceptedCookieHeader);
 BASE_DECLARE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite);
 BASE_DECLARE_FEATURE(kWebViewShortCircuitShouldInterceptRequest);
 BASE_DECLARE_FEATURE(kWebViewSequencedShouldInterceptRequest);
+BASE_DECLARE_FEATURE(kWebViewRecordAppCacheHistograms);
 
 }  // namespace android_webview::features
 

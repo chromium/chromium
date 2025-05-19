@@ -56,6 +56,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &::features::kPrefetchBrowserInitiatedTriggers,
     &features::kWebViewShortCircuitShouldInterceptRequest,
     &features::kWebViewUseStartupTasksLogic,
+    &features::kWebViewRecordAppCacheHistograms,
 };
 
 // static
