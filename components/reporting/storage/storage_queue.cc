@@ -2365,7 +2365,7 @@ Status StorageQueue::SingleFile::Open(bool read_only) {
       filename_, read_only ? (base::File::FLAG_OPEN | base::File::FLAG_READ)
                            : (base::File::FLAG_OPEN_ALWAYS |
                               base::File::FLAG_APPEND | base::File::FLAG_READ));
-  if (!handle_ || !handle_->IsValid()) {
+  if (!handle_->IsValid()) {
     handle_.reset();
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_OPEN_FILE,
