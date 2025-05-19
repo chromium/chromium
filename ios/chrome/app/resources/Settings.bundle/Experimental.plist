@@ -176,6 +176,7 @@
 				<string>promos_manager::Promo::OmniboxPosition</string>
 				<string>promos_manager::Promo::DockingPromo</string>
 				<string>promos_manager::Promo::PostDefaultAbandonment</string>
+				<string>promos_manager::Promo::GLICPromo</string>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -186,6 +187,7 @@
 				<string>Omnibox Position</string>
 				<string>Docking Promo</string>
 				<string>Post-Default Browser Abandonment Alert</string>
+				<string>GLIC Promo</string>
 			</array>
 		</dict>
 		<dict>
