@@ -44,7 +44,7 @@ namespace features {
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTabCaptureInfobarLinks,
              "TabCaptureInfobarLinks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if defined(WEBRTC_USE_PIPEWIRE)
