@@ -159,6 +159,13 @@ struct NET_EXPORT SSLConfig {
   // The usage of this session. This supports distinguishing connections to a
   // proxy as an endpoint from connections to that same proxy as a proxy.
   SessionUsage session_usage = SessionUsage::kDestination;
+
+  // If non-empty, a list of TLS Trust Anchor IDs in wire format
+  // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-tls-extension),
+  // i.e. a series of non-empty, 8-bit length-prefixed strings. If non-empty,
+  // these trust anchor IDs will be sent on the TLS ClientHello message to help
+  // the server select a certificate that the client will accept.
+  std::vector<uint8_t> trust_anchor_ids;
 };
 
 }  // namespace net

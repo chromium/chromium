@@ -2736,6 +2736,41 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
   context_ = nullptr;
 }
 
+// Tests that Trust Anchor IDs are sent when configured via SSLConfig.
+TEST_P(SSLClientSocketVersionTest, ConnectWithTrustAnchorIDs) {
+  SSLConfig ssl_config;
+  ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03};
+
+  bool ran_callback = false;
+  SSLServerConfig server_config = GetServerConfig();
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        const uint8_t* data;
+        size_t len = 0;
+        EXPECT_TRUE(SSL_early_callback_ctx_extension_get(
+            client_hello, TLSEXT_TYPE_trust_anchors, &data, &len));
+        // The TLS extension should contain the configured trust anchor IDs
+        // list, plus a 2-byte length prefix.
+        if (len != ssl_config.trust_anchor_ids.size() + 2) {
+          // Ideally this would be ASSERT_EQ(len,
+          // ssl_config.trust_anchor_ids.size() + 2), but we can't ASSERT in a
+          // function with a return value.
+          return false;
+        }
+        EXPECT_EQ(0, memcmp(ssl_config.trust_anchor_ids.data(), data + 2,
+                            ssl_config.trust_anchor_ids.size()));
+        ran_callback = true;
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+}
+
 // Tests that OCSP stapling is requested, as per Certificate Transparency (RFC
 // 6962).
 TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsEnablesOCSP) {
