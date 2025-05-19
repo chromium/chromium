@@ -18,10 +18,20 @@ SpeechRecognitionEventHandler::SpeechRecognitionEventHandler(
     : source_language_(source_language) {}
 SpeechRecognitionEventHandler::~SpeechRecognitionEventHandler() = default;
 
+void SpeechRecognitionEventHandler::AddObserver(
+    BabelOrcaSpeechRecognizer::Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void SpeechRecognitionEventHandler::RemoveObserver(
+    BabelOrcaSpeechRecognizer::Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
 void SpeechRecognitionEventHandler::OnSpeechResult(
     const std::optional<media::SpeechRecognitionResult>& result) {
-  if (transcription_result_callback_ && result.has_value()) {
-    transcription_result_callback_.Run(result.value(), source_language_);
+  if (result.has_value()) {
+    NotifySpeechResult(result.value());
   }
 }
 
@@ -35,21 +45,22 @@ void SpeechRecognitionEventHandler::OnLanguageIdentificationEvent(
   // This will make its way back to the live caption controller and bubble,
   // which has its own logic to complete regardless of the value of
   // `event->asr_switch_result`.
-  language_identification_callback_.Run(event);
+  NotifyLanguageIdentificationEvent(std::move(event));
 }
 
-void SpeechRecognitionEventHandler::SetTranscriptionResultCallback(
-    BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-        transcription_result_callback,
-    BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
-        language_identification_callback) {
-  language_identification_callback_ = language_identification_callback;
-  transcription_result_callback_ = transcription_result_callback;
+void SpeechRecognitionEventHandler::NotifySpeechResult(
+    const media::SpeechRecognitionResult& result) {
+  for (auto& observer : observers_) {
+    observer.OnTranscriptionResult(result, source_language_);
+  }
 }
 
-void SpeechRecognitionEventHandler::RemoveSpeechRecognitionObservation() {
-  transcription_result_callback_.Reset();
-  language_identification_callback_.Reset();
+void SpeechRecognitionEventHandler::NotifyLanguageIdentificationEvent(
+    const media::mojom::LanguageIdentificationEventPtr& ptr) {
+  for (auto& observer : observers_) {
+    // Clone here in case there are multiple observers.
+    observer.OnLanguageIdentificationEvent(ptr.Clone());
+  }
 }
 
 }  // namespace ash::babelorca

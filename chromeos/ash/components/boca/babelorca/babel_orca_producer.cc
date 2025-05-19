@@ -170,11 +170,7 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
 
   VLOG(1)
       << "[BabelOrca] observe and start speech recognition for local captions";
-  speech_recognizer_->ObserveSpeechRecognition(
-      base::BindRepeating(&BabelOrcaProducer::OnTranscriptionResult,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&BabelOrcaProducer::OnLanguageIdentificationEvent,
-                          weak_ptr_factory_.GetWeakPtr()));
+  speech_recognizer_->AddObserver(this);
   speech_recognizer_->Start();
 }
 
@@ -209,11 +205,7 @@ void BabelOrcaProducer::InitSending(bool signed_in) {
   }
   VLOG(1) << "[BabelOrca] observe and start speech recognition for session "
              "captions";
-  speech_recognizer_->ObserveSpeechRecognition(
-      base::BindRepeating(&BabelOrcaProducer::OnTranscriptionResult,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&BabelOrcaProducer::OnLanguageIdentificationEvent,
-                          weak_ptr_factory_.GetWeakPtr()));
+  speech_recognizer_->AddObserver(this);
   speech_recognizer_->Start();
 }
 
@@ -267,7 +259,7 @@ void BabelOrcaProducer::StopRecognition() {
   speech_recognizer_->Stop();
   caption_controller_->StopLiveCaption();
   // This should be a no-op if not currently observing.
-  speech_recognizer_->RemoveSpeechRecognitionObservation();
+  speech_recognizer_->RemoveObserver(this);
   rate_limited_sender_.reset();
 }
 

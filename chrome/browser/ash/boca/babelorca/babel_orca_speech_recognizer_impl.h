@@ -45,12 +45,8 @@ class BabelOrcaSpeechRecognizerImpl : public BabelOrcaSpeechRecognizer,
   // BabelOrcaSpeechRecognizer
   void Start() override;
   void Stop() override;
-  void ObserveSpeechRecognition(
-      BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-          transcription_result_callback,
-      BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
-          language_identification_callback) override;
-  void RemoveSpeechRecognitionObservation() override;
+  void AddObserver(Observer* obs) override;
+  void RemoveObserver(Observer* obs) override;
 
  protected:
   media::mojom::RecognizerClientType GetRecognizerClientType() override;

@@ -57,18 +57,12 @@ void BabelOrcaSpeechRecognizerImpl::Stop() {
   SpeechRecognitionAvailabilityChanged(false);
 }
 
-void BabelOrcaSpeechRecognizerImpl::ObserveSpeechRecognition(
-    BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-        transcription_result_callback,
-    BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
-        language_identification_callback) {
-  speech_recognition_event_handler_.SetTranscriptionResultCallback(
-      std::move(transcription_result_callback),
-      std::move(language_identification_callback));
+void BabelOrcaSpeechRecognizerImpl::AddObserver(Observer* obs) {
+  speech_recognition_event_handler_.AddObserver(obs);
 }
 
-void BabelOrcaSpeechRecognizerImpl::RemoveSpeechRecognitionObservation() {
-  speech_recognition_event_handler_.RemoveSpeechRecognitionObservation();
+void BabelOrcaSpeechRecognizerImpl::RemoveObserver(Observer* obs) {
+  speech_recognition_event_handler_.RemoveObserver(obs);
 }
 
 media::mojom::RecognizerClientType

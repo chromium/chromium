@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/observer_list.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
@@ -24,12 +25,8 @@ class SpeechRecognitionEventHandler {
       const SpeechRecognitionEventHandler&) = delete;
 
   // Set and unset callback for transcription results
-  void SetTranscriptionResultCallback(
-      BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-          transcription_result_callback,
-      BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
-          language_identification_callback);
-  void RemoveSpeechRecognitionObservation();
+  void AddObserver(BabelOrcaSpeechRecognizer::Observer* obs);
+  void RemoveObserver(BabelOrcaSpeechRecognizer::Observer* obs);
 
   // Called by the speech recognizer when a transcript is received.
   void OnSpeechResult(
@@ -40,12 +37,13 @@ class SpeechRecognitionEventHandler {
       const media::mojom::LanguageIdentificationEventPtr& event);
 
  private:
+  void NotifySpeechResult(const media::SpeechRecognitionResult& result);
+  void NotifyLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& ptr);
+
   std::string source_language_;
 
-  BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
-      language_identification_callback_;
-  BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-      transcription_result_callback_;
+  base::ObserverList<BabelOrcaSpeechRecognizer::Observer> observers_;
 };
 
 }  // namespace ash::babelorca
