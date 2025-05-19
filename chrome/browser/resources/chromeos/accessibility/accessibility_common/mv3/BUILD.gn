@@ -141,6 +141,8 @@ ts_library("ts_build") {
   tsconfig_base = "../../tsconfig.base.json"
 }
 
+# TODO(crbug.com/388867838): Use bundle_js and minify_js, similar to what is
+# done for mv2.
 # Instead of setting up copy targets, use a script to copy all files.
 run_jsbundler("copied_files") {
   mode = "copy"

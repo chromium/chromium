@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FaceLandmarker} from '/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
-import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
 import {BubbleController} from './bubble_controller.js';
 import {PrefNames} from './constants.js';

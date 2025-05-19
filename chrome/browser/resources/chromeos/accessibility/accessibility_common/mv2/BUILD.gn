@@ -10,11 +10,17 @@ import("//chrome/test/base/ash/js2gtest.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 
 assert(is_chromeos)
 
 group("build") {
-  deps = [ ":copied_files" ]
+  deps = [
+    ":copy_misc_files",
+    ":minify_js",
+    ":minify_js_sandboxed_pumpkin_tagger",
+  ]
 }
 
 accessibility_common_dir =
@@ -124,7 +130,7 @@ ts_library("ts_build") {
 
     # For type-checking purposes, map vision_bundle.mjs to the definition file
     # in third_party/.
-    "chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs|" + rebase_path(
+    "/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs|" + rebase_path(
             "$mediapipe_dir/vision.d.ts",
             target_gen_dir),
   ]
@@ -136,30 +142,62 @@ ts_library("ts_build") {
   tsconfig_base = "../../tsconfig.base.json"
 }
 
-# Instead of setting up copy targets, use a script to copy all files.
-run_jsbundler("copied_files") {
-  mode = "copy"
-  dest_dir = accessibility_common_dir
-  clear_dest_dirs = [
-    "autoclick",
-    "dictation",
-    "facegaze",
-    "magnifier",
-  ]
+# Bundles the accessibility common files into a single file.
+bundle_js("bundle_js") {
+  visibility = [ ":minify_js" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir", root_build_dir)
+  js_module_in_files = [ "accessibility_common_loader.js" ]
+  out_folder = "$target_gen_dir/bundle"
+
   deps = [
     ":copy_mediapipe_files",
     ":ts_build",
     "../../common:copied_files",
   ]
+}
 
-  sources =
-      misc_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+# Minifies the bundled script to optimize memory footprint.
+# The minified file gets written directly to $accessibility_common_dir.
+minify_js("minify_js") {
+  visibility = [ ":build" ]
 
-  rewrite_rules = [
-    rebase_path("$tsc_out_dir", root_build_dir) + ":",
-    rebase_path(".", root_build_dir) + ":",
-    rebase_path(closure_library_dir, root_build_dir) + ":closure",
-  ]
+  deps = [ ":bundle_js" ]
+  in_folder = "$target_gen_dir/bundle"
+  in_files = [ "accessibility_common_loader.rollup.js" ]
+  out_folder = "$accessibility_common_dir"
+}
+
+# Bundles the sandboxed pumpkin tagger and its imports into a single file, since
+# it is used to initialize a web worker that is separate from the main
+# background script.
+bundle_js("bundle_js_sandboxed_pumpkin_tagger") {
+  visibility = [ ":minify_js_sandboxed_pumpkin_tagger" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir/dictation/parse", root_build_dir)
+  js_module_in_files = [ "sandboxed_pumpkin_tagger.js" ]
+  out_folder = "$target_gen_dir/bundle/dictation/parse"
+
+  deps = [ ":ts_build" ]
+}
+
+# Minifies the sandboxed pumpkin tagger to optimize memory footprint.
+# The minified file gets written directly to
+# $accessibility_common_dir/dictation/parse.
+minify_js("minify_js_sandboxed_pumpkin_tagger") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js_sandboxed_pumpkin_tagger" ]
+  in_folder = "$target_gen_dir/bundle/dictation/parse"
+  in_files = [ "sandboxed_pumpkin_tagger.rollup.js" ]
+  out_folder = "$accessibility_common_dir/dictation/parse"
+}
+
+copy("copy_misc_files") {
+  sources = misc_sources
+  outputs = [ "$accessibility_common_dir/{{source_target_relative}}" ]
 }
 
 # Copies required mediapipe files into the accessibility_common extension

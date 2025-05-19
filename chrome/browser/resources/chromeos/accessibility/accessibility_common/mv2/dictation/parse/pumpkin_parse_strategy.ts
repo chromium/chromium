@@ -25,7 +25,7 @@ import {LocaleInfo} from '../locale_info.js';
 import {ListCommandsMacro} from '../macros/list_commands_macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
-import * as PumpkinConstants from './pumpkin/pumpkin_constants.js';
+import {FromPumpkinTagger, FromPumpkinTaggerCommand, HypothesisArgumentName, PumpkinData, PumpkinLocale, SANDBOXED_PUMPKIN_TAGGER_JS_FILE, SUPPORTED_LOCALES, ToPumpkinTagger, ToPumpkinTaggerCommand} from './pumpkin/pumpkin_constants.js';
 
 /** A parsing strategy that utilizes the Pumpkin semantic parser. */
 export class PumpkinParseStrategy extends ParseStrategy {
@@ -35,12 +35,12 @@ export class PumpkinParseStrategy extends ParseStrategy {
     this.init_();
   }
 
-  private pumpkinData_: PumpkinConstants.PumpkinData|null = null;
+  private pumpkinData_: PumpkinData|null = null;
   private pumpkinTaggerReady_ = false;
   private tagResolver_: (
       (results: proto.speech.pumpkin.PumpkinTaggerResults) => void)|null = null;
   private worker_: Worker|null = null;
-  private locale_: PumpkinConstants.PumpkinLocale|null = null;
+  private locale_: PumpkinLocale|null = null;
   private requestedPumpkinInstall_ = false;
   private onPumpkinTaggerReadyChangedForTesting_: VoidFunction|null = null;
 
@@ -58,7 +58,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
     });
   }
 
-  private onPumpkinInstalled_(data: PumpkinConstants.PumpkinData): void {
+  private onPumpkinInstalled_(data: PumpkinData): void {
     if (!data) {
       console.warn('Pumpkin installed, but data is empty');
       return;
@@ -80,7 +80,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
     this.pumpkinData_ = data;
 
     this.worker_ = new Worker(
-        PumpkinConstants.SANDBOXED_PUMPKIN_TAGGER_JS_FILE, {type: 'module'});
+        new URL(SANDBOXED_PUMPKIN_TAGGER_JS_FILE, import.meta.url),
+        {type: 'module'});
     this.worker_.onmessage = (message) => this.onMessage_(message);
   }
 
@@ -89,9 +90,9 @@ export class PumpkinParseStrategy extends ParseStrategy {
    * context.
    */
   private onMessage_(message: MessageEvent): void {
-    const command: PumpkinConstants.FromPumpkinTagger = message.data;
+    const command: FromPumpkinTagger = message.data;
     switch (command.type) {
-      case PumpkinConstants.FromPumpkinTaggerCommand.READY:
+      case FromPumpkinTaggerCommand.READY:
         this.refreshLocale_();
         if (!this.locale_) {
           throw new Error(
@@ -100,23 +101,23 @@ export class PumpkinParseStrategy extends ParseStrategy {
         }
 
         this.sendToSandboxedPumpkinTagger_({
-          type: PumpkinConstants.ToPumpkinTaggerCommand.LOAD,
+          type: ToPumpkinTaggerCommand.LOAD,
           locale: this.locale_,
           pumpkinData: this.pumpkinData_,
         });
         this.pumpkinData_ = null;
         return;
-      case PumpkinConstants.FromPumpkinTaggerCommand.FULLY_INITIALIZED:
+      case FromPumpkinTaggerCommand.FULLY_INITIALIZED:
         this.setPumpkinTaggerReady_(true);
         this.maybeRefresh_();
         return;
-      case PumpkinConstants.FromPumpkinTaggerCommand.TAG_RESULTS:
+      case FromPumpkinTaggerCommand.TAG_RESULTS:
         // TODO(crbug.com/314203187): Not null asserted, check that this is
         // correct.
         this.tagResolver_!
             (command.results as proto.speech.pumpkin.PumpkinTaggerResults);
         return;
-      case PumpkinConstants.FromPumpkinTaggerCommand.REFRESHED:
+      case FromPumpkinTaggerCommand.REFRESHED:
         this.setPumpkinTaggerReady_(true);
         this.maybeRefresh_();
         return;
@@ -127,8 +128,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
     }
   }
 
-  private sendToSandboxedPumpkinTagger_(
-      command: PumpkinConstants.ToPumpkinTagger): void {
+  private sendToSandboxedPumpkinTagger_(command: ToPumpkinTagger): void {
     if (!this.worker_) {
       throw new Error(
           `Worker not ready, cannot send command to SandboxedPumpkinTagger: ${
@@ -157,7 +157,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
     for (let i = 0; i < numArgs; i++) {
       const argument = hypothesis.actionArgumentList[i];
       // See Variable Argument Placeholders in voiceaccess.patterns_template.
-      if (argument.name === PumpkinConstants.HypothesisArgumentName.SEM_TAG) {
+      if (argument.name === HypothesisArgumentName.SEM_TAG) {
         // Map Pumpkin's STOP_LISTENING to generic TOGGLE_DICTATION macro.
         // When this is run by Dictation, it always stops.
         if (argument.value === 'STOP_LISTENING') {
@@ -165,20 +165,13 @@ export class PumpkinParseStrategy extends ParseStrategy {
         } else {
           tag = MacroName[argument.value as keyof typeof MacroName];
         }
-      } else if (
-          argument.name === PumpkinConstants.HypothesisArgumentName.NUM_ARG) {
+      } else if (argument.name === HypothesisArgumentName.NUM_ARG) {
         repeat = argument.value;
-      } else if (
-          argument.name ===
-          PumpkinConstants.HypothesisArgumentName.OPEN_ENDED_TEXT) {
+      } else if (argument.name === HypothesisArgumentName.OPEN_ENDED_TEXT) {
         text = argument.value;
-      } else if (
-          argument.name ===
-          PumpkinConstants.HypothesisArgumentName.BEGIN_PHRASE) {
+      } else if (argument.name === HypothesisArgumentName.BEGIN_PHRASE) {
         beginPhrase = argument.value;
-      } else if (
-          argument.name ===
-          PumpkinConstants.HypothesisArgumentName.END_PHRASE) {
+      } else if (argument.name === HypothesisArgumentName.END_PHRASE) {
         endPhrase = argument.value;
       }
     }
@@ -284,8 +277,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
   }
 
   private refreshLocale_(): void {
-    this.locale_ =
-        PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale as keyof typeof PumpkinConstants.SUPPORTED_LOCALES] || null;
+    this.locale_ = SUPPORTED_LOCALES[
+        LocaleInfo.locale as keyof typeof SUPPORTED_LOCALES] || null;
   }
 
   /**
@@ -293,8 +286,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
    * the pumpkin locale.
    */
   private maybeRefresh_(): void {
-    const dictationLocale =
-        PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale as keyof typeof PumpkinConstants.SUPPORTED_LOCALES] || null;
+    const dictationLocale = SUPPORTED_LOCALES[
+        LocaleInfo.locale as keyof typeof SUPPORTED_LOCALES] || null;
     if (dictationLocale !== this.locale_) {
       this.refresh();
     }
@@ -314,7 +307,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
 
     this.setPumpkinTaggerReady_(false);
     this.sendToSandboxedPumpkinTagger_({
-      type: PumpkinConstants.ToPumpkinTaggerCommand.REFRESH,
+      type: ToPumpkinTaggerCommand.REFRESH,
       locale: this.locale_,
     });
   }
@@ -329,7 +322,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
     // TODO(crbug.com/1264544): Could increase the hypotheses count from 1
     // when we are ready to implement disambiguation.
     this.sendToSandboxedPumpkinTagger_({
-      type: PumpkinConstants.ToPumpkinTaggerCommand.TAG,
+      type: ToPumpkinTaggerCommand.TAG,
       text,
       numResults: 1,
     });

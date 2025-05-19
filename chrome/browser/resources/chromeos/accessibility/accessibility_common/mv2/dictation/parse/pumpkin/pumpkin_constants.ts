@@ -142,6 +142,6 @@ export enum HypothesisArgumentName {
 }
 
 export const SANDBOXED_PUMPKIN_TAGGER_JS_FILE =
-    'dictation/parse/sandboxed_pumpkin_tagger.js';
+    'dictation/parse/sandboxed_pumpkin_tagger.rollup.js';
 
 TestImportManager.exportForTesting(['SUPPORTED_LOCALES', SUPPORTED_LOCALES]);
