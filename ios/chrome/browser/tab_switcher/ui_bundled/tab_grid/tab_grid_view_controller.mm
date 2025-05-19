@@ -794,6 +794,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Otherwise don't.
   if (!self.viewVisible || !animated) {
     [self.scrollView setContentOffset:targetOffset animated:NO];
+    [self.topToolbar setBackgroundContentOffset:targetOffset animated:NO];
+    [self.bottomToolbar setBackgroundContentOffset:targetOffset animated:NO];
     self.currentPage = targetPage;
     // Important updates (e.g., button configurations, incognito visibility) are
     // made at the end of scrolling animations after `self.currentPage` is set.
@@ -806,6 +808,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     if (scrolled) {
       self.scrollViewAnimatingContentOffset = YES;
       [self.scrollView setContentOffset:targetOffset animated:YES];
+      [self.topToolbar setBackgroundContentOffset:targetOffset animated:YES];
+      [self.bottomToolbar setBackgroundContentOffset:targetOffset animated:YES];
       // `self.currentPage` is set in scrollViewDidEndScrollingAnimation:
     } else {
       self.currentPage = targetPage;
@@ -1892,6 +1896,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // scroll width.
   contentOffset.x = offsetWidth * offset;
   self.scrollView.contentOffset = contentOffset;
+  [self.topToolbar setBackgroundContentOffset:contentOffset animated:NO];
+  [self.bottomToolbar setBackgroundContentOffset:contentOffset animated:NO];
 }
 
 - (void)pageControlChangedPageByDrag:(id)sender {
