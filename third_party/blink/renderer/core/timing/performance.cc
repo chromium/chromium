@@ -42,6 +42,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -836,6 +837,12 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                                   ("mark_interactive"));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_feature_usage,
                                   ("mark_feature_usage"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const AtomicString, mark_parser_blocking,
+      (blink::features::kHTMLParserYieldEventNameForPause.Get().c_str()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const AtomicString, mark_parser_restart,
+      (features::kHTMLParserYieldEventNameForResume.Get().c_str()));
   bool has_start_time = mark_options && mark_options->hasStartTime();
   if (has_start_time || (mark_options && mark_options->hasDetail())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
@@ -890,6 +897,41 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
         }
       }
     }
+
+    if (base::FeatureList::IsEnabled(features::kHTMLParserYieldByUserTiming)) {
+      DCHECK_NE(mark_parser_blocking, "");
+      DCHECK_NE(mark_parser_restart, "");
+      static const size_t timeout =
+          blink::features::kHTMLParserYieldTimeoutInMs.Get();
+      LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+      if (window && window->GetFrame() &&
+          window->GetFrame()->IsOutermostMainFrame()) {
+        Document* document = window->GetFrame()->GetDocument();
+        if (mark_name == mark_parser_blocking && mark_parser_blocking != "") {
+          document->NotifyParserPauseByUserTiming();
+          // Schedule a timeout based resume event here since pausing the parser
+          // can be a potential footgun. It's not guaranteed that the parser
+          // resume mark is called after the parser pause mark.
+          //
+          // If the resuming task is already scheduled, cancels and reschedule
+          // it.
+          parser_yield_task_handle_.Cancel();
+          parser_yield_task_handle_ = PostDelayedCancellableTask(
+              *document->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
+              WTF::BindOnce(
+                  [](Document* document) {
+                    document->NotifyParserResumeByUserTiming();
+                  },
+                  WrapPersistent(document)),
+              base::Milliseconds(timeout));
+        } else if (mark_name == mark_parser_restart && mark_parser_restart != "") {
+          // If the parser is pausing, resume it.
+          document->NotifyParserResumeByUserTiming();
+          parser_yield_task_handle_.Cancel();
+        }
+      }
+    }
+
     NotifyObserversOfEntry(*performance_mark);
   }
   return performance_mark;

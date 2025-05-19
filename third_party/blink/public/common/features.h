@@ -688,6 +688,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kGetUserMediaDeferredDeviceSettingsSelection);
 #endif
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHTMLParserYieldByUserTiming);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kHTMLParserYieldEventNameForPause);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kHTMLParserYieldEventNameForResume);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                               kHTMLParserYieldTimeoutInMs);
+
 // When enabled all input arriving will be ignored, and the dispatcher will be
 // notified that the event was not consumed. With the exception of when there
 // is an attached Dev Tools session, during which input will be dispatched even

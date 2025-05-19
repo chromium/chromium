@@ -132,6 +132,10 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   bool HasPendingPreloads();
 
+  // Start pausing the parser while waiting for the performance.mark() call.
+  void NotifyParserPauseByUserTiming() override;
+  void NotifyParserResumeByUserTiming() override;
+
  protected:
   void insert(const String&) final;
   void Append(const String&) override;
@@ -156,7 +160,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void PrepareToStopParsing() final;
   void StopParsing() final;
   ALWAYS_INLINE bool IsPaused() const {
-    return IsWaitingForScripts() || task_runner_state_->WaitingForStylesheets();
+    return IsWaitingForScripts() ||
+           task_runner_state_->WaitingForStylesheets() ||
+           is_waiting_for_user_timing_;
   }
   bool IsWaitingForScripts() const final;
   bool IsExecutingScript() const final;
@@ -308,6 +314,11 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // yet). This is used to compare the number of seen tags with the number of
   // processed CSP tags in order to decide if resources can be preloaded.
   int seen_csp_meta_tags_ = 0;
+
+  // TODO(crbug.com/416543903): If true, it pauses the parser until the
+  // performance.mark() as a resuming signal is called.
+  bool is_waiting_for_user_timing_ = false;
+  base::TimeTicks time_waiting_for_user_timing_;
 
   base::MetricsSubSampler metrics_sub_sampler_;
 };

@@ -1619,6 +1619,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void DidAddPendingParserBlockingStylesheet();
   void DidLoadAllPendingParserBlockingStylesheets();
   void DidRemoveAllPendingStylesheets();
+  void NotifyParserPauseByUserTiming();
+  void NotifyParserResumeByUserTiming();
 
   bool InStyleRecalc() const;
 

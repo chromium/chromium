@@ -1153,6 +1153,28 @@ BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kHTMLParserYieldByUserTiming,
+             "HTMLParserYieldByUserTiming",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(std::string,
+                   kHTMLParserYieldEventNameForPause,
+                   &kHTMLParserYieldByUserTiming,
+                   "pause_event_name",
+                   "");
+
+BASE_FEATURE_PARAM(std::string,
+                   kHTMLParserYieldEventNameForResume,
+                   &kHTMLParserYieldByUserTiming,
+                   "resume_event_name",
+                   "");
+
+BASE_FEATURE_PARAM(size_t,
+                   kHTMLParserYieldTimeoutInMs,
+                   &kHTMLParserYieldByUserTiming,
+                   "timeout_ms",
+                   20);
+
 BASE_FEATURE(kIgnoreInputWhileHidden,
              "IgnoreInputWhileHidden",
              // TODO(crbug.com/407265465) Some Accessibility tools on Windows

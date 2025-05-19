@@ -1272,6 +1272,44 @@ void HTMLDocumentParser::NotifyScriptLoaded() {
     ResumeParsingAfterPause();
 }
 
+void HTMLDocumentParser::NotifyParserPauseByUserTiming() {
+  CHECK(base::FeatureList::IsEnabled(features::kHTMLParserYieldByUserTiming));
+  if (!is_waiting_for_user_timing_) {
+    time_waiting_for_user_timing_ = base::TimeTicks::Now();
+  }
+  is_waiting_for_user_timing_ = true;
+}
+
+void HTMLDocumentParser::NotifyParserResumeByUserTiming() {
+  CHECK(base::FeatureList::IsEnabled(features::kHTMLParserYieldByUserTiming));
+  DCHECK(script_runner_);
+  DCHECK(!IsExecutingScript());
+
+  if (!is_waiting_for_user_timing_) {
+    return;
+  }
+  is_waiting_for_user_timing_ = false;
+
+  // TODO(crbug.com/416543903): Need refactoring the common resume logic with
+  // `NotifyScriptLoaded()`.
+  if (IsStopped()) {
+    return;
+  }
+
+  if (IsStopping()) {
+    AttemptToRunDeferredScriptsAndEnd();
+    return;
+  }
+
+  script_runner_->ExecuteScriptsWaitingForLoad();
+  if (!IsPaused()) {
+    ResumeParsingAfterPause();
+    base::UmaHistogramTimes(
+        "Blink.HTMLParsing.YieldedTimeByUserTiming",
+        base::TimeTicks::Now() - time_waiting_for_user_timing_);
+  }
+}
+
 // static
 void HTMLDocumentParser::ResetCachedFeaturesForTesting() {
   ThreadedPreloadScannerEnabled(FeatureResetMode::kResetForTesting);

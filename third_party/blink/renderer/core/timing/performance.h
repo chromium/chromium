@@ -442,6 +442,8 @@ class CORE_EXPORT Performance : public EventTarget {
 
   // Running counter for LongTask observations.
   size_t long_task_counter_ = 0;
+
+  TaskHandle parser_yield_task_handle_;
 };
 
 }  // namespace blink

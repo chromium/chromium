@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
@@ -13,6 +12,15 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
+
+namespace {
+const Vector<char>& TestImage() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const Vector<char>, test_image,
+      (*test::ReadFromFile(test::CoreTestDataPath("white-1x1.png"))));
+  return test_image;
+}
+}  // namespace
 
 class HTMLDocumentParserLoadingTest
     : public SimTest,
@@ -411,4 +419,76 @@ TEST_P(HTMLDocumentParserLoadingTest,
   platform_->RunUntilIdle();
 }
 
+class HTMLDocumentParserYieldByUserTimingTest : public SimTest {
+ public:
+  HTMLDocumentParserYieldByUserTimingTest() {
+    std::map<std::string, std::string> params;
+    params["pause_event_name"] = "pause";
+    params["resume_event_name"] = "resume";
+    params["timeout_ms"] = "10";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kHTMLParserYieldByUserTiming, params);
+    platform_->SetAutoAdvanceNowToPendingTasks(false);
+  }
+
+ protected:
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
+      platform_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HTMLDocumentParserYieldByUserTimingTest,
+       ParserIsPausedAndResumedByUserTiming) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest image_resource("https://example.com/img.png", "image/png");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <div id="before"></div>
+    <img src="img.png" onload="performance.mark('resume');">
+    <script>performance.mark('pause');</script>
+    <div id="after"></div>
+  )HTML");
+
+  // The parser is paused by the user timing script.
+  platform_->RunUntilIdle();
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("before")));
+  EXPECT_FALSE(GetDocument().getElementById(AtomicString("after")));
+
+  // Completes the image load. It invokes the resume event and contents after
+  // the script will be available.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  image_resource.Complete(TestImage());
+  platform_->RunUntilIdle();
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("after")));
+}
+
+TEST_F(HTMLDocumentParserYieldByUserTimingTest,
+       ParserIsPausedByUserTimingAndResumedByTimeout) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest image_resource("https://example.com/img.png", "image/png");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <div id="before"></div>
+    <script>performance.mark('pause');</script>
+    <div id="after"></div>
+  )HTML");
+
+  // The parser is paused by the user timing script.
+  platform_->RunUntilIdle();
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("before")));
+  EXPECT_FALSE(GetDocument().getElementById(AtomicString("after")));
+
+  // Flush tasks on the task queue. The resume event is scheduled with the
+  // timeout and contents after the script will be available after the resume
+  // event.
+  platform_->test_task_runner()->FastForwardUntilNoTasksRemain();
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("after")));
+}
 }  // namespace blink
