@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -290,17 +289,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             }
         } else {
             rescueArchivedTabs(orchestrator);
-        }
-
-        // If the flag is turned off, clear all {@link SavedTabGroup}s of possible archived status.
-        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-            for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
-                SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
-
-                if (savedTabGroup != null && savedTabGroup.archivalTimeMs != null) {
-                    mTabGroupSyncService.updateArchivalStatus(syncGroupId, false);
-                }
-            }
         }
     }
 
