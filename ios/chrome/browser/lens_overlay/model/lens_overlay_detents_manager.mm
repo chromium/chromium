@@ -240,7 +240,6 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
       break;
     case SheetDetentStateConsentDialog:
       _sheet.detents = @[ [self consentDetent] ];
-      _sheet.largestUndimmedDetentIdentifier = kConsentSheetDetentIdentifier;
       _sheet.selectedDetentIdentifier = kConsentSheetDetentIdentifier;
       break;
     case SheetDetentStateInfoMessage:

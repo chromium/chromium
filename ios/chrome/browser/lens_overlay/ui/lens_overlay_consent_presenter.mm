@@ -81,7 +81,7 @@
 - (BOOL)lensOverlayDetentsManagerShouldDismissBottomSheet:
     (LensOverlayDetentsManager*)detentsManager {
   DCHECK(detentsManager.sheetDimension == SheetDimensionState::kConsent);
-  return YES;
+  return NO;
 }
 
 @end

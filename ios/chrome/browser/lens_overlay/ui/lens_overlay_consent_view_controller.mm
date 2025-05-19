@@ -43,6 +43,8 @@ const CGFloat kLottieInfiniteLoopFlag = -1;
 // The height of the invariant items of the dialog
 // (e.g. bottom action buttons, the padding).
 const CGFloat kDialogFixedItemsHeight = 160;
+// The width of the dialog in regular display size.
+const CGFloat kDialogWidthInRegularDisplaySize = 540;
 
 // Whether to use the updated onboarding string.
 bool UseUpdatedStrings() {
@@ -157,9 +159,11 @@ NSString* LearnMoreString() {
 
 - (CGSize)preferredContentSize {
   [_contentStack layoutIfNeeded];
-  CGFloat fittingWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width;
   CGFloat presentedContentHeight = _contentStack.frame.size.height;
-  return CGSizeMake(fittingWidth,
+
+  // Only regular width is relevant, as the bottom sheet prresentation is
+  // edge-attached in compact width.
+  return CGSizeMake(kDialogWidthInRegularDisplaySize,
                     presentedContentHeight + kDialogFixedItemsHeight);
 }
 
@@ -200,11 +204,9 @@ NSString* LearnMoreString() {
   UIImageView* imageView = [[UIImageView alloc]
       initWithImage:[UIImage imageNamed:kLensOverlayOnboardingImageName]];
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [imageView.widthAnchor
-        constraintEqualToConstant:kLensOverlayOnboardingIllustrationSize],
-    [imageView.heightAnchor constraintEqualToAnchor:imageView.widthAnchor],
-  ]];
+  AddSizeConstraints(imageView,
+                     CGSizeMake(kLensOverlayOnboardingIllustrationSize,
+                                kLensOverlayOnboardingIllustrationSize));
 
   return imageView;
 }
