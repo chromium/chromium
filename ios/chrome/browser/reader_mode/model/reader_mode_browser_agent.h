@@ -17,9 +17,9 @@ class WebStateList;
 
 // Observes the WebStateList of the associated browser and ensures the Reader
 // mode UI is presented and dismissed accordingly when there is a new active
-// WebState or when Reader mode is activated/deactivated in the currently active
-// WebState. Acts as the delegate of the ReaderModeTabHelper in the current
-// active WebState.
+// WebState or when Reader mode content becomes available/unavailable in the
+// currently active WebState. Acts as the delegate of the ReaderModeTabHelper in
+// the current active WebState.
 class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
                                public WebStateListObserver,
                                public ReaderModeTabHelperDelegate {
@@ -45,8 +45,10 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // ReaderModeTabHelperDelegate methods.
-  void ReaderModeDidBecomeActive(ReaderModeTabHelper* tab_helper) override;
-  void ReaderModeDidBecomeInactive(ReaderModeTabHelper* tab_helper) override;
+  void ReaderModeContentDidBecomeAvailable(
+      ReaderModeTabHelper* tab_helper) override;
+  void ReaderModeContentWillBecomeUnavailable(
+      ReaderModeTabHelper* tab_helper) override;
 
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_scoped_observation_{this};

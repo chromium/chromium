@@ -173,33 +173,33 @@ void ReaderModeTabHelper::SetDelegate(ReaderModeTabHelperDelegate* delegate) {
 }
 
 bool ReaderModeTabHelper::IsActive() const {
-  return active_;
+  return !!reader_mode_web_state_;
 }
 
 void ReaderModeTabHelper::SetActive(bool active) {
-  if (active == active_) {
+  if (active == IsActive()) {
     return;
   }
-  active_ = active;
-  if (active_) {
+  if (active) {
     // If Reader mode is being activated, create the secondary WebState where
     // the content will be rendered and start distillation.
     CreateReaderModeWebState();
-    if (delegate_) {
-      delegate_->ReaderModeDidBecomeActive(this);
-    }
   } else {
     // If Reader mode is being deactivated, destroy the secondary WebState and
     // ensure the Reader mode UI is dismissed.
     DestroyReaderModeWebState();
-    if (delegate_) {
-      delegate_->ReaderModeDidBecomeInactive(this);
-    }
   }
 }
 
+bool ReaderModeTabHelper::IsReaderModeContentAvailable() const {
+  // TODO(crbug.com/417685203): Try to remove this parameter once decoupling is
+  // completed e.g. instead check whether there is a ReaderModeContentTabHelper
+  // attached and displaying content.
+  return reader_mode_content_available_;
+}
+
 UIView* ReaderModeTabHelper::GetReaderModeContentView() {
-  CHECK(reader_mode_web_state_);
+  CHECK(IsReaderModeContentAvailable());
   return reader_mode_web_state_->GetView();
 }
 
@@ -407,6 +407,10 @@ void ReaderModeTabHelper::PageDistillationCompleted(
                                             length:html.length()];
       ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
           ->LoadContent(content_url, content_data);
+      reader_mode_content_available_ = true;
+      if (delegate_) {
+        delegate_->ReaderModeContentDidBecomeAvailable(this);
+      }
     } else {
       // If the page could not be distilled, deactivate Reader mode in this tab.
       SetActive(false);
@@ -428,9 +432,10 @@ void ReaderModeTabHelper::CreateReaderModeWebState() {
 }
 
 void ReaderModeTabHelper::DestroyReaderModeWebState() {
-  // TODO(crbug.com/409940117): Ensure the UI gracefully handles the
-  // destruction of the Reader mode WebState while its view is inside the view
-  // hierarchy.
+  if (delegate_) {
+    delegate_->ReaderModeContentWillBecomeUnavailable(this);
+  }
+  reader_mode_content_available_ = false;
   reader_mode_web_state_.reset();
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();

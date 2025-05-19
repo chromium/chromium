@@ -37,8 +37,13 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   bool IsActive() const;
   // Activates/deactivates Reader mode in the current tab.
   void SetActive(bool active);
+  // Whether Reader mode content is available. When Reader mode becomes active,
+  // the Reader mode content will start being generated through distillation. If
+  // distillation process is successful, then the Reader mode content will
+  // become available.
+  bool IsReaderModeContentAvailable() const;
   // Returns the Reader mode content view. A precondition for calling this
-  // method is for Reader mode to be active in this tab.
+  // method is for `IsReaderModeContentAvailable()` to be true.
   UIView* GetReaderModeContentView();
   // Returns whether the current page supports Reading mode.
   bool CurrentPageSupportsReaderMode() const;
@@ -95,8 +100,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Destroys `reader_mode_web_state_` and stops any ongoing distillation.
   void DestroyReaderModeWebState();
 
-  // Whether Reader mode is active in this tab.
-  bool active_ = false;
+  // Whether the Reader mode content is available in this tab.
+  bool reader_mode_content_available_ = false;
   // WebState used to render the Reader mode content.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
   id<SnackbarCommands> snackbar_handler_;

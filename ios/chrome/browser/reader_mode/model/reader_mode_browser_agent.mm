@@ -56,13 +56,14 @@ void ReaderModeBrowserAgent::WebStateListDidChange(
   }
 
   // Show or hide the Reader mode UI if necessary.
-  const bool old_reader_mode_active =
-      old_tab_helper && old_tab_helper->IsActive();
-  const bool new_reader_mode_active =
-      new_tab_helper && new_tab_helper->IsActive();
-  if (!old_reader_mode_active && new_reader_mode_active) {
+  const bool old_reader_mode_content_available =
+      old_tab_helper && old_tab_helper->IsReaderModeContentAvailable();
+  const bool new_reader_mode_content_available =
+      new_tab_helper && new_tab_helper->IsReaderModeContentAvailable();
+  if (!old_reader_mode_content_available && new_reader_mode_content_available) {
     [reader_mode_handler_ showReaderMode];
-  } else if (old_reader_mode_active && !new_reader_mode_active) {
+  } else if (old_reader_mode_content_available &&
+             !new_reader_mode_content_available) {
     [reader_mode_handler_ hideReaderMode];
   }
 }
@@ -75,14 +76,14 @@ void ReaderModeBrowserAgent::WebStateListDestroyed(
 
 #pragma mark - ReaderModeTabHelperDelegate
 
-void ReaderModeBrowserAgent::ReaderModeDidBecomeActive(
+void ReaderModeBrowserAgent::ReaderModeContentDidBecomeAvailable(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
   [reader_mode_handler_ showReaderMode];
 }
 
-void ReaderModeBrowserAgent::ReaderModeDidBecomeInactive(
+void ReaderModeBrowserAgent::ReaderModeContentWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.

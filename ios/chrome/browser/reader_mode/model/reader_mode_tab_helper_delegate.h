@@ -10,10 +10,12 @@ class ReaderModeTabHelper;
 // Delegate for ReaderModeTabHelper.
 class ReaderModeTabHelperDelegate {
  public:
-  // Called when Reader mode became active in this tab.
-  virtual void ReaderModeDidBecomeActive(ReaderModeTabHelper* tab_helper) = 0;
-  // Called when Reader mode became inactive in this tab.
-  virtual void ReaderModeDidBecomeInactive(ReaderModeTabHelper* tab_helper) = 0;
+  // Called when Reader mode content became available in this tab.
+  virtual void ReaderModeContentDidBecomeAvailable(
+      ReaderModeTabHelper* tab_helper) = 0;
+  // Called when Reader mode content will become unavailable in this tab.
+  virtual void ReaderModeContentWillBecomeUnavailable(
+      ReaderModeTabHelper* tab_helper) = 0;
 
  protected:
   virtual ~ReaderModeTabHelperDelegate() = default;
