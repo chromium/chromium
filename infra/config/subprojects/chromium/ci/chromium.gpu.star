@@ -594,11 +594,7 @@ ci.thin_tester(
             "gpu_common_metal_passthrough_graphite_telemetry_tests",
         ],
         mixins = [
-            # TODO(crbug.com/414760990): Change this back to
-            # mac_mini_intel_gpu_stable once the upgrade is complete. Had to be
-            # switched before the upgrade was ready to roll out everywhere due
-            # to capacity issues.
-            "mac_mini_intel_gpu_experimental",
+            "mac_mini_intel_gpu_stable",
             "puppet_production",
         ],
     ),
