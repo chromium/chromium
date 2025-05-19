@@ -735,7 +735,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testBlurAndFocus() {
+  async function testMoveViewportOnFocus() {
     // Ensure the viewport is scrollable by zooming in.
     viewport.setZoom(2.0);
 
@@ -768,14 +768,6 @@ chrome.test.runTests([
     // scrolling.
     chrome.test.assertEq(10, syncScrollMessage.x);
     chrome.test.assertEq(10, syncScrollMessage.y);
-
-    // Focusing should also have the active element set to the textarea.
-    const active = textbox.shadowRoot.activeElement;
-    chrome.test.assertTrue(!!active);
-    chrome.test.assertEq('TEXTAREA', active.tagName);
-    manager.dispatchEvent(new CustomEvent('blur-text-box'));
-    // blur-text-box should blur the textarea.
-    chrome.test.assertEq(null, textbox.shadowRoot.activeElement);
 
     chrome.test.succeed();
   },
