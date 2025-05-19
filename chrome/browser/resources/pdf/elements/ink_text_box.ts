@@ -8,6 +8,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TextAttributes, TextBoxRect} from '../constants.js';
+import {TextTypeface} from '../constants.js';
 import {colorsEqual, convertRotatedCoordinates, Ink2Manager, stylesEqual} from '../ink2_manager.js';
 import type {TextBoxInit, ViewportParams} from '../ink2_manager.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
@@ -34,6 +35,17 @@ export enum TextBoxState {
 // reasonable minimum width regardless of the content of the text box. Note that
 // this value is held constant regardless of zoom due to the rendering issue.
 const MIN_WIDTH_PX = 36;
+
+function getStyleForTypeface(typeface: TextTypeface): string {
+  switch (typeface) {
+    case TextTypeface.SANS_SERIF:
+      return 'Arial, sans-serif';
+    case TextTypeface.SERIF:
+      return 'Times, serif';
+    case TextTypeface.MONOSPACE:
+      return '"Courier New", monospace';
+  }
+}
 
 const InkTextBoxElementBase = InkTextObserverMixin(CrLitElement);
 
@@ -378,7 +390,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private updateTextAttributes_(newAttributes: TextAttributes) {
-    this.$.textbox.style.fontFamily = newAttributes.typeface;
+    this.$.textbox.style.fontFamily =
+        getStyleForTypeface(newAttributes.typeface);
     this.attributes_ = newAttributes;
     this.styleFontSize_();
     this.$.textbox.style.textAlign = newAttributes.alignment;

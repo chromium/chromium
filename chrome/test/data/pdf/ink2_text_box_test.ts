@@ -113,7 +113,7 @@ chrome.test.runTests([
     // Initial state
     chrome.test.assertEq('12px', textboxStyles.getPropertyValue('font-size'));
     chrome.test.assertEq(
-        'sans-serif', textboxStyles.getPropertyValue('font-family'));
+        'Arial, sans-serif', textboxStyles.getPropertyValue('font-family'));
     chrome.test.assertEq('400', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'normal', textboxStyles.getPropertyValue('font-style'));
@@ -130,7 +130,7 @@ chrome.test.runTests([
     manager.setTextTypeface(TextTypeface.SERIF);
     await microtasksFinished();
     chrome.test.assertEq(
-        'serif', textboxStyles.getPropertyValue('font-family'));
+        'Times, serif', textboxStyles.getPropertyValue('font-family'));
 
     // Size
     manager.setTextSize(20);
