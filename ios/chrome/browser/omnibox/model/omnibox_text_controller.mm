@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"

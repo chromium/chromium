@@ -23,7 +23,7 @@
 #import "components/omnibox/browser/omnibox.mojom-shared.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
@@ -33,7 +33,7 @@ class OmniboxPopupViewIOS;
 
 class OmniboxEditModelIOS {
  public:
-  OmniboxEditModelIOS(OmniboxControllerIOS* controller, OmniboxViewBase* view);
+  OmniboxEditModelIOS(OmniboxControllerIOS* controller, OmniboxViewIOS* view);
   virtual ~OmniboxEditModelIOS();
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
   OmniboxEditModelIOS& operator=(const OmniboxEditModelIOS&) = delete;
@@ -174,13 +174,12 @@ class OmniboxEditModelIOS {
                                   const std::u16string& additional_text,
                                   const AutocompleteMatch& new_match);
 
-  // Called by the OmniboxViewBase after something changes, with details about
+  // Called by the OmniboxViewIOS after something changes, with details about
   // what state changes occurred.  Updates internal state, updates the popup if
   // necessary, and returns true if any significant changes occurred.  Note that
   // `text_change.text_differs` may be set even if `text_change.old_text` ==
   // `text_change.new_text`, e.g. if we've just committed an IME composition.
-  bool OnAfterPossibleChange(
-      const OmniboxViewBase::StateChanges& state_changes);
+  bool OnAfterPossibleChange(const OmniboxViewIOS::StateChanges& state_changes);
 
   // Called when the current match has changed in the OmniboxControllerIOS.
   void OnCurrentMatchChanged();
@@ -300,7 +299,7 @@ class OmniboxEditModelIOS {
   raw_ptr<OmniboxControllerIOS> controller_;
 
   // Owns `OmniboxControllerIOS` which owns this.
-  raw_ptr<OmniboxViewBase> view_;
+  raw_ptr<OmniboxViewIOS> view_;
 
   OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
 

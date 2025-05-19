@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_TEST_OMNIBOX_VIEW_BASE_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_TEST_OMNIBOX_VIEW_BASE_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_TEST_OMNIBOX_VIEW_IOS_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_TEST_OMNIBOX_VIEW_IOS_H_
 
 #import <stddef.h>
 
 #import <string>
 
-#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ui/gfx/range/range.h"
 
-// Fake implementation of OmniboxViewBase for use in tests.
-class TestOmniboxViewBase : public OmniboxViewBase {
+// Fake implementation of OmniboxViewIOS for use in tests.
+class TestOmniboxViewIOS : public OmniboxViewIOS {
  public:
-  explicit TestOmniboxViewBase(std::unique_ptr<OmniboxClient> client)
-      : OmniboxViewBase(std::move(client)) {}
+  explicit TestOmniboxViewIOS(std::unique_ptr<OmniboxClient> client)
+      : OmniboxViewIOS(nil, std::move(client), nil, nil, nil) {}
 
-  TestOmniboxViewBase(const TestOmniboxViewBase&) = delete;
-  TestOmniboxViewBase& operator=(const TestOmniboxViewBase&) = delete;
+  TestOmniboxViewIOS(const TestOmniboxViewIOS&) = delete;
+  TestOmniboxViewIOS& operator=(const TestOmniboxViewIOS&) = delete;
 
   const std::u16string& inline_autocompletion() const {
     return inline_autocompletion_;
@@ -27,7 +27,7 @@ class TestOmniboxViewBase : public OmniboxViewBase {
 
   static State CreateState(std::string text, size_t sel_start, size_t sel_end);
 
-  // OmniboxViewBase:
+  // OmniboxViewIOS:
   std::u16string GetText() const override;
   void SetWindowTextAndCaretPos(const std::u16string& text,
                                 size_t caret_pos,
@@ -42,7 +42,7 @@ class TestOmniboxViewBase : public OmniboxViewBase {
       const std::u16string& inline_autocompletion) override;
   void OnBeforePossibleChange() override {}
   bool OnAfterPossibleChange() override;
-  using OmniboxViewBase::GetStateChanges;
+  using OmniboxViewIOS::GetStateChanges;
 
  private:
   std::u16string text_;
@@ -50,4 +50,4 @@ class TestOmniboxViewBase : public OmniboxViewBase {
   gfx::Range selection_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_TEST_OMNIBOX_VIEW_BASE_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_TEST_OMNIBOX_VIEW_IOS_H_

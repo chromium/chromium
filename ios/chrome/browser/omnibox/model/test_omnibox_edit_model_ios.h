@@ -14,7 +14,7 @@
 class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
  public:
   TestOmniboxEditModelIOS(OmniboxControllerIOS* omnibox_controller,
-                          OmniboxViewBase* view,
+                          OmniboxViewIOS* view,
                           PrefService* pref_service);
   ~TestOmniboxEditModelIOS() override;
   TestOmniboxEditModelIOS(const TestOmniboxEditModelIOS&) = delete;

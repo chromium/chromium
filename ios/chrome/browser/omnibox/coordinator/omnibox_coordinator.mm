@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"

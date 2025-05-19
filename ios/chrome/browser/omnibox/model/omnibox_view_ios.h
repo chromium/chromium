@@ -11,51 +11,141 @@
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/omnibox/browser/location_bar_model.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
 
 class OmniboxClient;
 @protocol OmniboxCommands;
+class OmniboxControllerIOS;
+class OmniboxEditModelIOS;
 @protocol OmniboxFocusDelegate;
 @class OmniboxTextController;
 @class OmniboxTextFieldIOS;
 class ProfileIOS;
 @protocol ToolbarCommands;
 
-// iOS implementation of OmniBoxView.  Wraps a UITextField and
-// interfaces with the rest of the autocomplete system.
-class OmniboxViewIOS : public OmniboxViewBase {
+// Wraps a UITextField and interfaces with the rest of the autocomplete system.
+class OmniboxViewIOS {
  public:
+  // Represents the changes between two State objects. This is used by the
+  // model to determine how its internal state should be updated after the view
+  // state changes. See OmniboxEditModelIOS::OnAfterPossibleChange().
+  struct StateChanges {
+    // `old_text` and `new_text` are not owned.
+    raw_ptr<const std::u16string> old_text;
+    raw_ptr<const std::u16string> new_text;
+    size_t new_sel_start;
+    size_t new_sel_end;
+    bool selection_differs;
+    bool text_differs;
+    bool just_deleted_text;
+  };
+
   // Retains `field`.
   OmniboxViewIOS(OmniboxTextFieldIOS* field,
                  std::unique_ptr<OmniboxClient> client,
                  ProfileIOS* profile,
                  id<OmniboxCommands> omnibox_focuser,
                  id<ToolbarCommands> toolbar_commands_handler);
+  OmniboxViewIOS(const OmniboxViewIOS&) = delete;
+  OmniboxViewIOS& operator=(const OmniboxViewIOS&) = delete;
+  virtual ~OmniboxViewIOS();
 
-  ~OmniboxViewIOS() override;
+  // Returns `text` with any leading javascript schemas stripped.
+  static std::u16string StripJavascriptSchemas(const std::u16string& text);
+
+  // Automatically collapses internal whitespace as follows:
+  // * Leading and trailing whitespace are often copied accidentally and rarely
+  //   affect behavior, so they are stripped. If this collapses the whole
+  //   string, returns a space, since pasting nothing feels broken.
+  // * Internal whitespace sequences not containing CR/LF may be integral to the
+  //   meaning of the string and are preserved exactly. The presence of any of
+  //   these also suggests the input is more likely a search than a navigation,
+  //   which affects the next bullet.
+  // * Internal whitespace sequences containing CR/LF have likely been split
+  //   across lines by terminals, email programs, etc., and are collapsed. If
+  //   there are any internal non-CR/LF whitespace sequences, the input is more
+  //   likely search data (e.g. street addresses), so collapse these to a single
+  //   space. If not, the input might be a navigation (e.g. a line-broken URL),
+  //   so collapse these away entirely.
+  //
+  // Finally, calls StripJavascriptSchemas() on the resulting string.
+  static std::u16string SanitizeTextForPaste(const std::u16string& text);
+
+  OmniboxEditModelIOS* model();
+  const OmniboxEditModelIOS* model() const;
+
+  OmniboxControllerIOS* controller();
+  const OmniboxControllerIOS* controller() const;
 
   void SetOmniboxTextController(OmniboxTextController* controller) {
     omnibox_text_controller_ = controller;
   }
 
-  // OmniboxView implementation.
-  std::u16string GetText() const override;
-  void SetWindowTextAndCaretPos(const std::u16string& text,
-                                size_t caret_pos,
-                                bool update_popup,
-                                bool notify_text_changed) override;
-  void SetCaretPos(size_t caret_pos) override;
-  void RevertAll() override;
-  void UpdatePopup() override;
-  void OnInlineAutocompleteTextMaybeChanged(
+  // Returns the current selection.
+  NSRange GetCurrentSelection() const { return current_selection_; }
+
+  // Returns the current text of the edit control, which could be the
+  // "temporary" text set by the popup, the "permanent" text set by the
+  // browser, or just whatever the user has currently typed.
+  virtual std::u16string GetText() const;
+
+  // The user text is the text the user has manually keyed in. When present,
+  // this is shown in preference to the permanent text; hitting escape will
+  // revert to the permanent text.
+  void SetUserText(const std::u16string& text);
+  virtual void SetUserText(const std::u16string& text, bool update_popup);
+
+  // Sets the window text and the caret position. `notify_text_changed` is true
+  // if the model should be notified of the change. Clears the additional text.
+  virtual void SetWindowTextAndCaretPos(const std::u16string& text,
+                                        size_t caret_pos,
+                                        bool update_popup,
+                                        bool notify_text_changed);
+
+  // Sets the caret position. Removes any selection. Clamps the requested caret
+  // position to the length of the current text.
+  virtual void SetCaretPos(size_t caret_pos);
+
+  // Reverts the edit and popup back to their unedited state (permanent text
+  // showing, popup closed, no user input in progress).
+  virtual void RevertAll();
+
+  // Updates the autocomplete popup and other state after the text has been
+  // changed by the user.
+  virtual void UpdatePopup();
+
+  // Closes the autocomplete popup, if it's open. The name `ClosePopup`
+  // conflicts with the OSX class override as that has a base class that also
+  // defines a method with that name.
+  virtual void CloseOmniboxPopup();
+
+  // Called when the inline autocomplete text in the model may have changed.
+  // `user_text` is the portion of omnibox text the user typed.
+  // `inline`_autocompletion` is the autocompleted part.
+  virtual void OnInlineAutocompleteTextMaybeChanged(
       const std::u16string& user_text,
-      const std::u16string& inline_autocompletion) override;
-  void OnBeforePossibleChange() override;
-  bool OnAfterPossibleChange() override;
-  void SetAdditionalText(const std::u16string& text) override;
-  void GetSelectionBounds(std::u16string::size_type* start,
-                          std::u16string::size_type* end) const override;
+      const std::u16string& inline_autocompletion);
+
+  // Checkpoints the current edit state before an operation that might trigger
+  // a new autocomplete run to open or modify the popup. Call this before
+  // user-initiated edit actions that trigger autocomplete, but *not* for
+  // automatic changes to the textfield that should not affect autocomplete.
+  virtual void OnBeforePossibleChange();
+
+  // OnAfterPossibleChange() returns true if there was a change that caused it
+  // to call UpdatePopup().
+  virtual bool OnAfterPossibleChange();
+
+  // Sets the omnibox adjacent additional text label in the location bar view.
+  virtual void SetAdditionalText(const std::u16string& text);
+
+  // Fills `start` and `end` with the indexes of the current selection's bounds.
+  // It is not guaranteed that `*start < *end`, as the selection can be
+  // directed. If there is no selection, `start` and `end` will both be equal
+  // to the current cursor position.
+  virtual void GetSelectionBounds(std::u16string::size_type* start,
+                                  std::u16string::size_type* end) const;
 
   // OmniboxTextChange methods.
 
@@ -72,10 +162,27 @@ class OmniboxViewIOS : public OmniboxViewBase {
   // tap on left/right arrow key).
   void OnAcceptAutocomplete();
 
-  // Returns the current selection.
-  NSRange GetCurrentSelection() const { return current_selection_; }
-
  private:
+  friend class TestOmniboxViewIOS;
+  // Tracks important state that may change between OnBeforePossibleChange() and
+  // OnAfterPossibleChange().
+  struct State {
+    std::u16string text;
+    size_t sel_start;
+    size_t sel_end;
+  };
+
+  // Fills `state` with the current text state.
+  void GetState(State* state);
+
+  // Returns the delta between `before` and `after`.
+  StateChanges GetStateChanges(const State& before, const State& after);
+
+  // Internally invoked whenever the text changes in some way.
+  virtual void TextChanged();
+
+  std::unique_ptr<OmniboxControllerIOS> controller_;
+
   OmniboxTextFieldIOS* field_;
 
   State state_before_change_;

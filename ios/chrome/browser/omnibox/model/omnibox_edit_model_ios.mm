@@ -66,7 +66,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "net/cookies/cookie_util.h"
 #import "third_party/icu/source/common/unicode/ubidi.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
@@ -233,7 +233,7 @@ void LogFocusToOpenTime(base::TimeDelta elapsed,
 // -----------------------------------------------------------
 
 OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
-                                         OmniboxViewBase* view)
+                                         OmniboxViewIOS* view)
     : controller_(controller),
       view_(view),
       user_input_in_progress_(false),
@@ -541,7 +541,7 @@ void OmniboxEditModelIOS::OnSetFocus() {
   // If the omnibox lost focus while the caret was hidden and then regained
   // focus, OnSetFocus() is called and should restore visibility. Note that
   // focus can be regained without an accompanying call to
-  // OmniboxViewBase::SetFocus(), e.g. by tabbing in.
+  // OmniboxViewIOS::SetFocus(), e.g. by tabbing in.
   SetFocusState(OMNIBOX_FOCUS_VISIBLE, OMNIBOX_FOCUS_CHANGE_EXPLICIT);
 
   if (user_input_in_progress_ || !in_revert_) {
@@ -649,7 +649,7 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
 }
 
 bool OmniboxEditModelIOS::OnAfterPossibleChange(
-    const OmniboxViewBase::StateChanges& state_changes) {
+    const OmniboxViewIOS::StateChanges& state_changes) {
   // Update the paste state as appropriate: if we're just finishing a paste
   // that replaced all the text, preserve that information; otherwise, if we've
   // made some other edit, clear paste tracking.

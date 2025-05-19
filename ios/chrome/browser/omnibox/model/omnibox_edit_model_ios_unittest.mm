@@ -33,10 +33,10 @@
 #import "components/url_formatter/url_fixer.h"
 #import "extensions/buildflags/buildflags.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/model/test_omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/test_omnibox_view_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -89,14 +89,14 @@ class OmniboxEditModelIOSTest : public PlatformTest {
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
 
-    view_ = std::make_unique<TestOmniboxViewBase>(std::move(omnibox_client));
+    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
     view_->controller()->SetEditModelForTesting(
         std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
                                                   view_.get(),
                                                   /*pref_service=*/nullptr));
   }
 
-  TestOmniboxViewBase* view() { return view_.get(); }
+  TestOmniboxViewIOS* view() { return view_.get(); }
   TestLocationBarModel* location_bar_model() {
     return omnibox_client_->location_bar_model();
   }
@@ -108,7 +108,7 @@ class OmniboxEditModelIOSTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   raw_ptr<TestOmniboxClient, DanglingUntriaged> omnibox_client_;
-  std::unique_ptr<TestOmniboxViewBase> view_;
+  std::unique_ptr<TestOmniboxViewIOS> view_;
 };
 
 // Tests various permutations of AutocompleteModel::AdjustTextForCopy.
@@ -262,8 +262,8 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
 
   std::u16string text_before = u"he";
   std::u16string text_after = u"hel";
-  OmniboxViewBase::StateChanges state_changes{
-      &text_before, &text_after, 3, 3, false, true, false};
+  OmniboxViewIOS::StateChanges state_changes{&text_before, &text_after, 3,    3,
+                                             false,        true,        false};
   model()->OnAfterPossibleChange(state_changes);
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->OnPopupDataChanged(u"lo", std::u16string(), {});
@@ -390,7 +390,7 @@ class OmniboxEditModelIOSPopupTest : public PlatformTest {
     EXPECT_CALL(*omnibox_client, GetPrefs())
         .WillRepeatedly(Return(pref_service()));
 
-    view_ = std::make_unique<TestOmniboxViewBase>(std::move(omnibox_client));
+    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
     view_->controller()->SetEditModelForTesting(
         std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
                                                   view_.get(), pref_service()));
@@ -427,7 +427,7 @@ class OmniboxEditModelIOSPopupTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<TestOmniboxViewBase> view_;
+  std::unique_ptr<TestOmniboxViewIOS> view_;
   TestOmniboxPopupViewIOS popup_view_;
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };

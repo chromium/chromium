@@ -10,7 +10,7 @@
 
 TestOmniboxEditModelIOS::TestOmniboxEditModelIOS(
     OmniboxControllerIOS* omnibox_controller,
-    OmniboxViewBase* view,
+    OmniboxViewIOS* view,
     PrefService* pref_service)
     : OmniboxEditModelIOS(omnibox_controller, view),
       popup_is_open_(false),

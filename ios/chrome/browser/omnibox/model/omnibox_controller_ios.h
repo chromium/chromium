@@ -14,13 +14,13 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 
 class OmniboxClient;
-class OmniboxViewBase;
+class OmniboxViewIOS;
 
 // This class controls the various services that can modify the content of the
 // omnibox, including `AutocompleteController` and `OmniboxEditModelIOS`.
 class OmniboxControllerIOS : public AutocompleteController::Observer {
  public:
-  OmniboxControllerIOS(OmniboxViewBase* view,
+  OmniboxControllerIOS(OmniboxViewIOS* view,
                        std::unique_ptr<OmniboxClient> client,
                        base::TimeDelta autocomplete_stop_timer_duration =
                            kAutocompleteDefaultStopTimerDuration);

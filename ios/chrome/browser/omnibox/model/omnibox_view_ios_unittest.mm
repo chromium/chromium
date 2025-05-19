@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 
 #import <stddef.h>
 
@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/model/test_omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/test_omnibox_view_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -46,23 +46,23 @@ using testing::SaveArgPointee;
 
 namespace {
 
-class OmniboxViewBaseTest : public PlatformTest {
+class OmniboxViewIOSTest : public PlatformTest {
  public:
-  OmniboxViewBaseTest()
+  OmniboxViewIOSTest()
       : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
     EXPECT_CALL(*client(), GetBookmarkModel())
         .WillRepeatedly(Return(bookmark_model_.get()));
 
-    view_ = std::make_unique<TestOmniboxViewBase>(std::move(omnibox_client));
+    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
     view_->controller()->SetEditModelForTesting(
         std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
                                                   view_.get(),
                                                   /*pref_service=*/nullptr));
   }
 
-  TestOmniboxViewBase* view() { return view_.get(); }
+  TestOmniboxViewIOS* view() { return view_.get(); }
 
   TestOmniboxEditModelIOS* model() {
     return static_cast<TestOmniboxEditModelIOS*>(view_->model());
@@ -74,18 +74,18 @@ class OmniboxViewBaseTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxViewBase> view_;
+  std::unique_ptr<TestOmniboxViewIOS> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
 };
 
-class OmniboxViewBasePopupTest : public PlatformTest {
+class OmniboxViewIOSPopupTest : public PlatformTest {
  public:
-  OmniboxViewBasePopupTest() {
+  OmniboxViewIOSPopupTest() {
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
 
-    view_ = std::make_unique<TestOmniboxViewBase>(std::move(omnibox_client));
+    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
     view_->controller()->SetEditModelForTesting(
         std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
                                                   view_.get(),
@@ -94,7 +94,7 @@ class OmniboxViewBasePopupTest : public PlatformTest {
     model()->SetPopupIsOpen(true);
   }
 
-  TestOmniboxViewBase* view() { return view_.get(); }
+  TestOmniboxViewIOS* view() { return view_.get(); }
 
   TestOmniboxEditModelIOS* model() {
     return static_cast<TestOmniboxEditModelIOS*>(view_->model());
@@ -104,13 +104,13 @@ class OmniboxViewBasePopupTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxViewBase> view_;
+  std::unique_ptr<TestOmniboxViewIOS> view_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
   TestOmniboxPopupViewIOS popup_view_;
 };
 }  // namespace
 
-TEST_F(OmniboxViewBaseTest, TestStripSchemasUnsafeForPaste) {
+TEST_F(OmniboxViewIOSTest, TestStripSchemasUnsafeForPaste) {
   constexpr const auto urls = std::to_array<const char*>({
       " \x01 ",                                       // Safe query.
       "http://www.google.com?q=javascript:alert(0)",  // Safe URL.
@@ -144,11 +144,11 @@ TEST_F(OmniboxViewBaseTest, TestStripSchemasUnsafeForPaste) {
   for (size_t i = 0; i < std::size(urls); i++) {
     EXPECT_EQ(
         ASCIIToUTF16(expecteds[i]),
-        OmniboxViewBase::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
+        OmniboxViewIOS::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
   }
 }
 
-TEST_F(OmniboxViewBaseTest, SanitizeTextForPaste) {
+TEST_F(OmniboxViewIOSTest, SanitizeTextForPaste) {
   const struct {
     std::u16string input;
     std::u16string output;
@@ -203,60 +203,60 @@ TEST_F(OmniboxViewBaseTest, SanitizeTextForPaste) {
 
   for (const auto& testcase : kTestcases) {
     EXPECT_EQ(testcase.output,
-              OmniboxViewBase::SanitizeTextForPaste(testcase.input));
+              OmniboxViewIOS::SanitizeTextForPaste(testcase.input));
   }
 }
 
 // Tests GetStateChanges correctly determines if text was deleted.
-TEST_F(OmniboxViewBaseTest, GetStateChanges_DeletedText) {
+TEST_F(OmniboxViewIOSTest, GetStateChanges_DeletedText) {
   {
     // Continuing autocompletion
     auto state_before =
-        TestOmniboxViewBase::CreateState("google.com", 10, 3);  // goo[gle.com]
-    auto state_after = TestOmniboxViewBase::CreateState("goog", 4, 4);  // goog|
+        TestOmniboxViewIOS::CreateState("google.com", 10, 3);  // goo[gle.com]
+    auto state_after = TestOmniboxViewIOS::CreateState("goog", 4, 4);  // goog|
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
     // Typing not the autocompletion
     auto state_before =
-        TestOmniboxViewBase::CreateState("google.com", 1, 10);  // g[oogle.com]
-    auto state_after = TestOmniboxViewBase::CreateState("gi", 2, 2);  // gi|
+        TestOmniboxViewIOS::CreateState("google.com", 1, 10);  // g[oogle.com]
+    auto state_after = TestOmniboxViewIOS::CreateState("gi", 2, 2);  // gi|
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
     // Deleting autocompletion
     auto state_before =
-        TestOmniboxViewBase::CreateState("google.com", 1, 10);  // g[oogle.com]
-    auto state_after = TestOmniboxViewBase::CreateState("g", 1, 1);  // g|
+        TestOmniboxViewIOS::CreateState("google.com", 1, 10);  // g[oogle.com]
+    auto state_after = TestOmniboxViewIOS::CreateState("g", 1, 1);  // g|
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_TRUE(state_changes.just_deleted_text);
   }
   {
     // Inserting
     auto state_before =
-        TestOmniboxViewBase::CreateState("goole.com", 3, 3);  // goo|le.com
+        TestOmniboxViewIOS::CreateState("goole.com", 3, 3);  // goo|le.com
     auto state_after =
-        TestOmniboxViewBase::CreateState("google.com", 4, 4);  // goog|le.com
+        TestOmniboxViewIOS::CreateState("google.com", 4, 4);  // goog|le.com
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
     // Deleting
     auto state_before =
-        TestOmniboxViewBase::CreateState("googgle.com", 5, 5);  // googg|le.com
+        TestOmniboxViewIOS::CreateState("googgle.com", 5, 5);  // googg|le.com
     auto state_after =
-        TestOmniboxViewBase::CreateState("google.com", 4, 4);  // goog|le.com
+        TestOmniboxViewIOS::CreateState("google.com", 4, 4);  // goog|le.com
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_TRUE(state_changes.just_deleted_text);
   }
   {
     // Replacing
     auto state_before =
-        TestOmniboxViewBase::CreateState("goojle.com", 3, 4);  // goo[j]le.com
+        TestOmniboxViewIOS::CreateState("goojle.com", 3, 4);  // goo[j]le.com
     auto state_after =
-        TestOmniboxViewBase::CreateState("google.com", 4, 4);  // goog|le.com
+        TestOmniboxViewIOS::CreateState("google.com", 4, 4);  // goog|le.com
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }

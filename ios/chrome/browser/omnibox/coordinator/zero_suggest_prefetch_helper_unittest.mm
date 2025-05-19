@@ -13,7 +13,7 @@
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -49,7 +49,7 @@ class MockAutocompleteController : public AutocompleteController {
 
 class TestOmniboxController : public OmniboxControllerIOS {
  public:
-  TestOmniboxController(OmniboxViewBase* view,
+  TestOmniboxController(OmniboxViewIOS* view,
                         std::unique_ptr<OmniboxClient> client)
       : OmniboxControllerIOS(view, std::move(client)) {}
 

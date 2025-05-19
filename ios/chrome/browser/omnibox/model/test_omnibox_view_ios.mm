@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/test_omnibox_view_base.h"
+#import "ios/chrome/browser/omnibox/model/test_omnibox_view_ios.h"
 
 #import <algorithm>
 
@@ -11,34 +11,34 @@
 #import "ui/gfx/native_widget_types.h"
 
 // static
-OmniboxViewBase::State TestOmniboxViewBase::CreateState(std::string text,
-                                                        size_t sel_start,
-                                                        size_t sel_end) {
-  OmniboxViewBase::State state;
+OmniboxViewIOS::State TestOmniboxViewIOS::CreateState(std::string text,
+                                                      size_t sel_start,
+                                                      size_t sel_end) {
+  OmniboxViewIOS::State state;
   state.text = base::UTF8ToUTF16(text);
   state.sel_start = sel_start;
   state.sel_end = sel_end;
   return state;
 }
 
-std::u16string TestOmniboxViewBase::GetText() const {
+std::u16string TestOmniboxViewIOS::GetText() const {
   return text_;
 }
 
-void TestOmniboxViewBase::SetWindowTextAndCaretPos(const std::u16string& text,
-                                                   size_t caret_pos,
-                                                   bool update_popup,
-                                                   bool notify_text_changed) {
+void TestOmniboxViewIOS::SetWindowTextAndCaretPos(const std::u16string& text,
+                                                  size_t caret_pos,
+                                                  bool update_popup,
+                                                  bool notify_text_changed) {
   text_ = text;
   selection_ = gfx::Range(caret_pos);
 }
 
-void TestOmniboxViewBase::GetSelectionBounds(size_t* start, size_t* end) const {
+void TestOmniboxViewIOS::GetSelectionBounds(size_t* start, size_t* end) const {
   *start = selection_.start();
   *end = selection_.end();
 }
 
-void TestOmniboxViewBase::OnInlineAutocompleteTextMaybeChanged(
+void TestOmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
     const std::u16string& user_text,
     const std::u16string& inline_autocompletion) {
   std::u16string display_text = user_text + inline_autocompletion;
@@ -53,6 +53,6 @@ void TestOmniboxViewBase::OnInlineAutocompleteTextMaybeChanged(
   }
 }
 
-bool TestOmniboxViewBase::OnAfterPossibleChange() {
+bool TestOmniboxViewIOS::OnAfterPossibleChange() {
   return false;
 }

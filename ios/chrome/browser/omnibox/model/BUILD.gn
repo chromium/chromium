@@ -53,8 +53,6 @@ source_set("model") {
     "omnibox_text_controller.h",
     "omnibox_text_controller.mm",
     "omnibox_text_controller_delegate.h",
-    "omnibox_view_base.h",
-    "omnibox_view_base.mm",
     "omnibox_view_ios.h",
     "omnibox_view_ios.mm",
     "pedal_section_extractor.h",
@@ -161,8 +159,8 @@ source_set("test_support") {
     "test_omnibox_edit_model_ios.mm",
     "test_omnibox_popup_view_ios.h",
     "test_omnibox_popup_view_ios.mm",
-    "test_omnibox_view_base.h",
-    "test_omnibox_view_base.mm",
+    "test_omnibox_view_ios.h",
+    "test_omnibox_view_ios.mm",
   ]
 
   deps = [
@@ -184,7 +182,7 @@ source_set("unit_tests") {
     "omnibox_controller_ios_unittest.mm",
     "omnibox_edit_model_ios_unittest.mm",
     "omnibox_pedal_annotator_unittest.mm",
-    "omnibox_view_base_unittest.mm",
+    "omnibox_view_ios_unittest.mm",
     "pedal_section_extractor_unittest.mm",
   ]
   deps = [
