@@ -11,6 +11,7 @@
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '/shared/settings/prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
+import '../../icons.html.js';
 import './privacy_guide_fragment_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
