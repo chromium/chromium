@@ -4921,7 +4921,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.WelcomeExperienceNotificationEvent"
-    enum="WelcomeExperienceNotificationEventType" expires_after="2025-06-30">
+    enum="WelcomeExperienceNotificationEventType" expires_after="2026-06-30">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
