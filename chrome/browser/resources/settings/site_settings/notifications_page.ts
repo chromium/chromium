@@ -19,6 +19,7 @@ import './category_setting_exceptions.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
 import '../privacy_icons.html.js';
+import '../privacy_page/collapse_radio_button.js';
 import '../safety_hub/safety_hub_module.js';
 import '../settings_shared.css.js';
 

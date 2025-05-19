@@ -71,21 +71,24 @@
     <settings-radio-group
         pref="{{prefs.generated.geolocation}}"
         selectable-elements="cr-radio-button">
-      <cr-radio-button
+      <settings-collapse-radio-button
           name="[[settingsStateEnum_.QUIET]]"
           pref="[[prefs.generated.geolocation]]"
-          label="$i18n{siteSettingsLocationAskQuiet}">
-      </cr-radio-button>
-      <cr-radio-button
+          label="$i18n{siteSettingsLocationAskQuiet}"
+          no-collapse>
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button
           name="[[settingsStateEnum_.CPSS]]"
           pref="[[prefs.generated.geolocation]]"
-          label="$i18n{siteSettingsLocationAskCPSS}">
-      </cr-radio-button>
-      <cr-radio-button
+          label="$i18n{siteSettingsLocationAskCPSS}"
+          no-collapse>
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button
           name="[[settingsStateEnum_.LOUD]]"
           pref="[[prefs.generated.geolocation]]"
-          label="$i18n{siteSettingsLocationAskLoud}">
-      </cr-radio-button>
+          label="$i18n{siteSettingsLocationAskLoud}"
+          no-collapse>
+      </settings-collapse-radio-button>
     </settings-radio-group>
   </div>
 </template>
