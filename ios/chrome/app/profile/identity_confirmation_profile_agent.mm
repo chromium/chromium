@@ -143,7 +143,10 @@ enum class IdentityConfirmationSnackbarDecision {
     return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
 
-  if (![self isStartSurfaceWithBrowser:browser]) {
+  // For non-managed accounts, show the snackbar only on top of Bling Start.
+  if (!authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin) &&
+      ![self isStartSurfaceWithBrowser:browser]) {
     return IdentityConfirmationSnackbarDecision::kDontShowNotOnStartPage;
   }
 
