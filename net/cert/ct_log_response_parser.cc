@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/ct_log_response_parser.h"
 
 #include <memory>
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/json/json_value_converter.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -105,9 +101,9 @@ bool FillSignedTreeHead(const base::Value& json_signed_tree_head,
   signed_tree_head->timestamp =
       base::Time::FromMillisecondsSinceUnixEpoch(parsed_sth.timestamp);
   signed_tree_head->signature = parsed_sth.signature;
-  memcpy(signed_tree_head->sha256_root_hash,
-         parsed_sth.sha256_root_hash.c_str(),
-         kSthRootHashLength);
+  base::as_writable_byte_span(signed_tree_head->sha256_root_hash)
+      .copy_from(base::as_byte_span(parsed_sth.sha256_root_hash)
+                     .first(kSthRootHashLength));
   return true;
 }
 
