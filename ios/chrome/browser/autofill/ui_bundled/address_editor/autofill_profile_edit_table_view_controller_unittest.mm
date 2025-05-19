@@ -270,11 +270,14 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
     if (test_case.account_profile ||
         test_case.prompt_mode ==
             AutofillSaveProfilePromptMode::kMigrateProfile) {
+      int expected_text_id =
+          (test_case.prompt_mode ==
+                   AutofillSaveProfilePromptMode::kUpdateProfile
+               ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
+               : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER);
       // Check footer text in the save prompt.
       CheckSectionFooter(
-          l10n_util::GetNSStringF(
-              IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-              kTestSyncingEmail),
+          l10n_util::GetNSStringF(expected_text_id, kTestSyncingEmail),
           numOfSections - 2);
       EXPECT_EQ(NumberOfItemsInSection(4), 0);
     }
