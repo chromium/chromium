@@ -286,8 +286,23 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
         visible_end_of_selection = CreateVisiblePosition(end_of_selection);
       }
 
-      start_of_current_paragraph =
+      VisiblePosition start_of_next_paragraph =
           StartOfNextParagraph(EndingVisibleSelection().VisibleStart());
+      // Move to the start of the next paragraph. If the start of the next
+      // paragraph goes before the start of the current paragraph, then we
+      // should move to the next position from the start of the next paragraph
+      // in order to avoid infinite loop causing a renderer freeze.
+      // TODO(crbug.com/417631316): Below change fixes the renderer freeze but
+      // it uncovers another bug where the empty span is not unlistified.
+      if (RuntimeEnabledFeatures::
+              FixNextPositionCalculationInInsertListEnabled() &&
+          !start_of_current_paragraph.IsOrphan() &&
+          start_of_next_paragraph.DeepEquivalent() <=
+              start_of_current_paragraph.DeepEquivalent()) {
+        start_of_current_paragraph = NextPositionOf(start_of_next_paragraph);
+      } else {
+        start_of_current_paragraph = start_of_next_paragraph;
+      }
     }
     SetEndingSelection(SelectionForUndoStep::From(
         SelectionInDOMTree::Builder()

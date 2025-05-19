@@ -2221,6 +2221,11 @@
       status: "stable",
     },
     {
+      // crbug.com/411739501
+      name: "FixNextPositionCalculationInInsertList",
+      status: "stable",
+    },
+    {
       name: "Fledge",
       status: "stable",
       base_feature: "none",
