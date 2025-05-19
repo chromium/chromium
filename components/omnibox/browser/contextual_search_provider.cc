@@ -314,7 +314,7 @@ void ContextualSearchProvider::AddPageSearchActionMatches(
   match.takeover_action =
       base::MakeRefCounted<ContextualSearchOpenLensAction>();
   match.contents = base::UTF8ToUTF16(input.current_url().host());
-  match.contents_class = {{0, ACMatchClassification::URL}};
+  match.contents_class = {{0, ACMatchClassification::DIM}};
   match.description = match.takeover_action->GetLabelStrings().hint;
   match.description_class = {{0, ACMatchClassification::NONE}};
   matches_.push_back(match);

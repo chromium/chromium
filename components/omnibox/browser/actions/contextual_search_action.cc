@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "build/branding_buildflags.h"                // nogncheck
@@ -42,12 +43,13 @@ ContextualSearchFulfillmentAction::~ContextualSearchFulfillmentAction() =
 ////////////////////////////////////////////////////////////////////////////////
 
 ContextualSearchOpenLensAction::ContextualSearchOpenLensAction()
-    : OmniboxAction(
-          OmniboxAction::LabelStrings(u"Ask Google Lens about this page",
-                                      u"",
-                                      u"",
-                                      u""),
-          GURL()) {}
+    : OmniboxAction(OmniboxAction::LabelStrings(
+                        l10n_util::GetStringUTF16(
+                            IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL),
+                        u"",
+                        u"",
+                        u""),
+                    GURL()) {}
 
 OmniboxActionId ContextualSearchOpenLensAction::ActionId() const {
   return OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS;
