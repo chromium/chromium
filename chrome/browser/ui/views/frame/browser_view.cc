@@ -3354,7 +3354,7 @@ void BrowserView::MaybeShowTabStripToolbarButtonIPH() {
       toolbar_->pinned_toolbar_actions_container()->IsActionPinned(
           kActionTabSearch);
   if (should_show) {
-    MaybeShowFeaturePromo(
+    MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHTabSearchToolbarButtonFeature);
   }
 }
