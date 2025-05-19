@@ -10420,6 +10420,27 @@
             ]
         }
     ],
+    "GoogleLensTabletIntegration": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_110422",
+                    "params": {
+                        "enableCameraAssistedSearchOnTablet": "true",
+                        "enableCameraAssistedSearchOnTabletWidget": "true",
+                        "enableContextMenuSearchOnTablet": "true"
+                    },
+                    "enable_features": [
+                        "LensCameraAssistedSearch",
+                        "LensOnQuickActionSearchWidget"
+                    ]
+                }
+            ]
+        }
+    ],
     "GpuYieldRasterization": [
         {
             "platforms": [

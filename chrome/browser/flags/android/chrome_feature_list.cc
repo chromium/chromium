@@ -306,6 +306,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIncognitoScreenshot,
     &kInstanceSwitcherV2,
     &kKeyboardEscBackNavigation,
+    &kLensOnQuickActionSearchWidget,
     &kMagicStackAndroid,
     &kMayLaunchUrlUsesSeparateStoragePartition,
     &kMiniOriginBar,
@@ -862,6 +863,10 @@ BASE_FEATURE(kContextMenuSysUiMatchesActivity,
 BASE_FEATURE(kContextMenuTranslateWithGoogleLens,
              "ContextMenuTranslateWithGoogleLens",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOnQuickActionSearchWidget,
+             "LensOnQuickActionSearchWidget",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualSearchDisableOnlineDetection,
              "ContextualSearchDisableOnlineDetection",
