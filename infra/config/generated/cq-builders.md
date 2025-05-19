@@ -632,6 +632,7 @@ builder.
   * [`//third_party/ruy/.+`](https://cs.chromium.org/chromium/src/third_party/ruy/)
   * [`//third_party/tflite/.+`](https://cs.chromium.org/chromium/src/third_party/tflite/)
   * [`//third_party/xnnpack/.+`](https://cs.chromium.org/chromium/src/third_party/xnnpack/)
+  * [`//third_party/protobuf/src/.+`](https://cs.chromium.org/chromium/src/third_party/protobuf/src/)
 
 * [linux_chromium_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_dbg_ng""))
 

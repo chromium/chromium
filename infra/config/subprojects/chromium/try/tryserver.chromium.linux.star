@@ -759,6 +759,9 @@ try_.builder(
             "third_party/ruy/.+",
             "third_party/tflite/.+",
             "third_party/xnnpack/.+",
+            # Diectories that have caused breakages in the past due to the
+            # protobuf roll.
+            "third_party/protobuf/src/.+",
         ],
     ),
 )
