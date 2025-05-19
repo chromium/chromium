@@ -9,6 +9,8 @@ source_set("discover_feed") {
     "test_discover_feed_service.h",
     "test_discover_feed_service.mm",
   ]
-  deps =
-      [ "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api" ]
+  deps = [
+    "//ios/chrome/test/fakes",
+    "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
+  ]
 }

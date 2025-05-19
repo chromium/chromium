@@ -63,6 +63,16 @@ NSDate* TestDiscoverFeedService::GetEarliestBackgroundRefreshBeginDate() {
   return nil;
 }
 
+void TestDiscoverFeedService::set_eligibility_handler(
+    FakeDiscoverFeedEligibilityHandler* handler) {
+  eligibility_handler_ = handler;
+}
+
+FakeDiscoverFeedEligibilityHandler*
+TestDiscoverFeedService::get_eligibility_handler() {
+  return eligibility_handler_;
+}
+
 UICollectionView* TestDiscoverFeedService::collection_view() {
   return collection_view_;
 }

@@ -15,6 +15,9 @@ source_set("model") {
     "discover_feed_service.mm",
     "discover_feed_view_controller_configuration.h",
     "discover_feed_view_controller_configuration.mm",
+    "discover_feed_visibility_observer.h",
+    "discover_feed_visibility_provider_configuration.h",
+    "discover_feed_visibility_provider_configuration.mm",
     "feed_model_configuration.h",
     "feed_model_configuration.mm",
   ]
@@ -109,4 +112,23 @@ source_set("constants") {
 
 source_set("discover_feed_refresher") {
   sources = [ "discover_feed_refresher.h" ]
+}
+
+source_set("discover_feed_visibility_browser_agent") {
+  sources = [
+    "discover_feed_visibility_browser_agent.h",
+    "discover_feed_visibility_browser_agent.mm",
+  ]
+  deps = [
+    ":discover_feed_factory",
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
+  ]
 }

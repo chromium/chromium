@@ -8,4 +8,5 @@ include_rules = [
   "+ios/chrome/browser/start_surface/ui_bundled",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/regional_capabilities/model",
 ]

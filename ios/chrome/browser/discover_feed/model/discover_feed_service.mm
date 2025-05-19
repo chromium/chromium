@@ -28,9 +28,3 @@ void DiscoverFeedService::NotifyDiscoverFeedModelRecreated() {
 }
 
 void DiscoverFeedService::BrowsingHistoryCleared() {}
-
-// TODO(crbug.com/406544789): Remove.
-void DiscoverFeedService::UpdateFeedViewVisibilityState(
-    UICollectionView* collection_view,
-    BrowserViewVisibilityState current_state,
-    BrowserViewVisibilityState previous_state) {}

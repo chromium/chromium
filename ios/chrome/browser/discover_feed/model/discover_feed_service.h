@@ -59,12 +59,10 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
       UIViewController* feed_view_controller) = 0;
 
   // Informs the service that the Discover content visibility state has changed.
-  // TODO(crbug.com/406544789): Remove implementation and make this strictly
-  // virtual.
   virtual void UpdateFeedViewVisibilityState(
       UICollectionView* collection_view,
       BrowserViewVisibilityState current_state,
-      BrowserViewVisibilityState previous_state);
+      BrowserViewVisibilityState previous_state) = 0;
 
   // Updates the feed's theme to match the user's theme (light/dark).
   virtual void UpdateTheme() = 0;

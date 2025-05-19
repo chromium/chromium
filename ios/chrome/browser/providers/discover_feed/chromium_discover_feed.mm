@@ -48,5 +48,10 @@ std::unique_ptr<DiscoverFeedService> CreateDiscoverFeedService(
   return std::make_unique<ChromiumDiscoverFeedService>();
 }
 
+id<DiscoverFeedVisibilityProvider> CreateDiscoverFeedVisibilityProvider(
+    DiscoverFeedVisibilityProviderConfiguration* configuration) {
+  return nil;
+}
+
 }  // namespace provider
 }  // namespace ios

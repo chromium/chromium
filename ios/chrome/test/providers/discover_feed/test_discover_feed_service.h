@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 
+@class FakeDiscoverFeedEligibilityHandler;
+
 // Dummy DiscoverFeedService implementation used for tests.
 class TestDiscoverFeedService final : public DiscoverFeedService {
  public:
@@ -36,13 +38,16 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   void HandleBackgroundRefreshTaskExpiration() final;
   NSDate* GetEarliestBackgroundRefreshBeginDate() final;
 
-  // TestDiscoverFeedService methods
+  // TestDiscoverFeedService methods:
+  void set_eligibility_handler(FakeDiscoverFeedEligibilityHandler* handler);
+  FakeDiscoverFeedEligibilityHandler* get_eligibility_handler();
   UICollectionView* collection_view();
   BrowserViewVisibilityState visibility_state();
 
  private:
   UICollectionView* collection_view_;
   BrowserViewVisibilityState visibility_state_;
+  FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
 };
 
 #endif  // IOS_CHROME_TEST_PROVIDERS_DISCOVER_FEED_TEST_DISCOVER_FEED_SERVICE_H_

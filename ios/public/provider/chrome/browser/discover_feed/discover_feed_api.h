@@ -5,10 +5,13 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_API_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_API_H_
 
-#include <memory>
+#import <memory>
 
-#include "ios/chrome/browser/discover_feed/model/discover_feed_configuration.h"
-#include "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_configuration.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_provider_configuration.h"
+
+@protocol DiscoverFeedVisibilityProvider;
 
 namespace ios {
 namespace provider {
@@ -16,6 +19,10 @@ namespace provider {
 // Creates a new instance of DiscoverFeedService.
 std::unique_ptr<DiscoverFeedService> CreateDiscoverFeedService(
     DiscoverFeedConfiguration* configuration);
+
+// Creates a new instance of DiscoverFeedVisibilityProvider.
+id<DiscoverFeedVisibilityProvider> CreateDiscoverFeedVisibilityProvider(
+    DiscoverFeedVisibilityProviderConfiguration* configuration);
 
 }  // namespace provider
 }  // namespace ios

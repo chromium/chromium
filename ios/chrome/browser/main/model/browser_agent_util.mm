@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -137,6 +138,10 @@ void AttachBrowserAgents(Browser* browser) {
   if (!browser_is_inactive) {
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser);
     TabBasedIPHBrowserAgent::CreateForBrowser(browser);
+  }
+
+  if (!browser_is_off_record && !browser_is_inactive) {
+    DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser);
   }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
