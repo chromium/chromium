@@ -1533,7 +1533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.TrustedSellerSignalsCrossOriginPermissionWait"
-    units="ms" expires_after="2025-05-10">
+    units="ms" expires_after="2025-11-09">
   <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
