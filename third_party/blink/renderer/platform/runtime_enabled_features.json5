@@ -599,6 +599,12 @@
       name: "AutoPictureInPictureVideoHeuristics",
       status: "experimental",
     },
+    { // If the start and end positions are the same in MoveParagraph,
+      // there is no need to collapse the whitespace between them.
+      // https://crbug.com/406053617
+      name: "AvoidNormalizingVisiblePositionsWhenStartEqualsEnd",
+      status: "stable",
+    },
     // When enabled, clicking on canvas element will not update the selection.
     // See crbug.com/40130450.
     {

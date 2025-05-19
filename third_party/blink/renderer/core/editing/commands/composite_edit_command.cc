@@ -1532,6 +1532,12 @@ void CompositeEditCommand::MoveParagraphs(
   // the end and before the start are treated as though they were rendered.
   Position start = MostForwardCaretPosition(start_candidate);
   Position end = MostBackwardCaretPosition(end_candidate);
+  if (RuntimeEnabledFeatures::
+          AvoidNormalizingVisiblePositionsWhenStartEqualsEndEnabled() &&
+      start_candidate == end_candidate) {
+    start = start_candidate;
+    end = end_candidate;
+  }
   if (end < start)
     end = start;
 
