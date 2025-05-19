@@ -2207,6 +2207,21 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsAge"
+    units="ms" expires_after="2025-09-14">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the duration between when the search terms are visited and when the
+    same search terms are visited again, filtered to within 1s cases to rule out
+    the case where restarting chrome affects the distribution.
+
+    Recorded at SearchPrefetchService::RecordInterceptionMetrics when the same
+    search terms are visited again.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender"
     enum="SearchPreloadForwardingResult" expires_after="2025-09-14">
   <owner>lingqi@chromium.org</owner>

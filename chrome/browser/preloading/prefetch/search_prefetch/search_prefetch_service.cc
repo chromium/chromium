@@ -1295,6 +1295,13 @@ void SearchPrefetchService::RecordInterceptionMetrics(
     if (age < base::Milliseconds(30)) {
       base::trace_event::EmitNamedTrigger("second-search-request-within30");
     }
+    if (age < base::Seconds(1)) {
+      // Limit the age to 1 second to rule out the case where restarting chrome
+      // affects the distribution.
+      base::UmaHistogramCustomTimes(
+          "Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsAge", age,
+          base::Milliseconds(1), base::Seconds(1), 20);
+    }
   }
   search_terms_cache_.Put(search_terms, base::Time::Now());
   base::trace_event::EmitNamedTrigger("first-search-request");
