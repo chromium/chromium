@@ -5281,6 +5281,24 @@
             ]
         }
     ],
+    "ClayBlockingEscapeHatch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "escape_hatch_block_limit": "5"
+                    },
+                    "enable_features": [
+                        "ClayBlocking"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClaySnackbarOnAndroid": [
         {
             "platforms": [
