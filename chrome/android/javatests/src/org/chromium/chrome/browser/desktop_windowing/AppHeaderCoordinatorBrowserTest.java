@@ -373,6 +373,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE) // https://crbug.com/393388366
     public void testKeyboardInDesktopWindow_RootViewPadded() throws TimeoutException {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
