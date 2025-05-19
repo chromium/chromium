@@ -6,7 +6,6 @@
 # OWNERS of the existing tool.
 
 set noparent
-dpranke@google.com
 jessemckenna@google.com
 thakis@chromium.org
 
