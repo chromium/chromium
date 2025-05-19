@@ -312,7 +312,7 @@ using ClientManagerCallback =
 // It retrieves the `PushNotificationClientManager` for the loaded Profile (if
 // successful) and runs the original callback with the result.
 //
-// TODO(crbug.com/414585765): Ensure that the ScopedProfileKeepAliveIOS is
+// TODO(crbug.com/418696432): Ensure that the ScopedProfileKeepAliveIOS is
 // not destroyed before `original_callback` and any background processing,
 // if any, is complete. Currently the profile will be unloaded as soon as
 // the current function returns, even if `original_callback` starts any
