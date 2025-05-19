@@ -2097,7 +2097,7 @@ RTCVideoEncoder::Impl::CreateI420SharedMemoryFrameByLibyuv(
         media::PIXEL_FORMAT_I420, input_frame_coded_size_);
     i420_shmem = std::make_unique<base::MappedReadOnlyRegion>(
         base::ReadOnlySharedMemoryRegion::Create(input_frame_buffer_size));
-    if (!i420_shmem && i420_shmem->IsValid()) {
+    if (!i420_shmem->IsValid()) {
       NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
                          "Failed to create shared memory"});
       return nullptr;
