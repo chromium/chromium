@@ -31,12 +31,8 @@ AutofillAiModelExecutorFactory* AutofillAiModelExecutorFactory::GetInstance() {
 }
 
 AutofillAiModelExecutorFactory::AutofillAiModelExecutorFactory()
-    : ProfileKeyedServiceFactory(
-          "AutofillAiModelExecutor",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kNone)
-              .Build()) {
+    : ProfileKeyedServiceFactory("AutofillAiModelExecutor",
+                                 ProfileSelections::BuildForRegularProfile()) {
   DependsOn(AutofillAiModelCacheFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
