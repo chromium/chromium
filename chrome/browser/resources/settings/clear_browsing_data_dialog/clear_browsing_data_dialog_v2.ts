@@ -20,8 +20,9 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import type {ClearBrowsingDataBrowserProxy} from './clear_browsing_data_browser_proxy.js';
@@ -32,7 +33,7 @@ import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_ti
 export interface SettingsClearBrowsingDataDialogV2Element {
   $: {
     cancelButton: CrButtonElement,
-    clearButton: CrButtonElement,
+    deleteButton: CrButtonElement,
     deleteBrowsingDataDialog: CrDialogElement,
     showMoreButton: CrButtonElement,
     manageOtherGoogleDataRow: HTMLElement,
@@ -125,6 +126,16 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         value: false,
       },
 
+      isDeletionInProgress_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isNoDatatypeSelected_: {
+        type: Boolean,
+        value: false,
+      },
+
       expandedBrowsingDataTypeOptionsList_: Array,
 
       moreBrowsingDataTypeOptionsList_: Array,
@@ -132,6 +143,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   }
 
   declare private dataTypesExpanded_: boolean;
+  declare private isDeletionInProgress_: boolean;
+  declare private isNoDatatypeSelected_: boolean;
   declare private expandedBrowsingDataTypeOptionsList_:
       BrowsingDataTypeOption[];
   declare private moreBrowsingDataTypeOptionsList_: BrowsingDataTypeOption[];
@@ -147,6 +160,13 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         this.updateCounterText_.bind(this));
 
     this.setUpDataTypeOptionLists_();
+
+    this.addEventListener(
+        'settings-boolean-control-change',
+        this.updateDeleteButtonState_.bind(this));
+    // afterNextRender is needed to wait for checkbox lists to be populated via
+    // dom-repeat before checking if the delete button should be disabled.
+    afterNextRender(this, () => this.updateDeleteButtonState_());
   }
 
   override connectedCallback() {
@@ -219,8 +239,51 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     this.$.deleteBrowsingDataDialog.close();
   }
 
-  private onClearBrowsingDataClick_() {
-    // TODO(crbug.com/397187800): Trigger the deletion and update prefs.
+  /**
+   * Triggers browsing data deletion on the selected DataTypes and within the
+   * selected TimePeriod.
+   */
+  private async onDeleteBrowsingDataClick_() {
+    // TODO(crbug.com/397187800): Trigger the deletion announcements for a11y.
+    this.isDeletionInProgress_ = true;
+
+    const dataTypes = this.getSelectedDataTypes_();
+    const timePeriod = this.$.timePicker.getSelectedTimePeriod();
+
+    // Update the DataType and TimePeriod prefs with the latest selection.
+    this.$.deleteBrowsingDataDialog
+        .querySelectorAll<SettingsCheckboxElement>(
+            'settings-checkbox[no-set-pref]')
+        .forEach(checkbox => checkbox.sendPrefChange());
+    this.$.timePicker.sendPrefChange();
+
+    // TODO(crbug.com/397187800): Show history and passwords notice dialogs.
+    await this.clearBrowsingDataBrowserProxy_.clearBrowsingData(
+        dataTypes, timePeriod);
+
+    this.isDeletionInProgress_ = false;
+    if (this.$.deleteBrowsingDataDialog.open) {
+      this.$.deleteBrowsingDataDialog.close();
+    }
+  }
+
+  private getSelectedDataTypes_(): string[] {
+    // Get all the visible checkboxes in the dialog. Hidden checkboxes, eg.
+    // collapsed checkboxes in the 'More' list, would never be selected, so
+    // there is no need to iterate over them.
+    const checkboxes =
+        this.$.deleteBrowsingDataDialog.querySelectorAll('settings-checkbox');
+    const dataTypes: string[] = [];
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked && !checkbox.hidden) {
+        dataTypes.push(checkbox.pref!.key);
+      }
+    });
+    return dataTypes;
+  }
+
+  private updateDeleteButtonState_() {
+    this.isNoDatatypeSelected_ = this.getSelectedDataTypes_().length === 0;
   }
 
   private onShowMoreClick_() {
@@ -230,6 +293,10 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   private shouldHideShowMoreButton_() {
     return this.dataTypesExpanded_ || !this.moreBrowsingDataTypeOptionsList_ ||
         this.moreBrowsingDataTypeOptionsList_.length === 0;
+  }
+
+  private shouldDisableDeleteButton_(): boolean {
+    return this.isDeletionInProgress_ || this.isNoDatatypeSelected_;
   }
 }
 

@@ -228,6 +228,11 @@ export class SettingsClearBrowsingDataTimePicker extends
   getSelectedTimePeriod(): TimePeriod {
     return this.selectedTimePeriod_;
   }
+
+  sendPrefChange() {
+    this.setPrefValue(
+        'browser.clear_data.time_period', this.selectedTimePeriod_);
+  }
 }
 
 declare global {

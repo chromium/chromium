@@ -238,4 +238,23 @@ suite('DeleteBrowsingDataTimePicker', function() {
     // Change event should not be fired if the pref does not change.
     assertEquals(3, timePeriodChangeCallCount);
   });
+
+  test('sendPrefChange', async function() {
+    // Initially, the TimePeriod should be set to LAST_HOUR.
+    assertEquals(
+        TimePeriod.LAST_HOUR,
+        timePicker.getPref('browser.clear_data.time_period').value);
+
+    // Select the LAST_DAY chip.
+    const timePeriod = getChipForTimePeriod(TimePeriod.LAST_DAY);
+    assertTrue(!!timePeriod);
+    timePeriod.click();
+    await flushTasks();
+
+    timePicker.sendPrefChange();
+    // Verify the pref was updated to LAST_DAY.
+    assertEquals(
+        TimePeriod.LAST_DAY,
+        timePicker.getPref('browser.clear_data.time_period').value);
+  });
 });

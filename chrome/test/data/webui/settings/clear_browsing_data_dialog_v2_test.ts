@@ -6,12 +6,13 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element} from 'chrome://settings/lazy_load.js';
-import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, TimePeriod} from 'chrome://settings/lazy_load.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element} from 'chrome://settings/lazy_load.js';
+import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
@@ -65,7 +66,7 @@ suite('DeleteBrowsingDataDialog', function() {
     dialog = document.createElement('settings-clear-browsing-data-dialog-v2');
     dialog.set('prefs', settingsPrefs.prefs);
     document.body.appendChild(dialog);
-    return flushTasks();
+    return waitAfterNextRender(dialog);
   }
 
   function verifyCheckboxesVisibleForDataTypesInOrder(
@@ -97,9 +98,68 @@ suite('DeleteBrowsingDataDialog', function() {
     return undefined;
   }
 
+  async function selectTimePeriodFromTimePicker(timePeriod: TimePeriod) {
+    const visibleTimePeriodChips =
+        dialog.$.timePicker.shadowRoot!.querySelectorAll<HTMLElement>(
+            'cr-chip');
+    assertTrue(!!visibleTimePeriodChips);
+
+    for (const chip of visibleTimePeriodChips) {
+      if (chip.textContent!.trim() === getTimePeriodString(timePeriod)) {
+        chip.click();
+        return;
+      }
+    }
+
+    // Open the 'More' dropdown menu.
+    dialog.$.timePicker.$.moreButton.click();
+    await flushTasks();
+    const menuItems =
+        dialog.$.timePicker.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.dropdown-item');
+    assertTrue(!!menuItems);
+
+    for (const item of menuItems) {
+      if (item.textContent!.trim() === getTimePeriodString(timePeriod)) {
+        item.click();
+        return;
+      }
+    }
+
+    assertNotReached();
+  }
+
   test('CancelButton', async function() {
     dialog.$.cancelButton.click();
     await eventToPromise('close', dialog);
+  });
+
+  test('DeleteButton', async function() {
+    // Initially the button is disabled because no checkbox is selected.
+    assertTrue(dialog.$.deleteButton.disabled);
+    assertFalse(dialog.$.cancelButton.disabled);
+
+    // The button should be enabled if a checkbox is selected.
+    const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
+    assertTrue(!!historyCheckbox);
+    historyCheckbox.$.checkbox.click();
+    await flushTasks();
+    assertFalse(dialog.$.deleteButton.disabled);
+
+    const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
+    testClearBrowsingDataBrowserProxy.setClearBrowsingDataPromise(
+        promiseResolver.promise);
+
+    // While the deletion is in progress, the Cancel and Delete button should be
+    // disabled.
+    dialog.$.deleteButton.click();
+    await testClearBrowsingDataBrowserProxy.whenCalled('clearBrowsingData');
+    await flushTasks();
+    assertTrue(dialog.$.deleteButton.disabled);
+    assertTrue(dialog.$.cancelButton.disabled);
+
+    promiseResolver.resolve(
+        {showHistoryNotice: false, showPasswordsNotice: false});
   });
 
   test('ShowMoreButton', function() {
@@ -330,16 +390,14 @@ suite('DeleteBrowsingDataDialog', function() {
     // Clear previous restartCounters calls.
     testClearBrowsingDataBrowserProxy.reset();
 
-    // Dispatch a |selected-time-period-change| event to trigger the Counters'
-    // restart. LAST_HOUR is the default selected time period.
-    dialog.$.timePicker.dispatchEvent(
-        new CustomEvent('selected-time-period-change'));
+    // Set the selected TimePeriod to LAST_WEEK.
+    await selectTimePeriodFromTimePicker(TimePeriod.LAST_WEEK);
     await flushTasks();
 
     const args =
         await testClearBrowsingDataBrowserProxy.whenCalled('restartCounters');
     assertEquals(args[0], /*isBasic=*/ false);
-    assertEquals(args[1], TimePeriod.LAST_HOUR);
+    assertEquals(args[1], TimePeriod.LAST_WEEK);
   });
 
   test('CountersUpdateCheckboxSubLabel', async function() {
@@ -369,5 +427,75 @@ suite('DeleteBrowsingDataDialog', function() {
         getCheckboxForDataType(BrowsingDataType.SITE_SETTINGS);
     assertTrue(!!siteSettingsCheckbox);
     assertEquals('site settings result', siteSettingsCheckbox.subLabel);
+  });
+
+  test('ClearBrowsingData', async function() {
+    // Update the selected TimePeriod to LAST_DAY.
+    await selectTimePeriodFromTimePicker(TimePeriod.LAST_DAY);
+
+    // Select datatypes for deletion.
+    dialog.$.showMoreButton.click();
+    await flushTasks();
+    const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
+    assertTrue(!!historyCheckbox);
+    historyCheckbox.$.checkbox.click();
+
+    const downloadsCheckbox =
+        getCheckboxForDataType(BrowsingDataType.DOWNLOADS);
+    assertTrue(!!downloadsCheckbox);
+    downloadsCheckbox.$.checkbox.click();
+
+    const hostedAppsDataCheckbox =
+        getCheckboxForDataType(BrowsingDataType.HOSTED_APPS_DATA);
+    assertTrue(!!hostedAppsDataCheckbox);
+    hostedAppsDataCheckbox.$.checkbox.click();
+    await flushTasks();
+
+    // Trigger the deletion.
+    const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
+    testClearBrowsingDataBrowserProxy.setClearBrowsingDataPromise(
+        promiseResolver.promise);
+    dialog.$.deleteButton.click();
+
+    // Verify TimePeriod pref is updated.
+    assertEquals(
+        TimePeriod.LAST_DAY,
+        dialog.getPref('browser.clear_data.time_period').value);
+
+    // Verify DataType prefs are updated.
+    assertEquals(
+        true, dialog.getPref('browser.clear_data.browsing_history').value);
+    assertEquals(false, dialog.getPref('browser.clear_data.cookies').value);
+    assertEquals(false, dialog.getPref('browser.clear_data.cache').value);
+    assertEquals(false, dialog.getPref('browser.clear_data.form_data').value);
+    assertEquals(
+        false, dialog.getPref('browser.clear_data.site_settings').value);
+    assertEquals(
+        true, dialog.getPref('browser.clear_data.download_history').value);
+    assertEquals(
+        true, dialog.getPref('browser.clear_data.hosted_apps_data').value);
+
+    // Verify correct TimePeriod and DataTypes are sent to the proxy.
+    const args =
+        await testClearBrowsingDataBrowserProxy.whenCalled('clearBrowsingData');
+    const dataTypes = args[0];
+    assertEquals(3, dataTypes.length);
+    const expectedDataTypes = [
+      'browser.clear_data.browsing_history',
+      'browser.clear_data.download_history',
+      'browser.clear_data.hosted_apps_data',
+    ];
+    assertArrayEquals(expectedDataTypes, dataTypes);
+
+    const timePeriod = args[1];
+    assertEquals(TimePeriod.LAST_DAY, timePeriod);
+
+    // Simulate that the deletion has completed.
+    promiseResolver.resolve(
+        {showHistoryNotice: false, showPasswordsNotice: false});
+    await promiseResolver.promise;
+
+    // Verify dialog is closed after deletion is completed.
+    assertFalse(dialog.$.deleteBrowsingDataDialog.open);
   });
 });

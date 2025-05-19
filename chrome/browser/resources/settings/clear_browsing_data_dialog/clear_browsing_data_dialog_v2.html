@@ -100,11 +100,13 @@
     </settings-clear-browsing-data-account-indicator>
 </if>
     <cr-button id="cancelButton" class="cancel-button" autofocus
-        on-click="onCancelClick_">
+        on-click="onCancelClick_" disabled="[[isDeletionInProgress_]]">
       $i18n{cancel}
     </cr-button>
-    <cr-button id="clearButton" class="action-button"
-        on-click="onClearBrowsingDataClick_">
+    <cr-button id="deleteButton" class="action-button"
+        on-click="onDeleteBrowsingDataClick_"
+        disabled="[[shouldDisableDeleteButton_(
+            isDeletionInProgress_, isNoDatatypeSelected_)]]">
       $i18n{clearData}
     </cr-button>
   </div>
