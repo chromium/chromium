@@ -420,12 +420,19 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   cell.imageView.image = [self.dataSource imageForGaiaID:gaiaID];
   cell.textLabel.text = [self.dataSource nameForGaiaID:gaiaID];
+  NSString* name = [self.dataSource nameForGaiaID:gaiaID];
   NSString* email = [self.dataSource emailForGaiaID:gaiaID];
   cell.detailTextLabel.text = email;
   cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  cell.accessibilityLabel = l10n_util::GetNSStringF(
-      IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL,
-      base::SysNSStringToUTF16(email));
+  if (name) {
+    cell.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+  } else {
+    cell.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(email));
+  }
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
   // Set the enterprise icon. This may be replaced by the activity indicator

@@ -3826,6 +3826,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
         Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
+      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_ACCESSIBILITY_LABEL" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
+        Sign in as <ph name="NAME">$1<ex>John Doe</ex></ph> <ph name="EMAIL">$2<ex>johndoe@gmail.com</ex></ph>
+      </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SYNC_IS_OFF" desc="Text informing the user that sync is off [iOS only] [60em]" meaning="The Chrome sync feature is off.">
         Off
       </message>
