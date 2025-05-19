@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -52,6 +53,9 @@ import java.util.Set;
 /** Unit tests for {@link KeyboardShortcuts}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@Features.EnableFeatures({
+    ChromeFeatureList.TASK_MANAGER_CLANK,
+})
 public class KeyboardShortcutsTest {
 
     // Want this to be less than 8 so we can test that "go to tab" keyboard shortcut is not called.
