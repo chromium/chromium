@@ -14,4 +14,7 @@ specific_include_rules = {
     "animation_frame_timing_info.h": [
         "+components/viz/common/frame_sinks/begin_frame_args.h",
     ],
+    "window_performance.h": [
+        "+components/viz/common/frame_sinks/begin_frame_args.h",
+    ],
 }
