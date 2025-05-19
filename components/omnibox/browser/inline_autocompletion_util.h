@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 #include "components/omnibox/browser/in_memory_url_index_types.h"
-#include "ui/gfx/range/range.h"
 
 // Finds the first occurrence of |search| at a wordbreak within |text| starting
 // at |search_start|.

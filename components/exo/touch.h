@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/exo/surface_observer.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
 class LocatedEvent;

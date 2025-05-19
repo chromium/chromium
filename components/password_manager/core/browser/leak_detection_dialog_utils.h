@@ -13,7 +13,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 namespace password_manager {

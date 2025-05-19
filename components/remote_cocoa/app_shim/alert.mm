@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/gfx/text_elider.h"
 
 using remote_cocoa::mojom::AlertBridgeInitParams;
 using remote_cocoa::mojom::AlertDisposition;

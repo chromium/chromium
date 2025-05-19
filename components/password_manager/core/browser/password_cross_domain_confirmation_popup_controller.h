@@ -8,7 +8,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
 namespace password_manager {

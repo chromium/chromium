@@ -13,7 +13,6 @@
 #include "components/ui_devtools/ui_element.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace ui_devtools {
 

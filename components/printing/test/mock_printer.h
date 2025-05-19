@@ -17,8 +17,6 @@
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/units.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #define MOCK_PRINTER_SUPPORTS_PAGE_IMAGES

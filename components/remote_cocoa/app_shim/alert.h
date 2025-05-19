@@ -11,7 +11,6 @@
 #include "components/remote_cocoa/common/alert.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/gfx/text_elider.h"
 
 @class AlertBridgeHelper;
 

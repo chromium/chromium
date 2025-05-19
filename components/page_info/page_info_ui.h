@@ -20,7 +20,6 @@
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/safe_browsing/buildflags.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/native_widget_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/image/image_skia.h"

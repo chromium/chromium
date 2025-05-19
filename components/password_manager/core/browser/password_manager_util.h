@@ -17,7 +17,6 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace password_manager {
 class PasswordManagerDriver;

@@ -18,7 +18,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace tab_groups {

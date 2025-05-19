@@ -20,9 +20,6 @@
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/animation/keyframe/keyframe_effect.h"
-#include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 namespace gpu {
 class SharedImageInterface;

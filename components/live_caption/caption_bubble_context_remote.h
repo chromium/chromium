@@ -12,7 +12,6 @@
 #include "components/live_caption/caption_bubble_context.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace captions {
 

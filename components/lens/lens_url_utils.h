@@ -10,7 +10,6 @@
 
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_metadata.mojom.h"
-#include "ui/gfx/geometry/size_f.h"
 
 class GURL;
 
