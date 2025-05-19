@@ -12,6 +12,7 @@ import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -21,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -57,6 +59,21 @@ public class EdgeToEdgeControllerImpl
                 LayoutStateProvider.LayoutStateObserver,
                 FullscreenManager.Observer {
     private static final String TAG = "E2E_ControllerImpl";
+    private static final String SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM =
+            "Android.EdgeToEdge.SupportedConfigurationSwitch";
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED,
+        SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED,
+        SupportedConfigurationSwitch.NUM_ENTRIES
+    })
+    @interface SupportedConfigurationSwitch {
+        int FROM_SUPPORTED_TO_UNSUPPORTED = 0;
+        int FROM_UNSUPPORTED_TO_SUPPORTED = 1;
+        int NUM_ENTRIES = 2;
+    }
 
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
@@ -90,6 +107,8 @@ public class EdgeToEdgeControllerImpl
 
     private @Nullable Tab mCurrentTab;
     private @Nullable WebContentsObserver mWebContentsObserver;
+
+    private boolean mIsSupportedConfiguration;
 
     /**
      * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).
@@ -217,6 +236,7 @@ public class EdgeToEdgeControllerImpl
         // retriggerOnApplyWindowInsets to populate all the initial state.
         mIsPageOptedIntoEdgeToEdge = EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab);
         mInsetObserver.retriggerOnApplyWindowInsets();
+        mIsSupportedConfiguration = EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
     }
 
     @VisibleForTesting
@@ -450,6 +470,24 @@ public class EdgeToEdgeControllerImpl
 
     @VisibleForTesting
     WindowInsetsCompat handleWindowInsets(View rootView, WindowInsetsCompat windowInsets) {
+        if (mIsSupportedConfiguration
+                != EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity)) {
+            Log.v(
+                    TAG,
+                    "Switching supported configuration from %s",
+                    (mIsSupportedConfiguration
+                            ? "supported to unsupported"
+                            : "unsupported to supported"));
+            RecordHistogram.recordEnumeratedHistogram(
+                    SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM,
+                    mIsSupportedConfiguration
+                            ? SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED
+                            : SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED,
+                    SupportedConfigurationSwitch.NUM_ENTRIES);
+            mIsSupportedConfiguration =
+                    EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+        }
+
         // Exit early if there is a tappable navbar (3-button) as the controller should not function
         // when 3-button nav is enabled.
         if (EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {

@@ -1575,6 +1575,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Exempted"/>
 </enum>
 
+<enum name="SupportedConfigurationSwitch">
+  <int value="0" label="FromSupportedToUnsupported"/>
+  <int value="1" label="FromUnsupportedToSupported"/>
+</enum>
+
 <enum name="SurveyDownloadResponseCodes2">
   <summary>
     Results when download survey response is available. Used by

@@ -1896,6 +1896,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.EdgeToEdge.SupportedConfigurationSwitch"
+    enum="SupportedConfigurationSwitch" expires_after="2025-12-01">
+  <owner>clhager@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records when the EdgeToEdgeControllerImpl notices a change in whether
+    edge-to-edge is supported by the device configuration when it handles a
+    change in window insets. This is recorded once every time a change is
+    detected.
+  </summary>
+</histogram>
+
 <histogram name="Android.Event.ActionDown" enum="InputDeviceSource"
     expires_after="2025-09-14">
   <owner>mvanouwerkerk@chromium.org</owner>
