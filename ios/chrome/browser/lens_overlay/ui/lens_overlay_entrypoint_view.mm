@@ -99,9 +99,14 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
     AddSizeConstraints(
         _visibilityIndicatorView,
         CGSizeMake(kVisibilityIndicatorSize, kVisibilityIndicatorSize));
+
+    self.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_LENS_OVERLAY_ENTRYPOINT_BUTTON_STOP_ACCESSIBILITY_LABEL);
   } else {
     [_visibilityIndicatorView removeFromSuperview];
     _visibilityIndicatorView = nil;
+    self.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_LENS_OVERLAY_ENTRYPOINT_BUTTON_ACCESSIBILITY_LABEL);
   }
 }
 
