@@ -1418,6 +1418,7 @@ chromium-metrics-reviews@google.com.
     <variant name="IdleDetection"/>
     <variant name="MidiSysEx"/>
     <variant name="Notifications"/>
+    <variant name="RegisterProtocolHandler"/>
     <variant name="VideoCapture"/>
     <variant name="VR"/>
   </token>
@@ -1527,6 +1528,7 @@ chromium-metrics-reviews@google.com.
     <variant name="IdleDetection"/>
     <variant name="MidiSysEx"/>
     <variant name="Notifications"/>
+    <variant name="RegisterProtocolHandler"/>
     <variant name="VideoCapture"/>
     <variant name="VR"/>
   </token>
