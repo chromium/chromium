@@ -63,6 +63,7 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // views::View
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  gfx::Point GetKeyboardContextMenuLocation() override;
 
   // views::LabelButton
   bool IsTriggerableEvent(const ui::Event& e) override;

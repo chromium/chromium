@@ -155,6 +155,16 @@ bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
+gfx::Point SavedTabGroupButton::GetKeyboardContextMenuLocation() {
+  // Use center bottom of the button as menu location so the context menu does
+  // not overlap with text.
+  gfx::Rect vis_bounds = GetVisibleBounds();
+  gfx::Point screen_point(vis_bounds.x() + vis_bounds.width() / 2,
+                          vis_bounds.y() + vis_bounds.height());
+  ConvertPointToScreen(this, &screen_point);
+  return screen_point;
+}
+
 bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
   return e.type() == ui::EventType::kGestureTap ||
          e.type() == ui::EventType::kGestureTapDown ||
