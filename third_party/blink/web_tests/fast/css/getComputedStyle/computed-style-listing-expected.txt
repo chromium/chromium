@@ -110,7 +110,7 @@ border-left-width: 0px
 border-right-color: rgb(0, 0, 0)
 border-right-style: none
 border-right-width: 0px
-border-spacing: 0px 0px
+border-spacing: 0px
 border-start-end-radius: 0px
 border-start-start-radius: 0px
 border-top-color: rgb(0, 0, 0)

@@ -1123,7 +1123,9 @@ const CSSValue* BorderSpacing::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ZoomAdjustedPixelValue(style.HorizontalBorderSpacing(), style));
-  list->Append(*ZoomAdjustedPixelValue(style.VerticalBorderSpacing(), style));
+  if (style.HorizontalBorderSpacing() != style.VerticalBorderSpacing()) {
+    list->Append(*ZoomAdjustedPixelValue(style.VerticalBorderSpacing(), style));
+  }
   return list;
 }
 
