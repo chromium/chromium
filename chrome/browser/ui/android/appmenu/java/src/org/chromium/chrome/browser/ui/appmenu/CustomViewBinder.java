@@ -51,25 +51,19 @@ public interface CustomViewBinder extends ViewBinder<PropertyModel, View, Proper
      * Return the layout resource id for the custom view. This method will only be called if the
      * item is supported by this view binder ({@link #getItemViewType(int)} didn't return
      * NOT_HANDLED).
+     *
      * @param id The custom binder view type for a given menu item.
      * @return The resource id for the layout for the provided view type, used to create a {@link
-     *         LayoutViewBuilder} if the viewType is supported, otherwise NOT_HANDLED.
+     *     LayoutViewBuilder} if the viewType is supported, otherwise NOT_HANDLED.
      */
     int getLayoutId(int viewType);
-
-    /**
-     * Determines whether the enter animation should be applied to the menu item matching the
-     * provided id.
-     * @param id The id of the menu item to check.
-     * @return True if the standard animation should be applied.
-     */
-    boolean supportsEnterAnimation(int id);
 
     /**
      * Retrieve the pixel height for the custom view. We cannot use View#getHeight() in {{@link
      * #getView(MenuItem, View, ViewGroup, LayoutInflater)}} because View#getHeight() will return 0
      * before the view is laid out. This method is for calculating popup window size, and the height
      * should bese on the layout xml file related to the custom view.
+     *
      * @param context The context of the custom view.
      * @return The pixel size of the height.
      */

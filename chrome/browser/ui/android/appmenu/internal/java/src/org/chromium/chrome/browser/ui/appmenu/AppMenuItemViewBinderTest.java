@@ -125,11 +125,6 @@ public class AppMenuItemViewBinderTest {
         }
 
         @Override
-        public boolean supportsEnterAnimation(int id) {
-            return true;
-        }
-
-        @Override
         public int getPixelHeight(Context context) {
             return 0;
         }
@@ -170,11 +165,6 @@ public class AppMenuItemViewBinderTest {
                 lastBindId = model.get(AppMenuItemProperties.MENU_ITEM_ID);
                 getViewItemCallbackHelper.notifyCalled();
             }
-        }
-
-        @Override
-        public boolean supportsEnterAnimation(int id) {
-            return false;
         }
 
         @Override

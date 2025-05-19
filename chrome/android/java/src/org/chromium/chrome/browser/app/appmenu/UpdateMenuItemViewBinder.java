@@ -118,11 +118,6 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public boolean supportsEnterAnimation(int id) {
-        return true;
-    }
-
-    @Override
     public int getPixelHeight(Context context) {
         int textSize =
                 context.getResources()

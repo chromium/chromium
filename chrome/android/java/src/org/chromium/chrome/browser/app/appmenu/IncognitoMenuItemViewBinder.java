@@ -95,11 +95,6 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public boolean supportsEnterAnimation(int id) {
-        return true;
-    }
-
-    @Override
     public int getPixelHeight(Context context) {
         TypedArray a =
                 context.obtainStyledAttributes(

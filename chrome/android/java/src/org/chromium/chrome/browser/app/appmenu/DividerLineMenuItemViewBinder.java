@@ -59,11 +59,6 @@ public class DividerLineMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public boolean supportsEnterAnimation(int id) {
-        return true;
-    }
-
-    @Override
     public int getPixelHeight(Context context) {
         int dividerLineHeight =
                 context.getResources().getDimensionPixelSize(R.dimen.divider_height);
