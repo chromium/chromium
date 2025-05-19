@@ -8,24 +8,35 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_view_base.h"
 
 @class OmniboxAutocompleteController;
 class OmniboxControllerIOS;
+class OmniboxEditModelIOS;
 
-// iOS implementation of OmniboxPopupView.
-class OmniboxPopupViewIOS : public OmniboxPopupViewBase {
+class OmniboxPopupViewIOS {
  public:
   OmniboxPopupViewIOS(
       OmniboxControllerIOS* controller,
-      OmniboxAutocompleteController* omniboxAutocompleteController);
-  ~OmniboxPopupViewIOS() override;
+      OmniboxAutocompleteController* omnibox_autocomplete_controller);
+  virtual ~OmniboxPopupViewIOS();
 
-  // OmniboxPopupView implementation.
-  bool IsOpen() const override;
-  void UpdatePopupAppearance() override;
+  OmniboxEditModelIOS* model();
+  const OmniboxEditModelIOS* model() const;
+
+  OmniboxControllerIOS* controller();
+  const OmniboxControllerIOS* controller() const;
+
+  // Returns true if the popup is currently open.
+  virtual bool IsOpen() const;
+
+  // Redraws the popup window to match any changes in the result set; this may
+  // mean opening or closing the window.
+  virtual void UpdatePopupAppearance();
 
  private:
+  // Owned by OmniboxViewIOS which owns this.
+  const raw_ptr<OmniboxControllerIOS> controller_;
+
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_;
 };
 

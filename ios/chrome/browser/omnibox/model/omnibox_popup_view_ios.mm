@@ -4,38 +4,14 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 
-#import <QuartzCore/QuartzCore.h>
-
-#import <memory>
-#import <string>
-
-#import "base/check.h"
-#import "base/memory/ptr_util.h"
-#import "base/metrics/histogram_macros.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
-#import "components/omnibox/browser/autocomplete_match.h"
-#import "components/omnibox/browser/omnibox_popup_selection.h"
-#import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
-#import "ios/chrome/browser/omnibox/public/omnibox_util.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/grit/ios_theme_resources.h"
-#import "ios/web/public/thread/web_thread.h"
-#import "net/url_request/url_request_context_getter.h"
-
-using base::UserMetricsAction;
 
 OmniboxPopupViewIOS::OmniboxPopupViewIOS(
     OmniboxControllerIOS* controller,
     OmniboxAutocompleteController* omnibox_autocomplete_controller)
-    : OmniboxPopupViewBase(controller),
+    : controller_(controller),
       omnibox_autocomplete_controller_(omnibox_autocomplete_controller) {
   DCHECK(controller);
   model()->set_popup_view(this);
@@ -43,6 +19,24 @@ OmniboxPopupViewIOS::OmniboxPopupViewIOS(
 
 OmniboxPopupViewIOS::~OmniboxPopupViewIOS() {
   model()->set_popup_view(nullptr);
+}
+
+OmniboxEditModelIOS* OmniboxPopupViewIOS::model() {
+  return const_cast<OmniboxEditModelIOS*>(
+      const_cast<const OmniboxPopupViewIOS*>(this)->model());
+}
+
+const OmniboxEditModelIOS* OmniboxPopupViewIOS::model() const {
+  return controller_->edit_model();
+}
+
+OmniboxControllerIOS* OmniboxPopupViewIOS::controller() {
+  return const_cast<OmniboxControllerIOS*>(
+      const_cast<const OmniboxPopupViewIOS*>(this)->controller());
+}
+
+const OmniboxControllerIOS* OmniboxPopupViewIOS::controller() const {
+  return controller_;
 }
 
 void OmniboxPopupViewIOS::UpdatePopupAppearance() {

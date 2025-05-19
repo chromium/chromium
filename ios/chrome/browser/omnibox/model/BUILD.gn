@@ -48,8 +48,6 @@ source_set("model") {
     "omnibox_image_fetcher.mm",
     "omnibox_pedal_annotator.h",
     "omnibox_pedal_annotator.mm",
-    "omnibox_popup_view_base.h",
-    "omnibox_popup_view_base.mm",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
     "omnibox_text_controller.h",
@@ -161,8 +159,8 @@ source_set("test_support") {
   sources = [
     "test_omnibox_edit_model_ios.h",
     "test_omnibox_edit_model_ios.mm",
-    "test_omnibox_popup_view_base.h",
-    "test_omnibox_popup_view_base.mm",
+    "test_omnibox_popup_view_ios.h",
+    "test_omnibox_popup_view_ios.mm",
     "test_omnibox_view_base.h",
     "test_omnibox_view_base.mm",
   ]

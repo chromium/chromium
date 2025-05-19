@@ -65,7 +65,7 @@
 #import "components/search_engines/template_url_starter_pack_data.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_view_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
 #import "net/cookies/cookie_util.h"
 #import "third_party/icu/source/common/unicode/ubidi.h"
@@ -244,7 +244,7 @@ OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
 
 OmniboxEditModelIOS::~OmniboxEditModelIOS() = default;
 
-void OmniboxEditModelIOS::set_popup_view(OmniboxPopupViewBase* popup_view) {
+void OmniboxEditModelIOS::set_popup_view(OmniboxPopupViewIOS* popup_view) {
   popup_view_ = popup_view;
 }
 

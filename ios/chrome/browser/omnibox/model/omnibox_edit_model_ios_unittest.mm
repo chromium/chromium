@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_edit_model_ios.h"
-#import "ios/chrome/browser/omnibox/model/test_omnibox_popup_view_base.h"
+#import "ios/chrome/browser/omnibox/model/test_omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_view_base.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -428,7 +428,7 @@ class OmniboxEditModelIOSPopupTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestOmniboxViewBase> view_;
-  TestOmniboxPopupViewBase popup_view_;
+  TestOmniboxPopupViewIOS popup_view_;
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 

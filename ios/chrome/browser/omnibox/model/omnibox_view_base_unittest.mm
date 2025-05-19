@@ -25,7 +25,7 @@
 #import "components/search_engines/template_url_data.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_edit_model_ios.h"
-#import "ios/chrome/browser/omnibox/model/test_omnibox_popup_view_base.h"
+#import "ios/chrome/browser/omnibox/model/test_omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_view_base.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -106,7 +106,7 @@ class OmniboxViewBasePopupTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxViewBase> view_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
-  TestOmniboxPopupViewBase popup_view_;
+  TestOmniboxPopupViewIOS popup_view_;
 };
 }  // namespace
 

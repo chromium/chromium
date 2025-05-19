@@ -29,7 +29,7 @@
 #import "url/gurl.h"
 
 class OmniboxControllerIOS;
-class OmniboxPopupViewBase;
+class OmniboxPopupViewIOS;
 
 class OmniboxEditModelIOS {
  public:
@@ -38,9 +38,9 @@ class OmniboxEditModelIOS {
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
   OmniboxEditModelIOS& operator=(const OmniboxEditModelIOS&) = delete;
 
-  void set_popup_view(OmniboxPopupViewBase* popup_view);
-  OmniboxPopupViewBase* get_popup_view() { return popup_view_; }
-  const OmniboxPopupViewBase* get_popup_view() const { return popup_view_; }
+  void set_popup_view(OmniboxPopupViewIOS* popup_view);
+  OmniboxPopupViewIOS* get_popup_view() { return popup_view_; }
+  const OmniboxPopupViewIOS* get_popup_view() const { return popup_view_; }
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
 
@@ -365,7 +365,7 @@ class OmniboxEditModelIOS {
 
   // The popup view is nullptr when there's no popup, and is non-null when
   // a popup view exists (i.e. between calls to `set_popup_view`).
-  raw_ptr<OmniboxPopupViewBase> popup_view_ = nullptr;
+  raw_ptr<OmniboxPopupViewIOS> popup_view_ = nullptr;
 
   base::WeakPtrFactory<OmniboxEditModelIOS> weak_factory_{this};
 };
