@@ -699,7 +699,40 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
       editingStyle != UITableViewCellEditingStyleDelete) {
     return;
   }
-  [self deleteItemAtIndexPaths:@[ indexPath ]];
+
+  if (_personalDataManager->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled() &&
+      [self.reauthenticationModule canAttemptReauth]) {
+    LogMandatoryReauthSettingsPageDeleteCardEvent(
+        MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
+
+    auto completionHandler = ^(ReauthenticationResult result) {
+      switch (result) {
+        case ReauthenticationResult::kSuccess:
+          LogMandatoryReauthSettingsPageDeleteCardEvent(
+              MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded);
+          [self deleteItemAtIndexPaths:@[ indexPath ]];
+          break;
+        case ReauthenticationResult::kSkipped:
+          LogMandatoryReauthSettingsPageDeleteCardEvent(
+              MandatoryReauthAuthenticationFlowEvent::kFlowSkipped);
+          [self deleteItemAtIndexPaths:@[ indexPath ]];
+          break;
+        case ReauthenticationResult::kFailure:
+          LogMandatoryReauthSettingsPageDeleteCardEvent(
+              MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
+          break;
+      }
+    };
+    [self.reauthenticationModule
+        attemptReauthWithLocalizedReason:
+            l10n_util::GetNSString(
+                IDS_PAYMENTS_AUTOFILL_SETTINGS_EDIT_MANDATORY_REAUTH)
+                    canReusePreviousAuth:YES
+                                 handler:completionHandler];
+  } else {
+    [self deleteItemAtIndexPaths:@[ indexPath ]];
+  }
 }
 
 #pragma mark - helper methods
