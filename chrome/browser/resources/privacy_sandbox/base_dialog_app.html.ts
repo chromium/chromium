@@ -21,6 +21,10 @@ export function getHtml(this: BaseDialogApp) {
           slot="view"
           fill-content>
       </protected-audience-measurement>
+      <three-ads-apis id="${
+      this.getNoticeId(
+          PrivacySandboxNotice.kThreeAdsApisNotice)}" slot="view" fill-content>
+      </three-ads-apis
     </cr-view-manager>
   `;
 }

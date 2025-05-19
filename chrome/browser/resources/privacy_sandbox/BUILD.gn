@@ -46,6 +46,8 @@ build_webui("build") {
     "base_dialog_mixin.ts",
     "protected_audience_measurement.html.ts",
     "protected_audience_measurement.ts",
+    "three_ads_apis.html.ts",
+    "three_ads_apis.ts",
   ]
 
   css_files = [

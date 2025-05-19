@@ -39,6 +39,44 @@ async function setupBaseDialogApp():
   return {page, testHandler};
 }
 
+function getNoticeComponentSelector(notice: PrivacySandboxNotice) {
+  switch (notice) {
+    case PrivacySandboxNotice.kTopicsConsentNotice:
+      return 'topics-consent';
+    case PrivacySandboxNotice.kProtectedAudienceMeasurementNotice:
+      return 'protected-audience-measurement';
+    case PrivacySandboxNotice.kThreeAdsApisNotice:
+      return 'three-ads-apis';
+    default:
+      return '';
+  }
+}
+
+function getButtonIdFromEvent(event: PrivacySandboxNoticeEvent) {
+  switch (event) {
+    case PrivacySandboxNoticeEvent.kOptIn:
+      return '#acceptButton';
+    case PrivacySandboxNoticeEvent.kAck:
+      return '#ackButton';
+    default:
+      return '';
+  }
+}
+
+async function testButtonClick(
+    page: BaseDialogApp, notice: PrivacySandboxNotice,
+    event: PrivacySandboxNoticeEvent, testHandler: TestBaseDialogPageHandler) {
+  const noticeComponent =
+      page.shadowRoot.querySelector(getNoticeComponentSelector(notice));
+  assertTrue(!!noticeComponent);
+  assertTrue(!!noticeComponent.shadowRoot);
+  const button = noticeComponent.shadowRoot.querySelector<HTMLElement>(
+      getButtonIdFromEvent(event));
+  assertTrue(!!button);
+  button.click();
+  await testHandler.eventOccurred(notice, event);
+}
+
 suite('TopicsConsent', function() {
   let page: BaseDialogApp;
   let testHandler: TestBaseDialogPageHandler;
@@ -58,16 +96,12 @@ suite('TopicsConsent', function() {
   });
 
   test('Consent', async function() {
-    const topicsConsent = page.shadowRoot.querySelector('topics-consent');
-    assertTrue(!!topicsConsent);
-    assertTrue(!!topicsConsent.shadowRoot);
-    const acceptButton =
-        topicsConsent.shadowRoot.querySelector<HTMLElement>('#acceptButton');
-    assertTrue(!!acceptButton);
-    acceptButton.click();
-    await testHandler.eventOccurred(
-        PrivacySandboxNotice.kTopicsConsentNotice,
-        PrivacySandboxNoticeEvent.kOptIn);
+    await testButtonClick(
+        page, PrivacySandboxNotice.kTopicsConsentNotice,
+        PrivacySandboxNoticeEvent.kOptIn, testHandler);
+    // TODO(crbug.com/417700269): Remove this once close dialog method is
+    // removed from the mojo interface and the View Manager handles closing the
+    // dialog.
     await testHandler.whenCalled('closeDialog');
   });
 });
@@ -92,17 +126,33 @@ suite('ProtectedAudienceMeasurement', function() {
   });
 
   test('Notice', async function() {
-    const protectedAudienceMeasurement =
-        page.shadowRoot.querySelector('protected-audience-measurement');
-    assertTrue(!!protectedAudienceMeasurement);
-    assertTrue(!!protectedAudienceMeasurement.shadowRoot);
-    const ackButton =
-        protectedAudienceMeasurement.shadowRoot.querySelector<HTMLElement>(
-            '#ackButton');
-    assertTrue(!!ackButton);
-    ackButton.click();
-    await testHandler.eventOccurred(
-        PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
-        PrivacySandboxNoticeEvent.kAck);
+    await testButtonClick(
+        page, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
+        PrivacySandboxNoticeEvent.kAck, testHandler);
+  });
+});
+
+suite('ThreeAdsApis', function() {
+  let page: BaseDialogApp;
+  let testHandler: TestBaseDialogPageHandler;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      noticeIdToShow: PrivacySandboxNotice.kThreeAdsApisNotice,
+    });
+  });
+
+  setup(async function() {
+    ({page, testHandler} = await setupBaseDialogApp());
+  });
+
+  test('CrViewManager', function() {
+    testCrViewManager(page, PrivacySandboxNotice.kThreeAdsApisNotice);
+  });
+
+  test('Notice', async function() {
+    await testButtonClick(
+        page, PrivacySandboxNotice.kThreeAdsApisNotice,
+        PrivacySandboxNoticeEvent.kAck, testHandler);
   });
 });
