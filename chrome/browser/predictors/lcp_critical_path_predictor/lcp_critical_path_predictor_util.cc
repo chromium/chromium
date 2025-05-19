@@ -482,7 +482,7 @@ bool RecordLcpInfluencerScriptUrlsHistogram(
 
 bool RecordPreconnectOriginsHistogram(int sliding_window_size,
                                       int max_histogram_buckets,
-                                      const std::vector<GURL>& origins,
+                                      const std::set<url::Origin>& origins,
                                       LcppStat& stat) {
   // There could be multiple preconnect origins. Record each in a separate
   // histogram.
@@ -491,7 +491,7 @@ bool RecordPreconnectOriginsHistogram(int sliding_window_size,
           sliding_window_size, max_histogram_buckets,
           stat.preconnect_origin_stat());
   for (auto& origin : origins) {
-    const auto& origin_spec = origin.spec();
+    const auto origin_spec = origin.GetURL().spec();
     if (!IsValidUrlInLcppStringFrequencyStatData(origin_spec)) {
       continue;
     }
@@ -821,7 +821,7 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
   std::vector<GURL> lcp_influencer_scripts =
       PredictLcpInfluencerScripts(lcpp_stat);
   std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_stat);
-  std::vector<GURL> preconnect_origins =
+  std::vector<url::Origin> preconnect_origins =
       PredictPreconnectableOrigins(lcpp_stat);
   std::vector<GURL> unused_preloads = PredictUnusedPreloads(lcpp_stat);
 
@@ -934,7 +934,7 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppStat& stat) {
   return font_urls;
 }
 
-std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat) {
+std::vector<url::Origin> PredictPreconnectableOrigins(const LcppStat& stat) {
   std::vector<std::pair<double, std::string>>
       preconnect_origins_with_frequency =
           ConvertToFrequencyStringPair(stat.preconnect_origin_stat());
@@ -944,11 +944,11 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat) {
   int preconnects_allowed =
       blink::features::kkLCPPAutoPreconnectMaxPreconnectOriginsCount.Get();
   if (preconnects_allowed <= 0) {
-    return std::vector<GURL>();
+    return std::vector<url::Origin>();
   }
 
-  std::vector<GURL> preconnect_origins;
-  for (const auto& [frequency, preconnect_url] :
+  std::vector<url::Origin> preconnect_origins;
+  for (const auto& [frequency, preconnect_origin] :
        preconnect_origins_with_frequency) {
     // The frequencies are reverse sorted by `ConvertToFrequencyStringPair`.
     // No need to see later frequencies if the frequency is smaller than the
@@ -956,11 +956,11 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppStat& stat) {
     if (frequency < frequency_threshold) {
       break;
     }
-    GURL parsed_url(preconnect_url);
-    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+    GURL parsed_origin(preconnect_origin);
+    if (!parsed_origin.is_valid() || !parsed_origin.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
-    preconnect_origins.emplace_back(std::move(parsed_url));
+    preconnect_origins.emplace_back(url::Origin::Create(parsed_origin));
     if (--preconnects_allowed <= 0) {
       break;
     }
@@ -1504,10 +1504,10 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
     std::vector<PreconnectRequest> additional_preconnects;
     auto anonymization_key =
         net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url));
-    for (const GURL& preconnect_origin :
+    for (const url::Origin& preconnect_origin :
          PredictPreconnectableOrigins(*lcpp_stat)) {
-      additional_preconnects.emplace_back(
-          url::Origin::Create(preconnect_origin), 1, anonymization_key);
+      additional_preconnects.emplace_back(preconnect_origin, 1,
+                                          anonymization_key);
       ++count;
     }
 

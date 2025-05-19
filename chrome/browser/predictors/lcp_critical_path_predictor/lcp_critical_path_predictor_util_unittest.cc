@@ -1009,12 +1009,17 @@ TEST(PredictFetchedSubresourceUrls, FilterUrls) {
                 /*total_frequency_threshold=*/0.0));
 }
 
+url::Origin CreateOrigin(std::string url) {
+  return url::Origin::Create(GURL(url));
+}
+
 TEST(PredictPreconnectableOrigins, Empty) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kLCPPAutoPreconnectLcpOrigin, {}}}, {});
   LcppStat lcpp_stat;
-  EXPECT_EQ(std::vector<GURL>(), PredictPreconnectableOrigins(lcpp_stat));
+  EXPECT_EQ(std::vector<url::Origin>(),
+            PredictPreconnectableOrigins(lcpp_stat));
 }
 
 TEST(PredictPreconnectableOrigins, Simple) {
@@ -1028,8 +1033,8 @@ TEST(PredictPreconnectableOrigins, Simple) {
   LcppStat lcpp_stat;
   lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets()->insert(
       {"https://example.com", 0.9});
-  std::vector<GURL> expected;
-  expected.emplace_back("https://example.com");
+  std::vector<url::Origin> expected;
+  expected.emplace_back(CreateOrigin("https://example.com"));
   EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
 }
 
@@ -1047,9 +1052,9 @@ TEST(PredictPreconnectableOrigins, SortedByFrequencyInDescendingOrder) {
   buckets->insert({"https://example.com", 0.1});
   buckets->insert({"https://example2.com", 0.3});
   buckets->insert({"https://example3.com", 0.2});
-  EXPECT_EQ(std::vector<GURL>({GURL("https://example2.com"),
-                               GURL("https://example3.com"),
-                               GURL("https://example.com")}),
+  EXPECT_EQ(std::vector<url::Origin>({CreateOrigin("https://example2.com"),
+                                      CreateOrigin("https://example3.com"),
+                                      CreateOrigin("https://example.com")}),
             PredictPreconnectableOrigins(lcpp_stat));
 }
 
@@ -1066,8 +1071,8 @@ TEST(PredictPreconnectableOrigins, Threshold) {
       lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
   main_buckets->insert({"https://example1.com", 0.9});
   main_buckets->insert({"https://example2.com", 0.1});
-  std::vector<GURL> expected;
-  expected.emplace_back("https://example1.com");
+  std::vector<url::Origin> expected;
+  expected.emplace_back(CreateOrigin("https://example1.com"));
   EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
 }
 
@@ -1085,8 +1090,8 @@ TEST(PredictPreconnectableOrigins, MaxUrls) {
         lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
     main_buckets->insert({"https://example.com", 0.9});
     main_buckets->insert({"https://example1.com", 0.8});
-    std::vector<GURL> expected;
-    expected.emplace_back("https://example.com");
+    std::vector<url::Origin> expected;
+    expected.emplace_back(CreateOrigin("https://example.com"));
     EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
   }
   {  // Use MaxUrls as a kill switch.
@@ -1102,7 +1107,7 @@ TEST(PredictPreconnectableOrigins, MaxUrls) {
         lcpp_stat.mutable_preconnect_origin_stat()->mutable_main_buckets();
     main_buckets->insert({"https://example1.com", 0.9});
     main_buckets->insert({"https://example2.com", 0.8});
-    std::vector<GURL> expected;
+    std::vector<url::Origin> expected;
     EXPECT_EQ(expected, PredictPreconnectableOrigins(lcpp_stat));
   }
 }
@@ -1125,8 +1130,8 @@ TEST(PredictPreconnectableOrigins, FilterUrls) {
   // Not an URL.
   buckets->insert({"d.jpeg", 0.8});
   EXPECT_EQ(4U, buckets->size());
-  EXPECT_EQ(std::vector<GURL>(
-                {GURL("https://example1.com"), GURL("https://example2.com")}),
+  EXPECT_EQ(std::vector<url::Origin>({CreateOrigin("https://example1.com"),
+                                      CreateOrigin("https://example2.com")}),
             PredictPreconnectableOrigins(lcpp_stat));
 }
 

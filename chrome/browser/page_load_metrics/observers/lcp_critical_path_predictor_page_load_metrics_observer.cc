@@ -728,6 +728,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
     ReportSubresourceUMA(*commit_url_, lcpp_stat_prelearn, *lcpp_data_inputs_);
     MaybeReportConfidenceUMAs(*commit_url_, lcpp_stat_prelearn,
                               *lcpp_data_inputs_);
+    base::UmaHistogramCounts10000("Blink.LCPP.PreconnectCount",
+                                  lcpp_data_inputs_->preconnect_origins.size());
     predictor->LearnLcpp(initiator_origin_, *commit_url_, *lcpp_data_inputs_);
   }
 
@@ -858,12 +860,20 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
   lcpp_data_inputs_->lcp_influencer_scripts = lcp_influencer_scripts;
 }
 
-void LcpCriticalPathPredictorPageLoadMetricsObserver::SetPreconnectOrigins(
-    const std::vector<GURL>& origins) {
+void LcpCriticalPathPredictorPageLoadMetricsObserver::AddPreconnectOrigin(
+    const url::Origin& origin) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
-  lcpp_data_inputs_->preconnect_origins = origins;
+
+  std::set<url::Origin>& preconnect_origins =
+      lcpp_data_inputs_->preconnect_origins;
+  if (blink::features::kLCPPAutoPreconnectRecordAllOrigins.Get()) {
+    preconnect_origins.insert(origin);
+  } else {
+    preconnect_origins.clear();
+    preconnect_origins.insert(origin);
+  }
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::SetUnusedPreloads(

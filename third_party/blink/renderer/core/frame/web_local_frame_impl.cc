@@ -3362,8 +3362,8 @@ void WebLocalFrameImpl::SetLCPPHint(
   Vector<url::Origin> preconnect_origins;
   preconnect_origins.reserve(
       base::checked_cast<wtf_size_t>(hint->preconnect_origins.size()));
-  for (const auto& origin_url : hint->preconnect_origins) {
-    preconnect_origins.emplace_back(url::Origin::Create(origin_url));
+  for (const auto& origin : hint->preconnect_origins) {
+    preconnect_origins.emplace_back(origin);
   }
   lcpp->set_preconnected_origins(preconnect_origins);
 

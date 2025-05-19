@@ -1465,6 +1465,12 @@ BASE_FEATURE_PARAM(int,
                    "lcpp_preconnect_max_histogram_buckets",
                    10);
 
+BASE_FEATURE_PARAM(bool,
+                   kLCPPAutoPreconnectRecordAllOrigins,
+                   &kLCPPAutoPreconnectLcpOrigin,
+                   "lcpp_preconnect_record_all_origins",
+                   false);
+
 BASE_FEATURE(kLCPPDeferUnusedPreload,
              "LCPPDeferUnusedPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);

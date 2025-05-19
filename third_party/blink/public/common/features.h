@@ -942,6 +942,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kLCPPAutoPreconnectMaxHistogramBuckets);
 
+// If enabled, kLCPPAutoPreconnectLcpOrigin stores all origins instead of the
+// final LCP image element's.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLCPPAutoPreconnectRecordAllOrigins);
+
 // If enabled, unused preload requests are deferred to the timing on LCP.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPDeferUnusedPreload);
 

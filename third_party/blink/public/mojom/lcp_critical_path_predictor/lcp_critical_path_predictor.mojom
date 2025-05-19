@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 struct LcpElement {
@@ -38,8 +39,8 @@ interface LCPCriticalPathPredictorHost {
   // the LCP element.
   SetLcpInfluencerScriptUrls(array<url.mojom.Url> lcp_influencer_scripts);
 
-  // `origins` contain the list of preconnectable origins that affected the LCP element.
-  SetPreconnectOrigins(array<url.mojom.Url> origins);
+  // `origin` is preconnectable one that affected the LCP element of the image.
+  AddPreconnectOrigin(url.mojom.Origin origin);
 
   // This method is for letting the LCPP know the used web fonts.
   // `font_url` is a web font's URL, which has started to be fetched.
@@ -83,7 +84,7 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
   array<url.mojom.Url> fetched_fonts;
 
   // Preconnectable origins that affected the LCP element.
-  array<url.mojom.Url> preconnect_origins;
+  array<url.mojom.Origin> preconnect_origins;
 
   // Unused preloaded URLs in the past loads.
   array<url.mojom.Url> unused_preloads;

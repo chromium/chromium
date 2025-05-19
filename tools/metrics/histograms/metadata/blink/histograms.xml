@@ -3379,9 +3379,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.PreconnectCount" units="count"
+    expires_after="2026-05-09">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of actual preconncted origins for image element.
+
+    The metric is emitted as LCP Critical Path Predictor finalizes LCP candidate
+    dependencies.
+  </summary>
+</histogram>
+
 <histogram name="Blink.LCPP.PreconnectPredictionCount" units="count"
-    expires_after="2025-11-09">
+    expires_after="2026-05-09">
   <owner>alexnj@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
@@ -3394,8 +3409,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchCount" units="count"
-    expires_after="2025-11-09">
+    expires_after="2026-05-09">
   <owner>alexnj@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
@@ -3411,8 +3427,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchPercent" units="%"
-    expires_after="2025-11-09">
+    expires_after="2026-05-09">
   <owner>alexnj@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>

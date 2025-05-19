@@ -85,14 +85,14 @@ void LCPCriticalPathPredictorHost::SetLcpInfluencerScriptUrls(
   }
 }
 
-void LCPCriticalPathPredictorHost::SetPreconnectOrigins(
-    const std::vector<GURL>& origins) {
+void LCPCriticalPathPredictorHost::AddPreconnectOrigin(
+    const url::Origin& origin) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kLCPPAutoPreconnectLcpOrigin)) {
     return;
   }
   if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
-    plmo->SetPreconnectOrigins(origins);
+    plmo->AddPreconnectOrigin(origin);
   }
 }
 

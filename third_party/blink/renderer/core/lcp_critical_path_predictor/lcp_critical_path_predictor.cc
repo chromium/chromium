@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -236,7 +237,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
         base::UmaHistogramBoolean("Blink.LCPP.CrossOriginLcpImage",
                                   is_lcp_cross_origin);
         if (is_lcp_cross_origin) {
-          GetHost().SetPreconnectOrigins({(KURL)lcp_origin.GetURL()});
+          GetHost().AddPreconnectOrigin(SecurityOrigin::Create(lcp_image_url));
         }
 
         // Calculate accuracy against predicted.
