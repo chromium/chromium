@@ -1950,8 +1950,6 @@ TEST_F(NigoriSyncBridgeImplTest,
 // Tests that the initial built keystore Nigori, includes initialized
 // Public-private key-pairs.
 TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
-  base::HistogramTester histogram_tester;
-
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
 
@@ -1984,14 +1982,10 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
               HasPublicKeyVersionAndValue(0, key_value));
 
   EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), Not(NullTime()));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", true, 1);
 }
 
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldFailOnDifferentKeyInitializingKeystoreNigoriWithKeyPair) {
-  base::HistogramTester histogram_tester;
-
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
 
@@ -2023,15 +2017,11 @@ TEST_F(NigoriSyncBridgeImplTest,
               Eq(std::nullopt));
   EXPECT_THAT(bridge()->GetDataForDebugging(), Not(HasKeystoreNigori()));
   EXPECT_THAT(bridge()->GetDataForDebugging(), Not(HasPublicKeyVersion(0)));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
 
 // Tests that an existing Nigori will be initialized with Public-private
 // key-pairs.
 TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
-  base::HistogramTester histogram_tester;
-
   // Perform initial sync with simple keystore Nigori without key pair.
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
@@ -2059,14 +2049,10 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
   // bridge.
   EXPECT_THAT(bridge()->GetDataForDebugging(),
               HasPublicKeyVersionAndValue(0, key_value));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", true, 1);
 }
 
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldFailOnDifferentNigoriKeyInitializingKeyPairForExistingNigori) {
-  base::HistogramTester histogram_tester;
-
   // Perform initial sync with simple keystore Nigori without key pair.
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
@@ -2092,8 +2078,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   // passphrase Nigori. Bridge should not attempt to commit cross user sharing
   // key anymore, because it can't decrypt the custom passphrase Nigori yet.
   EXPECT_THAT(bridge()->GetDataForCommit(), Not(HasPublicKeyVersion(0)));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
 
 TEST_F(NigoriSyncBridgeImplTest, ShouldRegenerateKeyPairIfCorrupted) {

@@ -736,17 +736,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.CrossUserSharingPublicPrivateKeyInitSuccess"
-    enum="Boolean" expires_after="2025-06-22">
-  <owner>rushans@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
-  <summary>
-    Histogram that keeps track of the bootstrap of Public-private key
-    initialization outcome. Recorded upon attempt to commit NigoriSpecifics with
-    CrossUserSharingPrivateKey, that happens upon browser restart.
-  </summary>
-</histogram>
-
 <histogram
     name="Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
