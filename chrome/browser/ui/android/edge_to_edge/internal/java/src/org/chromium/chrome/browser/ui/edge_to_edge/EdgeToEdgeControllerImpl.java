@@ -59,6 +59,8 @@ public class EdgeToEdgeControllerImpl
                 LayoutStateProvider.LayoutStateObserver,
                 FullscreenManager.Observer {
     private static final String TAG = "E2E_ControllerImpl";
+    private static final String DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM =
+            "Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration";
     private static final String SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM =
             "Android.EdgeToEdge.SupportedConfigurationSwitch";
 
@@ -414,6 +416,10 @@ public class EdgeToEdgeControllerImpl
      */
     @VisibleForTesting
     void drawToEdge(boolean pageOptedIntoEdgeToEdge, boolean changedWindowState) {
+        if (!EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity)) {
+            RecordHistogram.recordBooleanHistogram(
+                    DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM, changedWindowState);
+        }
         // Exit early if there is a tappable navbar (3-button) as the controller should not function
         // when 3-button nav is enabled.
         if (EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {

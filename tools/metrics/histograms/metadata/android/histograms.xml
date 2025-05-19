@@ -1875,6 +1875,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>clhager@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records when EdgeToEdgeControllerImpl#drawToEdge gets called on a device
+    whose configuration does not support edge-to-edge, with the boolean record
+    indicating whether drawToEdge was called due to a change in window state.
+  </summary>
+</histogram>
+
 <histogram name="Android.EdgeToEdge.Eligible" enum="Boolean"
     expires_after="2025-08-24">
   <owner>lazzzis@google.com</owner>
