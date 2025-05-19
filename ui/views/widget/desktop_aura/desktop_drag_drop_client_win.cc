@@ -20,6 +20,17 @@
 #include "ui/views/widget/desktop_aura/desktop_drop_target_win.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
+namespace {
+// This value defines the offset needed to not open a context menu when
+// synchronizing the pointer to the touch location after a long press with the
+// mouse outside of the current window. Matches `kTouchDragSlop` in
+// gesture_manager.cc.
+// `kTouchOffset` = `kTouchDragSlop` + 1 = 9;
+// TODO(crbug.com/40312079): Remove when pointer syncing for touch drag and
+// drops with mouse outside of window is fixed.
+constexpr int kTouchOffset = 9;
+}  // namespace
+
 namespace views {
 
 DesktopDragDropClientWin::DesktopDragDropClientWin(
@@ -50,8 +61,7 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     CHECK(screen);
     aura::Window* window =
         screen->GetWindowAtScreenPoint(screen->GetCursorScreenPoint());
-    touch_screen_point =
-        screen_location + source_window->GetBoundsInScreen().OffsetFromOrigin();
+    touch_screen_point = screen_location;
     source_window->GetHost()->ConvertDIPToPixels(&touch_screen_point);
     bool touch_down = aura::Env::GetInstance()->is_touch_down();
     bool touch_over_other_window =
@@ -64,7 +74,13 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     // events for this to be smoother, but ::SetCursorPos needs to be called
     // well before calling ::DoDragDrop.
     if (touch_drag_cursor_sync && touch_down && touch_over_other_window) {
-      ::SetCursorPos(touch_screen_point.x(), touch_screen_point.y());
+      // The context menu will be open if the DnD operation is ended in the same
+      // position it started. This offset causes the DnD to end outside the
+      // range that would cause the context menu to be open, otherwise every
+      // touch long press gesture that starts with the mouse outside the window
+      // will cause the context menu to be open.
+      ::SetCursorPos(touch_screen_point.x() + kTouchOffset,
+                     touch_screen_point.y() + kTouchOffset);
     }
     // Check that the cursor is over the window being dragged from. If not,
     // don't start the drag because ::DoDragDrop will not do the drag.
@@ -102,9 +118,6 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
       &effect);
   if (alive && source == ui::mojom::DragEventSource::kTouch) {
     desktop_host_->FinishTouchDrag(touch_screen_point);
-    // Move the mouse cursor to where the drag drop started, to avoid issues
-    // when the drop is outside of the Chrome window.
-    ::SetCursorPos(touch_screen_point.x(), touch_screen_point.y());
   }
   drag_source_copy->set_data(nullptr);
 
