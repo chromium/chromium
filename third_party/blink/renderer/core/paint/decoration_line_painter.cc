@@ -40,14 +40,12 @@ std::pair<gfx::Point, gfx::Point> GetSnappedPointsForTextLine(
 
 bool ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
   switch (stroke_style) {
-    case kNoStroke:
     case kSolidStroke:
     case kDoubleStroke:
       return false;
     case kDottedStroke:
     case kDashedStroke:
     case kWavyStroke:
-    default:
       return true;
   }
 }

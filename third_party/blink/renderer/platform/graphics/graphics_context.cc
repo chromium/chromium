@@ -432,10 +432,6 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
                                const cc::PaintFlags* paint_flags) {
   DCHECK(canvas_);
 
-  StrokeStyle pen_style = styled_stroke.Style();
-  if (pen_style == kNoStroke)
-    return;
-
   gfx::PointF p1 = gfx::PointF(point1);
   gfx::PointF p2 = gfx::PointF(point2);
   bool is_vertical_line = (p1.x() == p2.x());
@@ -450,6 +446,7 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
       paint_flags ? *paint_flags : ImmutableState()->StrokeFlags();
   styled_stroke.SetupPaint(&flags, {length, width, false});
 
+  const StrokeStyle pen_style = styled_stroke.Style();
   if (pen_style == kDottedStroke) {
     if (StyledStrokeData::StrokeIsDashed(width, pen_style)) {
       // When the length of the line is an odd multiple of the width, things
