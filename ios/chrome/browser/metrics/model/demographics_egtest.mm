@@ -237,17 +237,11 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
   // Expect 2 counts because in the iOS First Run, the MetricsService is started
   // quicker, which causes two metrics log uploads to happen by this point.
-  ConditionBlock condition = ^{
-    NSError* error = [MetricsAppInterface
-        expectUniqueSampleWithCount:2
-                          forBucket:success
-                       forHistogram:@"UMA.UserDemographics.Status"];
-    return error == nil;
-  };
-
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForActionTimeout, condition),
-             @"Unexpected histogram contents");
+  NSError* error = [MetricsAppInterface
+      expectUniqueSampleWithCount:2
+                        forBucket:success
+                     forHistogram:@"UMA.UserDemographics.Status"];
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 // LINT.ThenChange(/chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
