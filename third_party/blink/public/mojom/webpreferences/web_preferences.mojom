@@ -479,6 +479,11 @@ struct WebPreferences {
   // default value depends on the platform.
   bool touch_drag_drop_enabled;
 
+  // Whether the end of a drag fires a contextmenu event and possibly shows a
+  // context-menu (depends on how the event is handled). Follows
+  // `touch_drag_drop_enabled` in Windows.
+  bool touch_dragend_context_menu = false;
+
   // Controls whether WebXR's immersive-ar is allowed.
   bool webxr_immersive_ar_allowed;
 

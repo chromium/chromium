@@ -4647,6 +4647,11 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   web_prefs->touch_drag_drop_enabled =
       base::FeatureList::IsEnabled(features::kTouchDragAndDrop);
 
+#if BUILDFLAG(IS_WIN)
+  web_prefs->touch_dragend_context_menu =
+      base::FeatureList::IsEnabled(features::kTouchDragAndDrop);
+#endif
+
   for (auto& parts : extra_parts_) {
     parts->OverrideWebPreferences(web_contents, main_frame_site, web_prefs);
   }
