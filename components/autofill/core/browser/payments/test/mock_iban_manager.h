@@ -20,7 +20,8 @@ class MockIbanManager : public IbanManager {
 
   MOCK_METHOD(bool,
               OnGetSingleFieldSuggestions,
-              (const FormFieldData& field,
+              (const FormStructure& form,
+               const FormFieldData& field,
                const AutofillField& autofill_field,
                const AutofillClient& client,
                SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback),

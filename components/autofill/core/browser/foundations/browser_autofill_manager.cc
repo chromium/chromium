@@ -1198,9 +1198,8 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
   }
 
   for (const auto& suggestion_generator : suggestion_generators_) {
-    suggestion_generator->GenerateSuggestions(*form_structure, *autofill_field,
-                                              client(), suggestion_data,
-                                              barrier_callback);
+    suggestion_generator->GenerateSuggestions(
+        *form_structure, *autofill_field, suggestion_data, barrier_callback);
   }
 }
 
@@ -1489,12 +1488,12 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
                                           on_suggestions_returned)) {
       return;
     }
-    if (autofill_field &&
+    if (form_structure && autofill_field &&
         client().GetPaymentsAutofillClient()->GetIbanManager() &&
         client()
             .GetPaymentsAutofillClient()
             ->GetIbanManager()
-            ->OnGetSingleFieldSuggestions(field, *autofill_field, client(),
+            ->OnGetSingleFieldSuggestions(*form_structure, field, *autofill_field, client(),
                                           on_suggestions_returned)) {
       return;
     }

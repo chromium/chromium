@@ -67,11 +67,9 @@ class SuggestionGenerator {
   // Suggestions were triggered on `field` which belongs to `form`. `callback`
   // is called when generation is complete and a list of `Suggestion`
   // objects is passed along with the corresponding `FillingProduct`.
-  // TODO(crbug.com/409962888): Remove `client` from the parameters.
   virtual void GenerateSuggestions(
       const FormStructure& form,
       const AutofillField& field,
-      AutofillClient& client,
       const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) = 0;

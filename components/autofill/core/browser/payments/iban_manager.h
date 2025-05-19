@@ -35,12 +35,15 @@ class IbanManager : public KeyedService {
 
   ~IbanManager() override;
 
-  // May generate IBAN suggestions for the given `autofill_field`.
+  // May generate IBAN suggestions for the given `autofill_field` in `form`.
   // If `OnGetSingleFieldSuggestions` decides to claim the opportunity to fill
   // `field`, it returns true and calls `on_suggestions_returned`.
   // Claiming the opportunity is not a promise that suggestions will be available.
   // The callback may be called with no suggestions.
+  // TODO(crbug.com/409962888): Remove once the migration to
+  // `SuggestionGenerator`s is complete.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
+      const FormStructure& form,
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const AutofillClient& client,
@@ -71,22 +74,6 @@ class IbanManager : public KeyedService {
     // selected.
     FieldGlobalId most_recent_suggestion_selected_field_global_id_;
   };
-
-  // Filters the `ibans` based on the `field`'s value and returns the resulting
-  // suggestions.
-  std::vector<Suggestion> GetIbanSuggestions(std::vector<Iban> ibans,
-                                             const FormFieldData& field);
-
-  // Filter out IBAN-based suggestions based on the following criteria:
-  // For local IBANs: Filter out the IBAN value which does not starts with the
-  // provided `field_value`.
-  // For server IBANs: Filter out IBAN suggestion if any of the following
-  // conditions are satisfied:
-  // 1. If the IBAN's `prefix` is absent and the length of the `field_value` is
-  // less than `kFieldLengthLimitOnServerIbanSuggestion` characters.
-  // 2. If the IBAN's prefix is present and prefix matches the `field_value`.
-  void FilterIbansToSuggest(const std::u16string& field_value,
-                            std::vector<Iban>& ibans);
 
   const raw_ptr<PaymentsDataManager> payments_data_manager_;
 
