@@ -72,6 +72,12 @@ BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kFillRecoveryPassword,
+             "FillRecoveryPassword",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests,
              "IosCleanupHangingPasswordFormExtractionRequests",

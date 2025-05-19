@@ -66,6 +66,11 @@ BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);
 // selection, rather than autofilling on page load, with highlighting of fields.
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 
+#if BUILDFLAG(IS_ANDROID)
+// Allows filling from a secondary recovery password saved as a backup.
+BASE_DECLARE_FEATURE(kFillRecoveryPassword);
+#endif
+
 #if BUILDFLAG(IS_IOS)
 
 // Enables the clean up of hanging form extraction requests made by the

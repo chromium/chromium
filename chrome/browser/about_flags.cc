@@ -12418,6 +12418,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kSecurePaymentConfirmationUxRefresh)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"fill-recovery-password", flag_descriptions::kFillRecoveryPasswordName,
+     flag_descriptions::kFillRecoveryPasswordDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::kFillRecoveryPassword)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

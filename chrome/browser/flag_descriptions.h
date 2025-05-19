@@ -726,6 +726,11 @@ extern const char kExperimentalAccessibilityLanguageDetectionDynamicName[];
 extern const char
     kExperimentalAccessibilityLanguageDetectionDynamicDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kFillRecoveryPasswordName[];
+extern const char kFillRecoveryPasswordDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kForceColorProfileSRGB[];
 extern const char kForceColorProfileP3[];
 extern const char kForceColorProfileRec2020[];

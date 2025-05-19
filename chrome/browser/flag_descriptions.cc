@@ -1749,6 +1749,12 @@ const char kExperimentalAccessibilityLanguageDetectionDynamicDescription[] =
     "Enable language detection for dynamic content which is then exposed to "
     "assistive technologies such as screen readers.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kFillRecoveryPasswordName[] = "Fill recovery password";
+const char kFillRecoveryPasswordDescription[] =
+    "Offers the previously saved recovery password for filling if one exists.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kMemlogName[] = "Chrome heap profiler start mode.";
 const char kMemlogDescription[] =
     "Starts heap profiling service that records sampled memory allocation "

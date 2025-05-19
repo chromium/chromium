@@ -12895,6 +12895,7 @@ from previous Chrome versions.
   <int value="-441972413" label="OobeJellyModal:disabled"/>
   <int value="-441840790" label="TailoredSecurityUpdatedMessages:disabled"/>
   <int value="-441139232" label="ExcludeDisplayInMirrorMode:enabled"/>
+  <int value="-440532303" label="FillRecoveryPassword:disabled"/>
   <int value="-439110184" label="AndroidWebAppLaunchHandler:disabled"/>
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
   <int value="-438495497" label="enable-unsafe-swiftshader"/>
@@ -18444,6 +18445,7 @@ from previous Chrome versions.
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
   <int value="1660605883" label="WebPaymentAPICSP:disabled"/>
   <int value="1660772828" label="NtpModulesDragAndDrop:enabled"/>
+  <int value="1661091335" label="FillRecoveryPassword:enabled"/>
   <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
   <int value="1661501921" label="BackToHomeAnimation:disabled"/>
   <int value="1661870048" label="SkipUndecryptablePasswords:disabled"/>
