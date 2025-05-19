@@ -47,8 +47,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PrivacySandboxBaseDialogMochaTest,
                          testing::Values(WindowSize::kSmall, WindowSize::kBig));
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, BaseDialogTest) {
-  RunTestSuite("BaseDialogTest");
+IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, TopicsConsent) {
+  RunTestSuite("TopicsConsent");
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest,
+                       ProtectedAudienceMeasurement) {
+  RunTestSuite("ProtectedAudienceMeasurement");
 }
 
 }  // namespace

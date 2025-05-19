@@ -15,6 +15,12 @@ export function getHtml(this: BaseDialogApp) {
           slot="view"
           fill-content>
       </topics-consent>
+      <protected-audience-measurement id="${
+      this.getNoticeId(
+          PrivacySandboxNotice.kProtectedAudienceMeasurementNotice)}"
+          slot="view"
+          fill-content>
+      </protected-audience-measurement>
     </cr-view-manager>
   `;
 }

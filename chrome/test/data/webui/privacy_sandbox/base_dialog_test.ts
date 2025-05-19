@@ -14,13 +14,35 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestBaseDialogPageHandler} from './test_base_dialog_browser_proxy.js';
 import {TestBaseDialogBrowserProxy} from './test_base_dialog_browser_proxy.js';
 
-suite('BaseDialogTest', function() {
+function testCrViewManager(page: BaseDialogApp, notice: PrivacySandboxNotice) {
+  const viewManager = page.shadowRoot.querySelector('cr-view-manager');
+  assertTrue(!!viewManager);
+  const activeView = viewManager.querySelector('[slot="view"].active');
+  assertTrue(!!activeView);
+  assertEquals(PrivacySandboxNotice[notice], activeView.id);
+}
+
+async function setupBaseDialogApp():
+    Promise<{page: BaseDialogApp, testHandler: TestBaseDialogPageHandler}> {
+  const testBrowserProxy = new TestBaseDialogBrowserProxy();
+  BaseDialogBrowserProxy.setInstance(testBrowserProxy);
+  const testHandler = testBrowserProxy.handler;
+
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  const page = document.createElement('base-dialog-app');
+  document.body.appendChild(page);
+
+  await testHandler.whenCalled('resizeDialog');
+  await testHandler.whenCalled('showDialog');
+  await page.updateComplete;
+
+  return {page, testHandler};
+}
+
+suite('TopicsConsent', function() {
   let page: BaseDialogApp;
   let testHandler: TestBaseDialogPageHandler;
 
-  // TODO(crbug.com/398005782): Since this loadTimeData value is hard coded in
-  // BaseDialogUI, we set that here. Once that is removed, we can refactor this
-  // logic to test all of the other notices.
   suiteSetup(function() {
     loadTimeData.overrideValues({
       noticeIdToShow: PrivacySandboxNotice.kTopicsConsentNotice,
@@ -28,27 +50,11 @@ suite('BaseDialogTest', function() {
   });
 
   setup(async function() {
-    const testBrowserProxy = new TestBaseDialogBrowserProxy();
-    BaseDialogBrowserProxy.setInstance(testBrowserProxy);
-    testHandler = testBrowserProxy.handler;
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('base-dialog-app');
-    document.body.appendChild(page);
-
-    await testHandler.whenCalled('resizeDialog');
-    await testHandler.whenCalled('showDialog');
-    await page.updateComplete;
+    ({page, testHandler} = await setupBaseDialogApp());
   });
 
-  test('ShowsConsentView', function() {
-    const viewManager = page.shadowRoot.querySelector('cr-view-manager');
-    assertTrue(!!viewManager);
-    const activeView = viewManager.querySelector('[slot="view"].active');
-    assertTrue(!!activeView);
-    assertEquals(
-        PrivacySandboxNotice[PrivacySandboxNotice.kTopicsConsentNotice],
-        activeView.id);
+  test('CrViewManager', function() {
+    testCrViewManager(page, PrivacySandboxNotice.kTopicsConsentNotice);
   });
 
   test('Consent', async function() {
@@ -63,5 +69,40 @@ suite('BaseDialogTest', function() {
         PrivacySandboxNotice.kTopicsConsentNotice,
         PrivacySandboxNoticeEvent.kOptIn);
     await testHandler.whenCalled('closeDialog');
+  });
+});
+
+suite('ProtectedAudienceMeasurement', function() {
+  let page: BaseDialogApp;
+  let testHandler: TestBaseDialogPageHandler;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      noticeIdToShow: PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
+    });
+  });
+
+  setup(async function() {
+    ({page, testHandler} = await setupBaseDialogApp());
+  });
+
+  test('CrViewManager', function() {
+    testCrViewManager(
+        page, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice);
+  });
+
+  test('Notice', async function() {
+    const protectedAudienceMeasurement =
+        page.shadowRoot.querySelector('protected-audience-measurement');
+    assertTrue(!!protectedAudienceMeasurement);
+    assertTrue(!!protectedAudienceMeasurement.shadowRoot);
+    const ackButton =
+        protectedAudienceMeasurement.shadowRoot.querySelector<HTMLElement>(
+            '#ackButton');
+    assertTrue(!!ackButton);
+    ackButton.click();
+    await testHandler.eventOccurred(
+        PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
+        PrivacySandboxNoticeEvent.kAck);
   });
 });
