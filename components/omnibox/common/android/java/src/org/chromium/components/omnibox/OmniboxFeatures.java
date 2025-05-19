@@ -116,6 +116,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sOmniboxMobileParityUpdate =
+            newFlag(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE, FeatureState.ENABLED_IN_TEST);
+
     public static final BooleanCachedFeatureParam sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
 

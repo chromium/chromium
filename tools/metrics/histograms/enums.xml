@@ -18828,6 +18828,7 @@ from previous Chrome versions.
   <int value="1795186324" label="SyncPseudoUSSExtensionSettings:disabled"/>
   <int value="1795214277" label="SupportForAddPasswordsInSettings:disabled"/>
   <int value="1795585793" label="EnableComposeNudgeAtCursor:disabled"/>
+  <int value="1796031437" label="OmniboxMobileParityUpdate:disabled"/>
   <int value="1796436890" label="MinorModeSupport:enabled"/>
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
   <int value="1797002314" label="HatsUseNewHistograms:enabled"/>
@@ -19539,6 +19540,7 @@ from previous Chrome versions.
   <int value="2051886966" label="PwaInstallUseBottomSheet:enabled"/>
   <int value="2053269084" label="EcheLauncher:disabled"/>
   <int value="2053479012" label="PersistDeviceBoundSessions:disabled"/>
+  <int value="2054616439" label="OmniboxMobileParityUpdate:enabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
   <int value="2057084644" label="AndroidTabDeclutterArchiveTabGroups:disabled"/>

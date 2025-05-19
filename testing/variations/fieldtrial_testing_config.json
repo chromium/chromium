@@ -15465,6 +15465,21 @@
             ]
         }
     ],
+    "OmniboxMobileParityUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxMobileParityUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnDeviceBrainModel": [
         {
             "platforms": [

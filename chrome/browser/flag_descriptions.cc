@@ -2785,6 +2785,11 @@ const char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "
     "autocompletion.";
 
+const char kOmniboxMobileParityUpdateName[] = "Omnibox Mobile parity update";
+const char kOmniboxMobileParityUpdateDescription[] =
+    "When set, applies certain assets to match Desktop visuals and "
+    "descriptions";
+
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
     "Omnibox MV Tiles Horizontal Render Group";
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =

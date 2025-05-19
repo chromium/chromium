@@ -6760,6 +6760,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxDiagnosticsAndroidVaiants,
                                     "Diagnostics")},
 
+    {"omnibox-mobile-parity-update",
+     flag_descriptions::kOmniboxMobileParityUpdateName,
+     flag_descriptions::kOmniboxMobileParityUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
     {"omnibox-on-device-head-suggestions",

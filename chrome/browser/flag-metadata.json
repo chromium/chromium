@@ -7084,6 +7084,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "omnibox-mobile-parity-update",
+    "owners": [ "ender@google.com", "pnoland@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "omnibox-most-visited-tiles-horizontal-render-group",
     "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com"],
     "expiry_milestone": 140
