@@ -731,9 +731,11 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   if (!IsRenderingContext2D())
     SetNeedsCompositingUpdate();
 
-  SetOpacityMode(SkAlphaTypeIsOpaque(GetRenderingContextAlphaType())
-                     ? kOpaque
-                     : kNonOpaque);
+  is_opaque_ = SkAlphaTypeIsOpaque(GetRenderingContextAlphaType());
+  if (cc_layer_) {
+    cc_layer_->SetContentsOpaque(is_opaque_);
+    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
+  }
 
   return context_.Get();
 }
@@ -1701,8 +1703,8 @@ cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerIfNeeded() {
     InitializeLayerWithCSSProperties(cc_layer_.get());
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);
-    cc_layer_->SetContentsOpaque(is_opaque());
-    cc_layer_->SetBlendBackgroundColor(!is_opaque());
+    cc_layer_->SetContentsOpaque(is_opaque_);
+    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
   }
   return cc_layer_.get();
 }

@@ -109,14 +109,6 @@ void CanvasResourceHost::SetNeedsPushProperties() {
   }
 }
 
-void CanvasResourceHost::SetOpacityMode(OpacityMode opacity_mode) {
-  is_opaque_ = opacity_mode == kOpaque;
-  if (cc_layer_) {
-    cc_layer_->SetContentsOpaque(is_opaque_);
-    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
-  }
-}
-
 void CanvasResourceHost::FlushRecording(FlushReason reason) {
   if (resource_provider_) {
     resource_provider_->FlushCanvas(reason);
