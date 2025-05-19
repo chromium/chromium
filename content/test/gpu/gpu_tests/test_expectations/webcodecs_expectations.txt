@@ -92,6 +92,8 @@
 # results: [ Failure RetryOnFailure Skip Slow ]
 # END TAG HEADER
 
+# full_wildcard_support: true
+
 ###############################
 # Permanent Skip Expectations #
 ###############################
@@ -163,31 +165,10 @@ crbug.com/416483573 [ android android-brya ] WebCodecs_TexImage2d_hw_decoder [ F
 crbug.com/416483573 [ android android-brya ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 # Flaky failures that started when upgrading to Mac 15.4
+crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_*hvc*prefer-hardware* [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodeColorSpace_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodeDecode_capture_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodeDecode_hw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodeDecode_sw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_Encode_arraybuffer_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_Encode_capture_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_Encode_hw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_Encode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_Encode_sw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingFramerateResolutions_1920x1080_120_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingFramerateResolutions_1920x1080_30_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingFramerateResolutions_1920x1080_60_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingFramerateResolutions_3840x2160_120_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingFramerateResolutions_3840x2160_30_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingFramerateResolutions_3840x2160_60_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingModes_offscreen_hvc1.1.6.L123.00_prefer-hardware_constant_quality [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_1500000 [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_1500000 [ Failure ]
-crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_2000000 [ Failure ]
+crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_arraybuffer [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_capture [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ Failure ]
