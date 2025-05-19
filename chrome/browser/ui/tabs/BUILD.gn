@@ -337,6 +337,7 @@ if (!is_android) {
       "//chrome/browser/fingerprinting_protection",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/media/webrtc",
+      "//chrome/browser/privacy_sandbox/incognito:tab_observer",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search",

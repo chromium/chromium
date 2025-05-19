@@ -789,6 +789,16 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.ActSurvey.Status"
+    enum="PrivacySandboxActSurveyStatus" expires_after="2025-11-12">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the status when attempting to surface the ACT survey. The ACT survey
+    is triggered on a new tab page in Incognito with a configurable delay.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-13">

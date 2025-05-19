@@ -20,6 +20,7 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/passage_embeddings/embedder_tab_observer.h"
+#include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -238,6 +239,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab.GetContents());
 
+    privacy_sandbox_incognito_tab_observer_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxIncognitoTabObserver>(
+            tab.GetContents());
+
     dwa_web_contents_observer_ =
         std::make_unique<metrics::DwaWebContentsObserver>(
             tab.GetContents());
@@ -397,6 +402,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     privacy_sandbox_tab_observer_.reset();
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
+            new_contents);
+  }
+
+  if (privacy_sandbox_incognito_tab_observer_) {
+    privacy_sandbox_incognito_tab_observer_.reset();
+    privacy_sandbox_incognito_tab_observer_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxIncognitoTabObserver>(
             new_contents);
   }
 

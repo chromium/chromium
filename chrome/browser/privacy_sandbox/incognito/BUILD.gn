@@ -1,0 +1,68 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("incognito") {
+  public_deps = [
+    ":incognito_features",
+    ":incognito_surveys",
+    ":tab_observer",
+  ]
+}
+
+group("unit_tests") {
+  testonly = true
+  deps = []
+
+  if (!is_android) {
+    deps += [ ":incognito_surveys_unittest" ]
+  }
+}
+
+source_set("incognito_features") {
+  sources = [ "privacy_sandbox_incognito_features.cc" ]
+  public = [ "privacy_sandbox_incognito_features.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("tab_observer") {
+  sources = [ "privacy_sandbox_incognito_tab_observer.cc" ]
+  public = [ "privacy_sandbox_incognito_tab_observer.h" ]
+  deps = [
+    ":incognito_surveys",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("incognito_surveys") {
+  sources = [
+    "privacy_sandbox_incognito_survey_service.cc",
+    "privacy_sandbox_incognito_survey_service_factory.cc",
+  ]
+  public = [
+    "privacy_sandbox_incognito_survey_service.h",
+    "privacy_sandbox_incognito_survey_service_factory.h",
+  ]
+  deps = [
+    ":incognito_features",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/hats",
+    "//content/public/browser",
+  ]
+}
+
+if (!is_android) {
+  source_set("incognito_surveys_unittest") {
+    testonly = true
+    sources = [ "privacy_sandbox_incognito_survey_service_unittest.cc" ]
+    deps = [
+      ":incognito_features",
+      ":incognito_surveys",
+      "//chrome/browser/ui/hats:hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/test:test_support",
+    ]
+  }
+}

@@ -1978,6 +1978,7 @@ static_library("browser") {
     "//chrome/browser/privacy_budget",
     "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:headers",
+    "//chrome/browser/privacy_sandbox/incognito",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profile_util_impl",

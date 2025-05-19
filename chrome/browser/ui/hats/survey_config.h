@@ -84,6 +84,7 @@ extern const char
 extern const char
     kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback[];
 extern const char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[];
+extern const char kHatsSurveyTriggerPrivacySandboxActSurvey[];
 extern const char kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey[];
 extern const char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[];
 extern const char kHatsSurveyTriggerMerchantTrustLearnSurvey[];

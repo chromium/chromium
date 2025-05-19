@@ -22826,6 +22826,18 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="No RenderFrame"/>
 </enum>
 
+<!-- LINT.IfChange(PrivacySandboxActSurveyStatus) -->
+
+<enum name="PrivacySandboxActSurveyStatus">
+  <int value="0" label="Survey was successfully launched"/>
+  <int value="1" label="Feature not enabled"/>
+  <int value="2" label="Failed to fetch HaTS service"/>
+  <int value="3" label="Failed to launch survey"/>
+  <int value="4" label="Not in Incognito profile"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_survey_service.h:PrivacySandboxActSurveyStatus) -->
+
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Download error"/>

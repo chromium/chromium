@@ -73,6 +73,7 @@ class PermissionIndicatorsTabData;
 
 namespace privacy_sandbox {
 class PrivacySandboxTabObserver;
+class PrivacySandboxIncognitoTabObserver;
 }  // namespace privacy_sandbox
 
 namespace metrics {
@@ -163,6 +164,11 @@ class TabFeatures {
 
   privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
     return privacy_sandbox_tab_observer_.get();
+  }
+
+  privacy_sandbox::PrivacySandboxIncognitoTabObserver*
+  privacy_sandbox_incognito_tab_observer() {
+    return privacy_sandbox_incognito_tab_observer_.get();
   }
 
   metrics::DwaWebContentsObserver* dwa_web_contents_observer() {
@@ -297,6 +303,9 @@ class TabFeatures {
 
   std::unique_ptr<privacy_sandbox::PrivacySandboxTabObserver>
       privacy_sandbox_tab_observer_;
+
+  std::unique_ptr<privacy_sandbox::PrivacySandboxIncognitoTabObserver>
+      privacy_sandbox_incognito_tab_observer_;
 
   std::unique_ptr<metrics::DwaWebContentsObserver>
       dwa_web_contents_observer_;

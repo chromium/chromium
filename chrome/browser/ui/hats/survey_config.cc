@@ -11,6 +11,7 @@
 #include "base/features.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -157,6 +158,8 @@ constexpr char
         "plus-address-filled-plus-address-via-manual-fallback";
 constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
     "privacy-sandbox-sentiment-survey";
+constexpr char kHatsSurveyTriggerPrivacySandboxActSurvey[] =
+    "privacy-sandbox-act-survey";
 constexpr char kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey[] =
     "merchant-trust-evaluation-control-survey";
 constexpr char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[] =
@@ -231,6 +234,20 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*log_responses_to_ukm=*/true);
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Privacy sandbox ACT survey
+  survey_configs.emplace_back(  //
+      &privacy_sandbox::kPrivacySandboxActSurvey,
+      kHatsSurveyTriggerPrivacySandboxActSurvey,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/
+      std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Survey Trigger Delay"},
+      /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false,
+      /*requested_browser_type=*/
+      hats::SurveyConfig::RequestedBrowserType::kIncognito);
+
   // Dev tools surveys.
   survey_configs.emplace_back(&features::kHaTSDesktopDevToolsIssuesCOEP,
                               "devtools-issues-coep",
