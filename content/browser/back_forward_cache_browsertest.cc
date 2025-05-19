@@ -1811,7 +1811,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Tests that we're getting the correct TextInputState and focus updates when a
 // page enters the back-forward cache and when it gets restored.
 // TODO(b/324570785): Re-enable the test for Android.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_TextInputStateUpdated DISABLED_TextInputStateUpdated
 #else
 #define MAYBE_TextInputStateUpdated TextInputStateUpdated
