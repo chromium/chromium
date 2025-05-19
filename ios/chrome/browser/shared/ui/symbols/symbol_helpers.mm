@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbol_helpers.h"
 
 #import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbol_configurations.h"
 
@@ -34,7 +35,8 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
                         inBundle:nil
                withConfiguration:configuration];
   }
-  DCHECK(symbol);
+  DCHECK(symbol) << " symbol_name: " << base::SysNSStringToUTF8(symbol_name)
+                 << " is_system_symbol: " << system_symbol;
   return symbol;
 }
 
