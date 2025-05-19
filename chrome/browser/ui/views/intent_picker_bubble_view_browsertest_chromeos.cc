@@ -52,6 +52,7 @@
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -762,6 +763,18 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOSParameterized,
   NavigateParams params(browser(), test_url,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
+  ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
+
+  // Navigate to the same site again, this time in a new tab (which would allow
+  // the non-arc navigation capturing code to also potentially trigger on this
+  // navigation), and verify the app was launched.
+  clear_launched_arc_apps();
+  content::RenderFrameHost* rfh =
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(rfh);
+  EXPECT_TRUE(content::ExecJs(
+      rfh,
+      content::JsReplace("window.open($1, '_blank', 'noopener');", test_url)));
   ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
 }
 
