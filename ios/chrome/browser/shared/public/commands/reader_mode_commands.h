@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_READER_MODE_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_READER_MODE_COMMANDS_H_
 
+#import <Foundation/Foundation.h>
+
 // Commands protocol to show/hide the Reader mode UI.
 @protocol ReaderModeCommands <NSObject>
 
@@ -13,9 +15,6 @@
 
 // Hides the Reader mode UI.
 - (void)hideReaderMode;
-
-// Shows the Reader mode UI if currently inactive and vice-versa.
-- (void)toggleReaderMode;
 
 @end
 

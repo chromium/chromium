@@ -2420,12 +2420,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Sets the Reader mode UI visibility.
 - (void)setReaderModeVisibility:(BOOL)visible {
+  ReaderModeTabHelper::FromWebState(self.webState)->SetActive(visible);
   [self dismissMenu];
-  if (visible) {
-    [self.readerModeHandler showReaderMode];
-  } else {
-    [self.readerModeHandler hideReaderMode];
-  }
 }
 
 #pragma mark - Destinations Handlers

@@ -23,11 +23,15 @@
 #import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -113,6 +117,11 @@ void AttachBrowserAgents(Browser* browser) {
   // SessionRestorationBrowserAgent is created.
   WebStateListMetricsBrowserAgent::CreateForBrowser(
       browser, SessionMetrics::FromProfile(browser->GetProfile()));
+
+  if (IsReaderModeAvailable()) {
+    ReaderModeBrowserAgent::CreateForBrowser(browser,
+                                             browser->GetWebStateList());
+  }
 
   // Normal profiles are the only ones to get tab usage recorder.
   if (!browser_is_off_record) {

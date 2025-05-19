@@ -14,8 +14,8 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-@protocol ReaderModeCommands;
 @protocol SnackbarCommands;
+class ReaderModeTabHelperDelegate;
 
 // Observes changes to the web state to perform reader mode operations.
 class ReaderModeTabHelper : public web::WebStateObserver,
@@ -28,6 +28,9 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   ReaderModeTabHelper& operator=(const ReaderModeTabHelper&) = delete;
 
   ~ReaderModeTabHelper() override;
+
+  // Sets `delegate_`.
+  void SetDelegate(ReaderModeTabHelperDelegate* delegate);
 
   // Returns whether Reader mode is active in the current tab. If so, the Reader
   // mode UI should be presented.
@@ -42,8 +45,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
-  // Sets the reader mode handler.
-  void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
 
   // Processes the result of the Reader Mode heuristic trigger that was run on
   // the `url` content.
@@ -62,7 +63,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
-  void WasHidden(web::WebState* web_state) override;
 
   // ReaderModeContentDelegate overrides:
   void ReaderModeContentDidCancelRequest(
@@ -75,9 +75,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
-
-  // Hides the Reader Mode UI and stops any ongoing distillation tasks.
-  void HideReaderMode();
 
   // Determine if the page load is eligible for triggering the reader mode
   // heuristic.
@@ -93,12 +90,16 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       const std::string& title,
       const std::string& csp_nonce);
 
+  // Creates `reader_mode_web_state_` and starts distillation.
+  void CreateReaderModeWebState();
+  // Destroys `reader_mode_web_state_` and stops any ongoing distillation.
+  void DestroyReaderModeWebState();
+
   // Whether Reader mode is active in this tab.
   bool active_ = false;
   // WebState used to render the Reader mode content.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
   id<SnackbarCommands> snackbar_handler_;
-  id<ReaderModeCommands> reader_mode_handler_;
   base::TimeDelta heuristic_latency_;
   base::OneShotTimer trigger_reader_mode_timer_;
 
@@ -106,6 +107,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   raw_ptr<DistillerService> distiller_service_;
 
   std::unique_ptr<OfflinePageDistillerViewer> distiller_viewer_;
+
+  raw_ptr<ReaderModeTabHelperDelegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
 };

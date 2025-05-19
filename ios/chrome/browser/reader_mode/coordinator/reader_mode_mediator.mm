@@ -5,21 +5,28 @@
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
 
+@interface ReaderModeMediator () <WebStateListObserving>
+@end
+
 @implementation ReaderModeMediator {
-  base::WeakPtr<web::WebState> _sourceWebState;
+  raw_ptr<WebStateList> _webStateList;
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 }
 
 #pragma mark - Initialization
 
-- (instancetype)initWithWebState:(raw_ptr<web::WebState>)webState {
+- (instancetype)initWithWebStateList:(raw_ptr<WebStateList>)webStateList {
   self = [super init];
   if (self) {
-    CHECK(webState);
-    // TODO(crbug.com/409940117): Ensure the UI reacts to a change in active
-    // WebState e.g. new active WebState or no active WebState.
-    _sourceWebState = webState->GetWeakPtr();
+    CHECK(webStateList);
+    _webStateList = webStateList;
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+    _webStateList->AddObserver(_webStateListObserverBridge.get());
   }
   return self;
 }
@@ -29,16 +36,54 @@
 - (void)setConsumer:(id<ReaderModeConsumer>)consumer {
   CHECK(consumer);
   _consumer = consumer;
-  ReaderModeTabHelper* tabHelper =
-      ReaderModeTabHelper::FromWebState(_sourceWebState.get());
-  CHECK(tabHelper);
-  [self.consumer setContentView:tabHelper->GetReaderModeContentView()];
+  [self updateContentWithNewActiveWebState:_webStateList->GetActiveWebState()];
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change()) {
+    [self updateContentWithNewActiveWebState:status.new_active_web_state];
+  }
+}
+
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+  _webStateListObserverBridge.reset();
+  _webStateList = nullptr;
 }
 
 #pragma mark - Public
 
 - (void)disconnect {
-  _sourceWebState = nil;
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+    _webStateListObserverBridge.reset();
+    _webStateList = nullptr;
+  }
+}
+
+#pragma mark - Private
+
+// If `activeWebState` is not null, feed the Reader mode content view of
+// `activeWebState` to `consumer`. Otherwise, give `nil` content view to
+// consumer.
+- (void)updateContentWithNewActiveWebState:(web::WebState*)activeWebState {
+  // Remove the old content view.
+  [self.consumer setContentView:nil];
+  // If there is a new content view, feed it to consumer.
+  if (!activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(activeWebState);
+  if (!readerModeTabHelper->IsActive()) {
+    return;
+  }
+  [self.consumer
+      setContentView:readerModeTabHelper->GetReaderModeContentView()];
 }
 
 @end

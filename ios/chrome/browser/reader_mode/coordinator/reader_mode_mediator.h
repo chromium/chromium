@@ -8,20 +8,17 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-namespace web {
-class WebState;
-}
+@protocol ReaderModeConsumer;
 
 // Mediator for the Reader mode UI.
 @interface ReaderModeMediator : NSObject
 
 @property(nonatomic, weak) id<ReaderModeConsumer> consumer;
 
-// Initializes the mediator using `webState` as the source WebState from which
-// Reader mode content needs to be extracted.
-- (instancetype)initWithWebState:(raw_ptr<web::WebState>)webState;
+// Initializes the mediator for the given `webStateList`.
+- (instancetype)initWithWebStateList:(raw_ptr<WebStateList>)webStateList;
 
 // Disconnects the mediator from the model layer.
 - (void)disconnect;

@@ -159,13 +159,6 @@
         HandlerForProtocol(_commandDispatcher, SnackbarCommands));
   }
 
-  if (IsReaderModeAvailable()) {
-    ReaderModeTabHelper* readerModeTabHelper =
-        ReaderModeTabHelper::FromWebState(webState);
-    readerModeTabHelper->SetReaderModeHandler(
-        HandlerForProtocol(_commandDispatcher, ReaderModeCommands));
-  }
-
   DCHECK(_printCoordinator);
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(
       _printCoordinator);
@@ -265,12 +258,6 @@
     ReaderModeTabHelper* readerModeTabHelper =
         ReaderModeTabHelper::FromWebState(webState);
     readerModeTabHelper->SetSnackbarHandler(nil);
-  }
-
-  if (IsReaderModeAvailable()) {
-    ReaderModeTabHelper* readerModeTabHelper =
-        ReaderModeTabHelper::FromWebState(webState);
-    readerModeTabHelper->SetReaderModeHandler(nil);
   }
 
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);

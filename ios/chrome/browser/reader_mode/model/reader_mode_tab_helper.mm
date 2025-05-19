@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -167,6 +168,10 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
 
 ReaderModeTabHelper::~ReaderModeTabHelper() = default;
 
+void ReaderModeTabHelper::SetDelegate(ReaderModeTabHelperDelegate* delegate) {
+  delegate_ = delegate;
+}
+
 bool ReaderModeTabHelper::IsActive() const {
   return active_;
 }
@@ -179,26 +184,17 @@ void ReaderModeTabHelper::SetActive(bool active) {
   if (active_) {
     // If Reader mode is being activated, create the secondary WebState where
     // the content will be rendered and start distillation.
-    web::WebState::CreateParams create_params = web::WebState::CreateParams(
-        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
-            ->GetOffTheRecordProfile());
-    reader_mode_web_state_ = web::WebState::Create(create_params);
-    ReaderModeContentTabHelper::CreateForWebState(reader_mode_web_state_.get());
-    ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
-        ->SetDelegate(this);
-    reader_mode_web_state_->SetWebUsageEnabled(true);
-    // TODO(crbug.com/409940117): Decouple heuristic and distillation.
-    TriggerReaderModeHeuristic();
+    CreateReaderModeWebState();
+    if (delegate_) {
+      delegate_->ReaderModeDidBecomeActive(this);
+    }
   } else {
     // If Reader mode is being deactivated, destroy the secondary WebState and
     // ensure the Reader mode UI is dismissed.
-    // TODO(crbug.com/409940117): Ensure the UI gracefully handles the
-    // destruction of the Reader mode WebState while its view is inside the view
-    // hierarchy.
-    reader_mode_web_state_.reset();
-    // Cancel any ongoing distillation task.
-    distiller_viewer_.reset();
-    HideReaderMode();
+    DestroyReaderModeWebState();
+    if (delegate_) {
+      delegate_->ReaderModeDidBecomeInactive(this);
+    }
   }
 }
 
@@ -219,11 +215,6 @@ bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
 void ReaderModeTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
   snackbar_handler_ = snackbar_handler;
-}
-
-void ReaderModeTabHelper::SetReaderModeHandler(
-    id<ReaderModeCommands> reader_mode_handler) {
-  reader_mode_handler_ = reader_mode_handler;
 }
 
 void ReaderModeTabHelper::PageLoaded(
@@ -265,20 +256,15 @@ void ReaderModeTabHelper::DidFinishNavigation(
     web::NavigationContext* navigation_context) {
   if (!navigation_context->IsSameDocument() ||
       navigation_context->HasUserGesture()) {
-    HideReaderMode();
+    SetActive(false);
   }
 }
 
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_, web_state);
-  HideReaderMode();
+  SetActive(false);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
-}
-
-void ReaderModeTabHelper::WasHidden(web::WebState* web_state) {
-  // Ensure the Reader mode UI is hidden when the tab is hidden.
-  HideReaderMode();
 }
 
 void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
@@ -337,12 +323,6 @@ void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
     ukm::builders::IOS_ReaderMode_Heuristic_Latency(source_id)
         .SetLatency(delta.InMilliseconds())
         .Record(ukm::UkmRecorder::Get());
-  }
-}
-
-void ReaderModeTabHelper::HideReaderMode() {
-  if (IsReaderModeAvailable()) {
-    [reader_mode_handler_ hideReaderMode];
   }
 }
 
@@ -427,11 +407,31 @@ void ReaderModeTabHelper::PageDistillationCompleted(
                                             length:html.length()];
       ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
           ->LoadContent(content_url, content_data);
-      // Once the Reader mode content is ready, show the Reader mode UI.
-      [reader_mode_handler_ showReaderMode];
     } else {
-      // If the page could not be distilled, ensure Reader mode UI is hidden.
-      HideReaderMode();
+      // If the page could not be distilled, deactivate Reader mode in this tab.
+      SetActive(false);
     }
   }
+}
+
+void ReaderModeTabHelper::CreateReaderModeWebState() {
+  web::WebState::CreateParams create_params = web::WebState::CreateParams(
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
+          ->GetOffTheRecordProfile());
+  reader_mode_web_state_ = web::WebState::Create(create_params);
+  ReaderModeContentTabHelper::CreateForWebState(reader_mode_web_state_.get());
+  ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
+      ->SetDelegate(this);
+  reader_mode_web_state_->SetWebUsageEnabled(true);
+  // TODO(crbug.com/409940117): Decouple heuristic and distillation.
+  TriggerReaderModeHeuristic();
+}
+
+void ReaderModeTabHelper::DestroyReaderModeWebState() {
+  // TODO(crbug.com/409940117): Ensure the UI gracefully handles the
+  // destruction of the Reader mode WebState while its view is inside the view
+  // hierarchy.
+  reader_mode_web_state_.reset();
+  // Cancel any ongoing distillation task.
+  distiller_viewer_.reset();
 }

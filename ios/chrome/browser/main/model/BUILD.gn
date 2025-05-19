@@ -37,6 +37,8 @@ source_set("model") {
     "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:browser_agent",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
     "//ios/chrome/browser/send_tab_to_self/model",

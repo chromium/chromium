@@ -6,6 +6,8 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("model") {
   sources = [
+    "reader_mode_browser_agent.h",
+    "reader_mode_browser_agent.mm",
     "reader_mode_content_delegate.h",
     "reader_mode_content_tab_helper.h",
     "reader_mode_content_tab_helper.mm",
@@ -19,6 +21,7 @@ source_set("model") {
     "reader_mode_model_factory.mm",
     "reader_mode_tab_helper.h",
     "reader_mode_tab_helper.mm",
+    "reader_mode_tab_helper_delegate.h",
   ]
   deps = [
     ":constants",
@@ -33,9 +36,11 @@ source_set("model") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -80,6 +85,7 @@ source_set("constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "reader_mode_browser_agent_unittest.mm",
     "reader_mode_content_tab_helper_unittest.mm",
     "reader_mode_distiller_page_unittest.mm",
     "reader_mode_java_script_feature_unittest.mm",
@@ -99,10 +105,13 @@ source_set("unit_tests") {
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test/fakes",

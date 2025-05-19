@@ -18,6 +18,7 @@ specific_include_rules = {
     "+ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h",
     "+ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h",
     "+ios/chrome/browser/follow/model/follow_browser_agent.h",
+    "+ios/chrome/browser/reader_mode/model",
     "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
     "+ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h",
     "+ios/chrome/browser/intents/model/user_activity_browser_agent.h",

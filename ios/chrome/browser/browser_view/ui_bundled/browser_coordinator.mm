@@ -167,6 +167,7 @@
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
@@ -2628,22 +2629,6 @@ enum class ToolbarKind {
 #pragma mark - ReaderModeCommands
 
 - (void)showReaderMode {
-  web::WebState* activeWebState = self.activeWebState;
-  if (!activeWebState) {
-    return;
-  }
-  ReaderModeTabHelper* tabHelper =
-      ReaderModeTabHelper::FromWebState(activeWebState);
-  if (!tabHelper) {
-    return;
-  }
-  if (!tabHelper->IsActive()) {
-    // If Reader mode is not active yet in this tab, activate it first. When the
-    // distilled page is ready, -showReaderMode will be called again and the
-    // Reader mode UI can be presented.
-    tabHelper->SetActive(true);
-    return;
-  }
   if (_readerModeCoordinator) {
     // If the Reader mode UI is already presented then there is nothing to do.
     return;
@@ -2655,46 +2640,12 @@ enum class ToolbarKind {
 }
 
 - (void)hideReaderMode {
-  web::WebState* activeWebState = self.activeWebState;
-  if (!activeWebState) {
-    return;
-  }
-  ReaderModeTabHelper* tabHelper =
-      ReaderModeTabHelper::FromWebState(activeWebState);
-  if (!tabHelper) {
-    return;
-  }
-  if (tabHelper->IsActive()) {
-    // If Reader mode is active in this tab, deactivate it first. When it has
-    // been deactivated, -hideReaderMode will be called again and the Reader
-    // mode UI can be dismissed.
-    tabHelper->SetActive(false);
-    return;
-  }
   if (!_readerModeCoordinator) {
     // If the Reader mode UI is already dismissed then there is nothing to do.
     return;
   }
   [_readerModeCoordinator stop];
   _readerModeCoordinator = nil;
-}
-
-- (void)toggleReaderMode {
-  web::WebState* activeWebState = self.activeWebState;
-  if (!activeWebState) {
-    return;
-  }
-  ReaderModeTabHelper* tabHelper =
-      ReaderModeTabHelper::FromWebState(activeWebState);
-  if (!tabHelper) {
-    return;
-  }
-  // If Reader mode is active in the current tab, hide it. Otherwise, show it.
-  if (tabHelper->IsActive()) {
-    [self hideReaderMode];
-  } else {
-    [self showReaderMode];
-  }
 }
 
 #pragma mark - FindInPageCommands
@@ -3211,6 +3162,13 @@ enum class ToolbarKind {
             static_cast<id<SnackbarCommands>>(commandDispatcher),
             HandlerForProtocol(commandDispatcher, FeedCommands));
   }
+
+  ReaderModeBrowserAgent* readerModeBrowserAgent =
+      ReaderModeBrowserAgent::FromBrowser(self.browser);
+  if (readerModeBrowserAgent) {
+    readerModeBrowserAgent->SetReaderModeHandler(HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ReaderModeCommands));
+  }
 }
 
 // Installs delegates for self.profile
@@ -3245,6 +3203,12 @@ enum class ToolbarKind {
 
   if (FollowBrowserAgent::FromBrowser(self.browser)) {
     FollowBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
+  }
+
+  ReaderModeBrowserAgent* readerModeBrowserAgent =
+      ReaderModeBrowserAgent::FromBrowser(self.browser);
+  if (readerModeBrowserAgent) {
+    readerModeBrowserAgent->SetReaderModeHandler(nil);
   }
 }
 
