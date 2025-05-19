@@ -354,8 +354,9 @@ TEST_F(
       })();
     });
 
+// TODO(crbug.com/417555323): Test is flaky.
 TEST_F(
-    'MagnifierE2ETest', 'ScreenMagnifierSelectToSpeakFollowingPref',
+    'MagnifierE2ETest', 'DISABLED_ScreenMagnifierSelectToSpeakFollowingPref',
     function() {
       this.newCallback(async () => {
         // Disable select to speak following for full screen magnifier, and
