@@ -593,4 +593,32 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnTabGrid) {
   EXPECT_OCMOCK_VERIFY(application_commands_handler_);
 }
 
+// Test that soft lock is not required when Chrome was launched via an external
+// intent.
+TEST_F(IncognitoReauthSceneAgentTest, NoSoftLockOnExternalIntents) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_feature_enabled=*/true,
+                   /*soft_lock_pref_enabled=*/true);
+  scene_state_.startupHadExternalIntent = YES;
+
+  // Advance the clock and foreground the app.
+  AdvanceClock(kIOSSoftLockBackgroundThreshold.Get());
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_EQ(agent_.incognitoLockState, IncognitoLockState::kNone);
+}
+
+// Test that reauth is required when Chrome was launched via an external intent.
+TEST_F(IncognitoReauthSceneAgentTest, ReauthOnExternalIntents) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/true,
+                   /*soft_lock_feature_enabled=*/true,
+                   /*soft_lock_pref_enabled=*/false);
+  scene_state_.startupHadExternalIntent = YES;
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_EQ(agent_.incognitoLockState, IncognitoLockState::kReauth);
+}
+
 }  // namespace
