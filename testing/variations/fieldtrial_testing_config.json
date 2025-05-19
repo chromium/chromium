@@ -2795,9 +2795,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "WithSendBeforeUnload",
                     "params": {
-                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "DumpWithoutCrashing"
+                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
                     },
                     "enable_features": [
                         "AvoidUnnecessaryBeforeUnloadCheckSync"

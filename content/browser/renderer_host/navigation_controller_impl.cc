@@ -3344,6 +3344,11 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
       CHECK_EQ(different_document_loads.size(), 1u);
       CHECK(same_document_loads.empty());
       request = different_document_loads.at(0)->GetWeakPtr();
+      // Extend the life time of the pending NavigationEntry since the following
+      // Navigator::Navigate() might clear the pending NavigationEntry, and hit
+      // the CHECK_EQ() in the bottom of Navigator::Navigate().
+      std::unique_ptr<PendingEntryRef> pending_entry_ref =
+          ReferencePendingEntry();
       root->navigator().Navigate(std::move(different_document_loads.at(0)),
                                  ReloadType::NONE);
     } else {
