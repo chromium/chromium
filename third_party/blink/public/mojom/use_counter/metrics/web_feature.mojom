@@ -4887,6 +4887,7 @@ enum WebFeature {
   kScrollIntoViewContainerNearest = 5578,
   kPopoverShown = 5579,
   kInputParsedParentOptionOrOptgroup = 5580,
+  kNavigatorUAData_toJSON = 5581,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -6208,6 +6208,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5578" label="ScrollIntoViewContainerNearest"/>
   <int value="5579" label="PopoverShown"/>
   <int value="5580" label="InputParsedParentOptionOrOptgroup"/>
+  <int value="5581" label="NavigatorUAData_toJSON"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8247,6 +8248,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="338" label="Requestidlecallback"/>
   <int value="339" label="ClearSiteData"/>
   <int value="340" label="LinkRelExpect"/>
+  <int value="341" label="UaClientHints"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
