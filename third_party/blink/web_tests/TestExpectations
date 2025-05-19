@@ -9482,3 +9482,4 @@ crbug.com/417921517 [ Win11-arm64 ] external/wpt/css/css-ruby/ruby-text-combine-
 # Gardener 2025-05-19
 crbug.com/418345234 [ Win ] external/wpt/fetch/fetch-later/quota/max-payload.tentative.https.window.html [ Failure ]
 crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
+crbug.com/418362694 [ Debug Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Crash Timeout ]
