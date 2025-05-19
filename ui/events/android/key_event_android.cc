@@ -6,9 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "ui/events/android/event_flags_android.h"
-#include "ui/events/event.h"
-#include "ui/events/keycodes/keyboard_code_conversion_android.h"
-#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/android/event_type_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/events/keyevent_jni_headers/KeyEvent_jni.h"
@@ -28,21 +26,24 @@ KeyEventAndroid::KeyEventAndroid(JNIEnv* env, jobject event, int key_code)
   event_.Reset(env, event);
 }
 
-KeyEventAndroid::~KeyEventAndroid() {}
+KeyEventAndroid::KeyEventAndroid(const KeyEventAndroid& other) = default;
+KeyEventAndroid& KeyEventAndroid::KeyEventAndroid::operator=(
+    const KeyEventAndroid& other) = default;
+
+KeyEventAndroid::~KeyEventAndroid() = default;
 
 ScopedJavaLocalRef<jobject> KeyEventAndroid::GetJavaObject() const {
   return ScopedJavaLocalRef<jobject>(event_);
 }
 
-KeyEvent KeyEventAndroid::ToKeyEvent() const {
-  KeyboardCode key_code = KeyboardCodeFromAndroidKeyCode(key_code_);
-
+int KeyEventAndroid::MetaState() const {
   JNIEnv* env = AttachCurrentThread();
-  jint android_meta_state =
-      JNI_KeyEvent::Java_KeyEvent_getMetaState(env, event_);
-  EventFlags modifiers = EventFlagsFromAndroidMetaState(android_meta_state);
+  return JNI_KeyEvent::Java_KeyEvent_getMetaState(env, event_);
+}
 
-  return KeyEvent(EventType::kKeyPressed, key_code, modifiers);
+int KeyEventAndroid::Action() const {
+  JNIEnv* env = AttachCurrentThread();
+  return JNI_KeyEvent::Java_KeyEvent_getAction(env, event_);
 }
 
 }  // namespace ui

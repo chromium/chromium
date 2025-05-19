@@ -5,15 +5,15 @@
 #ifndef UI_EVENTS_ANDROID_EVENT_FLAGS_ANDROID_H_
 #define UI_EVENTS_ANDROID_EVENT_FLAGS_ANDROID_H_
 
-#include "ui/events/events_base_export.h"
+#include "ui/events/events_export.h"
 
 namespace ui {
 
 // Converts android meta state to event flags.
-EVENTS_BASE_EXPORT int EventFlagsFromAndroidMetaState(int meta_state);
+EVENTS_EXPORT int EventFlagsFromAndroidMetaState(int meta_state);
 
 // Converts android button state to event flags.
-EVENTS_BASE_EXPORT int EventFlagsFromAndroidButtonState(int button_state);
+EVENTS_EXPORT int EventFlagsFromAndroidButtonState(int button_state);
 
 }  // namespace ui
 

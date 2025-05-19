@@ -94,6 +94,37 @@ source_set("platform_event") {
   sources = [ "platform_event.h" ]
 
   public_deps = [ "//base" ]
+
+  if (is_android) {
+    public_deps += [ ":platform_event_android" ]
+  }
+}
+
+if (is_android) {
+  source_set("platform_event_android") {
+    sources = [
+      "android/event_flags_android.cc",
+      "android/event_flags_android.h",
+      "android/event_type_android.cc",
+      "android/event_type_android.h",
+      "android/key_event_android.cc",
+      "android/key_event_android.h",
+      "android/platform_event_android.cc",
+      "android/platform_event_android.h",
+
+      # Allow this target to include events_export.h without depending on the
+      # events target (which would be circular).
+      "events_export.h",
+    ]
+
+    deps = [
+      ":event_constants",
+      ":keyevent_jni_headers",
+      ":motionevent_jni_headers",
+      "//base",
+      "//ui/events/types:headers",
+    ]
+  }
 }
 
 component("events_base") {
@@ -123,6 +154,13 @@ component("events_base") {
     "pointer_details.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "keycodes/keyboard_code_conversion_android.cc",
+      "keycodes/keyboard_code_conversion_android.h",
+    ]
+  }
+
   if (is_win) {
     sources += [
       "keycodes/keyboard_code_conversion_win.cc",
@@ -144,16 +182,6 @@ component("events_base") {
     "//ui/events/types:headers",
     "//ui/gfx/geometry",
   ]
-
-  if (is_android) {
-    sources += [
-      "android/event_flags_android.cc",
-      "android/event_flags_android.h",
-      "keycodes/keyboard_code_conversion_android.cc",
-      "keycodes/keyboard_code_conversion_android.h",
-    ]
-    deps += [ ":motionevent_jni_headers" ]
-  }
 
   if (is_mac) {
     sources += [
@@ -360,7 +388,7 @@ component("events") {
     ]
   }
 
-  if (is_win || is_apple || use_ozone) {
+  if (is_win || is_apple || use_ozone || is_android) {
     sources -= [ "events_stub.cc" ]
   }
 
@@ -370,7 +398,6 @@ component("events") {
       "android/event_handler_android.h",
       "android/gesture_event_android.h",
       "android/gesture_event_type.h",
-      "android/key_event_android.h",
       "android/key_event_utils.h",
       "android/motion_event_android.h",
       "android/motion_event_android_java.h",
@@ -383,8 +410,8 @@ component("events") {
     sources += [
       "android/drag_event_android.cc",
       "android/event_handler_android.cc",
+      "android/events_android.cc",
       "android/gesture_event_android.cc",
-      "android/key_event_android.cc",
       "android/key_event_utils.cc",
       "android/motion_event_android.cc",
       "android/motion_event_android_java.cc",

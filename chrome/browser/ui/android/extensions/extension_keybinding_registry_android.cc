@@ -19,6 +19,7 @@
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/platform_event.h"
 
 ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
     content::BrowserContext* context,
@@ -82,9 +83,8 @@ jboolean ExtensionKeybindingRegistryAndroid::HandleKeyEvent(
     return false;
   }
 
-  ui::KeyEventAndroid native_key_event(env, java_key_event);
-  ui::KeyEvent key_event = native_key_event.ToKeyEvent();
-  ui::Accelerator accelerator(key_event);
+  ui::PlatformEvent native_event((ui::KeyEventAndroid(env, java_key_event)));
+  ui::Accelerator accelerator((ui::KeyEvent(native_event)));
 
   if (!active_accelerators_.contains(accelerator)) {
     return false;
