@@ -435,8 +435,9 @@ void BaseSearchProviderTest::RunTest(TestData* cases,
     input.set_prefer_keyword(prefer_keyword);
     provider_->Start(input, false);
     matches = provider_->matches();
-    SCOPED_TRACE(u"Input was: " + cases[i].input + u"; prefer_keyword was: " +
-                 (prefer_keyword ? u"true" : u"false"));
+    SCOPED_TRACE(
+        base::StrCat({u"Input was: ", cases[i].input, u"; prefer_keyword was: ",
+                      base::ASCIIToUTF16(base::ToString(prefer_keyword))}));
     EXPECT_EQ(cases[i].num_results, matches.size());
     if (matches.size() == cases[i].num_results) {
       for (size_t j = 0; j < cases[i].num_results; ++j) {
@@ -605,14 +606,14 @@ void BaseSearchProviderTest::CheckMatches(
   SCOPED_TRACE(description);
   // Ensure that the returned matches equal the expectations.
   for (; i < matches.size(); ++i) {
-    SCOPED_TRACE(" Case # " + base::NumberToString(i));
+    SCOPED_TRACE(base::StrCat({" Case # ", base::NumberToString(i)}));
     EXPECT_EQ(ASCIIToUTF16(expected_matches[i].contents), matches[i].contents);
     EXPECT_EQ(expected_matches[i].allowed_to_be_default_match,
               matches[i].allowed_to_be_default_match);
   }
   // Ensure that no expected matches are missing.
   for (; i < num_expected_matches; ++i) {
-    SCOPED_TRACE(" Case # " + base::NumberToString(i));
+    SCOPED_TRACE(base::StrCat({" Case # ", base::NumberToString(i)}));
     EXPECT_EQ(kNotApplicable, expected_matches[i].contents);
   }
 }
@@ -776,7 +777,7 @@ TEST_F(SearchProviderTest, HonorPreventInlineAutocomplete) {
 // is queried as well as URLFetchers getting created.
 TEST_F(SearchProviderTest, QueryKeywordProvider) {
   std::u16string term = keyword_term_.substr(0, keyword_term_.length() - 1);
-  QueryForInput(u"k " + term, false, false);
+  QueryForInput(base::StrCat({u"k ", term}), false, false);
 
   // Make sure the default providers suggest service was queried.
   EXPECT_TRUE(
@@ -809,7 +810,7 @@ TEST_F(SearchProviderTest, QueryKeywordProvider) {
   EXPECT_FALSE(match.keyword.empty());
 
   // The fill into edit should contain the keyword.
-  EXPECT_EQ(keyword_t_url_->keyword() + u' ' + keyword_term_,
+  EXPECT_EQ(base::StrCat({keyword_t_url_->keyword(), u" ", keyword_term_}),
             match.fill_into_edit);
 }
 
@@ -860,7 +861,7 @@ TEST_F(SearchProviderTest, SendDataToSuggestAtAppropriateTimes) {
   };
 
   for (auto& test_case : cases) {
-    SCOPED_TRACE("for input=" + test_case.input);
+    SCOPED_TRACE(base::StrCat({"for input=", test_case.input}));
     QueryForInput(ASCIIToUTF16(test_case.input), false, false);
     // Make sure the default provider's suggest service was or was not queried
     // as appropriate.
@@ -871,7 +872,8 @@ TEST_F(SearchProviderTest, SendDataToSuggestAtAppropriateTimes) {
 
     // Send the same input with an explicitly invoked keyword.  In all cases,
     // it's okay to send the request to the keyword suggest server.
-    QueryForInput(u"k " + ASCIIToUTF16(test_case.input), false, false);
+    QueryForInput(base::StrCat({u"k ", ASCIIToUTF16(test_case.input)}), false,
+                  false);
     EXPECT_TRUE(test_url_loader_factory_.IsPending(base::StrCat(
         {"http://suggest_keyword/", base::EscapePath(test_case.input)})));
   }
@@ -1297,10 +1299,10 @@ TEST_F(SearchProviderTest, DefaultProviderNoSuggestRelevanceInKeywordMode) {
                                               test_case.keyword_provider_json);
     }
 
-    SCOPED_TRACE(
-        "for input with default_provider_json=" +
-        test_case.default_provider_json +
-        " and keyword_provider_json=" + test_case.keyword_provider_json);
+    SCOPED_TRACE(base::StrCat(
+        {"for input with default_provider_json=",
+         test_case.default_provider_json,
+         " and keyword_provider_json=", test_case.keyword_provider_json}));
     const ACMatches& matches = provider_->matches();
     ASSERT_LE(matches.size(), std::size(test_case.matches));
     size_t j = 0;
@@ -1682,7 +1684,8 @@ TEST_F(SearchProviderTest, DefaultFetcherSuggestRelevance) {
                                               std::string());
     }
 
-    const std::string description = "for input with json=" + test_case.json;
+    const std::string description =
+        base::StrCat({"for input with json=", test_case.json});
     CheckMatches(description, std::size(test_case.matches), test_case.matches,
                  provider_->matches());
   }
@@ -2098,7 +2101,7 @@ TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
       RunTillProviderDone();
     }
 
-    SCOPED_TRACE("for input with json=" + cases[i].json);
+    SCOPED_TRACE(base::StrCat({"for input with json=", cases[i].json}));
     const ACMatches& matches = provider_->matches();
     ASSERT_FALSE(matches.empty());
     // Find the first match that's allowed to be the default match and check
@@ -2120,7 +2123,7 @@ TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
     }
     // Ensure that no expected matches are missing.
     for (; j < std::size(cases[i].matches); ++j) {
-      SCOPED_TRACE(" Case # " + base::NumberToString(i));
+      SCOPED_TRACE(base::StrCat({" Case # ", base::NumberToString(i)}));
       EXPECT_EQ(kNotApplicable, cases[i].matches[j].contents);
     }
   }
@@ -2327,26 +2330,25 @@ TEST_F(SearchProviderTest, DontInlineAutocompleteAsynchronously) {
 
     // Verify that the matches after the asynchronous results are as expected.
     std::string description =
-        "first asynchronous response for input with "
-        "first_json=" +
-        test_case.first_json;
+        base::StrCat({"first asynchronous response for input with first_json=",
+                      test_case.first_json});
     CheckMatches(description, std::size(test_case.first_async_matches),
                  test_case.first_async_matches, provider_->matches());
 
     // Then, send the query "ab" and check the synchronous matches.
     description =
-        "synchronous response after the first keystroke after input "
-        "with first_json=" +
-        test_case.first_json;
+        base::StrCat({"synchronous response after the first keystroke after "
+                      "input with first_json=",
+                      test_case.first_json});
     QueryForInput(u"ab", false, false);
     CheckMatches(description, std::size(test_case.sync_matches),
                  test_case.sync_matches, provider_->matches());
 
     // Finally, get the provided JSON response, |second_json|, and verify the
     // matches after the second asynchronous response are as expected.
-    description = "second asynchronous response after input with first_json=" +
-                  test_case.first_json +
-                  " and second_json=" + test_case.second_json;
+    description = base::StrCat(
+        {"second asynchronous response after input with first_json=",
+         test_case.first_json, " and second_json=", test_case.second_json});
     ASSERT_TRUE(test_url_loader_factory_.IsPending("https://defaultturl2/ab"));
     test_url_loader_factory_.AddResponse("https://defaultturl2/ab",
                                          test_case.second_json);
@@ -2402,18 +2404,16 @@ TEST_F(SearchProviderTest, DontCacheCalculatorSuggestions) {
                                             std::string());
 
     // Verify that the matches after the asynchronous results are as expected.
-    std::string description =
-        "first asynchronous response for input with "
-        "json=" +
-        test_case.json;
+    std::string description = base::StrCat(
+        {"first asynchronous response for input with json=", test_case.json});
     CheckMatches(description, std::size(test_case.async_matches),
                  test_case.async_matches, provider_->matches());
 
     // Then, send the query "1+23" and check the synchronous matches.
     description =
-        "synchronous response after the first keystroke after input "
-        "with json=" +
-        test_case.json;
+        base::StrCat({"synchronous response after the first keystroke after "
+                      "input with json=",
+                      test_case.json});
     QueryForInput(u"1+23", false, false);
     CheckMatches(description, std::size(test_case.sync_matches),
                  test_case.sync_matches, provider_->matches());
@@ -2434,7 +2434,7 @@ TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
   ASSERT_EQ(u"term1", term1_);
   std::u16string term = term1_.substr(0, term1_.length() - 1);
 
-  AddSearchToHistory(default_t_url_, term + u"2", 2);
+  AddSearchToHistory(default_t_url_, base::StrCat({term, u"2"}), 2);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   struct Cases {
@@ -2495,7 +2495,8 @@ TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
     QueryForInputAndWaitForFetcherResponses(cases[i].input, false,
                                             cases[i].json, std::string());
 
-    const std::string description = "for input with json=" + cases[i].json;
+    const std::string description =
+        base::StrCat({"for input with json=", cases[i].json});
     const ACMatches& matches = provider_->matches();
 
     // Ensure no extra matches are present.
@@ -2620,7 +2621,8 @@ TEST_F(SearchProviderTest, DefaultProviderSuggestRelevanceScoringUrlInput) {
           ASCIIToUTF16(test_case.input), false, test_case.json, std::string());
     }
 
-    SCOPED_TRACE("input=" + test_case.input + " json=" + test_case.json);
+    SCOPED_TRACE(
+        base::StrCat({"input=", test_case.input, " json=", test_case.json}));
     size_t j = 0;
     const ACMatches& matches = provider_->matches();
     ASSERT_LE(matches.size(), std::size(test_case.output));
@@ -3251,14 +3253,16 @@ TEST_F(SearchProviderTest, ParseEntitySuggestion) {
     const ACMatches& matches = provider_->matches();
     ASSERT_FALSE(matches.empty());
 
-    SCOPED_TRACE("for input with json = " + test_case.response_json);
+    SCOPED_TRACE(
+        base::StrCat({"for input with json = ", test_case.response_json}));
 
     ASSERT_LE(matches.size(), std::size(test_case.matches));
     size_t j = 0;
     // Ensure that the returned matches equal the expectations.
     for (; j < matches.size(); ++j) {
       const Match& match = test_case.matches[j];
-      SCOPED_TRACE(" and match index: " + base::NumberToString(j));
+      SCOPED_TRACE(
+          base::StrCat({" and match index: ", base::NumberToString(j)}));
       EXPECT_EQ(match.contents, base::UTF16ToUTF8(matches[j].contents));
       EXPECT_EQ(match.description, base::UTF16ToUTF8(matches[j].description));
       EXPECT_EQ(match.query_params,
@@ -3269,7 +3273,8 @@ TEST_F(SearchProviderTest, ParseEntitySuggestion) {
     }
     // Ensure that no expected matches are missing.
     for (; j < std::size(test_case.matches); ++j) {
-      SCOPED_TRACE(" and match index: " + base::NumberToString(j));
+      SCOPED_TRACE(
+          base::StrCat({" and match index: ", base::NumberToString(j)}));
       EXPECT_EQ(test_case.matches[j].contents, kNotApplicable);
       EXPECT_EQ(test_case.matches[j].description, kNotApplicable);
       EXPECT_EQ(test_case.matches[j].query_params, kNotApplicable);
@@ -3372,8 +3377,8 @@ TEST_F(SearchProviderTest, PrefetchMetadataParsing) {
             ? test_case.keyword_provider_response_json
             : std::string());
 
-    const std::string description =
-        "for input with json =" + test_case.default_provider_response_json;
+    const std::string description = base::StrCat(
+        {"for input with json =", test_case.default_provider_response_json});
     const ACMatches& matches = provider_->matches();
     // The top match must inline and score as highly as calculated verbatim.
     ASSERT_FALSE(matches.empty());
@@ -3476,18 +3481,18 @@ TEST_F(SearchProviderTest, XSSIGuardedJSONParsing_ValidResponses) {
     ASSERT_FALSE(matches.empty());
     EXPECT_GE(matches[0].relevance, 1300);
 
-    SCOPED_TRACE("for case: " + base::NumberToString(i));
+    SCOPED_TRACE(base::StrCat({"for case: ", base::NumberToString(i)}));
     ASSERT_LE(matches.size(), std::size(cases[i].matches));
     size_t j = 0;
     // Ensure that the returned matches equal the expectations.
     for (; j < matches.size(); ++j) {
-      SCOPED_TRACE("and match: " + base::NumberToString(j));
+      SCOPED_TRACE(base::StrCat({"and match: ", base::NumberToString(j)}));
       EXPECT_EQ(cases[i].matches[j].contents,
                 base::UTF16ToUTF8(matches[j].contents));
       EXPECT_EQ(cases[i].matches[j].type, matches[j].type);
     }
     for (; j < std::size(cases[i].matches); ++j) {
-      SCOPED_TRACE("and match: " + base::NumberToString(j));
+      SCOPED_TRACE(base::StrCat({"and match: ", base::NumberToString(j)}));
       EXPECT_EQ(cases[i].matches[j].contents, kNotApplicable);
       EXPECT_EQ(cases[i].matches[j].type, AutocompleteMatchType::NUM_TYPES);
     }
@@ -3581,11 +3586,13 @@ TEST_F(SearchProviderTest, ParseDeletionUrl) {
     const ACMatches& matches = provider_->matches();
     ASSERT_FALSE(matches.empty());
 
-    SCOPED_TRACE("for input with json = " + test_case.response_json);
+    SCOPED_TRACE(
+        base::StrCat({"for input with json = ", test_case.response_json}));
 
     for (size_t j = 0; j < matches.size(); ++j) {
       const Match& match = test_case.matches[j];
-      SCOPED_TRACE(" and match index: " + base::NumberToString(j));
+      SCOPED_TRACE(
+          base::StrCat({" and match index: ", base::NumberToString(j)}));
       EXPECT_EQ(match.contents, base::UTF16ToUTF8(matches[j].contents));
       EXPECT_EQ(match.deletion_url,
                 matches[j].GetAdditionalInfoForDebugging("deletion_url"));
