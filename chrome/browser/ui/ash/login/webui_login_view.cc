@@ -171,6 +171,7 @@ void WebUILoginView::Init() {
 
 void WebUILoginView::RequestFocus() {
   web_view_->RequestFocus();
+  web_view_->web_contents()->SetInitialFocus();
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -358,7 +359,8 @@ bool WebUILoginView::PreHandleGestureEvent(
 }
 
 void WebUILoginView::OnFocusLeavingSystemTray(bool reverse) {
-  AboutToRequestFocusFromTabTraversal(reverse);
+  web_view_->RequestFocus();
+  web_view_->web_contents()->FocusThroughTabTraversal(reverse);
 }
 
 void WebUILoginView::OnSystemTrayBubbleShown() {}

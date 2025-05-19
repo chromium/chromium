@@ -41,6 +41,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -551,6 +552,7 @@ bool EnrollmentScreen::HandleAccelerator(LoginAcceleratorAction action) {
       ShowSkipEnrollmentDialogue();
       return true;
     } else {
+      LoginDisplayHost::default_host()->GetWebUILoginView()->RequestFocus();
       OnCancel();
       return true;
     }
