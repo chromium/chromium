@@ -480,10 +480,15 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        rebuildPasswordLists();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mExportFlow.onResume();
-        rebuildPasswordLists();
     }
 
     @Override
@@ -748,5 +753,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
 
     Toolbar getToolbarForTesting() {
         return getActivity().findViewById(R.id.action_bar);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

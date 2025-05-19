@@ -48,4 +48,9 @@ public class BlockedCredentialFragmentView extends CredentialEntryFragmentViewBa
         TextView urlOrAppText = assumeNonNull(getView()).findViewById(R.id.url_or_app);
         urlOrAppText.setText(urlOrApp);
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

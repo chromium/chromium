@@ -218,4 +218,9 @@ public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase 
                             textField.getPaddingBottom());
                 });
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

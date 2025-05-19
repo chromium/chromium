@@ -108,4 +108,9 @@ public class FederatedCredentialFragmentView extends CredentialEntryFragmentView
         TextView passwordText = assumeNonNull(getView()).findViewById(R.id.password);
         passwordText.setText(getString(R.string.password_via_federation, federatedOrigin));
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

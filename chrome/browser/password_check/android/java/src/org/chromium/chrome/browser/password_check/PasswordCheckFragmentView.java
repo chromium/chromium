@@ -135,4 +135,9 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat
     int getReferrer() {
         return mPasswordCheckReferrer;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }
