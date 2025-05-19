@@ -688,11 +688,7 @@ public class StatusMediator
 
     @Override
     public void onStatusChanged(
-            boolean controlsVisible,
-            boolean protectionsOn,
-            int enforcement,
-            int blockingStatus,
-            long expiration) {
+            int cookieControlsState, int enforcement, int blockingStatus, long expiration) {
         mBlockingStatus3pcd = blockingStatus;
     }
 

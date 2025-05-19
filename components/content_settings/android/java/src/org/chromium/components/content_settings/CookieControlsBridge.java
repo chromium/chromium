@@ -101,14 +101,11 @@ public class CookieControlsBridge {
 
     @CalledByNative
     private void onStatusChanged(
-            boolean controlsVisible,
-            boolean protectionsOn,
+            @CookieControlsState int controlsState,
             @CookieControlsEnforcement int enforcement,
             @CookieBlocking3pcdStatus int blockingStatus,
             long expiration) {
-        // Old cookies API.
-        mObserver.onStatusChanged(
-                controlsVisible, protectionsOn, enforcement, blockingStatus, expiration);
+        mObserver.onStatusChanged(controlsState, enforcement, blockingStatus, expiration);
     }
 
     @CalledByNative

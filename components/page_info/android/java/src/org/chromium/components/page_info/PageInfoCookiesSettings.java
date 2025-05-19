@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.components.content_settings.CookieControlsState;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -234,9 +235,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         .show();
     }
 
-    public void setCookieStatus(
-            boolean controlsVisible,
-            boolean protectionsOn,
+    public void set3pcsStatus(
+            @CookieControlsState int controlsState,
             @CookieControlsEnforcement int enforcement,
             long expiration) {
         if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
@@ -260,20 +260,21 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             updateContentDescriptionsForA11y();
             return;
         }
+        boolean visible = controlsState != CookieControlsState.HIDDEN;
+        mCookieSwitch.setVisible(visible);
+        mThirdPartyCookiesTitle.setVisible(visible);
+        mThirdPartyCookiesSummary.setVisible(visible);
 
-        mCookieSwitch.setVisible(controlsVisible);
-        mThirdPartyCookiesTitle.setVisible(controlsVisible);
-        mThirdPartyCookiesSummary.setVisible(controlsVisible);
+        if (!visible) return;
 
-        if (!controlsVisible) return;
-
+        boolean cookiesBlocked = controlsState == CookieControlsState.BLOCKED3PC;
         mCookieSwitch.setIcon(
                 SettingsUtils.getTintedIcon(
                         getContext(),
-                        protectionsOn
+                        cookiesBlocked
                                 ? R.drawable.ic_visibility_off_black
                                 : R.drawable.ic_visibility_black));
-        mCookieSwitch.setChecked(!protectionsOn);
+        mCookieSwitch.setChecked(!cookiesBlocked);
         mCookieSwitch.setEnabled(enforcement == CookieControlsEnforcement.NO_ENFORCEMENT);
         mCookieSwitch.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(
@@ -293,7 +294,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             mOnFeedbackClicked.onResult(this.getActivity());
                         });
 
-        if (protectionsOn) {
+        if (cookiesBlocked) {
             mThirdPartyCookiesTitle.setTitle(
                     getString(R.string.page_info_cookies_site_not_working_title));
             int resId =
@@ -329,6 +330,23 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         }
         updateContentDescriptionsForA11y();
         updateCookieSwitch();
+    }
+
+    public void setStatus(
+            @CookieControlsState int controlsState,
+            @CookieControlsEnforcement int enforcement,
+            long expiration) {
+        switch (controlsState) {
+            case CookieControlsState.BLOCKED3PC:
+            case CookieControlsState.ALLOWED3PC:
+            case CookieControlsState.HIDDEN:
+                set3pcsStatus(controlsState, enforcement, expiration);
+                break;
+            case CookieControlsState.PAUSED_TP:
+            case CookieControlsState.ACTIVE_TP:
+                // TODO(crbug.com/388294499): Add support for TP UI.
+                break;
+        }
     }
 
     public void setStorageUsage(long storageUsage) {

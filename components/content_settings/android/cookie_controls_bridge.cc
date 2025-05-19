@@ -75,12 +75,8 @@ void CookieControlsBridge::OnStatusChanged(
   expiration_ = expiration;
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  // TODO(crbug.com/388294499): Add support for CookieControlsState on Clank.
   Java_CookieControlsBridge_onStatusChanged(
-      env, jobject_,
-      static_cast<bool>(controls_state_ != CookieControlsState::kHidden),
-      static_cast<bool>(controls_state_ == CookieControlsState::kActiveTp ||
-                        controls_state_ == CookieControlsState::kBlocked3pc),
+      env, jobject_, static_cast<int>(controls_state_),
       static_cast<int>(enforcement_), static_cast<int>(blocking_status),
       expiration.InMillisecondsSinceUnixEpoch());
 }

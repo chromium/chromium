@@ -183,8 +183,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private CookieControlsBridge mCookieControlsBridge;
     private boolean mShouldHighlightCookieControlsIcon;
-    private boolean mCookieControlsVisible;
-    private boolean mThirdPartyCookiesBlocked;
     private int mBlockingStatus3pcd;
 
     private final Handler mTaskHandler = new Handler();
@@ -1747,13 +1745,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void onStatusChanged(
-                boolean controlsVisible,
-                boolean protectionsOn,
-                int enforcement,
-                int blockingStatus,
-                long expiration) {
-            mCookieControlsVisible = controlsVisible;
-            mThirdPartyCookiesBlocked = protectionsOn;
+                int controlsState, int enforcement, int blockingStatus, long expiration) {
             mBlockingStatus3pcd = blockingStatus;
         }
 
@@ -2014,6 +2006,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void onPageLoadStopped() {
+            if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
+                return;
+            }
             if (mPageInfoIphController == null) {
                 Tab currentTab = getCurrentTab();
                 if (currentTab == null) return;
@@ -2027,10 +2022,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                         new Handler(Looper.getMainLooper())),
                                 getSecurityIconView());
             }
-            if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
-                if (!mCookieControlsVisible || !mThirdPartyCookiesBlocked) return;
-                // TODO(b/332761678): Add reminder IPH here.
-            } else if (mShouldHighlightCookieControlsIcon) {
+            if (mShouldHighlightCookieControlsIcon) {
                 mPageInfoIphController.showCookieControlsIph(
                         COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT, R.string.cookie_controls_iph_message);
                 animateCookieControlsIcon();
