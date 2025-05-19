@@ -52,6 +52,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -141,6 +142,7 @@ public class MultiInstanceManagerApi31UnitTest {
     private static final GURL URL3 = JUnitTestGURLs.URL_3;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
@@ -195,6 +197,17 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+
+    private MultiInstanceManagerApi31 createMultiInstanceManager(Activity activity) {
+        return new TestMultiInstanceManagerApi31(
+                activity,
+                mTabModelOrchestratorSupplier,
+                mMultiWindowModeStateDispatcher,
+                mActivityLifecycleDispatcher,
+                mModalDialogManagerSupplier,
+                mMenuOrKeyboardActionController,
+                mDesktopWindowStateManagerSupplier);
+    }
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
         // Running tasks containing Chrome activity ~ ActivityManager.getAppTasks()
@@ -620,7 +633,7 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstanceManagerApi31.writeLastAccessedTime(1);
         // These two writes can often use the same timestamp, and cause the result to be random.
         // Wait for the next millisecond to guarantee this doesn't happen.
-        Thread.sleep(1);
+        mFakeTimeTestRule.advanceMillis(1);
         MultiInstanceManagerApi31.writeLastAccessedTime(2); // Accessed most recently.
 
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59));
@@ -628,6 +641,29 @@ public class MultiInstanceManagerApi31UnitTest {
 
         MultiInstanceManagerApi31.writeLastAccessedTime(1); // instance ID 1 is now the MRU.
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask60));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testGetInstanceInfo_closesInstancesOlderThanSixMonths() {
+        MultiWindowTestUtils.enableMultiInstance();
+        // Setting up two additional Multi-instance managers; mMultiInstanceManager already exists.
+        MultiInstanceManagerApi31 multiInstanceManager1 =
+                createMultiInstanceManager(mActivityTask57);
+        MultiInstanceManagerApi31 multiInstanceManager2 =
+                createMultiInstanceManager(mActivityTask58);
+
+        // Current activity is mActivityTask56, managed by mMultiInstanceManager.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Advancing time by well over six months.
+        mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 5000000);
+        // Closing the two other instances that are not managing the current activity.
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+        verify(mMultiInstanceManager, times(2)).closeInstance(anyInt(), anyInt());
     }
 
     @Test
@@ -1447,6 +1483,8 @@ public class MultiInstanceManagerApi31UnitTest {
         // Simulate creation of activity |mTabbedActivityTask62| with index 0 and
         // |mTabbedActivityTask63| with index 1.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        // Advancing time by at least 1ms apart to record different instance access times.
+        mFakeTimeTestRule.advanceMillis(1);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
 
         long accessTime0 = MultiInstanceManagerApi31.readLastAccessedTime(0);
@@ -1506,7 +1544,9 @@ public class MultiInstanceManagerApi31UnitTest {
         multiInstanceManager0.onTopResumedActivityChanged(false);
         multiInstanceManager1.onTopResumedActivityChanged(true);
         long instance1CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(1);
-
+        // Advance time by 1ms to record a different access time for the instances when the top
+        // resumed activity changes.
+        mFakeTimeTestRule.advanceMillis(1);
         // Resume instance0, so it becomes the top resumed activity.
         multiInstanceManager0.onTopResumedActivityChanged(true);
         multiInstanceManager1.onTopResumedActivityChanged(false);

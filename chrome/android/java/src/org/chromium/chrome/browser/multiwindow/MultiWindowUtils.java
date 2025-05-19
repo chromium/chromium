@@ -33,6 +33,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -685,12 +686,13 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Write the time this instance is accessed.
+     *
      * @param index Instance ID
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void writeLastAccessedTime(int index) {
         ChromeSharedPreferences.getInstance()
-                .writeLong(lastAccessedTimeKey(index), System.currentTimeMillis());
+                .writeLong(lastAccessedTimeKey(index), TimeUtils.currentTimeMillis());
     }
 
     @VisibleForTesting
@@ -732,7 +734,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime == 0) {
                         RecordUserAction.record("Android.MultiWindowMode.Enter2");
-                        long current = System.currentTimeMillis();
+                        long current = TimeUtils.currentTimeMillis();
                         prefs.writeLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME, current);
                     }
                 } else {
@@ -743,7 +745,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                     SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime > 0) {
-                        long current = System.currentTimeMillis();
+                        long current = TimeUtils.currentTimeMillis();
                         RecordUserAction.record("Android.MultiWindowMode.Exit2");
                         RecordHistogram.recordLongTimesHistogram(
                                 "Android.MultiWindowMode.TotalDuration", current - startTime);

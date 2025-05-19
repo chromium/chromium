@@ -32,6 +32,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -84,12 +85,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
     private static final String TAG = "MIMApi31";
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
-
+    /* package */ static final long SIX_MONTHS_MS = TimeUnit.DAYS.toMillis(6 * 30);
     private static final String EMPTY_DATA = "";
     private static MultiInstanceState sState;
 
@@ -413,8 +415,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     type = InstanceInfo.Type.ADJACENT;
                 }
             }
-
             int taskId = getTaskFromMap(i);
+            // It is generally assumed and expected that the last-accessed time for the current
+            // activity is already updated to a "current" time when this method is called. However,
+            // we will avoid closing the current instance explicitly to avoid an unexpected outcome
+            // if this is not the case.
+            if (ChromeFeatureList.sDisableInstanceLimit.isEnabled()
+                    && isOlderThanSixMonths(readLastAccessedTime(i))
+                    && type != InstanceInfo.Type.CURRENT) {
+                closeInstance(i, taskId);
+                continue;
+            }
             result.add(
                     new InstanceInfo(
                             i,
@@ -427,11 +438,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             readIncognitoSelected(i),
                             readLastAccessedTime(i)));
         }
-
         // Move the current instance always to the top of the list.
         assert currentItemPos != -1;
         if (currentItemPos != 0 && result.size() > 1) result.add(0, result.remove(currentItemPos));
         return result;
+    }
+
+    private boolean isOlderThanSixMonths(long timestampMillis) {
+        return (TimeUtils.currentTimeMillis() - timestampMillis) > SIX_MONTHS_MS;
     }
 
     @Override
