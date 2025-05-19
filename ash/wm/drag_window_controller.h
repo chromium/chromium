@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace aura {
 class Window;

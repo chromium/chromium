@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/arc_export.h"
 #include "components/exo/input_method_surface_manager.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 

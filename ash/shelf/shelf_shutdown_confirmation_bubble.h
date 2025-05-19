@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf_bubble.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"

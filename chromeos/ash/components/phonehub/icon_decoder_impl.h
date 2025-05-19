@@ -12,7 +12,6 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
-#include "ui/gfx/image/image.h"
 
 namespace ash::phonehub {
 

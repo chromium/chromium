@@ -8,7 +8,6 @@
 #include "ash/style/system_shadow.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 

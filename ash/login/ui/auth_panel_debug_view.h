@@ -12,7 +12,6 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/osauth/public/auth_attempt_consumer.h"
 #include "components/account_id/account_id.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
 namespace ash {

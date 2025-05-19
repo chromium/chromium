@@ -13,7 +13,6 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace ash {

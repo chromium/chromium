@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/font.h"
 #include "ui/views/style/typography.h"
 
 namespace ash {

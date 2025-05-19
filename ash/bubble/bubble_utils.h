@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/font.h"
 
 namespace ui {
 class LocatedEvent;
