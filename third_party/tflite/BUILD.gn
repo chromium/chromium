@@ -550,6 +550,7 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/fully_connected.cc",
     "src/tensorflow/lite/kernels/gather.cc",
     "src/tensorflow/lite/kernels/gather_nd.cc",
+    "src/tensorflow/lite/kernels/hadamard_rotation.cc",
     "src/tensorflow/lite/kernels/hashtable_lookup.cc",
     "src/tensorflow/lite/kernels/if.cc",
     "src/tensorflow/lite/kernels/kernel_util.cc",

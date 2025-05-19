@@ -186,7 +186,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-rminmax_x64",
     ":f32-rsum_avx-no-avx2-no-f16c-no-fma",
     ":f32-rsum_avx512f",
-    ":f32-rsum_sse-no-sse2",
+    ":f32-rsum_sse2-no-sse3",
     ":f32-rsum_x64",
     ":f32-spmm_sse-no-sse2",
     ":f32-spmm_x64",
@@ -260,8 +260,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-vrnd_x64",
     ":f32-vrsqrt_avx-no-avx2-no-f16c-no-fma",
     ":f32-vrsqrt_avx512f",
-    ":f32-vrsqrt_f16c-fma-no-avx2",
-    ":f32-vrsqrt_sse-no-sse2",
+    ":f32-vrsqrt_sse2-no-sse3",
     ":f32-vrsqrt_x64",
     ":f32-vsigmoid_avx-no-avx2-no-f16c-no-fma",
     ":f32-vsigmoid_avx512f",
@@ -276,8 +275,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-vsin_x64",
     ":f32-vsqrt_avx-no-avx2-no-f16c-no-fma",
     ":f32-vsqrt_avx512f",
-    ":f32-vsqrt_f16c-fma-no-avx2",
-    ":f32-vsqrt_sse-no-sse2",
+    ":f32-vsqrt_sse2-no-sse3",
     ":f32-vsqrt_x64",
     ":f32-vtanh_avx-no-avx2-no-f16c-no-fma",
     ":f32-vtanh_avx512f",
@@ -692,7 +690,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-rminmax_x64_standalone",
     ":f32-rsum_avx-no-avx2-no-f16c-no-fma_standalone",
     ":f32-rsum_avx512f_standalone",
-    ":f32-rsum_sse-no-sse2_standalone",
+    ":f32-rsum_sse2-no-sse3_standalone",
     ":f32-rsum_x64_standalone",
     ":f32-spmm_sse-no-sse2_standalone",
     ":f32-spmm_x64_standalone",
@@ -766,8 +764,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-vrnd_x64_standalone",
     ":f32-vrsqrt_avx-no-avx2-no-f16c-no-fma_standalone",
     ":f32-vrsqrt_avx512f_standalone",
-    ":f32-vrsqrt_f16c-fma-no-avx2_standalone",
-    ":f32-vrsqrt_sse-no-sse2_standalone",
+    ":f32-vrsqrt_sse2-no-sse3_standalone",
     ":f32-vrsqrt_x64_standalone",
     ":f32-vsigmoid_avx-no-avx2-no-f16c-no-fma_standalone",
     ":f32-vsigmoid_avx512f_standalone",
@@ -782,8 +779,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-vsin_x64_standalone",
     ":f32-vsqrt_avx-no-avx2-no-f16c-no-fma_standalone",
     ":f32-vsqrt_avx512f_standalone",
-    ":f32-vsqrt_f16c-fma-no-avx2_standalone",
-    ":f32-vsqrt_sse-no-sse2_standalone",
+    ":f32-vsqrt_sse2-no-sse3_standalone",
     ":f32-vsqrt_x64_standalone",
     ":f32-vtanh_avx-no-avx2-no-f16c-no-fma_standalone",
     ":f32-vtanh_avx512f_standalone",
@@ -5910,9 +5906,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/f32-gemm/gen/f32-gemm-1x4-minmax-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-relu-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-minmax-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-relu-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x4-minmax-scalar.c",
@@ -5943,9 +5936,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/f32-gemm/gen/f32-gemm-1x4-minmax-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-relu-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-1x4-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-minmax-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-relu-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x4-minmax-scalar.c",
@@ -6437,9 +6427,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/f32-igemm/gen/f32-igemm-1x4-minmax-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-relu-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-minmax-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-relu-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x4-minmax-scalar.c",
@@ -6470,9 +6457,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/f32-igemm/gen/f32-igemm-1x4-minmax-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-relu-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-1x4-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-minmax-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-relu-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x4-minmax-scalar.c",
@@ -7547,7 +7531,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -7572,7 +7555,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -7838,7 +7820,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -7863,7 +7844,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -8931,15 +8911,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("f32-rsum_sse-no-sse2") {
+  source_set("f32-rsum_sse2-no-sse3") {
     cflags = [
-      "-mno-sse2",
-      "-msse",
+      "-mno-sse3",
+      "-msse2",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rsum/gen/f32-rsum-sse-u16-acc4.c",
+      "src/src/f32-rsum/gen/f32-rsum-sse2-u16-acc4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -8957,15 +8937,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("f32-rsum_sse-no-sse2_standalone") {
+  source_set("f32-rsum_sse2-no-sse3_standalone") {
     cflags = [
-      "-mno-sse2",
-      "-msse",
+      "-mno-sse3",
+      "-msse2",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rsum/gen/f32-rsum-sse-u16-acc4.c",
+      "src/src/f32-rsum/gen/f32-rsum-sse2-u16-acc4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -10965,7 +10945,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u2.c",
       "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u4.c",
     ]
 
@@ -10989,7 +10968,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u2.c",
       "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u4.c",
     ]
 
@@ -12916,13 +12894,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -12946,13 +12920,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -12983,7 +12953,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx-rsqrt-u16.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx-rsqrt.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13011,7 +12982,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx-rsqrt-u16.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx-rsqrt.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13037,7 +13009,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx512f-rsqrt-u32.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx512f-rsqrt.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx512f-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13060,7 +13033,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx512f-rsqrt-u32.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx512f-rsqrt.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-avx512f-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13081,16 +13055,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("f32-vrsqrt_f16c-fma-no-avx2") {
+  source_set("f32-vrsqrt_sse2-no-sse3") {
     cflags = [
-      "-mf16c",
-      "-mfma",
-      "-mno-avx2",
+      "-mno-sse3",
+      "-msse2",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-fma3-rsqrt-u16.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13108,71 +13081,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("f32-vrsqrt_f16c-fma-no-avx2_standalone") {
+  source_set("f32-vrsqrt_sse2-no-sse3_standalone") {
     cflags = [
-      "-mf16c",
-      "-mfma",
-      "-mno-avx2",
+      "-mno-sse3",
+      "-msse2",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-fma3-rsqrt-u16.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
-  source_set("f32-vrsqrt_sse-no-sse2") {
-    cflags = [
-      "-mno-sse2",
-      "-msse",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse-rsqrt-u8.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set("f32-vrsqrt_sse-no-sse2_standalone") {
-    cflags = [
-      "-mno-sse2",
-      "-msse",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse-rsqrt-u8.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13199,7 +13116,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u1.c",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u4.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13223,7 +13140,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u1.c",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u4.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13847,7 +13764,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-avx-rsqrt-u16.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-avx-rsqrt.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-avx-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13875,7 +13793,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-avx-rsqrt-u16.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-avx-rsqrt.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-avx-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13901,7 +13820,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-avx512f-rsqrt-u16.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-avx512f-rsqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13924,7 +13843,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-avx512f-rsqrt-u16.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-avx512f-rsqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13945,16 +13864,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("f32-vsqrt_f16c-fma-no-avx2") {
+  source_set("f32-vsqrt_sse2-no-sse3") {
     cflags = [
-      "-mf16c",
-      "-mfma",
-      "-mno-avx2",
+      "-mno-sse3",
+      "-msse2",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-fma3-rsqrt-u16.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-sse2-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -13972,71 +13890,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("f32-vsqrt_f16c-fma-no-avx2_standalone") {
+  source_set("f32-vsqrt_sse2-no-sse3_standalone") {
     cflags = [
-      "-mf16c",
-      "-mfma",
-      "-mno-avx2",
+      "-mno-sse3",
+      "-msse2",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-fma3-rsqrt-u16.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
-  source_set("f32-vsqrt_sse-no-sse2") {
-    cflags = [
-      "-mno-sse2",
-      "-msse",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-sse-rsqrt-u12.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set("f32-vsqrt_sse-no-sse2_standalone") {
-    cflags = [
-      "-mno-sse2",
-      "-msse",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-sse-rsqrt-u12.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-sse2-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -14062,7 +13924,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt-u1.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -14085,7 +13947,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt-u1.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -17155,7 +17017,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x4-minmax-scalar.c",
-      "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x4-minmax-scalar.c",
     ]
 
@@ -17181,7 +17042,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x4-minmax-scalar.c",
-      "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x4-minmax-scalar.c",
     ]
 
@@ -17665,7 +17525,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x4-minmax-scalar.c",
-      "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x4-minmax-scalar.c",
     ]
 
@@ -17691,7 +17550,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x4-minmax-scalar.c",
-      "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x4-minmax-scalar.c",
     ]
 
@@ -18022,10 +17880,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -18050,10 +17906,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -18430,7 +18284,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u1.c",
       "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -18454,7 +18307,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u1.c",
       "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -19027,13 +18879,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -19058,13 +18907,10 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -19668,9 +19514,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -19694,9 +19538,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -20300,9 +20142,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -20326,9 +20166,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -22083,7 +21921,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u1.c",
       "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u4.c",
     ]
 
@@ -22107,7 +21944,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u1.c",
       "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u4.c",
     ]
 
@@ -22416,7 +22252,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -22440,7 +22275,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -23524,10 +23358,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -23552,10 +23384,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -23875,7 +23705,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u1.c",
       "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -23899,7 +23728,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u1.c",
       "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -24228,9 +24056,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-gemm/gen/qu8-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qu8-gemm/gen/qu8-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -24254,9 +24080,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-gemm/gen/qu8-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qu8-gemm/gen/qu8-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -24585,9 +24409,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-igemm/gen/qu8-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qu8-igemm/gen/qu8-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -24611,9 +24433,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-igemm/gen/qu8-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x4-minmax-fp32-scalar-lrintf.c",
-      "src/src/qu8-igemm/gen/qu8-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-3x4-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -25872,7 +25692,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u1.c",
       "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u4.c",
     ]
 
@@ -25896,7 +25715,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u1.c",
       "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u4.c",
     ]
 
@@ -26205,7 +26023,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -26229,7 +26046,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -27852,6 +27668,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/static-resize-bilinear-2d.c",
       "src/src/subgraph/static-slice.c",
       "src/src/subgraph/static-transpose.c",
+      "src/src/subgraph/subgraph-utils.c",
       "src/src/subgraph/unary.c",
       "src/src/subgraph/unpooling-2d.c",
       "src/src/subgraph/validation.c",
@@ -27902,6 +27719,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/static-resize-bilinear-2d.c",
       "src/src/subgraph/static-slice.c",
       "src/src/subgraph/static-transpose.c",
+      "src/src/subgraph/subgraph-utils.c",
       "src/src/subgraph/unary.c",
       "src/src/subgraph/unpooling-2d.c",
       "src/src/subgraph/validation.c",
@@ -33720,9 +33538,6 @@ if (current_cpu == "arm64") {
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8s4-minmax-neonfma.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-minmax-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-relu-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-scalar.c",
@@ -33762,9 +33577,6 @@ if (current_cpu == "arm64") {
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8s4-minmax-neonfma.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-minmax-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-relu-scalar.c",
-      "src/src/f32-gemm/gen/f32-gemm-2x4-scalar.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-scalar.c",
@@ -34000,9 +33812,6 @@ if (current_cpu == "arm64") {
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8s4-minmax-neonfma.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-minmax-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-relu-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-scalar.c",
@@ -34042,9 +33851,6 @@ if (current_cpu == "arm64") {
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-aarch64-neonfma-lane-ld128.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8s4-minmax-neonfma.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-minmax-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-relu-scalar.c",
-      "src/src/f32-igemm/gen/f32-igemm-2x4-scalar.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-aarch64-neonfma-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-neon-lane-ld64.c",
       "src/src/f32-igemm/gen/f32-igemm-4x2-minmax-scalar.c",
@@ -34311,7 +34117,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-neon-u32.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-neonv8-u32.c",
-      "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -34338,7 +34143,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-neon-u32.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-neonv8-u32.c",
-      "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qs8-vcvt/gen/f32-qs8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -34368,7 +34172,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-neon-u32.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-neonv8-u32.c",
-      "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -34395,7 +34198,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-neon-u32.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-neonv8-u32.c",
-      "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u1.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-imagic-u4.c",
       "src/src/f32-qu8-vcvt/gen/f32-qu8-vcvt-scalar-lrintf-u4.c",
     ]
@@ -35140,7 +34942,6 @@ if (current_cpu == "arm64") {
       "src/src/f32-velu/gen/f32-velu-neon-rr2-lut16-p3-u8.c",
       "src/src/f32-velu/gen/f32-velu-neonfma-rr1-lut16-p3-u16.c",
       "src/src/f32-velu/gen/f32-velu-neonfma-rr1-p6-u8.c",
-      "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u2.c",
       "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u4.c",
     ]
 
@@ -35167,7 +34968,6 @@ if (current_cpu == "arm64") {
       "src/src/f32-velu/gen/f32-velu-neon-rr2-lut16-p3-u8.c",
       "src/src/f32-velu/gen/f32-velu-neonfma-rr1-lut16-p3-u16.c",
       "src/src/f32-velu/gen/f32-velu-neonfma-rr1-p6-u8.c",
-      "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u2.c",
       "src/src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u4.c",
     ]
 
@@ -35556,19 +35356,15 @@ if (current_cpu == "arm64") {
       "src/src/f32-vrnd/gen/f32-vrndd-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndd-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndne-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndne-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndu-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndu-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndz-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndz-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -35594,19 +35390,15 @@ if (current_cpu == "arm64") {
       "src/src/f32-vrnd/gen/f32-vrndd-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndd-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndne-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndne-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndne-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndu-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndu-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndu-scalar-libm-u4.c",
       "src/src/f32-vrnd/gen/f32-vrndz-neon-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndz-neonv8-u8.c",
       "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u1.c",
-      "src/src/f32-vrnd/gen/f32-vrndz-scalar-libm-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -35632,9 +35424,9 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-neon-rsqrt-u16.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-neon-rsqrt.c",
       "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u1.c",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u4.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -35657,9 +35449,9 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-neon-rsqrt-u16.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-neon-rsqrt.c",
       "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u1.c",
-      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u4.c",
+      "src/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -35789,8 +35581,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-aarch64-neon-sqrt-u4.c",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt-u1.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-aarch64-neon-sqrt.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -35813,8 +35605,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-aarch64-neon-sqrt-u4.c",
-      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt-u1.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-aarch64-neon-sqrt.c",
+      "src/src/f32-vsqrt/gen/f32-vsqrt-scalar-sqrt.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36039,7 +35831,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/pf16-gemm/pf16-gemm-32x32-minmax-neonsme2.c",
+      "src/src/pf16-gemm/pf16-gemm-1x32c2-minmax-neonsme2.c",
+      "src/src/pf16-gemm/pf16-gemm-32x32c2-minmax-neonsme2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36062,7 +35855,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/pf16-gemm/pf16-gemm-32x32-minmax-neonsme2.c",
+      "src/src/pf16-gemm/pf16-gemm-1x32c2-minmax-neonsme2.c",
+      "src/src/pf16-gemm/pf16-gemm-32x32c2-minmax-neonsme2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -37398,7 +37192,6 @@ if (current_cpu == "arm64") {
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x8c2s4-minmax-neon-mlal.c",
-      "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x8c2s4-minmax-neon-mlal.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x4-minmax-scalar.c",
     ]
@@ -37426,7 +37219,6 @@ if (current_cpu == "arm64") {
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x8c2s4-minmax-neon-mlal.c",
-      "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x8c2s4-minmax-neon-mlal.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x4-minmax-scalar.c",
     ]
@@ -37619,7 +37411,6 @@ if (current_cpu == "arm64") {
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8-minmax-neon-mlal-lane.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8c2s4-minmax-neon-mlal.c",
-      "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x8c2s4-minmax-neon-mlal.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x8-minmax-neon-mlal-lane.c",
@@ -37649,7 +37440,6 @@ if (current_cpu == "arm64") {
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8-minmax-neon-mlal-lane.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8c2s4-minmax-neon-mlal.c",
-      "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x8c2s4-minmax-neon-mlal.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x8-minmax-neon-mlal-lane.c",
@@ -38035,12 +37825,10 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p16c-minmax-rndnu-neon-mla8-ld64.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p8c-minmax-rndnu-neon-mla8-ld64.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p16c-minmax-rndnu-neon-mla8-ld64.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -38066,12 +37854,10 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p16c-minmax-rndnu-neon-mla8-ld64.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-25p8c-minmax-rndnu-neon-mla8-ld64.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p16c-minmax-rndnu-neon-mla8-ld64.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-dwconv/gen/qs8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -38148,7 +37934,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-neon-u32.c",
-      "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u1.c",
       "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -38173,7 +37958,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-neon-u32.c",
-      "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u1.c",
       "src/src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -38355,7 +38139,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-neonv8-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p8c-minmax-fp32-neon-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p8c-minmax-fp32-neonv8-mla8-ld64.c",
@@ -38363,12 +38146,10 @@ if (current_cpu == "arm64") {
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p16c-minmax-fp32-neonv8-mla8-ld128.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p16c-minmax-fp32-neonv8-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p16c-minmax-fp32-neon-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p16c-minmax-fp32-neonv8-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -38394,7 +38175,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-neonv8-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p8c-minmax-fp32-neon-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p8c-minmax-fp32-neonv8-mla8-ld64.c",
@@ -38402,12 +38182,10 @@ if (current_cpu == "arm64") {
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p16c-minmax-fp32-neonv8-mla8-ld128.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p16c-minmax-fp32-neonv8-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-3p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p16c-minmax-fp32-neon-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p16c-minmax-fp32-neonv8-mla8-ld64.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -38612,11 +38390,9 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x16-minmax-fp32-neonv8-mlal-lane.c",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x8c2s4-minmax-fp32-neonv8-mlal.c",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x8c2s4-minmax-fp32-neonv8-mlal.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-3x4-minmax-fp32-scalar-lrintf.c",
@@ -38643,11 +38419,9 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x16-minmax-fp32-neonv8-mlal-lane.c",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x8c2s4-minmax-fp32-neonv8-mlal.c",
-      "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-2x8c2s4-minmax-fp32-neonv8-mlal.c",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-3x4-minmax-fp32-scalar-lrintf.c",
@@ -38854,11 +38628,9 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x16-minmax-fp32-neonv8-mlal-lane.c",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x8c2s4-minmax-fp32-neonv8-mlal.c",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x8c2s4-minmax-fp32-neonv8-mlal.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-3x4-minmax-fp32-scalar-lrintf.c",
@@ -38885,11 +38657,9 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x16-minmax-fp32-neonv8-mlal-lane.c",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x8c2s4-minmax-fp32-neonv8-mlal.c",
-      "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x8c2s4-minmax-fp32-neon-mlal.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-2x8c2s4-minmax-fp32-neonv8-mlal.c",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-3x4-minmax-fp32-scalar-lrintf.c",
@@ -39229,7 +38999,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-vcvt/gen/qs8-vcvt-neon-u32.c",
-      "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u1.c",
       "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u4.c",
     ]
 
@@ -39254,7 +39023,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qs8-vcvt/gen/qs8-vcvt-neon-u32.c",
-      "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u1.c",
       "src/src/qs8-vcvt/gen/qs8-vcvt-scalar-u4.c",
     ]
 
@@ -39283,7 +39051,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qs8-vlrelu/gen/qs8-vlrelu-neon-u32.c",
       "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39308,7 +39075,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qs8-vlrelu/gen/qs8-vlrelu-neon-u32.c",
       "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qs8-vlrelu/gen/qs8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39584,12 +39350,10 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p8c-minmax-rndnu-neon-mul8.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p16c-minmax-rndnu-neon-mul8.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -39614,12 +39378,10 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p2c-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-25p8c-minmax-rndnu-neon-mul8.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p16c-minmax-rndnu-neon-mul8.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p1c-minmax-fp32-scalar-fmagic.c",
-      "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-dwconv/gen/qu8-dwconv-9p2c-minmax-fp32-scalar-lrintf.c",
     ]
 
@@ -39647,7 +39409,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-neon-u32.c",
-      "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u1.c",
       "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -39672,7 +39433,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-neon-u32.c",
-      "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u1.c",
       "src/src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u4.c",
     ]
 
@@ -39760,10 +39520,8 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qu8-gemm/gen/qu8-gemm-1x16-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x16-minmax-rndnu16-neon-mlal-lane.c",
-      "src/src/qu8-gemm/gen/qu8-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x8-minmax-rndnu-neon-mlal-lane.c",
-      "src/src/qu8-gemm/gen/qu8-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-3x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-gemm/gen/qu8-gemm-3x8-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-neon-mlal-lane.c",
@@ -39791,10 +39549,8 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qu8-gemm/gen/qu8-gemm-1x16-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x16-minmax-rndnu16-neon-mlal-lane.c",
-      "src/src/qu8-gemm/gen/qu8-gemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-gemm/gen/qu8-gemm-1x8-minmax-rndnu-neon-mlal-lane.c",
-      "src/src/qu8-gemm/gen/qu8-gemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-gemm/gen/qu8-gemm-3x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-gemm/gen/qu8-gemm-3x8-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-neon-mlal-lane.c",
@@ -39884,10 +39640,8 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qu8-igemm/gen/qu8-igemm-1x16-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x16-minmax-rndnu16-neon-mlal-lane.c",
-      "src/src/qu8-igemm/gen/qu8-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x8-minmax-rndnu-neon-mlal-lane.c",
-      "src/src/qu8-igemm/gen/qu8-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-3x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-igemm/gen/qu8-igemm-3x8-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-neon-mlal-lane.c",
@@ -39915,10 +39669,8 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qu8-igemm/gen/qu8-igemm-1x16-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x16-minmax-rndnu16-neon-mlal-lane.c",
-      "src/src/qu8-igemm/gen/qu8-igemm-1x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-igemm/gen/qu8-igemm-1x8-minmax-rndnu-neon-mlal-lane.c",
-      "src/src/qu8-igemm/gen/qu8-igemm-2x2-minmax-fp32-scalar-imagic.c",
       "src/src/qu8-igemm/gen/qu8-igemm-3x4-minmax-fp32-scalar-lrintf.c",
       "src/src/qu8-igemm/gen/qu8-igemm-3x8-minmax-rndnu-neon-mlal-lane.c",
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-neon-mlal-lane.c",
@@ -40162,7 +39914,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-vcvt/gen/qu8-vcvt-neon-u32.c",
-      "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u1.c",
       "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u4.c",
     ]
 
@@ -40187,7 +39938,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qu8-vcvt/gen/qu8-vcvt-neon-u32.c",
-      "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u1.c",
       "src/src/qu8-vcvt/gen/qu8-vcvt-scalar-u4.c",
     ]
 
@@ -40216,7 +39966,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qu8-vlrelu/gen/qu8-vlrelu-neon-u32.c",
       "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -40241,7 +39990,6 @@ if (current_cpu == "arm64") {
       "src/include/xnnpack.h",
       "src/src/qu8-vlrelu/gen/qu8-vlrelu-neon-u32.c",
       "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-andxor-u4.c",
-      "src/src/qu8-vlrelu/gen/qu8-vlrelu-scalar-select-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -40863,6 +40611,7 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/static-resize-bilinear-2d.c",
       "src/src/subgraph/static-slice.c",
       "src/src/subgraph/static-transpose.c",
+      "src/src/subgraph/subgraph-utils.c",
       "src/src/subgraph/unary.c",
       "src/src/subgraph/unpooling-2d.c",
       "src/src/subgraph/validation.c",
@@ -40913,6 +40662,7 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/static-resize-bilinear-2d.c",
       "src/src/subgraph/static-slice.c",
       "src/src/subgraph/static-transpose.c",
+      "src/src/subgraph/subgraph-utils.c",
       "src/src/subgraph/unary.c",
       "src/src/subgraph/unpooling-2d.c",
       "src/src/subgraph/validation.c",
