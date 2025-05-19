@@ -5,11 +5,12 @@
 
 // TODO: Expand the WebXrTestApi to specify a viewGeometry that this can validate
 // as well.
-const depthViewGeometryTestGenerator = function(isCpuOptimized, matchDepthView) {
+const depthViewGeometryTestGenerator = (matchDepthView) => {
   return (session, controller, t, sessionObjects) => {
 
     return session.requestReferenceSpace('viewer').then((viewerSpace) => new Promise((resolve) => {
 
+      const isCpuOptimized = session.depthUsage === 'cpu-optimized';
       const glBinding = new XRWebGLBinding(session, sessionObjects.gl);
 
       const rafCb = function(time, frame) {
