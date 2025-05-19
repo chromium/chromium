@@ -6185,6 +6185,13 @@
         {}
        ]
       ],
+      "external-reference-in-interleaved-oof-crash.html": [
+       "a1aad3a77a43de923ddab1d673b95f531ab25576",
+       [
+        null,
+        {}
+       ]
+      ],
       "felighting-display-none-mutation-crash.html": [
        "bc3e2333bf6ebb7abd064d4f02ff084198204b2e",
        [
@@ -364505,10 +364512,6 @@
       "542f2b7d5249f8e61a9fd347f13574b36ee6a367",
       []
      ],
-     "inheritance-expected.txt": [
-      "8e0864c3ac0d0ed43ddb4a7a68e5f3a3c62694dd",
-      []
-     ],
      "max-height-table-ref.html": [
       "ab1036ebb8dffa550b499f8a334c5b6455ba072b",
       []
@@ -364536,12 +364539,6 @@
       ],
       "row-background-paint-remove-last-cell-ref.html": [
        "57beaedd479c3093f73dc52ed5957f2c576a959f",
-       []
-      ]
-     },
-     "parsing": {
-      "border-spacing-computed-expected.txt": [
-       "f2a5a967bf29ebaf7862eb17e289b552754f8d60",
        []
       ]
      },
@@ -372084,7 +372081,7 @@
       ]
      },
      "inheritance-expected.txt": [
-      "06fdc634fc6494296b2f886954ce5225a8cb7eda",
+      "83e2a3670a2dd984b5ed0c4c6ddb416754d8da63",
       []
      ],
      "input-security-auto-sensitive-text-input-ref.html": [
@@ -374117,10 +374114,6 @@
      ],
      "variable-reference-visited-ref.html": [
       "8647be19a8ccb033bc569fb9d1e1e444428f1655",
-      []
-     ],
-     "variable-substitution-basic-expected.txt": [
-      "52bacfed275da685a2626656f7890af7042003db",
       []
      ],
      "wide-keyword-fallback-001-ref.html": [
@@ -402494,7 +402487,7 @@
         []
        ],
        "table-attribute-expected.txt": [
-        "f51d0ca8e66d1ae5163a1c21efa20d4495bc914a",
+        "9121ccdb7dc77800ac638fff7d8ec579a1aefc70",
         []
        ],
        "table-background-print-ref.html": [
@@ -430977,7 +430970,7 @@
        []
       ],
       "binary.wast.js": [
-       "d47a29e2e9d29a6b00bfbc11ad8d482ba5c7e356",
+       "468d0ba0a992a8ec2fb7f7ea370c7df5db93e2db",
        []
       ],
       "block.wast.js": [
@@ -431025,7 +431018,7 @@
        []
       ],
       "data.wast.js": [
-       "4e1ad56ef750a0e675b223d865b71131689806d2",
+       "88b519538def9c4410fb05b91e75db3300d2ae1f",
        []
       ],
       "elem.wast.js": [
@@ -432237,7 +432230,7 @@
     "animation-model": {
      "animation-types": {
       "accumulation-per-property-001-expected.txt": [
-       "15adf779ce36ab7470969e2d0c1c317a1756c5dd",
+       "830d1949449653d2cfdaeadcf9fb25dcd8453453",
        []
       ],
       "accumulation-per-property-002-expected.txt": [
@@ -432245,7 +432238,7 @@
        []
       ],
       "addition-per-property-001-expected.txt": [
-       "15adf779ce36ab7470969e2d0c1c317a1756c5dd",
+       "830d1949449653d2cfdaeadcf9fb25dcd8453453",
        []
       ],
       "addition-per-property-002-expected.txt": [
@@ -432253,7 +432246,7 @@
        []
       ],
       "interpolation-per-property-001-expected.txt": [
-       "0f830f612999c432b27a2cc7384ae55f012be6a4",
+       "4fc1e1d5cfb06013a54dafceeae4a58f50d8afbc",
        []
       ],
       "interpolation-per-property-002-expected.txt": [
@@ -467880,7 +467873,7 @@
     },
     "rewriter": {
      "rewriter-abort.tentative.https.window.js": [
-      "0eb716f398bdd08e7e853918506fdf58028eebe0",
+      "992bb5c637c0e695b377953c074353cdf9f9e28f",
       [
        "ai/rewriter/rewriter-abort.tentative.https.window.html",
        {
@@ -467952,8 +467945,62 @@
        }
       ]
      ],
+     "rewriter-create-available.tentative.https.window.js": [
+      "41371d5db569138f1161b433d8b0479fb8985419",
+      [
+       "ai/rewriter/rewriter-create-available.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Rewriter Create Available"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "rewriter-create.tentative.https.window.js": [
+      "4494f5912261b909873e1db424a27122f309feb4",
+      [
+       "ai/rewriter/rewriter-create.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Rewriter Create"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "rewriter-from-detached-iframe.tentative.https.window.js": [
-      "d7c473438cf89e8a006963f7ab9df2ac7229d079",
+      "27f1d96d546266d8633590a2ed55753bd5c33c9d",
       [
        "ai/rewriter/rewriter-from-detached-iframe.tentative.https.window.html",
        {
@@ -467989,15 +468036,69 @@
        }
       ]
      ],
-     "rewriter.tentative.https.window.js": [
-      "da3f002a82b74c921f6e428298d4bbf8269f77a8",
+     "rewriter-measureInputUsage.tentative.https.window.js": [
+      "beefa358f3eee1ba31830c0cae25fd34fb87c561",
       [
-       "ai/rewriter/rewriter.tentative.https.window.html",
+       "ai/rewriter/rewriter-measureInputUsage.tentative.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Rewriter"
+          "Rewriter measureInputUsage"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "rewriter-rewrite-streaming.tentative.https.window.js": [
+      "81b73fbdabd0d8f631cc6db62fc9a72c28287793",
+      [
+       "ai/rewriter/rewriter-rewrite-streaming.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Rewriter Rewrite Streaming"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "rewriter-rewrite.tentative.https.window.js": [
+      "07e8b419a4af8c1c3933271e11083509a1e97fa4",
+      [
+       "ai/rewriter/rewriter-rewrite.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Rewriter Rewrite"
          ],
          [
           "script",
@@ -468019,7 +468120,7 @@
     },
     "summarizer": {
      "summarizer-abort.tentative.https.window.js": [
-      "14c89056dfb3e5d31ae70bcf81e7e93aa6a97f9e",
+      "6c98a845fa6ff2006f1a80a9d8eeed441d4e7768",
       [
        "ai/summarizer/summarizer-abort.tentative.https.window.html",
        {
@@ -468035,8 +468136,13 @@
          [
           "script",
           "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
@@ -468095,7 +468201,7 @@
       ]
      ],
      "summarizer-create-available.tentative.https.window.js": [
-      "1f108ddd021cdc7c40a550ae457bc608bdd5c866",
+      "0153ca784ce9763f817afeedecc1ca854de9d12f",
       [
        "ai/summarizer/summarizer-create-available.tentative.https.window.html",
        {
@@ -468122,7 +468228,7 @@
       ]
      ],
      "summarizer-create.tentative.https.window.js": [
-      "d9df70cc2e796389002d24ec579b0954dca5a601",
+      "ff5d42b100f067d8b85d91be43949e0c83ab0a5e",
       [
        "ai/summarizer/summarizer-create.tentative.https.window.html",
        {
@@ -468130,6 +468236,33 @@
          [
           "title",
           "Summarizer Create"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "summarizer-from-detached-iframe.tentative.https.window.js": [
+      "8bfdc92319699e53b87f28e2bec1c36267897d06",
+      [
+       "ai/summarizer/summarizer-from-detached-iframe.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Summarizer Detached Iframe"
          ],
          [
           "script",
@@ -468186,7 +468319,7 @@
       ]
      ],
      "summarizer-summarize-streaming.tentative.https.window.js": [
-      "59aa01aeb312ce90958708a089fa33499b4ea32e",
+      "8d85dc7b836eb8416182acceb57c16940399e63f",
       [
        "ai/summarizer/summarizer-summarize-streaming.tentative.https.window.html",
        {
@@ -468213,14 +468346,14 @@
       ]
      ],
      "summarizer-summarize.tentative.https.window.js": [
-      "c54052f8b36157e22dc8b083137d0ab4adbd2d70",
+      "a9be36dace027fdbf229f0f48a13ba4ab9b13941",
       [
        "ai/summarizer/summarizer-summarize.tentative.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Summarizer Create Available"
+          "Summarizer Summarize"
          ],
          [
           "script",
@@ -468306,7 +468439,7 @@
     },
     "writer": {
      "writer-abort.tentative.https.window.js": [
-      "bb877f6d73b9747e85df0022d6d325f1ecc8017d",
+      "be0d50f7102dd6b7231892c5e34957ca65cd9ea0",
       [
        "ai/writer/writer-abort.tentative.https.window.html",
        {
@@ -468378,8 +468511,62 @@
        }
       ]
      ],
+     "writer-create-available.tentative.https.window.js": [
+      "dd9e40d45e8ac580107728ad78c977eb214813b2",
+      [
+       "ai/writer/writer-create-available.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Writer Create Available"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "writer-create.tentative.https.window.js": [
+      "2f328c8d7cc67fd6ed18d7f3b68d5551dc1dfd36",
+      [
+       "ai/writer/writer-create.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Writer Create"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "writer-from-detached-iframe.tentative.https.window.js": [
-      "c63d8bb77c953e1f04bbab2987e28f6dd0cc5e1a",
+      "a8fcb6f12640db98409a81ef4ac2b8b8e319ce5c",
       [
        "ai/writer/writer-from-detached-iframe.tentative.https.window.html",
        {
@@ -468415,15 +468602,69 @@
        }
       ]
      ],
-     "writer.tentative.https.window.js": [
-      "6606f2174486f977d25065659638c788b822bdda",
+     "writer-measureInputUsage.tentative.https.window.js": [
+      "e836e8fd9ccbf876486cbd7870ea314ac0de9230",
       [
-       "ai/writer/writer.tentative.https.window.html",
+       "ai/writer/writer-measureInputUsage.tentative.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Writer"
+          "Writer measureInputUsage"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "writer-write-streaming.tentative.https.window.js": [
+      "52992ad21394102fece8feec286eca4b50e19fa2",
+      [
+       "ai/writer/writer-write-streaming.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Writer Write Streaming"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "writer-write.tentative.https.window.js": [
+      "3383ceb923963a5e726d158ff1882f083c781939",
+      [
+       "ai/writer/writer-write.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Writer Write"
          ],
          [
           "script",
@@ -528710,6 +528951,13 @@
        {}
       ]
      ],
+     "caret-shape-parsing.html": [
+      "82f9248e02ccbd8e1c06e0717a870ca04376df49",
+      [
+       null,
+       {}
+      ]
+     ],
      "cursor-calc-hotspot.html": [
       "825d9571271c06d96302faa46edcf0f2e5a4cda9",
       [
@@ -566202,7 +566450,7 @@
      ]
     ],
     "lfedcm-identity.create-store-collect.tentative.sub.https.html": [
-     "54226aff9ae9974a9810865b6806c930b7677260",
+     "553bc40989e4c23b6e331c658734ed08a466ba5c",
      [
       null,
       {
@@ -685978,7 +686226,7 @@
      ]
     ],
     "pointerevent_lostpointercapture_remove_setcapture_node.html": [
-     "4b372d04bdfa447ffd3d639efced347b93aacbde",
+     "8da1b7d28c45e49f31ba55e05eac3fe6e5a01283",
      [
       null,
       {

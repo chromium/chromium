@@ -2812,6 +2812,21 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Win11-arm64 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Win10.20h2 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac15-arm64 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac15 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac14-arm64 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac14 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac13-arm64 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac13 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac12-arm64 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac12 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac11-arm64 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac11 ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Linux ] external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
+[ Mac15 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Timeout ]
 crbug.com/418466380 [ Win11 ] external/wpt/css/css-images/tiled-gradients.html [ Failure ]
 crbug.com/418466380 [ Win11-arm64 ] external/wpt/css/css-images/tiled-gradients.html [ Failure ]
 crbug.com/418466380 [ Win10.20h2 ] external/wpt/css/css-images/tiled-gradients.html [ Failure ]
@@ -9466,4 +9481,4 @@ crbug.com/417921517 [ Win11-arm64 ] external/wpt/css/css-ruby/ruby-text-combine-
 
 # Gardener 2025-05-19
 crbug.com/418345234 [ Win ] external/wpt/fetch/fetch-later/quota/max-payload.tentative.https.window.html [ Failure ]
-crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout Pass ]
+crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
