@@ -4,11 +4,12 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {playFromSelectionTimeout, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createApp, emitEvent} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
@@ -65,6 +66,7 @@ suite('ReadAloudHighlight', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     VoiceLanguageController.setInstance(new VoiceLanguageController());

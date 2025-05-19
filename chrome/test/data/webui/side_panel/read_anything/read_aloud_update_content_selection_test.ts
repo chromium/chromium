@@ -4,11 +4,12 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, emitEvent, playFromSelectionWithMockTimer} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('ReadAloud_UpdateContentSelection', () => {
   let app: AppElement;
@@ -86,6 +87,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
 
@@ -150,6 +152,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
     });
 
     test('container class correct', () => {
+      assertTrue(speechController.isSpeechActive());
       assertEquals(
           app.$.container.className,
           'user-select-disabled-when-speech-active-true');
