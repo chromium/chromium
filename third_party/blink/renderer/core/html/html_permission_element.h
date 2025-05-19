@@ -527,6 +527,8 @@ class CORE_EXPORT HTMLPermissionElement final
 
   bool is_registered_in_browser_process_ = false;
 
+  bool is_cache_registered_ = false;
+
   // Holds reasons for which clicking is currently disabled (if any). Each
   // entry will have an expiration time associated with it, which can be
   // |base::TimeTicks::Max()| if it's indefinite.

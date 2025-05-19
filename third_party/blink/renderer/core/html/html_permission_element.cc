@@ -464,9 +464,10 @@ void HTMLPermissionElement::OnPermissionStatusInitialized(
 Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
-  if (!permission_descriptors_.empty()) {
+  if (!is_cache_registered_ && !permission_descriptors_.empty()) {
     CachedPermissionStatus::From(GetDocument().domWindow())
         ->RegisterClient(this, permission_descriptors_);
+    is_cache_registered_ = true;
   }
   return kInsertionDone;
 }
@@ -515,9 +516,11 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
     disable_reason_expire_timer_.Stop();
   }
   intersection_rect_ = std::nullopt;
-  if (LocalDOMWindow* window = GetDocument().domWindow()) {
+  LocalDOMWindow* window = GetDocument().domWindow();
+  if (window && is_cache_registered_) {
     CachedPermissionStatus::From(window)->UnregisterClient(
         this, permission_descriptors_);
+    is_cache_registered_ = false;
   }
   EnsureUnregisterPageEmbeddedPermissionControl();
 }
@@ -1489,7 +1492,7 @@ bool HTMLPermissionElement::IsStyleValid() {
   if (style->GetDisplayStyle().Display() != EDisplay::kNone &&
       style->GetDisplayStyle().Display() != EDisplay::kInlineBlock) {
     AddConsoleWarning(WTF::StrCat(
-        {"Invalid display style of the permission element", GetType(),
+        {"Invalid display style of the permission element ", GetType(),
          ". Only 'display: inline-block' or 'display: none' is allowed"}));
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kInvalidDisplayProperty);
