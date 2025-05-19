@@ -50,13 +50,14 @@
 [ Mac14-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Pass ]
 [ Mac15-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Pass ]
 
+crbug.com/418116092 fast/dom/focus-contenteditable.html [ Failure ]
+crbug.com/418159586 fast/dom/inert/inert-node-is-uneditable.html [ Timeout ]
+
 # TODO(crbug.com/401453196): Resolve failing layout tests. Refine into child
 # bugs if/as it becomes clear that tests are failing due to distinct issues.
 crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi-scale.html [ Failure Timeout ]
 crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi.html [ Failure Timeout ]
 crbug.com/401453196 fast/canvas/canvas-hidpi-blurry.html [ Failure Timeout ]
-crbug.com/401453196 fast/dom/focus-contenteditable.html [ Failure ]
-crbug.com/401453196 fast/dom/inert/inert-node-is-uneditable.html [ Timeout ]
 crbug.com/401453196 fast/backgrounds/gradient-background-leakage-hidpi.html [ Failure Timeout ]
 crbug.com/401453196 fast/dynamic/anchor-lock.html [ Failure Timeout ]
 crbug.com/401453196 fast/events/reveal-link-when-focused.html [ Failure Timeout ]
