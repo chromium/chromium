@@ -299,10 +299,19 @@ bool CanvasResourceDispatcher::PrepareFrame(
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 
-  resources_.insert(resource_id,
-                    std::make_unique<FrameResource>(
-                        canvas_resource, std::move(release_callback)));
-  PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
+  // Create a new ref on `canvas_resource` to pass to the placeholder, which
+  // will manage the lifetime of this ref.
+  auto resource_ref_for_placeholder = canvas_resource;
+  PostImageToPlaceholderIfNotBlocked(std::move(resource_ref_for_placeholder),
+                                     resource_id);
+
+  // Now store our ref to ensure that the resource remains valid for the
+  // duration of the compositor's usage (we'll drop our ref when the compositor
+  // notifies us that it is no longer using the resource via
+  // `ReclaimResources()`).
+  resources_.insert(resource_id, std::make_unique<FrameResource>(
+                                     std::move(canvas_resource),
+                                     std::move(release_callback)));
 
   // TODO(crbug.com/645993): this should be inherited from WebGL context's
   // creation settings.
