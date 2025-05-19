@@ -27,6 +27,8 @@ AutoclickE2ETest = class extends E2ETestBase {
     });
 
     await super.setUpDeferred();
+
+    await this.waitForBoundsListener();
   }
 
   /** @override */
@@ -65,6 +67,24 @@ AutoclickE2ETest = class extends E2ETestBase {
    */
   assertSameRect(first, second) {
     assertTrue(RectUtil.equal(first, second));
+  }
+
+  async waitForBoundsListener() {
+    // The bounds listener is added during autoclick initialization, which can
+    // take non-trivial time in mv3.
+    await new Promise(resolve => {
+      if (this.mockAccessibilityPrivate.boundsListener_ !== null) {
+        resolve();
+        return;
+      }
+
+      const intervalId = setInterval(() => {
+        if (this.mockAccessibilityPrivate.boundsListener_ !== null) {
+          clearInterval(intervalId);
+          resolve();
+        }
+      }, 500);
+    });
   }
 };
 
@@ -114,38 +134,34 @@ AX_TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', async function() {
   this.assertSameRect(focusRings[0].rects[0], expected);
 });
 
-AX_TEST_F(
-    'AutoclickE2ETest', 'DISABLED_RemovesAndAddsAutoclick', async function() {
-      const root = await this.runWithLoadedTree(
-          'data:text/html;charset=utf-8,<p>Cats rock!</p>');
-      // Turn on screen magnifier so that when we turn off autoclick, the
-      // extension doesn't get unloaded and crash the test.
-      await new Promise(resolve => {
-        chrome.accessibilityFeatures.screenMagnifier.set(
-            {value: true}, resolve);
-      });
+AX_TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', async function() {
+  const root = await this.runWithLoadedTree(
+      'data:text/html;charset=utf-8,<p>Cats rock!</p>');
+  // Turn on screen magnifier so that when we turn off autoclick, the
+  // extension doesn't get unloaded and crash the test.
+  await new Promise(resolve => {
+    chrome.accessibilityFeatures.screenMagnifier.set({value: true}, resolve);
+  });
 
-      // Toggle autoclick off and on, ensure it still works and no crashes.
-      await new Promise(resolve => {
-        chrome.accessibilityFeatures.autoclick.set({value: false}, resolve);
-      });
-      await new Promise(resolve => {
-        chrome.accessibilityFeatures.autoclick.set({value: true}, resolve);
-      });
-      const node = root.find(
-          {role: RoleType.STATIC_TEXT, attributes: {name: 'Cats rock!'}});
-      await new Promise(resolve => {
-        this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(
-            // Offset slightly into the node to ensure the hittest happens
-            // within the node.
-            node.location.left + 1, node.location.top + 1, resolve);
-      });
-      const expected = node.root.location;
-      const focusRings = this.mockAccessibilityPrivate.getFocusRings();
-      this.assertSameRect(
-          this.mockAccessibilityPrivate.getScrollableBounds(), expected);
-      this.assertSameRect(focusRings[0].rects[0], expected);
-    });
+  // Toggle autoclick off and on, ensure it still works and no crashes.
+  accessibilityCommon.onAutoclickUpdated_({value: false});
+  accessibilityCommon.onAutoclickUpdated_({value: true});
+  this.waitForBoundsListener();
+
+  const node =
+      root.find({role: RoleType.STATIC_TEXT, attributes: {name: 'Cats rock!'}});
+  await new Promise(resolve => {
+    this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(
+        // Offset slightly into the node to ensure the hittest happens
+        // within the node.
+        node.location.left + 1, node.location.top + 1, resolve);
+  });
+  const expected = node.root.location;
+  const focusRings = this.mockAccessibilityPrivate.getFocusRings();
+  this.assertSameRect(
+      this.mockAccessibilityPrivate.getScrollableBounds(), expected);
+  this.assertSameRect(focusRings[0].rects[0], expected);
+});
 
 // TODO(crbug.com/41467584): Add tests for when the scrollable area is scrolled
 // all the way up or down, left or right. Add tests for nested scrollable areas.
