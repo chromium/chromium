@@ -74,6 +74,9 @@ ChromeOsEnterpriseParams& ChromeOsEnterpriseParams::operator=(
 
 ChromeOsEnterpriseParams::~ChromeOsEnterpriseParams() = default;
 
+bool ChromeOsEnterpriseParams::operator==(
+    const ChromeOsEnterpriseParams& other) const = default;
+
 // static
 ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
     const base::Value::Dict& dict) {

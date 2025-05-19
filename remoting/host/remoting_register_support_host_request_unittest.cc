@@ -14,8 +14,10 @@
 #include "remoting/base/http_status.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/test_rsa_key_pair.h"
+#include "remoting/proto/remote_support_service.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
 #include "remoting/signaling/fake_signal_strategy.h"
+#include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,16 +35,18 @@ using RegisterSupportHostResponseCallback = base::OnceCallback<void(
 constexpr char kSupportId[] = "123321456654";
 constexpr base::TimeDelta kSupportIdLifetime = base::Minutes(5);
 constexpr char kFtlId[] = "fake_user@domain.com/chromoting_ftl_abc123";
-const char kTestAuthorizedHelper[] = "helpful_dude@chromoting.com";
+constexpr char kTestAuthorizedHelper[] = "helpful_dude@chromoting.com";
+constexpr char kPublicKey[] = "fake_public_key";
+constexpr char kHostVersion[] = "1.2.3.4";
+constexpr char kHostOsName[] = "Windows 11";
+constexpr char kHostOsVersion[] = "5.6.7.8";
 
 void ValidateRegisterHost(const apis::v1::RegisterSupportHostRequest& request) {
-  ASSERT_TRUE(request.has_host_version());
-  ASSERT_TRUE(request.has_host_os_name());
-  ASSERT_TRUE(request.has_host_os_version());
-  ASSERT_EQ(kFtlId, request.tachyon_id());
-
-  auto key_pair = RsaKeyPair::FromString(kTestRsaKeyPair);
-  EXPECT_EQ(key_pair->GetPublicKey(), request.public_key());
+  ASSERT_EQ(request.host_version(), kHostVersion);
+  ASSERT_EQ(request.host_os_name(), kHostOsName);
+  ASSERT_EQ(request.host_os_version(), kHostOsVersion);
+  ASSERT_EQ(request.tachyon_id(), kFtlId);
+  ASSERT_EQ(request.public_key(), kPublicKey);
 }
 
 void RespondOk(RegisterSupportHostResponseCallback callback) {
@@ -115,23 +119,19 @@ class RemotingRegisterSupportHostTest : public testing::Test {
     register_host_client_ = register_host_client.get();
     register_host_request_->register_host_client_ =
         std::move(register_host_client);
-
-    signal_strategy_ =
-        std::make_unique<FakeSignalStrategy>(SignalingAddress(kFtlId));
-
-    // Start in disconnected state.
-    signal_strategy_->Disconnect();
-
-    key_pair_ = RsaKeyPair::FromString(kTestRsaKeyPair);
-  }
-
-  ~RemotingRegisterSupportHostTest() override {
-    register_host_request_.reset();
-    signal_strategy_.reset();
-    task_environment_.FastForwardUntilNoTasksRemain();
+    simple_host_.public_key = kPublicKey;
+    simple_host_.version = kHostVersion;
+    simple_host_.operating_system_info.name = kHostOsName;
+    simple_host_.operating_system_info.version = kHostOsVersion;
+    SignalingAddress ftl_address(kFtlId);
+    ftl_address.GetFtlInfo(&simple_host_.tachyon_account_info.account_id,
+                           &simple_host_.tachyon_account_info.registration_id);
   }
 
  protected:
+  using RegisterHostCallback =
+      RemotingRegisterSupportHostRequest::RegisterHostCallback;
+
   class MockRegisterSupportHostClient final
       : public RemotingRegisterSupportHostRequest::RegisterSupportHostClient {
    public:
@@ -141,33 +141,38 @@ class RemotingRegisterSupportHostTest : public testing::Test {
     MOCK_METHOD0(CancelPendingRequests, void());
   };
 
+  void RegisterHost(
+      const internal::RemoteSupportHostStruct& host,
+      const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      RegisterHostCallback callback) {
+    register_host_request_->RegisterHost(std::move(host), enterprise_params,
+                                         std::move(callback));
+  }
+
+  void CancelPendingRequests() {
+    register_host_request_->CancelPendingRequests();
+  }
+
+  internal::RemoteSupportHostStruct simple_host_;
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<RemotingRegisterSupportHostRequest> register_host_request_;
-  raw_ptr<MockRegisterSupportHostClient, DanglingUntriaged>
-      register_host_client_ = nullptr;
-
-  std::unique_ptr<SignalStrategy> signal_strategy_;
-  scoped_refptr<RsaKeyPair> key_pair_;
+  raw_ptr<MockRegisterSupportHostClient> register_host_client_ = nullptr;
   std::string authorized_helper_;
 };
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterFtl) {
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateRegisterHostAndRespondOk());
-  EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);
 
-  base::MockCallback<RegisterSupportHostRequest::RegisterCallback>
-      register_callback;
+  base::MockCallback<RegisterHostCallback> register_callback;
   EXPECT_CALL(register_callback,
-              Run(kSupportId, kSupportIdLifetime, protocol::ErrorCode::OK))
+              Run(HttpStatus::OK(), kSupportId, kSupportIdLifetime))
       .Times(1);
 
-  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, std::nullopt,
-                                       register_callback.Get());
-  signal_strategy_->Connect();
+  RegisterHost(simple_host_, std::nullopt, register_callback.Get());
 }
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsDisabled) {
@@ -184,18 +189,12 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsDisabled) {
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
 
-  EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);
-
-  base::MockCallback<RegisterSupportHostRequest::RegisterCallback>
-      register_callback;
+  base::MockCallback<RegisterHostCallback> register_callback;
   EXPECT_CALL(register_callback,
-              Run(kSupportId, kSupportIdLifetime, protocol::ErrorCode::OK))
+              Run(HttpStatus::OK(), kSupportId, kSupportIdLifetime))
       .Times(1);
 
-  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, std::move(params),
-                                       register_callback.Get());
-  signal_strategy_->Connect();
+  RegisterHost(simple_host_, std::move(params), register_callback.Get());
 }
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsEnabled) {
@@ -212,89 +211,45 @@ TEST_F(RemotingRegisterSupportHostTest, RegisterWithEnterpriseOptionsEnabled) {
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
 
-  EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);
-
-  base::MockCallback<RegisterSupportHostRequest::RegisterCallback>
-      register_callback;
+  base::MockCallback<RegisterHostCallback> register_callback;
   EXPECT_CALL(register_callback,
-              Run(kSupportId, kSupportIdLifetime, protocol::ErrorCode::OK))
+              Run(HttpStatus::OK(), kSupportId, kSupportIdLifetime))
       .Times(1);
 
-  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, std::move(params),
-                                       register_callback.Get());
-  signal_strategy_->Connect();
+  RegisterHost(simple_host_, std::move(params), register_callback.Get());
 }
 
 TEST_F(RemotingRegisterSupportHostTest, RegisterWithAuthorizedHelper) {
+  internal::RemoteSupportHostStruct host_with_authorized_helper = simple_host_;
+  host_with_authorized_helper.authorized_helper_email = kTestAuthorizedHelper;
+
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(DoValidateAuthorizedHelperAndRespondOk());
 
-  EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);
-
-  base::MockCallback<RegisterSupportHostRequest::RegisterCallback>
-      register_callback;
+  base::MockCallback<RegisterHostCallback> register_callback;
   EXPECT_CALL(register_callback,
-              Run(kSupportId, kSupportIdLifetime, protocol::ErrorCode::OK))
+              Run(HttpStatus::OK(), kSupportId, kSupportIdLifetime))
       .Times(1);
 
-  authorized_helper_ = kTestAuthorizedHelper;
-
-  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, std::nullopt,
-                                       register_callback.Get());
-  signal_strategy_->Connect();
+  RegisterHost(host_with_authorized_helper, std::nullopt,
+               register_callback.Get());
 }
 
 TEST_F(RemotingRegisterSupportHostTest, FailedWithDeadlineExceeded) {
+  HttpStatus deadline_exceeded{HttpStatus::Code::DEADLINE_EXCEEDED,
+                               "deadline exceeded"};
   EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
       .WillOnce(
-          [](std::unique_ptr<apis::v1::RegisterSupportHostRequest> request,
-             RegisterSupportHostResponseCallback callback) {
-            ValidateRegisterHost(*request);
-            std::move(callback).Run(
-                HttpStatus(HttpStatus::Code::DEADLINE_EXCEEDED,
-                           "deadline exceeded"),
-                nullptr);
-          });
-  EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);
-
-  base::MockCallback<RegisterSupportHostRequest::RegisterCallback>
-      register_callback;
-  EXPECT_CALL(register_callback,
-              Run(_, _, protocol::ErrorCode::SIGNALING_TIMEOUT))
-      .Times(1);
-
-  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, std::nullopt,
-                                       register_callback.Get());
-  signal_strategy_->Connect();
-}
-
-TEST_F(RemotingRegisterSupportHostTest,
-       SignalingDisconnectedBeforeRegistrationSucceeds) {
-  RegisterSupportHostResponseCallback register_support_host_callback;
-  EXPECT_CALL(*register_host_client_, RegisterSupportHost(_, _))
-      .WillOnce(
-          [&](std::unique_ptr<apis::v1::RegisterSupportHostRequest> request,
+          [=](std::unique_ptr<apis::v1::RegisterSupportHostRequest> request,
               RegisterSupportHostResponseCallback callback) {
             ValidateRegisterHost(*request);
-            register_support_host_callback = std::move(callback);
+            std::move(callback).Run(deadline_exceeded, nullptr);
           });
-  EXPECT_CALL(*register_host_client_, CancelPendingRequests()).Times(1);
 
-  base::MockCallback<RegisterSupportHostRequest::RegisterCallback>
-      register_callback;
-  EXPECT_CALL(register_callback,
-              Run(_, _, protocol::ErrorCode::SIGNALING_ERROR))
-      .Times(1);
+  base::MockCallback<RegisterHostCallback> register_callback;
+  EXPECT_CALL(register_callback, Run(deadline_exceeded, _, _)).Times(1);
 
-  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
-                                       authorized_helper_, std::nullopt,
-                                       register_callback.Get());
-  signal_strategy_->Connect();
-  signal_strategy_->Disconnect();
-  RespondOk(std::move(register_support_host_callback));
+  RegisterHost(simple_host_, std::nullopt, register_callback.Get());
 }
 
 }  // namespace remoting

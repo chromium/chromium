@@ -8,11 +8,9 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
-#include "remoting/host/register_support_host_request.h"
-#include "remoting/signaling/signal_strategy.h"
+#include "remoting/host/register_support_host_request_base.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -35,8 +33,7 @@ class OAuthTokenGetter;
 // A RegisterSupportHostRequest implementation that uses Remoting API to
 // register the host.
 class RemotingRegisterSupportHostRequest final
-    : public RegisterSupportHostRequest,
-      public SignalStrategy::Listener {
+    : public RegisterSupportHostRequestBase {
  public:
   RemotingRegisterSupportHostRequest(
       std::unique_ptr<OAuthTokenGetter> token_getter,
@@ -48,13 +45,6 @@ class RemotingRegisterSupportHostRequest final
       const RemotingRegisterSupportHostRequest&) = delete;
 
   ~RemotingRegisterSupportHostRequest() override;
-
-  // RegisterSupportHostRequest implementation.
-  void StartRequest(SignalStrategy* signal_strategy,
-                    scoped_refptr<RsaKeyPair> key_pair,
-                    const std::string& authorized_helper,
-                    std::optional<ChromeOsEnterpriseParams> params,
-                    RegisterCallback callback) override;
 
  private:
   using RegisterSupportHostResponseCallback = base::OnceCallback<void(
@@ -74,35 +64,16 @@ class RemotingRegisterSupportHostRequest final
 
   class RegisterSupportHostClientImpl;
 
-  enum class State {
-    NOT_STARTED,
-    REGISTERING,
-    REGISTERED,
-  };
+  void Initialize(
+      std::unique_ptr<net::ClientCertStore> client_cert_store) override;
+  void RegisterHost(
+      const internal::RemoteSupportHostStruct& host,
+      const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      RegisterHostCallback callback) override;
+  void CancelPendingRequests() override;
 
-  // SignalStrategy::Listener interface.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingStanza(
-      const jingle_xmpp::XmlElement* stanza) override;
-
-  void RegisterHost();
-  void OnRegisterHostResult(
-      const HttpStatus& status,
-      std::unique_ptr<apis::v1::RegisterSupportHostResponse> response);
-
-  void RunCallback(const std::string& support_id,
-                   base::TimeDelta lifetime,
-                   protocol::ErrorCode error_code);
-
-  raw_ptr<SignalStrategy> signal_strategy_ = nullptr;
-  scoped_refptr<RsaKeyPair> key_pair_;
-  RegisterCallback callback_;
   std::unique_ptr<OAuthTokenGetter> token_getter_;
   std::unique_ptr<RegisterSupportHostClient> register_host_client_;
-  std::optional<ChromeOsEnterpriseParams> enterprise_params_;
-  std::string authorized_helper_;
-
-  State state_ = State::NOT_STARTED;
 };
 
 }  // namespace remoting

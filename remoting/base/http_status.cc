@@ -111,6 +111,8 @@ HttpStatus::HttpStatus(net::HttpStatusCode http_status_code,
 
 HttpStatus::~HttpStatus() = default;
 
+bool HttpStatus::operator==(const HttpStatus& other) const = default;
+
 bool HttpStatus::ok() const {
   return error_code_ == Code::OK;
 }

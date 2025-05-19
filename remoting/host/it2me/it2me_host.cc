@@ -353,7 +353,8 @@ void It2MeHost::ConnectOnNetworkThread(
         reconnect_params_->support_id);
   }
   register_request_->StartRequest(
-      signal_strategy_.get(), host_key_pair_, authorized_helper_,
+      signal_strategy_.get(), host_context_->CreateClientCertStore(),
+      host_key_pair_, authorized_helper_,
       std::move(chrome_os_enterprise_params_),
       base::BindOnce(&It2MeHost::OnReceivedSupportID,
                      weak_factory_.GetWeakPtr()));

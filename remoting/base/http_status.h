@@ -53,6 +53,8 @@ class HttpStatus {
              const std::string& response_body);
   ~HttpStatus();
 
+  bool operator==(const HttpStatus& other) const;
+
   // Indicates whether the http request was successful based on the status code.
   bool ok() const;
 

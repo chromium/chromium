@@ -23,6 +23,11 @@ struct RemoteSupportHostStruct {
   RemoteSupportHostStruct();
   ~RemoteSupportHostStruct();
 
+  RemoteSupportHostStruct(const RemoteSupportHostStruct&);
+  RemoteSupportHostStruct(RemoteSupportHostStruct&&);
+  RemoteSupportHostStruct& operator=(const RemoteSupportHostStruct&);
+  RemoteSupportHostStruct& operator=(RemoteSupportHostStruct&&);
+
   std::string public_key;
   std::string version;
   std::string authorized_helper_email;

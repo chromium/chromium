@@ -8,5 +8,13 @@ namespace remoting::internal {
 
 RemoteSupportHostStruct::RemoteSupportHostStruct() = default;
 RemoteSupportHostStruct::~RemoteSupportHostStruct() = default;
+RemoteSupportHostStruct::RemoteSupportHostStruct(
+    const RemoteSupportHostStruct&) = default;
+RemoteSupportHostStruct::RemoteSupportHostStruct(RemoteSupportHostStruct&&) =
+    default;
+RemoteSupportHostStruct& RemoteSupportHostStruct::operator=(
+    const RemoteSupportHostStruct&) = default;
+RemoteSupportHostStruct& RemoteSupportHostStruct::operator=(
+    RemoteSupportHostStruct&&) = default;
 
 }  // namespace remoting::internal

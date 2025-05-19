@@ -39,6 +39,7 @@ class PassthroughRegisterSupportHostRequest final
 
   // RegisterSupportHostRequest implementation.
   void StartRequest(SignalStrategy* signal_strategy,
+                    std::unique_ptr<net::ClientCertStore> client_cert_store,
                     scoped_refptr<RsaKeyPair> key_pair,
                     const std::string& authorized_helper,
                     std::optional<ChromeOsEnterpriseParams> params,
