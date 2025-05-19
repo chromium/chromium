@@ -8,12 +8,10 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "build/build_config.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace tflite::task::text::nlclassifier {
@@ -28,11 +26,6 @@ namespace language_detection {
 // We use 256 to keep in line with the existing code.
 // TODO(https://crbug.com/354070625): Figure out if we can drop this to 128.
 inline constexpr size_t kModelTruncationLength = 256;
-
-#if !BUILDFLAG(IS_WIN)
-// Controls whether mmap is used to load the language detection model.
-BASE_DECLARE_FEATURE(kMmapLanguageDetectionModel);
-#endif
 
 struct Prediction {
   Prediction(const std::string& language, float score)

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -51,12 +50,6 @@ class ScopedLanguageDetectionModelStateRecorder {
 
 }  // namespace
 
-#if !BUILDFLAG(IS_WIN)
-BASE_FEATURE(kMmapLanguageDetectionModel,
-             "MmapLanguageDetectionModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 Prediction TopPrediction(const std::vector<Prediction>& predictions) {
   auto elem = std::max_element(predictions.begin(), predictions.end());
   CHECK(elem != predictions.end());
@@ -90,13 +83,11 @@ LanguageDetectionModel::LoadModelFromFile(base::File model_file,
   base::ElapsedTimer timer;
 // Windows doesn't support using mmap for the language detection model.
 #if !BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kMmapLanguageDetectionModel)) {
-    options.mutable_base_options()
-        ->mutable_model_file()
-        ->mutable_file_descriptor_meta()
-        ->set_fd(model_file.GetPlatformFile());
-  } else
-#endif
+  options.mutable_base_options()
+      ->mutable_model_file()
+      ->mutable_file_descriptor_meta()
+      ->set_fd(model_file.GetPlatformFile());
+#else
   {
     std::string file_content(model_file.GetLength(), '\0');
     if (!model_file.ReadAndCheck(0,
@@ -107,6 +98,7 @@ LanguageDetectionModel::LoadModelFromFile(base::File model_file,
          ->mutable_model_file()
          ->mutable_file_content() = std::move(file_content);
   }
+#endif
 
   auto statusor_classifier =
       tflite::task::text::nlclassifier::NLClassifier::CreateFromOptions(
