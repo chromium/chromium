@@ -169,8 +169,7 @@ void SitePermissionsHelper::UpdateSiteAccess(
     bool revoking_current_site_permissions =
         new_access == PermissionsManager::UserSiteAccess::kOnClick;
     if (revoking_current_site_permissions) {
-      TabHelper::FromWebContents(web_contents)
-          ->active_tab_permission_granter()
+      ActiveTabPermissionGranter::FromWebContents(web_contents)
           ->ClearActiveExtensionAndNotify(extension->id());
       // While revoking permissions doesn't necessarily mandate a page
       // refresh, it is complicated to determine when an extension has affected

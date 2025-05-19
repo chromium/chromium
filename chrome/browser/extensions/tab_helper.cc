@@ -218,10 +218,6 @@ bool TabHelper::IsReloadRequired() {
   return reload_required_;
 }
 
-ActiveTabPermissionGranter* TabHelper::active_tab_permission_granter() {
-  return ActiveTabPermissionGranter::FromWebContents(web_contents());
-}
-
 void TabHelper::OnWatchedPageChanged(
     const std::vector<std::string>& css_selectors) {
   InvokeForContentRulesRegistries(

@@ -34,7 +34,6 @@ class Image;
 }
 
 namespace extensions {
-class ActiveTabPermissionGranter;
 class ExtensionActionRunner;
 class Extension;
 
@@ -92,9 +91,6 @@ class TabHelper : public content::WebContentsObserver,
   ExtensionActionRunner* extension_action_runner() {
     return extension_action_runner_.get();
   }
-
-  // TODO(crbug.com/393179880): Eliminate this method.
-  ActiveTabPermissionGranter* active_tab_permission_granter();
 
   void OnWatchedPageChanged(const std::vector<std::string>& css_selectors);
 

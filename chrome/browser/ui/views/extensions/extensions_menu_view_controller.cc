@@ -445,8 +445,7 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
   // Otherwise, extension has one-time access and we need to clear tab
   // permissions (e.g extension with activeTab was granted one-time access).
   DCHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
-  extensions::TabHelper::FromWebContents(web_contents)
-      ->active_tab_permission_granter()
+  extensions::ActiveTabPermissionGranter::FromWebContents(web_contents)
       ->ClearActiveExtensionAndNotify(extension_id);
 
   auto* action_runner =

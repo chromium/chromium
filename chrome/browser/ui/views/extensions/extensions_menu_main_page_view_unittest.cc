@@ -16,7 +16,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -794,9 +793,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ActiveTabRequested_DynamicUpdates) {
   //     access on grants tab permissions but doesn't change the user site
   //     access.
   extensions::ActiveTabPermissionGranter* active_tab_permission_granter =
-      extensions::TabHelper::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents())
-          ->active_tab_permission_granter();
+      extensions::ActiveTabPermissionGranter::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(active_tab_permission_granter);
   active_tab_permission_granter->GrantIfRequested(extension.get());
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetVisible());
