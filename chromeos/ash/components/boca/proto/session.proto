@@ -154,10 +154,20 @@ message ViewScreenConfig {
   ViewScreenState view_screen_state = 1;
 
   ConnectionParameter connection_param = 2;
+
+  ViewScreenDevice view_screen_requester = 3;
 }
 
 message ConnectionParameter {
   string connection_code = 1;
+}
+
+message ViewScreenDevice {
+  UserIdentity user = 1;
+
+  DeviceInfo info = 2;
+
+  UserIdentity service_account = 3;
 }
 
 message DeviceInfo {
