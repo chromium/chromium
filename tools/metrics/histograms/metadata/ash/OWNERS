@@ -5,5 +5,4 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 tby@chromium.org
 jimmyxgong@chromium.org
 gavinwill@chromium.org
-michelefan@chromium.org
 junis@google.com
