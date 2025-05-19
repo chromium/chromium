@@ -982,7 +982,7 @@ virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/p
 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-speech-synthesis.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechSynthesis*
-virtual/stable/external/wpt/soft-navigation-heuristics/disabled.html
+virtual/stable/external/wpt/soft-navigation-heuristics/smoke/tentative/lcp.html
 virtual/third-party-storage-partitioning/external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-fixed-inline-002.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-*

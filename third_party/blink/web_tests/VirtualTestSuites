@@ -364,7 +364,7 @@
               "media/stable",
               "webexposed",
               "compositing/filters",
-              "external/wpt/soft-navigation-heuristics/disabled.html",
+              "external/wpt/soft-navigation-heuristics/smoke/tentative/lcp.html",
               "wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html"
             ],
     "exclusive_tests": ["media/stable"],
