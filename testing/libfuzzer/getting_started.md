@@ -31,6 +31,10 @@ single binary blob of data - then instead use our older fuzzing technology
 will work a little better in these cases because if the fuzzer finds a problem,
 the test case will exactly match the binary format.)
 
+See
+[http://go/chrome-fuzzing-dashboard](https://analysis.chromium.org/coverage/p/chromium?platform=fuzz&test_suite_type=any&path=%2F%2F&project=chromium%2Fsrc&path=%2F%2F&host=chromium.googlesource.com&ref=refs%2Fheads%2Fmain&modifier_id=0)
+for which directories lack fuzz coverage.
+
 ## How to fuzz
 
 1. Find your existing unit test target. Create a new similar target
