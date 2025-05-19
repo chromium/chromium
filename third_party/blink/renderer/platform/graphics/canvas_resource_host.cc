@@ -109,12 +109,6 @@ void CanvasResourceHost::SetNeedsPushProperties() {
   }
 }
 
-void CanvasResourceHost::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
-  if (cc_layer_ && IsComposited()) {
-    cc_layer_->SetNeedsDisplayRect(dirty_rect);
-  }
-}
-
 void CanvasResourceHost::SetOpacityMode(OpacityMode opacity_mode) {
   is_opaque_ = opacity_mode == kOpaque;
   if (cc_layer_) {

@@ -92,7 +92,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   void ResetLayer();
   void ClearLayerTexture();
   void SetNeedsPushProperties();
-  void DoPaintInvalidation(const gfx::Rect& dirty_rect);
   void SetOpacityMode(OpacityMode opacity_mode);
 
   virtual void SetTransferToGPUTextureWasInvoked() {}
