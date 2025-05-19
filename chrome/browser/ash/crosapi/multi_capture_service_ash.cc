@@ -47,7 +47,6 @@ void MultiCaptureServiceAsh::MultiCaptureStopped(const std::string& label) {
 void MultiCaptureServiceAsh::IsMultiCaptureAllowed(
     const GURL& url,
     IsMultiCaptureAllowedCallback callback) {
-  // This function is only called from the primary user on the Lacros side.
   content::BrowserContext* context =
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
           user_manager::UserManager::Get()->GetPrimaryUser());
