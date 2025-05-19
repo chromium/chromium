@@ -1,0 +1,1 @@
+CONSOLE MESSAGE: A soft navigation has been detected: float-in-float-hit-testing.html#

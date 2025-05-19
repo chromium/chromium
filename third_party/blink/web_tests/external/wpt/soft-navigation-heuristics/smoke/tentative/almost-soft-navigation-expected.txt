@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Doesn't paint because the element is hidden.
+  assert_equals: Expected only one soft navigation (test_id=no-paint). expected 1 but got 2
+Harness: the test ran to completion.

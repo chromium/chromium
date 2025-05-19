@@ -49,23 +49,6 @@ class SoftNavigationHeuristicsTest : public testing::Test {
     return heuristics;
   }
 
-  Node* CreateNodeForTest() {
-    ScriptState* script_state = GetScriptStateForTest();
-    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-    Document* document = window->document();
-    return document->CreateRawElement(html_names::kDivTag);
-  }
-
-  void ReportPaintRectForTest(SoftNavigationHeuristics* heuristics,
-                              Node* node) {
-    ScriptState* script_state = GetScriptStateForTest();
-    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-    LocalFrame* frame = window->GetFrame();
-    gfx::RectF rect{1000, 1000};
-    heuristics->RecordPaint(frame, rect, node);
-    return heuristics->OnPaintFinished();
-  }
-
   ScriptState* GetScriptStateForTest() {
     return ToScriptStateForMainWorld(page_holder_->GetDocument().GetFrame());
   }
@@ -142,6 +125,7 @@ TEST_F(SoftNavigationHeuristicsTest,
         tracker->MaybeCreateTaskScopeForCallback(GetScriptStateForTest(),
                                                  nullptr);
   }
+  ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
@@ -252,7 +236,7 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
   {
     std::optional<TaskScope> task_scope =
         tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
-    heuristics->ModifiedDOM(CreateNodeForTest());
+    heuristics->ModifiedDOM();
   }
 
   // Simulate default action link navigation after the click event.
@@ -341,9 +325,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
       ASSERT_TRUE(context);
 
       heuristics->SameDocumentNavigationCommitted("foo.html", context);
-      Node* node = CreateNodeForTest();
-      heuristics->ModifiedDOM(node);
-      ReportPaintRectForTest(heuristics, node);
+      heuristics->ModifiedDOM();
     }
   }
   EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
@@ -352,9 +334,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
     std::optional<TaskScope> task_scope =
         tracker->MaybeCreateTaskScopeForCallback(script_state, task_state);
     heuristics->SameDocumentNavigationCommitted("bar.html", context);
-    Node* node = CreateNodeForTest();
-    heuristics->ModifiedDOM(node);
-    ReportPaintRectForTest(heuristics, node);
+    heuristics->ModifiedDOM();
   }
   EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
 }
