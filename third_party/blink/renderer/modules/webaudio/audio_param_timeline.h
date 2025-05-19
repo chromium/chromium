@@ -93,8 +93,7 @@ class AudioParamTimeline {
   float ValuesForFrameRange(size_t start_frame,
                             size_t end_frame,
                             float default_value,
-                            float* values,
-                            unsigned number_of_values,
+                            base::span<float> values,
                             double sample_rate,
                             double control_rate,
                             float min_value,
@@ -274,9 +273,6 @@ class AudioParamTimeline {
 
   // State of the timeline for the current event.
   struct AutomationState {
-    // Parameters for the current automation request.  Number of
-    // values to be computed for the automation request
-    const unsigned number_of_values;
     // Start and end frames for this automation request
     const size_t start_frame;
     const size_t end_frame;
@@ -286,7 +282,7 @@ class AudioParamTimeline {
     const double control_rate;
 
     // Parameters needed for processing the current event.
-    const unsigned fill_to_frame;
+    const size_t fill_to_frame;
     const size_t fill_to_end_frame;
 
     // Value and time for the current event
@@ -307,8 +303,7 @@ class AudioParamTimeline {
   float ValuesForFrameRangeImpl(size_t start_frame,
                                 size_t end_frame,
                                 float default_value,
-                                float* values,
-                                unsigned number_of_values,
+                                base::span<float> values,
                                 double sample_rate,
                                 double control_rate,
                                 unsigned render_quantum_frames)
@@ -337,16 +332,14 @@ class AudioParamTimeline {
   float ValueCurveAtTime(double t,
                          double time1,
                          double duration,
-                         const float* curve_data,
-                         unsigned curve_length);
+                         base::span<const float> curve_data);
 
   // Handles the special case where the first event in the timeline
   // starts after `start_frame`.  These initial values are filled using
   // `default_value`.  The updated `current_frame` and `write_index` is
   // returned.
-  std::tuple<size_t, unsigned> HandleFirstEvent(float* values,
+  std::tuple<size_t, unsigned> HandleFirstEvent(base::span<float> values,
                                                 float default_value,
-                                                unsigned number_of_values,
                                                 size_t start_frame,
                                                 size_t end_frame,
                                                 double sample_rate,
@@ -374,8 +367,7 @@ class AudioParamTimeline {
   bool HandleAllEventsInThePast(double current_time,
                                 double sample_rate,
                                 float& default_value,
-                                unsigned number_of_values,
-                                float* values,
+                                base::span<float> values,
                                 unsigned render_quantum_frames)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
@@ -407,7 +399,7 @@ class AudioParamTimeline {
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessLinearRamp(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -417,7 +409,7 @@ class AudioParamTimeline {
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessExponentialRamp(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -427,7 +419,7 @@ class AudioParamTimeline {
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetTarget(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -437,7 +429,7 @@ class AudioParamTimeline {
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetValueCurve(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index);
@@ -447,18 +439,10 @@ class AudioParamTimeline {
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessCancelValues(
       const AutomationState& current_state,
-      float* values,
+      base::span<float> values,
       size_t current_frame,
       float value,
       unsigned write_index) EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
-
-  // Fill the output vector `values` with the value `default_value`,
-  // starting at `write_index` and continuing up to `end_frame`
-  // (exclusive).  `write_index` is updated with the new index.
-  uint32_t FillWithDefault(float* values,
-                           float default_value,
-                           uint32_t end_frame,
-                           uint32_t write_index);
 
   // When cancelling events, remove the items from `events_` starting
   // at the given index.  Update `new_events_` too.

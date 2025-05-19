@@ -180,10 +180,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web
   // Audio specification.
-  void CalculateFinalValues(float* values,
-                            unsigned number_of_values,
-                            bool sample_accurate);
-  void CalculateTimelineValues(float* values, unsigned number_of_values);
+  void CalculateFinalValues(base::span<float> values, bool sample_accurate);
+  void CalculateTimelineValues(base::span<float> values);
 
   // The type of AudioParam, indicating what this AudioParam represents and what
   // node it belongs to.  Mostly for informational purposes and doesn't affect
