@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -538,6 +539,16 @@ inline float SimpleFontData::ZeroInlineSize() const {
   // vertical-lr and text-orientation is upright).
   SkScalar size = font_.getSize();
   if (!platform_data_->IsVerticalNonCJKUpright()) {
+    if (RuntimeEnabledFeatures::CSSChUnitSpecCompliantFallbackEnabled()) {
+      return size * 0.5f;
+    }
+
+    // This is a bug that was unfortunately introduced in
+    // crrev.com/c/6333369, and has shipped in m136.
+    // TODO(crbug.com/416145497): Remove this old behaviour
+    // when feature flag
+    // `RuntimeEnabledFeatures::CSSChUnitSpecCompliantFallbackEnabled` is tested
+    // out and is enabled by default.
     return size / 0.5f;
   }
   return size;
