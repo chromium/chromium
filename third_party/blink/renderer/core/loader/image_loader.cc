@@ -443,7 +443,8 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
 
   KURL url;
   AtomicString image_source_url = element_->ImageSourceURL();
-  if (RuntimeEnabledFeatures::OptimizeHTMLElementUrlsEnabled() && source_url) {
+  if (base::FeatureList::IsEnabled(features::kOptimizeHTMLElementUrls) &&
+      source_url) {
     url = *source_url;
   } else {
     url = ImageSourceToKURL(image_source_url);

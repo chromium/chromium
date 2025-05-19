@@ -3271,10 +3271,6 @@
       status: "experimental",
     },
     {
-      name: "OptimizeHTMLElementUrls",
-      status: "experimental",
-    },
-    {
       // This flag makes the <option> element's label attribute render the
       // contents of the label attribute even if it is only whitespace in order
       // to match the spec and firefox. It also stops stripping/simplifying

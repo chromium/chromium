@@ -35,6 +35,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
+#include "base/containers/lru_cache.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -2232,6 +2233,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
  private:
   friend class DocumentTest;
+  friend class DocumentURLCacheTest;
   friend class IgnoreDestructiveWriteCountIncrementer;
   friend class ThrowOnDynamicMarkupInsertionCountIncrementer;
   friend class IgnoreOpensDuringUnloadCountIncrementer;
@@ -2301,6 +2303,43 @@ class CORE_EXPORT Document : public ContainerNode,
    private:
     HeapVector<Member<HTMLFormElement>> list_;
     bool dirty_ = false;
+  };
+
+  class CORE_EXPORT URLCache {
+   public:
+    URLCache();
+    ~URLCache();
+
+    URLCache(const URLCache&) = delete;
+    URLCache& operator=(const URLCache&) = delete;
+
+    KURL Get(const KURL& base, const String& relative);
+    void Put(const KURL& base, const String& relative, KURL url);
+
+    // If the document's base URL is changed, we remove entries corresponding to
+    // the previous base URL, as we're unlikely to reuse those entries.
+    void RemoveOldEntries(const KURL& base);
+
+    size_t CacheSizeForTesting() { return cache_.size(); }
+
+   private:
+    // The relative URL is not stored as an AtomicString (which is what
+    // getAttribute() returns), as some callers are not guaranteed to always
+    // pass an AtomicString. However, when the underlying StringImpl originated
+    // from an AtomicString, we use the same fastpath for hashing as
+    // AtomicString.
+    struct KeyHash {
+      std::size_t operator()(const std::pair<KURL, String>& key) const;
+    };
+
+    // The cache's key is made up of the base KURL and relative URL String, and
+    // the value is the resolved KURL.
+    // The base URL is stored as part of the cache key to allow reusing results
+    // from PreloadRequest::CompleteURL() calling CompleteURLWithOverride() with
+    // a different base URL than the Document's current base URL without
+    // updating it.
+    base::HashingLRUCache<std::pair<KURL, String>, KURL, URLCache::KeyHash>
+        cache_;
   };
 
   friend class AXContext;
@@ -2538,6 +2577,10 @@ class CORE_EXPORT Document : public ContainerNode,
   KURL base_url_;  // Node.baseURI: The URL to use when resolving relative URLs.
   KURL base_url_override_;  // An alternative base URL that takes precedence
                             // over base_url_ (but not base_element_url_).
+
+  // The URL cache is mutable because the changes that are made to it during
+  // CompleteURLWithOverride() are not observable by callers.
+  mutable URLCache url_cache_;
 
   // Indicates whether all the conditions are met to trigger recording of counts
   // for cases where sandboxed srcdoc documents use their base url to resolve

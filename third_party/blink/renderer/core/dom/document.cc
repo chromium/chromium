@@ -49,6 +49,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
+#include "mojo/public/cpp/bindings/lib/wtf_hash_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
@@ -710,6 +711,54 @@ const HeapVector<Member<HTMLFormElement>>& Document::GetTopLevelForms() {
 
 void Document::MarkTopLevelFormsDirty() {
   top_level_forms_.MarkDirty();
+}
+
+Document::URLCache::URLCache()
+    : cache_(features::kDocumentURLCacheSize.Get()) {}
+
+Document::URLCache::~URLCache() = default;
+
+KURL Document::URLCache::Get(const KURL& base, const String& relative) {
+  if (base::FeatureList::IsEnabled(features::kOptimizeHTMLElementUrls)) {
+    CHECK(IsMainThread());
+    const auto it = cache_.Get(std::make_pair(base, relative));
+    if (it != cache_.end()) {
+      return it->second;
+    }
+  }
+  return KURL();
+}
+
+void Document::URLCache::Put(const KURL& base,
+                             const String& relative,
+                             KURL url) {
+  if (base::FeatureList::IsEnabled(features::kOptimizeHTMLElementUrls)) {
+    CHECK(IsMainThread());
+    cache_.Put(std::make_pair(base, relative), url);
+  }
+}
+
+void Document::URLCache::RemoveOldEntries(const KURL& base) {
+  if (base::FeatureList::IsEnabled(features::kOptimizeHTMLElementUrls)) {
+    CHECK(IsMainThread());
+    for (auto it = cache_.rbegin(); it != cache_.rend();) {
+      if (it->first.first != base) {
+        ++it;
+        continue;
+      }
+
+      it = cache_.Erase(it);
+    }
+  }
+}
+
+size_t Document::URLCache::KeyHash::operator()(
+    const std::pair<KURL, String>& key) const {
+  size_t hash = 0;
+  if (key.first.IsValid()) {
+    hash = key.first.GetString().Hash();
+  }
+  return mojo::internal::WTFHashCombine(hash, key.second);
 }
 
 CachedAttrAssociatedElementsMap* Document::GetCachedAttrAssociatedElementsMap(
@@ -4694,6 +4743,8 @@ void Document::UpdateBaseURL() {
     for (HTMLAnchorElement& anchor :
          Traversal<HTMLAnchorElement>::StartsAfter(*this))
       anchor.InvalidateCachedVisitedLinkHash();
+
+    url_cache_.RemoveOldEntries(old_base_url);
   }
 
   for (HTMLScriptElement& script :
@@ -7158,8 +7209,12 @@ KURL Document::CompleteURLWithOverride(
   if (url.IsNull())
     return KURL();
 
-  KURL result = Encoding().IsValid() ? KURL(base_url_override, url, Encoding())
-                                     : KURL(base_url_override, url);
+  KURL result = url_cache_.Get(base_url_override, url);
+  if (result.IsEmpty()) {
+    result = Encoding().IsValid() ? KURL(base_url_override, url, Encoding())
+                                  : KURL(base_url_override, url);
+    url_cache_.Put(base_url_override, url, result);
+  }
   // If the conditions are met for
   // `should_record_sandboxed_srcdoc_baseurl_metrics_` to be set, we should
   // only record the metric if there's no `base_element_url_` set via a base
