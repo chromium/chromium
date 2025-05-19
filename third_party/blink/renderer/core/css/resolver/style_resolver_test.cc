@@ -136,9 +136,10 @@ class StyleResolverTest : public PageTestBase {
     StyleRulePositionTry* rule =
         GetStyleEngine().GetPositionTryRule(*scoped_name);
     CHECK(rule);
-    GetStyleEngine().UpdateStyleForOutOfFlow(
-        element, /* try_set */ &rule->Properties(), kNoTryTactics,
-        /* anchor_evaluator */ nullptr);
+    GetStyleEngine().UpdateStyleForOutOfFlow(element, /*try_fallback_index*/ 0,
+                                             /*try_set=*/&rule->Properties(),
+                                             kNoTryTactics,
+                                             /*anchor_evaluator=*/nullptr);
   }
 
   size_t GetCurrentOldStylesCount() {

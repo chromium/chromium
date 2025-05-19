@@ -336,8 +336,10 @@ class OOFCandidateStyleIterator {
     }
 
     CHECK(element_);
+
     element_->GetDocument().GetStyleEngine().UpdateStyleForOutOfFlow(
-        *element_, try_set, try_tactics, &anchor_evaluator_);
+        *element_, try_fallback_index, try_set, try_tactics,
+        &anchor_evaluator_);
     CHECK(element_->GetLayoutObject());
     // Returns LayoutObject ComputedStyle instead of element style for layout
     // purposes. The style may be different, in particular for body -> html

@@ -4506,7 +4506,8 @@ static bool NeedsContainerQueryEvaluator(
     const ComputedStyle& new_style) {
   return evaluator.DependsOnStyle() ||
          new_style.IsContainerForSizeContainerQueries() ||
-         new_style.IsContainerForScrollStateContainerQueries();
+         new_style.IsContainerForScrollStateContainerQueries() ||
+         new_style.IsContainerForAnchoredContainerQueries();
 }
 
 static const StyleRecalcChange ApplyComputedStyleDiff(
@@ -4791,6 +4792,13 @@ StyleRecalcChange Element::RecalcOwnStyle(
             .EnsureContainerQueryData()
             .SetContainerQueryEvaluator(nullptr);
       } else if (old_style) {
+        if (style_recalc_context.anchor_evaluator == nullptr) {
+          // position-try-fallbacks are only applied for UpdateStyleForOutOfFlow
+          // during layout, so we need to reset the anchored(fallback) state to
+          // no fallback for normal style recalc.
+          child_change = evaluator->ApplyAnchoredChanges(
+              child_change, /*try_fallback_index=*/std::nullopt);
+        }
         child_change = evaluator->ApplyScrollStateAndStyleChanges(
             child_change, *old_style, *new_style,
             diff != ComputedStyle::Difference::kEqual);

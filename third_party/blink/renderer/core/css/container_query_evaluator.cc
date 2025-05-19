@@ -138,7 +138,8 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
       ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped_,
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-      ContainerScrollDirection::kNone, ContainerScrollDirection::kNone);
+      ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
+      /*anchored_fallback=*/0);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -487,6 +488,21 @@ ContainerQueryEvaluator::ScrollDirectionContainerChanged(
   return change;
 }
 
+// Re-evaluate the cached results and clear any results which are affected by
+// the anchored fallback changes.
+ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::AnchoredContainerChanged(int anchored_fallback) {
+  if (anchored_fallback_ == anchored_fallback) {
+    return Change::kNone;
+  }
+  UpdateAnchoredFallback(anchored_fallback);
+  Change change = ComputeAnchoredChange();
+  if (change != Change::kNone) {
+    ClearResults(change, kAnchoredContainer);
+  }
+  return change;
+}
+
 ContainerQueryEvaluator::Change
 ContainerQueryEvaluator::StyleContainerChanged() {
   if (!depends_on_style_) {
@@ -553,7 +569,8 @@ void ContainerQueryEvaluator::UpdateContainerValues() {
       existing_values.ScrollableHorizontal(),
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
-      existing_values.ScrollDirectionVertical());
+      existing_values.ScrollDirectionVertical(),
+      existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -598,7 +615,8 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
       existing_values.SnappedFlags(), existing_values.ScrollableHorizontal(),
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
-      existing_values.ScrollDirectionVertical());
+      existing_values.ScrollDirectionVertical(),
+      existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -618,7 +636,8 @@ void ContainerQueryEvaluator::UpdateContainerStuck(
       existing_values.SnappedFlags(), existing_values.ScrollableHorizontal(),
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
-      existing_values.ScrollDirectionVertical());
+      existing_values.ScrollDirectionVertical(),
+      existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -637,7 +656,8 @@ void ContainerQueryEvaluator::UpdateContainerSnapped(
       existing_values.ScrollableHorizontal(),
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
-      existing_values.ScrollDirectionVertical());
+      existing_values.ScrollDirectionVertical(),
+      existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -657,7 +677,8 @@ void ContainerQueryEvaluator::UpdateContainerScrollable(
       existing_values.StuckVertical(), existing_values.Snapped(),
       scrollable_horizontal, scrollable_vertical,
       existing_values.ScrollDirectionHorizontal(),
-      existing_values.ScrollDirectionVertical());
+      existing_values.ScrollDirectionVertical(),
+      existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -677,7 +698,25 @@ void ContainerQueryEvaluator::UpdateContainerScrollDirection(
       existing_values.StuckVertical(), existing_values.Snapped(),
       existing_values.ScrollableHorizontal(),
       existing_values.ScrollableVertical(), scroll_direction_horizontal,
-      scroll_direction_vertical);
+      scroll_direction_vertical, existing_values.AnchoredFallback());
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+}
+
+void ContainerQueryEvaluator::UpdateAnchoredFallback(int anchored_fallback) {
+  anchored_fallback_ = anchored_fallback;
+
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  Element* container = existing_values.ContainerElement();
+
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      container->GetDocument(), *container, existing_values.Width(),
+      existing_values.Height(), existing_values.StuckHorizontal(),
+      existing_values.StuckVertical(), existing_values.Snapped(),
+      existing_values.ScrollableHorizontal(),
+      existing_values.ScrollableVertical(),
+      existing_values.ScrollDirectionHorizontal(),
+      existing_values.ScrollDirectionVertical(), anchored_fallback);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -710,6 +749,8 @@ void ContainerQueryEvaluator::ClearResults(Change change,
          (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled() &&
           container_type == kScrollDirectionContainer &&
           pair.key->Selector().SelectsScrollDirectionContainers()) ||
+         (container_type == kAnchoredContainer &&
+          pair.key->Selector().SelectsAnchoredContainers()) ||
          (container_type == kStyleContainer &&
           pair.key->Selector().SelectsStyleContainers()))) {
       continue;
@@ -828,6 +869,24 @@ ContainerQueryEvaluator::ComputeScrollDirectionChange() const {
   return change;
 }
 
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeAnchoredChange()
+    const {
+  Change change = Change::kNone;
+
+  for (const auto& result : results_) {
+    const ContainerQuery& query = *result.key;
+    if (!query.Selector().SelectsAnchoredContainers()) {
+      continue;
+    }
+    if (Eval(query).value == result.value.value) {
+      continue;
+    }
+    change = std::max(result.value.change, change);
+  }
+
+  return change;
+}
+
 void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
     StyleRecalcChange change) {
   CHECK(media_query_evaluator_);
@@ -845,6 +904,23 @@ void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
   // here only to update the font-size etc from the current container style in
   // CSSContainerValues.
   UpdateContainerValues();
+}
+
+StyleRecalcChange ContainerQueryEvaluator::ApplyAnchoredChanges(
+    const StyleRecalcChange& child_change,
+    std::optional<wtf_size_t> try_fallback_index) {
+  int anchored_fallback = 0;
+  if (try_fallback_index.has_value()) {
+    anchored_fallback = ClampTo<int>(try_fallback_index.value()) + 1;
+  }
+  switch (AnchoredContainerChanged(anchored_fallback)) {
+    case ContainerQueryEvaluator::Change::kNone:
+      return child_change;
+    case ContainerQueryEvaluator::Change::kNearestContainer:
+      return child_change.ForceRecalcAnchoredContainer();
+    case ContainerQueryEvaluator::Change::kDescendantContainers:
+      return child_change.ForceRecalcDescendantAnchoredContainers();
+  }
 }
 
 StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(

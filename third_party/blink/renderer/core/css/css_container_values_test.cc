@@ -39,7 +39,8 @@ class CSSContainerValuesTest : public PageTestBase {
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-        ContainerScrollDirection::kNone, ContainerScrollDirection::kNone);
+        ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
+        /*anchored_fallback=*/0);
   }
 
   CSSContainerValues* CreateSnappedValues(ContainerSnappedFlags snapped) {
@@ -48,7 +49,8 @@ class CSSContainerValuesTest : public PageTestBase {
         ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped,
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-        ContainerScrollDirection::kNone, ContainerScrollDirection::kNone);
+        ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
+        /*anchored_fallback=*/0);
   }
 
   CSSContainerValues* CreateScrollableValues(
@@ -59,7 +61,8 @@ class CSSContainerValuesTest : public PageTestBase {
         ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone), horizontal,
         vertical, ContainerScrollDirection::kNone,
-        ContainerScrollDirection::kNone);
+        ContainerScrollDirection::kNone,
+        /*anchored_fallback=*/0);
   }
 
   CSSContainerValues* CreateScrollDirectionValues(
@@ -71,7 +74,7 @@ class CSSContainerValuesTest : public PageTestBase {
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-        horizontal, vertical);
+        horizontal, vertical, /*anchored_fallback=*/0);
   }
 
  private:

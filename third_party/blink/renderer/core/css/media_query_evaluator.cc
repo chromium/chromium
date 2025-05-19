@@ -1663,7 +1663,7 @@ static bool ScriptingMediaFeatureEval(const MediaQueryExpValue& value,
 static bool FallbackMediaFeatureEval(const MediaQueryExpValue& value,
                                      MediaQueryOperator op,
                                      const MediaValues& media_values) {
-  const int fallback = media_values.PositionTryFallback();
+  const int fallback = media_values.AnchoredFallback();
   if (!value.IsValid()) {
     return fallback == 0;
   }

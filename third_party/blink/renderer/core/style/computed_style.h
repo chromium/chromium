@@ -1627,6 +1627,10 @@ class ComputedStyle final : public ComputedStyleBase {
     return IsScrollStateContainer() && StyleType() == kPseudoIdNone;
   }
 
+  bool IsContainerForAnchoredContainerQueries() const {
+    return IsAnchoredContainer() && StyleType() == kPseudoIdNone;
+  }
+
   bool DependsOnContainerQueries() const {
     return DependsOnSizeContainerQueries() ||
            DependsOnStyleContainerQueries() ||
@@ -2530,6 +2534,9 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool IsScrollStateContainer() const {
     return ContainerType() & kContainerTypeScrollState;
+  }
+  bool IsAnchoredContainer() const {
+    return ContainerType() & kContainerTypeAnchored;
   }
 
   static bool IsDisplayBlockContainer(EDisplay display) {

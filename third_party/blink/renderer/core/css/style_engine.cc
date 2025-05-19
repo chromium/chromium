@@ -3771,10 +3771,12 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
   GetDocument().UpdateScrollMarkerGroupToScrollableAreasMap();
 }
 
-void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
-                                          const CSSPropertyValueSet* try_set,
-                                          const TryTacticList& tactic_list,
-                                          AnchorEvaluator* anchor_evaluator) {
+void StyleEngine::UpdateStyleForOutOfFlow(
+    Element& element,
+    std::optional<wtf_size_t> try_fallback_index,
+    const CSSPropertyValueSet* try_set,
+    const TryTacticList& tactic_list,
+    AnchorEvaluator* anchor_evaluator) {
   const CSSPropertyValueSet* try_tactics_set =
       try_value_flips_.FlipSet(tactic_list);
 
@@ -3790,6 +3792,13 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
   style_recalc_context.try_tactics_set = try_tactics_set;
 
   StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
+  if (ContainerQueryEvaluator* evaluator =
+          element.GetContainerQueryEvaluator()) {
+    // TODO(crbug.com/417621241): This method now needs to be similar to
+    // UpdateStyleAndLayoutTreeForContainer() and also run layout tree rebuild
+    // when necessary.
+    change = evaluator->ApplyAnchoredChanges(change, try_fallback_index);
+  }
 
   if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
     RecalcPositionTryStyleForPseudoElement(*pseudo_element, change,

@@ -684,6 +684,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // CSSFlipRevertValues to appear in the try-tactics layer (see
   // OutOfFlowData::try_tactics_set_).
   void UpdateStyleForOutOfFlow(Element& element,
+                               std::optional<wtf_size_t> try_fallback_index,
                                const CSSPropertyValueSet* try_set,
                                const TryTacticList&,
                                AnchorEvaluator*);

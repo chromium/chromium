@@ -23,7 +23,8 @@ CSSContainerValues::CSSContainerValues(
     ContainerScrollableFlags scrollable_horizontal,
     ContainerScrollableFlags scrollable_vertical,
     ContainerScrollDirection scroll_direction_horizontal,
-    ContainerScrollDirection scroll_direction_vertical)
+    ContainerScrollDirection scroll_direction_vertical,
+    int anchored_fallback)
     : MediaValuesDynamic(document.GetFrame()),
       element_(&container),
       width_(width),
@@ -36,6 +37,7 @@ CSSContainerValues::CSSContainerValues(
       scrollable_vertical_(scrollable_vertical),
       scroll_direction_horizontal_(scroll_direction_horizontal),
       scroll_direction_vertical_(scroll_direction_vertical),
+      anchored_fallback_(anchored_fallback),
       font_sizes_(CSSToLengthConversionData::FontSizes(
           container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),

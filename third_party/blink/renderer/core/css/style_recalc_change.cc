@@ -79,14 +79,18 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
   if (pseudo_element.NeedsLayoutSubtreeUpdate()) {
     return true;
   }
-  if (!RecalcSizeContainerQueryDependent()) {
+  if (!RecalcContainerQueryDependent()) {
     return false;
   }
   const ComputedStyle& style = pseudo_element.ComputedStyleRef();
   return (RecalcSizeContainerQueryDependent() &&
           style.DependsOnSizeContainerQueries()) ||
          (RecalcStyleContainerQueryDependent() &&
-          style.DependsOnStyleContainerQueries());
+          style.DependsOnStyleContainerQueries()) ||
+         (RecalcScrollStateContainerQueryDependent() &&
+          style.DependsOnScrollStateContainerQueries()) ||
+         (RecalcAnchoredContainerQueryDependent() &&
+          style.DependsOnAnchoredContainerQueries());
 }
 
 String StyleRecalcChange::ToString() const {

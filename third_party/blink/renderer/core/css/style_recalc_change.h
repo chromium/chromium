@@ -231,7 +231,7 @@ class CORE_EXPORT StyleRecalcChange {
     return flags_ & kRecalcScrollStateContainerFlags;
   }
   bool RecalcAnchoredContainerQueryDependent() const {
-    return flags_ & kRecalcScrollStateContainerFlags;
+    return flags_ & kRecalcAnchoredContainerFlags;
   }
   bool RecalcContainerQueryDependent() const {
     return flags_ & kRecalcContainerFlags;

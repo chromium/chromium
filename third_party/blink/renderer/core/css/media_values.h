@@ -187,8 +187,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   }
   // Return the currently applied position-try-fallback for an anchored element.
   // 0 means no position-try-fallback is applied. Otherwise a 1-based index into
-  // the list of fallbacks of the computed position-try-fallback property.
-  virtual int PositionTryFallback() const { NOTREACHED(); }
+  // the list of fallbacks of the computed position-try-fallbacks property.
+  virtual int AnchoredFallback() const { NOTREACHED(); }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }

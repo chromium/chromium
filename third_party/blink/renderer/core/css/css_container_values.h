@@ -26,7 +26,8 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
       ContainerScrollableFlags scrollable_horizontal,
       ContainerScrollableFlags scrollable_vertical,
       ContainerScrollDirection scroll_direction_horizontal,
-      ContainerScrollDirection scroll_direction_vertical);
+      ContainerScrollDirection scroll_direction_vertical,
+      int anchored_fallback);
 
   // Returns std::nullopt if queries on the relevant axis is not
   // supported.
@@ -83,7 +84,7 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   ContainerScrollDirection ScrollDirectionInline() const override;
   ContainerScrollDirection ScrollDirectionBlock() const override;
 
-  int PositionTryFallback() const override { return position_try_fallback_; }
+  int AnchoredFallback() const override { return anchored_fallback_; }
 
  private:
   // The current computed style for the container.
@@ -113,9 +114,9 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
       ContainerScrollDirection::kNone;
   ContainerScrollDirection scroll_direction_vertical_ =
       ContainerScrollDirection::kNone;
-  // A 1-based index into the position-try-fallback applied to an anchored()
+  // A 1-based index into position-try-fallbacks applied to an anchored()
   // container. 0 if no position-try-fallbacks are applied.
-  int position_try_fallback_ = 0;
+  int anchored_fallback_ = 0;
   // Container font sizes for resolving relative lengths.
   CSSToLengthConversionData::FontSizes font_sizes_;
   // LineHeightSize of the container element.
