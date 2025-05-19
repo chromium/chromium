@@ -1562,9 +1562,9 @@ TEST_F(BookmarkModelTest, MoveWithUuidCollisionInDescendant) {
 // Tests the default node if no bookmarks have been added yet
 TEST_F(BookmarkModelTest, ParentForNewNodesWithEmptyModel) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  ASSERT_EQ(model_->mobile_node(), GetParentForNewNodes(model_.get()));
+  EXPECT_EQ(model_->mobile_node(), GetParentForNewNodes(model_.get()));
 #else
-  ASSERT_EQ(model_->bookmark_bar_node(), GetParentForNewNodes(model_.get()));
+  EXPECT_EQ(model_->other_node(), GetParentForNewNodes(model_.get()));
 #endif
 }
 
@@ -1576,7 +1576,7 @@ TEST_F(BookmarkModelTest, ParentCanBeBookmarkBarOnAndroid) {
   const GURL kUrl("http://foo.com");
 
   model_->AddURL(model_->bookmark_bar_node(), 0, kTitle, kUrl);
-  ASSERT_EQ(model_->bookmark_bar_node(), GetParentForNewNodes(model_.get()));
+  EXPECT_EQ(model_->bookmark_bar_node(), GetParentForNewNodes(model_.get()));
 }
 #endif
 
@@ -1586,7 +1586,7 @@ TEST_F(BookmarkModelTest, ParentForNewNodes) {
   const GURL kUrl("http://foo.com");
 
   model_->AddURL(model_->other_node(), 0, kTitle, kUrl);
-  ASSERT_EQ(model_->other_node(), GetParentForNewNodes(model_.get()));
+  EXPECT_EQ(model_->other_node(), GetParentForNewNodes(model_.get()));
 }
 
 // Tests that adding a URL to a folder updates the last modified time.
@@ -1595,7 +1595,7 @@ TEST_F(BookmarkModelTest, ParentForNewMobileNodes) {
   const GURL kUrl("http://foo.com");
 
   model_->AddURL(model_->mobile_node(), 0, kTitle, kUrl);
-  ASSERT_EQ(model_->mobile_node(), GetParentForNewNodes(model_.get()));
+  EXPECT_EQ(model_->mobile_node(), GetParentForNewNodes(model_.get()));
 }
 
 // Make sure recently modified stays in sync when adding a URL.
