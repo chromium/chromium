@@ -11,8 +11,8 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
-#include "components/autofill/core/browser/suggestions/single_fields/iban_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
