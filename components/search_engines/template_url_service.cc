@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/search_engines/template_url_service.h"
 
 #include <algorithm>
@@ -299,6 +298,30 @@ std::string_view SyncChangeTypeToHistogramSuffix(
       return "Deleted";
   }
   NOTREACHED();
+}
+
+// Logs the number of changes of each type to the histogram
+// `histogram_prefix_{Type}` upon MergeDataAndStartSyncing and
+// ProcessSyncChanges.
+void LogSyncChangesToHistogram(const syncer::SyncChangeList& change_list,
+                               std::string_view histogram_prefix) {
+  auto counts = base::MakeFixedFlatMap<syncer::SyncChange::SyncChangeType, int>(
+      {{syncer::SyncChange::ACTION_ADD, 0},
+       {syncer::SyncChange::ACTION_UPDATE, 0},
+       {syncer::SyncChange::ACTION_DELETE, 0}});
+  for (const syncer::SyncChange& change : change_list) {
+    // No ADDs should be committed upon initial or incremental update.
+    CHECK(!base::FeatureList::IsEnabled(
+              syncer::kSeparateLocalAndAccountSearchEngines) ||
+          change.change_type() != syncer::SyncChange::ACTION_ADD);
+    ++counts.at(change.change_type());
+  }
+  for (const auto& [type, count] : counts) {
+    base::UmaHistogramCounts100(
+        base::StringPrintf("%s_%s", histogram_prefix,
+                           SyncChangeTypeToHistogramSuffix(type)),
+        count);
+  }
 }
 
 }  // namespace
@@ -1901,6 +1924,8 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
     return error;
   }
 
+  LogSyncChangesToHistogram(
+      new_changes, "Sync.SearchEngine.ChangesCommittedUponIncrementalUpdate");
   return sync_processor_->ProcessSyncChanges(from_here, new_changes);
 }
 
@@ -2024,8 +2049,8 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   // valid changes to sync_processor_.
   PruneSyncChanges(&sync_data_map, &new_changes);
 
-  base::UmaHistogramCounts100(
-      "Sync.SearchEngine.NewChangesCommittedUponSyncStart", new_changes.size());
+  LogSyncChangesToHistogram(new_changes,
+                            "Sync.SearchEngine.ChangesCommittedUponSyncStart");
   std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
   if (!error.has_value()) {
