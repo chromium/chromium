@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_SERVICE_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
@@ -81,7 +82,7 @@ class CONTENT_EXPORT PermissionServiceContext
   // May return nullptr during teardown, or when showing an interstitial.
   BrowserContext* GetBrowserContext() const;
 
-  GURL GetEmbeddingOrigin() const;
+  std::optional<GURL> GetEmbeddingOrigin() const;
 
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
   RenderProcessHost* render_process_host() const {

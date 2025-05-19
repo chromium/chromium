@@ -470,7 +470,7 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatusForCurrentContext(
             permission, context_->render_process_host(), origin_);
   }
 
-  DCHECK(context_->GetEmbeddingOrigin().is_empty());
+  DCHECK(!context_->GetEmbeddingOrigin().has_value());
   return browser_context->GetPermissionController()
       ->GetPermissionResultForOriginWithoutContext(permission, origin_)
       .status;
@@ -506,11 +506,10 @@ void PermissionServiceImpl::ResetPermissionStatus(blink::PermissionType type) {
 
   GURL requesting_origin(origin_.GetURL());
   // If the embedding_origin is empty we'll use |origin_| instead.
-  GURL embedding_origin = context_->GetEmbeddingOrigin();
   PermissionControllerImpl::FromBrowserContext(browser_context)
       ->ResetPermission(
           type, requesting_origin,
-          embedding_origin.is_empty() ? requesting_origin : embedding_origin);
+          context_->GetEmbeddingOrigin().value_or(requesting_origin));
 }
 
 void PermissionServiceImpl::ReceivedBadMessage() {

@@ -225,10 +225,15 @@ BrowserContext* PermissionServiceContext::GetBrowserContext() const {
   return nullptr;
 }
 
-GURL PermissionServiceContext::GetEmbeddingOrigin() const {
-  return render_frame_host_ ? PermissionUtil::GetLastCommittedOriginAsURL(
-                                  render_frame_host_->GetMainFrame())
-                            : GURL();
+std::optional<GURL> PermissionServiceContext::GetEmbeddingOrigin() const {
+  if (render_frame_host_) {
+    GURL origin_as_url(PermissionUtil::GetLastCommittedOriginAsURL(
+        render_frame_host_->GetMainFrame()));
+    if (!origin_as_url.is_empty()) {
+      return origin_as_url;
+    }
+  }
+  return std::nullopt;
 }
 
 void PermissionServiceContext::RenderProcessHostDestroyed(
