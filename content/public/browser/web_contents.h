@@ -947,6 +947,25 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       RenderFrameHost* render_frame_host,
       bool is_full_page) = 0;
 
+  // The unowned version of AttachInnerWebContents(). The caller should manage
+  // the lifetime of the inner WebContents.
+  // WARNING: this is for prototyping purposes only. You should not use this in
+  // production. In the long term, the concept of inner WebContents should
+  // probably be removed from the WebContents API.
+  // TODO(crbug.com/416609971): Remove this method once we find a way to attach
+  // inner WebContents without using WebContents trees.
+  virtual void AttachUnownedInnerWebContents(
+      WebContents* inner_web_contents,
+      RenderFrameHost* render_frame_host) = 0;
+
+  // Detaches the unowned `inner_web_contents` from this outer WebContents.
+  // WARNING: this is for prototyping purposes only. You should not use this in
+  // production.
+  // TODO(crbug.com/416609971): Remove this method once we find a way to attach
+  // inner WebContents without using WebContents trees.
+  virtual void DetachUnownedInnerWebContents(
+      WebContents* inner_web_contents) = 0;
+
   // Attaches `guest_page` to the container frame `outer_render_frame_host`,
   // which must be in a FrameTree for this WebContents. Note:
   // `outer_render_frame_host` will be swapped out and destroyed during the

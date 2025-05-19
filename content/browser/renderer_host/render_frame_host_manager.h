@@ -691,8 +691,13 @@ class CONTENT_EXPORT RenderFrameHostManager {
   }
 
   // Called by the delegate at the end of the attaching process.
-  void set_attach_complete() {
+  void set_attach_inner_delegate_complete() {
     attach_to_inner_delegate_state_ = AttachToInnerDelegateState::ATTACHED;
+  }
+
+  // Called by the delegate at the end of the detaching process.
+  void set_detach_inner_delegate_complete() {
+    attach_to_inner_delegate_state_ = AttachToInnerDelegateState::NONE;
   }
 
   Delegate* delegate() { return delegate_; }

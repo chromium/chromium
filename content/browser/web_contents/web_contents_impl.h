@@ -483,6 +483,9 @@ class CONTENT_EXPORT WebContentsImpl
       std::unique_ptr<WebContents> inner_web_contents,
       RenderFrameHost* render_frame_host,
       bool is_full_page) override;
+  void AttachUnownedInnerWebContents(WebContents* inner_web_contents,
+    RenderFrameHost* render_frame_host) override;
+  void DetachUnownedInnerWebContents(WebContents* inner_web_contents) override;
   void AttachGuestPage(std::unique_ptr<GuestPageHolder> guest_page,
                        RenderFrameHost* outer_render_frame_host) override;
   bool IsInnerWebContentsForGuest() override;
@@ -1772,10 +1775,20 @@ class CONTENT_EXPORT WebContentsImpl
     explicit WebContentsTreeNode(WebContentsImpl* current_web_contents);
     ~WebContentsTreeNode() final;
 
-    // Attaches |inner_web_contents| to the |render_frame_host| within this
-    // WebContents.
-    void AttachInnerWebContents(std::unique_ptr<WebContents> inner_web_contents,
-                                RenderFrameHostImpl* render_frame_host);
+    // Attaches `inner_web_contents` to the `render_frame_host` within this
+    // WebContents. If `should_take_ownership` is true, this WebContents will
+    // take ownership of `inner_web_contents`.
+    void AttachInnerWebContents(WebContents* inner_web_contents,
+      RenderFrameHostImpl* render_frame_host,
+      bool should_take_ownership);
+
+    // Detaches `inner_web_contents` from the outer WebContents.
+    void DetachInnerWebContents(WebContents* inner_web_contents);
+
+    // Returns true if `inner_web_contents` is attached but not owned by this
+    // WebContentsTreeNode. This function will CHECK fail if
+    // `inner_web_contents` is not attached to this WebContentsTreeNode.
+    bool IsUnownedInnerWebContents(WebContents* inner_web_contents) const;
 
     WebContentsImpl* outer_web_contents() const { return outer_web_contents_; }
     FrameTreeNodeId outer_contents_frame_tree_node_id() const {
@@ -1793,8 +1806,8 @@ class CONTENT_EXPORT WebContentsImpl
     std::vector<WebContentsImpl*> GetInnerWebContents() const;
 
    private:
-    std::unique_ptr<WebContents> DetachInnerWebContents(
-        WebContentsImpl* inner_web_contents);
+    void DetachUnownedInnerWebContents(WebContentsImpl* inner_web_contents);
+    void DestroyOwnedInnerWebContents(WebContentsImpl* inner_web_contents);
 
     // FrameTreeNode::Observer implementation.
     void OnFrameTreeNodeDestroyed(FrameTreeNode* node) final;
@@ -1810,9 +1823,11 @@ class CONTENT_EXPORT WebContentsImpl
     // |current_web_contents_| as an inner WebContents.
     FrameTreeNodeId outer_contents_frame_tree_node_id_;
 
-    // List of inner WebContents that we host. The outer WebContents owns the
-    // inner WebContents.
-    std::vector<std::unique_ptr<WebContents>> inner_web_contents_;
+    // List of inner WebContents that we host and own.
+    std::vector<std::unique_ptr<WebContents>> owned_inner_web_contents_;
+
+    // List of inner WebContents that we host but don't own.
+    std::vector<raw_ptr<WebContents>> unowned_inner_web_contents_;
 
     // Only the root node should have this set. This indicates the FrameTree
     // that has the focused frame. The FrameTree tree could be arbitrarily deep.
@@ -1974,6 +1989,13 @@ class CONTENT_EXPORT WebContentsImpl
   // Returns true if |this| is the focused WebContents or an ancestor of the
   // focused WebContents.
   bool ContainsOrIsFocusedWebContents();
+
+  // Internal implementation of AttachInnerWebContents() and
+  // AttachUnownedInnerWebContents().
+  void AttachInnerWebContentsImpl(WebContents* inner_web_contents,
+    RenderFrameHost* render_frame_host,
+    bool is_full_page,
+    bool should_take_ownership);
 
   // Called just after an inner web contents is attached.
   void InnerWebContentsAttached(WebContents* inner_web_contents);

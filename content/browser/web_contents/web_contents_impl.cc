@@ -1073,48 +1073,104 @@ WebContentsImpl::WebContentsTreeNode::WebContentsTreeNode(
 WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() = default;
 
 void WebContentsImpl::WebContentsTreeNode::AttachInnerWebContents(
-    std::unique_ptr<WebContents> inner_web_contents,
-    RenderFrameHostImpl* render_frame_host) {
+    WebContents* inner_web_contents,
+    RenderFrameHostImpl* render_frame_host,
+    bool should_take_ownership) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsTreeNode::AttachInnerWebContents");
   WebContentsImpl* inner_web_contents_impl =
-      static_cast<WebContentsImpl*>(inner_web_contents.get());
+      static_cast<WebContentsImpl*>(inner_web_contents);
   WebContentsTreeNode& inner_web_contents_node = inner_web_contents_impl->node_;
 
   inner_web_contents_node.outer_web_contents_ = current_web_contents_;
   inner_web_contents_node.outer_contents_frame_tree_node_id_ =
       render_frame_host->frame_tree_node()->frame_tree_node_id();
 
-  if (inner_web_contents) {
+  if (should_take_ownership) {
     inner_web_contents->SetOwnerLocationForDebug(FROM_HERE);
+    owned_inner_web_contents_.push_back(base::WrapUnique(inner_web_contents));
+  } else {
+    unowned_inner_web_contents_.push_back(inner_web_contents);
   }
-  inner_web_contents_.push_back(std::move(inner_web_contents));
 
   render_frame_host->frame_tree_node()->AddObserver(&inner_web_contents_node);
   current_web_contents_->InnerWebContentsAttached(inner_web_contents_impl);
 }
 
-std::unique_ptr<WebContents>
-WebContentsImpl::WebContentsTreeNode::DetachInnerWebContents(
-    WebContentsImpl* inner_web_contents) {
+void WebContentsImpl::WebContentsTreeNode::DetachInnerWebContents(
+    WebContents* inner_web_contents) {
   OPTIONAL_TRACE_EVENT0(
       "content",
       "WebContentsImpl::WebContentsTreeNode::DetachInnerWebContents");
-  std::unique_ptr<WebContents> detached_contents;
-  for (std::unique_ptr<WebContents>& web_contents : inner_web_contents_) {
-    if (web_contents.get() == inner_web_contents) {
-      detached_contents = std::move(web_contents);
-      std::swap(web_contents, inner_web_contents_.back());
-      inner_web_contents_.pop_back();
-      current_web_contents_->InnerWebContentsDetached(inner_web_contents);
-      if (detached_contents) {
-        detached_contents->SetOwnerLocationForDebug(std::nullopt);
-      }
-      return detached_contents;
-    }
+  CHECK_EQ(inner_web_contents->GetOuterWebContents(), current_web_contents_);
+
+  auto* inner_web_contents_impl =
+      static_cast<WebContentsImpl*>(inner_web_contents);
+  if (IsUnownedInnerWebContents(inner_web_contents)) {
+    DetachUnownedInnerWebContents(inner_web_contents_impl);
+  } else {
+    DestroyOwnedInnerWebContents(inner_web_contents_impl);
+  }
+}
+
+bool WebContentsImpl::WebContentsTreeNode::IsUnownedInnerWebContents(
+    WebContents* inner_web_contents) const {
+  CHECK_EQ(inner_web_contents->GetOuterWebContents(), current_web_contents_);
+  return base::Contains(unowned_inner_web_contents_, inner_web_contents);
+}
+
+void WebContentsImpl::WebContentsTreeNode::DetachUnownedInnerWebContents(
+    WebContentsImpl* inner_web_contents) {
+  std::erase(unowned_inner_web_contents_, inner_web_contents);
+
+  // Detach WebContents tree node and frame tree node.
+  bool was_inner_web_contents_focused =
+      inner_web_contents->ContainsOrIsFocusedWebContents();
+  FrameTree* focused_frame_tree = inner_web_contents->GetFocusedFrameTree();
+  WebContentsTreeNode& inner_web_contents_node = inner_web_contents->node_;
+  inner_web_contents_node.outer_web_contents_ = nullptr;
+  FrameTreeNode* outer_contents_frame_tree_node =
+      inner_web_contents_node.OuterContentsFrameTreeNode();
+  outer_contents_frame_tree_node->RemoveObserver(&inner_web_contents_node);
+  outer_contents_frame_tree_node->current_frame_host()
+      ->set_inner_tree_main_frame_tree_node_id(FrameTreeNodeId());
+  outer_contents_frame_tree_node->render_manager()
+      ->set_detach_inner_delegate_complete();
+  inner_web_contents_node.outer_contents_frame_tree_node_id_ =
+      FrameTreeNodeId();
+
+  // Reset inner WebContents's focused frame tree.
+  // When attached, only the outermost WebContents retains a focused tree. After
+  // detaching, the inner WebContents becomes the outermost WebContents from its
+  // perspective, so its focused frame tree needs to be set.
+  inner_web_contents_node.SetFocusedFrameTree(
+    was_inner_web_contents_focused ?
+      focused_frame_tree : &inner_web_contents->GetPrimaryFrameTree());
+  // Reset the outermost WebContents's focused frame tree if the inner
+  // WebContents was focused before detaching.
+  if (was_inner_web_contents_focused) {
+    current_web_contents_->SetAsFocusedWebContentsIfNecessary();
   }
 
-  NOTREACHED();
+  current_web_contents_->InnerWebContentsDetached(inner_web_contents);
+}
+
+void WebContentsImpl::WebContentsTreeNode::DestroyOwnedInnerWebContents(
+    WebContentsImpl* inner_web_contents) {
+  std::unique_ptr<WebContents> inner_web_contents_to_delete;
+  for (std::unique_ptr<WebContents>& web_contents : owned_inner_web_contents_) {
+    if (web_contents.get() == inner_web_contents) {
+      // Remove the WebContents from the list of owned WebContents.
+      inner_web_contents_to_delete = std::move(web_contents);
+      std::swap(web_contents, owned_inner_web_contents_.back());
+      owned_inner_web_contents_.pop_back();
+      break;
+    }
+  }
+  CHECK(inner_web_contents_to_delete);
+  inner_web_contents->SetOwnerLocationForDebug(std::nullopt);
+  current_web_contents_->InnerWebContentsDetached(inner_web_contents);
+  inner_web_contents_to_delete.reset();
 }
 
 FrameTreeNode*
@@ -1152,8 +1208,14 @@ WebContentsImpl*
 WebContentsImpl::WebContentsTreeNode::GetInnerWebContentsInFrame(
     const FrameTreeNode* frame) {
   auto ftn_id = frame->frame_tree_node_id();
-  for (auto& contents : inner_web_contents_) {
+  for (auto& contents : owned_inner_web_contents_) {
     WebContentsImpl* impl = static_cast<WebContentsImpl*>(contents.get());
+    if (impl->node_.outer_contents_frame_tree_node_id() == ftn_id) {
+      return impl;
+    }
+  }
+  for (auto& contents : unowned_inner_web_contents_) {
+    WebContentsImpl* impl = static_cast<WebContentsImpl*>(contents);
     if (impl->node_.outer_contents_frame_tree_node_id() == ftn_id) {
       return impl;
     }
@@ -1164,8 +1226,11 @@ WebContentsImpl::WebContentsTreeNode::GetInnerWebContentsInFrame(
 std::vector<WebContentsImpl*>
 WebContentsImpl::WebContentsTreeNode::GetInnerWebContents() const {
   std::vector<WebContentsImpl*> inner_web_contents;
-  for (auto& contents : inner_web_contents_) {
+  for (auto& contents : owned_inner_web_contents_) {
     inner_web_contents.push_back(static_cast<WebContentsImpl*>(contents.get()));
+  }
+  for (auto& contents : unowned_inner_web_contents_) {
+    inner_web_contents.push_back(static_cast<WebContentsImpl*>(contents));
   }
 
   return inner_web_contents;
@@ -1433,6 +1498,11 @@ WebContentsImpl::~WebContentsImpl() {
   if (this != outermost && ContainsOrIsFocusedWebContents()) {
     // If the current WebContents is in focus, unset it.
     outermost->SetAsFocusedWebContentsIfNecessary();
+  }
+
+  if (GetOuterWebContents()
+      && GetOuterWebContents()->node_.IsUnownedInnerWebContents(this)) {
+    GetOuterWebContents()->DetachUnownedInnerWebContents(this);
   }
 
   if (pointer_lock_widget_) {
@@ -3153,15 +3223,33 @@ void WebContentsImpl::AttachInnerWebContents(
     std::unique_ptr<WebContents> inner_web_contents,
     RenderFrameHost* render_frame_host,
     bool is_full_page) {
-  // Not reachable with MPArch based guests.
+  // Not reachable with MPArch based guest view.
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  AttachInnerWebContentsImpl(inner_web_contents.release(), render_frame_host,
+                            is_full_page,
+                            /*should_take_ownership=*/true);
+}
 
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::AttachInnerWebContents",
-                        "inner_web_contents",
-                        static_cast<void*>(inner_web_contents.get()),
-                        "is_full_page", is_full_page);
+void WebContentsImpl::AttachUnownedInnerWebContents(
+    WebContents* inner_web_contents,
+    RenderFrameHost* render_frame_host) {
+  AttachInnerWebContentsImpl(inner_web_contents, render_frame_host,
+                            /*is_full_page=*/false,
+                            /*should_take_ownership=*/false);
+}
+
+void WebContentsImpl::AttachInnerWebContentsImpl(
+    WebContents* inner_web_contents,
+    RenderFrameHost* render_frame_host,
+    bool is_full_page,
+    bool should_take_ownership) {
+  OPTIONAL_TRACE_EVENT("content", "WebContentsImpl::AttachInnerWebContents",
+                       "inner_web_contents",
+                       static_cast<void*>(inner_web_contents), "is_full_page",
+                       is_full_page, "should_take_ownership",
+                       should_take_ownership);
   WebContentsImpl* inner_web_contents_impl =
-      static_cast<WebContentsImpl*>(inner_web_contents.get());
+      static_cast<WebContentsImpl*>(inner_web_contents);
   DCHECK(!inner_web_contents_impl->node_.outer_web_contents());
   auto* render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
@@ -3221,8 +3309,8 @@ void WebContentsImpl::AttachInnerWebContents(
   inner_web_contents_impl->RecursivelyUnregisterRenderWidgetHostViews();
 
   // Create a link to our outer WebContents.
-  node_.AttachInnerWebContents(std::move(inner_web_contents),
-                               render_frame_host_impl);
+  node_.AttachInnerWebContents(inner_web_contents, render_frame_host_impl,
+                               should_take_ownership);
 
   // Create a proxy in top-level RenderFrameHostManager, pointing to the
   // SiteInstanceGroup of the outer WebContents. The proxy will be used to send
@@ -3251,7 +3339,7 @@ void WebContentsImpl::AttachInnerWebContents(
         inner_web_contents_impl->primary_frame_tree_.root(),
         render_frame_host_impl->GetSiteInstance()->group());
   }
-  outer_render_manager->set_attach_complete();
+  outer_render_manager->set_attach_inner_delegate_complete();
 
   // If the inner WebContents is full frame, give it focus.
   if (is_full_page) {
@@ -3267,6 +3355,66 @@ void WebContentsImpl::AttachInnerWebContents(
   // Make sure that the inner web contents and its outer delegate get properly
   // linked via the embedding token now that inner web contents are attached.
   inner_main_frame->PropagateEmbeddingTokenToParentFrame();
+}
+
+void WebContentsImpl::DetachUnownedInnerWebContents(
+    WebContents* inner_web_contents) {
+  CHECK(base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents));
+  CHECK(node_.IsUnownedInnerWebContents(inner_web_contents));
+
+  WebContentsImpl* inner_web_contents_impl =
+      static_cast<WebContentsImpl*>(inner_web_contents);
+  // Unregister and destroy RenderWidgetHostViewChildFrame.
+  inner_web_contents_impl->RecursivelyUnregisterRenderWidgetHostViews();
+
+  // RenderWidgetHostView are of type RenderWidgetHostViewChildFrame and they
+  // need to be re-created with appropriate platform views.
+  std::vector<RenderViewHostImpl*> list_of_rvh_with_rwhv;
+  inner_web_contents_impl->GetPrimaryFrameTree().ForEachRenderViewHost(
+      [&list_of_rvh_with_rwhv](RenderViewHostImpl* rvh) {
+        if (rvh->GetWidget() && rvh->GetWidget()->GetView()) {
+          CHECK(
+              rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame());
+          rvh->GetWidget()->GetView()->Destroy();
+          list_of_rvh_with_rwhv.push_back(rvh);
+        }
+      });
+
+  // Destroy WebContentsViewChildFrame.
+  inner_web_contents_impl->render_view_host_delegate_view_ = nullptr;
+  inner_web_contents_impl->view_ = nullptr;
+
+  // Reset proxy.
+  RenderFrameHostManager* inner_render_manager =
+      inner_web_contents_impl->GetRenderManager();
+  RenderFrameHostImpl* inner_main_frame =
+      inner_render_manager->current_frame_host();
+  RenderFrameProxyHost* proxy = inner_render_manager->GetProxyToOuterDelegate();
+  if (proxy) {
+    inner_main_frame->browsing_context_state()->DeleteRenderFrameProxyHost(
+        proxy->site_instance_group(),
+        BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
+  }
+
+  node_.DetachInnerWebContents(inner_web_contents_impl);
+
+  // Recreate WebContentsView.
+  inner_web_contents_impl->view_ = CreateWebContentsView(
+      inner_web_contents_impl,
+      GetContentClient()->browser()->GetWebContentsViewDelegate(
+          inner_web_contents_impl),
+      &inner_web_contents_impl->render_view_host_delegate_view_);
+  inner_web_contents_impl->view_->CreateView(gfx::NativeView());
+
+  // Recreate and register RenderWidgetHostView. Don't do this if the
+  // WebContents is being destroyed because it will cause a CHECK failure in
+  // SendScreenRects().
+  if (!inner_web_contents_impl->IsBeingDestroyed()) {
+    for (RenderViewHostImpl* rvh : list_of_rvh_with_rwhv) {
+      inner_web_contents_impl->CreateRenderWidgetHostViewForRenderManager(rvh);
+    }
+    inner_web_contents_impl->RecursivelyRegisterRenderWidgetHostViews();
+  }
 }
 
 void WebContentsImpl::AttachGuestPage(
@@ -3363,7 +3511,7 @@ void WebContentsImpl::AttachGuestPage(
   inner_render_manager->SetRWHViewForInnerFrameTree(child_rwhv);
   child_rwhv->RegisterFrameSinkId();
 
-  outer_render_manager->set_attach_complete();
+  outer_render_manager->set_attach_inner_delegate_complete();
   inner_main_frame->PropagateEmbeddingTokenToParentFrame();
   // TODO(crbug.com/40202416): Determine if anything else is needed here.
 }
