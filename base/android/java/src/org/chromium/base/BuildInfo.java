@@ -92,6 +92,9 @@ public class BuildInfo {
     /** Whether we're running on an Android Foldable OS device or not. */
     public final boolean isFoldable;
 
+    /** Whether we're running on an Android Desktop OS device or not. */
+    public final boolean isDesktop;
+
     /**
      * version of the FEATURE_VULKAN_DEQP_LEVEL, if available. Queried only on Android T or above
      */
@@ -187,6 +190,7 @@ public class BuildInfo {
         isTV = DeviceInfo.isTV();
         isAutomotive = DeviceInfo.isAutomotive();
         isFoldable = DeviceInfo.isFoldable();
+        isDesktop = DeviceInfo.isDesktop();
         vulkanDeqpLevel = DeviceInfo.getVulkanDeqpLevel();
     }
 
