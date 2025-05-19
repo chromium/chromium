@@ -77,6 +77,10 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
   // No-op.
 }
 
+- (void)setIncognitoToolbarsBackgroundHidden:(BOOL)hidden {
+  // No-op.
+}
+
 @end
 
 class TabGroupsPanelCoordinatorTest : public PlatformTest {

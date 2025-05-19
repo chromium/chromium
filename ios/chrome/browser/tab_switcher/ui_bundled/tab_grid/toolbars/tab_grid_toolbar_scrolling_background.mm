@@ -89,4 +89,8 @@
   }
 }
 
+- (void)hideIncognitoToolbarBackground:(BOOL)hidden {
+  _incognitoTabsBackground.alpha = hidden ? 0 : 1;
+}
+
 @end

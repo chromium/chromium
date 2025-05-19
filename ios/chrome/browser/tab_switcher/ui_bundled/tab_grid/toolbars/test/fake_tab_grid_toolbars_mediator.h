@@ -19,6 +19,7 @@
 @property(nonatomic, strong) TabGridToolbarsConfiguration* configuration;
 @property(nonatomic, weak) id<TabGridToolbarsGridDelegate> delegate;
 @property(nonatomic, assign) BOOL enabled;
+@property(nonatomic, assign) BOOL incognitoHidden;
 
 @end
 

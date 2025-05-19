@@ -167,6 +167,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   _doneButton.enabled = enabled;
 }
 
+- (void)setIncognitoBackgroundHidden:(BOOL)hidden {
+  [_scrollBackgroundView hideIncognitoToolbarBackground:hidden];
+}
+
 - (void)useUndoCloseAll:(BOOL)useUndo {
   _closeAllOrUndoButton.enabled = YES;
   if (useUndo) {

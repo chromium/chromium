@@ -125,6 +125,11 @@
   }
 }
 
+- (void)setIncognitoToolbarsBackgroundHidden:(BOOL)hidden {
+  [self.topToolbarConsumer setIncognitoBackgroundHidden:hidden];
+  [self.bottomToolbarConsumer setIncognitoBackgroundHidden:hidden];
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList

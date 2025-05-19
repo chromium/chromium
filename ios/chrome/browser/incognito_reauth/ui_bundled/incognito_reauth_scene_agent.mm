@@ -255,8 +255,8 @@
   [self logEnabledHistogramOnce];
   if (IsIOSSoftLockEnabled()) {
     [self setUpPrefObservers];
+    [self notifyObservers];
     [self maybeEnterTabGridWithSceneState:sceneState];
-
     [self logIncognitoLockStateHistogramOnce];
     [self recordIncognitoLockImpressionForSceneState:sceneState];
   }

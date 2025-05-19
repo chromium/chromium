@@ -862,6 +862,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.pagingEnabled = YES;
+  scrollView.showsHorizontalScrollIndicator = NO;
   scrollView.delegate = self;
   // Ensures that scroll view does not add additional margins based on safe
   // areas.

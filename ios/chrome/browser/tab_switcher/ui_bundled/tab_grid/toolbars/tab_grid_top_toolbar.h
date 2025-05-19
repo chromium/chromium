@@ -88,6 +88,8 @@
 // Sets the toolbar background offset to match the content scroll view offset.
 - (void)setBackgroundContentOffset:(CGPoint)backgroundContentOffset
                           animated:(BOOL)animated;
+// Sets whether the incognito toolbar background should be hidden.
+- (void)setIncognitoBackgroundHidden:(BOOL)hidden;
 
 @end
 

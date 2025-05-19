@@ -172,6 +172,11 @@
   _closeAllOrUndoButton.enabled = enabled;
 }
 
+- (void)setIncognitoBackgroundHidden:(BOOL)hidden {
+  [_scrollBackgroundView hideIncognitoToolbarBackground:hidden];
+  [self updateBackgroundVisibility];
+}
+
 - (void)useUndoCloseAll:(BOOL)useUndo {
   _closeAllOrUndoButton.enabled = YES;
   if (useUndo) {

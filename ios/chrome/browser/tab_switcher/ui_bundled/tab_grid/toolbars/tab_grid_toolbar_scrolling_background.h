@@ -18,7 +18,8 @@
 - (void)updateBackgroundsForPage:(TabGridPage)page
             scrolledToEdgeHidden:(BOOL)scrolledToEdge
     scrolledBackgroundViewHidden:(BOOL)scrolledBackgroundViewHidden;
-
+// Hides incognito toolbar according to `hidden` by setting the alpha value.
+- (void)hideIncognitoToolbarBackground:(BOOL)hidden;
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TOOLBARS_TAB_GRID_TOOLBAR_SCROLLING_BACKGROUND_H_

@@ -26,6 +26,11 @@
 // enable the saved configuration.
 - (void)setButtonsEnabled:(BOOL)enabled;
 
+// Sends YES to hide toolbars on the incognito page on the tab switcher when
+// authentication is required to give the full screen blur effect, NO to reshow
+// toolbars.
+- (void)setIncognitoToolbarsBackgroundHidden:(BOOL)hidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GRID_TOOLBARS_MUTATOR_H_

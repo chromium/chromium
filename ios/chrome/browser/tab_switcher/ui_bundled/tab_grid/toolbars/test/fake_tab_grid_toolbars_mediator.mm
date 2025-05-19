@@ -18,4 +18,8 @@
   self.enabled = enabled;
 }
 
+- (void)setIncognitoToolbarsBackgroundHidden:(BOOL)hidden {
+  self.incognitoHidden = hidden;
+}
+
 @end
