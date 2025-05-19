@@ -1116,6 +1116,18 @@ BASE_FEATURE(kAllowMediaCodecCallsInSeparateProcess,
              "AllowMediaCodecCallsInSeparateProcess",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows Chrome to query Android for supported layouts, and forces the use
+// of the layout with the maximum number of channels. This avoids
+// downmixing (and losing channel information) if a media file starts with
+// a low channel count but switches to a higher channel later in the file.
+// For example, when this feature is disabled and playing a media file
+// which starts with 5.1 and switches to 7.1, we would be forced to downmix
+// from 7.1 to 5.1, since we don't update ChannelLayouts mid-playback.
+// Used on Android automotive only.
+BASE_FEATURE(kUseAudioManagerMaxChannelLayout,
+             "UseAudioManagerMaxChannelLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

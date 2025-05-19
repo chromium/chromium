@@ -161,6 +161,7 @@ if (is_android) {
       ":media_java_resources",
       "//base:base_java",
       "//build/android:build_java",
+      "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]

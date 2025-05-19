@@ -29,6 +29,7 @@
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_OPENSLES)
@@ -623,6 +624,14 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     }
   }
 
+  if (base::FeatureList::IsEnabled(kUseAudioManagerMaxChannelLayout)) {
+    // Since channel count never changes over the lifetime of an output stream,
+    // use the max number of channels supported. This can prevent down-sampling
+    // and loss of channel information (e.g. if a stream starts as stereo and
+    // changes to 5.1)
+    channel_layout_config = GetLayoutWithMaxChannels(channel_layout_config);
+  }
+
   int user_buffer_size = GetUserBufferSize();
   if (user_buffer_size) {
     buffer_size = user_buffer_size;
@@ -633,7 +642,6 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     return GetAudioFormatsSupportedBySinkDevice(
         output_device_id, channel_layout_config, sample_rate, buffer_size);
   }
-
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          channel_layout_config, sample_rate, buffer_size);
 }
@@ -752,6 +760,22 @@ void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
   for (auto stream : streams_) {
     stream->SetVolume(volume);
   }
+}
+
+ChannelLayoutConfig AudioManagerAndroid::GetLayoutWithMaxChannels(
+    ChannelLayoutConfig layout_configuration) {
+  JNIEnv* env = AttachCurrentThread();
+  int value = Java_AudioManagerAndroid_getLayoutWithMaxChannels(
+      env, GetJavaAudioManager());
+  CHECK_GT(value, 0);
+  CHECK_LE(value, CHANNEL_LAYOUT_MAX);
+  ChannelLayout channel_layout = static_cast<ChannelLayout>(value);
+  int number_channels = ChannelLayoutToChannelCount(channel_layout);
+  if (number_channels > layout_configuration.channels()) {
+    return ChannelLayoutConfig(channel_layout, number_channels);
+  }
+
+  return layout_configuration;
 }
 
 }  // namespace media

@@ -130,6 +130,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const ChannelLayoutConfig& channel_layout_config,
       int sample_rate,
       int buffer_size);
+  ChannelLayoutConfig GetLayoutWithMaxChannels(
+      ChannelLayoutConfig layout_configuration);
 
   void DoSetMuteOnAudioThread(bool muted);
   void DoSetVolumeOnAudioThread(double volume);

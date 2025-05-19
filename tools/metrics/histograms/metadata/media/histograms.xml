@@ -573,6 +573,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.Android.MissingChannelMask" units="sparse"
+    expires_after="2026-06-01">
+  <owner>dvalenzuela@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the AudioDevice channel masks that are supported by Android
+    automotive, but not yet mapped to a corresponding media::ChannelLayout. To
+    interpret these numbers as AudioFormat.channelMasks, see:
+    https://developer.android.com/reference/android/media/AudioFormat#channelMask
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Android.SupportedChannelMask" units="sparse"
+    expires_after="2026-06-01">
+  <owner>dvalenzuela@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the AudioDevice channel masks that are supported by Android
+    automotive. These only include masks that are mapped to a corresponding
+    media::ChannelLayout. To interpret these numbers as
+    AudioFormat.channelMasks, see:
+    https://developer.android.com/reference/android/media/AudioFormat#channelMask
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
     expires_after="2025-11-25">
   <owner>evliu@google.com</owner>
