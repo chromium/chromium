@@ -792,10 +792,6 @@ public class FlagsFragmentTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testResetFlagsByIntent() throws Throwable {
-        // TODO(crbug.com/408061337): Check whether this pollUiThread fixes the test failures on
-        // Android P builders and remove if not.
-        CriteriaHelper.pollUiThread(
-                () -> mRule.getActivity().hasWindowFocus(), "Activity did not gain focus.");
         // 1. First test that the intent resets the flags
         // Given one flag is set
         toggleFlag(onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1), true);
