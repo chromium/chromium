@@ -16,14 +16,11 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -89,13 +86,18 @@ class UserSessionActivityReporterBrowserTest
                                        /*check_if_submittable=*/true);
   }
 
+  void SetReportActivityTimesPolicy(bool value) {
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_activity_times(value);
+  }
+
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId)};
 
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
-
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -103,8 +105,7 @@ class UserSessionActivityReporterBrowserTest
 IN_PROC_BROWSER_TEST_F(UserSessionActivityReporterBrowserTest,
                        ReportSessionActivity) {
   // Enable policy.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      kReportDeviceActivityTimes, true);
+  SetReportActivityTimesPolicy(true);
 
   MissiveClientTestObserver missive_observer(
       Destination::USER_SESSION_ACTIVITY);
@@ -137,8 +138,7 @@ IN_PROC_BROWSER_TEST_F(UserSessionActivityReporterBrowserTest,
 IN_PROC_BROWSER_TEST_F(UserSessionActivityReporterBrowserTest,
                        ReportSessionActivityWhenUserLocksDevice) {
   // Enable policy.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      kReportDeviceActivityTimes, true);
+  SetReportActivityTimesPolicy(true);
 
   MissiveClientTestObserver missive_observer(
       Destination::USER_SESSION_ACTIVITY);
@@ -210,8 +210,7 @@ IN_PROC_BROWSER_TEST_F(UserSessionActivityReporterBrowserTest,
 IN_PROC_BROWSER_TEST_F(UserSessionActivityReporterBrowserTest,
                        DoesNotReportWhenPolicyIsDisabled) {
   // Turn off policy
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      kReportDeviceActivityTimes, false);
+  SetReportActivityTimesPolicy(false);
 
   MissiveClientTestObserver missive_observer(
       Destination::USER_SESSION_ACTIVITY);

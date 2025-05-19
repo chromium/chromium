@@ -6,20 +6,15 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/os_events.pb.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -74,8 +69,6 @@ class OsUpdatesReporterBrowserTest
  protected:
   OsUpdatesReporterBrowserTest() {
     login_manager_mixin_.AppendRegularUsers(1);
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportOsUpdateStatus, true);
   }
 
   void SetUpOnMainThread() override {
@@ -96,6 +89,10 @@ class OsUpdatesReporterBrowserTest
         kTestAffiliationId);
     user_policy_update->policy_data()->add_user_affiliation_ids(
         kTestAffiliationId);
+
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_os_update_status(true);
   }
 
   void SendFakeUpdateEngineStatus(const std::string& version,
@@ -110,16 +107,12 @@ class OsUpdatesReporterBrowserTest
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
 
-  ash::FakeSessionManagerClient* session_manager_client();
-
   UserPolicyMixin user_policy_mixin_{&mixin_host_, kTestAccountId};
 
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
 
   LoginManagerMixin login_manager_mixin_{
       &mixin_host_, LoginManagerMixin::UserList(), &fake_gaia_mixin_};
-
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged>
       fake_update_engine_client_ = nullptr;

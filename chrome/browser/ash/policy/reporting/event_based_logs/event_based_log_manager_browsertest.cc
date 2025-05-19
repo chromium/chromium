@@ -10,8 +10,6 @@
 
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -28,12 +26,14 @@ class EventBasedLogManagerBrowserTest
     : public policy::DevicePolicyCrosBrowserTest {
  public:
   void SetLogUploadEnabled(bool enabled) {
-    cros_settings_.device_settings()->SetBoolean(ash::kSystemLogUploadEnabled,
-                                                 enabled);
-  }
+    device_policy()
+        ->payload()
+        .mutable_device_log_upload_settings()
+        ->set_system_log_upload_enabled(enabled);
 
- private:
-  ash::ScopedTestingCrosSettings cros_settings_;
+    policy_helper()->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
+        {ash::kSystemLogUploadEnabled});
+  }
 };
 
 }  // namespace
