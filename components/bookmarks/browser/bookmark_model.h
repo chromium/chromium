@@ -310,8 +310,11 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Returns true if there are bookmarks, otherwise returns false.
   bool HasBookmarks() const;
 
-  // Returns true is there is no user created bookmarks or folders.
-  bool HasNoUserCreatedBookmarksOrFolders() const;
+  // Returns true is there is at least one user-created bookmark or folder. This
+  // includes bookmarks downloaded via Sync but excludes managed nodes
+  // (enterprise) as well as, on Android, partner bookmarks (which are not
+  // included in BookmarkModel).
+  bool HasUserCreatedBookmarksOrFolders() const;
 
   // Returns true if the specified URL is bookmarked.
   bool IsBookmarked(const GURL& url) const;

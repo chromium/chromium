@@ -907,10 +907,15 @@ bool BookmarkModel::HasBookmarks() const {
   return url_index_ && url_index_->HasBookmarks();
 }
 
-bool BookmarkModel::HasNoUserCreatedBookmarksOrFolders() const {
+bool BookmarkModel::HasUserCreatedBookmarksOrFolders() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return bookmark_bar_node_->children().empty() &&
-         other_node_->children().empty() && mobile_node_->children().empty();
+  return !bookmark_bar_node_->children().empty() ||
+         !other_node_->children().empty() ||
+         !mobile_node_->children().empty() ||
+         (account_bookmark_bar_node_ &&
+          !account_bookmark_bar_node_->children().empty()) ||
+         (account_other_node_ && !account_other_node_->children().empty()) ||
+         (account_mobile_node_ && !account_mobile_node_->children().empty());
 }
 
 bool BookmarkModel::IsBookmarked(const GURL& url) const {

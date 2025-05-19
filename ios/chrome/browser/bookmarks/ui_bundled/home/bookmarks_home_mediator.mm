@@ -348,7 +348,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // show the spinner backgound. Otherwise, check if we need to show the empty
   // background.
   if (self.consumer.isDisplayingBookmarkRoot) {
-    if (_bookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
+    if (!_bookmarkModel->HasUserCreatedBookmarksOrFolders() &&
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarksHomeBackgroundStyleLoading];
