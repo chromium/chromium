@@ -1349,7 +1349,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWellKnownDirectoryPath_Base_OK) {
   base::ScopedPathOverride user_desktop_override(
       base::DIR_USER_DESKTOP, temp_dir_.GetPath(), true, true);
-  ResetBlockPath();
   EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
                 blink::mojom::WellKnownDirectory::kDirDesktop, kTestOrigin),
             temp_dir_.GetPath());
@@ -1359,7 +1358,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWellKnownDirectoryPath_Chrome_OK) {
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
-  ResetBlockPath();
   EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
                 blink::mojom::WellKnownDirectory::kDirDocuments, kTestOrigin),
             temp_dir_.GetPath());
@@ -1372,7 +1370,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       ->SkipSanitizeDownloadTargetPathForTesting();
   DownloadPrefs::FromBrowserContext(browser_context())
       ->SetDownloadPath(temp_dir_.GetPath());
-  ResetBlockPath();
 
 #if BUILDFLAG(IS_ANDROID)
   // Android always uses the system Download directory (/storage/emulated/...).
