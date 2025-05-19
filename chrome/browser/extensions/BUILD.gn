@@ -344,6 +344,8 @@ source_set("extensions") {
     "omaha_attributes_handler.h",
     "pack_extension_job.cc",
     "pack_extension_job.h",
+    "permissions/active_tab_permission_granter.cc",
+    "permissions/active_tab_permission_granter.h",
     "permissions/permissions_updater.cc",
     "permissions/permissions_updater.h",
     "permissions/scripting_permissions_modifier.cc",
@@ -526,8 +528,6 @@ source_set("extensions") {
     sources += [
       "account_extension_tracker.cc",
       "account_extension_tracker.h",
-      "permissions/active_tab_permission_granter.cc",
-      "permissions/active_tab_permission_granter.h",
 
       # TODO(crbug.com/40245282): Ideally, no API implementations would be included
       # here.
