@@ -697,8 +697,7 @@ class SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState
  public:
   bool HasUnsyncedThemeData() {
     return GetClient(0)
-        ->GetTypesWithUnsyncedData({syncer::THEMES})
-        .Get()
+        ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
         .contains(syncer::THEMES);
   }
 

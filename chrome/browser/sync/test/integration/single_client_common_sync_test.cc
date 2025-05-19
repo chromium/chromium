@@ -267,8 +267,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
 
   // BOOKMARKS has no unsynced data.
   EXPECT_FALSE(GetClient(0)
-                   ->GetTypesWithUnsyncedData({syncer::BOOKMARKS})
-                   .Get()
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::BOOKMARKS})
                    .contains(syncer::BOOKMARKS));
 
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
@@ -283,8 +282,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
 
   // BOOKMARKS now has local changes not yet synced with the server.
   EXPECT_TRUE(GetClient(0)
-                  ->GetTypesWithUnsyncedData({syncer::BOOKMARKS})
-                  .Get()
+                  ->GetTypesWithUnsyncedDataAndWait({syncer::BOOKMARKS})
                   .contains(syncer::BOOKMARKS));
 
   // Clear the error and wait for the local changes to be committed.
@@ -296,8 +294,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
 
   // BOOKMARKS has no unsynced data.
   EXPECT_FALSE(GetClient(0)
-                   ->GetTypesWithUnsyncedData({syncer::BOOKMARKS})
-                   .Get()
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::BOOKMARKS})
                    .contains(syncer::BOOKMARKS));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -312,8 +309,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, HttpError) {
 
   // THEMES has no unsynced data.
   ASSERT_FALSE(GetClient(0)
-                   ->GetTypesWithUnsyncedData({syncer::THEMES})
-                   .Get()
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
                    .contains(syncer::THEMES));
 
   // Force theme saved to the account to be unsynced.
@@ -325,8 +321,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, HttpError) {
 
   // THEMES now has local changes not yet synced with the server.
   EXPECT_TRUE(GetClient(0)
-                  ->GetTypesWithUnsyncedData({syncer::THEMES})
-                  .Get()
+                  ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
                   .contains(syncer::THEMES));
 
   // Http error is not an auth error.
@@ -339,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, HttpError) {
 
   // THEMES has no unsynced data.
   EXPECT_FALSE(GetClient(0)
-                   ->GetTypesWithUnsyncedData({syncer::THEMES})
-                   .Get()
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
                    .contains(syncer::THEMES));
 }
 
@@ -356,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 
   // THEMES has no unsynced data.
   ASSERT_FALSE(GetClient(0)
-                   ->GetTypesWithUnsyncedData({syncer::THEMES})
-                   .Get()
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
                    .contains(syncer::THEMES));
 
   // Enter sign-in pending state.
@@ -369,8 +362,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 
   // THEMES now has local changes not yet synced with the server.
   EXPECT_TRUE(GetClient(0)
-                  ->GetTypesWithUnsyncedData({syncer::THEMES})
-                  .Get()
+                  ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
                   .contains(syncer::THEMES));
 
   EXPECT_TRUE(
@@ -382,8 +374,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 
   // THEMES has no unsynced data.
   EXPECT_FALSE(GetClient(0)
-                   ->GetTypesWithUnsyncedData({syncer::THEMES})
-                   .Get()
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
                    .contains(syncer::THEMES));
 
   EXPECT_FALSE(

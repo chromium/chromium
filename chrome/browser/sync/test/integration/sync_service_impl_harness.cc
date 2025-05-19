@@ -601,12 +601,12 @@ SyncCycleSnapshot SyncServiceImplHarness::GetLastCycleSnapshot() const {
   return SyncCycleSnapshot();
 }
 
-base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>>
-SyncServiceImplHarness::GetTypesWithUnsyncedData(
+absl::flat_hash_map<syncer::DataType, size_t>
+SyncServiceImplHarness::GetTypesWithUnsyncedDataAndWait(
     syncer::DataTypeSet requested_types) const {
   base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>> future;
   service()->GetTypesWithUnsyncedData(requested_types, future.GetCallback());
-  return future;
+  return future.Get();
 }
 
 syncer::LocalDataDescription

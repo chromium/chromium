@@ -193,10 +193,10 @@ class SyncServiceImplHarness {
   // Returns a snapshot of the current sync session.
   syncer::SyncCycleSnapshot GetLastCycleSnapshot() const;
 
-  // Returns a TestFuture that will be resolved with the set of data types that
-  // have unsynced data.
-  base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>>
-  GetTypesWithUnsyncedData(syncer::DataTypeSet requested_types) const;
+  // Returns the datatypes which have local changes that have not yet been
+  // synced with the server.
+  absl::flat_hash_map<syncer::DataType, size_t> GetTypesWithUnsyncedDataAndWait(
+      syncer::DataTypeSet requested_types) const;
 
   // Retrieves the LocalDataDescription for the specified |data_type|.
   // it assumes the service will provide a unique description for this specific
