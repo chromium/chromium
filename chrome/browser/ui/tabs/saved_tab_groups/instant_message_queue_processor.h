@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 
 class Browser;
@@ -16,19 +17,25 @@ class Browser;
 namespace tab_groups {
 
 using collaboration::messaging::InstantMessage;
+using collaboration::messaging::MessageAttribution;
 using collaboration::messaging::MessagingBackendService;
 
 using SuccessCallback =
     MessagingBackendService::InstantMessageDelegate::SuccessCallback;
 
+using FetchAvatarSuccessCallback =
+    base::OnceCallback<void(const gfx::Image& avatar)>;
+
 // Struct used to capture the instant message and its associated callback.
 struct QueuedInstantMessage {
   QueuedInstantMessage(InstantMessage message_,
+                       gfx::Image avatar_,
                        SuccessCallback success_callback_);
   QueuedInstantMessage(QueuedInstantMessage&& other);
   ~QueuedInstantMessage();
 
   InstantMessage message;
+  gfx::Image avatar;
   SuccessCallback success_callback;
 };
 
@@ -92,7 +99,20 @@ class InstantMessageQueueProcessor {
   // Returns the toast params populated for this message. Returns
   // std::nullopt if this message cannot be converted into a valid
   // toast. Virtual for tests.
-  std::optional<ToastParams> GetParamsForMessage(const InstantMessage& message);
+  std::optional<ToastParams> GetParamsForMessage(
+      const QueuedInstantMessage& queued_message);
+
+  // Fetches the avatar image for the given message and calls the
+  // |success_callback| with the result. The avatar must be loaded before
+  // triggering the toast.
+  void FetchAvatar(InstantMessage message,
+                   FetchAvatarSuccessCallback success_callback);
+
+  // Callback to be called once the avatar image has been fetched. This will
+  // actually enqueue the message to be shown.
+  void OnAvatarFetched(InstantMessage message,
+                       SuccessCallback success_callback,
+                       const gfx::Image& avatar);
 
   raw_ptr<Profile> profile_;
 
@@ -101,6 +121,8 @@ class InstantMessageQueueProcessor {
 
   // Queue of instant messages remaining to be shown.
   base::queue<QueuedInstantMessage> instant_message_queue_;
+
+  base::WeakPtrFactory<InstantMessageQueueProcessor> weak_factory_{this};
 };
 
 }  // namespace tab_groups
