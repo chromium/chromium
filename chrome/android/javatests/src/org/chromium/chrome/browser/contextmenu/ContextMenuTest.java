@@ -102,6 +102,8 @@ import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
 
@@ -1229,7 +1231,9 @@ public class ContextMenuTest {
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
+    @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testSharePage() throws Exception {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1274,7 +1278,9 @@ public class ContextMenuTest {
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
+    @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testPrintPage() throws Exception {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 // Set printing controller to use the mock instance.
