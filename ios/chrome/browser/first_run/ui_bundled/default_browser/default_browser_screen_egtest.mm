@@ -24,30 +24,6 @@ namespace {
 // Constant for timeout while waiting for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
-// Returns a matcher for the device switcher promo title.
-id<GREYMatcher> DeviceSwitcherPromoTitle() {
-  return grey_text(GetNSString(
-      [ChromeEarlGrey isIPadIdiom]
-          ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
-          : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE));
-}
-
-// Returns a matcher for the desktop user promo subtitle.
-id<GREYMatcher> DesktopUserPromoSubtitle() {
-  return grey_text(GetNSString(
-      [ChromeEarlGrey isIPadIdiom]
-          ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
-          : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE));
-}
-
-// Returns a matcher for the android switcher promo subtitle.
-id<GREYMatcher> AndroidSwitcherPromoSubtitle() {
-  return grey_text(GetNSString(
-      [ChromeEarlGrey isIPadIdiom]
-          ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
-          : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE));
-}
-
 // Returns a matcher for the default promo title.
 id<GREYMatcher> DefaultPromoTitle() {
   return grey_text(
@@ -90,38 +66,22 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enable Segmented Default Browser promos and iPad tailored Default Browser
-  // promo strings.
-  config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  if ([self isRunningTest:@selector(testDesktopUserPromoDisplayed)]) {
-    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-    config.additional_args.push_back("Desktop");
-  }
-  if ([self isRunningTest:@selector(testAndroidSwitcherPromoDisplayed)]) {
-    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-    config.additional_args.push_back("AndroidPhone");
-  }
-  if ([self isRunningTest:@selector(DISABLED_testShopperPromoNotDisplayed)]) {
-    config.additional_args.push_back("-ForceExperienceForShopper");
-    config.additional_args.push_back("true");
-  }
-  // Disable feature since SegmentedDefaultBrowserPromo and
-  // AnimatedDefaultBrowserPromoInFRE experiments will be run disjointly and
   // Animated Default Browser introduces a new Default Browser screen with a
   // different ID.
   config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
-  // Disable feature since SegmentedDefaultBrowserPromo and
-  // UpdatedFirstRunSequence experiments will be run disjointly and only one
-  // will be launched.
+
+  // The UpdatedFirstRunSequence experiment makes changes to the Default Browser
+  // screen's view that cause the test to fail.
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
+
   return config;
 }
 
@@ -174,22 +134,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 #pragma mark - Tests
 
-// Tests if the desktop user promo is correctly displayed.
-- (void)testDesktopUserPromoDisplayed {
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DesktopUserPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests if the android switcher promo is correctly displayed.
-- (void)testAndroidSwitcherPromoDisplayed {
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:AndroidSwitcherPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Tests if the default promo is correctly displayed.
 - (void)testDefaultPromoDisplayed {
   [[EarlGrey selectElementWithMatcher:DefaultPromoTitle()]
@@ -198,16 +142,5 @@ id<GREYMatcher> DefaultPromoSubtitle() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that the shopping user promo is not displayed when the Shopper
-// experience is forced through experimental settings. Shopper segmentation
-// information should not be available during first run.
-// TODO(crbug.com/360395573): Enable after modifying segmented default browser
-// utils to add this check.
-- (void)DISABLED_testShopperPromoNotDisplayed {
-  [[EarlGrey selectElementWithMatcher:DefaultPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DefaultPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
 
 @end
