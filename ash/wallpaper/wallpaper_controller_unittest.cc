@@ -552,7 +552,6 @@ void InitTimeOfDayFeatureList(
       enabled_features = personalization_app::GetTimeOfDayFeatures();
       break;
   }
-  enabled_features.push_back(features::kSeaPen);
   enabled_features.push_back(features::kFeatureManagementSeaPen);
   enabled_features.push_back(features::kSeaPenDemoMode);
   enabled_features.push_back(features::kDemoModeWallpaperUpdate);

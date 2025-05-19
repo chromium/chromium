@@ -2658,7 +2658,6 @@ BASE_FEATURE(kSchedulerConfiguration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables sea pen feature in the personalization app.
-BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementSeaPen,
              "FeatureManagementSeaPen",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -4525,8 +4524,7 @@ bool IsSeaPenQueryRewriteEnabled() {
 }
 
 bool IsSeaPenEnabled() {
-  return base::FeatureList::IsEnabled(kSeaPen) &&
-         base::FeatureList::IsEnabled(kFeatureManagementSeaPen);
+  return base::FeatureList::IsEnabled(kFeatureManagementSeaPen);
 }
 
 bool IsSeaPenTextInputEnabled() {

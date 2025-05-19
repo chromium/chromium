@@ -3181,7 +3181,6 @@ constexpr char kClipboardHistoryUrlTitlesInternalName[] =
     "clipboard-history-url-titles";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kBluetoothUseLLPrivacyInternalName[] = "bluetooth-use-llprivacy";
-constexpr char kSeaPenInternalName[] = "sea-pen";
 constexpr char kAssistantIphInternalName[] = "assistant-iph";
 constexpr char kGrowthCampaigns[] = "growth-campaigns";
 constexpr char kGrowthCampaignsTestTag[] = "campaigns-test-tag";
@@ -8769,9 +8768,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProductivityLauncherImageSearchName,
      flag_descriptions::kProductivityLauncherImageSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProductivityLauncherImageSearch)},
-    {kSeaPenInternalName, flag_descriptions::kSeaPenName,
-     flag_descriptions::kSeaPenDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSeaPen)},
     {"shelf-auto-hide-separation",
      flag_descriptions::kShelfAutoHideSeparationName,
      flag_descriptions::kShelfAutoHideSeparationDescription, kOsCrOS,
@@ -12602,13 +12598,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
         base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
             floss::features::kLLPrivacyIsAvailable.name,
             base::FeatureList::OVERRIDE_DISABLE_FEATURE));
-  }
-
-  // Only show sea-pen flag if channel is one of Dev/Canary/Unknown.
-  if (!strcmp(kSeaPenInternalName, entry.internal_name)) {
-    return channel != version_info::Channel::DEV &&
-           channel != version_info::Channel::CANARY &&
-           channel != version_info::Channel::UNKNOWN;
   }
 
   // Only show Assistant Launcher search IPH flag if channel is one of

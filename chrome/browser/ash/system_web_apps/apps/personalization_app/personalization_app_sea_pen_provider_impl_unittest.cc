@@ -190,9 +190,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSeaPen, features::kSeaPenDemoMode,
-         features::kFeatureManagementSeaPen},
-        {});
+        {features::kSeaPenDemoMode, features::kFeatureManagementSeaPen}, {});
   }
 
   PersonalizationAppSeaPenProviderImplTest(
@@ -947,8 +945,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
        ShouldShowSeaPenIntroductionDialog) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
   test_wallpaper_controller()->ClearCounts();
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kSeaPen}, {});
 
   base::test::TestFuture<bool> should_show_dialog_future;
   sea_pen_provider_remote()->ShouldShowSeaPenIntroductionDialog(
@@ -968,8 +964,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
        ShouldShowSeaPenFreeformIntroductionDialog) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
   test_wallpaper_controller()->ClearCounts();
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kSeaPen}, {});
 
   base::test::TestFuture<bool> should_show_dialog_future;
   sea_pen_provider_remote()->ShouldShowSeaPenFreeformIntroductionDialog(

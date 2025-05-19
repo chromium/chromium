@@ -197,7 +197,6 @@ class SeaPenFetcherTest : public testing::Test {
   SeaPenFetcherTest() {
     scoped_feature_list_.InitWithFeatures(
         {
-            ash::features::kSeaPen,
             ash::features::kFeatureManagementSeaPen,
             manta::features::kMantaService,
         },
@@ -309,7 +308,6 @@ TEST_F(SeaPenFetcherTest, TemplateRequestsFourImages_withTextInputOn) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kSeaPen,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
@@ -356,7 +354,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kSeaPen,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
@@ -455,8 +452,8 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
-       manta::features::kMantaService, ash::features::kSeaPenTextInput},
+      {ash::features::kFeatureManagementSeaPen, manta::features::kMantaService,
+       ash::features::kSeaPenTextInput},
       {});
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -497,8 +494,8 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
-       manta::features::kMantaService, ash::features::kSeaPenTextInput},
+      {ash::features::kFeatureManagementSeaPen, manta::features::kMantaService,
+       ash::features::kSeaPenTextInput},
       {});
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
@@ -998,7 +995,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kSeaPen,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
@@ -1057,7 +1053,6 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kSeaPen,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
@@ -1108,7 +1103,6 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kSeaPen,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
@@ -1160,7 +1154,6 @@ TEST_F(SeaPenFetcherTest,
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kSeaPen,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
@@ -1205,7 +1198,6 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {
-          ash::features::kSeaPen,
           ash::features::kFeatureManagementSeaPen,
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,

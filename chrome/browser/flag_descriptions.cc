@@ -7431,9 +7431,6 @@ const char kScannerDisclaimerDebugOverrideChoiceAlwaysReminder[] =
 const char kScannerDisclaimerDebugOverrideChoiceAlwaysFull[] =
     "Always full disclaimer";
 
-const char kSeaPenName[] = "SeaPen";
-const char kSeaPenDescription[] = "Enable SeaPen Wallpaper";
-
 const char kSealKeyName[] = "Secret key for Seal feature";
 const char kSealKeyDescription[] = "Secret key for Seal feature.";
 

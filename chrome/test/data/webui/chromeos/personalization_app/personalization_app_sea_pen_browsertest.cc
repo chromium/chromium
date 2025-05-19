@@ -54,7 +54,6 @@ class PersonalizationAppSeaPenBrowserTest
     scoped_feature_list_.InitWithFeatures(
         {
             ::manta::features::kMantaService,
-            ::ash::features::kSeaPen,
             ::ash::features::kFeatureManagementSeaPen,
         },
         {});

@@ -65,9 +65,7 @@ class PersonalizationAppUtilsTest : public testing::Test {
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSeaPen, features::kSeaPenDemoMode,
-         features::kFeatureManagementSeaPen},
-        {});
+        {features::kSeaPenDemoMode, features::kFeatureManagementSeaPen}, {});
   }
 
   PersonalizationAppUtilsTest(const PersonalizationAppUtilsTest&) = delete;
