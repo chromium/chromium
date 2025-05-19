@@ -14,4 +14,9 @@ void UserModifiableProvider::ExpireWebsiteSetting(
   SetWebsiteSetting(primary_pattern, secondary_pattern, content_settings_type,
                     base::Value(), {}, partition_key);
 }
+
+void UserModifiableProvider::EnsureUpdatedSettings(base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 }  // namespace content_settings

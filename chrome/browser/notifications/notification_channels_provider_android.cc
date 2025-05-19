@@ -373,16 +373,22 @@ NotificationChannelsProviderAndroid::GetRuleIterator(
   // contain up-to-date information if user has modified notification settings,
   // As a result, schedule an channel update to inform all observers if
   // something has changed.
-  provider->ScheduleGetChannels(
-      /*skip_get_if_cached_channels_are_available=*/false,
-      base::BindOnce(
-          &NotificationChannelsProviderAndroid::UpdateCachedChannelsImpl,
-          provider->weak_factory_.GetWeakPtr(),
-          /*only_initialize_null_cached_channels=*/false, base::DoNothing()));
+
+  provider->EnsureUpdatedSettings(base::DoNothing());
 
   return channels.empty()
              ? nullptr
              : std::make_unique<ChannelsRuleIterator>(std::move(channels));
+}
+
+void NotificationChannelsProviderAndroid::EnsureUpdatedSettings(
+    base::OnceClosure callback) {
+  ScheduleGetChannels(
+      /*skip_get_if_cached_channels_are_available=*/false,
+      base::BindOnce(
+          &NotificationChannelsProviderAndroid::UpdateCachedChannelsImpl,
+          weak_factory_.GetWeakPtr(),
+          /*only_initialize_null_cached_channels=*/false, std::move(callback)));
 }
 
 bool NotificationChannelsProviderAndroid::SetWebsiteSetting(

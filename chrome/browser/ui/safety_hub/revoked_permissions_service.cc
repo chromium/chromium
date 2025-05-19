@@ -450,11 +450,20 @@ RevokedPermissionsService::RevokedPermissionsService(
 
   if (IsUnusedSiteAutoRevocationEnabled() ||
       IsAbusiveNotificationAutoRevocationEnabled()) {
-    StartRepeatedUpdates();
+    hcsm()->EnsureSettingsUpToDate(
+        base::BindOnce(&RevokedPermissionsService::MaybeStartRepeatedUpdates,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
 RevokedPermissionsService::~RevokedPermissionsService() = default;
+
+void RevokedPermissionsService::MaybeStartRepeatedUpdates() {
+  if (IsUnusedSiteAutoRevocationEnabled() ||
+      IsAbusiveNotificationAutoRevocationEnabled()) {
+    StartRepeatedUpdates();
+  }
+}
 
 std::unique_ptr<SafetyHubService::Result>
 RevokedPermissionsService::InitializeLatestResultImpl() {

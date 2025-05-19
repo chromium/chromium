@@ -85,6 +85,9 @@ class NotificationChannelsProviderAndroid
   void Initialize(content_settings::ProviderInterface* pref_provider,
                   TemplateURLService* template_url_service);
 
+  // Forces an update of cached channels and invokes callback upon completion.
+  void EnsureUpdatedSettings(base::OnceClosure callback) override;
+
   // UserModifiableProvider methods.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,

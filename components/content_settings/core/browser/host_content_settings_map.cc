@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -1298,5 +1299,14 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
         base::BindOnce(&HostContentSettingsMap::
                            DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun,
                        base::Unretained(this), content_setting_type));
+  }
+}
+
+void HostContentSettingsMap::EnsureSettingsUpToDate(
+    base::OnceClosure callback) {
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      user_modifiable_providers_.size(), std::move(callback));
+  for (auto&& provider : user_modifiable_providers_) {
+    provider->EnsureUpdatedSettings(barrier_closure);
   }
 }

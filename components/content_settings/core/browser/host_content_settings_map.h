@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -27,7 +28,6 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
-
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -345,6 +345,12 @@ class HostContentSettingsMap : public content_settings::Observer,
   // Adds/removes an observer for content settings changes.
   void AddObserver(content_settings::Observer* observer);
   void RemoveObserver(content_settings::Observer* observer);
+
+  // Forces a sync of content settings and invokes callback when the sync is
+  // done. Useful for ensuring that NOTIFICATIONS content settings are
+  // up-to-date on Android, where they reflect the state of the corresponding OS
+  // channels and need to be initialized from the OS.
+  void EnsureSettingsUpToDate(base::OnceClosure callback);
 
   // Schedules any pending lossy website settings to be written to disk.
   void FlushLossyWebsiteSettings();

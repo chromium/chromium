@@ -275,6 +275,8 @@ class RevokedPermissionsService final : public SafetyHubService,
     return HostContentSettingsMapFactory::GetForProfile(browser_context_.get());
   }
 
+  void MaybeStartRepeatedUpdates();
+
   // SafetyHubService implementation
 
   std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
