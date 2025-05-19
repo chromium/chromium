@@ -15538,6 +15538,13 @@ be describing additional metrics about the same event.
       provisional navigations (i.e. abandoned before commit).
     </summary>
   </metric>
+  <metric name="Net.ExtendedErrorCode" enum="ErrorNavigationTrigger">
+    <summary>
+      The extended error code for the net error for this page load, which
+      represents the detailed context of why the net error happened. Only logged
+      for failed provisional navigations.
+    </summary>
+  </metric>
   <metric name="PreviousBackgroundedTime">
     <summary>
       If we've experienced backgrounding while the navigation/page load is

@@ -233,6 +233,59 @@ class CONTENT_EXPORT NavigationRequest
     kPostCommit,
   };
 
+  // A detailed reason on why errors in navigation happened, to be assigned in
+  // the extended error code field. Mostly focusing on `net::ERR_ABORTED`
+  // failures.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ErrorNavigationTrigger)
+  enum class ErrorNavigationTrigger {
+    // An unknown trigger caused navigation abort.
+    kUnknown = 0,
+
+    // Caused by the cancelation from the navigation throttle.
+    kNavigationThrottleCancel,
+
+    // Caused by being blocked by the navigation throtle.
+    kNavigationThrottleBlock,
+
+    // Caused by the redirect not allowed due to the security policy.
+    kRedirectNotAllowed,
+
+    // Caused by the Credentialed subresource check blocked.
+    kCredentialedSubresourceBlocked,
+
+    // Caused by the embedder-initiated navigation of FencedFrame being blocked.
+    kFencedFrameEmbedderInitiatedNavigation,
+
+    // Caused by the permission policy of fenced frames being blocked.
+    kFencedFramesPermissionPolicyBlocked,
+
+    // Caused by the content decoder data pipe creation failing.
+    kContentDecoderDataPipeCreationFailed,
+
+    // The response should not be rendered (e.g. a download).
+    kShouldNotRenderResponse,
+
+    // The embedder overrides/blocks the URL load.
+    kShouldOverrideUrlLoading,
+
+    // The render initiated cross process navigation is not allowed, and blocked
+    // the navigation.
+    kRenderInitiatedCrossProcessNavigationNotAllowed,
+
+    // The render initiated navigation could not request the URL.
+    kRendererInitiatedCanNotRequestURL,
+
+    // The response rendered fallback content, due to e.g. Http errors.
+    kShouldRenderFallbackContent,
+
+    kMaxValue = kShouldRenderFallbackContent,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:ErrorNavigationTrigger)
+
   // Creates a request for a browser-initiated navigation.
   static std::unique_ptr<NavigationRequest> CreateBrowserInitiated(
       FrameTreeNode* frame_tree_node,

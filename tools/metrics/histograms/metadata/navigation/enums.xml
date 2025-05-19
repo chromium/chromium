@@ -267,6 +267,26 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Early swap for a navigation transition"/>
 </enum>
 
+<!-- LINT.IfChange(ErrorNavigationTrigger) -->
+
+<enum name="ErrorNavigationTrigger">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kNavigationThrottleCancel"/>
+  <int value="2" label="kNavigationThrottleBlock"/>
+  <int value="3" label="kRedirectNotAllowed"/>
+  <int value="4" label="kCredentialedSubresourceBlocked"/>
+  <int value="5" label="kFencedFrameEmbedderInitiatedNavigation"/>
+  <int value="6" label="kFencedFramesPermissionPolicyBlocked"/>
+  <int value="7" label="kContentDecoderDataPipeCreationFailed"/>
+  <int value="8" label="kShouldNotRenderResponse"/>
+  <int value="9" label="kShouldOverrideUrlLoading"/>
+  <int value="10" label="kRenderInitiatedCrossProcessNavigationNotAllowed"/>
+  <int value="11" label="kRendererInitiatedCanNotRequestURL"/>
+  <int value="12" label="kShouldRenderFallbackContent"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_request.h:ErrorNavigationTrigger) -->
+
 <enum name="FencedFrameAutomaticBeaconEventType">
   <int value="0" label="reserved.top_navigation"/>
   <int value="1" label="reserved.top_navigation_start"/>

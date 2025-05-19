@@ -2745,10 +2745,13 @@ void NavigationRequest::BeginNavigationImpl() {
     // Don't create a NavigationHandle here to simulate what happened with the
     // old navigation code path (i.e. doesn't fire onPageFinished notification
     // for aborted loads).
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /*skip_throttles*/, std::nullopt /*error_page_content*/,
-        false /*collapse_frame*/);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    completion_status.extended_error_code =
+        static_cast<int32_t>(ErrorNavigationTrigger::kShouldOverrideUrlLoading);
+    OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
+                            std::nullopt /*error_page_content*/,
+                            false /*collapse_frame*/);
     return;
   }
 #endif
@@ -2778,10 +2781,13 @@ void NavigationRequest::BeginNavigationImpl() {
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
     StartNavigation();
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /* skip_throttles  */, std::nullopt /* error_page_content */,
-        false /* collapse_frame */);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    completion_status.extended_error_code = static_cast<int32_t>(
+        ErrorNavigationTrigger::kCredentialedSubresourceBlocked);
+    OnRequestFailedInternal(completion_status, false /* skip_throttles  */,
+                            std::nullopt /* error_page_content */,
+                            false /* collapse_frame */);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -3454,6 +3460,8 @@ void NavigationRequest::OnRequestRedirected(
 
   if (should_override_url_loading) {
     net_error_ = net::ERR_ABORTED;
+    extended_error_code_ =
+        static_cast<int32_t>(ErrorNavigationTrigger::kShouldOverrideUrlLoading);
     common_params_->url = redirect_info.new_url;
     common_params_->method = redirect_info.new_method;
     // Update the navigation handle to point to the new url to ensure
@@ -3473,10 +3481,13 @@ void NavigationRequest::OnRequestRedirected(
     // error page with the net::ERR_UNSAFE_REDIRECT error code. Instead, the
     // browser simply ignores the navigation, because some extensions use this
     // edge case to silently cancel navigations. See https://crbug.com/941653.
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /* skip_throttles */, std::nullopt /* error_page_content */,
-        false /* collapse_frame */);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    completion_status.extended_error_code =
+        static_cast<int32_t>(ErrorNavigationTrigger::kRedirectNotAllowed);
+    OnRequestFailedInternal(completion_status, false /* skip_throttles */,
+                            std::nullopt /* error_page_content */,
+                            false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
@@ -3497,13 +3508,16 @@ void NavigationRequest::OnRequestRedirected(
           redirect_info.new_url)) {
     DVLOG(1) << "Denied unauthorized redirect for "
              << redirect_info.new_url.possibly_invalid_spec();
+    auto completion_status =
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    completion_status.extended_error_code = static_cast<int32_t>(
+        ErrorNavigationTrigger::kRendererInitiatedCanNotRequestURL);
     // TODO(arthursonzogni): This case uses ERR_ABORTED to be consistent with
     // the javascript URL redirect case above, though ideally it would use
     // net::ERR_UNSAFE_REDIRECT and an error page. See https://crbug.com/941653.
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /* skip_throttles */, std::nullopt /* error_page_content */,
-        false /* collapse_frame */);
+    OnRequestFailedInternal(completion_status, false /* skip_throttles */,
+                            std::nullopt /* error_page_content */,
+                            false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
@@ -3633,10 +3647,13 @@ void NavigationRequest::OnRequestRedirected(
 
   if (CheckCredentialedSubresource() ==
       CredentialedSubresourceCheckResult::BLOCK_REQUEST) {
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /*skip_throttles*/, std::nullopt /*error_page_content*/,
-        false /*collapse_frame*/);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    completion_status.extended_error_code = static_cast<int32_t>(
+        ErrorNavigationTrigger::kCredentialedSubresourceBlocked);
+    OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
+                            std::nullopt /*error_page_content*/,
+                            false /*collapse_frame*/);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -4558,6 +4575,8 @@ void NavigationRequest::OnResponseStarted(
 
   if (!response_should_be_rendered_) {
     net_error_ = net::ERR_ABORTED;
+    extended_error_code_ =
+        static_cast<int32_t>(ErrorNavigationTrigger::kShouldNotRenderResponse);
     SelectFrameHostForOnResponseStarted(std::move(url_loader_client_endpoints),
                                         is_download,
                                         std::move(subresource_loader_params));
@@ -4596,10 +4615,14 @@ void NavigationRequest::OnResponseStarted(
         "Embedder-initiated navigations of fenced frames are not allowed after "
         "both the embedder and embedded fenced frame network access has been "
         "disabled.");
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        /*skip_throttles=*/false, /*error_page_content=*/std::nullopt,
-        /*collapse_frame=*/false);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    completion_status.extended_error_code = static_cast<int32_t>(
+        ErrorNavigationTrigger::kFencedFrameEmbedderInitiatedNavigation);
+    OnRequestFailedInternal(completion_status,
+                            /*skip_throttles=*/false,
+                            /*error_page_content=*/std::nullopt,
+                            /*collapse_frame=*/false);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.
     return;
@@ -4753,6 +4776,9 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
              ->ShouldAllowRendererInitiatedCrossProcessNavigation(
                  frame_tree_node_->IsOutermostMainFrame())) {
       net_error_ = net::ERR_ABORTED;
+      extended_error_code_ = static_cast<int32_t>(
+          ErrorNavigationTrigger::
+              kRenderInitiatedCrossProcessNavigationNotAllowed);
       frame_tree_node_->ResetNavigationRequest(
           NavigationDiscardReason::kInternalCancellation);
       return;
@@ -4937,10 +4963,13 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
 
   if (HasRenderFrameHost() &&
       !CheckPermissionsPoliciesForFencedFrames(GetOriginToCommit().value())) {
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /*skip_throttles*/, std::nullopt /*error_page_content*/,
-        false /*collapse_frame*/);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    completion_status.extended_error_code = static_cast<int32_t>(
+        ErrorNavigationTrigger::kFencedFramesPermissionPolicyBlocked);
+    OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
+                            std::nullopt /*error_page_content*/,
+                            false /*collapse_frame*/);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.
     return;
@@ -5330,13 +5359,22 @@ void NavigationRequest::OnStartChecksComplete(
     // is no onbeforeunload handler or if a NavigationThrottle cancelled it,
     // then this could cause reentrancy into NavigationController. So use a
     // PostTask to avoid that.
+    auto completion_status =
+        network::URLLoaderCompletionStatus(result.net_error_code());
+    if (result.action() == NavigationThrottle::CANCEL_AND_IGNORE ||
+        result.action() == NavigationThrottle::CANCEL) {
+      completion_status.extended_error_code =
+          static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleCancel);
+    } else {
+      completion_status.extended_error_code =
+          static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleBlock);
+    }
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&NavigationRequest::OnRequestFailedInternal,
-                                  weak_factory_.GetWeakPtr(),
-                                  network::URLLoaderCompletionStatus(
-                                      result.net_error_code()),
-                                  true /* skip_throttles */,
-                                  result.error_page_content(), collapse_frame));
+        FROM_HERE,
+        base::BindOnce(&NavigationRequest::OnRequestFailedInternal,
+                       weak_factory_.GetWeakPtr(), std::move(completion_status),
+                       true /* skip_throttles */, result.error_page_content(),
+                       collapse_frame));
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -5657,9 +5695,13 @@ void NavigationRequest::OnRedirectChecksComplete(
     // TODO(clamy): distinguish between CANCEL and CANCEL_AND_IGNORE if needed.
     DCHECK(result.action() == NavigationThrottle::CANCEL ||
            result.net_error_code() == net::ERR_ABORTED);
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(result.net_error_code()),
-        true /* skip_throttles */, result.error_page_content(), collapse_frame);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(result.net_error_code());
+    completion_status.extended_error_code =
+        static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleCancel);
+    OnRequestFailedInternal(std::move(completion_status),
+                            true /* skip_throttles */,
+                            result.error_page_content(), collapse_frame);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -5669,6 +5711,12 @@ void NavigationRequest::OnRedirectChecksComplete(
   if (result.action() == NavigationThrottle::BLOCK_REQUEST ||
       result.action() == NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE) {
     DCHECK(net::IsRequestBlockedError(result.net_error_code()));
+    auto completion_status =
+        network::URLLoaderCompletionStatus(result.net_error_code());
+    if (result.net_error_code() == net::ERR_ABORTED) {
+      completion_status.extended_error_code =
+          static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleBlock);
+    }
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(result.net_error_code()),
         true /* skip_throttles */, result.error_page_content(), collapse_frame);
@@ -5906,11 +5954,14 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           // we should avoid crashing the browser process or attempting to
           // download the raw encoded body. Instead, just abort the navigation
           // request.
-          OnRequestFailedInternal(
-              network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-              /*skip_throttles=*/false,
-              /*error_page_content=*/std::nullopt,
-              /*collapse_frame=*/false);
+          auto completion_status =
+              network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+          completion_status.extended_error_code = static_cast<int32_t>(
+              ErrorNavigationTrigger::kContentDecoderDataPipeCreationFailed);
+          OnRequestFailedInternal(completion_status,
+                                  /*skip_throttles=*/false,
+                                  /*error_page_content=*/std::nullopt,
+                                  /*collapse_frame=*/false);
           // DO NOT ADD CODE after this. The previous call to
           // OnRequestFailedInternal has destroyed the NavigationRequest.
           return;
@@ -5928,10 +5979,13 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           frame_tree_node_->frame_tree_node_id(),
           from_download_cross_origin_redirect_);
 
-      OnRequestFailedInternal(
-          network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-          false /*skip_throttles*/, std::nullopt /*error_page_content*/,
-          false /*collapse_frame*/);
+      auto completion_status =
+          network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+      completion_status.extended_error_code = static_cast<int32_t>(
+          ErrorNavigationTrigger::kShouldNotRenderResponse);
+      OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
+                              std::nullopt /*error_page_content*/,
+                              false /*collapse_frame*/);
       // DO NOT ADD CODE after this. The previous call to OnRequestFailed has
       // destroyed the NavigationRequest.
       return;
@@ -5959,12 +6013,15 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       // ensure that the fetcher does not outlive `this`. This ensures that the
       // fallback / resource timing are only reported if the navigation request
       // is logically still pending.
+      auto completion_status =
+          network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+      completion_status.extended_error_code = static_cast<int32_t>(
+          ErrorNavigationTrigger::kShouldRenderFallbackContent);
       ObjectNavigationFallbackBodyLoader::CreateAndStart(
           *this, std::move(response_body_),
           std::move(url_loader_client_endpoints_),
           base::BindOnce(&NavigationRequest::OnRequestFailedInternal,
-                         weak_factory_.GetWeakPtr(),
-                         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+                         weak_factory_.GetWeakPtr(), completion_status,
                          false /* skip_throttles */,
                          std::nullopt /* error_page_content */,
                          false /* collapse_frame */));
@@ -5986,10 +6043,13 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
     // TODO(clamy): distinguish between CANCEL and CANCEL_AND_IGNORE.
     if (!response_should_be_rendered_) {
-      OnRequestFailedInternal(
-          network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-          true /* skip_throttles */, std::nullopt /* error_page_content */,
-          false /* collapse_frame */);
+      auto completion_status =
+          network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+      completion_status.extended_error_code = static_cast<int32_t>(
+          ErrorNavigationTrigger::kShouldNotRenderResponse);
+      OnRequestFailedInternal(completion_status, true /* skip_throttles */,
+                              std::nullopt /* error_page_content */,
+                              false /* collapse_frame */);
 
       // DO NOT ADD CODE after this. The previous call to
       // OnRequestFailedInternal has destroyed the NavigationRequest.
@@ -5998,10 +6058,13 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
     DCHECK(result.action() == NavigationThrottle::CANCEL ||
            result.net_error_code() == net::ERR_ABORTED);
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(result.net_error_code()),
-        true /* skip_throttles */, result.error_page_content(),
-        false /* collapse_frame */);
+    auto completion_status =
+        network::URLLoaderCompletionStatus(result.net_error_code());
+    completion_status.extended_error_code =
+        static_cast<int32_t>(ErrorNavigationTrigger::kNavigationThrottleCancel);
+    OnRequestFailedInternal(completion_status, true /* skip_throttles */,
+                            result.error_page_content(),
+                            false /* collapse_frame */);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
