@@ -63,9 +63,4 @@ AutofillAiModelExecutorFactory::BuildServiceInstanceForBrowserContext(
       optimization_guide->GetModelQualityLogsUploaderService());
 }
 
-bool AutofillAiModelExecutorFactory::ServiceIsCreatedWithBrowserContext()
-    const {
-  return base::FeatureList::IsEnabled(features::kAutofillAiServerModel);
-}
-
 }  // namespace autofill

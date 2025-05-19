@@ -24,10 +24,6 @@ class AutofillAiModelExecutorFactory : public ProfileKeyedServiceFactory {
   static AutofillAiModelExecutor* GetForProfile(Profile* profile);
   static AutofillAiModelExecutorFactory* GetInstance();
 
- protected:
-  // ProfileKeyedServiceFactory:
-  bool ServiceIsCreatedWithBrowserContext() const override;
-
  private:
   friend base::NoDestructor<AutofillAiModelExecutorFactory>;
 
