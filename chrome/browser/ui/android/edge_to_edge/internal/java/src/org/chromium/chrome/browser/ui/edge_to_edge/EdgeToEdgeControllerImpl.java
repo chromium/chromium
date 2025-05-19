@@ -62,7 +62,7 @@ public class EdgeToEdgeControllerImpl
     private static final String DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM =
             "Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration";
     private static final String SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM =
-            "Android.EdgeToEdge.SupportedConfigurationSwitch";
+            "Android.EdgeToEdge.SupportedConfigurationSwitch2";
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -172,6 +172,8 @@ public class EdgeToEdgeControllerImpl
         mEdgeToEdgeManager = edgeToEdgeManager;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mDisablePaddingRootView = EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
+        mIsSupportedConfiguration = EdgeToEdgeControllerFactory.isSupportedConfiguration(activity);
+
         mEdgeToEdgeOsWrapper =
                 edgeToEdgeOsWrapper == null && !mDisablePaddingRootView
                         ? new EdgeToEdgeOSWrapperImpl()
@@ -238,7 +240,6 @@ public class EdgeToEdgeControllerImpl
         // retriggerOnApplyWindowInsets to populate all the initial state.
         mIsPageOptedIntoEdgeToEdge = EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab);
         mInsetObserver.retriggerOnApplyWindowInsets();
-        mIsSupportedConfiguration = EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
     }
 
     @VisibleForTesting
@@ -680,8 +681,7 @@ public class EdgeToEdgeControllerImpl
     }
 
     @VisibleForTesting
-    @Nullable
-    WebContentsObserver getWebContentsObserver() {
+    @Nullable WebContentsObserver getWebContentsObserver() {
         return mWebContentsObserver;
     }
 
