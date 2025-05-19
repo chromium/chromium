@@ -12,26 +12,35 @@ namespace features {
 
 BASE_FEATURE(kDsePreload2, "DsePreload2", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kDsePreload2PredictorMouseDown{
-    &kDsePreload2, "kDsePreload2PredictorMouseDown", true};
-const base::FeatureParam<bool> kDsePreload2PredictorUpOrDownArrowButton{
-    &kDsePreload2, "kDsePreload2PredictorUpOrDownArrowButton", true};
-const base::FeatureParam<bool> kDsePreload2PredictorTouchDown{
-    &kDsePreload2, "kDsePreload2PredictorTouchDown", true};
+BASE_FEATURE(kDsePreload2OnPress,
+             "DsePreload2OnPress",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kDsePreload2OnPressMouseDown{
+    &kDsePreload2, "kDsePreload2OnPressMouseDown", true};
+const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton{
+    &kDsePreload2, "kDsePreload2OnPressUpOrDownArrowButton", true};
+const base::FeatureParam<bool> kDsePreload2OnPressTouchDown{
+    &kDsePreload2, "kDsePreload2OnPressTouchDown", true};
 
 bool IsDsePreload2Enabled() {
   return base::FeatureList::IsEnabled(kDsePreload2);
 }
 
-bool DsePreload2IsPredictorEnabled(
+bool IsDsePreload2OnPressEnabled() {
+  return base::FeatureList::IsEnabled(kDsePreload2) &&
+         base::FeatureList::IsEnabled(kDsePreload2OnPress);
+}
+
+bool DsePreload2OnPressIsPredictorEnabled(
     omnibox::mojom::NavigationPredictor navigation_predictor) {
   switch (navigation_predictor) {
     case omnibox::mojom::NavigationPredictor::kMouseDown:
-      return kDsePreload2PredictorMouseDown.Get();
+      return kDsePreload2OnPressMouseDown.Get();
     case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
-      return kDsePreload2PredictorUpOrDownArrowButton.Get();
+      return kDsePreload2OnPressUpOrDownArrowButton.Get();
     case omnibox::mojom::NavigationPredictor::kTouchDown:
-      return kDsePreload2PredictorTouchDown.Get();
+      return kDsePreload2OnPressTouchDown.Get();
   }
 }
 

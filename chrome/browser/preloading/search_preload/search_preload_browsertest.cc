@@ -105,10 +105,14 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
             {features::kPrefetchPrerenderIntegration, {}},
             {
                 features::kDsePreload2,
+                {},
+            },
+            {
+                features::kDsePreload2OnPress,
                 {
-                    {"kDsePreload2PredictorMouseDown", "true"},
-                    {"kDsePreload2PredictorUpOrDownArrowButton", "true"},
-                    {"kDsePreload2PredictorTouchDown", "true"},
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
                 },
             },
         },

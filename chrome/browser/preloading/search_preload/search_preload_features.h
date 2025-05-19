@@ -15,18 +15,29 @@ enum class NavigationPredictor;
 namespace features {
 
 // DefaultSearchEngine Preload v2
+//
+// - Base feature flag for DSE preload 2.
+// - Disables `SearchPrefetch` (DSE v1).
+// - Enables on-suggest preloads.
+//
 // https://crbug.com/394988793
 BASE_DECLARE_FEATURE(kDsePreload2);
 
-extern const base::FeatureParam<bool> kDsePreload2PredictorMouseDown;
-extern const base::FeatureParam<bool> kDsePreload2PredictorUpOrDownArrowButton;
-extern const base::FeatureParam<bool> kDsePreload2PredictorTouchDown;
+// Enables on-press prefetch.
+BASE_DECLARE_FEATURE(kDsePreload2OnPress);
+
+extern const base::FeatureParam<bool> kDsePreload2OnPressMouseDown;
+extern const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton;
+extern const base::FeatureParam<bool> kDsePreload2OnPressTouchDown;
 
 // Returns true iff we should enter DsePreload2 code path.
 bool IsDsePreload2Enabled();
+
+// Returns true iff on-press triggers are enabled.
+bool IsDsePreload2OnPressEnabled();
 // Returns true iff we should start prefetch on
 // `SearchPreloadService::OnNavigationLikely()` with a predictor.
-bool DsePreload2IsPredictorEnabled(
+bool DsePreload2OnPressIsPredictorEnabled(
     omnibox::mojom::NavigationPredictor navigation_predictor);
 
 }  // namespace features

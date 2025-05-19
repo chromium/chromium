@@ -143,7 +143,11 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     Profile& profile,
     const AutocompleteMatch& match,
     omnibox::mojom::NavigationPredictor navigation_predictor) {
-  if (!features::DsePreload2IsPredictorEnabled(navigation_predictor)) {
+  if (!features::IsDsePreload2OnPressEnabled()) {
+    return false;
+  }
+
+  if (!features::DsePreload2OnPressIsPredictorEnabled(navigation_predictor)) {
     return false;
   }
 
