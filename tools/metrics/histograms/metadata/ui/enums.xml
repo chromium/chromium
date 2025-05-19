@@ -573,6 +573,7 @@ chromium-metrics-reviews@google.com.
 <enum name="WebUIUrlHashes">
   <int value="-2137891043" label="chrome-untrusted://scanner-feedback/"/>
   <int value="-2103246641" label="chrome://signin-internals/"/>
+  <int value="-2087891836" label="chrome://debug-webuis-disabled/"/>
   <int value="-2086395469" label="chrome://dlp-internals/"/>
   <int value="-2069349961" label="chrome://history-clusters-internals/"/>
   <int value="-2061366287" label="chrome://dev-ui-loader/"/>

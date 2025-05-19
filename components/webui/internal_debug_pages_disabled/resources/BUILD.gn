@@ -1,26 +1,16 @@
-# Copyright 2024 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-grit("resources") {
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-  outputs = [
-    "grit/internal_debug_pages_disabled_resources.h",
-    "grit/internal_debug_pages_disabled_resources_map.h",
-    "grit/internal_debug_pages_disabled_resources_map.cc",
-    "internal_debug_pages_disabled_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/components"
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "internal_debug_pages_disabled"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "app.html" ]
-  input_files_base_dir = rebase_path(".", "//")
+
+  static_files = [ "app.html" ]
+  ts_files = [ "app.ts" ]
+  ts_deps = [ "//ui/webui/resources/js:build_ts" ]
+  webui_context_type = "trusted"
+
+  grit_output_dir = "$root_gen_dir/components"
 }

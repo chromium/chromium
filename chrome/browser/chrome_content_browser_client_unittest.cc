@@ -854,7 +854,6 @@ TEST_F(ChromeContentBrowserClientTest, RedirectCertManagerFeatureOn) {
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest
     : public ChromeContentBrowserClientTest {
  public:
@@ -865,6 +864,31 @@ class ChromeContentSettingsRedirectTest
   ScopedTestingLocalState testing_local_state_;
 };
 
+TEST_F(ChromeContentSettingsRedirectTest, RedirectDebugURL) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  // Disable the internal only uis pref.
+  testing_local_state_.Get()->SetBoolean(chrome_urls::kInternalOnlyUisEnabled,
+                                         false);
+
+  // chrome://local-state is an internal debugging page available on all
+  // platforms.
+  const GURL debug_url(chrome::kChromeUILocalStateURL);
+  GURL dest_url = debug_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(chrome::kChromeUIInternalDebugPagesDisabledHost, dest_url.host());
+  std::string query_param_name("host=");
+  EXPECT_EQ(query_param_name + chrome::kChromeUILocalStateHost,
+            dest_url.query());
+
+  // Enable the internal only uis pref.
+  testing_local_state_.Get()->SetBoolean(chrome_urls::kInternalOnlyUisEnabled,
+                                         true);
+  dest_url = debug_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(debug_url, dest_url);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL settings_url(chrome::kChromeUISettingsURL);
@@ -1899,44 +1923,4 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GrantCookieAccessDueToHeuristicTest,
-                         testing::Bool());
-
-const char kTestWebUIURL[] = "chrome://test";
-
-class ChromeContentBrowserClientOverrideForInternalWebUITest
-    : public ChromeRenderViewHostTestHarness,
-      public testing::WithParamInterface<bool> {
- protected:
-  ChromeContentBrowserClientOverrideForInternalWebUITest() {
-    testing_local_state_.Get()->SetBoolean(chrome_urls::kInternalOnlyUisEnabled,
-                                           GetParam());
-  }
-
-  ChromeContentBrowserClient& client() { return client_; }
-
- protected:
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-
- private:
-  ChromeContentBrowserClient client_;
-};
-
-TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, RespectsPref) {
-  // When the feature flag is on, OverrideForInternalWebUI should return
-  // non-null if kInternalOnlyUisEnabled pref is turned off, and null
-  // otherwise.
-  std::unique_ptr<TestingProfile> profile = CreateTestingProfile();
-  content::TestWebUI test_webui;
-  auto web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile.get(), nullptr);
-  test_webui.set_web_contents(web_contents.get());
-  std::unique_ptr<content::WebUIController> webui_controller =
-      client().OverrideForInternalWebUI(&test_webui, GURL(kTestWebUIURL));
-
-  EXPECT_EQ(GetParam(), webui_controller == nullptr);
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChromeContentBrowserClientOverrideForInternalWebUITest,
                          testing::Bool());

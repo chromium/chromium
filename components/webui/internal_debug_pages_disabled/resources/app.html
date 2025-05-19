@@ -37,6 +37,9 @@
     </style>
   </head>
   <body>
+    <if expr="not is_ios">
+      <script type="module" src="./app.js"></script>
+    </if>
     <h1>$i18n{pageHeading}</h1>
     <p>$i18nRaw{pageBody}</p>
   </body>

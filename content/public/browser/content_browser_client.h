@@ -277,7 +277,6 @@ class WebAuthenticationDelegate;
 class WebContents;
 class WebContentsViewDelegate;
 class WebUIBrowserInterfaceBrokerRegistry;
-class WebUIController;
 class XrIntegrationClient;
 struct GlobalRenderFrameHostId;
 struct GlobalRequestID;
@@ -3266,20 +3265,6 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Called when the tracing service has stopped.
   virtual void OnTracingServiceStopped() {}
-
-  // Embedders can override the handling of internal debugging WebUIs. Internal
-  // WebUIs are WebUIs intended for use only by Chromium developer teams and are
-  // not intended to be useful for other users. Consequently such UIs are often
-  // untested and unmaintained. They can be a source of security or stability
-  // bugs, and may be broken periodically. This method allows embedders to limit
-  // access or require additional user action before allowing navigation to
-  // these UIs.
-  //
-  // If this returns non-null, the returned WebUIController is used instead of
-  // the one provided by content.
-  virtual std::unique_ptr<WebUIController> OverrideForInternalWebUI(
-      WebUI* web_ui,
-      const GURL& url);
 
   // Embedders can override the cross origin embedder policy of a local URL
   // navigation. A local URL is a URL with a local scheme as defined in

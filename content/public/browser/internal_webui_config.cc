@@ -39,9 +39,4 @@ bool IsInternalWebUI(const GURL& url) {
   return GetInternalWebUIHostSet().contains(url.host());
 }
 
-std::unique_ptr<content::WebUIController>
-InternalWebUIConfig::CreateWebUIController(WebUI* web_ui, const GURL& url) {
-  return GetContentClient()->browser()->OverrideForInternalWebUI(web_ui, url);
-}
-
 }  // namespace content

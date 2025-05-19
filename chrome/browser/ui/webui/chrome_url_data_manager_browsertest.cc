@@ -322,6 +322,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://credits",
 #endif
     "chrome://customize-chrome-side-panel.top-chrome",
+    "chrome://debug-webuis-disabled",
     "chrome://device-log",
     // TODO(crbug.com/40710256): Test failure due to excessive output.
     // "chrome://discards",

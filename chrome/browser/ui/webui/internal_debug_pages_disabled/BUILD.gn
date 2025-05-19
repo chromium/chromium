@@ -17,8 +17,10 @@ source_set("internal_debug_pages_disabled") {
     "//chrome/common",
     "//components/resources",
     "//components/strings",
+    "//components/webui/chrome_urls",
     "//content/public/common",
     "//ui/base",
+    "//ui/webui",
     "//url",
   ]
 }

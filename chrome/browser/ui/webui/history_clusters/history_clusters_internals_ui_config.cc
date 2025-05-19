@@ -21,12 +21,6 @@ HistoryClustersInternalsUIConfig::~HistoryClustersInternalsUIConfig() = default;
 std::unique_ptr<content::WebUIController>
 HistoryClustersInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                         const GURL& url) {
-  std::unique_ptr<content::WebUIController> default_controller =
-      InternalWebUIConfig::CreateWebUIController(web_ui, url);
-  if (default_controller) {
-    return default_controller;
-  }
-
   Profile* profile = Profile::FromWebUI(web_ui);
   return std::make_unique<HistoryClustersInternalsUI>(
       web_ui, HistoryClustersServiceFactory::GetForBrowserContext(profile),

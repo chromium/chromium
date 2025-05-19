@@ -108,6 +108,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -402,6 +403,10 @@ class SafeBrowsingBlockingPageBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    // The tests expect to load chrome://safe-browsing, which is an
+    // internal debugging page.
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
   }
 
   SBThreatType GetThreatType() const { return testing::get<0>(GetParam()); }
@@ -2992,6 +2997,10 @@ class SafeBrowsingBlockingPageAsyncChecksTestBase
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    // The tests expect to load chrome://safe-browsing, which is an
+    // internal debugging page.
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
   }
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {

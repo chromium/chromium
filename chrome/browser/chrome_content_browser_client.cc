@@ -312,6 +312,7 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/file_url_loader.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -5975,6 +5976,16 @@ class SpecialAccessFileURLLoaderFactory
   int child_id_;
 };
 
+bool IsDisabledInternalWebUI(const GURL& url) {
+  if (!content::IsInternalWebUI(url)) {
+    return false;
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  return !local_state->GetBoolean(chrome_urls::kInternalOnlyUisEnabled);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsSystemFeatureDisabled(policy::SystemFeature system_feature) {
   return policy::SystemFeaturesDisableListPolicyHandler::
@@ -6848,6 +6859,14 @@ bool ChromeContentBrowserClient::HandleWebUI(
                               false);
   }
 #endif
+
+  if (IsDisabledInternalWebUI(*url)) {
+    GURL::Replacements replacements;
+    std::string query("host=" + url->host());
+    replacements.SetQueryStr(query);
+    *url = GURL(chrome::kChromeUIInternalDebugPagesDisabledURL)
+               .ReplaceComponents(replacements);
+  }
 
   if (!ChromeWebUIControllerFactory::GetInstance()->UseWebUIForURL(
           browser_context, *url) &&
@@ -8619,19 +8638,6 @@ void ChromeContentBrowserClient::OnTracingServiceStopped() {
   windows_system_tracing_client_.reset();
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-std::unique_ptr<content::WebUIController>
-ChromeContentBrowserClient::OverrideForInternalWebUI(content::WebUI* web_ui,
-                                                     const GURL& url) {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  DCHECK(local_state->FindPreference(chrome_urls::kInternalOnlyUisEnabled));
-  if (local_state->GetBoolean(chrome_urls::kInternalOnlyUisEnabled)) {
-    return nullptr;
-  }
-
-  return std::make_unique<InternalDebugPagesDisabledUI>(web_ui, url.host());
-}
 
 bool ChromeContentBrowserClient::ShouldEnableSubframeZoom() {
 #if BUILDFLAG(ENABLE_PDF)

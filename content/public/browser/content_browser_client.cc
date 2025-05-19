@@ -1967,12 +1967,6 @@ bool ContentBrowserClient::ShouldDispatchPagehideDuringCommit(
   return true;
 }
 
-std::unique_ptr<WebUIController> ContentBrowserClient::OverrideForInternalWebUI(
-    WebUI* web_ui,
-    const GURL& url) {
-  return nullptr;
-}
-
 std::optional<network::CrossOriginEmbedderPolicy>
 ContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
     content::NavigationHandle* navigation_handle) {
