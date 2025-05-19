@@ -543,7 +543,9 @@ void LensOverlayController::SendObjects(
 }
 
 void LensOverlayController::NotifyResultsPanelOpened() {
-  page_->NotifyResultsPanelOpened();
+  if (page_) {
+    page_->NotifyResultsPanelOpened();
+  }
 }
 
 void LensOverlayController::TriggerCopy() {
@@ -1014,8 +1016,16 @@ void LensOverlayController::IssueContextualSearchRequest(
     // not overlay UI, this flow does a lot of unnecessary work. There should be
     // a new flow that can contextualize without the overlay UI being
     // initialized.
-    StartContextualizationWithoutOverlay(invocation_source,
-                                         lens_overlay_query_controller);
+    // Set the query controller if it is not already set. This happens in cases
+    // when a contextual request is made but the overlay is not shown.
+    lens_overlay_query_controller_ = lens_overlay_query_controller;
+    CHECK(lens_overlay_query_controller_);
+    GetContextualizationController()->StartContextualization(
+        invocation_source,
+        base::BindOnce(&LensOverlayController::OnPageContextUpdated,
+                       weak_factory_.GetWeakPtr(), destination_url, match_type,
+                       is_zero_prefix_suggestion, invocation_source));
+    return;
   }
 
   if (IsOverlayInitializing()) {
@@ -1033,7 +1043,6 @@ void LensOverlayController::IssueContextualSearchRequest(
     // search request.
     CHECK(lens_overlay_query_controller_);
     GetContextualizationController()->TryUpdatePageContextualization(
-        lens_overlay_query_controller_.get(),
         base::BindOnce(&LensOverlayController::OnPageContextUpdated,
                        weak_factory_.GetWeakPtr(), destination_url, match_type,
                        is_zero_prefix_suggestion, invocation_source));
@@ -1073,6 +1082,10 @@ std::string LensOverlayController::GetVsridForNewTab() {
 
 void LensOverlayController::SetTranslateMode(
     std::optional<lens::TranslateOptions> translate_options) {
+  if (!page_) {
+    return;
+  }
+
   if (translate_options.has_value()) {
     page_->SetTranslateMode(translate_options->source_language,
                             translate_options->target_language);
@@ -1132,7 +1145,9 @@ void LensOverlayController::ClearRegionSelection() {
 }
 
 void LensOverlayController::ClearAllSelections() {
-  page_->ClearAllSelections();
+  if (page_) {
+    page_->ClearAllSelections();
+  }
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
   initialization_data_->selected_text_.reset();
@@ -1773,8 +1788,9 @@ void LensOverlayController::UpdatePageContextualizationPart3(
   // suggest signals.
   if (new_page_content &&
       new_page_content->content_type_ == lens::MimeType::kPdf) {
+    CHECK(lens_overlay_query_controller_);
     GetContextualizationController()->FetchVisiblePageIndexAndGetPartialPdfText(
-        lens_overlay_query_controller_, page_count.value_or(0),
+        page_count.value_or(0),
         base::BindOnce(&LensOverlayController::OnPdfPartialPageTextRetrieved,
                        weak_factory_.GetWeakPtr()));
   }
@@ -1956,8 +1972,8 @@ void LensOverlayController::InitializeOverlay(
       initialization_data_->page_contents_.front().content_type_ ==
           lens::MimeType::kPdf) {
     CHECK(initialization_data_->pdf_page_count_.has_value());
+    CHECK(lens_overlay_query_controller_);
     GetContextualizationController()->FetchVisiblePageIndexAndGetPartialPdfText(
-        lens_overlay_query_controller_,
         initialization_data_->pdf_page_count_.value(),
         base::BindOnce(&LensOverlayController::OnPdfPartialPageTextRetrieved,
                        weak_factory_.GetWeakPtr()));
@@ -2665,8 +2681,10 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     std::map<std::string, std::string> additional_query_params) {
-  // If the overlay is closing or is off, do not attempt to issue the query.
-  if (IsOverlayClosing() || state() == State::kOff) {
+  // TODO(crbug.com/404941800): Re-add check for state == kOff once the
+  // contextualization flow is fully decoupled from the overlay.
+  // If the overlay is closing, do not attempt to issue the query.
+  if (IsOverlayClosing()) {
     return;
   }
   initialization_data_->additional_search_query_params_ =
@@ -2734,6 +2752,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   // otherwise there will be no results to load.
   results_side_panel_coordinator_->SetSidePanelIsLoadingResults(
       is_page_context_eligible_);
+
   MaybeLaunchSurvey();
 }
 
@@ -2741,6 +2760,14 @@ void LensOverlayController::HandleStartQueryResponse(
     std::vector<lens::mojom::OverlayObjectPtr> objects,
     lens::mojom::TextPtr text,
     bool is_error) {
+  // TODO(crbug.com/404941800): State can be off temporarily if the user
+  // contextualizes via an entry point that does not show the overlay UI. Remove
+  // the check for kOff after migrating the contextualization flow since this
+  // function should not be called when the overlay is not open.
+  if (state_ == State::kOff) {
+    return;
+  }
+
   // If the side panel is open, then the error page state can change depending
   // on whether the query succeeded or not. If the side panel is not open, the
   // error page state can only change if the query failed since the first side
@@ -3111,6 +3138,27 @@ void LensOverlayController::OnPageContextUpdated(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     lens::LensOverlayInvocationSource invocation_source) {
+  // TODO(crbug.com/404941800): Eventually, this should be a CHECK or removed
+  // once the contextualization controller is separated from the overlay. For
+  // now, this is required to prevent failures when opening the side panel.
+  // `initialization_data_` is used in IssueSearchBoxRequestPart2 to determine
+  // what type of query to send (contextual or text only).
+  if (state_ == State::kOff) {
+    initialization_data_ = std::make_unique<OverlayInitializationData>(
+        SkBitmap(), SkBitmap(), lens::PaletteId::kFallback,
+        lens_search_controller_->GetPageURL(),
+        lens_search_controller_->GetPageTitle());
+  }
+
+  // TODO(crbug.com/404941800): Similar to above, this should be a CHECK or
+  // removed once the contextualization controller is separated from the
+  // overlay. For now, this is required to prevent failures when opening the
+  // side panel.
+  if (!results_side_panel_coordinator_) {
+    results_side_panel_coordinator_ =
+        lens_search_controller_->lens_overlay_side_panel_coordinator();
+  }
+
   CHECK(lens_overlay_query_controller_);
   // TODO(crbug.com/404941800): This flow should not start the overlay once
   // contextualization is separated from the overlay.

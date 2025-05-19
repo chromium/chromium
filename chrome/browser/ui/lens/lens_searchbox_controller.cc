@@ -7,6 +7,7 @@
 #include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -190,7 +191,9 @@ LensSearchboxController::GetPageClassification() const {
   const LensOverlayController::State state =
       lens_search_controller_->lens_overlay_controller()->state();
   if (state == LensOverlayController::State::kLivePageAndResults ||
-      state == LensOverlayController::State::kOverlay) {
+      state == LensOverlayController::State::kOverlay ||
+      lens_search_controller_->lens_search_contextualization_controller()
+          ->IsActive()) {
     return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
   }
   return init_data_->thumbnail_uri.empty()

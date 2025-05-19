@@ -7,6 +7,7 @@
 
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/tabs/public/tab_interface.h"
@@ -73,6 +74,12 @@ class LensSearchContextualizationController {
     // active.
     kOff,
 
+    // The contextualization flow is in the process of initializing.
+    kInitializing,
+
+    // The contextualization flow is active.
+    kActive,
+
     // TODO(crbug.com/335516480): Implement suspended state.
     kSuspended,
   };
@@ -82,7 +89,7 @@ class LensSearchContextualizationController {
   // user. Virtual for testing.
   virtual void StartContextualization(
       lens::LensOverlayInvocationSource invocation_source,
-      lens::LensOverlayQueryController* lens_overlay_query_controller);
+      OnPageContextUpdatedCallback callback);
 
   // Tries to fetch the underlying page content bytes to use for
   // contextualization. If page content can not be retrieved, the callback will
@@ -93,7 +100,6 @@ class LensSearchContextualizationController {
   // with them. `callback` will be run whether the page context was updated or
   // not.
   void TryUpdatePageContextualization(
-      lens::LensOverlayQueryController* lens_overlay_query_controller,
       OnPageContextUpdatedCallback callback);
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -102,13 +108,14 @@ class LensSearchContextualizationController {
   // This is a no-op if the tab is not a PDF. Once the partial text is
   // retrieved, the text is sent to the server via the query controller.
   void FetchVisiblePageIndexAndGetPartialPdfText(
-      lens::LensOverlayQueryController* lens_overlay_query_controller,
       uint32_t page_count,
       PdfPartialPageTextRetrievedCallback callback);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // Resets the state of the contextualization controller to kOff.
   void ResetState();
+
+  bool IsActive() const { return state_ == State::kActive; }
 
  private:
   // Begin updating page contextualization by potentially taking a new
@@ -206,6 +213,40 @@ class LensSearchContextualizationController {
 
   bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
+  void CaptureScreenshot(base::OnceCallback<void(const SkBitmap&)> callback);
+
+  // Callback for when the screenshot is captured and initial request data is
+  // ready.
+  void DidCaptureScreenshot(
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame,
+      int attempt_id,
+      const SkBitmap& bitmap,
+      const std::vector<gfx::Rect>& bounds,
+      OnPageContextUpdatedCallback callback,
+      std::optional<uint32_t> pdf_current_page);
+
+  // Fetches the bounding boxes of all images within the current viewport.
+  void FetchViewportImageBoundingBoxes(OnPageContextUpdatedCallback callback,
+                                       const SkBitmap& bitmap);
+
+  // Creates the mojo bounding boxes for the significant regions.
+  std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(
+      const std::vector<gfx::Rect>& all_bounds);
+
+  // Gets the current page number if viewing a PDF.
+  void GetPdfCurrentPage(
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame,
+      int attempt_id,
+      const SkBitmap& bitmap,
+      OnPageContextUpdatedCallback callback,
+      const std::vector<gfx::Rect>& bounds);
+
+  float GetUiScaleFactor();
+
+  lens::LensOverlayQueryController* GetQueryController();
+
   // The current state of the contextualization flow.
   State state_ = State::kOff;
 
@@ -249,9 +290,8 @@ class LensSearchContextualizationController {
   // the page context has been updated and sent to the server.
   OnPageContextUpdatedCallback on_page_context_updated_callback_;
 
-  // The query controller to use for sending partial page content requests.
-  raw_ptr<lens::LensOverlayQueryController> lens_overlay_query_controller_ =
-      nullptr;
+  // The source of the invocation.
+  lens::LensOverlayInvocationSource invocation_source_;
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
