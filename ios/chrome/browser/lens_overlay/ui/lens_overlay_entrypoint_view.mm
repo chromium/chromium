@@ -94,6 +94,7 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
         [UIColor colorNamed:kGrey300Color];
     [self insertSubview:_visibilityIndicatorView belowSubview:self.imageView];
     _visibilityIndicatorView.layer.cornerRadius = kVisibilityIndicatorSize / 2;
+    _visibilityIndicatorView.userInteractionEnabled = NO;
     AddSameCenterConstraints(self, _visibilityIndicatorView);
     AddSizeConstraints(
         _visibilityIndicatorView,
