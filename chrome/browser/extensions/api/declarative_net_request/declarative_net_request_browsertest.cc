@@ -50,7 +50,6 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -4008,9 +4007,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       embedded_test_server()->GetURL("abc.com", "/page_with_two_frames.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
-  TabHelper* tab_helper = TabHelper::FromWebContents(web_contents());
   ActiveTabPermissionGranter* active_tab_granter =
-      tab_helper->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents());
   ASSERT_TRUE(active_tab_granter);
 
   // The preference is initially turned off. Both the visible badge text and the
@@ -5066,12 +5064,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
 
-  TabHelper* tab_helper = TabHelper::FromWebContents(web_contents());
-  ASSERT_TRUE(tab_helper);
-
   // Get the ActiveTabPermissionGranter for the second tab.
   ActiveTabPermissionGranter* active_tab_granter =
-      tab_helper->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents());
   ASSERT_TRUE(active_tab_granter);
 
   const Extension* dnr_extension = last_loaded_extension();

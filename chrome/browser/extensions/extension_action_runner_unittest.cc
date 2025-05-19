@@ -202,8 +202,7 @@ void ExtensionActionRunnerUnitTest::TearDown() {
 // is allowed to run.
 TEST_F(ExtensionActionRunnerUnitTest, GrantTabPermissions) {
   ActiveTabPermissionGranter* active_tab_permission_granter =
-      TabHelper::FromWebContents(web_contents())
-          ->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents());
   ASSERT_TRUE(active_tab_permission_granter);
 
   const Extension* extension = AddExtension();
@@ -338,8 +337,7 @@ TEST_F(ExtensionActionRunnerUnitTest, ActiveScriptsUseActiveTabPermissions) {
   NavigateAndCommit(GURL("https://www.google.com"));
 
   ActiveTabPermissionGranter* active_tab_permission_granter =
-      TabHelper::FromWebContents(web_contents())
-          ->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents());
   ASSERT_TRUE(active_tab_permission_granter);
   // Grant the extension active tab permissions. This normally happens, e.g.,
   // if the user clicks on a browser action.

@@ -108,12 +108,14 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   // The ActiveTabPermissionManager requires a session ID; ensure this
   // WebContents has one.
   CreateSessionServiceTabHelper(web_contents);
-  // The Unretained() is safe because ForEachRenderFrameHost() is synchronous.
+  // The [this] is safe because ForEachRenderFrameHost() is synchronous.
   web_contents->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* host) { SetTabId(host); });
-  active_tab_permission_granter_ = std::make_unique<ActiveTabPermissionGranter>(
-      web_contents, sessions::SessionTabHelper::IdForTab(web_contents).id(),
-      profile_);
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+  // TODO(crbug.com/393179880): Pull this creation out of TabHelper once
+  // tab id assignment can be done on desktop Android.
+  ActiveTabPermissionGranter::CreateForWebContents(web_contents, tab_id,
+                                                   profile_);
 
   ActivityLog::GetInstance(profile_)->ObserveScripts(script_executor_.get());
 
@@ -214,6 +216,10 @@ void TabHelper::SetReloadRequired(
 
 bool TabHelper::IsReloadRequired() {
   return reload_required_;
+}
+
+ActiveTabPermissionGranter* TabHelper::active_tab_permission_granter() {
+  return ActiveTabPermissionGranter::FromWebContents(web_contents());
 }
 
 void TabHelper::OnWatchedPageChanged(

@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
 #include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -158,8 +157,8 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
       ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           extension_id);
   CHECK(extension);
-  extensions::TabHelper::FromWebContents(web_contents)->
-      active_tab_permission_granter()->GrantIfRequested(extension);
+  extensions::ActiveTabPermissionGranter::FromWebContents(web_contents)
+      ->GrantIfRequested(extension);
 
   base::Value::List args;
   args.Append(input);

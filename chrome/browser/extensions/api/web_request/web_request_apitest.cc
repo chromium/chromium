@@ -2050,7 +2050,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   // Revoke the extension's tab permissions.
   ActiveTabPermissionGranter* granter =
-      TabHelper::FromWebContents(web_contents)->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents);
   ASSERT_TRUE(granter);
   granter->RevokeForTesting();
   base::RunLoop().RunUntilIdle();

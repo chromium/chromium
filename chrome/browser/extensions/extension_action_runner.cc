@@ -173,8 +173,7 @@ void ExtensionActionRunner::GrantTabPermissions(
                                           refresh_required);
   // Immediately grant permissions to every extension.
   for (auto* extension : extensions) {
-    TabHelper::FromWebContents(web_contents())
-        ->active_tab_permission_granter()
+    ActiveTabPermissionGranter::FromWebContents(web_contents())
         ->GrantIfRequested(extension);
   }
 
@@ -255,8 +254,7 @@ bool ExtensionActionRunner::WantsToRun(const Extension* extension) {
 
 void ExtensionActionRunner::RunForTesting(const Extension* extension) {
   if (WantsToRun(extension)) {
-    TabHelper::FromWebContents(web_contents())
-        ->active_tab_permission_granter()
+    ActiveTabPermissionGranter::FromWebContents(web_contents())
         ->GrantIfRequested(extension);
   }
 }
@@ -447,8 +445,7 @@ void ExtensionActionRunner::RunBlockedActions(const Extension* extension) {
   // the given tab.
   // The extension may already have active tab at this point, but granting
   // it twice is essentially a no-op.
-  TabHelper::FromWebContents(web_contents())
-      ->active_tab_permission_granter()
+  ActiveTabPermissionGranter::FromWebContents(web_contents())
       ->GrantIfRequested(extension);
 
   RunPendingScriptsForExtension(extension);

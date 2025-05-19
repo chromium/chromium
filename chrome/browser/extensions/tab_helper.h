@@ -93,9 +93,8 @@ class TabHelper : public content::WebContentsObserver,
     return extension_action_runner_.get();
   }
 
-  ActiveTabPermissionGranter* active_tab_permission_granter() {
-    return active_tab_permission_granter_.get();
-  }
+  // TODO(crbug.com/393179880): Eliminate this method.
+  ActiveTabPermissionGranter* active_tab_permission_granter();
 
   void OnWatchedPageChanged(const std::vector<std::string>& css_selectors);
 
@@ -157,8 +156,6 @@ class TabHelper : public content::WebContentsObserver,
   std::unique_ptr<ExtensionActionRunner> extension_action_runner_;
 
   declarative_net_request::WebContentsHelper declarative_net_request_helper_;
-
-  std::unique_ptr<ActiveTabPermissionGranter> active_tab_permission_granter_;
 
   // Whether the tab needs a page reload to apply the user site settings.
   bool reload_required_ = false;

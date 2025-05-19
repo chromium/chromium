@@ -20,7 +20,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/user_scripts_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -1742,8 +1741,8 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest, ActiveTabGranted) {
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   // Step 3: Grant activeTab and verify tracker runs the content script.
-  TabHelper* tab_helper = TabHelper::FromWebContents(web_contents);
-  tab_helper->active_tab_permission_granter()->GrantIfRequested(extension);
+  ActiveTabPermissionGranter::FromWebContents(web_contents)
+      ->GrantIfRequested(extension);
   EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 

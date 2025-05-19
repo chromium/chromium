@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -29,12 +30,9 @@ class Extension;
 // with the activeTab or tabCapture permission.
 class ActiveTabPermissionGranter
     : public content::WebContentsObserver,
-      public extensions::ExtensionRegistryObserver {
+      public extensions::ExtensionRegistryObserver,
+      public content::WebContentsUserData<ActiveTabPermissionGranter> {
  public:
-  ActiveTabPermissionGranter(content::WebContents* web_contents,
-                             int tab_id,
-                             Profile* profile);
-
   ActiveTabPermissionGranter(const ActiveTabPermissionGranter&) = delete;
   ActiveTabPermissionGranter& operator=(const ActiveTabPermissionGranter&) =
       delete;
@@ -53,8 +51,14 @@ class ActiveTabPermissionGranter
   void RevokeForTesting();
 
  private:
+  friend class content::WebContentsUserData<ActiveTabPermissionGranter>;
+
   FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,
                            FencedFrameDoesNotClearActiveExtensions);
+
+  ActiveTabPermissionGranter(content::WebContents* web_contents,
+                             int tab_id,
+                             Profile* profile);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
@@ -76,7 +80,7 @@ class ActiveTabPermissionGranter
       const ExtensionSet& granted_extensions_to_remove);
 
   // The tab ID for this tab.
-  int tab_id_;
+  const int tab_id_;
 
   // Extensions with the activeTab permission that have been granted
   // tab-specific permissions until the next navigation/refresh.
@@ -85,6 +89,8 @@ class ActiveTabPermissionGranter
   // Listen to extension unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace extensions

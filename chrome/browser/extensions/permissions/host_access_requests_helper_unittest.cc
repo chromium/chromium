@@ -7,7 +7,6 @@
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -405,9 +404,8 @@ TEST_F(HostAccessRequestsHelperUnittest,
 
   // Grant tab permission to extension.
   ActiveTabPermissionGranter* active_tab_permission_granter =
-      TabHelper::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents())
-          ->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(active_tab_permission_granter);
   active_tab_permission_granter->GrantIfRequested(extension.get());
 

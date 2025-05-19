@@ -189,8 +189,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
     // not set the delegate as it deals only with named commands (not
     // page/browser actions that are associated with the current page directly).
     ActiveTabPermissionGranter* granter =
-        web_contents ? TabHelper::FromWebContents(web_contents)
-                           ->active_tab_permission_granter()
+        web_contents ? ActiveTabPermissionGranter::FromWebContents(web_contents)
                      : nullptr;
     if (granter) {
       granter->GrantIfRequested(extension);

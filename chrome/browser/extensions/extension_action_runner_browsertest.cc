@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   EXPECT_FALSE(runner->WantsToRun(extension));
 
   ActiveTabPermissionGranter* active_tab_granter =
-      TabHelper::FromWebContents(web_contents)->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents);
   ASSERT_TRUE(active_tab_granter);
   EXPECT_EQ(active_tab_granter->granted_extensions_.size(), 1U);
 

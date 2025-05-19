@@ -104,8 +104,7 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
   }
 
   ActiveTabPermissionGranter* active_tab_permission_granter() {
-    return TabHelper::FromWebContents(web_contents())
-        ->active_tab_permission_granter();
+    return ActiveTabPermissionGranter::FromWebContents(web_contents());
   }
 
   bool IsAllowed(const scoped_refptr<const Extension>& extension_refptr,
@@ -525,8 +524,7 @@ TEST_F(ActiveTabWithServiceTest, FileURLs) {
 
   TabHelper::CreateForWebContents(web_contents.get());
   ActiveTabPermissionGranter* permission_granter =
-      TabHelper::FromWebContents(web_contents.get())
-          ->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents.get());
   ASSERT_TRUE(permission_granter);
   const int tab_id =
       sessions::SessionTabHelper::IdForTab(web_contents.get()).id();
