@@ -1025,6 +1025,13 @@ class ComputedStyle final : public ComputedStyleBase {
         .IsFullyTransparent();
   }
   bool HasRowRule() const {
+    // `SpecifiesColumns()` signifies we are in a multicol context. Return false
+    // if we are not in a multicol, grid, or flex context.
+    if (!SpecifiesColumns() && (Display() != EDisplay::kGrid &&
+                                Display() != EDisplay::kFlex)) [[likely]] {
+      return false;
+    }
+
     return HasRuleWidth(RowRuleWidth()) && !RowRuleIsTransparent() &&
            BorderStyleIsVisible(RowRuleStyle());
   }
@@ -2686,7 +2693,8 @@ class ComputedStyle final : public ComputedStyleBase {
   CORE_EXPORT bool CustomPropertiesEqual(const Vector<AtomicString>& properties,
                                          const ComputedStyle& other) const;
 
-  blink::Color GetCurrentColor(bool* is_current_color = nullptr) const;
+  CORE_EXPORT blink::Color GetCurrentColor(
+      bool* is_current_color = nullptr) const;
   blink::Color GetInternalVisitedCurrentColor(
       bool* is_current_color = nullptr) const;
   blink::Color GetInternalForcedCurrentColor(
