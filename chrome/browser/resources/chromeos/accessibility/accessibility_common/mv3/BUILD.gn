@@ -37,7 +37,7 @@ misc_sources = [
   "dictation/earcons/audio_end.wav",
   "dictation/earcons/audio_initiate.wav",
   "dictation/earcons/null_selection.wav",
-  "dictation/offscreen.html",
+  "offscreen.html",
 ]
 
 # TS files to build.

@@ -22,8 +22,7 @@ declare global {
  * are enabled.
  */
 export class AccessibilityCommon {
-  private static offscreenDocumentPromises_: Map<string, Promise<void>> =
-      new Map();
+  private static offscreenDocumentPromise_: Promise<void>|null;
 
   private autoclick_: Autoclick|null = null;
   private magnifier_: Magnifier|null = null;
@@ -39,7 +38,8 @@ export class AccessibilityCommon {
   private facegazeLoadCallbackForTest_: Function|null = null;
 
   static readonly FACEGAZE_PREF_NAME = 'settings.a11y.face_gaze.enabled';
-
+  static readonly OFFSCREEN_DOCUMENT_PATH =
+      'accessibility_common/mv3/offscreen.html';
 
   constructor() {
     this.init_();
@@ -48,16 +48,11 @@ export class AccessibilityCommon {
   static async init(): Promise<void> {
     await Flags.init();
     globalThis.accessibilityCommon = new AccessibilityCommon();
-    return AccessibilityCommon.initializeOffscreenDocuments();
+    return this.maybeCreateOffscreenDocument();
   }
 
-  static async initializeOffscreenDocuments(): Promise<void> {
-    await Promise.all([this.maybeCreateOffscreenDocument(
-        'accessibility_common/mv3/dictation/offscreen.html')]);
-  }
-
-  static async maybeCreateOffscreenDocument(url: string): Promise<void> {
-    const offscreenUrl = chrome.runtime.getURL(url);
+  static async maybeCreateOffscreenDocument(): Promise<void> {
+    const offscreenUrl = chrome.runtime.getURL(this.OFFSCREEN_DOCUMENT_PATH);
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
       documentUrls: [offscreenUrl]
@@ -65,14 +60,14 @@ export class AccessibilityCommon {
     if (existingContexts.length > 0) {
       return;
     }
-    if (!this.offscreenDocumentPromises_.has(url)) {
+    if (!this.offscreenDocumentPromise_) {
       const promise = chrome.offscreen.createDocument({
         url: offscreenUrl,
         reasons: [chrome.offscreen.Reason.WORKERS],
         justification: 'Audio web API and web assembly execution',
       });
       await promise;
-      this.offscreenDocumentPromises_.set(url, promise);
+      this.offscreenDocumentPromise_ = promise;
     }
   }
 
