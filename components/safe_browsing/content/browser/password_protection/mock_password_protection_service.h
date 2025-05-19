@@ -112,8 +112,6 @@ class MockPasswordProtectionService : public PasswordProtectionService {
            PasswordType,
            const std::vector<password_manager::MatchingReusedCredential>&,
            bool));
-  MOCK_CONST_METHOD0(GetUserPopulationPref,
-                     ChromeUserPopulation::UserPopulation());
 };
 
 }  // namespace safe_browsing

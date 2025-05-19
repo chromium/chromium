@@ -244,10 +244,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // Returns the URL where PasswordProtectionRequest instances send requests.
   static GURL GetPasswordProtectionRequestUrl();
 
-  // Gets the UserPopulation value for this profile.
-  virtual ChromeUserPopulation::UserPopulation GetUserPopulationPref()
-      const = 0;
-
   std::set<scoped_refptr<PasswordProtectionRequest>>&
   get_pending_requests_for_testing() {
     return pending_requests_;

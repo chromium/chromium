@@ -1784,11 +1784,6 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
-ChromeUserPopulation::UserPopulation
-ChromePasswordProtectionService::GetUserPopulationPref() const {
-  return ::safe_browsing::GetUserPopulationPref(profile_->GetPrefs());
-}
-
 ChromePasswordProtectionService::ChromePasswordProtectionService(
     Profile* profile,
     scoped_refptr<SafeBrowsingUIManager> ui_manager,

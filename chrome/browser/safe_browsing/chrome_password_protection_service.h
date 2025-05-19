@@ -296,9 +296,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Gets |account_info_| based on |profile_|.
   AccountInfo GetAccountInfo() const override;
 
-  // Gets the UserPopulation value for this profile.
-  ChromeUserPopulation::UserPopulation GetUserPopulationPref() const override;
-
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;
