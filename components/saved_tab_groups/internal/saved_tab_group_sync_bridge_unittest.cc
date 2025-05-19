@@ -266,16 +266,10 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
   }
 
   void VerifyEntriesCount(size_t expected_count) {
-    std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
-    store_->ReadAllData(base::BindLambdaForTesting(
-        [&](const std::optional<syncer::ModelError>& error,
-            std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
-          entries = std::move(data);
-        }));
-    task_environment_.RunUntilIdle();
+    const syncer::DataTypeStore::RecordList records =
+        syncer::DataTypeStoreTestUtil::ReadAllDataAndWait(*store_);
 
-    ASSERT_TRUE(entries);
-    EXPECT_EQ(expected_count, entries->size());
+    EXPECT_EQ(expected_count, records.size());
   }
 
   std::optional<proto::SavedTabGroupData> ReadSavedTabGroupDataFromStore(
@@ -1290,20 +1284,13 @@ TEST_F(
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
-  store_->ReadAllData(base::BindLambdaForTesting(
-      [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
-        entries = std::move(data);
-      }));
-  task_environment_.RunUntilIdle();
+  const std::map<std::string, proto::SavedTabGroupData> data =
+      syncer::DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+          proto::SavedTabGroupData>(*store_);
 
   // Verify the migrated data
-  ASSERT_TRUE(entries);
-  EXPECT_EQ(entries->size(), 1u);
-  const syncer::DataTypeStore::Record& record = entries->at(0);
-  proto::SavedTabGroupData migrated_data;
-  ASSERT_TRUE(migrated_data.ParseFromString(record.value));
+  ASSERT_EQ(data.size(), 1u);
+  const proto::SavedTabGroupData& migrated_data = data.begin()->second;
 
   EXPECT_TRUE(AreGroupSpecificsEqual(migrated_data.specifics(), old_specifics));
 
@@ -1339,17 +1326,11 @@ TEST_F(
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
-  store_->ReadAllData(base::BindLambdaForTesting(
-      [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
-        entries = std::move(data);
-      }));
-  task_environment_.RunUntilIdle();
+  const syncer::DataTypeStore::RecordList entries =
+      syncer::DataTypeStoreTestUtil::ReadAllDataAndWait(*store_);
 
   // Verify the migrated data
-  ASSERT_TRUE(entries);
-  EXPECT_EQ(entries->size(), 2u);
+  ASSERT_EQ(entries.size(), 2u);
   EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
 
   // Verify the migrated data in the model.
@@ -1416,18 +1397,12 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
-  store_->ReadAllData(base::BindLambdaForTesting(
-      [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
-        entries = std::move(data);
-      }));
-  task_environment_.RunUntilIdle();
+  const syncer::DataTypeStore::RecordList entries =
+      syncer::DataTypeStoreTestUtil::ReadAllDataAndWait(*store_);
 
   // Verify the migrated data. It should match the original.
-  ASSERT_TRUE(entries);
-  EXPECT_EQ(entries->size(), 1u);
-  const syncer::DataTypeStore::Record& record = entries->at(0);
+  ASSERT_EQ(entries.size(), 1u);
+  const syncer::DataTypeStore::Record& record = entries.at(0);
   proto::SavedTabGroupData migrated_data;
   EXPECT_EQ(group_data.SerializeAsString(), record.value);
   ASSERT_TRUE(migrated_data.ParseFromString(record.value));
@@ -1457,18 +1432,12 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
-  store_->ReadAllData(base::BindLambdaForTesting(
-      [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
-        entries = std::move(data);
-      }));
-  task_environment_.RunUntilIdle();
+  const syncer::DataTypeStore::RecordList entries =
+      syncer::DataTypeStoreTestUtil::ReadAllDataAndWait(*store_);
 
   // Verify the migrated data. It should match the original.
-  ASSERT_TRUE(entries);
-  EXPECT_EQ(entries->size(), 1u);
-  const syncer::DataTypeStore::Record& record = entries->at(0);
+  ASSERT_EQ(entries.size(), 1u);
+  const syncer::DataTypeStore::Record& record = entries.at(0);
   proto::SavedTabGroupData migrated_data;
   EXPECT_EQ(group_data.SerializeAsString(), record.value);
   ASSERT_TRUE(migrated_data.ParseFromString(record.value));
@@ -1506,17 +1475,11 @@ TEST_F(
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
-  store_->ReadAllData(base::BindLambdaForTesting(
-      [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
-        entries = std::move(data);
-      }));
-  task_environment_.RunUntilIdle();
+  const syncer::DataTypeStore::RecordList entries =
+      syncer::DataTypeStoreTestUtil::ReadAllDataAndWait(*store_);
 
   // Verify the migrated data
-  ASSERT_TRUE(entries);
-  EXPECT_EQ(entries->size(), 2u);
+  ASSERT_EQ(entries.size(), 2u);
   EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
 
   // Verify the migrated data in the model.

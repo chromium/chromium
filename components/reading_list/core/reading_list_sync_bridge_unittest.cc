@@ -106,21 +106,6 @@ base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   return clock->Now();
 }
 
-syncer::DataTypeStore::RecordList ReadAllDataFromDataTypeStore(
-    syncer::DataTypeStore* store) {
-  syncer::DataTypeStore::RecordList result;
-  base::RunLoop loop;
-  store->ReadAllData(base::BindLambdaForTesting(
-      [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::DataTypeStore::RecordList> records) {
-        EXPECT_FALSE(error.has_value()) << error->ToString();
-        result = std::move(*records);
-        loop.Quit();
-      }));
-  loop.Run();
-  return result;
-}
-
 }  // namespace
 
 class ReadingListSyncBridgeTest : public testing::Test {
@@ -409,12 +394,14 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
           }));
   loop.Run();
 
-  ASSERT_THAT(ReadAllDataFromDataTypeStore(underlying_in_memory_store_),
+  ASSERT_THAT(syncer::DataTypeStoreTestUtil::ReadAllDataAndWait(
+                  *underlying_in_memory_store_),
               SizeIs(1));
 
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
-  EXPECT_THAT(ReadAllDataFromDataTypeStore(underlying_in_memory_store_),
+  EXPECT_THAT(syncer::DataTypeStoreTestUtil::ReadAllDataAndWait(
+                  *underlying_in_memory_store_),
               SizeIs(0));
 }
 

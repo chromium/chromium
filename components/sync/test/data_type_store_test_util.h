@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_SYNC_TEST_DATA_TYPE_STORE_TEST_UTIL_H_
 #define COMPONENTS_SYNC_TEST_DATA_TYPE_STORE_TEST_UTIL_H_
 
+#include <map>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/data_type_store.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 
@@ -34,6 +38,25 @@ class DataTypeStoreTestUtil {
   // created by the factory.
   static RepeatingDataTypeStoreFactory FactoryForForwardingStore(
       DataTypeStore* target);
+
+  // Reads and returns all data records from the `store`.
+  static DataTypeStore::RecordList ReadAllDataAndWait(DataTypeStore& store);
+
+  // Reads and returns all data records from the `store` as protos of type `T`.
+  // The returned map is keyed by storage keys.
+  template <typename T>
+  static std::map<std::string, T> ReadAllDataAsProtoAndWait(
+      DataTypeStore& store) {
+    std::map<std::string, T> result;
+    for (const DataTypeStore::Record& record : ReadAllDataAndWait(store)) {
+      T data;
+      if (!data.ParseFromString(record.value)) {
+        ADD_FAILURE() << "Failed to parse storage key: " << record.id;
+      }
+      result.emplace(record.id, std::move(data));
+    }
+    return result;
+  }
 };
 
 }  // namespace syncer

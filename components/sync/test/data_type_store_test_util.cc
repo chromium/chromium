@@ -4,13 +4,16 @@
 
 #include "components/sync/test/data_type_store_test_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/blocking_data_type_store_impl.h"
 #include "components/sync/model/data_type_store_backend.h"
@@ -121,6 +124,28 @@ RepeatingDataTypeStoreFactory DataTypeStoreTestUtil::FactoryForForwardingStore(
             std::make_unique<ForwardingDataTypeStore>(target));
       },
       base::Unretained(target));
+}
+
+// static
+DataTypeStore::RecordList DataTypeStoreTestUtil::ReadAllDataAndWait(
+    DataTypeStore& store) {
+  DataTypeStore::RecordList result;
+  base::RunLoop loop;
+  store.ReadAllData(base::BindLambdaForTesting(
+      [&result, &loop](
+          const std::optional<ModelError>& error,
+          std::unique_ptr<DataTypeStore::RecordList> data_records) {
+        if (error.has_value()) {
+          ADD_FAILURE() << error->ToString();
+        } else if (!data_records) {
+          ADD_FAILURE() << "data_records is null";
+        } else {
+          result = std::move(*data_records);
+        }
+        loop.Quit();
+      }));
+  loop.Run();
+  return result;
 }
 
 }  // namespace syncer

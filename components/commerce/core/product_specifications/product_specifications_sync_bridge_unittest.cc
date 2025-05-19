@@ -234,26 +234,8 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   }
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics> GetAllStoreData() {
-    base::RunLoop loop;
-    std::map<std::string, sync_pb::ProductComparisonSpecifics>
-        storage_key_to_specifics;
-    bridge_->store_->ReadAllData(base::BindOnce(
-        [](base::RunLoop* loop,
-           std::map<std::string, sync_pb::ProductComparisonSpecifics>*
-               storage_key_to_specifics,
-           const std::optional<syncer::ModelError>& error,
-           std::unique_ptr<syncer::DataTypeStore::RecordList> data_records) {
-          for (auto& record : *data_records.get()) {
-            sync_pb::ProductComparisonSpecifics specifics;
-            specifics.ParseFromString(record.value);
-            storage_key_to_specifics->emplace(specifics.uuid(), specifics);
-          }
-          loop->Quit();
-        },
-        &loop, &storage_key_to_specifics));
-    loop.Run();
-
-    return storage_key_to_specifics;
+    return syncer::DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+        sync_pb::ProductComparisonSpecifics>(*store_);
   }
 
   void VerifySpecificsExists(

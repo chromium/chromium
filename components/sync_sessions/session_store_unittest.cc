@@ -130,28 +130,8 @@ std::unique_ptr<MetadataBatch> ReadAllPersistedMetadataFrom(
 
 std::map<std::string, SessionSpecifics> ReadAllPersistedDataFrom(
     DataTypeStore* store) {
-  std::unique_ptr<DataTypeStore::RecordList> records;
-  base::RunLoop loop;
-  store->ReadAllData(base::BindOnce(
-      [](std::unique_ptr<DataTypeStore::RecordList>* output_records,
-         base::RunLoop* loop, const std::optional<syncer::ModelError>& error,
-         std::unique_ptr<DataTypeStore::RecordList> input_records) {
-        EXPECT_FALSE(error) << error->ToString();
-        EXPECT_THAT(input_records, NotNull());
-        *output_records = std::move(input_records);
-        loop->Quit();
-      },
-      &records, &loop));
-  loop.Run();
-  std::map<std::string, SessionSpecifics> result;
-  if (records) {
-    for (const DataTypeStore::Record& record : *records) {
-      SessionSpecifics specifics;
-      EXPECT_TRUE(specifics.ParseFromString(record.value));
-      result.emplace(record.id, specifics);
-    }
-  }
-  return result;
+  return syncer::DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+      SessionSpecifics>(*store);
 }
 
 class SessionStoreOpenTest : public ::testing::Test {

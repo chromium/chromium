@@ -186,24 +186,12 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
   }
 
   size_t GetNumEntriesInStore(bool is_tab_details) {
-    std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
-    base::RunLoop run_loop;
-    store_->ReadAllData(base::BindLambdaForTesting(
-        [&run_loop, &entries](
-            const std::optional<syncer::ModelError>& error,
-            std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
-          entries = std::move(data);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    std::map<std::string, sync_pb::SharedTabGroupAccountDataSpecifics> data =
+        syncer::DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+            sync_pb::SharedTabGroupAccountDataSpecifics>(*store_);
 
     size_t size = 0;
-    for (const auto& record : *entries) {
-      sync_pb::SharedTabGroupAccountDataSpecifics specifics;
-      if (!specifics.ParseFromString(record.value)) {
-        CHECK(false);
-      }
-
+    for (const auto& [storage_key, specifics] : data) {
       if (is_tab_details && specifics.has_shared_tab_details()) {
         ++size;
       }
