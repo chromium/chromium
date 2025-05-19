@@ -16,8 +16,3 @@
 -ScopedAccessibilityModeTest.Filtering
 -ScopedAccessibilityModeTest.Process
 -ScopedAccessibilityModeTest.WebContents
-
-# These tests still need to be triaged and either okayed to skip or fixed.
--BackForwardCacheWithSubframeNavigationBrowserTest.SubframeNavigationWithUrlLoaderBeforeSendingRequestShouldNotPreventCache
--FindRequestManagerTest.FindInPage_Issue627799
--PrerenderBrowserTest.ActivatePageWithInnerContents

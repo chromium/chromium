@@ -2551,6 +2551,10 @@ void AXPlatformNodeAuraLinux::DestroyAtkObjects() {
   }
 
   if (atk_object_) {
+    // Remove this object from the active find-in-page results, so that it is
+    // not subsequently referenced by `ActiveFindInPageResult`.
+    GetActiveFindInPageResults().erase(atk_object_.get());
+
     // We explicitly clear g_current_focused just in case there is another
     // reference to atk_object_ somewhere.
     if (atk_object_ == g_current_focused)
