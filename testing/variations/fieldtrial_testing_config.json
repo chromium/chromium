@@ -19914,6 +19914,31 @@
             ]
         }
     ],
+    "RenderingOptimizationsHoldback": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DOMInsertionFaster",
+                        "FastClearNeedsRepaint",
+                        "HarfBuzzBufferPool",
+                        "IsolatedSVGDocumentOptimization",
+                        "LineBreakEarlyReturn",
+                        "PaintLayerUpdateOptimizations",
+                        "ScrollableAreaOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportingEventsForAndroid": [
         {
             "platforms": [
