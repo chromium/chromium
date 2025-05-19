@@ -94,6 +94,6 @@ public class MenuModelBridge {
     @CalledByNative
     private void addDivider() {
         // TODO(crbug.com/416222384): Update context menus to use incognito theming.
-        mItems.add(new ListItem(ContextMenuItemType.DIVIDER, new PropertyModel()));
+        mItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
     }
 }
