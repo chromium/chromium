@@ -18,18 +18,14 @@ mojom("mojo_bindings") {
 
 source_set("access_code_cast") {
   sources = [
-    "access_code_cast_dialog.cc",
     "access_code_cast_dialog.h",
-    "access_code_cast_handler.cc",
     "access_code_cast_handler.h",
-    "access_code_cast_ui.cc",
     "access_code_cast_ui.h",
   ]
 
   public_deps = [
     ":mojo_bindings",
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
     "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
@@ -50,21 +46,43 @@ source_set("access_code_cast") {
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
     "//url",
   ]
+}
+
+source_set("impl") {
+  sources = [
+    "access_code_cast_dialog.cc",
+    "access_code_cast_handler.cc",
+    "access_code_cast_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    ":access_code_cast",
+    "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/access_code_cast:resources",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
+    "//chrome/common",
+    "//components/access_code_cast/common:metrics",
+    "//components/media_router/browser",
+    "//components/media_router/common",
     "//components/prefs",
     "//components/sessions",
     "//components/strings:components_strings",
     "//components/web_modal",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
     "//ui/base",
     "//ui/display",
+    "//ui/views",
     "//ui/webui",
+    "//url",
   ]
 }
 

@@ -1665,6 +1665,7 @@ static_library("ui") {
       "//chrome/browser/ui/search_engine_choice",
       "//chrome/browser/ui/search_engine_choice:impl",
       "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/access_code_cast:impl",
 
       # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
       # gets modularized.
@@ -1937,7 +1938,7 @@ static_library("ui") {
 
       # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
       # subdirectories such as views and webui which are not modularized yet.
-      "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/access_code_cast:impl",
 
       # TODO(crbug.com/364667551): It includes //c/b/ui/browser.h and
       # //c/b/ui/browser_window.h.

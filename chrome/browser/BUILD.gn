@@ -4375,6 +4375,7 @@ static_library("browser") {
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/views/zoom:impl",
       "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/access_code_cast:impl",
       "//chrome/browser/ui/webui/app_service_internals",
 
       # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
@@ -4587,7 +4588,7 @@ static_library("browser") {
 
       # TODO(crbug.com/364667551): It includes
       # //c/b/signin/identity_manager_factory.h.
-      "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/access_code_cast:impl",
     ]
 
     #!is_android
