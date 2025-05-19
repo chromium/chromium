@@ -114,10 +114,8 @@ class WebTestPermissionManager
     // types such as STORAGE_ACCESS_GRANT, which are scoped to (requesting
     // site, embedding site), it will apply a same-site check instead.
     bool operator==(const PermissionDescription& other) const;
-    bool operator!=(const PermissionDescription& other) const;
 
     bool operator==(PermissionStatusSubscription* other) const;
-    bool operator!=(PermissionStatusSubscription* other) const;
 
     // Hash operator for hash maps.
     struct Hash {

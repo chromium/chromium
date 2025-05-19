@@ -111,11 +111,6 @@ bool WebTestPermissionManager::PermissionDescription::operator==(
   return origin == other.origin && embedding_origin == other.embedding_origin;
 }
 
-bool WebTestPermissionManager::PermissionDescription::operator!=(
-    const PermissionDescription& other) const {
-  return !this->operator==(other);
-}
-
 bool WebTestPermissionManager::PermissionDescription::operator==(
     PermissionStatusSubscription* other) const {
   // TODO(crbug.com/408965890): Add support for multi-state permissions. The
@@ -138,11 +133,6 @@ bool WebTestPermissionManager::PermissionDescription::operator==(
 
   return origin == other->requesting_origin_delegation &&
          embedding_origin == other->embedding_origin;
-}
-
-bool WebTestPermissionManager::PermissionDescription::operator!=(
-    PermissionStatusSubscription* other) const {
-  return !this->operator==(other);
 }
 
 size_t WebTestPermissionManager::PermissionDescription::Hash::operator()(
