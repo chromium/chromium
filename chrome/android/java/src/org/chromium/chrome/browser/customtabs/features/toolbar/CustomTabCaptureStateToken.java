@@ -8,15 +8,17 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 
 import java.util.Objects;
 
 /**
  * The idea of this class is to hold all of the properties that materially change the way the
- * toolbar looks. If two tokens are identical (no difference is found), then there should be
- * no reason to perform a bitmap capture.
+ * toolbar looks. If two tokens are identical (no difference is found), then there should be no
+ * reason to perform a bitmap capture.
  */
+@NullMarked
 class CustomTabCaptureStateToken {
     private final String mUrl;
     private final String mTitle;

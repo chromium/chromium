@@ -19,17 +19,22 @@ import androidx.annotation.Px;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 
 /**
  * A specialized {@link FrameLayout} that wraps the title and URL bars. It currently has 2 purposes:
- * - Prevents its children from getting touch events. This is especially useful to prevent
- *   {@link UrlBar} from running custom touch logic since it is read-only in custom tabs.
- * - Scales down the text within if they are overlapping. This can happen if the system font size
- *   setting is set to a large value, e.g. 200%.
+ *
+ * <ul>
+ *   <li>Prevents its children from getting touch events. This is especially useful to prevent
+ *       {@link UrlBar} from running custom touch logic since it is read-only in custom tabs.
+ *   <li>Scales down the text within if they are overlapping. This can happen if the system font
+ *       size setting is set to a large value, e.g. 200%.
+ * </ul>
  */
+@NullMarked
 class TitleAndUrlLayout extends FrameLayout {
     private final GestureDetector mGestureDetector;
     private TextView mTitleBar;

@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.interpolators.Interpolators;
 
 /**
@@ -38,6 +39,7 @@ import org.chromium.ui.interpolators.Interpolators;
  * the same time opacity transitioning from 0% -> 100%. </div>
  */
 // TODO(crbug.com/40859231): Share more code with StatusView.java.
+@NullMarked
 class BrandingSecurityButtonAnimationDelegate {
     public static final int ICON_ANIMATION_DURATION_MS = 250;
     private static final int ICON_ROTATION_DEGREES = 180;

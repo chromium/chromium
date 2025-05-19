@@ -12,10 +12,12 @@ import android.widget.ImageButton;
 
 import androidx.annotation.DimenRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** Helper class to animate the security status icon. */
+@NullMarked
 public class SecurityButtonAnimationDelegate {
     public static final int SLIDE_DURATION_MS = 200;
     public static final int FADE_DURATION_MS = 150;
