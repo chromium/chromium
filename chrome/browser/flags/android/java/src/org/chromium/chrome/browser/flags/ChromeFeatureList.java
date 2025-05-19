@@ -412,7 +412,6 @@ public abstract class ChromeFeatureList {
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String KEYBOARD_ESC_BACK_NAVIGAION = "KeyboardEscBackNavigation";
     public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
-    public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";

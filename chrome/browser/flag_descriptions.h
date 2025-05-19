@@ -1501,9 +1501,6 @@ extern const char kLensSearchSidePanelNewFeedbackDescription[];
 extern const char kLinkedServicesSettingName[];
 extern const char kLinkedServicesSettingDescription[];
 
-extern const char kLensOnQuickActionSearchWidgetName[];
-extern const char kLensOnQuickActionSearchWidgetDescription[];
-
 extern const char kLocationBarModelOptimizationsName[];
 extern const char kLocationBarModelOptimizationsDescription[];
 
