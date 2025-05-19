@@ -11,6 +11,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -77,6 +78,15 @@ void UninstallWebApp(Profile* profile,
 // Synchronously uninstall all web apps for the given profile. May be used in
 // unit tests and browser tests. Returns `false` if there was a failure.
 bool UninstallAllWebApps(Profile* profile);
+
+// Fetches the manifest for the given web contents and installs the app that
+// exists there. Unit tests should use this in combination with the
+// FakeWebContentsManager to set the manifest & page state for the current web
+// contents page.
+webapps::AppId InstallForWebContents(
+    Profile* profile,
+    content::WebContents* web_contents,
+    webapps::WebappInstallSource install_surface);
 
 }  // namespace test
 }  // namespace web_app

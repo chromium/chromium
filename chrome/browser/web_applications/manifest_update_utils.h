@@ -55,6 +55,7 @@ enum class ManifestUpdateCheckStage {
   kPendingAppLock,
   kDownloadingNewManifestData,
   kLoadingExistingManifestData,
+  kDownloadingChangedIconUrlBitmaps,
   kComparingManifestData,
   kResolvingIdentityChanges,
   kComplete,

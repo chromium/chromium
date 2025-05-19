@@ -33,17 +33,17 @@
 
 namespace web_app {
 
-bool SizeAndPupose::operator<(const SizeAndPupose& other) const {
+bool SizeAndPurpose::operator<(const SizeAndPurpose& other) const {
   return size.height() < other.size.height() &&
          size.width() < other.size.width() && purpose < other.purpose;
 }
 
-bool SizeAndPupose::operator==(const SizeAndPupose& other) const {
+bool SizeAndPurpose::operator==(const SizeAndPurpose& other) const {
   return size == other.size && purpose == other.purpose;
 }
 
-size_t SizeAndPupose::absl_container_hash::operator()(
-    const SizeAndPupose& key) const {
+size_t SizeAndPurpose::absl_container_hash::operator()(
+    const SizeAndPurpose& key) const {
   return absl::HashOf(key.size.width(), key.size.height(), key.purpose);
 }
 
@@ -100,24 +100,35 @@ void ManifestUpdateCheckCommandV2::StartWithLock(
       base::BindOnce(&ManifestUpdateCheckCommandV2::LoadExistingManifestData,
                      GetWeakPtr()),
 
+      base::BindOnce(
+          &ManifestUpdateCheckCommandV2::DownloadChangedIconUrlBitmaps,
+          GetWeakPtr()),
+
       base::BindOnce(&ManifestUpdateCheckCommandV2::CheckComplete,
                      GetWeakPtr()));
 }
 
-absl::flat_hash_map<SizeAndPupose, GURL>
-ManifestUpdateCheckCommandV2::CreateIconSizeAndPurposeMap(
-    const std::vector<apps::IconInfo>& icon_infos,
-    const std::vector<IconUrlWithSize>& icon_url_with_size) {
-  absl::flat_hash_map<SizeAndPupose, GURL> icons_size_and_purpose_map;
+IconPurpose GetIconPurpose(apps::IconInfo::Purpose purpose) {
+  switch (purpose) {
+    case apps::IconInfo::Purpose::kAny:
+      return IconPurpose::ANY;
+    case apps::IconInfo::Purpose::kMonochrome:
+      return IconPurpose::MONOCHROME;
+    case apps::IconInfo::Purpose::kMaskable:
+      return IconPurpose::MASKABLE;
+  }
+}
 
-  for (const IconUrlWithSize& sized_url : icon_url_with_size) {
-    for (const apps::IconInfo& info : icon_infos) {
-      if (info.url == sized_url.url) {
-        SizeAndPupose key = {sized_url.size, info.purpose};
-        icons_size_and_purpose_map[key] = sized_url.url;
-        break;
-      }
-    }
+absl::flat_hash_map<SizeAndPurpose, GURL>
+ManifestUpdateCheckCommandV2::CreateIconSizeAndPurposeMap(
+    const std::vector<apps::IconInfo>& icon_infos) {
+  absl::flat_hash_map<SizeAndPurpose, GURL> icons_size_and_purpose_map;
+  for (const apps::IconInfo& info : icon_infos) {
+    IconPurpose info_purpose = GetIconPurpose(info.purpose);
+    SizeAndPurpose key = {gfx::Size(info.square_size_px.value_or(0),
+                                    info.square_size_px.value_or(0)),
+                          info_purpose};
+    icons_size_and_purpose_map[key] = info.url;
   }
   return icons_size_and_purpose_map;
 }
@@ -193,10 +204,8 @@ void ManifestUpdateCheckCommandV2::StashNewManifestJson(
     return;
   }
 
-  std::vector<IconUrlWithSize> new_icon_url_with_size =
-      GetAppIconUrls(*new_install_info_);
-  new_icon_size_and_purpose_map = CreateIconSizeAndPurposeMap(
-      new_install_info_->manifest_icons, new_icon_url_with_size);
+  new_icon_size_and_purpose_map_ =
+      CreateIconSizeAndPurposeMap(new_install_info_->manifest_icons);
 
   std::move(next_step_callback).Run();
 }
@@ -281,16 +290,8 @@ void ManifestUpdateCheckCommandV2::StashExistingAppIcons(
   }
 
   existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
-
-  std::vector<IconUrlWithSize> existing_icon_url_with_size;
-  for (const apps::IconInfo& icon_info : GetWebApp().manifest_icons()) {
-    IconUrlWithSize::Create(icon_info.url,
-                            gfx::Size(icon_info.square_size_px.value_or(0),
-                                      icon_info.square_size_px.value_or(0)));
-  }
-
-  existing_icon_size_and_purpose_map = CreateIconSizeAndPurposeMap(
-      GetWebApp().manifest_icons(), existing_icon_url_with_size);
+  existing_icon_size_and_purpose_map_ =
+      CreateIconSizeAndPurposeMap(GetWebApp().manifest_icons());
 
   std::move(next_step_callback).Run();
 }
@@ -314,11 +315,90 @@ void ManifestUpdateCheckCommandV2::StashExistingShortcutsMenuIcons(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ManifestUpdateCheckStage::kCheckUpdateNeededAndDownloadIcons:
+////////////////////////////////////////////////////////////////////////////////
+
+void ManifestUpdateCheckCommandV2::DownloadChangedIconUrlBitmaps(
+    base::OnceClosure next_step_callback) {
+  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
+  stage_ = ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps;
+  RunChainedCallbacks(
+      base::BindOnce(&ManifestUpdateCheckCommandV2::DownloadNewIconBitmaps,
+                     GetWeakPtr()),
+
+      base::BindOnce(&ManifestUpdateCheckCommandV2::StashNewIconBitmaps,
+                     GetWeakPtr()),
+
+      std::move(next_step_callback));
+}
+
+void ManifestUpdateCheckCommandV2::DownloadNewIconBitmaps(
+    WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback) {
+  DCHECK_EQ(stage_,
+            ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
+  CHECK(new_install_info_);
+  IconUrlSizeSet icon_urls_to_download;
+
+  for (const auto& [new_key, new_url] : new_icon_size_and_purpose_map_) {
+    auto existing_map_it = existing_icon_size_and_purpose_map_.find(new_key);
+    auto new_map_it = new_icon_size_and_purpose_map_.find(new_key);
+    if (existing_map_it != existing_icon_size_and_purpose_map_.end() &&
+        new_map_it != new_icon_size_and_purpose_map_.end() &&
+        existing_map_it->second == new_map_it->second) {
+      const auto& existing_icon_bitmap =
+          existing_app_icon_bitmaps_.GetBitmapsForPurpose(new_key.purpose);
+      new_install_info_->icon_bitmaps.SetBitmapsForPurpose(
+          new_key.purpose, existing_icon_bitmap);
+    } else {
+      icon_urls_to_download.insert(
+          IconUrlWithSize::Create(new_url, new_key.size));
+    }
+  }
+
+  // Getting the URLs for other icons including shortcut, file handler, and home
+  // tab icons.
+  for (const auto& other_icon_url_size :
+       GetValidIconUrlsNotFromManifestIconField(*new_install_info_)) {
+    icon_urls_to_download.insert(other_icon_url_size);
+  }
+
+  IconDownloaderOptions options = {.skip_page_favicons = true,
+                                   .fail_all_if_any_fail = true};
+  icon_downloader_->Start(web_contents_.get(), icon_urls_to_download,
+                          std::move(next_step_callback), options);
+}
+
+void ManifestUpdateCheckCommandV2::StashNewIconBitmaps(
+    base::OnceClosure next_step_callback,
+    IconsDownloadedResult result,
+    IconsMap icons_map,
+    DownloadedIconsHttpResults icons_http_results) {
+  DCHECK_EQ(stage_,
+            ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
+
+  GetMutableDebugValue().Set("icon_download_result", base::ToString(result));
+
+  RecordIconDownloadMetrics(result, icons_http_results);
+
+  if (result != IconsDownloadedResult::kCompleted) {
+    CompleteCommandAndSelfDestruct(
+        ManifestUpdateCheckResult::kIconDownloadFailed);
+    return;
+  }
+
+  PopulateOtherIcons(new_install_info_.get(), icons_map);
+  PopulateProductIcons(new_install_info_.get(), &icons_map);
+
+  std::move(next_step_callback).Run();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ManifestUpdateCheckStage::kComplete:
 ////////////////////////////////////////////////////////////////////////////////
 
 void ManifestUpdateCheckCommandV2::CheckComplete() {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kResolvingIdentityChanges);
+  DCHECK_EQ(stage_,
+            ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps);
   stage_ = ManifestUpdateCheckStage::kComplete;
 
   ManifestUpdateCheckResult check_result =

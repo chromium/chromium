@@ -24,16 +24,16 @@ namespace web_app {
 struct WebAppInstallInfo;
 
 // Used to uniquely identify an icon url for app updates.
-struct SizeAndPupose {
+struct SizeAndPurpose {
   gfx::Size size;
-  apps::IconInfo::Purpose purpose;
+  IconPurpose purpose;
 
-  bool operator<(const SizeAndPupose& other) const;
-  bool operator==(const SizeAndPupose& other) const;
+  bool operator<(const SizeAndPurpose& other) const;
+  bool operator==(const SizeAndPurpose& other) const;
 
   struct absl_container_hash {
     using is_transparent = void;
-    size_t operator()(const SizeAndPupose& key) const;
+    size_t operator()(const SizeAndPurpose& key) const;
   };
 };
 
@@ -84,9 +84,8 @@ class ManifestUpdateCheckCommandV2
   // creation is done in the
   // ManifestUpdateCheckStage::kDownloadingNewManifestData and the
   // ManifestUpdateCheckStage::kLoadingExistingManifestData stage.
-  absl::flat_hash_map<SizeAndPupose, GURL> CreateIconSizeAndPurposeMap(
-      const std::vector<apps::IconInfo>& icon_infos,
-      const std::vector<IconUrlWithSize>& icon_url_with_size);
+  absl::flat_hash_map<SizeAndPurpose, GURL> CreateIconSizeAndPurposeMap(
+      const std::vector<apps::IconInfo>& icon_infos);
 
   // Stage: Download the new manifest data
   // (ManifestUpdateCheckStage::kDownloadingNewManifestData).
@@ -115,6 +114,17 @@ class ManifestUpdateCheckCommandV2
   void StashExistingShortcutsMenuIcons(
       base::OnceClosure next_step_callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
+
+  // Stage: Evaluates if icon bitmaps should be downloaded or if it already
+  // exists from disk, then stashes the icon bitmaps.
+  // (ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps)
+  void DownloadChangedIconUrlBitmaps(base::OnceClosure next_step_callback);
+  void DownloadNewIconBitmaps(
+      WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback);
+  void StashNewIconBitmaps(base::OnceClosure next_step_callback,
+                           IconsDownloadedResult result,
+                           IconsMap icons_map,
+                           DownloadedIconsHttpResults icons_http_results);
 
   // Stage: Update check complete.
   // (ManifestUpdateCheckStage::kComplete)
@@ -145,8 +155,8 @@ class ManifestUpdateCheckCommandV2
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
   IconBitmaps existing_app_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
-  absl::flat_hash_map<SizeAndPupose, GURL> new_icon_size_and_purpose_map;
-  absl::flat_hash_map<SizeAndPupose, GURL> existing_icon_size_and_purpose_map;
+  absl::flat_hash_map<SizeAndPurpose, GURL> new_icon_size_and_purpose_map_;
+  absl::flat_hash_map<SizeAndPurpose, GURL> existing_icon_size_and_purpose_map_;
   ManifestDataChanges manifest_data_changes_;
 
   // Debug info.

@@ -65,6 +65,22 @@ void PopulateIconUrlsForSizeAnyIfNeeded(
   }
 }
 
+std::vector<IconUrlWithSize> GetAppIconUrls(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<IconUrlWithSize> urls;
+
+  for (const apps::IconInfo& info : web_app_info.manifest_icons) {
+    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
+  }
+
+  PopulateIconUrlsForSizeAnyIfNeeded(
+      std::ref(urls),
+      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.manifest_icons),
+      web_app_info.icons_with_size_any.manifest_icon_provided_sizes,
+      /*is_app_icon=*/true);
+  return urls;
+}
+
 std::vector<IconUrlWithSize> GetShortcutMenuIcons(
     const WebAppInstallInfo& web_app_info) {
   std::vector<IconUrlWithSize> urls;
@@ -176,27 +192,22 @@ std::string IconUrlWithSize::ToString() const {
                             size.ToString().c_str());
 }
 
-std::vector<IconUrlWithSize> GetAppIconUrls(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> urls;
-
-  for (const apps::IconInfo& info : web_app_info.manifest_icons) {
-    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
-  }
-
-  PopulateIconUrlsForSizeAnyIfNeeded(
-      std::ref(urls),
-      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.manifest_icons),
-      web_app_info.icons_with_size_any.manifest_icon_provided_sizes,
-      /*is_app_icon=*/true);
-  return urls;
-}
-
 IconUrlSizeSet GetValidIconUrlsToDownload(
     const WebAppInstallInfo& web_app_info) {
   std::vector<IconUrlWithSize> icon_urls_with_sizes;
 
   base::Extend(icon_urls_with_sizes, GetAppIconUrls(web_app_info));
+  base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
+  base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
+  base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));
+
+  return RemoveDuplicates(std::move(icon_urls_with_sizes));
+}
+
+IconUrlSizeSet GetValidIconUrlsNotFromManifestIconField(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<IconUrlWithSize> icon_urls_with_sizes;
+
   base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
   base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
   base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));

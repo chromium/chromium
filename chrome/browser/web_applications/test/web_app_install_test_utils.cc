@@ -38,12 +38,61 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace web_app {
 namespace test {
+namespace {
+
+WebAppInstallDialogCallback CreateAcceptDialogCallback() {
+  return base::BindOnce(
+      [](base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
+         content::WebContents* initiator_web_contents,
+         std::unique_ptr<WebAppInstallInfo> web_app_info,
+         WebAppInstallationAcceptanceCallback acceptance_callback) {
+        web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+        std::move(acceptance_callback)
+            .Run(/*accept=*/true, std::move(web_app_info));
+      });
+}
+
+bool IsValidInstallSourceForWebContentsInstall(
+    webapps::WebappInstallSource install_source) {
+  switch (install_source) {
+    case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
+      return true;
+    case webapps::WebappInstallSource::MENU_BROWSER_TAB:
+      return true;
+    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+      return true;
+    case webapps::WebappInstallSource::DEVTOOLS:
+      return true;
+    default:
+      return false;
+  }
+}
+
+web_app::FallbackBehavior GetFallbackBehaviorFromInstallSource(
+    webapps::WebappInstallSource install_source) {
+  switch (install_source) {
+    case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
+      return web_app::FallbackBehavior::kCraftedManifestOnly;
+    case webapps::WebappInstallSource::MENU_BROWSER_TAB:
+      return web_app::FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
+    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+      return web_app::FallbackBehavior::kCraftedManifestOnly;
+    case webapps::WebappInstallSource::DEVTOOLS:
+      return web_app::FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
+    default:
+      return web_app::FallbackBehavior::kCraftedManifestOnly;
+  }
+}
+
+}  // namespace
 
 void WaitUntilReady(WebAppProvider* provider) {
   if (provider->on_registry_ready().is_signaled())
@@ -256,6 +305,28 @@ bool UninstallAllWebApps(Profile* profile) {
     }
   }
   return success;
+}
+
+webapps::AppId InstallForWebContents(
+    Profile* profile,
+    content::WebContents* web_contents,
+    webapps::WebappInstallSource install_source) {
+  auto* provider = WebAppProvider::GetForTest(profile);
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+
+  CHECK(IsValidInstallSourceForWebContentsInstall(install_source))
+      << "Incorrect WebappInstallSource used to trigger an user triggered "
+         "install from tests";
+
+  web_app::FallbackBehavior fallback_behavior =
+      GetFallbackBehaviorFromInstallSource(install_source);
+
+  provider->scheduler().FetchManifestAndInstall(
+      install_source, web_contents->GetWeakPtr(), CreateAcceptDialogCallback(),
+      install_future.GetCallback(), fallback_behavior);
+  EXPECT_TRUE(install_future.Wait());
+  return install_future.Get<webapps::AppId>();
 }
 
 }  // namespace test

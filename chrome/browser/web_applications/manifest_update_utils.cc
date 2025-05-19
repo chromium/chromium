@@ -71,6 +71,8 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckStage stage) {
       return os << "kDownloadingNewManifestData";
     case ManifestUpdateCheckStage::kLoadingExistingManifestData:
       return os << "kLoadingExistingManifestData";
+    case ManifestUpdateCheckStage::kDownloadingChangedIconUrlBitmaps:
+      return os << "kDownloadingChangedIconUrlBitmaps";
     case ManifestUpdateCheckStage::kComparingManifestData:
       return os << "kComparingManifestData";
     case ManifestUpdateCheckStage::kResolvingIdentityChanges:

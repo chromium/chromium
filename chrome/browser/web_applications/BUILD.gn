@@ -861,6 +861,7 @@ source_set("web_applications_unit_tests") {
     "commands/install_app_locally_command_unittest.cc",
     "commands/install_from_sync_command_unittest.cc",
     "commands/manifest_update_check_command_unittest.cc",
+    "commands/manifest_update_check_command_v2_unittest.cc",
     "commands/manifest_update_finalize_command_unittest.cc",
     "commands/os_integration_synchronize_command_unittest.cc",
     "commands/run_on_os_login_command_unittest.cc",
