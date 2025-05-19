@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/version_info/channel.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "extensions/common/event_filter.h"
@@ -321,9 +322,11 @@ class Dispatcher : public content::RenderThreadObserver,
   // Returns whether the current renderer hosts a platform app.
   bool IsWithinPlatformApp();
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Requires the GuestView modules in the module system of the ScriptContext
   // `context`.
   void RequireGuestViewModules(ScriptContext* context);
+#endif
 
   // Creates the NativeExtensionBindingsSystem. Note: this may be called on any
   // thread, and thus cannot mutate any state or rely on state which can be

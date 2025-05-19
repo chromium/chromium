@@ -198,6 +198,8 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"utils", IDR_UTILS_JS},
       {"webRequest", IDR_WEB_REQUEST_CUSTOM_BINDINGS_JS},
       {"webRequestEvent", IDR_WEB_REQUEST_EVENT_JS},
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
       // Note: webView not webview so that this doesn't interfere with the
       // chrome.webview API bindings.
       {"webView", IDR_WEB_VIEW_JS},
@@ -210,6 +212,7 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"webViewConstants", IDR_WEB_VIEW_CONSTANTS_JS},
       {"webViewEvents", IDR_WEB_VIEW_EVENTS_JS},
       {"webViewInternal", IDR_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS},
+#endif
 
       {"keep_alive", IDR_KEEP_ALIVE_JS},
 

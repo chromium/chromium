@@ -519,7 +519,9 @@ void Dispatcher::DidCreateScriptContext(
   }
 #endif
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   RequireGuestViewModules(context);
+#endif
 
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   switch (context->context_type()) {
@@ -722,9 +724,11 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
 
   worker_bindings_system->DidCreateScriptContext(context);
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // TODO(lazyboy): Get rid of RequireGuestViewModules() as this doesn't seem
   // necessary for Extension SW.
   RequireGuestViewModules(context);
+#endif
 
   WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
@@ -1524,6 +1528,7 @@ bool Dispatcher::IsWithinPlatformApp() {
   return false;
 }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   ModuleSystem* module_system = context->module_system();
   bool requires_guest_view_module = false;
@@ -1559,13 +1564,11 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   }
 #endif
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Require ExtensionOptions.
   if (context->GetAvailability("extensionOptionsInternal").is_available()) {
     requires_guest_view_module = true;
     module_system->Require("extensionOptionsElement");
   }
-#endif
 
   // Require WebView.
   if (context->GetAvailability("webViewInternal").is_available()) {
@@ -1589,6 +1592,7 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
         ->SetForceMainWorldInitialization(true);
   }
 }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(
     NativeExtensionBindingsSystem::Delegate* delegate,
