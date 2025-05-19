@@ -13,6 +13,7 @@ import '/shared/settings/prefs/prefs.js';
 import './privacy_guide_fragment_shared.css.js';
 import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_toggle_button.js';
+import '../../icons.html.js';
 
 import type {SyncBrowserProxy, SyncPrefs} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
