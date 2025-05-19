@@ -123,6 +123,10 @@ const VERBOSE = process.env.VERBOSE || 'false';
 // The path to the WPT report file.
 let WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
 
+// Mapper starts new instance of browser for each test, which sometimes takes
+// time and causes timeout exception. Retry unexpected mapper tests once.
+const RETRY_UNEXPECTED = process.env.RETRY_UNEXPECTED || 0;
+
 // If provided a CLI `--metadata` parameter, use it.
 if (restArgs.includes('--wpt-report')) {
   WPT_REPORT = restArgs[restArgs.indexOf('--wpt-report') + 1];
@@ -142,10 +146,6 @@ if (HEADLESS === 'true') {
 } else {
   log('Running WPT in headful mode...');
 }
-
-// Mapper starts new instance of browser for each test, which sometimes takes
-// time and causes timeout exception. Retry unexpected mapper tests once.
-const RETRY_UNEXPECTED = CHROMEDRIVER === 'true' ? 0 : 1;
 
 const wptBinary = resolve(join('wpt', 'wpt'));
 

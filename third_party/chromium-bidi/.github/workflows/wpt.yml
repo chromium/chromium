@@ -110,6 +110,9 @@ jobs:
         env:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
+          # TODO: Fix tests and don't rerun them.
+          # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
+          RETRY_UNEXPECTED: 1
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
@@ -123,6 +126,9 @@ jobs:
         env:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           CHROMEDRIVER_LOG_NAME: 'chromedriver-interop'
+          # TODO: Fix tests and don't rerun them.
+          # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
+          RETRY_UNEXPECTED: 1
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
