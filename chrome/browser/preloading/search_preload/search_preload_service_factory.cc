@@ -13,7 +13,14 @@
 namespace {
 
 ProfileSelections GetProfileSelections() {
-  ProfileSelection profile_selection = ProfileSelection::kOwnInstance;
+  // Note `SearchPreloadService` partially supports Incognito profile. For now,
+  // it supports the on-press triggered search prefetch only. Other prefetches
+  // must not be triggered in Incognito. For more details, see
+  // https://crbug.com/394716358.
+  ProfileSelection profile_selection =
+      features::IsDsePreload2OnPressIncognitoEnabled()
+          ? ProfileSelection::kOwnInstance
+          : ProfileSelection::kOriginalOnly;
   return ProfileSelections::Builder()
       .WithRegular(profile_selection)
       // TODO(crbug.com/40257657): Check if this

@@ -30,6 +30,14 @@ extern const base::FeatureParam<bool> kDsePreload2OnPressMouseDown;
 extern const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton;
 extern const base::FeatureParam<bool> kDsePreload2OnPressTouchDown;
 
+// Enables on-press trigger in incognito mode.
+//
+// Corresponds to `SearchNavigationPrefetch.allow_incognito`.
+//
+// For more details, see
+// https://docs.google.com/document/d/1f4dcNYP3O_Ft4yMmC42ETxGC5lM7YF5FDbEgnxUua7M/edit?tab=t.38v8gca76tmi
+BASE_DECLARE_FEATURE(kDsePreload2OnPressIncognito);
+
 // Enables on-suggest prefetch for non default match.
 //
 // For more details, see
@@ -45,6 +53,9 @@ bool IsDsePreload2OnPressEnabled();
 // `SearchPreloadService::OnNavigationLikely()` with a predictor.
 bool DsePreload2OnPressIsPredictorEnabled(
     omnibox::mojom::NavigationPredictor navigation_predictor);
+
+// Returns true iff on-press in incognito is enabled.
+bool IsDsePreload2OnPressIncognitoEnabled();
 
 }  // namespace features
 

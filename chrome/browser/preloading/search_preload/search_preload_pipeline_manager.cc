@@ -165,6 +165,11 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     return false;
   }
 
+  if (profile.IsOffTheRecord() &&
+      !features::IsDsePreload2OnPressIncognitoEnabled()) {
+    return false;
+  }
+
   if (!AutocompleteMatch::IsSearchType(match.type)) {
     return false;
   }
