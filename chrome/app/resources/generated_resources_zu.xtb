@@ -1470,7 +1470,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1999115740519098545">Ekuqaliseni</translation>
 <translation id="1999763610967697511">Hudula udedele</translation>
 <translation id="2002109485265116295">Isikhathi sangempela</translation>
-<translation id="2002160221914907025">I-AI ehlolwayo</translation>
 <translation id="2003130567827682533">Ukuze usebenzisa idatha '<ph name="NAME" />', qala ngokuxhuma kunethiwekhi ye-Wi-Fi</translation>
 <translation id="200321182559008924">Gcina amathebhu akho engenamfuhlumfuhlu</translation>
 <translation id="2003596238737586336">Ishejuli yamanje isethwe kokuthi <ph name="SUNRISE" /> - <ph name="SUNSET" />. Le sethingi iphethwe umlawuli wakho.</translation>
@@ -5177,6 +5176,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4585793705637313973">Hlela ikhasi</translation>
 <translation id="4586275095964870617"><ph name="URL" /> ayikwazanga ukuvula kwesinye isiphequluli. Sicela uxhumane nomlawuli wakho wesistimu.</translation>
 <translation id="4587589328781138893">Amasayithi</translation>
+<translation id="4588497044036650559">Vula ikhasi lokungakhethwa kukho kwesandiso sekhasi lethebhu entsha kuthebhu yamanje</translation>
 <translation id="4588749726511456218">Skrola isisheshisi <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905">Okuthi <ph name="PASSWORD_DOMAIN" /> kanye nokuthi <ph name="DOMAIN" /> kubonakala kuhlobene. Qiniseka ukuthi uyayethemba i-<ph name="DOMAIN" /> ngaphambi kokusebenzisa iphasiwedi yakho.</translation>
 <translation id="4589713469967853491">Amalogu abhalwe ngempumelelo kuhla lwemibhalo Yokulandiwe.</translation>
@@ -9156,6 +9156,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7461924472993315131">Phina</translation>
 <translation id="746216226901520237">Ngesikhathi esilandelayo, ifoni yakho izovula i-<ph name="DEVICE_TYPE" />yakho. ungavala i-Smart Lock kuzilungiselelo.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">Inhlangano yakho ilawula ukuthi idatha eqoqwe yilezi zakhi ingasetshenziswa kanjani.</translation>
 <translation id="7464645554245611385">Isibuyekezo sokugcina sale thebhu</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# vula ithebhu, cindezela ukuze ushintshe umugqa wamathebhu}one{# vula amathebhu, cindezela ukuze ushintshe umugqa wamathebhu}other{# vula amathebhu, cindezela ukuze ushintshe umugqa wamathebhu}}</translation>
 <translation id="7465635034594602553">Okuthile akuhambanga kahle. Sicela ulinde amaminithi ambalwa bese usebenzisa i-<ph name="APP_NAME" /> futhi.</translation>
@@ -11718,6 +11719,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="934244546219308557">Qamba leli qembu</translation>
 <translation id="93480724622239549">Isiphazamisi noma iphutha</translation>
 <translation id="9354763467503131">Ivunyelwe ukucela ukufaka ama-app ewebhu kudivayisi yakho</translation>
+<translation id="936329857119665832">Ivuleka kuthebhu yamanje</translation>
 <translation id="936646668635477464">Ikhamera nemakrofoni</translation>
 <translation id="936801553271523408">Idatha yokuxilonga yesistimu</translation>
 <translation id="93766956588638423">Lungisa isandiso</translation>

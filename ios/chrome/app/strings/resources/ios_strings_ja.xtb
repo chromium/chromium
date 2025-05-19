@@ -603,7 +603,6 @@
 <translation id="3547356470684043247">レビューで製品、サービス、使い勝手に関する購入者の評価を確認し、判断材料にすることができます</translation>
 <translation id="3557336313807607643">連絡先に追加</translation>
 <translation id="355765753469272474">元に戻す</translation>
-<translation id="3562379378751492229">使いやすい場所を選択できます。</translation>
 <translation id="3565930036634619844">タブ <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />。</translation>
 <translation id="3570693105179140209">他のパスワードを表示するにはダブルタップします。</translation>
 <translation id="3572607909481582402">Google アカウント</translation>
@@ -1089,7 +1088,6 @@
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="5613297089029360427">最新で並べ替え</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
-<translation id="5614805397884895755">ホーム画面からすばやくアクセスできます。</translation>
 <translation id="5619871095170816857">このカードには、同期したすべてのデバイスで過去 24 時間以内に使用し開いたタブが表示されます。</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="5624637933505983014">同期をオンにしない</translation>
@@ -1644,7 +1642,6 @@
 <translation id="78146569776629510">ダウンロード</translation>
 <translation id="7815852444315004084">今は表示しない</translation>
 <translation id="7825973332242257878">タブグループ</translation>
-<translation id="7831876841288640403">アドレスバーの最適な場所を選択します。</translation>
 <translation id="7839994177130598711">ファミリー メンバーが Google パスワード マネージャーを使用して <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。</translation>
 <translation id="7840771868269352570">選択したアイテムが削除されます。</translation>
 <translation id="7841180087127694526">コピーしたテキストを検索</translation>
@@ -1904,6 +1901,7 @@
 <translation id="8786100550345425552">権限を編集</translation>
 <translation id="878871978861915380">[価格トラッキング] を非表示にする</translation>
 <translation id="8792626944327216835">マイク</translation>
+<translation id="8796634520835503150">リーディング モードを使用できます</translation>
 <translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8803639129939845298">この通信は保護されています</translation>
 <translation id="8806823403540278281">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブは保存されません。

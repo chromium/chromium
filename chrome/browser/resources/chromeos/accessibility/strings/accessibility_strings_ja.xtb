@@ -32,6 +32,7 @@
 <translation id="1186712907912748007">ドラッグ＆ドロップしています。終了するには、<ph name="GESTURE" />。他のジェスチャーは一時的に使用できなくなっています。</translation>
 <translation id="1188858454923323853">捕捉</translation>
 <translation id="1189258430971676908">練習エリア: プルダウン リスト</translation>
+<translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{ネストレベル {$$COUNT}}}</translation>
 <translation id="1195238899008218998">後書き</translation>
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1198865190323699001">タップ操作</translation>
@@ -100,6 +101,7 @@
 <translation id="1506187449813838456">ピッチを上げる</translation>
 <translation id="151784044608172266">次の文</translation>
 <translation id="1524531499102321782">ブライユ点字の次の行</translation>
+<translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{個のチルダ}} *{{{$$COUNT} 個のチルダ}}</translation>
 <translation id="1542513807034338907">前のページにスクロールします</translation>
 <translation id="1546370775711804143">スクロールバー</translation>
 <translation id="1551572888042734032">夏</translation>
@@ -135,7 +137,9 @@
 <translation id="1756785467854861272">ダークマゼンタ</translation>
 <translation id="1758693804775271377">このトピックのレッスンを閲覧するには、1 本の指で左右にスワイプします</translation>
 <translation id="1765245556747822181">1 本の指で上にスワイプします</translation>
+<translation id="1766900865718394987">.input {$$COUNT :number} .match $$COUNT 1{{個のポンド記号}} *{{{$$COUNT} 個のポンド記号}}</translation>
 <translation id="1771761307086386028">右にスクロール</translation>
+<translation id="1776454891300234201">.input {$$COUNT :number} .match $$COUNT 1{{個の四角形の箇条書き記号}} *{{{$$COUNT} 個の四角形の箇条書き記号}}</translation>
 <translation id="1781173782405573156">パススルー キー</translation>
 <translation id="1787176709638001873">パスワード テキスト編集</translation>
 <translation id="1795438342141780114">カーソルを中央にリセットする</translation>
@@ -152,6 +156,7 @@
 <translation id="1902396333223336119">セル</translation>
 <translation id="1903683160884433981">ミディアム スプリング グリーン</translation>
 <translation id="1905379170753160525">見出しリストを表示</translation>
+<translation id="1909599030163690992">.input {$$COUNT :number} .match $$COUNT 1{{個のアンパサンド}} *{{{$$COUNT} 個のアンパサンド}}</translation>
 <translation id="1913761808037590218">数字を編集</translation>
 <translation id="1914424852593176649">サイズ: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> コード</translation>
@@ -159,6 +164,7 @@
 <translation id="1926147969119007125">フェイスナビを一時停止</translation>
 <translation id="1928932365747995741">前の編集可能テキスト フィールドはありません</translation>
 <translation id="1964135212174907577">次のオブジェクト</translation>
+<translation id="1969502304370936079">.input {$$COUNT :number} .match $$COUNT 1{{個の等号}} *{{{$$COUNT} 個の等号}}</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox メニューに点字コマンドを表示する</translation>
 <translation id="2009187674653301682">上付き文字オフ</translation>
@@ -166,12 +172,14 @@
 <translation id="203030071582665758">前のレベル 4 の見出しはありません</translation>
 <translation id="2045055672832940894">前のコントロールはありません</translation>
 <translation id="2045606329038304310">フォーム フィールドの制御</translation>
+<translation id="2061553293808239752">.input {$$COUNT :number} .match $$COUNT 1{{分}} *{{分}}</translation>
 <translation id="2063539687800151747">題辞</translation>
 <translation id="2086961585857038472">次の単語</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ja</translation>
 <translation id="2091933974477985526">前の編集可能テキスト領域</translation>
 <translation id="2100350898815792233">すべての句読点を読み上げます</translation>
+<translation id="2109693710509473741">.input {$$COUNT :number} .match $$COUNT 1{{個のカンマ}} *{{{$$COUNT} 個のカンマ}}</translation>
 <translation id="2110480898214777136">ページ、ダイアログ、またはその他のコンテナの内部での、行頭から行末、または行末から行頭への折り返し</translation>
 <translation id="2119965627982867824">スピンボタン</translation>
 <translation id="2121067395472282800">アクセス キー: <ph name="KEY" /></translation>
@@ -211,6 +219,7 @@
 <translation id="2371402123699727805">音声入力が有効になっています。停止するには、<ph name="GESTURE" />。他のジェスチャーは一時的に使用できなくなっています。</translation>
 <translation id="2381733276052567791">読み上げの有効と無効を切り替えます</translation>
 <translation id="2390264819538553347">次に進むには Enter キー、前に戻るには Backspace キーを押します。</translation>
+<translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{個のアスタリスク}} *{{{$$COUNT} 個のアスタリスク}}</translation>
 <translation id="2398579267367951220">ページ内を検索するには入力してください。見つかった結果に移動するには、Enter キーを押します。結果を 1 つずつ確認するには、上矢印または下矢印キーを押します。違う語句を検索する場合は、その語句を入力します。キャンセルする場合は、Esc キーを押します。</translation>
 <translation id="240709722712693803">ブルー バイオレット</translation>
 <translation id="2416512023405990736">チェックボックスがオフ</translation>
@@ -267,6 +276,7 @@
 <translation id="2708078563826046398">ピーチパフ</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2717271541250958000">タブパネル</translation>
+<translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{個のバックスラッシュ}} *{{{$$COUNT} 個のバックスラッシュ}}</translation>
 <translation id="2723001399770238859">音声</translation>
 <translation id="2737898226590637227">次の ARIA ランドマークはありません</translation>
 <translation id="2749275490991666823">オン</translation>
@@ -329,6 +339,7 @@
 <translation id="3090227230165225418">ダウンロード通知を読み上げる</translation>
 <translation id="3090532668523289635">グループ</translation>
 <translation id="3093176084511590672">次のランドマーク</translation>
+<translation id="3096276106587041702">.input {$$COUNT :number} .match $$COUNT 1{{秒}} *{{秒}}</translation>
 <translation id="3096671415663099226">コンボボックス</translation>
 <translation id="309749186376891736">カーソルを移動</translation>
 <translation id="3103579948980282461">ミディアム バイオレット レッド</translation>
@@ -367,6 +378,7 @@
 <translation id="3270069636408109001">次の表はありません</translation>
 <translation id="3273791280096244679">ラベルを保存</translation>
 <translation id="3283583562490372694">オフ</translation>
+<translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT} 個のアイテム}} * {{+{$$COUNT} 個のアイテム}}</translation>
 <translation id="3286372614333682499">縦向き</translation>
 <translation id="3286390186030710347">スライダ</translation>
 <translation id="3300733168898541351">元に戻す</translation>
@@ -403,6 +415,7 @@
 <translation id="3473744269398144689">音声入力を開始</translation>
 <translation id="3490765818161916458">リストグリッド</translation>
 <translation id="3494946239022273294">メニュー項目</translation>
+<translation id="3501911317648720697">.input {$$COUNT :number} .match $$COUNT 1{{個のコロン}} *{{{$$COUNT} 個のコロン}}</translation>
 <translation id="3505359110822747654">ChromeVox メニューを折りたたむ</translation>
 <translation id="352577523970648069">編集可能なテキスト欄</translation>
 <translation id="3538907380453898475">dscrplst</translation>
@@ -439,6 +452,7 @@
 <translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">ログを表示</translation>
 <translation id="3801735343383419236">予測入力はリスト形式</translation>
+<translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{個のパーセント記号}} *{{{$$COUNT} 個のパーセント記号}}</translation>
 <translation id="3806327402890551732">次または前のアイテムに移動する</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3813387282697781382">ライトコーラル</translation>
@@ -449,6 +463,7 @@
 <translation id="3856075812838139784">読み取り専用</translation>
 <translation id="3857141338659865495">ミディアム ターコイズ</translation>
 <translation id="3870295413168340326">前のレベル 3 の見出しはありません</translation>
+<translation id="3882892620695970398">.input {$$COUNT :number} .match $$COUNT 1{{個のアットマーク}} *{{{$$COUNT} 個のアットマーク}}</translation>
 <translation id="3887399638190992181">必須キー</translation>
 <translation id="3887576927692165210">編集</translation>
 <translation id="3896762831164962772">フェイスナビを一時停止しました。再開するには、<ph name="GESTURE" />。他のジェスチャーは一時的に使用できなくなっています。</translation>
@@ -479,10 +494,13 @@
 <translation id="4054936709456751127">ステータス</translation>
 <translation id="4058278702844053247">ページの読み込み中</translation>
 <translation id="4065205963140826639">検索+右矢印キーを押して [次へ] ボタンまで移動し、検索+スペースキーを押してボタンをクリックしてみましょう。</translation>
+<translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{個のキャレット}} *{{{$$COUNT} 個のキャレット}}</translation>
 <translation id="409334809956508737">前のオブジェクト</translation>
+<translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{個のプラス記号}} *{{{$$COUNT} 個のプラス記号}}</translation>
 <translation id="4099274309791143834">サブメニューあり</translation>
 <translation id="4101527861445851766">チェックボックスがオン</translation>
 <translation id="410225014223200513">唇を丸くすぼめる</translation>
+<translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{個のドット}} 3{{個のドット（省略記号）}} *{{{$$COUNT} 個のドット}}</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="4116415223832267137">アラート</translation>
 <translation id="4159784952369912983">パープル</translation>
@@ -516,6 +534,7 @@
 <translation id="4289540628985791613">概要</translation>
 <translation id="4294967782363273192">昇順に並べ替え</translation>
 <translation id="4300318234632215983">リンクの URL を読み上げる</translation>
+<translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{個の大なり記号}} *{{{$$COUNT} 個の大なり記号}}</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">シエンナ</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> を入力</translation>
@@ -550,12 +569,14 @@
 <translation id="4547556996012970016">次のレベル 5 見出し</translation>
 <translation id="4562381607973973258">見出し</translation>
 <translation id="4597532268155981612">フォーム</translation>
+<translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{個の小なり記号}} *{{{$$COUNT} 個の小なり記号}}</translation>
 <translation id="4601367666219428522">表「<ph name="TABLENAME" />」（<ph name="TABLEROWS" />x<ph name="TABLECOLS" />）</translation>
 <translation id="4606933160360542263">カスタムキーの組み合わせ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">次に押すキーを無視します</translation>
 <translation id="4617384941327705512">スマート キー固定モードはオフです</translation>
 <translation id="4623097797855662355">奥付</translation>
 <translation id="4624970070706497034">Chromebook では TalkBack のカスタマイズがサポートされなくなりました。TalkBack は引き続きご利用いただけますが、デフォルトのキーボード ショートカットをご使用ください。使用できるショートカットは、検索+A キーに続けて K キーを押して確認できます。確認した後に TalkBack に戻るには、もう一度コマンドを押します。</translation>
+<translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{個の箇条書き記号}} *{{{$$COUNT} 個の箇条書き記号}}</translation>
 <translation id="4649220074413114917">2 本の指で画面をタップすると、現在の読み上げを停止できます。ChromeVox に読み上げてほしくないことがある場合に便利です。次に進むには、2 本の指で画面をタップしてください。</translation>
 <translation id="4661075872484491155">ツリー</translation>
 <translation id="4668929960204016307">,</translation>
@@ -590,6 +611,7 @@
 <translation id="4854380505292502090">前のメディア ウィジェットはありません</translation>
 <translation id="4855927945655956315">必須キー: Ctrl</translation>
 <translation id="485806788160414322">メディアを再生または一時停止する</translation>
+<translation id="4861593489403902434">.input {$$COUNT :number} .match $$COUNT 1{{個の右丸かっこ}} *{{{$$COUNT} 個の右丸かっこ}}</translation>
 <translation id="4862744964787595316">太字オフ</translation>
 <translation id="4865995900839719272">前の行に移動</translation>
 <translation id="4866956062845190338">メニュー項目のラジオボタン</translation>
@@ -615,6 +637,7 @@
 <translation id="4993152509206108683">速度 <ph name="PERCENT" /> パーセント</translation>
 <translation id="4994420463726586413">現在の電池の状態を読み上げる</translation>
 <translation id="4997282455736854877"><ph name="NAME" />、選択されたラジオボタン</translation>
+<translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{個の疑問符}} *{{{$$COUNT} 個の疑問符}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />、選択されたメニュー項目のラジオボタン</translation>
 <translation id="5014131807708055994"><ph name="REASON" />　のため、<ph name="COMMAND" /> できません</translation>
 <translation id="5020651427400641814">読み上げのログを有効にする</translation>
@@ -714,6 +737,7 @@
 <translation id="5669637233317991674">このレッスンを前後に移動するには、検索+右矢印キーまたは検索+左矢印キーを押します</translation>
 <translation id="5677240841070992068">現在地</translation>
 <translation id="5678161956734658133">メールを編集</translation>
+<translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{個の右波かっこ}} *{{{$$COUNT} 個の右波かっこ}}</translation>
 <translation id="5681643281275621376">定義</translation>
 <translation id="5682113568322255809">ランドマーク</translation>
 <translation id="5683155931978483559">前のチェックボックス</translation>
@@ -754,6 +778,7 @@
 <translation id="5899860758576822363">ChromeVox の読み上げ中は小さい音量で再生する</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5906974869830879618">PIN を入力してください</translation>
+<translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{個のセミコロン}} *{{{$$COUNT} 個のセミコロン}}</translation>
 <translation id="5921587111466148855">章</translation>
 <translation id="5923780477617566089">現在の日付</translation>
 <translation id="5926889058434275234">操作の完全なリストは、ヘルプセンターでご覧いただけます。</translation>
@@ -794,6 +819,7 @@
 <translation id="6197361807490522975">ダークブルー</translation>
 <translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> を <ph name="INSERT_PHRASE" /> に置き換え</translation>
 <translation id="6236061028292614533">次の見出し</translation>
+<translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{個のパイプ}} *{{{$$COUNT} 個のパイプ}}</translation>
 <translation id="6254901459154107917">次の編集可能テキスト領域</translation>
 <translation id="6259464875943891919"><ph name="TYPE" />の外に出ました。</translation>
 <translation id="6280088282605782512">ダブルタップ</translation>
@@ -826,6 +852,7 @@
 <translation id="6493991254603208962">明るさを下げる</translation>
 <translation id="6501595918865591267">ターコイズ</translation>
 <translation id="6508059270146105198">ブライユ点字表示をページ下部に移動</translation>
+<translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{個の左丸かっこ}} *{{{$$COUNT} 個の左丸かっこ}}</translation>
 <translation id="6521550811716689390">ダーク バイオレット</translation>
 <translation id="6536157907112457272">リネン</translation>
 <translation id="6540201937398578274">ChromeVox では、検索キーは修飾キーとなります。ChromeVox のショートカットのほとんどは検索キーで始まります。また、移動には矢印キーを使用します。</translation>
@@ -866,6 +893,7 @@
 <translation id="6859876496651143278">1 本の指で左にスワイプします</translation>
 <translation id="6865519907510167493">スペルミス</translation>
 <translation id="6873188295213080042">ヒント: 検索+矢印キーで移動できます。</translation>
+<translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">現在の日付と時刻を音声で読み上げます</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6897341342232909480">左へ移動</translation>
@@ -879,6 +907,7 @@
 <translation id="6951482098621102657">次のレベル 5 の見出しはありません</translation>
 <translation id="6955705049214951590">ミスティローズ</translation>
 <translation id="696356426651109308">先頭へ移動</translation>
+<translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{時間}} *{{時間}}</translation>
 <translation id="6994042831499278539">用語参照</translation>
 <translation id="6996566555547746822">次のコンボ ボックス</translation>
 <translation id="6997224546856374593">大文字の読み上げ:</translation>
@@ -887,6 +916,7 @@
 <translation id="7005146664810010831">URL が見つかりません</translation>
 <translation id="7026338066939101231">減らす</translation>
 <translation id="7031651751836475482">リスト項目</translation>
+<translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{個の白色の箇条書き記号}} *{{{$$COUNT} 個の白色の箇条書き記号}}</translation>
 <translation id="7037042857287298941">前のリスト</translation>
 <translation id="7039555289296502784">オリーブドラブ</translation>
 <translation id="7041173719775863268">選択を終了</translation>
@@ -896,6 +926,7 @@
 <translation id="7086377898680121060">明るさを上げる</translation>
 <translation id="7088743565397416204">フォーカスしている項目を有効にするにはダブルタップします</translation>
 <translation id="7088960765736518739">スイッチ アクセス</translation>
+<translation id="7089749381037113497">.input {$$COUNT :number} .match $$COUNT 1{{個のアンダースコア}} *{{{$$COUNT} 個のアンダースコア}}</translation>
 <translation id="7090715360595433170">1 本の指で左右にスワイプするより効率的な場合もあります。</translation>
 <translation id="7091296112653361280">ナバホホワイト</translation>
 <translation id="7095834689119144465">数字のみのテキスト編集</translation>
@@ -906,6 +937,7 @@
 <translation id="712735679809149106">単語読み上げ</translation>
 <translation id="7137397390322864165">サーモン</translation>
 <translation id="7140168702531682811">上付き文字</translation>
+<translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{個のタブ}} *{{{$$COUNT} 個のタブ}}</translation>
 <translation id="7143034430156387447">6 点点字と 8 点点字を切り替えます</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7153618581592392745">ラベンダー</translation>
@@ -935,6 +967,7 @@
 <translation id="7289186959554153431">見出し 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />（<ph name="VARIANT" />）</translation>
 <translation id="7297440685387139507">ドラッグ＆ドロップを終了</translation>
+<translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{個のスペース}} *{{{$$COUNT} 個のスペース}}</translation>
 <translation id="7308519659008003150">前のフォーム フィールドはありません</translation>
 <translation id="731121099745151312">ツリー項目</translation>
 <translation id="7313717760367325059">ヘルプ</translation>
@@ -965,6 +998,7 @@
 <translation id="7543255924852002459">ラベルを破棄</translation>
 <translation id="7552432549459840808">Chrome の便利なショートカット</translation>
 <translation id="7553679324939294712"><ph name="INSERT_PHRASE" /> を <ph name="BEFORE_PHRASE" /> の前に挿入</translation>
+<translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{個のアポストロフィ}} *{{{$$COUNT} 個のアポストロフィ}}</translation>
 <translation id="7569983096843329377">黒</translation>
 <translation id="7579911500627256166">点 <ph name="DOT" /></translation>
 <translation id="7592060599656252486">一部</translation>
@@ -981,6 +1015,7 @@
 <translation id="7637342083105831460">検索+右矢印キーを押して [練習エリア] または [次のレッスン] ボタンに移動し、検索+Space キーを押して選択します。</translation>
 <translation id="7639968568612851608">ダークグレー</translation>
 <translation id="7663318257180412551">見出し 2</translation>
+<translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{個のドル記号}} *{{{$$COUNT} 個のドル記号}}</translation>
 <translation id="7674576868851035240">次のリンク</translation>
 <translation id="7674768236845044097">マーク</translation>
 <translation id="7676847077928500578">テキスト読み上げの設定をリセットします</translation>
@@ -990,9 +1025,11 @@
 <translation id="7696631298608145306">次の単語に移動</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701196182766842984">リストの予測入力</translation>
+<translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{個のダッシュ}} *{{{$$COUNT} 個のダッシュ}}</translation>
 <translation id="7714340021005120797">次のコンボボックスはありません</translation>
 <translation id="7715455358521357192">右目を細める</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{個のバッククォート}} *{{{$$COUNT} 個のバッククォート}}</translation>
 <translation id="7731785449856576010">次のメディア ウィジェットはありません</translation>
 <translation id="7735498529470878067">タッチガイドを使うと、画面上に何があるかをすばやく把握できます。</translation>
 <translation id="773906353055481349">検索+Ctrl+Alt キーを押しながら矢印キーを押して、セル間を移動します</translation>
@@ -1009,9 +1046,11 @@
 <translation id="7839679365527550018">前の単語</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7851816175263618915">一部の句読点を読み上げます</translation>
+<translation id="7861676488745595432">.input {$$COUNT :number} .match $$COUNT 1{{個の左角かっこ}} *{{{$$COUNT} 個の左角かっこ}}</translation>
 <translation id="7871691770940645922">仮想点字ディスプレイ</translation>
 <translation id="7882421473871500483">茶</translation>
 <translation id="78826985582142166">スライダ</translation>
+<translation id="7889376040363236522">.input {$$COUNT :number} .match $$COUNT 1{{個の引用符}} *{{{$$COUNT} 個の引用符}}</translation>
 <translation id="7913106023953875143">次のレベル 2 の見出しはありません</translation>
 <translation id="7927711904086083099">選択されていません</translation>
 <translation id="7935627501098484003">日時コントロール</translation>
@@ -1051,6 +1090,7 @@
 <translation id="8132248161074464367">前の無効なアイテム</translation>
 <translation id="8138880386467279117">タップ</translation>
 <translation id="8146613869421949343">次は検索キーについて見てみましょう。検索キーは他のキーと組み合わせて、ChromeVox コマンドとして使用します。検索キーは、左 Shift キーのすぐ上にあります。次へ進むには、検索キーを押してください。</translation>
+<translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{個の右角かっこ}} *{{{$$COUNT} 個の右角かっこ}}</translation>
 <translation id="8158033275290782295">すべて選択</translation>
 <translation id="816818801578874684">これは最初の見出しです。次の見出しに移動するには検索+H キーを押します。</translation>
 <translation id="8173092779156526980">4 本の指で左にスワイプします</translation>
@@ -1143,6 +1183,7 @@
 <translation id="8897030325301866860">フォント <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">句読点読み上げを切り替えます</translation>
 <translation id="8908714597367957477">列見出し</translation>
+<translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{個の左波かっこ}} *{{{$$COUNT} 個の左波かっこ}}</translation>
 <translation id="8910180774920883033">実行可能な操作があります。表示するには、検索+Ctrl+A キーを押してください</translation>
 <translation id="8937112856099038376">内部リンク</translation>
 <translation id="8940925288729953902">修飾キー</translation>
@@ -1172,12 +1213,14 @@
 <translation id="9108370397979208512">数式</translation>
 <translation id="9108589040018540527">スクロールバー</translation>
 <translation id="9128414153595658330">ダイアログ</translation>
+<translation id="9132815018758550541">.input {$$COUNT :number} .match $$COUNT 1{{個の感嘆符}} *{{{$$COUNT} 個の感嘆符}}</translation>
 <translation id="9133928141873682933">カーキ</translation>
 <translation id="9149560530563164529">セクション</translation>
 <translation id="9150735707954472829">タブ</translation>
 <translation id="9151249085738989067">言語に基づいて ChromeVox の音声を自動的に切り替える</translation>
 <translation id="9153606228985488238">ピッチ <ph name="PERCENT" /> パーセント</translation>
 <translation id="9160096769946561184">現在の列の末尾に移動</translation>
+<translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{個のスラッシュ}} *{{{$$COUNT} 個のスラッシュ}}</translation>
 <translation id="9173115498289768110">音量 <ph name="PERCENT" /> パーセント</translation>
 <translation id="9185200690645120087">ChromeVox タッチ操作チュートリアル</translation>
 <translation id="9192904702577636854">マーキー</translation>

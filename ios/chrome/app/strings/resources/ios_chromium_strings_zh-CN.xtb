@@ -120,6 +120,7 @@
 <translation id="3833326979834193417">Chromium 每天都会自动运行安全检查，以保护您免受数据泄露、不安全网站等问题的影响。您可在“设置”中详细了解安全检查。</translation>
 <translation id="3855938650519180865">Chromium 中的新变化</translation>
 <translation id="3886689467633467988">登录此网站和 Chromium 即可获取您在所有设备上保存的书签及其他信息。</translation>
+<translation id="3949514465204582407">Chromium 提示：在任意应用中获取您的密码</translation>
 <translation id="3983291422281996849">将 Chromium 设为默认浏览器，即可轻松跟踪价格并获取您想购买商品的价格分析。</translation>
 <translation id="4005283307739974863">在 Chromium 中打开并运行安全检查。</translation>
 <translation id="4043291146360695975">系统会将密码仅保存到此设备上的密码管理工具中。</translation>
@@ -167,7 +168,6 @@
 <translation id="5048795749726991615">若要在其他应用中轻松获取您已保存的密码，请使用 Chromium 的自动填充功能</translation>
 <translation id="5053429694249468757">正在删除 Chromium 数据…</translation>
 <translation id="5071749685031362629">iOS 版 Chromium</translation>
-<translation id="5088872414922783602">从主屏幕上的程序坞更快速地访问 Chromium。</translation>
 <translation id="5124429847818367226">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
 <translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
 <translation id="5134464247000681876">在 Chromium 中打开 Gmail、Google 地图、YouTube 和其他应用中的链接</translation>
@@ -276,6 +276,7 @@
 <translation id="7763454117143368771">使用 Chromium 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="7784950022329154821">在您关闭 Chromium 时锁定无痕式标签页</translation>
 <translation id="78025249032851484">您的 Chromium 版本过旧。</translation>
+<translation id="7811371919871579588">若要轻松获取其他应用中已保存的密码，请选择 Chromium 的自动填充功能。</translation>
 <translation id="7859018312476869945">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="7890287942691234100">开始使用 Chromium 扫描器</translation>
 <translation id="7905064834449738336">当您使用某个密码时，如果 Chromium 发现它已被在线发布，就会向您发出警告。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
@@ -289,7 +290,6 @@
 <translation id="800380310260616129">可从此处下载 Chromium。</translation>
 <translation id="8013573822802650211">要查看您在其他设备上用 Chromium 打开的标签页，请在所有设备上登录</translation>
 <translation id="8014091604604659473">已退出 Chromium 账号</translation>
-<translation id="8035379487371146621">将 Chromium 移至程序坞</translation>
 <translation id="8104697640054703121">利用 Chromium 的超强安全防护来保护自己免受危险网站的侵害</translation>
 <translation id="8119542592987737574">从 iPhone 主屏幕上的程序坞更快速地访问 Chromium。</translation>
 <translation id="8164086860209325020">前往 Chromium 设置</translation>

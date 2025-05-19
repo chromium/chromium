@@ -120,6 +120,7 @@ Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nal
 <translation id="3833326979834193417">Chromium automatski pokreće Proveru bezbednosti svakog dana da bi vas zaštitio od povrede podataka, nebezbednih veb-sajtova i drugog. Više o Proveri bezbednosti možete da pronađete u Podešavanjima.</translation>
 <translation id="3855938650519180865">Šta je novo u Chromium-u</translation>
 <translation id="3886689467633467988">Prijavite se na ovaj sajt i u Chromium da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima.</translation>
+<translation id="3949514465204582407">Savet za Chromium: Pristupajte lozinkama u bilo kojoj aplikaciji</translation>
 <translation id="3983291422281996849">Podesite Chromium kao podrazumevani pregledač da biste lako pratili cene i dobijali uvid u cene za stvari koje želite da kupite.</translation>
 <translation id="4005283307739974863">Otvara i pokreće Proveru bezbednosti u Chromium-u.</translation>
 <translation id="4043291146360695975">Lozinke se čuvaju u Menadžeru lozinki samo na ovom uređaju.</translation>
@@ -167,7 +168,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="5048795749726991615">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
 <translation id="5053429694249468757">Brišu se Chromium podaci…</translation>
 <translation id="5071749685031362629">Chromium za iOS</translation>
-<translation id="5088872414922783602">Brže pristupajte Chromium-u sa trake s aplikacijama na Početnom ekranu.</translation>
 <translation id="5124429847818367226">Sada možete da koristite Chromium svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji ste prijavljeni i načinom na koji se Chromium koristi.</translation>
 <translation id="5134464247000681876">Otvara linkove iz Gmail-a, Mapa, YouTube-a i drugih aplikacija u Chromium-u</translation>
@@ -276,6 +276,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7763454117143368771">Koristite Chromium kao podrazumevani pregledač da biste se odbranili od opasnih sajtova i zaštitili lozinke</translation>
 <translation id="7784950022329154821">Zaključajte kartice bez arhiviranja posle zatvaranja Chromium-a</translation>
 <translation id="78025249032851484">Chromium je zastareo.</translation>
+<translation id="7811371919871579588">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, koristite Chromium za automatsko popunjavanje.</translation>
 <translation id="7859018312476869945">Kada kucate u traci za adresu ili u okviru za pretragu, Chromium šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="7890287942691234100">Počnite da koristite Chromium skener</translation>
 <translation id="7905064834449738336">Kada koristite lozinku, Chromium vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
@@ -289,7 +290,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="800380310260616129">Preuzmite Chromium ovde.</translation>
 <translation id="8013573822802650211">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, prijavite se na svim uređajima</translation>
 <translation id="8014091604604659473">Chromium je odjavljen</translation>
-<translation id="8035379487371146621">Premestite Chromium na traku s aplikacijama</translation>
 <translation id="8104697640054703121">Nabavite najjaču Chromium zaštitu od opasnih sajtova</translation>
 <translation id="8119542592987737574">Brže pristupajte Chromium-u sa trake s aplikacijama na početnom ekranu iPhone-a.</translation>
 <translation id="8164086860209325020">Idi u Chromium podešavanja</translation>

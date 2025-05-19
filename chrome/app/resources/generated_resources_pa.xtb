@@ -1472,7 +1472,6 @@
 <translation id="1999115740519098545">ਸਟਾਰਟਅਪ ਤੇ</translation>
 <translation id="1999763610967697511">ਘਸੀਟੋ ਅਤੇ ਛੱਡੋ</translation>
 <translation id="2002109485265116295">ਅਸਲ-ਸਮਾਂ</translation>
-<translation id="2002160221914907025">ਪ੍ਰਯੋਗਮਈ AI</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ਡਾਟਾ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ, ਪਹਿਲਾਂ ਕਿਸੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="200321182559008924">ਬੇਲੋੜੇ ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="2003596238737586336">ਮੌਜੂਦਾ ਸਮਾਂ-ਸੂਚੀ <ph name="SUNRISE" /> - <ph name="SUNSET" /> 'ਤੇ ਸੈੱਟ ਕੀਤੀ ਗਈ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>
@@ -5179,6 +5178,7 @@
 <translation id="4585793705637313973">ਪੰਨੇ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="4586275095964870617"><ph name="URL" /> ਕਿਸੇ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="4587589328781138893">ਸਾਈਟਾਂ</translation>
+<translation id="4588497044036650559">ਮੌਜੂਦਾ ਟੈਬ ਵਿੱਚ, 'ਨਵੀਂ ਟੈਬ' ਪੰਨੇ ਦੀ ਐਕਸਟੈਂਸ਼ਨ ਦਾ ਵਿਕਲਪ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="4588749726511456218">ਸਕ੍ਰੋਲ ਐਕਸੈੱਲਰੇਸ਼ਨ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> ਅਤੇ <ph name="DOMAIN" /> ਸੰਬੰਧਿਤ ਲੱਗਦੇ ਹਨ। ਆਪਣੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਨੂੰ <ph name="DOMAIN" /> 'ਤੇ ਭਰੋਸਾ ਹੈ।</translation>
 <translation id="4589713469967853491">ਲੌਗਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਸਫਲਤਾਪੂਰਕ ਲਿਖਿਆ ਗਿਆ।</translation>
@@ -9157,6 +9157,7 @@
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">ਅਗਲੀ ਵਾਰ ਤੁਹਾਡਾ ਫ਼ੋਨ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰੇਗਾ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ 'ਸਮਾਰਟ ਲਾਕ' ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">ਤੁਹਾਡੀ ਸੰਸਥਾ ਇਹ ਪ੍ਰਬੰਧਨ ਕਰਦੀ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵੱਲੋਂ ਇਕੱਤਰ ਕੀਤੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਿਵੇਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="7464645554245611385">ਇਸ ਟੈਬ ਵਿੱਚ ਕੀਤਾ ਗਿਆ ਪਿਛਲਾ ਅੱਪਡੇਟ</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ਖੁੱਲ੍ਹੀ ਟੈਬ, ਟੈਬ ਪੱਟੀ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ ਦਬਾਓ}one{# ਖੁੱਲ੍ਹੀ ਟੈਬ, ਟੈਬ ਪੱਟੀ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ ਦਬਾਓ}other{# ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ, ਟੈਬ ਪੱਟੀ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ ਦਬਾਓ}}</translation>
 <translation id="7465635034594602553">ਕੋਈ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਥੋੜ੍ਹੀ ਦੇਰ ਉਡੀਕ ਕਰੋ ਅਤੇ <ph name="APP_NAME" /> ਨੂੰ ਦੁਬਾਰਾ ਚਲਾਓ।</translation>
@@ -11719,6 +11720,7 @@
 <translation id="934244546219308557">ਇਸ ਗਰੁੱਪ ਦਾ ਨਾਮ ਰੱਖੋ</translation>
 <translation id="93480724622239549">ਬੱਗ ਜਾਂ ਗੜਬੜ</translation>
 <translation id="9354763467503131">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਪੁੱਛਣ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਗਈ</translation>
+<translation id="936329857119665832">ਮੌਜੂਦਾ ਟੈਬ ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ</translation>
 <translation id="936646668635477464">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="936801553271523408">ਸਿਸਟਮ ਨਿਦਾਨ ਡਾਟਾ</translation>
 <translation id="93766956588638423">ਐਕਸਟੈਂਸ਼ਨ ਰਿਪੇਅਰ ਕਰੋ</translation>

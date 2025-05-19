@@ -1057,9 +1057,6 @@ thông qua quy trình phát hành <ph name="PRODUCT_NAME" />
 Chính sách này là giải pháp tạm thời trong trường hợp doanh nghiệp
 gặp sự cố do thay đổi này. Phiên bản cuối cùng hỗ trợ chính sách này là phiên bản 121. Chính sách này đã bị loại bỏ trong phiên bản 122.</translation>
 <translation id="1714790754501130659">Tên người dùng để xác thực các dịch vụ hệ thống dành cho proxy web từ xa.</translation>
-<translation id="171511968762040550">Nếu bạn đặt chính sách này thành True hoặc không đặt chính sách này, thì người dùng có thể thêm, xóa hoặc sửa đổi dấu trang.
-
-      Nếu bạn đặt chính sách này thành False, thì người dùng không thể thêm, xóa hoặc sửa đổi dấu trang. Người dùng vẫn có thể sử dụng dấu trang hiện có.</translation>
 <translation id="1715151459541210849">Bật tính năng hỗ trợ tiếp cận về đọc chính tả</translation>
 <translation id="1716468109214130396">Không cho phép Chrome khởi chạy nếu chưa đăng ký tham gia giải pháp Quản lý trình duyệt Chrome qua đám mây</translation>
 <translation id="1719033799014769396">Tắt tính năng báo cáo chế độ khởi động thiết bị</translation>
@@ -9715,11 +9712,6 @@ Khi bạn đặt chính sách này thành false hoặc không đặt, <ph name="
 Để biết thêm thông tin về chính sách <ph name="IEEM_SITELIST_POLICY" /> của Internet Explorer, hãy truy cập vào trang web: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Không cho phép người dùng chụp ảnh màn hình hoặc quay video</translation>
 <translation id="7792796937016596423">Người dùng sẽ không thể chặn bắt gói tin qua mạng</translation>
-<translation id="7795648856511126914">Trình phân tích cú pháp HTML sẽ được thay đổi để cho phép các thẻ HTML bổ sung bên trong phần tử &lt;select&gt;. Chính sách này cho phép sử dụng hành vi cũ của trình phân tích cú pháp HTML cho đến M136.
-
-Nếu bạn bật hoặc không đặt chính sách này thì trình phân tích cú pháp HTML sẽ cho phép các thẻ bổ sung bên trong phần tử &lt;select&gt;.
-
-Nếu bạn tắt chính sách này thì trình phân tích cú pháp HTML sẽ hạn chế những thẻ có thể được đặt bên trong phần tử &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Chúng tôi đã xóa chính sách này khỏi <ph name="PRODUCT_NAME" /> phiên bản 89 trở đi <ph name="FLASH_PLUGIN_NAME" /> không còn được dùng nữa.
 
       Nếu bạn đặt chính sách này thành Bật, thì tất cả nội dung <ph name="FLASH_PLUGIN_NAME" /> được nhúng trên những trang web cho phép <ph name="FLASH_PLUGIN_NAME" /> đều sẽ chạy, kể cả nội dung của các nguồn khác hoặc nội dung nhỏ.

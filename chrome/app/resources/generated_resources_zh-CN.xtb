@@ -1076,7 +1076,7 @@
 <translation id="173628468822554835">知道了。默认情况下，您访问的新网站不会向您发送通知。</translation>
 <translation id="1737968601308870607">提交错误</translation>
 <translation id="1740414789702358061"><ph name="SITE_ACCESS" />。选择即可更改网站权限</translation>
-<translation id="1741190788710022490">自适应充电</translation>
+<translation id="1741190788710022490">自动调节充电</translation>
 <translation id="174123615272205933">自定义</translation>
 <translation id="1741314857973421784">继续</translation>
 <translation id="1743970419083351269">关闭下载内容栏</translation>
@@ -1454,7 +1454,6 @@
 <translation id="1999115740519098545">起始页面</translation>
 <translation id="1999763610967697511">拖放</translation>
 <translation id="2002109485265116295">实时</translation>
-<translation id="2002160221914907025">实验性 AI</translation>
 <translation id="2003130567827682533">若想激活“<ph name="NAME" />”的数据流量服务，请先连接到 Wi-Fi 网络</translation>
 <translation id="200321182559008924">让标签页井然有序</translation>
 <translation id="2003596238737586336">当前的时间安排设置为<ph name="SUNRISE" /> - <ph name="SUNSET" />。此设置由您的管理员管理。</translation>

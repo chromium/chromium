@@ -1048,9 +1048,6 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 사용할 수 있는 임시 해결 방법입니다. 이 정책이 마지막으로 지원되는 버전은
 버전 121입니다. 이 정책은 버전 122에서 삭제되었습니다.</translation>
 <translation id="1714790754501130659">시스템 서비스를 원격 웹 프록시에 인증하기 위한 사용자 이름입니다.</translation>
-<translation id="171511968762040550">정책을 True로 설정하거나 설정하지 않으면 사용자가 북마크를 추가, 삭제 또는 수정할 수 있습니다.
-
-      정책을 False로 설정하면 사용자가 북마크를 추가, 삭제 또는 수정할 수 없습니다. 기존 북마크는 여전히 사용할 수 있습니다.</translation>
 <translation id="1715151459541210849">음성기록 접근성 기능 사용</translation>
 <translation id="1716468109214130396">Chrome 브라우저 클라우드 관리에 등록되지 않은 경우 Chrome이 실행되지 않도록 차단</translation>
 <translation id="1719033799014769396">기기 부팅 모드 보고 사용 중지</translation>
@@ -9654,11 +9651,6 @@ true로 설정하면 <ph name="PRODUCT_NAME" />에서는
 Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)을 자세히 살펴보세요.</translation>
 <translation id="7791215522423893512">사용자가 스크린샷을 찍고 동영상을 녹화하도록 허용 안함</translation>
 <translation id="7792796937016596423">사용자가 네트워크 패킷 캡처를 실행할 수 없음</translation>
-<translation id="7795648856511126914">&lt;select&gt; 요소 내에서 추가 HTML 태그를 허용하도록 HTML 파서가 변경되었습니다. 이 정책을 사용하면 M136까지 이전 HTML 파서 동작을 사용할 수 있습니다.
-
-이 정책을 사용 설정하거나 설정하지 않으면 HTML 파서가 &lt;select&gt; 요소 내에서 추가 태그를 허용합니다.
-
-이 정책이 사용 중지되면 HTML 파서가 &lt;select&gt; 요소 내에 넣을 수 있는 태그를 제한합니다.</translation>
 <translation id="7798441698807517880">이 정책은 <ph name="FLASH_PLUGIN_NAME" />이(가) 지원 중단되어 <ph name="PRODUCT_NAME" /> 버전 89부터 삭제되었습니다.
 
       정책을 True로 설정하면 다른 출처의 콘텐츠나 크기가 작은 콘텐츠를 비롯해 <ph name="FLASH_PLUGIN_NAME" /> 플러그인을 허용하는 웹사이트에 삽입된 <ph name="FLASH_PLUGIN_NAME" /> 콘텐츠가 전부 실행됩니다.

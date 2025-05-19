@@ -1050,9 +1050,6 @@ Bu politika, kuruluşların bu değişiklikten dolayı kesinti yaşaması ihtima
 karşı geçici bir çözümdür. Bu politika en son 121 sürümünde
 desteklendi. 122 sürümünde ise kaldırıldı.</translation>
 <translation id="1714790754501130659">Uzak web proxy'sinde sistem hizmetlerinin kimliğini doğrulamak için kullanılan kullanıcı adı.</translation>
-<translation id="171511968762040550">Politikayı True (Doğru) değerine ayarlamak veya ayarlamadan bırakmak, kullanıcıların yer işaretleri eklemelerine, kaldırmalarına veya bunları değiştirmelerine izin verir.
-
-      Politikayı False (Yanlış) değerine ayarlamak, kullanıcıların yer işaretleri eklemelerine, kaldırmalarına veya bunları değiştirmelerine izin verilmediği anlamına gelir. Mevcut yer işaretlerini kullanmaya devam edebilirler.</translation>
 <translation id="1715151459541210849">Dikte erişilebilirlik özelliğini etkinleştir</translation>
 <translation id="1716468109214130396">Chrome Tarayıcı Bulut Yönetimi'ne kayıtlı değilse Chrome'un başlatılmasını engelle</translation>
 <translation id="1719033799014769396">Cihaz başlatma modu raporlamasını devre dışı bırak</translation>
@@ -9702,11 +9699,6 @@ Bu politika Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa <ph n
 Internet Explorer'ın <ph name="IEEM_SITELIST_POLICY" /> politikası hakkında daha fazla bilgiyi https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode adresinde bulabilirsiniz.</translation>
 <translation id="7791215522423893512">Kullanıcıların ekran görüntüsü almasına veya video kaydı yapmasına izin verme</translation>
 <translation id="7792796937016596423">Kullanıcı, ağ paketi yakalama işlemleri gerçekleştiremez</translation>
-<translation id="7795648856511126914">HTML ayrıştırıcı, &lt;select&gt; öğesinin içine daha fazla HTML etiketinin eklenmesine izin verecek şekilde değiştiriliyor. Bu politika, M136 sürümüne kadar eski HTML ayrıştırıcı davranışının kullanılmasına olanak tanır.
-
-Bu politika etkinleştirilir veya ayarlanmazsa HTML ayrıştırıcı, &lt;select&gt; öğesinin içine daha fazla etiketin eklenmesine izin verir.
-
-Bu politika devre dışı bırakılırsa HTML ayrıştırıcı, &lt;select&gt; öğesinin içine hangi etiketlerin eklenebileceğini kısıtlar.</translation>
 <translation id="7798441698807517880"><ph name="FLASH_PLUGIN_NAME" /> kullanımdan kaldırıldığı için bu politika, <ph name="PRODUCT_NAME" /> sürüm 89 itibariyle kaldırılmıştır.
 
       Politikayı Doğru değerine ayarlamak, diğer kaynaklardan gelen içerikler veya küçük içerikler de dahil olmak üzere <ph name="FLASH_PLUGIN_NAME" /> eklentisine izin veren web sitelerindeki yerleşik tüm <ph name="FLASH_PLUGIN_NAME" /> içeriğini çalıştırır.

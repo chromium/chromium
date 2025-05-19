@@ -122,6 +122,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid teie Chrome'i kasutuskogem
 <translation id="1480287803138246127">Osa teie ajaloost ei pruugita siin kuvada. Chrome'i kogu ajaloo vaatamiseks avage Chrome'i täielik ajalugu.</translation>
 <translation id="1492417797159476138">Olete selle kasutajanime selle saidi jaoks juba salvestanud</translation>
 <translation id="1493287004536771723">Jälgite saiti <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">kasutajanimi</translation>
 <translation id="1501480321619201731">Kustuta grupp</translation>
 <translation id="1502010315804028179">Oma paroolide haldamiseks värskendage Google Play teenuseid</translation>
 <translation id="1506061864768559482">Otsingumootor</translation>
@@ -221,6 +222,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="197288927597451399">Jäta alles</translation>
 <translation id="1973912524893600642">Säilita andmed</translation>
 <translation id="1974060860693918893">Täpsemad</translation>
+<translation id="1984087999855033707">telefoninumber</translation>
 <translation id="1984417487208496350">Kaitseta (ei ole soovitatav)</translation>
 <translation id="1986685561493779662">Nimi on juba olemas</translation>
 <translation id="200114059308480249">Kas kaasata ümbritsev tekst Google'i otsingutesse?</translation>

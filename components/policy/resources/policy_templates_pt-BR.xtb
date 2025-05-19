@@ -1100,9 +1100,6 @@ Essa política é uma solução temporária caso as experiências de empresas
 sofram interrupções por causa dessa mudança. A última versão com suporte dessa
 política foi a 121. O suporte foi removido na versão 122.</translation>
 <translation id="1714790754501130659">O nome de usuário para autenticação de serviços do sistema para o proxy remoto da Web.</translation>
-<translation id="171511968762040550">Se a política for definida como verdadeira ou não for definida, os usuários poderão adicionar, remover ou modificar favoritos.
-
-      Se ela for definida como falsa, os usuários não poderão adicionar, remover ou modificar favoritos. Eles ainda poderão usar os favoritos já existentes.</translation>
 <translation id="1715151459541210849">Ativar recurso de acessibilidade de ditado</translation>
 <translation id="1716468109214130396">Impedir que o Chrome seja iniciado se não estiver registrado no Gerenciamento de nuvem do navegador Chrome</translation>
 <translation id="1719033799014769396">Desativar relatórios sobre o modo de inicialização do dispositivo</translation>
@@ -9925,11 +9922,6 @@ Quando esta política é definida como falsa ou não é definida, o <ph name="PR
 Para mais informações sobre a política <ph name="IEEM_SITELIST_POLICY" /> do Internet Explorer, acesse: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode.</translation>
 <translation id="7791215522423893512">Não permitir que os usuários façam capturas de tela e gravações de vídeo</translation>
 <translation id="7792796937016596423">O usuário não poderá capturar pacotes de rede</translation>
-<translation id="7795648856511126914">O analisador HTML está sendo modificado para permitir mais tags HTML no elemento &lt;select&gt;. Esta política permite que o comportamento antigo do analisador de HTML seja usado até a versão M136.
-
-Se ela for ativada ou deixada sem definição, o analisador de HTML vai permitir mais tags no elemento &lt;select&gt;.
-
-Se for desativada, o analisador HTML vai restringir quais tags podem ser colocadas no elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política foi removida na versão 89 do <ph name="PRODUCT_NAME" /> porque o uso de <ph name="FLASH_PLUGIN_NAME" /> foi suspenso.
 
       Se ela for definida como verdadeira, todo conteúdo em <ph name="FLASH_PLUGIN_NAME" /> incorporado em sites com permissão para <ph name="FLASH_PLUGIN_NAME" /> será executado, incluindo conteúdos pequenos ou de outras origens.

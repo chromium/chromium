@@ -33,6 +33,7 @@
 <translation id="1186712907912748007">کھینچ کر ڈالنے کا عمل پیش رفت میں ہے۔ ختم کرنے کے ليے <ph name="GESTURE" />۔ دیگر اشارے عارضی طور پر دستیاب نہیں ہیں۔</translation>
 <translation id="1188858454923323853">اعزازی</translation>
 <translation id="1189258430971676908">پریکٹیس کرنے کی جگہ: ڈراپ ڈاؤن فہرستیں</translation>
+<translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{nested level {$$COUNT}}}</translation>
 <translation id="1195238899008218998">پسِ نوشت</translation>
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="1198865190323699001">ٹچ اشارے</translation>
@@ -101,6 +102,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="1506187449813838456">پچ بڑھائیں</translation>
 <translation id="151784044608172266">اگلا جملہ</translation>
 <translation id="1524531499102321782">بریل کی اگلی لائن</translation>
+<translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{tilde}} *{{{$$COUNT} tildes}}</translation>
 <translation id="1542513807034338907">گزشتہ صفحے پر اسکرول کریں</translation>
 <translation id="1546370775711804143">سکرول بار</translation>
 <translation id="1551572888042734032">گرما</translation>
@@ -136,7 +138,9 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="1756785467854861272">گہرا میجنٹا</translation>
 <translation id="1758693804775271377">اس موضوع سے متعلق اسباق براؤز کرنے کیلئے ایک انگلی سے بائیں یا دائیں سوائپ کریں</translation>
 <translation id="1765245556747822181">ایک انگلی سے اوپر کی طرف سوائپ کریں</translation>
+<translation id="1766900865718394987">.input {$$COUNT :number} .match $$COUNT 1{{pound}} *{{{$$COUNT} pound signs}}</translation>
 <translation id="1771761307086386028">دائیں اسکرول کریں</translation>
+<translation id="1776454891300234201">.input {$$COUNT :number} .match $$COUNT 1{{square bullet}} *{{{$$COUNT} square bullets}}</translation>
 <translation id="1781173782405573156">آگے جانے کی کلید</translation>
 <translation id="1787176709638001873">پاس ورڈ میں ترمیم کا متن</translation>
 <translation id="1795438342141780114">کرسر کو وسط پر ری سیٹ کریں</translation>
@@ -153,6 +157,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="1902396333223336119">سیل</translation>
 <translation id="1903683160884433981">میڈیم بہار نما سبز</translation>
 <translation id="1905379170753160525">سرخیوں کی فہرست دکھائیں</translation>
+<translation id="1909599030163690992">.input {$$COUNT :number} .match $$COUNT 1{{ampersand}} *{{{$$COUNT} ampersands}}</translation>
 <translation id="1913761808037590218">‎#ed</translation>
 <translation id="1914424852593176649">سائز <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> کورڈ</translation>
@@ -160,6 +165,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="1926147969119007125">چہرے سے کنٹرول موقوف کریں</translation>
 <translation id="1928932365747995741">کوئی پچھلی قابل ترمیم ٹیکسٹ فیلڈ نہیں ہے</translation>
 <translation id="1964135212174907577">اگلا آبجیکٹ</translation>
+<translation id="1969502304370936079">.input {$$COUNT :number} .match $$COUNT 1{{equal}} *{{{$$COUNT} equal signs}}</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">‏ChromeVox مینوز میں بریل کی کمانڈز دکھائيں</translation>
 <translation id="2009187674653301682">سُپر اسکرپٹ نہیں ہے</translation>
@@ -167,12 +173,14 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="203030071582665758">سطح 4 کی کوئی پچھلی ہیڈنگ نہیں ہے</translation>
 <translation id="2045055672832940894">کوئی پچھلا کنٹرول نہیں ہے</translation>
 <translation id="2045606329038304310">فارم فیلڈ کا کنٹرول</translation>
+<translation id="2061553293808239752">.input {$$COUNT :number} .match $$COUNT 1{{minute}} *{{minutes}}</translation>
 <translation id="2063539687800151747">کتبہ</translation>
 <translation id="2086961585857038472">اگلا لفظ</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ur</translation>
 <translation id="2091933974477985526">پچھلا قابل ترمیم متن ایریا</translation>
 <translation id="2100350898815792233">سبھی رموز اوقاف</translation>
+<translation id="2109693710509473741">.input {$$COUNT :number} .match $$COUNT 1{{comma}} *{{{$$COUNT} commas}}</translation>
 <translation id="2110480898214777136">صفحہ، ڈائیلاگ یا دیگر کنٹینر کے اندر شروع سے آخر یا آخر سے شروع تک جائیں</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">رسائی کلید:<ph name="KEY" /></translation>
@@ -212,6 +220,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="2371402123699727805">ڈکٹیشن فعال ہے۔ روکنے کیلئے <ph name="GESTURE" />۔ دیگر اشارے عارضی طور پر دستیاب نہیں ہیں۔</translation>
 <translation id="2381733276052567791">ٹوگل کر کے اسپیچ کو آن یا آف کریں</translation>
 <translation id="2390264819538553347">آگے جانے کیلئے، انٹر کو دبائیں؛ واپس جانے کیلئے، بیک اسپیس کو دبائیں۔</translation>
+<translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">‏صفحے میں تلاش کرنے کے لئے ٹائپ کریں۔ نتیجے تک جانے کے لیے enter دبائیں، نتائج براؤز کرنے کے لئے اوپر یا نیچے تیر والے بٹن دبائیں، اپنی تلاش کو تبدیل کرنے کے لئے ٹائپنگ جاری رکھیں، یا منسوخ کرنے کے لئے escape دبائیں۔</translation>
 <translation id="240709722712693803">نیلا وائلیٹ</translation>
 <translation id="2416512023405990736">ایک غیر نشان زد چیک باکس</translation>
@@ -268,6 +277,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="2708078563826046398">ہلکا آڑو نما</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2717271541250958000">tabpnl</translation>
+<translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{backslash}} *{{{$$COUNT} backslashes}}</translation>
 <translation id="2723001399770238859">آڈیو</translation>
 <translation id="2737898226590637227">‏ARIA کا کوئی اگلا نمایاں مقام نہیں ہے</translation>
 <translation id="2749275490991666823">نشان زد</translation>
@@ -330,6 +340,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3090227230165225418">ڈاؤن لوڈ کی اطلاعات کا اعلان کریں</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">اگلا نمایاں مقام</translation>
+<translation id="3096276106587041702">.input {$$COUNT :number} .match $$COUNT 1{{second}} *{{seconds}}</translation>
 <translation id="3096671415663099226">cbo</translation>
 <translation id="309749186376891736">کرسر منتقل کریں</translation>
 <translation id="3103579948980282461">میڈیم وائلیٹ سرخ</translation>
@@ -368,6 +379,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3270069636408109001">کوئی اگلا ٹیبل نہیں ہے</translation>
 <translation id="3273791280096244679">لیبل محفوظ کریں</translation>
 <translation id="3283583562490372694">غیر نشان زد</translation>
+<translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{with {$$COUNT} item}} * {{with {$$COUNT} items}}</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
 <translation id="3286390186030710347">سلائیڈر</translation>
 <translation id="3300733168898541351">کالعدم کریں</translation>
@@ -404,6 +416,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3473744269398144689">ڈکٹیشن شروع کریں</translation>
 <translation id="3490765818161916458">فہرست گرڈ</translation>
 <translation id="3494946239022273294">mnuitm</translation>
+<translation id="3501911317648720697">.input {$$COUNT :number} .match $$COUNT 1{{colon}} *{{{$$COUNT} colons}}</translation>
 <translation id="3505359110822747654">‏ChromeVox مینوز کو سکیڑیں</translation>
 <translation id="352577523970648069">ایک قابل ترمیم متن فیلڈ</translation>
 <translation id="3538907380453898475">dscrplst</translation>
@@ -440,6 +453,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">لاگ دکھائیں</translation>
 <translation id="3801735343383419236">خود کار تکمیل کی فہرست</translation>
+<translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{percent}} *{{{$$COUNT} percent signs}}</translation>
 <translation id="3806327402890551732">اگلے یا گزشتہ آئٹم پر جائیں</translation>
 <translation id="3810838688059735925">ویڈیو</translation>
 <translation id="3813387282697781382">ہلکا مرجان</translation>
@@ -450,6 +464,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3856075812838139784">صرف پڑھنے کیلئے</translation>
 <translation id="3857141338659865495">میڈیم فیروزی</translation>
 <translation id="3870295413168340326">سطح 3 کی کوئی پچھلی ہیڈنگ نہیں ہے</translation>
+<translation id="3882892620695970398">.input {$$COUNT :number} .match $$COUNT 1{{at}} *{{{$$COUNT} at signs}}</translation>
 <translation id="3887399638190992181">ضروری کلیدیں</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3896762831164962772">چہرے سے کنٹرول موقوف ہو گیا۔ دوبارہ شروع کرنا کرنے کیلئے <ph name="GESTURE" />۔ دیگر اشارے عارضی طور پر دستیاب نہیں ہیں۔</translation>
@@ -480,10 +495,13 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">صفحہ لوڈ پیشرفت میں ہے</translation>
 <translation id="4065205963140826639">اگلا بٹن تلاش کرنے کیلئے تلاش کریں + دایاں تیر کا نشان ابھی استعمال کرنے کی کوشش کریں، پھر اس پر کلک کرنے کیلئے تلاش کریں + اسپیس کو دبائیں۔</translation>
+<translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{caret}} *{{{$$COUNT} carets}}</translation>
 <translation id="409334809956508737">گزشتہ آبجیکٹ</translation>
+<translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{plus}} *{{{$$COUNT} plus signs}}</translation>
 <translation id="4099274309791143834">ذیلی مینیو کے ساتھ</translation>
 <translation id="4101527861445851766">ایک نشان زد چیک باکس</translation>
 <translation id="410225014223200513">اپنے ہونٹوں سے دائرہ بنائیں</translation>
+<translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{dot}} 3{{ellipsis}} *{{{$$COUNT} dots}}</translation>
 <translation id="4115378294792113321">میجنٹا</translation>
 <translation id="4116415223832267137">الرٹ</translation>
 <translation id="4159784952369912983">جامنی</translation>
@@ -517,6 +535,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="4294967782363273192">صعودی ترتیب</translation>
 <translation id="4300318234632215983">‏لنک کے پیچھے URL کا اعلان کریں</translation>
+<translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{greater than}} *{{{$$COUNT} greater than signs}}</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">زردی مائل بھورا</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> ٹائپ کریں</translation>
@@ -551,12 +570,14 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4547556996012970016">سطح 5 کی اگلی سرخی</translation>
 <translation id="4562381607973973258">ہیڈر</translation>
 <translation id="4597532268155981612">فارم</translation>
+<translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{less than}} *{{{$$COUNT} less than signs}}</translation>
 <translation id="4601367666219428522">‏ٹیبل <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">حسب ضرورت کلید کا مجموعہ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">اگلی کلید دبانے کو نظر انداز کیا جا رہا ہے</translation>
 <translation id="4617384941327705512">اسمارٹ چپکنے والی وضع آف ہے</translation>
 <translation id="4623097797855662355">خاتمہ کتاب</translation>
 <translation id="4624970070706497034">‏TalkBack اب Chromebooks کے لیے حسب ضرورت بنانے کی سہولت فراہم نہیں کرتا ہے۔ آپ اب بھی اسے استعمال کر سکتے ہیں لیکن TalkBack کے ڈیفالٹ کی بورڈ شارٹ کٹس کا استعمال کریں۔ دستیاب شارٹ کٹس دیکھنے کے لیے Search + A، پھر K دبائیں۔ اگر آپ اب بھی TalkBack استعمال کرنا چاہتے ہیں تو کمانڈ کو دوبارہ دبائیں۔</translation>
+<translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}</translation>
 <translation id="4649220074413114917">‏کسی بھی موجودہ اسپیچ کو روکنے کے لیے آپ اسکرین کو دو انگلیوں سے تھپتھپا سکتے ہیں۔ اگر آپ نہیں چاہتے کہ ChromeVox کچھ پڑھے تو یہ کارآمد ہے۔ جاری رکھنے کے لیے، دو انگلیوں سے اسکرین پر تھپتھپائیں۔</translation>
 <translation id="4661075872484491155">ٹری</translation>
 <translation id="4668929960204016307">،</translation>
@@ -591,6 +612,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4854380505292502090">کوئی پچھلا میڈیا ویجیٹ نہیں ہے</translation>
 <translation id="4855927945655956315">‏ضروری کلیدیں: Control</translation>
 <translation id="485806788160414322">میڈیا چلائیں یا موقوف کریں</translation>
+<translation id="4861593489403902434">.input {$$COUNT :number} .match $$COUNT 1{{close paren}} *{{{$$COUNT} close parens}}</translation>
 <translation id="4862744964787595316">بولڈ نہیں ہے</translation>
 <translation id="4865995900839719272">پچھلی لائن پر لے جائیں</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -616,6 +638,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4993152509206108683">شرح <ph name="PERCENT" /> فیصد</translation>
 <translation id="4994420463726586413">بیٹری کا موجودہ اسٹیٹس پڑھیں</translation>
 <translation id="4997282455736854877"><ph name="NAME" />، ریڈیو بٹن منتخب کر لیا گیا</translation>
+<translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{question mark}} *{{{$$COUNT} question marks}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />،مینیو آئٹم ریڈیو بٹن منتخب کیا گیا ہے</translation>
 <translation id="5014131807708055994"><ph name="COMMAND" /> نہیں کیا جا سکا، <ph name="REASON" /></translation>
 <translation id="5020651427400641814">اسپیچ لاگنگ کو فعال کریں</translation>
@@ -716,6 +739,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="5669637233317991674">‏اس سبق کو نیویگیٹ کرنے کیلئے Search + دائیں تیر کا نشان یا Search + بائیں تیر کے نشان کو دبائیں</translation>
 <translation id="5677240841070992068">موجودہ مقام</translation>
 <translation id="5678161956734658133">mled</translation>
+<translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{right brace}} *{{{$$COUNT} right braces}}</translation>
 <translation id="5681643281275621376">تعریف</translation>
 <translation id="5682113568322255809">لینڈ مارک</translation>
 <translation id="5683155931978483559">پچھلا چیک باکس</translation>
@@ -756,6 +780,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="5899860758576822363">‏ChromeVox کے بولتے وقت کم تر آواز میں چلائیں</translation>
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5906974869830879618">براہ کرم پِن درج کریں</translation>
+<translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{semicolon}} *{{{$$COUNT} semicolons}}</translation>
 <translation id="5921587111466148855">باب</translation>
 <translation id="5923780477617566089">موجودہ تاریخ</translation>
 <translation id="5926889058434275234">اشاروں کی مکمل فہرست کے لیے، ہیلپ سینٹر ملاحظہ کریں۔</translation>
@@ -796,6 +821,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="6197361807490522975">گہرا نیلا</translation>
 <translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> کو <ph name="INSERT_PHRASE" /> سے بدلیں</translation>
 <translation id="6236061028292614533">اگلی سرخی</translation>
+<translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{pipe}} *{{{$$COUNT} vertical pipes}}</translation>
 <translation id="6254901459154107917">اگلا قابل ترمیم متن ایریا</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> سے خارج ہو گئے۔</translation>
 <translation id="6280088282605782512">دو بار تھپتھپائیں</translation>
@@ -828,6 +854,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="6493991254603208962">چمک کم کریں</translation>
 <translation id="6501595918865591267">فیروزی</translation>
 <translation id="6508059270146105198">بریل ڈسپلے کو صفحہ کے نیچے لے جائیں</translation>
+<translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{open paren}} *{{{$$COUNT} open parens}}</translation>
 <translation id="6521550811716689390">گہرا وائلیٹ</translation>
 <translation id="6536157907112457272">لینن</translation>
 <translation id="6540201937398578274">‏ChromeVox میں، Search کلید موڈیفائر کلید ہے۔ ChromeVox کے زیادہ تر شارٹ کٹس Search کلید کے ساتھ شروع ہوتے ہیں۔ آپ نیویگیشن کیلئے تیر کے نشان والی کلیدیں بھی استعمال کریں گے۔</translation>
@@ -868,6 +895,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="6859876496651143278">ایک انگلی سے بائیں طرف سوائپ کریں</translation>
 <translation id="6865519907510167493">غلط ہجے</translation>
 <translation id="6873188295213080042">‏تجویز: نیویگیٹ کرنے کیلئے Search کو ہولڈ کریں اور تیر کے نشان والی کلیدوں کو دبائیں۔</translation>
+<translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">موجودہ وقت اور تاریخ بولیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6897341342232909480">بائیں منتقل ہوں</translation>
@@ -881,6 +909,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="6951482098621102657">اگلی سطح 5 کی کوئی ہیڈنگ نہیں ہے</translation>
 <translation id="6955705049214951590">دھندلا گلابی</translation>
 <translation id="696356426651109308">شروعات پر جائیں</translation>
+<translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{hour}} *{{hours}}</translation>
 <translation id="6994042831499278539">فرہنگ کا حوالہ</translation>
 <translation id="6996566555547746822">اگلا کامبو باکس</translation>
 <translation id="6997224546856374593">بڑے حروف پڑھتے ہوئے:</translation>
@@ -889,6 +918,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7005146664810010831">‏کوئی URL نہیں ملا</translation>
 <translation id="7026338066939101231">تخفیف</translation>
 <translation id="7031651751836475482">lstitm</translation>
+<translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}</translation>
 <translation id="7037042857287298941">پچھلی فہرست</translation>
 <translation id="7039555289296502784">زیتون نما ہلکا بادامی</translation>
 <translation id="7041173719775863268">انتخاب ختم کریں</translation>
@@ -898,6 +928,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7086377898680121060">چمک بڑھائیں</translation>
 <translation id="7088743565397416204">فوکس کی جانے والی چیز کو فعال کرنے کے لیے دو بار تھپتھپائیں</translation>
 <translation id="7088960765736518739">سوئچ رسائی</translation>
+<translation id="7089749381037113497">.input {$$COUNT :number} .match $$COUNT 1{{underscore}} *{{{$$COUNT} underscores}}</translation>
 <translation id="7090715360595433170">یہ ایک انگلی سے بائیں اور دائیں سوائپ کرنے سے بھی زیادہ کارآمد ہو سکتا ہے۔</translation>
 <translation id="7091296112653361280">نارنجی مائل سفید</translation>
 <translation id="7095834689119144465">صرف نمبر والے متن میں ترمیم کریں</translation>
@@ -908,6 +939,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="712735679809149106">لفظ کی ایکو</translation>
 <translation id="7137397390322864165">سرخی مائل نارنجی</translation>
 <translation id="7140168702531682811">سُپر اسکرپٹ</translation>
+<translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{tab}} *{{{$$COUNT} tabs}}</translation>
 <translation id="7143034430156387447">6 اور 8 ڈاٹ والے بریل کے بیچ ٹوگل کریں</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7153618581592392745">ارغوانی</translation>
@@ -937,6 +969,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7289186959554153431">سرخی 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7297440685387139507">کھینچ کر ڈالنے کا عمل ختم کریں</translation>
+<translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{space}} *{{{$$COUNT} spaces}}</translation>
 <translation id="7308519659008003150">کوئی پچھلی فارم فیلڈ نہیں ہے</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">امدادی صفحہ</translation>
@@ -967,6 +1000,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7543255924852002459">لیبل مسترد کریں</translation>
 <translation id="7552432549459840808">‏Chrome کے مفید شارٹ کٹس</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> سے پہلے <ph name="INSERT_PHRASE" /> داخل کریں</translation>
+<translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{apostrophe}} *{{{$$COUNT} apostrophes}}</translation>
 <translation id="7569983096843329377">سیاہ</translation>
 <translation id="7579911500627256166">نقطہ <ph name="DOT" /></translation>
 <translation id="7592060599656252486">کچھ</translation>
@@ -983,6 +1017,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7637342083105831460">‏پریکٹس کرنے کی جگہ یا اگلے سبق کے بٹن کو تلاش کرنے کیلئے Search + دائیں تیر کے نشان کو دبائیں۔ پھر فعال کرنے کیلئے Search + Space دبائیں۔</translation>
 <translation id="7639968568612851608">گہرا خاکستری</translation>
 <translation id="7663318257180412551">سرخی 2</translation>
+<translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{dollar}} *{{{$$COUNT} dollar signs}}</translation>
 <translation id="7674576868851035240">اگلا لنک</translation>
 <translation id="7674768236845044097">نشان</translation>
 <translation id="7676847077928500578">ٹیکسٹ ٹو اسپیچ کی ترتیبات ری سیٹ کریں</translation>
@@ -992,9 +1027,11 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7696631298608145306">اگلے لفظ پر جائیں</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{dash}} *{{{$$COUNT} dashes}}</translation>
 <translation id="7714340021005120797">کوئی اگلا کومبو باکس نہیں ہے</translation>
 <translation id="7715455358521357192">دائیں آنکھ آدھی کھلی رکھیں</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
+<translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}</translation>
 <translation id="7731785449856576010">کوئی اگلا میڈیا ویجیٹ نہیں ہے</translation>
 <translation id="7735498529470878067">ٹچ کے ذریعے دریافت کرنے سے آپ کو اسکرین پر موجود چیزوں کے بارے میں فوری طور پر معلومات حاصل کرنے میں مدد مل سکتی ہے۔</translation>
 <translation id="773906353055481349">‏سیل کے لحاظ سے نیویگیٹ کرنے کیلئے تیروں کے ساتھ Search+Ctrl+Alt دبائیں</translation>
@@ -1011,9 +1048,11 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7839679365527550018">پچھلا لفظ</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7851816175263618915">کچھ رموز اوقاف</translation>
+<translation id="7861676488745595432">.input {$$COUNT :number} .match $$COUNT 1{{left bracket}} *{{{$$COUNT} left brackets}}</translation>
 <translation id="7871691770940645922">ورچوئل بریل ڈسپلے</translation>
 <translation id="7882421473871500483">بھورا</translation>
 <translation id="78826985582142166">sldr</translation>
+<translation id="7889376040363236522">.input {$$COUNT :number} .match $$COUNT 1{{quote}} *{{{$$COUNT} quotes}}</translation>
 <translation id="7913106023953875143">اگلی سطح 2 کی کوئی ہیڈنگ نہیں ہے</translation>
 <translation id="7927711904086083099">غیر منتخب کردہ</translation>
 <translation id="7935627501098484003">وقت کا کنٹرول</translation>
@@ -1053,6 +1092,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="8132248161074464367">پچھلا غلط آئٹم</translation>
 <translation id="8138880386467279117">ٹچ کریں</translation>
 <translation id="8146613869421949343">‏آگے، آپ Search کلید کے بارے میں جانیں گے۔ Search کلید ChromeVox کمانڈز کیلئے دوسری کلیدوں کے ساتھ استعمال کی جاتی ہے۔ Search کلید بالکل بائیں Shift کلید کے اوپر ہوتی ہے۔ جاری رکھنے کیلئے، Search کلید دبائیں۔</translation>
+<translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{right bracket}} *{{{$$COUNT} right brackets}}</translation>
 <translation id="8158033275290782295">سبھی منتخب کریں</translation>
 <translation id="816818801578874684">‏یہ پہلی سرخی ہے۔ دوسری سرخی پر جانے کیلئے Search + H دبائیں۔</translation>
 <translation id="8173092779156526980">چار انگلیوں سے بائیں طرف سوائپ کریں</translation>
@@ -1145,6 +1185,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="8897030325301866860">فونٹ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">دور کے رموز اوقاف کی بازگشت</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{left brace}} *{{{$$COUNT} left braces}}</translation>
 <translation id="8910180774920883033">‏کارروائیاں دستیاب ہیں۔ دیکھنے کے لیے Search+Ctrl+A دبائیں</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">موڈیفائر کلیدیں</translation>
@@ -1174,12 +1215,14 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="9108370397979208512">ریاضی</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="9128414153595658330">dlg</translation>
+<translation id="9132815018758550541">.input {$$COUNT :number} .match $$COUNT 1{{exclamation}} *{{{$$COUNT} exclamations}}</translation>
 <translation id="9133928141873682933">خاکی</translation>
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">ٹیب</translation>
 <translation id="9151249085738989067">‏زبان کی بنیاد پر ChromeVox آواز خودکار طور پر سوئچ کریں</translation>
 <translation id="9153606228985488238">پچ <ph name="PERCENT" /> فیصد</translation>
 <translation id="9160096769946561184">موجودہ کالم کے آخر میں جائیں</translation>
+<translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{slash}} *{{{$$COUNT} slashes}}</translation>
 <translation id="9173115498289768110">آواز <ph name="PERCENT" /> فیصد</translation>
 <translation id="9185200690645120087">‏ChromeVox ٹچ ٹیوٹوریل</translation>
 <translation id="9192904702577636854">Marquee</translation>

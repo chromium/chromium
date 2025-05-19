@@ -47,6 +47,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="1917964099031477364">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chrome dan apl Google yang lain pada peranti ini.</translation>
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
 <translation id="1965935827552890526">Selesaikan perkara yang anda lakukan di tetingkap Chrome lain yang terbuka.</translation>
+<translation id="1966638102563776885">Petua Chrome: Dapatkan kata laluan anda dalam mana-mana apl</translation>
 <translation id="1973910962341002002">Daripada tetapan "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", hidupkan "Chrome"</translation>
 <translation id="1984705450038014246">Segerakkan data Chrome anda</translation>
 <translation id="1987779152850321833">Lengkapkan tindakan yang dicadangkan di bawah untuk memanfaatkan Chrome sepenuhnya.</translation>
@@ -114,7 +115,6 @@ Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data in
 <translation id="3655656110921623717">Ini bermakna Chrome akan meminta laman mudah alih setiap masa.</translation>
 <translation id="3740397331642243698">Buka URL yang dimasukkan di Google Chrome dalam Inkognito.</translation>
 <translation id="3741995255368156336">Membuka Senarai Bacaan Chrome.</translation>
-<translation id="3808570423967020928">Akses Chrome dengan lebih pantas daripada Dok Skrin Utama anda.</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
 <translation id="384394811301901750">Google Chrome tidak dapat menggunakan kamera anda sekarang</translation>
 <translation id="3863841106411295595">Menambahkan URL yang diinput pada senarai bacaan anda dalam Chrome.</translation>
@@ -138,6 +138,7 @@ Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data in
 <translation id="4724297637870447613">Gunakan Chrome di mana-mana sahaja</translation>
 <translation id="4738647308035481133">Halaman Google Chrome</translation>
 <translation id="4742795653798179840">Data Chrome yang dipadamkan</translation>
+<translation id="4749294594657945639">Untuk mendapatkan kata laluan anda yang disimpan dalam apl lain dengan mudah, pilih Chrome untuk Autolengkap.</translation>
 <translation id="4761869838909035636">Jalankan Semakan Keselamatan Chrome</translation>
 <translation id="4798859546468762093">Untuk mendapatkan pemeribadian dan ciri lain, sertakan Chrome dalam <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Untuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
@@ -233,7 +234,6 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="6975725306479268850">Pilih Chrome untuk AutoLengkap</translation>
 <translation id="7056826488869329999">Buka dan Jalankan Pemeriksaan Keselamatan dalam Chrome.</translation>
 <translation id="7061455974939528301">Tekan dan tahan ikon Chrome dan klik "Edit skrin utama"</translation>
-<translation id="7065813315247345131">Alihkan Chrome kepada Dok</translation>
 <translation id="7124339256045485976">Pastikan Chrome terkini</translation>
 <translation id="7145599899567697473">Simpan dan autolengkap kata laluan dalam Chrome</translation>
 <translation id="7161390184744336561">Google Chrome sudah lapuk</translation>

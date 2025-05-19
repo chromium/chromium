@@ -47,6 +47,7 @@
 <translation id="1917964099031477364">Овај налог и сви несачувани подаци уклониће се из Chrome-а и других Google апликација на овом уређају.</translation>
 <translation id="1919130412786645364">Дозволи пријављивање у Chrome</translation>
 <translation id="1965935827552890526">Завршите оно што сте радили у другом отвореном Chrome прозору.</translation>
+<translation id="1966638102563776885">Савет за Chrome: Приступајте лозинкама у било којој апликацији</translation>
 <translation id="1973910962341002002">У подешавањима <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> укључите Chrome</translation>
 <translation id="1984705450038014246">Синхронизујте Chrome податке</translation>
 <translation id="1987779152850321833">Обавите ове предложене радње у наставку да бисте искористили Chrome на најбољи начин.</translation>
@@ -114,7 +115,6 @@
 <translation id="3655656110921623717">То значи да ће Chrome сваки пут захтевати мобилни сајт.</translation>
 <translation id="3740397331642243698">Отвара унете URL-ове у Google Chrome-у у режиму без архивирања.</translation>
 <translation id="3741995255368156336">Отвара Chrome листу за читање.</translation>
-<translation id="3808570423967020928">Брже приступајте Chrome-у са траке с апликацијама на Почетном екрану.</translation>
 <translation id="3827545470516145620">Добијате стандардну безбедносну заштиту на овом уређају</translation>
 <translation id="384394811301901750">Google Chrome тренутно не може да користи камеру</translation>
 <translation id="3863841106411295595">Додаје унете URL-ове на листу за читање у Chrome-у.</translation>
@@ -138,6 +138,7 @@
 <translation id="4724297637870447613">Користите Chrome свуда</translation>
 <translation id="4738647308035481133">Google Chrome страница</translation>
 <translation id="4742795653798179840">Избрисани Chrome подаци</translation>
+<translation id="4749294594657945639">Да бисте лако приступали сачуваним лозинкама у другим апликацијама, користите Chrome за аутоматско попуњавање.</translation>
 <translation id="4761869838909035636">Покрените Chrome безбедносну проверу</translation>
 <translation id="4798859546468762093">Да бисте добили персонализацију и друге функције, уврстите Chrome у: <ph name="FEATURE_NAME_1" /> и <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome шаље Google-у податке о коришћењу и отказивању ради побољшања апликације. <ph name="BEGIN_LINK" />Управљајте<ph name="END_LINK" /></translation>
@@ -233,7 +234,6 @@
 <translation id="6975725306479268850">Изаберите Chrome за аутоматско попуњавање</translation>
 <translation id="7056826488869329999">Отвара и покреће Проверу безбедности у Chrome-у.</translation>
 <translation id="7061455974939528301">Притисните и задржите икону Chrome-а, па кликните на Измените почетни екран</translation>
-<translation id="7065813315247345131">Преместите Chrome на траку с апликацијама</translation>
 <translation id="7124339256045485976">Редовно ажурирају Chrome</translation>
 <translation id="7145599899567697473">Сачувајте и аутоматски попуњавајте лозинке у Chrome-у</translation>
 <translation id="7161390184744336561">Google Chrome је застарео</translation>

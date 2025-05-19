@@ -462,6 +462,7 @@
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
 <translation id="2531107890083353124">タブをドラッグしながら、<ph name="KEY_ONE" /> キーを押す</translation>
+<translation id="2532199152994248594">キャプチャする範囲をドラッグするか、Space キーを押して選択します</translation>
 <translation id="2545334090614121435">Home キーの代わりに次のキーを使用してください</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
 <translation id="2549711466868162843">明るさ補正</translation>
@@ -1769,6 +1770,7 @@
 <translation id="6700713906295497288">IME メニューボタン</translation>
 <translation id="6704073473590541209">選択した右端のハンドル、矢印キーを使用して移動します</translation>
 <translation id="6706742084323792866">キーボードを固定</translation>
+<translation id="6709719156428404245">録画する範囲をドラッグするか、Space キーを押して選択します</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="672609503628871915">新機能を確認する</translation>

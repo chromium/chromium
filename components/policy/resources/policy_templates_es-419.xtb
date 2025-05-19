@@ -1099,9 +1099,6 @@ Esta política es una solución temporal en caso de que las empresas
 experimenten fallas debido a este cambio. La última versión compatible de esta
 política fue la versión 121. Se quitó en la versión 122.</translation>
 <translation id="1714790754501130659">El nombre de usuario para autenticar los servicios del sistema contra el proxy web remoto.</translation>
-<translation id="171511968762040550">Si la estableces esta política como verdadera o no la estableces, los usuarios podrán agregar, quitar o modificar favoritos.
-
-      Si la estableces como falsa, los usuarios no podrán agregar, quitar ni modificar favoritos, pero podrán seguir utilizando los existentes.</translation>
 <translation id="1715151459541210849">Habilita la función de accesibilidad de dictado</translation>
 <translation id="1716468109214130396">Impedir que Chrome se inicie si no está inscripto en la Administración en la nube para el navegador Chrome</translation>
 <translation id="1719033799014769396">Inhabilitar los informes del modo de inicio de dispositivo</translation>
@@ -9942,11 +9939,6 @@ Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME
 Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de Internet Explorer, consulta https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">No permitir que los usuarios tomen capturas de pantalla ni graben videos</translation>
 <translation id="7792796937016596423">El usuario no podrá realizar capturas de paquetes de red</translation>
-<translation id="7795648856511126914">Se está cambiando el analizador de HTML para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador HTML hasta la versión M136.
-
-Si habilitas esta política o no la estableces, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
-
-Si inhabilitas esta política, el analizador de HTML restringirá las etiquetas que se pueden colocar dentro del elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política se quitó desde la versión 89 de <ph name="PRODUCT_NAME" /> porque <ph name="FLASH_PLUGIN_NAME" /> dejó de estar disponible.
 
       Si estableces la política como verdadera, se ejecutará todo el contenido <ph name="FLASH_PLUGIN_NAME" /> incorporado en sitios web que permitan <ph name="FLASH_PLUGIN_NAME" />, incluido el contenido de otros orígenes o el contenido pequeño.

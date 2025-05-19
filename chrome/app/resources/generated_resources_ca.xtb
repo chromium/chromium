@@ -718,6 +718,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1494349716233667318">Els llocs web poden demanar-te permís per utilitzar els tipus de lletra instal·lats al teu dispositiu</translation>
 <translation id="1494429729245089920">La màquina virtual "<ph name="VM_NAME" />" existeix, però sembla que no és una màquina virtual de <ph name="APP_NAME" /> vàlida. Contacta amb l'administrador.</translation>
 <translation id="1495677929897281669">Torna a la pestanya</translation>
+<translation id="1496514951988037011">nom d'usuari</translation>
 <translation id="1498498210836053409">Desactiva el mode permanent en editar text (mode permanent intel·ligent)</translation>
 <translation id="1499041187027566160">apuja el volum</translation>
 <translation id="1500297251995790841">Dispositiu desconegut [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1437,6 +1438,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1981434377190976112">Llegir totes les dades en tots els llocs web</translation>
 <translation id="1982851102516626421">Tens la sessió tancada</translation>
 <translation id="1983612835086592681">L'has obert durant la darrera setmana</translation>
+<translation id="1984087999855033707">número de telèfon</translation>
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
 <translation id="1984683754853869253">Vols crear un perfil nou per al centre educatiu?</translation>
 <translation id="198507684520034826">Ajuda</translation>
@@ -1461,7 +1463,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1999115740519098545">A l'inici</translation>
 <translation id="1999763610967697511">Arrossega i deixa anar</translation>
 <translation id="2002109485265116295">En temps real</translation>
-<translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Per activar les dades del servei <ph name="NAME" />, primer connecta't a una xarxa Wi‑Fi</translation>
 <translation id="200321182559008924">Mantén les pestanyes ben ordenades</translation>
 <translation id="2003596238737586336">La programació actual està establerta en <ph name="SUNRISE" /> - <ph name="SUNSET" />. El teu administrador gestiona aquesta opció de configuració.</translation>

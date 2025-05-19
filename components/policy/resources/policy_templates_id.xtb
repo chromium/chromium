@@ -1102,9 +1102,6 @@ Kebijakan ini adalah solusi sementara jika perusahaan
 mengalami kerusakan akibat perubahan ini. Versi terakhir yang didukung
 untuk kebijakan ini adalah versi 121. Kebijakan tersebut dihapus di versi 122.</translation>
 <translation id="1714790754501130659">Nama pengguna untuk mengautentikasi layanan sistem ke proxy web jarak jauh.</translation>
-<translation id="171511968762040550">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, pengguna akan dapat menambahkan, menghapus, atau mengubah bookmark.
-
-      Jika kebijakan ditetapkan ke Salah (False), pengguna tidak akan dapat menambahkan, menghapus, atau mengubah bookmark. Mereka tetap dapat menggunakan bookmark yang ada.</translation>
 <translation id="1715151459541210849">Mengaktifkan fitur aksesibilitas dikte</translation>
 <translation id="1716468109214130396">Cegah Chrome diluncurkan jika tidak terdaftar ke Pengelolaan Cloud Browser Chrome</translation>
 <translation id="1719033799014769396">Nonaktifkan pelaporan mode booting perangkat</translation>
@@ -9952,11 +9949,6 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, <ph name="PRODUC
 Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /> Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Jangan izinkan pengguna mengambil screenshot atau rekaman video</translation>
 <translation id="7792796937016596423">Pengguna tidak akan dapat melakukan rekaman paket jaringan</translation>
-<translation id="7795648856511126914">Parser HTML sedang diubah untuk mengizinkan tag HTML tambahan di dalam elemen &lt;select&gt;. Kebijakan ini memungkinkan perilaku parser HTML lama digunakan hingga M136.
-
-Jika kebijakan ini disetel ke aktif atau tidak disetel, parser HTML akan mengizinkan tag tambahan di dalam elemen &lt;select&gt;.
-
-Jika kebijakan ini disetel ke nonaktif, parser HTML akan membatasi tag yang dapat dimasukkan ke dalam elemen &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Kebijakan ini telah dihapus sejak <ph name="PRODUCT_NAME" /> versi 89 karena <ph name="FLASH_PLUGIN_NAME" /> tidak digunakan lagi.
 
       Menyetel kebijakan ke Benar (True) akan menjalankan semua konten <ph name="FLASH_PLUGIN_NAME" /> yang disematkan di situs yang mengizinkan <ph name="FLASH_PLUGIN_NAME" />, termasuk konten dari asal lain atau konten kecil.

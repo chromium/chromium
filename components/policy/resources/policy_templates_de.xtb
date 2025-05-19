@@ -1035,9 +1035,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die Verhaltens
 
 Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass diese Änderung zu Ausfällen in Unternehmen führt. Die letzte unterstützte Version dieser Richtlinie war Version 121. Die Richtlinie wurde in Version 122 entfernt.</translation>
 <translation id="1714790754501130659">Nutzername zur Authentifizierung der Systemdienste für den Remote-Web-Proxy.</translation>
-<translation id="171511968762040550">Wenn diese Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutzer Lesezeichen hinzufügen, entfernen oder ändern.
-
-      Ist sie auf "False" gesetzt, können Nutzer keine Lesezeichen hinzufügen, entfernen oder ändern. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="1715151459541210849">Bedienungshilfe "Spracheingabe" aktivieren</translation>
 <translation id="1716468109214130396">Verhindern, dass Chrome gestartet wird, wenn Chrome nicht für die Chrome-Verwaltung über die Cloud registriert ist</translation>
 <translation id="1719033799014769396">Melden des Bootmodus auf Geräten deaktivieren</translation>
@@ -9514,11 +9511,6 @@ Wenn für die Richtlinie „false“ festgelegt oder sie nicht konfiguriert ist,
 Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Nutzer dürfen keine Screenshots und Videoaufzeichnungen machen</translation>
 <translation id="7792796937016596423">Der Nutzer ist nicht zu Netzwerkpaketaufnahmen berechtigt</translation>
-<translation id="7795648856511126914">Der HTML-Parser wird geändert, um zusätzliche HTML-Tags im &lt;select&gt;-Element zuzulassen. Mit dieser Richtlinie kann das alte HTML-Parser-Verhalten bis M136 verwendet werden.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erlaubt der HTML-Parser zusätzliche Tags im &lt;select&gt;-Element.
-
-Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tags im &lt;select&gt;-Element platziert werden können.</translation>
 <translation id="7798441698807517880">Diese Richtlinie ist seit Version 89 von <ph name="PRODUCT_NAME" /> nicht mehr enthalten, da <ph name="FLASH_PLUGIN_NAME" /> eingestellt wurde.
 
       Wenn die Richtlinie auf „True“ gesetzt ist, werden alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausgeführt, die auf Websites eingebettet sind, die <ph name="FLASH_PLUGIN_NAME" /> zulassen. Hierzu gehören auch Inhalte anderer Herkunft sowie kleine Inhalte.

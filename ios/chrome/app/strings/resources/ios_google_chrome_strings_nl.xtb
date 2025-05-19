@@ -47,6 +47,7 @@ Aandachtspunten:
 <translation id="1917964099031477364">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chrome en andere Google-apps op dit apparaat.</translation>
 <translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1965935827552890526">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
+<translation id="1966638102563776885">Chrome-tip: Krijg je wachtwoorden in elke app</translation>
 <translation id="1973910962341002002">Zet Chrome aan in de instellingen van <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /></translation>
 <translation id="1984705450038014246">Je Chrome-gegevens synchroniseren</translation>
 <translation id="1987779152850321833">Voer de voorgestelde acties hieronder uit om het maximale uit Chrome te halen.</translation>
@@ -114,7 +115,6 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="3655656110921623717">Dit betekent dat Chrome altijd de mobiele site opvraagt.</translation>
 <translation id="3740397331642243698">Hiermee worden de ingevoerde URL's in Google Chrome geopend in de incognitomodus.</translation>
 <translation id="3741995255368156336">Opent de Chrome-leeslijst.</translation>
-<translation id="3808570423967020928">Open Chrome sneller via het dock op het startscherm.</translation>
 <translation id="3827545470516145620">Je krijgt standaardbeveiliging op dit apparaat</translation>
 <translation id="384394811301901750">Google Chrome kan je camera momenteel niet gebruiken</translation>
 <translation id="3863841106411295595">Voegt de ingevoerde URL's toe aan je leeslijst in Chrome.</translation>
@@ -138,6 +138,7 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="4724297637870447613">Chrome overal gebruiken</translation>
 <translation id="4738647308035481133">Google Chrome-pagina</translation>
 <translation id="4742795653798179840">Verwijderde Chrome-gegevens</translation>
+<translation id="4749294594657945639">Kies Chrome voor automatisch invullen om je opgeslagen wachtwoorden makkelijk in andere apps te gebruiken.</translation>
 <translation id="4761869838909035636">Chrome-veiligheidscheck uitvoeren</translation>
 <translation id="4798859546468762093">Als je personalisatie en andere functies wilt krijgen, neem je Chrome op in <ph name="FEATURE_NAME_1" /> en <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
@@ -233,7 +234,6 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="6975725306479268850">Chrome kiezen voor automatisch invullen</translation>
 <translation id="7056826488869329999">Opent de Veiligheidscheck in Chrome en voert deze uit.</translation>
 <translation id="7061455974939528301">Houd je vinger op het Chrome-icoon en klik op Startscherm bewerken</translation>
-<translation id="7065813315247345131">Chrome naar het dock verplaatsen</translation>
 <translation id="7124339256045485976">Houd Chrome up-to-date</translation>
 <translation id="7145599899567697473">Wachtwoorden opslaan en automatisch invullen in Chrome</translation>
 <translation id="7161390184744336561">Google Chrome is verouderd</translation>

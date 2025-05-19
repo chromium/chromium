@@ -48,6 +48,7 @@ Bularni hisobga olish kerak:
 <translation id="1917964099031477364">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromedan olib tashlanadi.</translation>
 <translation id="1919130412786645364">Chrome hisobiga kirishga ruxsat berish</translation>
 <translation id="1965935827552890526">Yopilmagan Chrome oynangizdagi ishni davom ettiring.</translation>
+<translation id="1966638102563776885">Chrome maslahati: Parollardan istalgan ilovada foydalaning</translation>
 <translation id="1973910962341002002">“<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” sozlamalarida “Chrome” parametrini yoqing</translation>
 <translation id="1984705450038014246">Chrome axborotini sinxronlash</translation>
 <translation id="1987779152850321833">Chromedan maksimal foydalanish uchun quyidagi tavsiya etilgan amallarni bajaring.</translation>
@@ -115,7 +116,6 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="3655656110921623717">Bunda Chrome har safar saytning mobil versiyasini talab qiladi.</translation>
 <translation id="3740397331642243698">Kiritilgan URL manzillar Google Chrome brauzerida Inkognito rejimda ochiladi.</translation>
 <translation id="3741995255368156336">Chrome saqlangan sahifalarini ochadi.</translation>
-<translation id="3808570423967020928">Chromeni bosh ekranga mahkamlab, tezroq oching</translation>
 <translation id="3827545470516145620">Bu qurilmada standart xavfsizlik sozlamasi amal qiladi</translation>
 <translation id="384394811301901750">Google Chrome hozir kamerangizdan foydalana olmaydi.</translation>
 <translation id="3863841106411295595">Kiritilgan URL manzillarni Chrome Saqlangan sahifalariga qoʻshadi.</translation>
@@ -139,6 +139,7 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="4724297637870447613">Chrome doim yoningizda</translation>
 <translation id="4738647308035481133">Google Chrome sahifasi</translation>
 <translation id="4742795653798179840">Chrome maʼlumotlarini oʻchirish</translation>
+<translation id="4749294594657945639">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chrome avtomatik kiritishini tanlang</translation>
 <translation id="4761869838909035636">Chrome Xavfsizlik tekshiruvini bajarish</translation>
 <translation id="4798859546468762093">Moslashtirish va boshqa funksiyalarni olish uchun <ph name="FEATURE_NAME_1" /> va ulangan <ph name="FEATURE_NAME_2" />da Chromeni kiriting</translation>
 <translation id="4819268619367838612">Ilovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_LINK" />Boshqarish<ph name="END_LINK" /></translation>
@@ -234,7 +235,6 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>
 <translation id="7056826488869329999">Chromeda xavfsizliktekshiruvini ishga tushiradi.</translation>
 <translation id="7061455974939528301">Chrome belgisini bosib turing va "Bosh ekranni tahrirlash" ustiga bosing</translation>
-<translation id="7065813315247345131">Chromeni dok paneliga oling</translation>
 <translation id="7124339256045485976">Chrome brauzerini yangilab boring</translation>
 <translation id="7145599899567697473">Chromeda parollarni saqlash va avtomatik kiritish</translation>
 <translation id="7161390184744336561">Google Chrome versiyasi eskirdi</translation>

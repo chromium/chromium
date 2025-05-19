@@ -1461,7 +1461,6 @@
 <translation id="1999115740519098545">شروعات میں</translation>
 <translation id="1999763610967697511">کھینچ کر ڈالیں</translation>
 <translation id="2002109485265116295">ریئل ٹائم</translation>
-<translation id="2002160221914907025">‏تجرباتی AI</translation>
 <translation id="2003130567827682533">‏'<ph name="NAME" />' کے ڈیٹا کو فعال کرنے کیلئے، پہلے Wi-Fi نیٹ ورک سے منسلک ہوں</translation>
 <translation id="200321182559008924">اپنے ٹیبز کو غیر ضروری چیزوں سے پاک رکھیں</translation>
 <translation id="2003596238737586336">موجودہ شیڈول <ph name="SUNRISE" /> - <ph name="SUNSET" /> پر سیٹ ہے۔ یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
@@ -5164,6 +5163,7 @@
 <translation id="4585793705637313973">صفحہ میں ترمیم کریں</translation>
 <translation id="4586275095964870617"><ph name="URL" /> کو متبادل براؤزر میں نہیں کھولا جا سکا۔ براہ کرم اپنے سسٹم کے منتظم سے رابطہ کریں۔</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
+<translation id="4588497044036650559">موجودہ ٹیب میں نئے ٹیب صفحہ کی ایکسٹینشن کے اختیار کا صفحہ کھولیں</translation>
 <translation id="4588749726511456218">اسکرول ایکسلریشن کے بارے میں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> اور <ph name="DOMAIN" /> متعلقہ معلوم ہوتے ہیں۔ اپنے پاس ورڈ کا استعمال کرنے سے پہلے اس بات کو یقینی بنائیں کہ آپ <ph name="DOMAIN" /> پر اعتماد کرتے ہیں۔</translation>
 <translation id="4589713469967853491">ڈاؤن لوڈ ڈائریکٹری میں کامیابی کے ساتھ لکھے گئے لاگز۔</translation>
@@ -9137,6 +9137,7 @@
 <translation id="7461924472993315131">پن کریں</translation>
 <translation id="746216226901520237">‏اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں۔</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">آپ کی تنظیم نظم کرتی ہے کہ ان خصوصیات کے ذریعے جمع کردہ ڈیٹا کو کس طرح استعمال کیا جا سکتا ہے۔</translation>
 <translation id="7464645554245611385">اس ٹیب میں آخری اپ ڈیٹ</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ٹیب کھولیں، ٹیب اسٹرپ ٹوگل کرنے کے لیے دبائیں}other{# ٹیبز کھولیں، ٹیب اسٹرپ ٹوگل کرنے کے لیے دبائیں}}</translation>
 <translation id="7465635034594602553">کچھ غلط ہوگیا۔ براہ کرم کچھ منٹس انتظار کریں اور <ph name="APP_NAME" /> کو دوبارہ چلائیں۔</translation>
@@ -11699,6 +11700,7 @@
 <translation id="934244546219308557">اس گروپ کو نام دیں</translation>
 <translation id="93480724622239549">بگ یا خرابی</translation>
 <translation id="9354763467503131">آپ کے آلے پر ویب ایپس انسٹال کرنے کا مطالبہ کرنے کی اجازت ہے</translation>
+<translation id="936329857119665832">موجودہ ٹیب میں کھلتا ہے</translation>
 <translation id="936646668635477464">کیمرا اور مائیکروفون</translation>
 <translation id="936801553271523408">سسٹم ڈائیگناسٹک ڈیٹا</translation>
 <translation id="93766956588638423">ایکسٹینشن کو درست کریں</translation>

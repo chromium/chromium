@@ -1324,7 +1324,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6908230663105268638"><ph name="SITE_NAME" /> tiene permiso para enviar notificaciones</translation>
 <translation id="6908998565271542516">Opción para aprobar o no un sitio web, abierta a altura completa</translation>
 <translation id="6909589135458168665">Precargar páginas</translation>
-<translation id="6910211073230771657">Eliminado</translation>
+<translation id="6910211073230771657">Eliminados</translation>
 <translation id="6918398787259831832">Si el problema persiste, <ph name="BEGIN_LINK" />obtén más información<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ha eliminado estos permisos porque no has visitado el sitio recientemente</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestaña}other{<ph name="NUMBER_OF_TABS" /> pestañas}}</translation>

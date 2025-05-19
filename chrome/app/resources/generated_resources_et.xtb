@@ -719,6 +719,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1494349716233667318">Saidid võivad küsida luba teie seadmesse installitud fontide kasutamiseks</translation>
 <translation id="1494429729245089920">Virtuaalmasin „<ph name="VM_NAME" />“ on olemas, kuid näib, et see pole kehtiv rakenduse <ph name="APP_NAME" /> virtuaalmasin. Võtke ühendust administraatoriga.</translation>
 <translation id="1495677929897281669">Tagasi vahelehele</translation>
+<translation id="1496514951988037011">kasutajanimi</translation>
 <translation id="1498498210836053409">Lülita nakkerežiim teksti redigeerimisel välja (nutikas nakkerežiim)</translation>
 <translation id="1499041187027566160">suurendab helitugevust</translation>
 <translation id="1500297251995790841">Tundmatu seade [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1438,6 +1439,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1981434377190976112">Kõigil veebisaitidel kõigi teie andmete lugemine</translation>
 <translation id="1982851102516626421">Olete välja logitud</translation>
 <translation id="1983612835086592681">Avasite eelmisel nädalal</translation>
+<translation id="1984087999855033707">telefoninumber</translation>
 <translation id="1984417487208496350">Kaitseta (ei ole soovitatav)</translation>
 <translation id="1984683754853869253">Kas soovite kooli jaoks uue profiili luua?</translation>
 <translation id="198507684520034826">Abi</translation>
@@ -1462,7 +1464,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1999115740519098545">Käivitamisel</translation>
 <translation id="1999763610967697511">Pukseerimine</translation>
 <translation id="2002109485265116295">Reaalajas</translation>
-<translation id="2002160221914907025">Katseline AI</translation>
 <translation id="2003130567827682533">Võrgu „<ph name="NAME" />” andmeside aktiveerimiseks looge esmalt ühendus WiFi-võrguga</translation>
 <translation id="200321182559008924">Hoidke oma vahelehed liigsetest elementidest vabad</translation>
 <translation id="2003596238737586336">Praegune määratud ajakava: <ph name="SUNRISE" /> kuni <ph name="SUNSET" />. Seda seadet haldab administraator.</translation>
@@ -5168,6 +5169,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4585793705637313973">Lehe muutmine</translation>
 <translation id="4586275095964870617">URL-i <ph name="URL" /> ei saanud alternatiivses brauseris avada. Võtke ühendust süsteemiadministraatoriga.</translation>
 <translation id="4587589328781138893">Saidid</translation>
+<translation id="4588497044036650559">Ava uue vahelehe laienduse valikuleht praegusel vahelehel</translation>
 <translation id="4588749726511456218">Kerimise kiirendus. <ph name="LINK_BEGIN" />Lugege lisateavet<ph name="LINK_END" />.</translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> ja <ph name="DOMAIN" /> tunduvad olema seotud. Enne oma parooli kasutamist veenduge, et usaldaksite saiti <ph name="DOMAIN" />.</translation>
 <translation id="4589713469967853491">Logide kirjutamine kataloogi Allalaadimised õnnestus.</translation>
@@ -9145,6 +9147,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7461924472993315131">Kinnita</translation>
 <translation id="746216226901520237">Järgmisel korral avab seadme <ph name="DEVICE_TYPE" /> teie telefon. Funktsiooni Smart Lock saab välja lülitada menüüs Seaded.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">Nende funktsioonide kogutavate andmete kasutusviise haldab teie organisatsioon.</translation>
 <translation id="7464645554245611385">Selle vahelehe viimane värskendus</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# avatud vaheleht, vahelehtede rea vahetamiseks vajutage}other{# avatud vahelehte, vahelehtede rea vahetamiseks vajutage}}</translation>
 <translation id="7465635034594602553">Midagi läks valesti. Oodake mõni minut ja käitage rakendust <ph name="APP_NAME" /> uuesti.</translation>
@@ -11708,6 +11711,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="934244546219308557">Määrake sellele grupile nimi</translation>
 <translation id="93480724622239549">Tõrge või viga</translation>
 <translation id="9354763467503131">Veebirakenduste teie seadmesse installimise küsimine on lubatud</translation>
+<translation id="936329857119665832">Avaneb samal vahelehel</translation>
 <translation id="936646668635477464">Kaamera ja mikrofon</translation>
 <translation id="936801553271523408">Süsteemidiagnostika andmed</translation>
 <translation id="93766956588638423">Laiendi parandamine</translation>

@@ -47,6 +47,7 @@ Tasub teada
 <translation id="1917964099031477364">See konto ja kõik salvestamata andmed eemaldatakse Chrome'ist ja muudest selles seadmes olevatest Google'i rakendustest.</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
 <translation id="1965935827552890526">Lõpetage teises avatud Chrome'i aknas pooleliolev toiming.</translation>
+<translation id="1966638102563776885">Chrome'i nõuanne: pääsege oma paroolidele juurde mis tahes rakenduses</translation>
 <translation id="1973910962341002002">Lülitage üksuse „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” seadetes sisse valik „Chrome”</translation>
 <translation id="1984705450038014246">Chrome'i andmete sünkroonimine</translation>
 <translation id="1987779152850321833">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
@@ -114,7 +115,6 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="3655656110921623717">See tähendab, et Chrome taotleb iga kord mobiilisaiti.</translation>
 <translation id="3740397331642243698">Avab sisestatud URL-id Google Chrome'is inkognito režiimis.</translation>
 <translation id="3741995255368156336">Avab Chrome'i lugemisloendi.</translation>
-<translation id="3808570423967020928">Saate Chrome'i avakuva doki kaudu kiiremini avada.</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
 <translation id="3863841106411295595">Lisab sisestatud URL-id Chrome'is teie lugemisloendisse.</translation>
@@ -138,6 +138,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="4724297637870447613">Chrome'i kasutamine kõikjal</translation>
 <translation id="4738647308035481133">Google Chrome'i leht</translation>
 <translation id="4742795653798179840">Chrome'i andmed on kustutatud</translation>
+<translation id="4749294594657945639">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige funktsioon Chrome automaattäite jaoks.</translation>
 <translation id="4761869838909035636">Käita Chrome'i ohutuskontroll</translation>
 <translation id="4798859546468762093">Isikupärastatud kasutuskogemuse saamiseks ja muude funktsioonide kasutamiseks kaasake Chrome funktsioonidesse <ph name="FEATURE_NAME_1" /> ning <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Rakenduse täiustamiseks saadab Chrome Google'ile kasutus- ja krahhiandmeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
@@ -233,7 +234,6 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
 <translation id="7056826488869329999">Avab ja käitab Chrome'is ohutuskontrolli.</translation>
 <translation id="7061455974939528301">Hoidke Chrome'i ikooni all ja puudutage valikut „Edit home screen”</translation>
-<translation id="7065813315247345131">Chrome teisaldamine dokki</translation>
 <translation id="7124339256045485976">Hoidke Chrome ajakohasena</translation>
 <translation id="7145599899567697473">Salvestage paroolid ja täitke need automaatselt Chrome'is</translation>
 <translation id="7161390184744336561">Google Chrome on aegunud</translation>

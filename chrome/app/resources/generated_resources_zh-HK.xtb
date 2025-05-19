@@ -1471,7 +1471,6 @@
 <translation id="1999115740519098545">起始螢幕</translation>
 <translation id="1999763610967697511">拖放</translation>
 <translation id="2002109485265116295">即時</translation>
-<translation id="2002160221914907025">實驗性 AI</translation>
 <translation id="2003130567827682533">如要啟用「<ph name="NAME" />」的流動網絡，請先連接 Wi-Fi 網絡</translation>
 <translation id="200321182559008924">讓分頁變得井井有條</translation>
 <translation id="2003596238737586336">目前的時間表已設定為<ph name="SUNRISE" />至<ph name="SUNSET" />。此設定由管理員管理。</translation>
@@ -5171,6 +5170,7 @@
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617"><ph name="URL" /> 無法在替代瀏覽器中開啟。請聯絡您的系統管理員。</translation>
 <translation id="4587589328781138893">網站</translation>
+<translation id="4588497044036650559">喺目前嘅分頁打開新分頁擴充程式選項頁面</translation>
 <translation id="4588749726511456218">捲動加速功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> 和 <ph name="DOMAIN" /> 似乎有關聯。請確認你信任 <ph name="DOMAIN" />，再使用此密碼。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
@@ -9142,6 +9142,7 @@
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">你的機構會管理如何使用這些功能收集的資料。</translation>
 <translation id="7464645554245611385">此分頁最近的更新</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{已開啟 # 個分頁，按下即可切換標籤列}other{已開啟 # 個分頁，按下即可切換標籤列}}</translation>
 <translation id="7465635034594602553">發生錯誤，請等候數分鐘，然後再次執行 <ph name="APP_NAME" />。</translation>
@@ -11699,6 +11700,7 @@
 <translation id="934244546219308557">為此群組命名</translation>
 <translation id="93480724622239549">問題或錯誤</translation>
 <translation id="9354763467503131">允許要求在你的裝置上安裝網絡應用程式</translation>
+<translation id="936329857119665832">喺目前嘅分頁打開</translation>
 <translation id="936646668635477464">攝錄機和麥克風</translation>
 <translation id="936801553271523408">系統診斷數據</translation>
 <translation id="93766956588638423">修復擴充程式</translation>

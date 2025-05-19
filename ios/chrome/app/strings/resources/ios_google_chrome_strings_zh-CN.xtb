@@ -47,6 +47,7 @@
 <translation id="1917964099031477364">系统会从该设备上的 Chrome 和其他 Google 应用中移除此账号以及所有未保存的数据。</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
+<translation id="1966638102563776885">Chrome 提示：在任意应用中获取您的密码</translation>
 <translation id="1973910962341002002">在“<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />”设置中开启“Chrome”</translation>
 <translation id="1984705450038014246">同步 Chrome 数据</translation>
 <translation id="1987779152850321833">完成这些建议的操作，充分利用 Chrome。</translation>
@@ -114,7 +115,6 @@
 <translation id="3655656110921623717">在此模式下，Chrome 每次都会对移动版网站发出请求。</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
 <translation id="3741995255368156336">打开 Chrome 阅读清单。</translation>
-<translation id="3808570423967020928">从主屏幕程序坞更快访问 Chrome。</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
 <translation id="3863841106411295595">将所输入的网址添加到 Chrome 中的阅读清单。</translation>
@@ -138,6 +138,7 @@
 <translation id="4724297637870447613">随时随地使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 页面</translation>
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
+<translation id="4749294594657945639">若要轻松获取其他应用中已保存的密码，请选择 Chrome 的自动填充功能。</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
 <translation id="4798859546468762093">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chrome</translation>
 <translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -231,7 +232,6 @@
 <translation id="6975725306479268850">选择使用 Chrome 的自动填充功能</translation>
 <translation id="7056826488869329999">在 Chrome 中打开并运行安全检查。</translation>
 <translation id="7061455974939528301">按住 Chrome 图标，然后点击“修改主屏幕”</translation>
-<translation id="7065813315247345131">将 Chrome 移至程序坞</translation>
 <translation id="7124339256045485976">确保使用最新版的 Chrome</translation>
 <translation id="7145599899567697473">在 Chrome 中保存并自动填充密码</translation>
 <translation id="7161390184744336561">Google Chrome 版本太旧</translation>

@@ -119,6 +119,7 @@ Hisoblarni almashtirishdan oldin bir necha daqiqa kuting. Hisoblarni hozir almas
 <translation id="3833326979834193417">Chromium maʼlumotlarni oshkor qilish, xavfli saytlar va boshqalardan himoyalash uchun har kuni Xavfsizlik tekshiruvini bajaradi. Xavfsizlik tekshiruvi haqida batafsil axborotni Sozlamalardan olish mumkin.</translation>
 <translation id="3855938650519180865">Yangilangan Chromium</translation>
 <translation id="3886689467633467988">Bukmarklar va boshqalarni barcha qurilmalarda olish uchun bu sayt va Chromiumga Google hisobingizdan kiring.</translation>
+<translation id="3949514465204582407">Chromium maslahati: Parollardan istalgan ilovada foydalaning</translation>
 <translation id="3983291422281996849">Siz xarid qilishni istagan mahsulotlar narxini kuzatish uchun Chromiumni birlamchi brauzer etib belgilang.</translation>
 <translation id="4005283307739974863">Chromiumda xavfsizliktekshiruvini ishga tushiradi.</translation>
 <translation id="4043291146360695975">Parollar faqat shu qurilmadagi Parollar menejeriga saqlanadi.</translation>
@@ -166,7 +167,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="5048795749726991615">Saqlangan parollarni boshqa ilovalarda ishlatish uchun Chromium va Avtomatik kiritish funksiyasidan foydalaning</translation>
 <translation id="5053429694249468757">Chromium maʼlumotlari oʻchirilmoqda…</translation>
 <translation id="5071749685031362629">iOS uchun Chromium</translation>
-<translation id="5088872414922783602">Chromiumni bosh ekranga mahkamlab, tezroq oching</translation>
 <translation id="5124429847818367226">Siz endi Chromium brauzerini har doim internetni kezish vaqtida yoki xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="5131565040785979529">Siz kirgan hisob va Chromium profilingiz qanday ishlatilishi tashkilotingiz (<ph name="DOMAIN" />) boshqaruvida.</translation>
 <translation id="5134464247000681876">Gmail, Xaritalar, YouTube va boshqa ilovalardagi havolalarni Chromium orqali ochish</translation>
@@ -275,6 +275,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7763454117143368771">Internetni xavfsiz kezish va parollaringizni himoyalashda Chromium birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="7784950022329154821">Chromium yopilganda, Inkognito varaqlar qulflansin</translation>
 <translation id="78025249032851484">Chromium brauzeringiz eskirgan.</translation>
+<translation id="7811371919871579588">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chromium avtomatik kiritishini tanlang</translation>
 <translation id="7859018312476869945">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chromium yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="7890287942691234100">Chromium skaneridan foydalanish</translation>
 <translation id="7905064834449738336">Paroldan foydalansangiz, u internetga chiqib ketgan boʻlsa, Chromium sizni ogohlantiradi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
@@ -288,7 +289,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="800380310260616129">Chromium ilovasini yuklab olish.</translation>
 <translation id="8013573822802650211">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
 <translation id="8014091604604659473">Chromium hisobidan chiqarildi</translation>
-<translation id="8035379487371146621">Chromiumni dok paneliga olish</translation>
 <translation id="8104697640054703121">Xavfli saytlardan himoyalanish uchun Chromium kuchli xavfsizlik tizimidan foydalaning</translation>
 <translation id="8119542592987737574">Chromiumni iPhone bosh ekraniga mahkamlab, tezroq oching.</translation>
 <translation id="8164086860209325020">Chromium sozlamalarini oching</translation>

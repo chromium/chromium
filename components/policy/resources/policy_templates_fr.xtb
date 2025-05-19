@@ -1031,9 +1031,6 @@ Si elle est désactivée ou qu'elle n'est pas configurée, le changement de comp
 
 Cette règle constitue une solution temporaire au cas où des entreprises rencontreraient des problèmes dus à cette modification. Sa dernière version compatible était la version 121. Elle a été supprimée dans la version 122.</translation>
 <translation id="1714790754501130659">Nom d'utilisateur pour authentifier les services système auprès du proxy Web à distance.</translation>
-<translation id="171511968762040550">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent ajouter, supprimer ou modifier des favoris.
-
-      Si cette règle est définie sur "False", les utilisateurs ne peuvent pas ajouter, supprimer ni modifier des favoris. En revanche, ils peuvent utiliser les favoris déjà disponibles.</translation>
 <translation id="1715151459541210849">Activer la fonctionnalité d'accessibilité de dictée</translation>
 <translation id="1716468109214130396">Empêcher le lancement de Chrome s'il n'est pas enregistré dans la gestion cloud du navigateur Chrome</translation>
 <translation id="1719033799014769396">Désactiver les rapports sur le mode de démarrage de l'appareil</translation>
@@ -9531,11 +9528,6 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph n
 Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet Explorer, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode.</translation>
 <translation id="7791215522423893512">Ne pas autoriser les captures d'écran et l'enregistrement de vidéos</translation>
 <translation id="7792796937016596423">L'utilisateur ne pourra pas capturer de paquets du réseau</translation>
-<translation id="7795648856511126914">L'analyseur HTML est modifié pour autoriser des balises HTML supplémentaires dans l'élément &lt;select&gt;. Cette règle permet d'utiliser l'ancien comportement de l'analyseur HTML jusqu'à la version M136.
-
-Si cette règle est activée ou n'est pas configurée, l'analyseur HTML autorise les balises supplémentaires dans l'élément &lt;select&gt;.
-
-Si cette règle est désactivée, l'analyseur HTML limite les balises pouvant être placées dans l'élément &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Cette règle a été supprimée depuis la version 89 de <ph name="PRODUCT_NAME" />, car <ph name="FLASH_PLUGIN_NAME" /> est obsolète.
 
       Si cette règle est définie sur "True", tous les contenus <ph name="FLASH_PLUGIN_NAME" /> intégrés aux sites qui autorisent <ph name="FLASH_PLUGIN_NAME" /> sont exécutés (y compris les contenus de provenance différente ou de petite taille).

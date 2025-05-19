@@ -1461,7 +1461,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1999115740519098545">Al iniciar</translation>
 <translation id="1999763610967697511">Arrastrar y soltar</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
-<translation id="2002160221914907025">IA experimental</translation>
 <translation id="2003130567827682533">Para activar los datos de "<ph name="NAME" />", conéctate a una red Wi‑Fi</translation>
 <translation id="200321182559008924">Mantén tus pestañas en orden</translation>
 <translation id="2003596238737586336">El horario actual establecido es de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Este ajuste lo gestiona tu administrador.</translation>
@@ -5164,6 +5163,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617"><ph name="URL" /> no se ha podido abrir en un navegador alternativo. Ponte en contacto con el administrador del sistema.</translation>
 <translation id="4587589328781138893">Sitios web</translation>
+<translation id="4588497044036650559">Abre la página de opciones de la página Nueva pestaña de la extensión en la pestaña actual</translation>
 <translation id="4588749726511456218">Aceleración del desplazamiento <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> y <ph name="DOMAIN" /> parecen estar relacionados. Asegúrate de que <ph name="DOMAIN" /> es de confianza antes de usar tu contraseña.</translation>
 <translation id="4589713469967853491">Registros escritos correctamente en el directorio Descargas.</translation>
@@ -8385,7 +8385,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6909422577741440844">¿Recibir lo que comparte este dispositivo?</translation>
 <translation id="6910190732484284349">Eliminar llave de acceso para el nombre de usuario <ph name="USER_EMAIL" /></translation>
-<translation id="6910211073230771657">Eliminado</translation>
+<translation id="6910211073230771657">Eliminados</translation>
 <translation id="6910274140210351823">Oscuro</translation>
 <translation id="691102290537033604">La extensión podrá ejecutar código que Google no haya revisado. Puede que no sea seguro, por lo que solo debes habilitar esta opción si sabes lo que haces.</translation>
 <translation id="6911734910326569517">Uso de memoria</translation>
@@ -9139,6 +9139,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746216226901520237">La próxima vez, el teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="746329643760972486">macOS</translation>
+<translation id="7463985990119325874">Tu organización gestiona cómo se pueden usar los datos recogidos por estas funciones.</translation>
 <translation id="7464645554245611385">Última actualización de esta pestaña</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestaña abierta: pulsar para activar o desactivar la barra de pestañas}other{# pestañas abiertas; pulsar para activar o desactivar la barra de pestañas}}</translation>
 <translation id="7465635034594602553">Algo no va bien. Espera unos minutos y vuelve a ejecutar <ph name="APP_NAME" />.</translation>
@@ -11702,6 +11703,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="934244546219308557">Ponle un nombre a este grupo</translation>
 <translation id="93480724622239549">Fallo o error</translation>
 <translation id="9354763467503131">Con permiso para solicitar la instalación de aplicaciones web en tu dispositivo</translation>
+<translation id="936329857119665832">Se abre en la pestaña actual</translation>
 <translation id="936646668635477464">Cámara y micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>

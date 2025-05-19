@@ -32,6 +32,7 @@
 <translation id="1186712907912748007">ଡ୍ରାଗ ଏବଂ ଡ୍ରପ କରିବା ଚାଲିଛି। ଶେଷ କରିବା ପାଇଁ <ph name="GESTURE" />। ଅନ୍ୟ ଜେଶ୍ଚରଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଭାବେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="1188858454923323853">କମ୍ପ୍ଲିମେଣ୍ଟାରୀ</translation>
 <translation id="1189258430971676908">ଅଭ୍ୟାସ କ୍ଷେତ୍ର: ଡ୍ରପ୍-ଡାଉନ୍ ତାଲିକାଗୁଡ଼ିକ</translation>
+<translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{nested level {$$COUNT}}}</translation>
 <translation id="1195238899008218998">ଉପସଂହାର</translation>
 <translation id="1197088940767939838">କମଳା</translation>
 <translation id="1198865190323699001">ଟଚ ଜେଶ୍ଚର</translation>
@@ -100,6 +101,7 @@
 <translation id="1506187449813838456">ପିଚ୍‌ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="151784044608172266">ପରବର୍ତ୍ତୀ ବାକ୍ୟ</translation>
 <translation id="1524531499102321782">ପରବର୍ତ୍ତୀ ଧାଡି ବ୍ରେଲିରେ ଲେଖନ୍ତୁ</translation>
+<translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{tilde}} *{{{$$COUNT} tildes}}</translation>
 <translation id="1542513807034338907">ପୂର୍ବବର୍ତ୍ତୀ ପୃଷ୍ଠାକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1546370775711804143">ସ୍କ୍ରୋଲ ବାର୍‌</translation>
 <translation id="1551572888042734032">ଗ୍ରୀଷ୍ମ</translation>
@@ -135,7 +137,9 @@
 <translation id="1756785467854861272">ଗାଢ଼ ମାଜେଣ୍ଟା</translation>
 <translation id="1758693804775271377">ଏହି ବିଷୟ ପାଇଁ ଲେସନଗୁଡ଼ିକୁ ବ୍ରାଉଜ୍ କରିବାକୁ ଗୋଟିଏ ଆଙ୍ଗୁଠିରେ ବାମ କିମ୍ବା ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="1765245556747822181">ଏକ ଆଙ୍ଗୁଳି ଦ୍ଵାରା ଉପର ଆଡ଼କୁ ସ୍ଵାଇପ୍ କରନ୍ତୁ</translation>
+<translation id="1766900865718394987">.input {$$COUNT :number} .match $$COUNT 1{{pound}} *{{{$$COUNT} pound signs}}</translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
+<translation id="1776454891300234201">.input {$$COUNT :number} .match $$COUNT 1{{square bullet}} *{{{$$COUNT} square bullets}}</translation>
 <translation id="1781173782405573156">କୀ' ଜରିଆରେ ପାସ୍ କରନ୍ତୁ</translation>
 <translation id="1787176709638001873">ପାସ୍‌ୱର୍ଡ ଟେକ୍ସଟ୍‌ ଏଡିଟ୍ କରିବା</translation>
 <translation id="1795438342141780114">କର୍ସରକୁ କେନ୍ଦ୍ରରେ ରିସେଟ କରନ୍ତୁ</translation>
@@ -152,6 +156,7 @@
 <translation id="1902396333223336119">ସେଲ୍</translation>
 <translation id="1903683160884433981">ମଧ୍ୟମ ସ୍ପ୍ରିଂ ସବୁଜ</translation>
 <translation id="1905379170753160525">ଶୀର୍ଷକ ତାଲିକା ଦେଖାନ୍ତୁ</translation>
+<translation id="1909599030163690992">.input {$$COUNT :number} .match $$COUNT 1{{ampersand}} *{{{$$COUNT} ampersands}}</translation>
 <translation id="1913761808037590218">#ed</translation>
 <translation id="1914424852593176649">ଆକାର <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ଚୋର୍ଡ୍</translation>
@@ -159,6 +164,7 @@
 <translation id="1926147969119007125">ଫେସ ନିୟନ୍ତ୍ରଣକୁ ବିରତ କରନ୍ତୁ</translation>
 <translation id="1928932365747995741">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସମ୍ପାଦନଯୋଗ୍ୟ ଟେକ୍ସଟ୍ ଫିଲ୍ଡ ନାହିଁ</translation>
 <translation id="1964135212174907577">ପରବର୍ତ୍ତୀ ଅବ୍‌ଜେକ୍ଟ</translation>
+<translation id="1969502304370936079">.input {$$COUNT :number} .match $$COUNT 1{{equal}} *{{{$$COUNT} equal signs}}</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox ମେନୁରେ ବ୍ରେଲି କମାଣ୍ଡଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="2009187674653301682">ସୁପର୍‌‌ସ୍କ୍ରିପ୍ଟ ନୁହେଁ</translation>
@@ -166,12 +172,14 @@
 <translation id="203030071582665758">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 4 ହେଡିଂ ନାହିଁ</translation>
 <translation id="2045055672832940894">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ନିୟନ୍ତ୍ରଣ ନାହିଁ</translation>
 <translation id="2045606329038304310">ଫର୍ମ ଫିଲ୍ଡ କଣ୍ଟ୍ରୋଲ୍</translation>
+<translation id="2061553293808239752">.input {$$COUNT :number} .match $$COUNT 1{{minute}} *{{minutes}}</translation>
 <translation id="2063539687800151747">ଖୋଦିତ ଲେଖା</translation>
 <translation id="2086961585857038472">ପରବର୍ତ୍ତୀ ଶବ୍ଦ</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">or</translation>
 <translation id="2091933974477985526">ପୂର୍ବବର୍ତ୍ତୀ ଏଡିଟ୍ ଯୋଗ୍ୟ ଟେକ୍ସଟ୍ କ୍ଷେତ୍ର</translation>
 <translation id="2100350898815792233">ସମସ୍ତ ଉଦ୍ଧୃତ ଚିହ୍ନ</translation>
+<translation id="2109693710509473741">.input {$$COUNT :number} .match $$COUNT 1{{comma}} *{{{$$COUNT} commas}}</translation>
 <translation id="2110480898214777136">କୌଣସି ପୃଷ୍ଠା, ଡାୟଲଗ୍ କିମ୍ବା ଅନ୍ୟ ଧାରକ ଭିତରେ ଆରମ୍ଭରୁ ଶେଷ ପର୍ଯ୍ୟନ୍ତ କିମ୍ବା ଶେଷରୁ ଆରମ୍ଭ ପର୍ଯ୍ୟନ୍ତ ନିଅନ୍ତୁ</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">ଆକ୍‌ସେସ୍ କୀ:<ph name="KEY" /></translation>
@@ -211,6 +219,7 @@
 <translation id="2371402123699727805">ଡିକ୍ଟେସନ ସକ୍ରିୟ ଅଛି। ବନ୍ଦ କରିବା ପାଇଁ <ph name="GESTURE" />। ଅନ୍ୟ ଜେଶ୍ଚରଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଭାବେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="2381733276052567791">ସ୍ପୀଚ୍‌ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରି ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="2390264819538553347">ଆଗକୁ ବଢ଼ିବା ପାଇଁ, ଏଣ୍ଟର୍ ଦବାନ୍ତୁ; ପଛକୁ ଯିବା ପାଇଁ, ବ୍ୟାକସ୍ପେସ୍‌ ଦବାନ୍ତୁ।</translation>
+<translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">ପୃଷ୍ଠା ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଟାଇପ କରନ୍ତୁ। ଫଳାଫଳକୁ ଯିବା ପାଇଁ ଏଣ୍ଟର କୀ, ଫଳାଫଳଗୁଡ଼ିକୁ ବ୍ରାଉଜ କରିବା ପାଇଁ ଉପର କିମ୍ବା ତଳ ତୀର କୀ'ଗୁଡ଼ିକୁ ଦବାନ୍ତୁ, ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପରିବର୍ତ୍ତନ କରିବାକୁ ଟାଇପିଂ ଜାରି ରଖନ୍ତୁ କିମ୍ବା ବାତିଲ କରିବାକୁ ଏସ୍କେପ କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="240709722712693803">ନୀଳ ବାଇଗଣୀ</translation>
 <translation id="2416512023405990736">ଏକ ଚେକ୍‌ କରାଯାଇନଥିବା ଚେକ୍‌ବକ୍ସ</translation>
@@ -267,6 +276,7 @@
 <translation id="2708078563826046398">ପିଚ୍ ପଫ୍</translation>
 <translation id="2713444072780614174">ଧଳା</translation>
 <translation id="2717271541250958000">ଟାବ୍‍ ପ୍ୟାନେଲ୍‍</translation>
+<translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{backslash}} *{{{$$COUNT} backslashes}}</translation>
 <translation id="2723001399770238859">ଅଡିଓ</translation>
 <translation id="2737898226590637227">କୌଣସି ପରବର୍ତ୍ତୀ ARIA ଲ୍ୟାଣ୍ଡମାର୍କ ନାହିଁ</translation>
 <translation id="2749275490991666823">ଯାଞ୍ଚ କରାଯାଇଛି।</translation>
@@ -329,6 +339,7 @@
 <translation id="3090227230165225418">ଡାଉନ୍‌ଲୋଡ୍ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଘୋଷଣା କରନ୍ତୁ</translation>
 <translation id="3090532668523289635">ଗ୍ରୁପ୍</translation>
 <translation id="3093176084511590672">ପରବର୍ତ୍ତୀ ଲ୍ୟାଣ୍ଡମାର୍କ</translation>
+<translation id="3096276106587041702">.input {$$COUNT :number} .match $$COUNT 1{{second}} *{{seconds}}</translation>
 <translation id="3096671415663099226">cbo</translation>
 <translation id="309749186376891736">କର୍ସର୍ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="3103579948980282461">ମଧ୍ୟମ ବାଇଗଣୀ ନାଲି</translation>
@@ -367,6 +378,7 @@
 <translation id="3270069636408109001">କୌଣସି ପରବର୍ତ୍ତୀ ଟେବଲ୍ ନାହିଁ</translation>
 <translation id="3273791280096244679">ଲେବଲ୍ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="3283583562490372694">ଅନ୍‌ଚେକ୍‌ କରାଯାଇନାହିଁ</translation>
+<translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{with {$$COUNT} item}} * {{with {$$COUNT} items}}</translation>
 <translation id="3286372614333682499">ପୋଟ୍ରେଟ</translation>
 <translation id="3286390186030710347">ସ୍ଲାଇଡର୍</translation>
 <translation id="3300733168898541351">ଅନଡୁ କରନ୍ତୁ</translation>
@@ -403,6 +415,7 @@
 <translation id="3473744269398144689">ଡିକ୍ଟେସନ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="3490765818161916458">ତାଲିକା ଗ୍ରିଡ୍</translation>
 <translation id="3494946239022273294">mnuitm</translation>
+<translation id="3501911317648720697">.input {$$COUNT :number} .match $$COUNT 1{{colon}} *{{{$$COUNT} colons}}</translation>
 <translation id="3505359110822747654">ChromeVox ମେନୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="352577523970648069">ଗୋଟିଏ ଏଡିଟ୍‌ଯୋଗ୍ୟ ଟେକ୍ସଟ୍ ଫିଲ୍ଡ</translation>
 <translation id="3538907380453898475">dscrplst</translation>
@@ -439,6 +452,7 @@
 <translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">ଲଗ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="3801735343383419236">ସ୍ୱତଃସମ୍ପୂର୍ଣ୍ଣ ତାଲିକା</translation>
+<translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{percent}} *{{{$$COUNT} percent signs}}</translation>
 <translation id="3806327402890551732">ପରବର୍ତ୍ତୀ ବା ପୂର୍ବବର୍ତ୍ତୀ ଆଇଟମକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="3810838688059735925">ଭିଡିଓ</translation>
 <translation id="3813387282697781382">ହାଲୁକା ନାଲି</translation>
@@ -449,6 +463,7 @@
 <translation id="3856075812838139784">କେବଳ ପଢ଼ିବା ପାଇଁ</translation>
 <translation id="3857141338659865495">ମଧ୍ୟମ ସବୁଜ ନୀଳ</translation>
 <translation id="3870295413168340326">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 3 ହେଡିଂ ନାହିଁ</translation>
+<translation id="3882892620695970398">.input {$$COUNT :number} .match $$COUNT 1{{at}} *{{{$$COUNT} at signs}}</translation>
 <translation id="3887399638190992181">ଅତ୍ୟାବଶ୍ୟକ କୀଗୁଡ଼ିକ</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3896762831164962772">ଫେସ ନିୟନ୍ତ୍ରଣକୁ ବିରତ କରାଯାଇଛି। ପୁଣି ଆରମ୍ଭ କରିବା ପାଇଁ <ph name="GESTURE" />। ଅନ୍ୟ ଜେଶ୍ଚରଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଭାବେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
@@ -479,10 +494,13 @@
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">ଏକ ପୃଷ୍ଠା ଲୋଡ୍‌ ପ୍ରକ୍ରିୟା ଚାଲିଛି</translation>
 <translation id="4065205963140826639">ପରବର୍ତ୍ତୀ ବଟନ୍‌ ଖୋଜିବାକୁ ଏବେ ସର୍ଚ୍ଚ + ଡାହାଣ ତୀର ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ ପୁଣି ଏହାକୁ କ୍ଲିକ୍‌ କରିବାକୁ ସର୍ଚ୍ଚ + ସ୍ପେଶ୍‌ ଦବାନ୍ତୁ</translation>
+<translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{caret}} *{{{$$COUNT} carets}}</translation>
 <translation id="409334809956508737">ପୂର୍ବବର୍ତ୍ତୀ ଅବ୍‌ଜେକ୍ଟ</translation>
+<translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{plus}} *{{{$$COUNT} plus signs}}</translation>
 <translation id="4099274309791143834">ସବ୍‌ମେନୁ ଅଛି</translation>
 <translation id="4101527861445851766">ଠିକ୍‍ ଚିହ୍ନ ଦିଅଯାଇଥିବା ଗୋଟିଏ ଚେକ୍‍ବକ୍ସ</translation>
 <translation id="410225014223200513">ଆପଣଙ୍କ ଓଠରେ ଏକ ସର୍କଲ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{dot}} 3{{ellipsis}} *{{{$$COUNT} dots}}</translation>
 <translation id="4115378294792113321">ମାଜେଣ୍ଟା</translation>
 <translation id="4116415223832267137">ଆଲର୍ଟ</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
@@ -516,6 +534,7 @@
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
 <translation id="4294967782363273192">ସାନରୁ ବଡ଼ କ୍ରମରେ ସର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4300318234632215983">ଗୋଟିଏ ଲିଙ୍କ୍ ପଛରେ ଥିବା URL ଘୋଷଣା କରନ୍ତୁ</translation>
+<translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{greater than}} *{{{$$COUNT} greater than signs}}</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">ସିଏନା</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> ଟାଇପ କରନ୍ତୁ</translation>
@@ -550,12 +569,14 @@
 <translation id="4547556996012970016">ପରବର୍ତ୍ତୀ ସ୍ତର 5 ଶୀର୍ଷକ</translation>
 <translation id="4562381607973973258">ହେଡର୍</translation>
 <translation id="4597532268155981612">ଫର୍ମ</translation>
+<translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{less than}} *{{{$$COUNT} less than signs}}</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">କଷ୍ଟମ କୀ କମ୍ବିନେସନ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">ପରବର୍ତ୍ତୀ କୀ ଦବାଇବା ଅଣଦେଖା କରାଯାଉଛି</translation>
 <translation id="4617384941327705512">ସ୍ମାର୍ଟ ଷ୍ଟିକି ମୋଡ ବନ୍ଦ ଅଛି</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="4624970070706497034">TalkBack ଆଉ Chromebooks ପାଇଁ କଷ୍ଟମାଇଜେସନ ପ୍ରଦାନ କରୁ ନାହିଁ। ଆପଣ ଏବେ ବି ଏହାକୁ ବ୍ୟବହାର କରିପାରିବେ, କିନ୍ତୁ TalkBack ଡିଫଲ୍ଟ କୀବୋର୍ଡ ସର୍ଟକଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଉପଲବ୍ଧ ସର୍ଟକଟଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ, Search+A, ତା'ପରେ K ଦବାନ୍ତୁ। ଯଦି ଆପଣ ଏବେ ବି TalkBack ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ କମାଣ୍ଡକୁ ପୁଣି ଦବାନ୍ତୁ।</translation>
+<translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}</translation>
 <translation id="4649220074413114917">ବର୍ତ୍ତମାନର ଯେ କୌଣସି ସ୍ପିଚକୁ ବନ୍ଦ କରିବା ପାଇଁ ଦୁଇ ଆଙ୍ଗୁଠିରେ ସ୍କ୍ରିନକୁ ଟାପ୍ କରିବା ସୁବିଧାକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ। ଯଦି ChromeVox କିଛି ପଢ଼ୁ ବୋଲି ଆପଣ ଚାହୁଁ ନାହାଁନ୍ତି, ତେବେ ଏହା ଉପଯୋଗୀ ହୋଇଥାଏ। ଜାରି ରଖିବାକୁ, ଦୁଇ ଆଙ୍ଗୁଠିରେ ସ୍କ୍ରିନକୁ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="4661075872484491155">ଟ୍ରୀ</translation>
 <translation id="4668929960204016307">,</translation>
@@ -590,6 +611,7 @@
 <translation id="4854380505292502090">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ମିଡିଆ ୱିଜେଟ୍ ନାହିଁ</translation>
 <translation id="4855927945655956315">ଅତ୍ୟାବଶ୍ୟକ କୀଗୁଡ଼ିକ: Control</translation>
 <translation id="485806788160414322">ମିଡିଆ ପ୍ଲେ କରନ୍ତୁ ବା ବିରତ କରନ୍ତୁ</translation>
+<translation id="4861593489403902434">.input {$$COUNT :number} .match $$COUNT 1{{close paren}} *{{{$$COUNT} close parens}}</translation>
 <translation id="4862744964787595316">ବୋଲ୍ଡ ନୁହେଁ</translation>
 <translation id="4865995900839719272">ପୂର୍ବବର୍ତ୍ତୀ ଲାଇନକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="4866956062845190338">ରେଡିଓ ବଟନ୍ ମାଧ୍ୟମରେ ମେନୁ ଆଇଟମ୍</translation>
@@ -615,6 +637,7 @@
 <translation id="4993152509206108683">ମୂଲ୍ୟ <ph name="PERCENT" /> ଶତକଡା</translation>
 <translation id="4994420463726586413">ବର୍ତ୍ତମାନର ବ୍ୟାଟେରୀ ସ୍ଥିତି ଘୋଷଣା କରନ୍ତୁ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ରେଡିଓ ବଟନ୍ ବଛାଯାଇଛି</translation>
+<translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{question mark}} *{{{$$COUNT} question marks}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ମେନୁ ଆଇଟମ୍ ରେଡିଓ ବଟନ୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5014131807708055994"><ph name="COMMAND" /> କରାଯାଇପାରିବ ନାହିଁ, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ସ୍ପୀଚ୍‌ ଲଗିଂ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -715,6 +738,7 @@
 <translation id="5669637233317991674">ଏହି ଲେସନକୁ ନାଭିଗେଟ କରିବା ପାଇଁ Search + ଡାହାଣ ତୀର କୀ କିମ୍ବା Search + ବାମ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="5677240841070992068">ବର୍ତ୍ତମାନର ଲୋକେସନ୍</translation>
 <translation id="5678161956734658133">mled</translation>
+<translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{right brace}} *{{{$$COUNT} right braces}}</translation>
 <translation id="5681643281275621376">DEF</translation>
 <translation id="5682113568322255809">ଲ୍ୟାଣ୍ଡମାର୍କ</translation>
 <translation id="5683155931978483559">ପୂର୍ବର ଚେକ୍‌ବକ୍ସ</translation>
@@ -755,6 +779,7 @@
 <translation id="5899860758576822363">ChromeVox କହୁଥିଲେ ମଧ୍ୟ କମ୍ ଭଲ୍ୟୁମ୍‌ରେ ଚଲାନ୍ତୁ</translation>
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5906974869830879618">ଦୟାକରି ଏକ ପିନ୍ ଲେଖନ୍ତୁ</translation>
+<translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{semicolon}} *{{{$$COUNT} semicolons}}</translation>
 <translation id="5921587111466148855">ଅଧ୍ୟାୟ</translation>
 <translation id="5923780477617566089">ବର୍ତ୍ତମାନର ତାରିଖ</translation>
 <translation id="5926889058434275234">ଜେଶ୍ଚରର ଏକ ସମ୍ପୂର୍ଣ୍ଣ ତାଲିକା ପାଇଁ ସହାୟତା କେନ୍ଦ୍ରକୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>
@@ -795,6 +820,7 @@
 <translation id="6197361807490522975">ଗାଢ଼ ନୀଳ</translation>
 <translation id="6218813441317556731"><ph name="DELETE_PHRASE" />କୁ <ph name="INSERT_PHRASE" />ରେ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="6236061028292614533">ପରବର୍ତ୍ତୀ ଶୀର୍ଷକ</translation>
+<translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{pipe}} *{{{$$COUNT} vertical pipes}}</translation>
 <translation id="6254901459154107917">ପରବର୍ତ୍ତୀ ଏଡିଟ୍ ହେବା ଯୋଗ୍ୟ କ୍ଷେତ୍ର</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> ପ୍ରସ୍ଥାନ କଲେ।</translation>
 <translation id="6280088282605782512">ଦୁଇଥର ଟାପ କରନ୍ତୁ</translation>
@@ -827,6 +853,7 @@
 <translation id="6493991254603208962">ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="6501595918865591267">ସବୁଜ ନୀଳ</translation>
 <translation id="6508059270146105198">ପୃଷ୍ଠାର ନିମ୍ନକୁ ବ୍ରେଲି ଡିସ୍‍ପ୍ଲେ ଘୁଞ୍ଚାନ୍ତୁ</translation>
+<translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{open paren}} *{{{$$COUNT} open parens}}</translation>
 <translation id="6521550811716689390">ଗାଢ଼ ବାଇଗଣୀ</translation>
 <translation id="6536157907112457272">ଲାଇନେନ୍</translation>
 <translation id="6540201937398578274">ChromeVoxରେ, ସନ୍ଧାନ କୀ ହେଉଛି ପରିବର୍ତ୍ତକ କୀ। ଅଧିକାଂଶ ChromeVox ସର୍ଟକଟ୍‌ଗୁଡ଼ିକ ସନ୍ଧାନ କୀ ସହିତ ଆରମ୍ଭ ହୁଏ। ନାଭିଗେସନ୍ ପାଇଁ ଆପଣ ଏରୋ କୀ'ଗୁଡ଼ିକ ମଧ୍ୟ ବ୍ୟବହାର କରିବେ।</translation>
@@ -867,6 +894,7 @@
 <translation id="6859876496651143278">ଏକ ଆଙ୍ଗୁଳି ଦ୍ଵାରା ବାମକୁ ସ୍ଵାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="6865519907510167493">ଭୁଲ ବନାନ</translation>
 <translation id="6873188295213080042">ସୂଚନା: ନାଭିଗେଟ୍ କରିବାକୁ Search କୀ'କୁ ଧରି ରଖି ତୀର କୀଗୁଡ଼ିକୁ ଦବାନ୍ତୁ।</translation>
+<translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">ବର୍ତ୍ତମାନର ସମୟ ଓ ତାରିଖ କୁହନ୍ତୁ</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>
 <translation id="6897341342232909480">ବାମକୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
@@ -880,6 +908,7 @@
 <translation id="6951482098621102657">କୌଣସି ପରବର୍ତ୍ତୀ ସ୍ତର 5 ହେଡିଂ ନାହିଁ</translation>
 <translation id="6955705049214951590">ମିଷ୍ଟି ଗୋଲାପି</translation>
 <translation id="696356426651109308">ଆରମ୍ଭକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{hour}} *{{hours}}</translation>
 <translation id="6994042831499278539">ଶବ୍ଦାବଳୀର ସନ୍ଦର୍ଭ</translation>
 <translation id="6996566555547746822">ପରବର୍ତ୍ତୀ କୋମ୍ବୋ ବକ୍ସ</translation>
 <translation id="6997224546856374593">କ୍ୟାପିଟାଲ୍ ଅକ୍ଷରଗୁଡ଼ିକ ପଢ଼ିବା ବେଳେ:</translation>
@@ -888,6 +917,7 @@
 <translation id="7005146664810010831">କୌଣସି URL ମିଳିଲା ନାହିଁ</translation>
 <translation id="7026338066939101231">ହ୍ରାସ</translation>
 <translation id="7031651751836475482">lstitm</translation>
+<translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}</translation>
 <translation id="7037042857287298941">ପୂର୍ବବର୍ତ୍ତୀ ତାଲିକା</translation>
 <translation id="7039555289296502784">ଫିକା ଅଲିଭ୍</translation>
 <translation id="7041173719775863268">ଚୟନ ସମାପ୍ତ କରନ୍ତୁ</translation>
@@ -897,6 +927,7 @@
 <translation id="7086377898680121060">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="7088743565397416204">ଯାହା ଫୋକସ୍‌ କରାଯାଇଛି ତାହାକୁ ସକ୍ରିୟ କରିବାକୁ ଦୁଇଥର-ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="7088960765736518739">ଆକ୍ସେସ୍ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
+<translation id="7089749381037113497">.input {$$COUNT :number} .match $$COUNT 1{{underscore}} *{{{$$COUNT} underscores}}</translation>
 <translation id="7090715360595433170">ଗୋଟିଏ ଆଙ୍ଗୁଠିରେ ବାମକୁ ଏବଂ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରିବା ଅପେକ୍ଷା ଏହା ଅଧିକ ଉପଯୋଗୀ ମଧ୍ୟ ହୋଇପାରେ।</translation>
 <translation id="7091296112653361280">ନାଭାଜୋ ଧଳା</translation>
 <translation id="7095834689119144465">କେବଳ ସାଂଖ୍ୟିକ ଟେକ୍ସଟ୍‍ ଏଡ଼ିଟ୍‍ କରନ୍ତୁ</translation>
@@ -907,6 +938,7 @@
 <translation id="712735679809149106">ଶବ୍ଦ ଇକୋ</translation>
 <translation id="7137397390322864165">ସାଲ୍‌ମନ୍</translation>
 <translation id="7140168702531682811">ସୁପର୍‌‌ସ୍କ୍ରିପ୍ଟ</translation>
+<translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{tab}} *{{{$$COUNT} tabs}}</translation>
 <translation id="7143034430156387447">6 ଏବଂ 8 ଡଟ୍ ବ୍ରେଲି ମଧ୍ୟରେ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7153618581592392745">ଲାଭେଣ୍ଡର୍</translation>
@@ -936,6 +968,7 @@
 <translation id="7289186959554153431">ଶୀର୍ଷକ 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7297440685387139507">ଡ୍ରାଗ ଏବଂ ଡ୍ରପ କରିବା କାର୍ଯ୍ୟକୁ ଶେଷ କରନ୍ତୁ</translation>
+<translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{space}} *{{{$$COUNT} spaces}}</translation>
 <translation id="7308519659008003150">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ଫର୍ମ ଫିଲ୍ଡ ନାହିଁ</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">ସହାୟତା</translation>
@@ -966,6 +999,7 @@
 <translation id="7543255924852002459">ଲେବଲ୍ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="7552432549459840808">ଉପଯୋଗୀ Chrome ସର୍ଟକଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> ପୂର୍ବରୁ <ph name="INSERT_PHRASE" /> ଇନସାର୍ଟ କରନ୍ତୁ</translation>
+<translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{apostrophe}} *{{{$$COUNT} apostrophes}}</translation>
 <translation id="7569983096843329377">କଳା</translation>
 <translation id="7579911500627256166">ଡଟ୍ <ph name="DOT" /></translation>
 <translation id="7592060599656252486">କିଛି</translation>
@@ -982,6 +1016,7 @@
 <translation id="7637342083105831460">ଅଭ୍ୟାସ କ୍ଷେତ୍ର କିମ୍ବା Next ଲେସନ ବଟନ ଖୋଜିବାକୁ Search + Right ତୀର କୀ ଦବାନ୍ତୁ। ତା'ପରେ ସକ୍ରିୟ କରିବାକୁ Search + Space କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="7639968568612851608">ଗାଢ଼ ଧୂସର</translation>
 <translation id="7663318257180412551">ଶୀର୍ଷକ 2</translation>
+<translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{dollar}} *{{{$$COUNT} dollar signs}}</translation>
 <translation id="7674576868851035240">ପରବର୍ତ୍ତୀ ଲିଙ୍କ୍</translation>
 <translation id="7674768236845044097">ଟିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="7676847077928500578">ଟେକ୍ସଟ୍-ଟୁ-ସ୍ପିଚ୍ ସେଟିଂସ୍ ରିସେଟ୍ କରନ୍ତୁ</translation>
@@ -991,9 +1026,11 @@
 <translation id="7696631298608145306">ପରବର୍ତ୍ତୀ ଶବ୍ଦକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="7701040980221191251">କିଛି ନାହିଁ</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{dash}} *{{{$$COUNT} dashes}}</translation>
 <translation id="7714340021005120797">କୌଣସି ପରବର୍ତ୍ତୀ କମ୍ବୋ ବକ୍ସ ନାହିଁ</translation>
 <translation id="7715455358521357192">ଡାହାଣ ଆଖିରେ ଟେରେଇ ଚାହାଁନ୍ତୁ</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}</translation>
 <translation id="7731785449856576010">କୌଣସି ପରବର୍ତ୍ତୀ ମିଡିଆ ୱିଜେଟ୍ ନାହିଁ</translation>
 <translation id="7735498529470878067">ସ୍କ୍ରିନରେ କଣ ଅଛି ତାହା ଶୀଘ୍ର ଜାଣିବାରେ 'ସ୍ପର୍ଶ ଦ୍ୱାରା ଏକ୍ସପ୍ଲୋର୍ କରନ୍ତୁ' ସୁବିଧାଟି ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
 <translation id="773906353055481349">ସେଲ ଦ୍ୱାରା ନାଭିଗେଟ କରିବା ପାଇଁ ତୀରଚିହ୍ନ କୀଗୁଡ଼ିକ ସହିତ Search+Ctrl+Alt ଦବାନ୍ତୁ</translation>
@@ -1010,9 +1047,11 @@
 <translation id="7839679365527550018">ପୂର୍ବ ଶଦ୍ଦ</translation>
 <translation id="7846634333498149051">କୀ'ବୋର୍ଡ</translation>
 <translation id="7851816175263618915">କିଛି ବିରାମ ଚିହ୍ନ</translation>
+<translation id="7861676488745595432">.input {$$COUNT :number} .match $$COUNT 1{{left bracket}} *{{{$$COUNT} left brackets}}</translation>
 <translation id="7871691770940645922">ଭର୍ଚୁଆଲ୍ ବ୍ରେଲି ଡିସ୍‌ପ୍ଲେ</translation>
 <translation id="7882421473871500483">ବାଦାମୀ</translation>
 <translation id="78826985582142166">sldr</translation>
+<translation id="7889376040363236522">.input {$$COUNT :number} .match $$COUNT 1{{quote}} *{{{$$COUNT} quotes}}</translation>
 <translation id="7913106023953875143">କୌଣସି ପରବର୍ତ୍ତୀ ସ୍ତର 2 ହେଡିଂ ନାହିଁ</translation>
 <translation id="7927711904086083099">ଚୟନ କରାଯାଇନାହିଁ</translation>
 <translation id="7935627501098484003">ସମୟ ନିୟନ୍ତ୍ରଣ</translation>
@@ -1052,6 +1091,7 @@
 <translation id="8132248161074464367">ପୂର୍ବବର୍ତ୍ତୀ ଅବୈଧ ଆଇଟମ</translation>
 <translation id="8138880386467279117">ସ୍ପର୍ଶ</translation>
 <translation id="8146613869421949343">ତା'ପରେ, ଆପଣ Search କୀ ବିଷୟରେ ଜାଣିବେ। ChromeVox କମାଣ୍ଡଗୁଡ଼ିକ ପାଇଁ ଅନ୍ୟ କୀଗୁଡ଼ିକ ସହ Search କୀ ବ୍ୟବହାର କରାଯାଏ। Search କୀ ବାମ Shift କୀ'ର ଠିକ ଉପରେ ଅଛି। ଜାରି ରଖିବାକୁ, Search କୀ ଦବାନ୍ତୁ।</translation>
+<translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{right bracket}} *{{{$$COUNT} right brackets}}</translation>
 <translation id="8158033275290782295">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="816818801578874684">ଏହା ପ୍ରଥମ ହେଡିଂ ଅଟେ। ପରବର୍ତ୍ତୀ ହେଡିଂକୁ ଯିବା ପାଇଁ Search + H କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="8173092779156526980">ଚାରି ଆଙ୍ଗୁଠିରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
@@ -1144,6 +1184,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> ଫଣ୍ଟ</translation>
 <translation id="8898516272131543774">ଉଦ୍ଧୃତ ଚିହ୍ନ ଇକୋର ଚକ୍ର</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{left brace}} *{{{$$COUNT} left braces}}</translation>
 <translation id="8910180774920883033">କାର୍ଯ୍ୟଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି। ଦେଖିବାକୁ ସନ୍ଧାନ+Ctrl+A ଦବାନ୍ତୁ</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">ପରିବର୍ତ୍ତକ କୀ</translation>
@@ -1173,12 +1214,14 @@
 <translation id="9108370397979208512">ଗଣିତ</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="9128414153595658330">dlg</translation>
+<translation id="9132815018758550541">.input {$$COUNT :number} .match $$COUNT 1{{exclamation}} *{{{$$COUNT} exclamations}}</translation>
 <translation id="9133928141873682933">ଖାକି</translation>
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">ଟାବ୍</translation>
 <translation id="9151249085738989067">ଭାଷାର ଆଧାରରେ ChromeVox ଭଏସ୍‍କୁ ସ୍ୱଚାଳିତ ଭାବେ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="9153606228985488238">ପିଚ୍ <ph name="PERCENT" /> ଶତକଡ଼ା</translation>
 <translation id="9160096769946561184">ସାମ୍ପ୍ରତିକ ସ୍ତମ୍ଭର ଶେଷକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{slash}} *{{{$$COUNT} slashes}}</translation>
 <translation id="9173115498289768110">ଭଲ୍ୟୁମ୍ <ph name="PERCENT" /> ପ୍ରତିଶତ</translation>
 <translation id="9185200690645120087">ChromeVox ଟଚ୍ ଟ୍ୟୁଟୋରିଆଲ୍</translation>
 <translation id="9192904702577636854">ମାର୍କୀ</translation>

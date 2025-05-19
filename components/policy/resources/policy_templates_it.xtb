@@ -1092,9 +1092,6 @@ Questa policy è una soluzione alternativa temporanea qualora le aziende
 riscontrino danni a causa di questa modifica. L'ultima versione supportata di questa
 policy era la versione 121. È stata rimossa nella versione 122.</translation>
 <translation id="1714790754501130659">Il nome utente per l'autenticazione dei servizi di sistema per il proxy web remoto.</translation>
-<translation id="171511968762040550">Se la policy è impostata su True o se non viene configurata, gli utenti possono aggiungere, rimuovere o modificare i preferiti.
-
-      Se la policy è impostata su False, gli utenti non possono aggiungere, rimuovere o modificare i preferiti, ma possono comunque utilizzare quelli esistenti.</translation>
 <translation id="1715151459541210849">Attiva la funzione di accessibilità di dettatura</translation>
 <translation id="1716468109214130396">Impedisci l'avvio di Chrome se non hai effettuato la registrazione a Chrome Browser Cloud Management</translation>
 <translation id="1719033799014769396">Disattiva i report sulla modalità di avvio del dispositivo</translation>
@@ -9683,11 +9680,6 @@ Se questa policy viene impostata su false o se non viene configurata, <ph name="
 Per maggiori informazioni sulla policy <ph name="IEEM_SITELIST_POLICY" /> di Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Non consentire agli utenti di acquisire screenshot o registrazioni video</translation>
 <translation id="7792796937016596423">L'utente non potrà eseguire acquisizioni di pacchetti di rete</translation>
-<translation id="7795648856511126914">Il parser HTML sta per essere modificato per consentire l'inserimento di tag HTML aggiuntivi all'interno dell'elemento &lt;select&gt;. Questa policy consente di utilizzare il comportamento del parser HTML precedente fino alla versione M136.
-
-Se la policy viene attivata o se non viene configurata, il parser HTML consente l'uso di tag aggiuntivi all'interno dell'elemento &lt;select&gt;.
-
-Se viene disattivata, il parser HTML limita i tag che possono essere inseriti all'interno dell'elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Questa policy è stata rimossa dalla versione 89 di <ph name="PRODUCT_NAME" /> perché<ph name="FLASH_PLUGIN_NAME" /> è stata ritirata.
 
       Se la policy viene impostata su True, vengono eseguiti tutti i contenuti <ph name="FLASH_PLUGIN_NAME" /> incorporati nei siti web che consentono <ph name="FLASH_PLUGIN_NAME" />, inclusi i contenuti di altre origini o contenuti ridotti.

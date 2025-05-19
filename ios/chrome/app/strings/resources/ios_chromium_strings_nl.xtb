@@ -120,6 +120,7 @@ Wacht een paar minuten voordat je van account wisselt. Als je nu van account wis
 <translation id="3833326979834193417">Chromium voert elke dag automatisch de Veiligheidscheck uit om je te beschermen tegen onder andere gegevenslekken en onveilige websites. Je vindt meer informatie over de Veiligheidscheck in Instellingen.</translation>
 <translation id="3855938650519180865">Nieuw in Chromium</translation>
 <translation id="3886689467633467988">Log in op deze site en bij Chromium om onder andere je bookmarks op al je apparaten te gebruiken.</translation>
+<translation id="3949514465204582407">Chromium-tip: Krijg je wachtwoorden in elke app</translation>
 <translation id="3983291422281996849">Stel Chromium in als je standaardbrowser om makkelijk prijzen te volgen en prijsinzichten te krijgen voor artikelen die je wilt kopen.</translation>
 <translation id="4005283307739974863">Opent de Veiligheidscheck in Chromium en voert deze uit.</translation>
 <translation id="4043291146360695975">Wachtwoorden worden alleen opgeslagen in Wachtwoordmanager op dit apparaat.</translation>
@@ -167,7 +168,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="5048795749726991615">Gebruik Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
 <translation id="5053429694249468757">Chromium-gegevens verwijderen…</translation>
 <translation id="5071749685031362629">Chromium voor iOS</translation>
-<translation id="5088872414922783602">Open Chromium sneller via het dock op het startscherm.</translation>
 <translation id="5124429847818367226">Je kunt Chromium nu gebruiken als je browst of op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="5131565040785979529">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je bent ingelogd en hoe Chromium wordt gebruikt.</translation>
 <translation id="5134464247000681876">Open links uit Gmail, Maps, YouTube en andere apps in Chromium</translation>
@@ -276,6 +276,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7763454117143368771">Gebruik Chromium als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
 <translation id="7784950022329154821">Incognitotabbladen vergrendelen als je Chromium sluit</translation>
 <translation id="78025249032851484">Je Chromium is verouderd.</translation>
+<translation id="7811371919871579588">Kies Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk in andere apps te gebruiken.</translation>
 <translation id="7859018312476869945">Als je in de adresbalk of het zoekvak typt, stuurt Chromium wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
 <translation id="7905064834449738336">Als je een wachtwoord gebruikt, waarschuwt Chromium je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
@@ -289,7 +290,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="800380310260616129">Download Chromium hier.</translation>
 <translation id="8013573822802650211">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="8014091604604659473">Je bent uitgelogd bij Chromium</translation>
-<translation id="8035379487371146621">Chromium naar het dock verplaatsen</translation>
 <translation id="8104697640054703121">Gebruik de krachtigste beveiliging van Chromium tegen gevaarlijke sites</translation>
 <translation id="8119542592987737574">Open Chromium sneller via het dock op het startscherm van je iPhone.</translation>
 <translation id="8164086860209325020">Naar de Chromium-instellingen</translation>

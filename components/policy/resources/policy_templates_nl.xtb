@@ -1032,9 +1032,6 @@ Als je het beleid niet toepast of niet instelt, wordt de gedragswijziging van kr
 
 Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden vanwege deze wijziging. De laatste ondersteunde versie van dit beleid was versie 121. Het is verwijderd in versie 122.</translation>
 <translation id="1714790754501130659">De gebruikersnaam om systeemservices te verifiëren bij de externe webproxy.</translation>
-<translation id="171511968762040550">Als je het beleid instelt op 'True' of niet instelt, kunnen gebruikers bookmarks toevoegen, verwijderen of wijzigen.
-
-      Als je het beleid instelt op 'False', kunnen gebruikers geen bookmarks toevoegen, verwijderen of wijzigen. Ze kunnen nog wel bestaande bookmarks gebruiken.</translation>
 <translation id="1715151459541210849">Toegankelijkheidsfunctie voor dicteren aanzetten</translation>
 <translation id="1716468109214130396">Voorkomen dat Chrome wordt geopend als je niet bent ingeschreven voor Cloudbeheer voor de Chrome-browser</translation>
 <translation id="1719033799014769396">Rapportage voor opstartmodus van apparaat uitzetten</translation>
@@ -9480,11 +9477,6 @@ Als je dit beleid instelt op False of niet instelt, gebruikt <ph name="PRODUCT_N
 Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode voor meer informatie over het <ph name="IEEM_SITELIST_POLICY" />-beleid van Internet Explorer</translation>
 <translation id="7791215522423893512">Niet toestaan dat gebruikers screenshots en video-opnamen maken</translation>
 <translation id="7792796937016596423">De gebruiker kan geen opnamen van netwerkpakketten uitvoeren</translation>
-<translation id="7795648856511126914">De HTML-parser wordt gewijzigd zodat extra HTML-tags zijn toegestaan in het &lt;select&gt;-element. Met dit beleid kan het oude gedrag van de HTML-parser worden gebruikt tot M136.
-
-Als je dit beleid toepast of niet instelt, staat de HTML-parser extra tags toe in het &lt;select&gt;-element.
-
-Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;select&gt;-element kunnen worden geplaatst.</translation>
 <translation id="7798441698807517880">Dit beleid is verwijderd vanaf <ph name="PRODUCT_NAME" /> versie 89 omdat <ph name="FLASH_PLUGIN_NAME" /> is beëindigd.
 
       Als je het beleid instelt op True, wordt alle <ph name="FLASH_PLUGIN_NAME" />-content ingesloten op websites waarop <ph name="FLASH_PLUGIN_NAME" /> is toegestaan, waaronder content van een andere herkomst of kleine content.

@@ -120,6 +120,7 @@ Oodake enne konto vahetamist paar minutit. Kui vahetate kohe kontot, siis need a
 <translation id="3833326979834193417">Chromium käitab iga päev automaatselt ohutuskontrolli, et kaitsta teid andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest. Ohutuskontrolli kohta leiate lisateavet jaotisest Seaded.</translation>
 <translation id="3855938650519180865">Mis on Chromiumis uut?</translation>
 <translation id="3886689467633467988">Logige sisse sellele saidile ja Chromiumi, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
+<translation id="3949514465204582407">Chromiumi nõuanne: pääsege oma paroolidele juurde mis tahes rakenduses</translation>
 <translation id="3983291422281996849">Määrake Chromium oma vaikebrauseriks, et hõlpsasti jälgida hindu ja saada hinnastatistikat toodete kohta, mida soovite osta.</translation>
 <translation id="4005283307739974863">Avab ja käitab Chromiumi ohutuskontrolli.</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
@@ -167,7 +168,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5048795749726991615">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, kasutage funktsiooni Chromium automaattäite jaoks</translation>
 <translation id="5053429694249468757">Chromiumi andmete kustutamine …</translation>
 <translation id="5071749685031362629">Chromium iOS-ile</translation>
-<translation id="5088872414922783602">Saate Chromiumi avakuva doki kaudu kiiremini avada.</translation>
 <translation id="5124429847818367226">Nüüd saate kasutada Chromiumi iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="5131565040785979529">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele olete sisse logitud, ja Chromiumi kasutamist.</translation>
 <translation id="5134464247000681876">Avage Gmaili, Mapsi, YouTube'i ja muude rakenduste lingid Chromiumis</translation>
@@ -276,6 +276,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7763454117143368771">Kasutage Chromiumi vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="7784950022329154821">Lukusta Chromiumi sulgemisel inkognito vahelehed</translation>
 <translation id="78025249032851484">Teie Chromium on aegunud.</translation>
+<translation id="7811371919871579588">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige funktsioon Chromium automaattäite jaoks.</translation>
 <translation id="7859018312476869945">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chromium teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="7890287942691234100">Alustage Chromiumi skanneri kasutamist</translation>
 <translation id="7905064834449738336">Kui kasutate parooli, hoiatab Chromium teid, kui see on veebis avalikustatud. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
@@ -289,7 +290,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="800380310260616129">Laadige Chromium alla siit.</translation>
 <translation id="8013573822802650211">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige kõigisse oma seadmetesse sisse</translation>
 <translation id="8014091604604659473">Te pole Chromiumis sisse logitud</translation>
-<translation id="8035379487371146621">Chromiumi teisaldamine dokki</translation>
 <translation id="8104697640054703121">Hankige Chromiumi tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="8119542592987737574">Chromiumi saab kiiremini avada iPhone'i avakuva dokist.</translation>
 <translation id="8164086860209325020">Chromiumi seadete avamine</translation>
