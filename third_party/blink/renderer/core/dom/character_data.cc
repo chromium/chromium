@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -107,14 +106,10 @@ void CharacterData::insertData(unsigned offset,
   }
 
   String current_data = this->data();
-  StringBuilder new_str;
-  new_str.ReserveCapacity(data.length() + current_data.length());
-  new_str.Append(StringView(current_data, 0, offset));
-  new_str.Append(data);
-  new_str.Append(StringView(current_data, offset));
+  String new_str = WTF::StrCat({StringView(current_data, 0, offset), data,
+                                StringView(current_data, offset)});
 
-  SetDataAndUpdate(new_str.ReleaseString(),
-                   TextDiffRange::Insert(offset, data.length()),
+  SetDataAndUpdate(new_str, TextDiffRange::Insert(offset, data.length()),
                    kUpdateFromNonParser);
 
   GetDocument().DidInsertText(*this, offset, data.length());
@@ -154,12 +149,9 @@ void CharacterData::deleteData(unsigned offset,
     return;
 
   String current_data = this->data();
-  StringBuilder new_str;
-  new_str.ReserveCapacity(current_data.length() - real_count);
-  new_str.Append(StringView(current_data, 0, offset));
-  new_str.Append(StringView(current_data, offset + real_count));
-  SetDataAndUpdate(new_str.ReleaseString(),
-                   TextDiffRange::Delete(offset, real_count),
+  String new_str = WTF::StrCat({StringView(current_data, 0, offset),
+                                StringView(current_data, offset + real_count)});
+  SetDataAndUpdate(new_str, TextDiffRange::Delete(offset, real_count),
                    kUpdateFromNonParser);
 
   GetDocument().DidRemoveText(*this, offset, real_count);
@@ -175,13 +167,10 @@ void CharacterData::replaceData(unsigned offset,
     return;
 
   String current_data = this->data();
-  StringBuilder new_str;
-  new_str.ReserveCapacity(data.length() + current_data.length() - real_count);
-  new_str.Append(StringView(current_data, 0, offset));
-  new_str.Append(data);
-  new_str.Append(StringView(current_data, offset + real_count));
+  String new_str = WTF::StrCat({StringView(current_data, 0, offset), data,
+                                StringView(current_data, offset + real_count)});
 
-  SetDataAndUpdate(new_str.ReleaseString(),
+  SetDataAndUpdate(new_str,
                    TextDiffRange::Replace(offset, real_count, data.length()),
                    kUpdateFromNonParser);
 
