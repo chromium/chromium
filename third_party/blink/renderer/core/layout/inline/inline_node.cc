@@ -941,6 +941,7 @@ class InlineNodeDataEditor final {
 bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
                                    String new_text,
                                    const TextDiffRange& diff) {
+  TRACE_EVENT0("blink", "InlineNode::SetTextWithOffset");
   if (!layout_text->HasValidInlineItems() ||
       !layout_text->IsInLayoutNGInlineFormattingContext())
     return false;
@@ -1666,6 +1667,7 @@ void InlineNode::ShapeTextIncludingFirstLine(
     InlineNodeData* data,
     const String* previous_text,
     const InlineItems* previous_items) const {
+  TRACE_EVENT0("blink", "InlineNode::ShapeTextIncludingFirstLine");
   InlineItem::UpdateIndex(data->items);
   ShapeText(data, previous_text, previous_items);
   ShapeTextForFirstLineIfNeeded(data);
