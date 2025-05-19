@@ -476,7 +476,4 @@ interface NetworkService {
       pending_receiver<URLLoaderClient> source_url_loader_client,
       pending_receiver<URLLoader> dest_url_loader,
       pending_remote<URLLoaderClient> dest_url_loader_client);
-
-  // Enables or disables TLS 1.3 Early Data.
-  SetTLS13EarlyDataEnabled(bool enabled);
 };

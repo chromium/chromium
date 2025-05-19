@@ -586,7 +586,6 @@ bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
                                 &ssl_info->connection_status);
 
   ssl_info->early_data_received = early_data_received_;
-  ssl_info->early_data_accepted = SSL_early_data_accepted(ssl_.get());
   ssl_info->encrypted_client_hello = SSL_ech_accepted(ssl_.get());
   ssl_info->handshake_type = SSL_session_reused(ssl_.get())
                                  ? SSLInfo::HANDSHAKE_RESUME

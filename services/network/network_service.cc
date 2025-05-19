@@ -1070,12 +1070,6 @@ void NetworkService::InterceptUrlLoaderForBodyDecoding(
           {base::TaskPriority::USER_BLOCKING}));
 }
 
-void NetworkService::SetTLS13EarlyDataEnabled(bool enabled) {
-  for (NetworkContext* network_context : network_contexts_) {
-    network_context->SetTLS13EarlyDataEnabled(enabled);
-  }
-}
-
 void NetworkService::StartNetLogBounded(base::File file,
                                         uint64_t max_total_size,
                                         net::NetLogCaptureMode capture_mode,

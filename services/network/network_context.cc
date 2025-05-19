@@ -1219,12 +1219,6 @@ void NetworkContext::OnProxyLookupComplete(
   proxy_lookup_requests_.erase(it);
 }
 
-void NetworkContext::SetTLS13EarlyDataEnabled(bool enabled) {
-  url_request_context_->http_transaction_factory()
-      ->GetSession()
-      ->SetTLS13EarlyDataEnabled(enabled);
-}
-
 void NetworkContext::DisableQuic() {
   url_request_context_->http_transaction_factory()->GetSession()->DisableQuic();
 }

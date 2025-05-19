@@ -2820,9 +2820,6 @@ inline constexpr char kDevicePostQuantumKeyAgreementEnabled[] =
     "ssl.device_post_quantum_enabled";
 #endif
 
-// Boolean that specifies whether TLS 1.3 Early Data is enabled.
-inline constexpr char kTLS13EarlyDataEnabled[] = "ssl.tls13_early_data_enabled";
-
 // If false, disable Encrypted ClientHello (ECH) in TLS connections.
 inline constexpr char kEncryptedClientHelloEnabled[] = "ssl.ech_enabled";
 

@@ -235,8 +235,6 @@ class SystemNetworkContextManager {
 
   void UpdateIPv6ReachabilityOverrideEnabled();
 
-  void UpdateTLS13EarlyDataEnabled();
-
   // The PrefService to retrieve all the pref values.
   raw_ptr<PrefService> local_state_;
 

@@ -36,6 +36,7 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
 
+
 namespace policy {
 
 class SSLPolicyTest : public PolicyTest {
@@ -340,109 +341,6 @@ IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
   result = LoadPage(GetURL("/b"));
   EXPECT_TRUE(result.success);
   EXPECT_EQ(base::ASCIIToUTF16(kECHFailureTitle), result.title);
-}
-
-// TLS13EarlyDataPolicyTest relies on the fact that EmbeddedTestServer
-// uses HTTP/1.1 without connection reuse (unless the protocol is explicitly
-// specified). If EmbeddedTestServer ever gains connection reuse by default,
-// we'll need to force it off.
-class TLS13EarlyDataPolicyTest : public SSLPolicyTest,
-                                 public ::testing::WithParamInterface<bool> {
- public:
-  static constexpr std::string_view kHostname = "a.test";
-  static constexpr std::string_view kEarlyDataAcceptedTitle = "accepted";
-  static constexpr std::string_view kEarlyDataNotAcceptedTitle = "not accepted";
-
-  TLS13EarlyDataPolicyTest()
-      : test_server_{net::EmbeddedTestServer::TYPE_HTTPS} {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features.emplace_back(net::features::kHappyEyeballsV3);
-    } else {
-      disabled_features.emplace_back(net::features::kHappyEyeballsV3);
-    }
-    disabled_features.emplace_back(net::features::kEnableTLS13EarlyData);
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  void SetUpOnMainThread() override {
-    net::SSLServerConfig server_config;
-    server_config.early_data_enabled = true;
-    test_server_.RegisterRequestHandler(
-        base::BindRepeating(&TLS13EarlyDataPolicyTest::HandleRequest));
-    test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES,
-                              server_config);
-    ASSERT_TRUE(test_server_.Start());
-
-    host_resolver()->AddRule(kHostname, "127.0.0.1");
-  }
-
-  GURL GetURL(std::string_view path) {
-    return test_server_.GetURL(kHostname, path);
-  }
-
- private:
-  static std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-      const net::test_server::HttpRequest& request) {
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_content_type("text/html; charset=utf-8");
-    response->AddCustomHeader("Connection", "close");
-    if (request.ssl_info->early_data_accepted) {
-      response->set_content(
-          base::StrCat({"<title>", kEarlyDataAcceptedTitle, "</title>"}));
-    } else {
-      response->set_content(
-          base::StrCat({"<title>", kEarlyDataNotAcceptedTitle, "</title>"}));
-    }
-    return response;
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer test_server_;
-};
-
-INSTANTIATE_TEST_SUITE_P(, TLS13EarlyDataPolicyTest, ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest,
-                       TLS13EarlyDataPolicyNoOverride) {
-  EXPECT_FALSE(GetBooleanPref(prefs::kTLS13EarlyDataEnabled));
-
-  LoadResult result = LoadPage(GetURL("/warm-up"));
-  EXPECT_TRUE(result.success);
-
-  result = LoadPage(GetURL("/test-request"));
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(result.title, base::ASCIIToUTF16(kEarlyDataNotAcceptedTitle));
-}
-
-IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, TLS13EarlyDataPolicyEnable) {
-  PolicyMap policies;
-  SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(true));
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(GetBooleanPref(prefs::kTLS13EarlyDataEnabled));
-  content::FlushNetworkServiceInstanceForTesting();
-
-  LoadResult result = LoadPage(GetURL("/warm-up"));
-  EXPECT_TRUE(result.success);
-
-  result = LoadPage(GetURL("/test-request"));
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(result.title, base::ASCIIToUTF16(kEarlyDataAcceptedTitle));
-}
-
-IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, TLS13EarlyDataPolicyDisable) {
-  PolicyMap policies;
-  SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(false));
-  UpdateProviderPolicy(policies);
-  EXPECT_FALSE(GetBooleanPref(prefs::kTLS13EarlyDataEnabled));
-
-  LoadResult result = LoadPage(GetURL("/warm-up"));
-  EXPECT_TRUE(result.success);
-
-  result = LoadPage(GetURL("/test-request"));
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(result.title, base::ASCIIToUTF16(kEarlyDataNotAcceptedTitle));
 }
 
 }  // namespace policy

@@ -381,10 +381,6 @@ void HttpNetworkSession::CloseIdleConnections(const char* net_log_reason_utf8) {
   spdy_session_pool_.CloseCurrentIdleSessions(net_log_reason_utf8);
 }
 
-void HttpNetworkSession::SetTLS13EarlyDataEnabled(bool enabled) {
-  params_.enable_early_data = enabled;
-}
-
 bool HttpNetworkSession::IsQuicEnabled() const {
   return params_.enable_quic;
 }
