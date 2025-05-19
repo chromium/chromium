@@ -27,10 +27,24 @@ ExtensionKeybindingRegistryViews::~ExtensionKeybindingRegistryViews() {
   focus_manager_->UnregisterAccelerators(this);
 }
 
-void ExtensionKeybindingRegistryViews::RegisterAccelerator(
+bool ExtensionKeybindingRegistryViews::PopulateCommands(
+    const extensions::Extension* extension,
+    ui::CommandMap* commands) {
+  extensions::CommandService* command_service =
+      extensions::CommandService::Get(browser_context());
+  if (!command_service->GetNamedCommands(
+          extension->id(), extensions::CommandService::ACTIVE,
+          extensions::CommandService::REGULAR, commands)) {
+    return false;
+  }
+  return true;
+}
+
+bool ExtensionKeybindingRegistryViews::RegisterAccelerator(
     const ui::Accelerator& accelerator) {
   focus_manager_->RegisterAccelerator(accelerator,
                                       kExtensionAcceleratorPriority, this);
+  return true;
 }
 
 void ExtensionKeybindingRegistryViews::UnregisterAccelerator(

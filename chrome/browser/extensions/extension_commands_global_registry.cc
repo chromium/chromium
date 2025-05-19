@@ -7,6 +7,7 @@
 #include "base/lazy_instance.h"
 #include "base/uuid.h"
 #include "chrome/browser/extensions/commands/command_service.h"
+#include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/pref_names.h"
@@ -68,26 +69,21 @@ bool ExtensionCommandsGlobalRegistry::IsRegistered(
          IsAcceleratorRegistered(accelerator);
 }
 
-void ExtensionCommandsGlobalRegistry::AddExtensionKeybindings(
-    const extensions::Extension* extension,
-    const std::string& command_name) {
-  // This object only handles named commands, not browser/page actions.
-  if (ShouldIgnoreCommand(command_name)) {
-    return;
-  }
-
+bool ExtensionCommandsGlobalRegistry::PopulateCommands(
+    const Extension* extension,
+    ui::CommandMap* commands) {
   auto* instance = ui::GlobalAcceleratorListener::GetInstance();
   if (!instance) {
-    return;
+    return false;
   }
+
   extensions::CommandService* command_service =
       extensions::CommandService::Get(browser_context_);
-  ui::CommandMap commands;
   if (instance->IsRegistrationHandledExternally()) {
     if (!command_service->GetNamedCommands(
             extension->id(), extensions::CommandService::ALL,
-            extensions::CommandService::ANY_SCOPE, &commands)) {
-      return;
+            extensions::CommandService::ANY_SCOPE, commands)) {
+      return false;
     }
     PrefService* prefs =
         ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
@@ -98,31 +94,25 @@ void ExtensionCommandsGlobalRegistry::AddExtensionKeybindings(
       profile_id = uuid.AsLowercaseString();
       prefs->SetString(pref_names::kGlobalShortcutsUuid, profile_id);
     }
-    instance->OnCommandsChanged(extension->id(), profile_id, commands, this);
+    instance->OnCommandsChanged(extension->id(), profile_id, *commands, this);
   }
 
   // Add all the active global keybindings, if any.
   if (!command_service->GetNamedCommands(
           extension->id(), extensions::CommandService::ACTIVE,
-          extensions::CommandService::GLOBAL, &commands)) {
-    return;
+          extensions::CommandService::GLOBAL, commands)) {
+    return false;
   }
+  return true;
+}
 
-  for (auto& command : commands) {
-    if (!command_name.empty() &&
-        (command.second.command_name() != command_name)) {
-      continue;
-    }
-    const ui::Accelerator& accelerator = command.second.accelerator();
-
-    if (!IsAcceleratorRegistered(accelerator)) {
-      if (!instance->RegisterAccelerator(accelerator, this)) {
-        continue;
-      }
-    }
-
-    AddEventTarget(accelerator, extension->id(), command.second.command_name());
+bool ExtensionCommandsGlobalRegistry::RegisterAccelerator(
+    const ui::Accelerator& accelerator) {
+  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
+  if (!instance) {
+    return false;
   }
+  return instance->RegisterAccelerator(accelerator, this);
 }
 
 void ExtensionCommandsGlobalRegistry::UnregisterAccelerator(

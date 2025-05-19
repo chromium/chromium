@@ -29,9 +29,23 @@ ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
 ExtensionKeybindingRegistryAndroid::~ExtensionKeybindingRegistryAndroid() =
     default;
 
-void ExtensionKeybindingRegistryAndroid::RegisterAccelerator(
+bool ExtensionKeybindingRegistryAndroid::PopulateCommands(
+    const extensions::Extension* extension,
+    ui::CommandMap* commands) {
+  extensions::CommandService* command_service =
+      extensions::CommandService::Get(browser_context());
+  if (!command_service->GetNamedCommands(
+          extension->id(), extensions::CommandService::ACTIVE,
+          extensions::CommandService::REGULAR, commands)) {
+    return false;
+  }
+  return true;
+}
+
+bool ExtensionKeybindingRegistryAndroid::RegisterAccelerator(
     const ui::Accelerator& accelerator) {
   active_accelerators_.insert(accelerator);
+  return true;
 }
 
 void ExtensionKeybindingRegistryAndroid::UnregisterAccelerator(

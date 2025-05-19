@@ -38,7 +38,9 @@ class ExtensionKeybindingRegistryAndroid
 
  private:
   // Overridden from ExtensionKeybindingRegistry:
-  void RegisterAccelerator(const ui::Accelerator& accelerator) override;
+  bool PopulateCommands(const extensions::Extension* extension,
+                        ui::CommandMap* commands) override;
+  bool RegisterAccelerator(const ui::Accelerator& accelerator) override;
   void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
   void OnShortcutHandlingSuspended(bool suspended) override;
 

@@ -73,8 +73,9 @@ class ExtensionCommandsGlobalRegistry
   static const bool kServiceRedirectedInIncognito = true;
 
   // Overridden from ExtensionKeybindingRegistry:
-  void AddExtensionKeybindings(const Extension* extension,
-                               const std::string& command_name) override;
+  bool PopulateCommands(const Extension* extension,
+                        ui::CommandMap* commands) override;
+  bool RegisterAccelerator(const ui::Accelerator& accelerator) override;
   void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
   void OnShortcutHandlingSuspended(bool suspended) override;
 

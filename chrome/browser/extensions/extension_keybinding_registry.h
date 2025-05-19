@@ -74,17 +74,23 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // Add extension keybindings for the events defined by the `extension`.
   // `command_name` is optional, but if not blank then only the command
   // specified will be added.
-  virtual void AddExtensionKeybindings(const Extension* extension,
-                                       const std::string& command_name);
+  void AddExtensionKeybindings(const Extension* extension,
+                               const std::string& command_name);
   // Remove extension bindings for `extension`. `command_name` is optional,
   // but if not blank then only the command specified will be removed.
   void RemoveExtensionKeybinding(
       const Extension* extension,
       const std::string& command_name);
 
+  // Populates the commands for the extension. Returns whether the commands were
+  // populated.
+  virtual bool PopulateCommands(const Extension* extension,
+                                ui::CommandMap* commands) = 0;
+
   // Overridden by platform specific implementations to provide additional
-  // registration (which varies between platforms).
-  virtual void RegisterAccelerator(const ui::Accelerator& accelerator) {}
+  // registration (which varies between platforms). Returns whether the
+  // accelerator was registered.
+  virtual bool RegisterAccelerator(const ui::Accelerator& accelerator) = 0;
   // Overridden by platform specific implementations to provide additional
   // unregistration (which varies between platforms).
   virtual void UnregisterAccelerator(const ui::Accelerator& accelerator) {}
