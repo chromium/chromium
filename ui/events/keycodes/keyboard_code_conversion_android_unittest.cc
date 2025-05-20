@@ -15,6 +15,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/keyboard_layout.h"
 
 namespace ui {
@@ -52,12 +53,57 @@ constexpr std::array<AndroidKeyCodeToKeyboardCode, 21>
          // Unknown
          {AKEYCODE_UNKNOWN, KeyboardCode::VKEY_UNKNOWN}}};
 
+struct KeyboardCodeToAndroidKeyCode {
+  KeyboardCode keyboard_code;
+  int android_key_code;
+};
+
+constexpr std::array<KeyboardCodeToAndroidKeyCode, 18>
+    kKeyboardCodeToAndroidKeyCodeMap = {
+        {// Spot-check several key codes
+         {KeyboardCode::VKEY_BACK, AKEYCODE_DEL},
+         {KeyboardCode::VKEY_LSHIFT, AKEYCODE_SHIFT_LEFT},
+         {KeyboardCode::VKEY_BROWSER_BACK, AKEYCODE_BACK},
+         {KeyboardCode::VKEY_LEFT, AKEYCODE_DPAD_LEFT},
+         {KeyboardCode::VKEY_0, AKEYCODE_0},
+         {KeyboardCode::VKEY_Z, AKEYCODE_Z},
+         {KeyboardCode::VKEY_VOLUME_DOWN, AKEYCODE_VOLUME_DOWN},
+         {KeyboardCode::VKEY_OEM_1, AKEYCODE_SEMICOLON},
+         {KeyboardCode::VKEY_OEM_2, AKEYCODE_SLASH},
+         {KeyboardCode::VKEY_INSERT, AKEYCODE_INSERT},
+         {KeyboardCode::VKEY_F5, AKEYCODE_F5},
+         {KeyboardCode::VKEY_NUMPAD0, AKEYCODE_NUMPAD_0},
+         {KeyboardCode::VKEY_DECIMAL, AKEYCODE_NUMPAD_DOT},
+         {KeyboardCode::VKEY_NEXT, AKEYCODE_CHANNEL_DOWN},
+         // Android keycodes mapped to the same key code.
+         {KeyboardCode::VKEY_RETURN, AKEYCODE_ENTER},
+         {KeyboardCode::VKEY_VOLUME_MUTE, AKEYCODE_VOLUME_MUTE},
+         {KeyboardCode::VKEY_MEDIA_PLAY_PAUSE, AKEYCODE_MEDIA_PLAY_PAUSE},
+         // Unknown
+         {KeyboardCode::VKEY_UNKNOWN, AKEYCODE_UNKNOWN}}};
+
 }  // namespace
 
 TEST(KeyboardCodeConversionAndroidTest, AndroidToChrome) {
   for (const auto& entry : kAndroidKeyCodeToKeyboardCodeMap) {
     EXPECT_EQ(entry.keyboard_code,
               KeyboardCodeFromAndroidKeyCode(entry.android_key_code));
+  }
+}
+
+TEST(KeyboardCodeConversionAndroidTest, ChromeToAndroid) {
+  for (const auto& entry : kKeyboardCodeToAndroidKeyCodeMap) {
+    EXPECT_EQ(entry.android_key_code,
+              AndroidKeyCodeFromKeyboardCode(entry.keyboard_code));
+  }
+
+  for (int i = 0; i < 256; i++) {
+    const KeyboardCode keyboard_code = static_cast<KeyboardCode>(i);
+    const int android_key_code = AndroidKeyCodeFromKeyboardCode(keyboard_code);
+    if (android_key_code == AKEYCODE_UNKNOWN) {
+      continue;
+    }
+    EXPECT_EQ(keyboard_code, KeyboardCodeFromAndroidKeyCode(android_key_code));
   }
 }
 

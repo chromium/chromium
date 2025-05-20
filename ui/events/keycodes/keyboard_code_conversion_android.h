@@ -13,6 +13,9 @@ namespace ui {
 
 EVENTS_BASE_EXPORT KeyboardCode KeyboardCodeFromAndroidKeyCode(int keycode);
 
+EVENTS_BASE_EXPORT int AndroidKeyCodeFromKeyboardCode(
+    KeyboardCode keyboard_code);
+
 // Returns DomKey from an Android character and keycode.
 EVENTS_BASE_EXPORT DomKey GetDomKeyFromAndroidEvent(int keycode,
                                                     int unicode_character);
