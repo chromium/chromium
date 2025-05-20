@@ -137,16 +137,16 @@ void DawnSharedTextureCache::DestroyWGPUTextureIfNotCached(
   }
 
   auto* texture_cache = GetTextureCache(device);
-  if (!texture_cache) {
-    return;
+  if (texture_cache) {
+    auto iter = std::ranges::find_if(*texture_cache, [&](const auto& kv_pair) {
+      return kv_pair.second.Get() == texture.Get();
+    });
+    if (iter != texture_cache->end()) {
+      return;
+    }
   }
 
-  auto iter = std::ranges::find_if(*texture_cache, [&](const auto& kv_pair) {
-    return kv_pair.second.Get() == texture.Get();
-  });
-  if (iter == texture_cache->end()) {
-    texture.Destroy();
-  }
+  texture.Destroy();
 }
 
 void DawnSharedTextureCache::EraseDataIfDeviceLost() {
