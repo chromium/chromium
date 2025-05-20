@@ -1326,12 +1326,6 @@ const char kEnterpriseBadgingForNtpFooterDescription[] =
     "Enable enterprise profile badging in the footer on the New Tab Page. This "
     "includes showing the enterprise logo and the management disclaimer";
 
-const char kEnterpriseUpdatedProfileCreationScreenName[] =
-    "Enable enterprise updated profile creation screens";
-const char kEnterpriseUpdatedProfileCreationScreenDescription[] =
-    "Enable enterprise updated profile creation screens in the profile picker "
-    "and forced profile creation.";
-
 const char kManagedProfileRequiredInterstitialName[] =
     "Enable the managed profile required interstitial";
 const char kManagedProfileRequiredInterstitialDescription[] =

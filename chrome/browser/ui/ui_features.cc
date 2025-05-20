@@ -308,7 +308,7 @@ BASE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel,
 
 BASE_FEATURE(kEnterpriseUpdatedProfileCreationScreen,
              "EnterpriseUpdatedProfileCreationScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kManagedProfileRequiredInterstitial,
              "ManagedProfileRequiredInterstitial",

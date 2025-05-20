@@ -212,11 +212,14 @@ void SetUserAcceptedAccountManagement(Profile* profile, bool accepted) {
     return;
   // The updated consent screen also ask the user for consent to share device
   // signals.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (accepted && base::FeatureList::IsEnabled(
                       features::kEnterpriseUpdatedProfileCreationScreen)) {
     profile->GetPrefs()->SetBoolean(
         device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
   }
+#endif
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesEntry* entry =
       profile_manager->GetProfileAttributesStorage()
