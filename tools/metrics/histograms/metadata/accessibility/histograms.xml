@@ -1590,7 +1590,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.EngineUse.PageNavsUntilStart" units="count"
-    expires_after="2025-09-14">
+    expires_after="2025-11-16">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1602,7 +1602,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.EngineUse.TimeUntilStart" units="ms"
-    expires_after="2025-09-14">
+    expires_after="2025-11-16">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1800,7 +1800,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.InactiveTime" units="ms"
-    expires_after="2025-09-14">
+    expires_after="2025-11-16">
   <owner>aleventhal@chromium.org</owner>
   <owner>abigailbklein@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
@@ -1838,7 +1838,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2025-09-14">
+    expires_after="2025-11-16">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -2179,7 +2179,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
-    expires_after="2025-09-14">
+    expires_after="2025-11-16">
   <owner>aleventhal@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2256,7 +2256,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.PDF.IsPDFTagged" enum="BooleanExists"
-    expires_after="2025-09-14">
+    expires_after="2025-11-16">
   <owner>dtseng@chromium.org</owner>
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -3406,7 +3406,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.{ServiceName}.InitializationLatency"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-16">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

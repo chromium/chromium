@@ -918,7 +918,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.NumFilesPerExternalMetricsScan"
-    units="count" expires_after="2025-09-14">
+    units="count" expires_after="2025-11-16">
   <owner>tby@chromium.org</owner>
   <owner>jongahn@chromium.org</owner>
   <summary>

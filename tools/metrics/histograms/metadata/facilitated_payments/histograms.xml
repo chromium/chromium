@@ -323,7 +323,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy"
-    units="ms" expires_after="2025-09-14">
+    units="ms" expires_after="2025-11-16">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -536,7 +536,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.{Result}.Latency"
-    units="ms" expires_after="2025-09-14">
+    units="ms" expires_after="2025-11-16">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -572,7 +572,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.{FacilitatedPaymentsType}.UiScreenShown"
-    enum="FacilitatedPayments.UiScreen" expires_after="2025-09-14">
+    enum="FacilitatedPayments.UiScreen" expires_after="2025-11-16">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>

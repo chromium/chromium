@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result.{DatabaseTag}" enum="SqlRecoveryResult"
-    expires_after="2025-09-15">
+    expires_after="2025-11-16">
   <owner>asully@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
-    expires_after="2025-09-15">
+    expires_after="2025-11-16">
   <owner>asully@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
