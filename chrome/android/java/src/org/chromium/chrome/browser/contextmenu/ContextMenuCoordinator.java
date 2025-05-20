@@ -64,6 +64,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         ListItemType.CONTEXT_MENU_ITEM,
         ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
         ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
+        ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
     })
     public @interface ListItemType {
         int DIVIDER = 0;
@@ -71,6 +72,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         int CONTEXT_MENU_ITEM = 2;
         int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 3;
         int CONTEXT_MENU_ITEM_WITH_CHECKBOX = 4;
+        int CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON = 5;
     }
 
     private static final int INVALID_ITEM_ID = -1;

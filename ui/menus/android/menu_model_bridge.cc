@@ -64,7 +64,12 @@ void MenuModelBridge::AddExtensionItems(ui::MenuModel* menu_model) {
                                               menu_model->AsWeakPtr(), i)));
         break;
       case MenuModel::TYPE_RADIO:
-        // TODO(jhimawan): Call Java MenuModelBridge to add radio item.
+        Java_MenuModelBridge_addRadioButton(
+            env, java_obj_, menu_model->GetLabelAt(i),
+            menu_model->IsItemCheckedAt(i), menu_model->IsEnabledAt(i),
+            ToJniCallback(env, base::BindOnce(&MenuModelBridge::ActivatedAt,
+                                              weak_ptr_factory_.GetWeakPtr(),
+                                              menu_model->AsWeakPtr(), i)));
         break;
       case MenuModel::TYPE_SEPARATOR: {
         Java_MenuModelBridge_addDivider(env, java_obj_);

@@ -19,6 +19,7 @@ public class ContextMenuRadioItemProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey SELECTED = new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {TITLE, MENU_ITEM_ID, ON_CLICK, ENABLED};
+    public static final PropertyKey[] ALL_KEYS = {TITLE, MENU_ITEM_ID, ON_CLICK, ENABLED, SELECTED};
 }

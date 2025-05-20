@@ -90,6 +90,31 @@ public class MenuModelBridge {
                 new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX, modelBuilder.build()));
     }
 
+    /**
+     * Adds a context menu item with a radio button.
+     *
+     * @param label The label to display.
+     * @param isSelected Whether the radio option is selected.
+     * @param isEnabled Whether the radio option and label are enabled.
+     * @param callback The callback to run when the radio option is selected.
+     */
+    @CalledByNative
+    private void addRadioButton(
+            @JniType("std::u16string") final String label,
+            final boolean isSelected,
+            final boolean isEnabled,
+            final Runnable callback) {
+        PropertyModel.Builder modelBuilder =
+                new PropertyModel.Builder(ContextMenuRadioItemProperties.ALL_KEYS)
+                        .with(ContextMenuRadioItemProperties.TITLE, label)
+                        .with(ContextMenuRadioItemProperties.SELECTED, isSelected)
+                        .with(ContextMenuRadioItemProperties.ENABLED, isEnabled)
+                        .with(ContextMenuRadioItemProperties.ON_CLICK, callback);
+        mItems.add(
+                new ListItem(
+                        ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON, modelBuilder.build()));
+    }
+
     /** Adds a divider to the context menu. */
     @CalledByNative
     private void addDivider() {
