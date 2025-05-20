@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="TrustedVault.AccessTokenFetchSuccess{SecurityDomainId}"
-    enum="Boolean" expires_after="2025-07-01">
+    enum="Boolean" expires_after="2026-07-01">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
