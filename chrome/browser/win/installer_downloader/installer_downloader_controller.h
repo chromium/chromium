@@ -44,7 +44,8 @@ class InstallerDownloaderController {
   // TODO(https://crbug.com/417709084): Make the infobar global to the browser.
   using ShowInfobarCallback =
       base::RepeatingCallback<void(content::WebContents* web_contents,
-                                   base::RepeatingClosure on_accept)>;
+                                   base::OnceClosure on_accept,
+                                   base::OnceClosure on_dismiss)>;
 
   using GetActiveWebContentsCallback =
       base::RepeatingCallback<content::WebContents*()>;
@@ -68,6 +69,9 @@ class InstallerDownloaderController {
   // Trigger when user give an explicit consent through installer download
   // infobar.
   void OnDownloadRequestAccepted();
+
+  // Called when the user dismisses the installer download infobar.
+  void OnInfoBarDismissed();
 
   void SetActiveWebContentsCallbackForTesting(
       GetActiveWebContentsCallback callback);

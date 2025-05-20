@@ -7,7 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/mock_callback.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -32,8 +34,10 @@ class InstallerDownloaderInfoBarDelegateTest
   }
   std::unique_ptr<InstallerDownloaderInfoBarDelegate> CreateDelegate() {
     return std::make_unique<InstallerDownloaderInfoBarDelegate>(
-        base::DoNothing());
+        mock_accept_cb_.Get(), mock_cancel_cb_.Get());
   }
+  base::MockCallback<base::OnceClosure> mock_accept_cb_;
+  base::MockCallback<base::OnceClosure> mock_cancel_cb_;
 };
 
 TEST_F(InstallerDownloaderInfoBarDelegateTest, CheckInfoBarProperties) {
@@ -76,6 +80,14 @@ TEST_F(InstallerDownloaderInfoBarDelegateTest, AddInfoBarToManager) {
   EXPECT_EQ(added_infobar_ptr, infobar_manager->infobars()[0]);
   EXPECT_EQ(infobars::InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE,
             added_infobar_ptr->delegate()->GetIdentifier());
+}
+
+// TODO(crbug.com/412697757): Add views test for clicking cancel/accept on
+// infobar.
+TEST_F(InstallerDownloaderInfoBarDelegateTest, CancelClicked) {
+  auto delegate = CreateDelegate();
+  EXPECT_CALL(mock_cancel_cb_, Run).Times(1);
+  delegate->InfoBarDismissed();
 }
 
 }  // namespace

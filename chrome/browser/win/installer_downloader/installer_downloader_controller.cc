@@ -91,9 +91,11 @@ void InstallerDownloaderController::OnEligibilityReady(
   // InstallerDownloaderController will be alive at any point during the browser
   // runtime.
   show_infobar_callback_.Run(
-      contents, base::BindRepeating(
-                    &InstallerDownloaderController::OnDownloadRequestAccepted,
-                    base::Unretained(this)));
+      contents,
+      base::BindOnce(&InstallerDownloaderController::OnDownloadRequestAccepted,
+                     base::Unretained(this)),
+      base::BindOnce(&InstallerDownloaderController::OnInfoBarDismissed,
+                     base::Unretained(this)));
 }
 
 void InstallerDownloaderController::OnDownloadRequestAccepted() {
@@ -112,6 +114,11 @@ void InstallerDownloaderController::OnDownloadCompleted() {
 void InstallerDownloaderController::SetActiveWebContentsCallbackForTesting(
     GetActiveWebContentsCallback callback) {
   get_active_web_contents_callback_ = std::move(callback);
+}
+
+void InstallerDownloaderController::OnInfoBarDismissed() {
+  // TODO(crbug.com/417709084):Dismisses all installer Downloader infobars
+  // since this infobar is global.
 }
 
 }  // namespace installer_downloader

@@ -97,7 +97,7 @@ TEST_F(InstallerDownloaderControllerTest, ShowsInfobarWhenEligible) {
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(base::test::RunOnceCallback<0>(
           std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
-  EXPECT_CALL(show_infobar_callback_, Run(_, _)).Times(1);
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
 
   controller_->MaybeShowInfoBar();
 }
