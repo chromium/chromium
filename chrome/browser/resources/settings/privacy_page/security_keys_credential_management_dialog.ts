@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
