@@ -490,4 +490,8 @@ robolectric_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
+
+  if (enable_extensions_core) {
+    sources += [ "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediatorTest.java" ]
+  }
 }

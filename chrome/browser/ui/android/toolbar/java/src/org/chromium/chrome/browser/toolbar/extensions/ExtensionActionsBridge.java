@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -22,7 +24,8 @@ public class ExtensionActionsBridge {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     @CalledByNative
-    private ExtensionActionsBridge(long nativeExtensionActionsBridge) {
+    @VisibleForTesting
+    ExtensionActionsBridge(long nativeExtensionActionsBridge) {
         mNativeExtensionActionsBridge = nativeExtensionActionsBridge;
     }
 
@@ -78,42 +81,48 @@ public class ExtensionActionsBridge {
     }
 
     @CalledByNative
-    private void onActionAdded(@JniType("std::string") String actionId) {
+    @VisibleForTesting
+    void onActionAdded(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionAdded(actionId);
         }
     }
 
     @CalledByNative
-    private void onActionRemoved(@JniType("std::string") String actionId) {
+    @VisibleForTesting
+    void onActionRemoved(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionRemoved(actionId);
         }
     }
 
     @CalledByNative
-    private void onActionUpdated(@JniType("std::string") String actionId) {
+    @VisibleForTesting
+    void onActionUpdated(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionUpdated(actionId);
         }
     }
 
     @CalledByNative
-    private void onActionModelInitialized() {
+    @VisibleForTesting
+    void onActionModelInitialized() {
         for (Observer observer : mObservers) {
             observer.onActionModelInitialized();
         }
     }
 
     @CalledByNative
-    private void onPinnedActionsChanged() {
+    @VisibleForTesting
+    void onPinnedActionsChanged() {
         for (Observer observer : mObservers) {
             observer.onPinnedActionsChanged();
         }
     }
 
     @CalledByNative
-    private void onActionIconUpdated(@JniType("std::string") String actionId) {
+    @VisibleForTesting
+    void onActionIconUpdated(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionIconUpdated(actionId);
         }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -20,8 +22,8 @@ public class ExtensionAction {
     private final String mTitle;
 
     @CalledByNative
-    private ExtensionAction(
-            @JniType("std::string") String id, @JniType("std::string") String title) {
+    @VisibleForTesting
+    ExtensionAction(@JniType("std::string") String id, @JniType("std::string") String title) {
         mId = id;
         mTitle = title;
     }
