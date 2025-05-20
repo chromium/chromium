@@ -88,6 +88,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
@@ -196,6 +197,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -4288,6 +4290,23 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
                                                   : IDS_TAB_AX_MEMORY_USAGE;
       title = l10n_util::GetStringFUTF16(message_id, title,
                                          ui::FormatBytes(memory_used));
+    }
+  } else if (tab_data.collaboration_messaging &&
+             tab_data.collaboration_messaging->HasMessage()) {
+    std::u16string given_name = tab_data.collaboration_messaging->given_name();
+
+    switch (tab_data.collaboration_messaging->collaboration_event()) {
+      case collaboration::messaging::CollaborationEvent::TAB_ADDED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB, given_name);
+        break;
+      case collaboration::messaging::CollaborationEvent::TAB_UPDATED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
+            given_name);
+        break;
+      default:
+        NOTREACHED();
     }
   }
 

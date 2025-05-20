@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
@@ -28,7 +29,9 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -46,6 +49,30 @@
 #include "ui/views/widget/widget.h"
 
 using views::Widget;
+
+namespace {
+
+using collaboration::messaging::CollaborationEvent;
+using collaboration::messaging::PersistentMessage;
+using collaboration::messaging::PersistentNotificationType;
+
+PersistentMessage CreateMessage(std::string given_name,
+                                CollaborationEvent event) {
+  data_sharing::GroupMember user;
+  user.given_name = given_name;
+
+  collaboration::messaging::MessageAttribution attr;
+  attr.triggering_user = user;
+
+  collaboration::messaging::PersistentMessage message;
+  message.collaboration_event = event;
+  message.attribution = attr;
+  message.type = PersistentNotificationType::CHIP;
+
+  return message;
+}
+
+}  // namespace
 
 class TabTest : public ChromeViewsTestBase {
  public:
@@ -893,5 +920,57 @@ TEST_F(AlertIndicatorButtonTest, AccessibleNameChanged) {
 
   new_data.title = u"new_title";
   EXPECT_TRUE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+}
+
+TEST_F(AlertIndicatorButtonTest,
+       AccessibleNameChangesWithCollaborationMessages) {
+  TestingProfile profile;
+
+  controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);
+
+  TabRendererData old_data = tab_strip_->tab_at(0)->data();
+  TabRendererData new_data = tab_strip_->tab_at(0)->data();
+  EXPECT_FALSE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+
+  // Create message for new_data.
+  tab_groups::CollaborationMessagingTabData collaboration_messaging1(&profile);
+  collaboration_messaging1.set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging1.SetMessage(
+      CreateMessage("Name1", CollaborationEvent::TAB_ADDED));
+  new_data.collaboration_messaging = collaboration_messaging1.GetWeakPtr();
+
+  EXPECT_TRUE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+
+  // Create message with a different name for old_data.
+  tab_groups::CollaborationMessagingTabData collaboration_messaging2(&profile);
+  collaboration_messaging2.set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging2.SetMessage(
+      CreateMessage("Name2", CollaborationEvent::TAB_ADDED));
+  old_data.collaboration_messaging = collaboration_messaging2.GetWeakPtr();
+
+  EXPECT_TRUE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+
+  // Create message with a different event for old_data.
+  tab_groups::CollaborationMessagingTabData collaboration_messaging3(&profile);
+  collaboration_messaging3.set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging3.SetMessage(
+      CreateMessage("Name1", CollaborationEvent::TAB_UPDATED));
+  old_data.collaboration_messaging = collaboration_messaging3.GetWeakPtr();
+
+  EXPECT_TRUE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+
+  // Create a duplicate message for old_data.
+  tab_groups::CollaborationMessagingTabData collaboration_messaging4(&profile);
+  collaboration_messaging4.set_mocked_avatar_for_testing(gfx::Image());
+  collaboration_messaging4.SetMessage(
+      CreateMessage("Name1", CollaborationEvent::TAB_ADDED));
+  old_data.collaboration_messaging = collaboration_messaging4.GetWeakPtr();
+
+  EXPECT_FALSE(
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 }
