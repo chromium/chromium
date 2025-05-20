@@ -240,7 +240,7 @@
         Expand
       </message>
 
-      <message name="IDS_PDF_ANNOTATION_COLOR_BLACK" desc="Button tooltip for selecting the Black color for drawing on top of the PDF document">
+      <message name="IDS_PDF_ANNOTATION_COLOR_BLACK" desc="Button tooltip for selecting the Black color for drawing on top of the PDF document or for text color for adding text annotations to the document">
         Black
       </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_RED" desc="Button tooltip for selecting the Red color for drawing on top of the PDF document">
@@ -261,7 +261,7 @@
       <message name="IDS_PDF_ANNOTATION_COLOR_BROWN" desc="Button tooltip for selecting the Brown color for drawing on top of the PDF document">
         Brown
       </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_WHITE" desc="Button tooltip for selecting the White color for drawing on top of the PDF document">
+      <message name="IDS_PDF_ANNOTATION_COLOR_WHITE" desc="Button tooltip for selecting the White color for drawing on top of the PDF document or for text color for adding text annotations to the document.">
         White
       </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_CRIMSON" desc="Button tooltip for selecting the Crimson color for drawing on top of the PDF document">
@@ -303,7 +303,7 @@
       <message name="IDS_PDF_ANNOTATION_COLOR_TEAL" desc="Button tooltip for selecting the Teal color for drawing on top of the PDF document">
         Teal
       </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_GREY" desc="Button tooltip for selecting the Light Grey color for drawing on top of the PDF document">
+      <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_GREY" desc="Button tooltip for selecting the Light Grey color for drawing on top of the PDF document or for text color for adding text annotations to the document">
         Light Grey
       </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_PINK" desc="Button tooltip for selecting the Light Pink color for drawing on top of the PDF document">
@@ -385,56 +385,107 @@
       <message name="IDS_PDF_INK2_ANNOTATION_COLOR_LIGHT_YELLOW" desc="The button label for selecting the 'light yellow' brush color for drawing strokes in the PDF viewer.">
         Light Yellow
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_DARK_GREY_1" desc="The button label for selecting the 'dark grey 1' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_DARK_GREY_1" desc="The button label for selecting the 'dark grey 1' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Dark Grey 1
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_DARK_GREY_2" desc="The button label for selecting the 'dark grey 2' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_DARK_GREY_2" desc="The button label for selecting the 'dark grey 2' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Dark Grey 2
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_RED_1" desc="The button label for selecting the 'red 1' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_RED_1" desc="The button label for selecting the 'red 1' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Red 1
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_1" desc="The button label for selecting the 'yellow 1' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_1" desc="The button label for selecting the 'yellow 1' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Yellow 1
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_1" desc="The button label for selecting the 'green 1' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_1" desc="The button label for selecting the 'green 1' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Green 1
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_1" desc="The button label for selecting the 'blue 1' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_CYAN_1" desc="The button label for selecting the 'cyan 1' color for adding annotation text in the PDF viewer.">
+        Cyan 1
+      </message>
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_1" desc="The button label for selecting the 'blue 1' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Blue 1
       </message>
       <message name="IDS_PDF_INK2_ANNOTATION_COLOR_TAN_1" desc="The button label for selecting the 'tan 1' brush color for drawing strokes in the PDF viewer.">
         Tan 1
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_RED_2" desc="The button label for selecting the 'red 2' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_RED_2" desc="The button label for selecting the 'red 2' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Red 2
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_2" desc="The button label for selecting the 'yellow 2' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_2" desc="The button label for selecting the 'yellow 2' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Yellow 2
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_2" desc="The button label for selecting the 'green 2' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_2" desc="The button label for selecting the 'green 2' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Green 2
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_2" desc="The button label for selecting the 'blue 2' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_CYAN_2" desc="The button label for selecting the 'cyan 2' color for adding annotation text in the PDF viewer.">
+        Cyan 2
+      </message>
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_2" desc="The button label for selecting the 'blue 2' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Blue 2
       </message>
       <message name="IDS_PDF_INK2_ANNOTATION_COLOR_TAN_2" desc="The button label for selecting the 'tan 2' brush color for drawing strokes in the PDF viewer.">
         Tan 2
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_RED_3" desc="The button label for selecting the 'red 3' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_RED_3" desc="The button label for selecting the 'red 3' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Red 3
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_3" desc="The button label for selecting the 'yellow 3' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_3" desc="The button label for selecting the 'yellow 3' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Yellow 3
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_3" desc="The button label for selecting the 'green 3' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_3" desc="The button label for selecting the 'green 3' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Green 3
       </message>
-      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_3" desc="The button label for selecting the 'blue 3' brush color for drawing strokes in the PDF viewer.">
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_CYAN_3" desc="The button label for selecting the 'cyan 3' color for adding annotation text in the PDF viewer.">
+        Cyan 3
+      </message>
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_3" desc="The button label for selecting the 'blue 3' color for drawing strokes or for adding annotation text in the PDF viewer.">
         Blue 3
       </message>
       <message name="IDS_PDF_INK2_ANNOTATION_COLOR_TAN_3" desc="The button label for selecting the 'tan 3' brush color for drawing strokes in the PDF viewer.">
         Tan 3
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_ANNOTATION" desc="The button label for entering 'text annotation mode' in the PDF viewer, which allows for adding and editing text annotations.">
+        Add text
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_FONT" desc="The dropdown menu and section header text label for selecting the font to be used in a text annotation in the PDF viewer.">
+        Font
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_FONT_SANS_SERIF" desc="The dropdown menu option for using sans serif font in a text annotation in the PDF Viewer.">
+        Sans Serif
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_FONT_SERIF" desc="The dropdown menu option for using serif font in a text annotation in the PDF Viewer.">
+        Serif
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_FONT_MONOSPACE" desc="The dropdown menu option for using monospace font in a text annotation in the PDF Viewer.">
+        Monospace
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_FONT_SIZE" desc="The accessible label for the dropdown menu for selecting font size for a text annotation in the PDF viewer.">
+        Font size
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_STYLES" desc="The section header text for selecting font styles and alignment for a text annotation in the PDF viewer.">
+        Styles
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_STYLE_BOLD" desc="The button label for the toggle button to apply bold font styling to a text annotation in the PDF viewer.">
+        Bold
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_STYLE_ITALIC" desc="The button label for the toggle button to apply bold italic styling to a text annotation in the PDF viewer.">
+        Italic
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_ALIGNMENT" desc="The accessibility label for the group of text alignment options for a text annotation in the PDF viewer. The user can pick one option from the group.">
+        Text alignment
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_ALIGN_LEFT" desc="The button label for the button to align text on the left in a text annotation in the PDF viewer.">
+        Left
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_ALIGN_CENTER" desc="The button label for the button to align text in the center in a text annotation in the PDF viewer.">
+        Center
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_ALIGN_RIGHT" desc="The button label for the button to align text on the right in a text annotation in the PDF viewer.">
+        Right
+      </message>
+      <message name="IDS_PDF_INK2_TEXT_COLOR" desc="The section header and accessibility label for the group of options for selecting a text color for a text annotation in the PDF Viewer.">
+        Text color
       </message>
     </if>
 

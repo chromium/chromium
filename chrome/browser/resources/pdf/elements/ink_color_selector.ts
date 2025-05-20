@@ -47,11 +47,13 @@ export class InkColorSelectorElement extends InkColorSelectorElementBase {
         notify: true,
         type: Object,
       },
+      label: {type: String},
     };
   }
 
   accessor colors: ColorOption[] = [];
   accessor currentColor: Color = {r: 0, g: 0, b: 0};
+  accessor label: string = '';
 
   protected onColorClick_(e: Event) {
     this.setBrushColor_(e.currentTarget as HTMLInputElement);

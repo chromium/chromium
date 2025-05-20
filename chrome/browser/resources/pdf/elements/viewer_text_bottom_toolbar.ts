@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -17,7 +18,7 @@ import {getCss} from './viewer_text_bottom_toolbar.css.js';
 import {getHtml} from './viewer_text_bottom_toolbar.html.js';
 
 const ViewerTextBottomToolbarElementBase =
-    InkAnnotationTextMixin(InkTextObserverMixin(CrLitElement));
+    InkAnnotationTextMixin(InkTextObserverMixin(I18nMixinLit(CrLitElement)));
 
 export interface ViewerTextBottomToolbarElement {
   $: {

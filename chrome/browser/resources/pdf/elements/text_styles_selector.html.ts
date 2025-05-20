@@ -18,8 +18,8 @@ export function getHtml(this: TextStylesSelectorElement) {
           data-style="${style}"
           iron-icon="pdf-ink:text-format-${style}"
           aria-pressed="${this.getAriaPressed_(style)}"
-          aria-label="${style}"
-          title="${style}">
+          aria-label="${this.getTitle_(style)}"
+          title="${this.getTitle_(style)}">
       </cr-icon-button>`)}
   <!--_html_template_end_-->`;
   // clang-format on

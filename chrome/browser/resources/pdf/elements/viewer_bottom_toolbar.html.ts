@@ -15,7 +15,7 @@ import type {ViewerBottomToolbarElement} from './viewer_bottom_toolbar.js';
 
 export function getHtml(this: ViewerBottomToolbarElement) {
   // clang-format off
-  return html`
+  return html`<!--_html_template_start_-->
     <ink-brush-selector .currentType="${this.currentType}"
         @current-type-changed="${this.onCurrentTypeChanged}">
     </ink-brush-selector>
@@ -32,11 +32,12 @@ export function getHtml(this: ViewerBottomToolbarElement) {
       <viewer-bottom-toolbar-dropdown id="color"
           .buttonTitle="${this.getColorTitle_()}">
         <div slot="icon" class="color-chip"></div>
-        <ink-color-selector slot="menu" .colors="${this.availableBrushColors()}"
+        <ink-color-selector slot="menu" label="$i18n{ink2Color}"
+            .colors="${this.availableBrushColors()}"
             .currentColor="${this.currentColor}"
             @current-color-changed="${this.onCurrentColorChanged}">
         </ink-color-selector>
       </viewer-bottom-toolbar-dropdown>` : ''}
-  `;
+  <!--_html_template_end_-->`;
   // clang-format on
 }

@@ -11,7 +11,7 @@ import type {InkColorSelectorElement} from './ink_color_selector.js';
 export function getHtml(this: InkColorSelectorElement) {
   return html`<!--_html_template_start_-->
     <cr-grid role="radiogroup" columns="5" focus-selector=".color-chip"
-        aria-label="$i18n{ink2Color}"
+        aria-label="${this.label}"
         @cr-grid-focus-changed="${this.onCrGridFocusChanged_}">
       ${this.colors.map(item => html`
         <label class="color-item">

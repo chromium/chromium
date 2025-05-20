@@ -200,6 +200,23 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"ink2BrushColorGreen3", IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_3},
       {"ink2BrushColorBlue3", IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_3},
       {"ink2BrushColorTan3", IDS_PDF_INK2_ANNOTATION_COLOR_TAN_3},
+      {"ink2TextAnnotation", IDS_PDF_INK2_TEXT_ANNOTATION},
+      {"ink2TextFont", IDS_PDF_INK2_TEXT_FONT},
+      {"ink2TextFontSansSerif", IDS_PDF_INK2_TEXT_FONT_SANS_SERIF},
+      {"ink2TextFontSerif", IDS_PDF_INK2_TEXT_FONT_SERIF},
+      {"ink2TextFontMonospace", IDS_PDF_INK2_TEXT_FONT_MONOSPACE},
+      {"ink2TextFontSize", IDS_PDF_INK2_TEXT_FONT_SIZE},
+      {"ink2TextStyles", IDS_PDF_INK2_TEXT_STYLES},
+      {"ink2TextStyleBold", IDS_PDF_INK2_TEXT_STYLE_BOLD},
+      {"ink2TextStyleItalic", IDS_PDF_INK2_TEXT_STYLE_ITALIC},
+      {"ink2TextAlignment", IDS_PDF_INK2_TEXT_ALIGNMENT},
+      {"ink2TextAlignLeft", IDS_PDF_INK2_TEXT_ALIGN_LEFT},
+      {"ink2TextAlignCenter", IDS_PDF_INK2_TEXT_ALIGN_CENTER},
+      {"ink2TextAlignRight", IDS_PDF_INK2_TEXT_ALIGN_RIGHT},
+      {"ink2TextColor", IDS_PDF_INK2_TEXT_COLOR},
+      {"ink2TextColorCyan1", IDS_PDF_INK2_ANNOTATION_COLOR_CYAN_1},
+      {"ink2TextColorCyan2", IDS_PDF_INK2_ANNOTATION_COLOR_CYAN_2},
+      {"ink2TextColorCyan3", IDS_PDF_INK2_ANNOTATION_COLOR_CYAN_3},
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
   };
   for (const auto& resource : kPdfResources)
