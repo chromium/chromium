@@ -1109,6 +1109,48 @@ void BoxBorderPainter::ComputeBorderProperties() {
   }
 }
 
+bool BoxBorderPainter::ClipOutlineAsStrokeIfNeeded(
+    const ContouredRect& contoured_rect,
+    SkClipOp clip_op) const {
+  // We only use stroke for positive outlines with concave corners.
+  // Negative or convex outlines don't require joins and can use the ordinary
+  // ContouredRect path.
+  if (!is_uniform_width_ || !outer_.IsRounded() || outer_.IsConvex() ||
+      outer_outsets_.top <= 0) {
+    return false;
+  }
+
+  CHECK(style_.HasOutline());
+
+  // When rendering a uniform outset (e.g. an outline), we use stroking instead
+  // of the normal PathBuilder ContouredRect path, so that appropriate round
+  // joins/caps are rendered.
+  const FloatRoundedRect& origin_rect = contoured_rect.GetOriginRect();
+  const Path origin_path = Path::MakeContouredRect(
+      ContouredRect(origin_rect, contoured_rect.GetCornerCurvature()));
+  StrokeData stroke_data;
+  stroke_data.SetThickness(
+      contoured_rect.Rect().InsetsFrom(origin_rect.Rect()).width());
+  stroke_data.SetLineJoin(LineJoin::kRoundJoin);
+  stroke_data.SetLineCap(LineCap::kRoundCap);
+  SkPath clip_path = origin_path.StrokePath(stroke_data, AffineTransform());
+  clip_path.addPath(origin_path.GetSkPath());
+  context_.ClipPath(clip_path, kAntiAliased, clip_op);
+  return true;
+}
+
+void BoxBorderPainter::ClipContouredRect(const ContouredRect& rect) const {
+  if (!ClipOutlineAsStrokeIfNeeded(rect, SkClipOp::kIntersect)) {
+    context_.ClipContouredRect(rect);
+  }
+}
+
+void BoxBorderPainter::ClipOutContouredRect(const ContouredRect& rect) const {
+  if (!ClipOutlineAsStrokeIfNeeded(rect, SkClipOp::kDifference)) {
+    context_.ClipOutContouredRect(rect);
+  }
+}
+
 void BoxBorderPainter::Paint() const {
   if (!visible_edge_count_ || outer_.Rect().IsEmpty())
     return;
@@ -1118,14 +1160,17 @@ void BoxBorderPainter::Paint() const {
 
   bool clip_to_outer_border = outer_.IsRounded();
   GraphicsContextStateSaver state_saver(context_, clip_to_outer_border);
+
   if (clip_to_outer_border) {
     // For BackgroundBleedClip{Only,Layer}, the outer rrect clip is already
     // applied.
-    if (!BleedAvoidanceIsClipping(bleed_avoidance_))
-      context_.ClipContouredRect(outer_);
+    if (!BleedAvoidanceIsClipping(bleed_avoidance_)) {
+      ClipContouredRect(outer_);
+    }
 
-    if (inner_.IsRenderable() && !inner_.IsEmpty())
-      context_.ClipOutContouredRect(inner_);
+    if (inner_.IsRenderable() && !inner_.IsEmpty()) {
+      ClipOutContouredRect(inner_);
+    }
   }
 
   const ComplexBorderInfo border_info(*this);
@@ -1511,7 +1556,7 @@ void BoxBorderPainter::DrawCurvedDoubleBoxSide(Color color) const {
     ContouredRect inner_clip =
         ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
             style_, border_rect_, inner_outsets, sides_to_include_);
-    context_.ClipContouredRect(inner_clip);
+    ClipContouredRect(inner_clip);
     context_.SetFillColor(color);
     context_.FillRect(rect, auto_dark_mode);
   }
@@ -1531,7 +1576,7 @@ void BoxBorderPainter::DrawCurvedDoubleBoxSide(Color color) const {
     ContouredRect outer_clip =
         ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
             style_, used_border_rect, outer_outsets, sides_to_include_);
-    context_.ClipOutContouredRect(outer_clip);
+    ClipOutContouredRect(outer_clip);
     context_.SetFillColor(color);
     context_.FillRect(rect, auto_dark_mode);
   }
@@ -1562,7 +1607,7 @@ void BoxBorderPainter::DrawCurvedRidgeGrooveBoxSide(
       ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
           style_, border_rect_, CenterOutsets(), sides_to_include_);
 
-  context_.ClipContouredRect(clip_rect);
+  ClipContouredRect(clip_rect);
   context_.SetFillColor(CalculateInsetOutsetColor(!darken_s1, color));
   context_.FillRect(rect, auto_dark_mode);
 }

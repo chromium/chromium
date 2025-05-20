@@ -110,6 +110,10 @@ class BoxBorderPainter {
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
   gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
 
+  void ClipContouredRect(const ContouredRect&) const;
+  void ClipOutContouredRect(const ContouredRect&) const;
+  bool ClipOutlineAsStrokeIfNeeded(const ContouredRect&, SkClipOp) const;
+
   MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;
   static bool MitersRequireClipping(MiterType miter1,
                                     MiterType miter2,

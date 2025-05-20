@@ -62,6 +62,11 @@ class PLATFORM_EXPORT ContouredRect {
       return (top_left_ == kRound) && IsUniform();
     }
 
+    constexpr bool IsConvex() const {
+      return top_left_ >= kBevel && top_right_ >= kBevel &&
+             bottom_right_ >= kBevel && bottom_left_ >= kBevel;
+    }
+
     constexpr bool IsUniform() const {
       return top_left_ == top_right_ && top_left_ == bottom_right_ &&
              top_left_ == bottom_left_;
@@ -170,6 +175,10 @@ class PLATFORM_EXPORT ContouredRect {
 
   constexpr bool HasRoundCurvature() const {
     return corner_curvature_.IsRound() || !IsRounded();
+  }
+
+  constexpr bool IsConvex() const {
+    return !IsRounded() || corner_curvature_.IsConvex();
   }
 
   const FloatRoundedRect::Radii& GetRadii() const { return rect_.GetRadii(); }
