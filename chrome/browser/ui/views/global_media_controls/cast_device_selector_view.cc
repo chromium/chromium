@@ -43,6 +43,7 @@ constexpr int kDeviceContainerSeparator = 4;
 constexpr int kDeviceEntrySeparator = 8;
 constexpr int kCloseButtonIconSize = 20;
 constexpr int kDeviceEntryIconSize = 20;
+constexpr int kPermissionRejectedLabelWidth = 400;
 
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::TLBR(12, 8, 16, 8);
 constexpr gfx::Insets kCastHeaderRowInsets = gfx::Insets::TLBR(0, 8, 0, 4);
@@ -257,6 +258,10 @@ void CastDeviceSelectorView::OnPermissionRejected() {
   permission_rejected_label_->SetDefaultEnabledColorId(
       media_color_theme_.secondary_foreground_color_id);
   permission_rejected_label_->SetText(label_text);
+  gfx::Size preferred_size(kPermissionRejectedLabelWidth,
+                           permission_rejected_label_->GetHeightForWidth(
+                               kPermissionRejectedLabelWidth));
+  permission_rejected_label_->SetPreferredSize(preferred_size);
 
 #if BUILDFLAG(IS_MAC)
   base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
