@@ -149,6 +149,7 @@ const char kGreenPDFPath[] = "/green.pdf";
   // Take a snapshot of the tab grid showing a PDF.
   EDORemoteVariable<UIImage*>* tabGridSnapshot =
       [[EDORemoteVariable alloc] init];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(0)];
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
       performAction:grey_snapshot(tabGridSnapshot)];
 
