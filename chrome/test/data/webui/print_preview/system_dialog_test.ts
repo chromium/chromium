@@ -5,7 +5,6 @@
 import type {CrButtonElement, PrintPreviewLinkContainerElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
 import {NativeLayerImpl, PluginProxyImpl, ScalingType, whenReady} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -45,7 +44,6 @@ suite('SystemDialogTest', function() {
     sidebar = page.shadowRoot.querySelector('print-preview-sidebar')!;
     return Promise
         .all([
-          waitBeforeNextRender(page),
           whenReady(),
           nativeLayer.whenCalled('getInitialSettings'),
           nativeLayer.whenCalled('getPrinterCapabilities'),

@@ -5,11 +5,9 @@
 import type {PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
 import {isChromeOS, isMac, isWindows} from 'chrome://resources/js/platform.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -46,7 +44,6 @@ suite('KeyEventTest', function() {
           nativeLayer.whenCalled('getPrinterCapabilities'),
         ])
         .then(function() {
-          flush();
           return microtasksFinished();
         });
   });
@@ -106,7 +103,7 @@ suite('KeyEventTest', function() {
     const whenKeyEventFired = eventToPromise('keydown', button);
     keyEventOn(button, 'keydown', 0, [], 'Enter');
     await whenKeyEventFired;
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(0, nativeLayer.getCallCount('doPrint'));
   });
 

@@ -10,7 +10,6 @@ import 'chrome://print/pdf/pdf_print_wrapper.js';
 import type {PdfViewerPrintElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
 import {pdfCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('PdfViewerTest', function() {
@@ -58,7 +57,7 @@ suite('PdfViewerTest', function() {
     // The error dialog only appears when it is needed.
     assertFalse(!!viewer.shadowRoot.querySelector('viewer-error-dialog'));
     viewer.showErrorDialog = true;
-    await waitAfterNextRender(viewer);
+    await microtasksFinished();
     assertTrue(!!viewer.shadowRoot.querySelector('viewer-error-dialog'));
   });
 

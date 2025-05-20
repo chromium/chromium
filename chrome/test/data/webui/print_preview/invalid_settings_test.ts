@@ -6,7 +6,6 @@ import type {CrButtonElement, Destination, NativeInitialSettings, PrintPreviewAp
 import {MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -90,7 +89,7 @@ suite('InvalidSettingsTest', function() {
     const destinationSettings =
         sidebar.shadowRoot.querySelector('print-preview-destination-settings')!;
 
-    return waitBeforeNextRender(page)
+    return microtasksFinished()
         .then(() => {
           const parentElement =
               sidebar.shadowRoot.querySelector('print-preview-button-strip')!;

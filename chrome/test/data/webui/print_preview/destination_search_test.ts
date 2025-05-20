@@ -6,7 +6,6 @@ import 'chrome://print/print_preview.js';
 
 import type {DestinationStore, PrintPreviewDestinationDialogElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, DestinationStoreEventType, NativeLayerImpl} from 'chrome://print/print_preview.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -42,7 +41,6 @@ suite('DestinationSearchTest', function() {
     document.body.appendChild(dialog);
     return nativeLayer.whenCalled('getPrinterCapabilities').then(function() {
       dialog.show();
-      flush();
       nativeLayer.reset();
     });
   });
