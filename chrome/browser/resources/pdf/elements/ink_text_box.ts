@@ -96,6 +96,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private accessor zoom_: number = 1.0;
 
   private attributes_?: TextAttributes;
+  private currentArrowKey_: string|null = null;
+  private dragTarget_: HTMLElement|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   // Whether this is an existing textbox. Tracked so that the textbox can
   // correctly notify the backend about changes (e.g. deleting all text in an
@@ -103,11 +105,17 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   // this change where we wouldn't commit an empty new annotation).
   private existing_: boolean = false;
   private id_: number = -1;
+  private keyDownCount_: number = -1;
   private pageNumber_: number = -1;
   private pageX_: number = 0;
   private pageY_: number = 0;
   private pointerStart_: {x: number, y: number}|null = null;
   private startPosition_: TextBoxRect|null = null;
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.setAttribute('tabindex', '0');
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -125,6 +133,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
             this.onViewportChanged_((e as CustomEvent<ViewportParams>).detail));
     this.eventTracker_.add(
         this, 'pointerdown', (e: PointerEvent) => this.onPointerDown_(e));
+    this.eventTracker_.add(
+        this, 'keydown', (e: KeyboardEvent) => this.onKeyDown_(e));
   }
 
   override disconnectedCallback() {
@@ -230,7 +240,51 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
   }
 
+  private removePointerDragListeners_() {
+    assert(this.dragTarget_);
+    this.eventTracker_.remove(this.dragTarget_, 'pointercancel');
+    this.eventTracker_.remove(this.dragTarget_, 'pointerup');
+    this.eventTracker_.remove(this.dragTarget_, 'pointermove');
+    this.dragTarget_ = null;
+    this.pointerStart_ = null;
+  }
+
+  private removeKeyDragListeners_() {
+    assert(this.dragTarget_);
+    this.eventTracker_.remove(this.dragTarget_, 'keyup');
+    this.eventTracker_.remove(this.dragTarget_, 'focusout');
+    this.dragTarget_ = null;
+    this.currentArrowKey_ = null;
+    this.keyDownCount_ = -1;
+  }
+
+  // Removes any drag listeners and resets location to the start position.
+  private resetDrag_() {
+    if (this.dragTarget_ === null) {
+      return;
+    }
+
+    // Reset location to the start position.
+    assert(this.startPosition_);
+    this.locationX_ = this.startPosition_.locationX;
+    this.locationY_ = this.startPosition_.locationY;
+    this.width_ = this.startPosition_.width;
+    this.height_ = this.startPosition_.height;
+    this.startPosition_ = null;
+
+    if (this.pointerStart_ !== null) {
+      this.removePointerDragListeners_();
+    } else if (this.currentArrowKey_ !== null) {
+      this.removeKeyDragListeners_();
+    }
+  }
+
   commitTextAnnotation() {
+    // If the user is still dragging the box by holding down a key or pointer,
+    // reset location to the start of the drag and remove listeners before
+    // deactivating the box and committing the annotation.
+    this.resetDrag_();
+
     // If this is a new/inactive box or a new box edited to empty, nothing to do
     // unless it was initialized from an existing annotation. If this was
     // an existing annotation, we need to notify the backend to re-render it,
@@ -314,6 +368,81 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.pageY_ = update.pageDimensions.y;
   }
 
+  private onKeyDown_(e: KeyboardEvent) {
+    const target = e.composedPath()[0];
+    if (e.key === 'Escape') {
+      if (target === this.$.textbox) {
+        this.focus();
+      } else {
+        this.commitTextAnnotation();
+      }
+      return;
+    }
+
+    // Ignore all other keyboard events on the textbox itself.
+    if (!(target instanceof HTMLElement) || target === this.$.textbox) {
+      return;
+    }
+
+    // Delete key not in the textbox deletes the annotation.
+    if (e.key === 'Delete') {
+      this.textValue_ = '';
+      this.commitTextAnnotation();
+      return;
+    }
+
+    // Ignore all other keys except arrows. Also ignore if the user is already
+    // dragging with the pointer.
+    if (!['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key) ||
+        this.pointerStart_ !== null) {
+      return;
+    }
+
+    // Reset state if this is a new arrow key.
+    if (this.currentArrowKey_ !== null && this.currentArrowKey_ !== e.key) {
+      this.onHandleKeyUp_();
+    }
+    this.currentArrowKey_ = e.key;
+
+    if (this.keyDownCount_ === -1) {
+      this.dragTarget_ = target;
+      this.eventTracker_.add(target, 'keyup', () => this.onHandleKeyUp_());
+      this.eventTracker_.add(target, 'focusout', () => this.onHandleKeyUp_());
+      this.keyDownCount_ = 0;
+      this.startPosition_ = {
+        locationX: this.locationX_,
+        locationY: this.locationY_,
+        width: this.width_,
+        height: this.height_,
+      };
+    }
+    this.keyDownCount_++;
+
+    let moveX = 0;
+    let moveY = 0;
+    switch (e.key) {
+      case 'ArrowDown':
+        moveY = this.keyDownCount_;
+        break;
+      case 'ArrowUp':
+        moveY = -1 * this.keyDownCount_;
+        break;
+      case 'ArrowLeft':
+        moveX = -1 * this.keyDownCount_;
+        break;
+      case 'ArrowRight':
+        moveX = this.keyDownCount_;
+        break;
+    }
+    this.onMove_(target, moveX, moveY);
+  }
+
+  private onHandleKeyUp_() {
+    this.startPosition_ = null;
+    this.removeKeyDragListeners_();
+    this.textBoxEdited_();
+  }
+
   protected onPointerDown_(e: PointerEvent) {
     const target = e.composedPath()[0];
     // Ignore pointer events on the textbox itself.
@@ -322,6 +451,12 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       return;
     }
 
+    // Don't allow dragging with the keyboard and pointer at the same time.
+    if (this.dragTarget_ !== null) {
+      return;
+    }
+
+    this.dragTarget_ = target;
     this.pointerStart_ = {x: e.x, y: e.y};
     this.startPosition_ = {
       locationX: this.locationX_,
@@ -331,10 +466,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     };
 
     this.eventTracker_.add(
-        target, 'pointercancel',
-        (e: PointerEvent) => this.onHandlePointerUp_(e));
+        target, 'pointercancel', () => this.onHandlePointerUp_());
     this.eventTracker_.add(
-        target, 'pointerup', (e: PointerEvent) => this.onHandlePointerUp_(e));
+        target, 'pointerup', () => this.onHandlePointerUp_());
     this.eventTracker_.add(
         target, 'pointermove',
         (e: PointerEvent) => this.onHandlePointerMove_(e));
@@ -344,48 +478,43 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private onHandlePointerMove_(e: PointerEvent) {
     const target = e.target as HTMLElement;
     assert(this.pointerStart_);
+    this.onMove_(
+        target, e.x - this.pointerStart_.x, e.y - this.pointerStart_.y);
+  }
+
+  private onMove_(target: HTMLElement, moveX: number, moveY: number) {
     assert(this.startPosition_);
     if (!target.classList.contains('handle')) {
       // User is dragging the box itself.
-      const deltaX = e.x - this.pointerStart_.x;
-      const deltaY = e.y - this.pointerStart_.y;
-      this.locationX_ = this.startPosition_.locationX + deltaX;
-      this.locationY_ = this.startPosition_.locationY + deltaY;
+      this.locationX_ = this.startPosition_.locationX + moveX;
+      this.locationY_ = this.startPosition_.locationY + moveY;
       return;
     }
 
     if (target.classList.contains('left')) {
-      const deltaX = Math.min(
-          e.x - this.pointerStart_.x, this.startPosition_.width - MIN_WIDTH_PX);
+      const deltaX = Math.min(moveX, this.startPosition_.width - MIN_WIDTH_PX);
       this.locationX_ = this.startPosition_.locationX + deltaX;
       this.width_ = this.startPosition_.width - deltaX;
     } else if (target.classList.contains('right')) {
-      const deltaX = Math.max(
-          e.x - this.pointerStart_.x,
-          -1 * this.startPosition_.width + MIN_WIDTH_PX);
+      const deltaX =
+          Math.max(moveX, -1 * this.startPosition_.width + MIN_WIDTH_PX);
       this.width_ = this.startPosition_.width + deltaX;
     }
     if (target.classList.contains('top')) {
-      const deltaY = Math.min(
-          e.y - this.pointerStart_.y,
-          this.startPosition_.height - this.minHeight_);
+      const deltaY =
+          Math.min(moveY, this.startPosition_.height - this.minHeight_);
       this.height_ = this.startPosition_.height - deltaY;
       this.locationY_ = this.startPosition_.locationY + deltaY;
     } else if (target.classList.contains('bottom')) {
-      const deltaY = Math.max(
-          e.y - this.pointerStart_.y,
-          -1 * this.startPosition_.height + this.minHeight_);
+      const deltaY =
+          Math.max(moveY, -1 * this.startPosition_.height + this.minHeight_);
       this.height_ = this.startPosition_.height + deltaY;
     }
   }
 
-  private onHandlePointerUp_(e: PointerEvent) {
-    const target = e.target as HTMLElement;
-    this.pointerStart_ = null;
+  private onHandlePointerUp_() {
     this.startPosition_ = null;
-    this.eventTracker_.remove(target, 'pointercancel');
-    this.eventTracker_.remove(target, 'pointerup');
-    this.eventTracker_.remove(target, 'pointermove');
+    this.removePointerDragListeners_();
     this.textBoxEdited_();
   }
 

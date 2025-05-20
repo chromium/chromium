@@ -4,7 +4,8 @@
 
 import {hexToColor, Ink2Manager, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertDeepEquals, getRequiredElement, setupTestViewportAndMockPluginForInk} from './test_util.js';
 
@@ -15,28 +16,44 @@ manager.initializeTextAnnotations();
 const textbox = document.createElement('ink-text-box');
 document.body.appendChild(textbox);
 
+function getDefaultAnnotation(): TextAnnotation {
+  return {
+    text: 'Hello World',
+    textAttributes: {
+      size: 12,
+      typeface: TextTypeface.SANS_SERIF,
+      styles: {
+        [TextStyle.BOLD]: false,
+        [TextStyle.ITALIC]: false,
+      },
+      alignment: TextAlignment.LEFT,
+      color: hexToColor(TEXT_COLORS[0]!.color),
+    },
+    textBoxRect: {height: 100, locationX: 400, locationY: 300, width: 100},
+    textOrientation: 0,
+    id: 0,
+    pageNumber: 0,
+  };
+}
+
 function initializeBox(
     width: number, height: number, x: number, y: number, existing?: boolean,
     orientation?: number) {
+  const annotation = getDefaultAnnotation();
+  if (!existing) {
+    annotation.text = '';
+  }
+  if (orientation) {
+    annotation.textOrientation = orientation;
+  }
+  annotation.textBoxRect.locationX = x;
+  annotation.textBoxRect.locationY = y;
+  annotation.textBoxRect.width = width;
+  annotation.textBoxRect.height = height;
+
   manager.dispatchEvent(new CustomEvent('initialize-text-box', {
     detail: {
-      annotation: {
-        text: existing ? 'Hello World' : '',
-        textAttributes: {
-          size: 12,
-          typeface: TextTypeface.SANS_SERIF,
-          styles: {
-            [TextStyle.BOLD]: false,
-            [TextStyle.ITALIC]: false,
-          },
-          alignment: TextAlignment.LEFT,
-          color: hexToColor(TEXT_COLORS[0]!.color),
-        },
-        textBoxRect: {height, locationX: x, locationY: y, width},
-        textOrientation: orientation ? orientation : 0,
-        id: 0,
-        pageNumber: 0,
-      },
+      annotation,
       pageCoordinates: {x: 10, y: 3},
     },
   }));
@@ -72,6 +89,27 @@ async function dragHandle(handle: HTMLElement, deltaX: number, deltaY: number) {
   handle.dispatchEvent(new PointerEvent(
       'pointerup', {pointerId: 1, clientX: 50 + deltaX, clientY: 40 + deltaY}));
   await microtasksFinished();
+}
+
+async function dragHandleWithKeyboard(
+    handle: HTMLElement, key: string, numEvents: number,
+    useFocusOut: boolean = false) {
+  for (let i = 0; i < numEvents; i++) {
+    keyDownOn(handle, 0, [], key);
+  }
+  if (useFocusOut) {
+    handle.dispatchEvent(new CustomEvent('focusout'));
+  } else {
+    keyUpOn(handle, 0, [], key);
+  }
+  await microtasksFinished();
+}
+
+function verifyFinishTextAnnotationMessage(expectedAnnotation: TextAnnotation) {
+  const message = mockPlugin.findMessage('finishTextAnnotation');
+  chrome.test.assertTrue(message !== undefined);
+  chrome.test.assertEq('finishTextAnnotation', message.type);
+  assertDeepEquals(expectedAnnotation, message.data);
 }
 
 chrome.test.runTests([
@@ -551,32 +589,15 @@ chrome.test.runTests([
     initializeBox(100, 100, 400, 300);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
-    const testAnnotation: TextAnnotation = {
-      text: 'Hello World',
-      id: 0,
-      pageNumber: 0,
-      textAttributes: {
-        size: 12,
-        typeface: TextTypeface.SANS_SERIF,
-        styles: {
-          [TextStyle.BOLD]: false,
-          [TextStyle.ITALIC]: false,
-        },
-        alignment: TextAlignment.LEFT,
-        color: hexToColor(TEXT_COLORS[0]!.color),
-      },
-      // Messages to the backend are in page coordinates.
-      textBoxRect: {locationX: 195, locationY: 147, height: 50, width: 50},
-      textOrientation: 0,
-    };
+    const testAnnotation = getDefaultAnnotation();
+    // Messages to the backend are in page coordinates.
+    testAnnotation
+        .textBoxRect = {locationX: 195, locationY: 147, height: 50, width: 50};
 
     function startNewAnnotationAndVerifyMessage(existing: boolean = false) {
       mockPlugin.clearMessages();
       initializeBox(100, 100, 400, 300, existing);
-      const message = mockPlugin.findMessage('finishTextAnnotation');
-      chrome.test.assertTrue(message !== undefined);
-      chrome.test.assertEq('finishTextAnnotation', message.type);
-      assertDeepEquals(testAnnotation, message.data);
+      verifyFinishTextAnnotationMessage(testAnnotation);
     }
 
     textbox.$.textbox.value = testAnnotation.text;
@@ -653,6 +674,190 @@ chrome.test.runTests([
 
     // Reset for future tests.
     document.body.appendChild(textbox);
+
+    chrome.test.succeed();
+  },
+
+  async function testResizeWithKeyboard() {
+    // Initialize to a 100x200 box at 400, 300.
+    initializeBox(100, 200, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertTrue(isVisible(textbox));
+    assertPositionAndSize(textbox, '100px', '200px', '400px', '300px');
+
+    // 5px up and left.
+    const topLeft = getRequiredElement(textbox, '.handle.top.left');
+    await dragHandleWithKeyboard(topLeft, 'ArrowUp', 5);
+    await dragHandleWithKeyboard(topLeft, 'ArrowLeft', 5);
+    assertPositionAndSize(textbox, '105px', '205px', '395px', '295px');
+
+    // Top handle 3px up and left. Left arrow is ignored on this handle.
+    const top = getRequiredElement(textbox, '.handle.top.center');
+    await dragHandleWithKeyboard(top, 'ArrowUp', 3);
+    await dragHandleWithKeyboard(top, 'ArrowLeft', 3);
+    assertPositionAndSize(textbox, '105px', '208px', '395px', '292px');
+
+    // Top right handle 4px down and right -> makes box shorter and wider.
+    // Use focusout event to finish right arrow drag to ensure it works.
+    const topRight = getRequiredElement(textbox, '.handle.top.right');
+    await dragHandleWithKeyboard(topRight, 'ArrowDown', 4);
+    await dragHandleWithKeyboard(topRight, 'ArrowRight', 4, true);
+    assertPositionAndSize(textbox, '109px', '204px', '395px', '296px');
+
+    // Drag the left handle right and up. Upward motion is ignored. Left motion
+    // makes the box 2px narrower.
+    const left = getRequiredElement(textbox, '.handle.left.center');
+    await dragHandleWithKeyboard(left, 'ArrowUp', 2);
+    await dragHandleWithKeyboard(left, 'ArrowRight', 2);
+    assertPositionAndSize(textbox, '107px', '204px', '397px', '296px');
+
+    // Drag the right handle right and down. Downward motion is ignored. Right
+    // motion makes the box 3px wider.
+    const right = getRequiredElement(textbox, '.handle.right.center');
+    await dragHandleWithKeyboard(right, 'ArrowDown', 3);
+    await dragHandleWithKeyboard(right, 'ArrowRight', 3);
+    assertPositionAndSize(textbox, '110px', '204px', '397px', '296px');
+
+    // Drag the bottom left handle down and left to make the box 10px bigger
+    // in both dimensions.
+    const bottomLeft = getRequiredElement(textbox, '.handle.bottom.left');
+    await dragHandleWithKeyboard(bottomLeft, 'ArrowDown', 10);
+    await dragHandleWithKeyboard(bottomLeft, 'ArrowLeft', 10);
+    assertPositionAndSize(textbox, '120px', '214px', '387px', '296px');
+
+    // Drag the bottom handle down and left to make the box 5px taller.
+    // Motion left is ignored.
+    const bottom = getRequiredElement(textbox, '.handle.bottom.center');
+    await dragHandleWithKeyboard(bottom, 'ArrowDown', 5);
+    await dragHandleWithKeyboard(bottom, 'ArrowLeft', 5);
+    assertPositionAndSize(textbox, '120px', '219px', '387px', '296px');
+
+    // Drag the bottom right handle down and right to make the box 2px bigger
+    // in both dimensions.
+    const bottomRight = getRequiredElement(textbox, '.handle.bottom.right');
+    await dragHandleWithKeyboard(bottomRight, 'ArrowDown', 2);
+    await dragHandleWithKeyboard(bottomRight, 'ArrowRight', 2);
+    assertPositionAndSize(textbox, '122px', '221px', '387px', '296px');
+
+    // Drag the bottom right handle up and left to try to make the box too
+    // small. Make sure it clamps at the same minimum size, anchored on the top
+    // left corner.
+    await dragHandleWithKeyboard(bottomRight, 'ArrowUp', 100);
+    await dragHandleWithKeyboard(bottomRight, 'ArrowLeft', 100);
+    const clampedWidth = textbox.$.textbox.clientWidth;
+    const clampedHeight = textbox.$.textbox.clientHeight;
+    chrome.test.assertTrue(clampedHeight >= textbox.$.textbox.scrollHeight);
+    // Min width is 36px.
+    chrome.test.assertEq(36, clampedWidth);
+    assertPositionAndSize(
+        textbox, '36px', `${clampedHeight}px`, '387px', '296px');
+
+    chrome.test.succeed();
+  },
+
+  async function testMoveWithKeyboard() {
+    // Initialize to a 100x100 box at 400, 300.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    await dragHandleWithKeyboard(textbox, 'ArrowUp', 5);
+    assertPositionAndSize(textbox, '100px', '100px', '400px', '295px');
+    await dragHandleWithKeyboard(textbox, 'ArrowDown', 5);
+    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    await dragHandleWithKeyboard(textbox, 'ArrowRight', 5);
+    assertPositionAndSize(textbox, '100px', '100px', '405px', '300px');
+    await dragHandleWithKeyboard(textbox, 'ArrowLeft', 5);
+    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+
+    // Make sure that arrow keys in the textarea are ignored.
+    await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowUp', 1);
+    await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowDown', 1);
+    await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowLeft', 1);
+    await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowRight', 1);
+    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    chrome.test.succeed();
+  },
+
+  async function testEscapeAndDelete() {
+    // Initialize to a 100x100 box at 400, 300.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertTrue(isVisible(textbox));
+
+    // Editing text --> commit annotation on event.
+    const testAnnotation = getDefaultAnnotation();
+    // Messages to the backend are in page coordinates. Convert to page
+    // coordinates since this is used for validating the commit message.
+    testAnnotation
+        .textBoxRect = {locationX: 195, locationY: 147, height: 50, width: 50};
+
+    mockPlugin.clearMessages();
+    textbox.$.textbox.value = testAnnotation.text;
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    // Escape on the textarea focuses the top level box.
+    const whenFocused = eventToPromise('focus', textbox);
+    keyDownOn(textbox.$.textbox, 0, [], 'Escape');
+    await whenFocused;
+
+    // Escape on the textbox commits the annotation and hides the box.
+    keyDownOn(textbox, 0, [], 'Escape');
+    await microtasksFinished();
+    chrome.test.assertTrue(textbox.hidden);
+    chrome.test.assertFalse(isVisible(textbox));
+    verifyFinishTextAnnotationMessage(testAnnotation);
+
+    // If the user is dragging, escape commits the annotation at the start
+    // location and hides the box.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    mockPlugin.clearMessages();
+    textbox.$.textbox.value = testAnnotation.text;
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    const handle = getRequiredElement(textbox, '.handle.bottom.right');
+    handle.dispatchEvent(new PointerEvent(
+        'pointerdown', {composed: true, pointerId: 1, clientX: 0, clientY: 0}));
+    handle.dispatchEvent(new PointerEvent(
+        'pointerdown',
+        {composed: true, pointerId: 1, clientX: 10, clientY: 10}));
+    await microtasksFinished();
+    keyDownOn(textbox, 0, [], 'Escape');
+    await microtasksFinished();
+    chrome.test.assertTrue(textbox.hidden);
+    chrome.test.assertFalse(isVisible(textbox));
+    // Message is identical to before because 'pointerup' was never fired.
+    verifyFinishTextAnnotationMessage(testAnnotation);
+
+    // Escape without any modification hides the box but doesn't send a message.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    mockPlugin.clearMessages();
+    keyDownOn(textbox, 0, [], 'Escape');
+    await microtasksFinished();
+    chrome.test.assertTrue(textbox.hidden);
+    chrome.test.assertFalse(isVisible(textbox));
+    chrome.test.assertEq(
+        undefined, mockPlugin.findMessage('setTextAnnotation'));
+
+    // Initialize to a 100x100 box at 400, 300 with some text content. Use
+    // "Delete" to clear all the content, which will trigger a message since
+    // this is for an existing annotation.
+    initializeBox(100, 100, 400, 300, true);
+    await microtasksFinished();
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertTrue(isVisible(textbox));
+    mockPlugin.clearMessages();
+    keyDownOn(textbox, 0, [], 'Delete');
+    await microtasksFinished();
+    chrome.test.assertTrue(textbox.hidden);
+    chrome.test.assertFalse(isVisible(textbox));
+    testAnnotation.text = '';
+    verifyFinishTextAnnotationMessage(testAnnotation);
 
     chrome.test.succeed();
   },
