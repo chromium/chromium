@@ -35,6 +35,22 @@ void GlicAppStateObserver::WebUiStateChanged(mojom::WebUiState state) {
 
 DEFINE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
 
+WebUiStateObserver::WebUiStateObserver(Host* host) : host_(host) {
+  observation_.Observe(host);
+}
+
+WebUiStateObserver::~WebUiStateObserver() {
+  observation_.Reset();
+}
+
+mojom::WebUiState WebUiStateObserver::GetStateObserverInitialState() const {
+  return host_->GetPrimaryWebUiState();
+}
+
+void WebUiStateObserver::WebUiStateChanged(mojom::WebUiState state) {
+  OnStateObserverStateChanged(state);
+}
+
 }  // namespace internal
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);

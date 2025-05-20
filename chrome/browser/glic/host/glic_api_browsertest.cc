@@ -34,10 +34,12 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
@@ -90,6 +92,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithFastTimeout",
       "GlicApiTestSystemSettingsTest",
       "GlicApiTestWithOneTabAndContextualCueing",
+      "GlicApiTestWithOneTabAndPreloading",
       "GlicApiTestPageContextEligibilityTest",
   };
 }
@@ -322,6 +325,72 @@ class GlicApiTestWithOneTab : public GlicApiTest {
     return InProcessBrowserTest::embedded_test_server()->GetURL(
         "/glic/test.html");
   }
+};
+
+class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithOneTabAndPreloading() {
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlic,
+          {
+              {"glic-default-hotkey", "Ctrl+G"},
+              // Shorten load timeouts.
+              {features::kGlicPreLoadingTimeMs.name, "20"},
+              {features::kGlicMinLoadingTimeMs.name, "40"},
+          }},
+         {features::kGlicApiActivationGating, {}},
+         {features::kGlicWarming,
+          {{features::kGlicWarmingDelayMs.name, "0"},
+           {features::kGlicWarmingJitterMs.name, "0"}}}},
+        /*disabled_features=*/
+        {});
+    // This will temporarily disable preloading to ensure that we don't load the
+    // web client before we've initialized the embedded test server and can set
+    // the correct URL.
+    GlicProfileManager::ForceMemoryPressureForTesting(
+        base::MemoryPressureMonitor::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
+    GlicProfileManager::ForceConnectionTypeForTesting(
+        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  }
+
+  void SetUpOnMainThread() override {
+    GlicApiTest::SetUpOnMainThread();
+    RunTestSequence(InstrumentTab(kFirstTab),
+                    NavigateWebContents(kFirstTab, page_url()));
+  }
+
+  void TearDown() override {
+    GlicApiTestWithOneTab::TearDown();
+    GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
+    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
+  }
+
+  GlicKeyedService* GetService() {
+    Profile* profile = browser()->profile();
+    return GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  }
+
+  Host* GetHost() {
+    Profile* profile = browser()->profile();
+    return &GlicKeyedServiceFactory::GetGlicKeyedService(profile)->host();
+  }
+
+  auto CreateAndWarmGlic() {
+    return Do([this] { GetService()->TryPreload(); });
+  }
+
+  auto ResetMemoryPressure() {
+    return Do([]() {
+      GlicProfileManager::ForceMemoryPressureForTesting(
+          base::MemoryPressureMonitor::MemoryPressureLevel::
+              MEMORY_PRESSURE_LEVEL_NONE);
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
@@ -846,6 +915,25 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
       .Times(0);
 
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndPreloading,
+                       testDeferredFocusedTabStateAtCreation) {
+  // Preload a web contents and then navigate.
+  RunTestSequence(
+      WaitForShow(kGlicButtonElementId), ResetMemoryPressure(),
+      ObserveState(glic::test::internal::kWebUiState, &host()),
+      CreateAndWarmGlic(),
+      WaitForState(glic::test::internal::kWebUiState,
+                   mojom::WebUiState::kReady),
+      CheckControllerShowing(false),
+      NavigateWebContents(kFirstTab,
+                          InProcessBrowserTest::embedded_test_server()->GetURL(
+                              "/scrollable_page_with_content.html")));
+  ExecuteJsTest();
+  RunTestSequence(ToggleGlicWindow(GlicWindowMode::kDetached),
+                  CheckControllerShowing(true));
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {

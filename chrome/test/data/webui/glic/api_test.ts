@@ -932,11 +932,9 @@ class ApiTests extends ApiTestFixtureBase {
 
   private async assertCreateTabFails(url: string) {
     assertTrue(!!this.host.createTab);
-    try {
-      await this.host.createTab(url, {openInBackground: false});
-    } catch (e) {
-      assertEquals('createTab: failed', (e as Error).message);
-    }
+    const errorMessage = await assertRejects(
+        this.host.createTab(url, {openInBackground: false}));
+    assertEquals('createTab: failed', errorMessage);
   }
 
   private async closePanelAndWaitUntilInactive() {
@@ -954,6 +952,25 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
 
   async testLoadWhileWindowClosed() {
     await observeSequence(this.host.panelActive()).waitForValue(false);
+  }
+
+  async testDeferredFocusedTabStateAtCreation() {
+    // Initial state.
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    const focusedTabStateV2Sequence =
+        observeSequence(this.host.getFocusedTabStateV2());
+    let focusedTabState = await focusedTabStateV2Sequence.next();
+    assertTrue(!!focusedTabState.hasNoFocus);
+    const tabStatePromise = focusedTabStateV2Sequence.next();
+    assertRejects(waitFor(tabStatePromise, 200));
+    // We should only see the second page.
+    await this.advanceToNextStep();
+    focusedTabState = await tabStatePromise;
+    assertTrue(!!focusedTabState.hasFocus);
+    assertTrue(
+        focusedTabState.hasFocus.tabData.url.endsWith(
+            'scrollable_page_with_content.html'),
+        `url=${focusedTabState.hasFocus.tabData.url}`);
   }
 }
 
@@ -1340,6 +1357,18 @@ async function runUntil<T>(
 
 function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
   return new Response(stream).bytes();
+}
+
+async function assertRejects<T>(promise: Promise<T>):
+    Promise<string|undefined> {
+  return promise.then(
+      () => {
+        // The promise should have rejected.
+        assertTrue(false);
+      },
+      (e) => {
+        return (e as Error).message;
+      });
 }
 
 main();
