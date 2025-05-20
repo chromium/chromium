@@ -14,8 +14,6 @@ source_set("coordinator") {
     "glic_mediator.h",
     "glic_mediator.mm",
     "glic_mediator_delegate.h",
-    "glic_promo_coordinator.h",
-    "glic_promo_coordinator.mm",
     "glic_promo_scene_agent.h",
     "glic_promo_scene_agent.mm",
   ]
