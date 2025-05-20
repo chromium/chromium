@@ -396,6 +396,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool AreAuthorShadowsAllowed() const override { return false; }
 
   void Reset();
+  void ResetLayer();
 
   void SetSurfaceSize(gfx::Size);
 

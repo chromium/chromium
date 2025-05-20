@@ -84,17 +84,6 @@ RasterMode CanvasResourceHost::GetRasterMode() const {
   return ShouldTryToUseGpuRaster() ? RasterMode::kGPU : RasterMode::kCPU;
 }
 
-void CanvasResourceHost::ResetLayer() {
-  if (cc_layer_) {
-    // Orphaning the layer is required to trigger the recreation of a new
-    // layer in the case where destruction is caused by a canvas resize. Test:
-    // virtual/gpu/fast/canvas/canvas-resize-after-paint-without-layout.html
-    cc_layer_->RemoveFromParent();
-    cc_layer_->ClearClient();
-    cc_layer_ = nullptr;
-  }
-}
-
 void CanvasResourceHost::ClearLayerTexture() {
   if (cc_layer_) {
     cc_layer_->ClearTexture();
