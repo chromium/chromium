@@ -3939,7 +3939,8 @@
           ],
           "form_control_types": [
             "INPUT_TEXT",
-            "INPUT_SEARCH"
+            "INPUT_SEARCH",
+            "INPUT_NUMBER"
           ]
         }
       ]
