@@ -90,7 +90,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   // Actual RasterMode used for rendering 2d primitives.
   RasterMode GetRasterMode() const;
   void ClearLayerTexture();
-  void SetNeedsPushProperties();
 
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
