@@ -443,12 +443,12 @@ void DrawLineForBoxSide(GraphicsContext& context,
                         bool antialias,
                         const AutoDarkMode& auto_dark_mode);
 
-Color CalculateBorderStyleColor(const EBorderStyle& style,
-                                const BoxSide& side,
-                                const Color& color) {
-  bool is_darken = (side == BoxSide::kTop || side == BoxSide::kLeft) ==
-                   (style == EBorderStyle::kInset);
+bool DarkenBoxSide(BoxSide side, EBorderStyle style) {
+  return (side == BoxSide::kTop || side == BoxSide::kLeft) ==
+         (style == EBorderStyle::kInset);
+}
 
+Color CalculateInsetOutsetColor(bool is_darken, const Color& color) {
   const Color dark_color = color.Dark();
   // Inset, outset, ridge, and groove paint a darkened or "shadow" edge:
   // https://w3c.github.io/csswg-drafts/css-backgrounds/#border-style. By
@@ -787,7 +787,7 @@ void DrawLineForBoxSide(GraphicsContext& context,
       break;
     case EBorderStyle::kInset:
     case EBorderStyle::kOutset:
-      color = CalculateBorderStyleColor(style, side, color);
+      color = CalculateInsetOutsetColor(DarkenBoxSide(side, style), color);
       [[fallthrough]];
     case EBorderStyle::kSolid:
       DrawSolidBoxSide(context, x1, y1, x2, y2, side, color, adjacent_width1,
@@ -1448,28 +1448,23 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
     case EBorderStyle::kHidden:
       return;
     case EBorderStyle::kDotted:
-    case EBorderStyle::kDashed: {
+    case EBorderStyle::kDashed:
       DrawDashedDottedBoxSideFromPath(border_thickness, stroke_thickness, color,
                                       border_style);
       return;
-    }
-    case EBorderStyle::kDouble: {
-      DrawDoubleBoxSideFromPath(border_path, border_thickness, stroke_thickness,
-                                side, color);
+    case EBorderStyle::kDouble:
+      DrawDoubleBoxSideFromPath(color);
       return;
-    }
     case EBorderStyle::kRidge:
-    case EBorderStyle::kGroove: {
-      DrawRidgeGrooveBoxSideFromPath(border_path, border_thickness,
-                                     stroke_thickness, side, color,
-                                     border_style);
+    case EBorderStyle::kGroove:
+      DrawRidgeGrooveBoxSideFromPath(side, color, border_style);
       return;
-    }
     case EBorderStyle::kInset:
     case EBorderStyle::kOutset:
-      color = CalculateBorderStyleColor(border_style, side, color);
-      break;
-    default:
+      color =
+          CalculateInsetOutsetColor(DarkenBoxSide(side, border_style), color);
+      [[fallthrough]];
+    case EBorderStyle::kSolid:
       break;
   }
 
@@ -1533,11 +1528,10 @@ void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
   context_.StrokePath(border_path, PaintAutoDarkMode(style_, element_role_));
 }
 
-void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
-                                                 int border_thickness,
-                                                 int stroke_thickness,
-                                                 BoxSide side,
-                                                 Color color) const {
+void BoxBorderPainter::DrawDoubleBoxSideFromPath(Color color) const {
+  const AutoDarkMode auto_dark_mode = PaintAutoDarkMode(style_, element_role_);
+  const gfx::Rect rect = gfx::ToRoundedRect(outer_.Rect());
+
   // Draw inner border line
   {
     GraphicsContextStateSaver state_saver(context_);
@@ -1547,8 +1541,8 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
         ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
             style_, border_rect_, inner_outsets, sides_to_include_);
     context_.ClipContouredRect(inner_clip);
-    DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
-                        color, EBorderStyle::kSolid);
+    context_.SetFillColor(color);
+    context_.FillRect(rect, auto_dark_mode);
   }
 
   // Draw outer border line
@@ -1567,31 +1561,29 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
         ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
             style_, used_border_rect, outer_outsets, sides_to_include_);
     context_.ClipOutContouredRect(outer_clip);
-    DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
-                        color, EBorderStyle::kSolid);
+    context_.SetFillColor(color);
+    context_.FillRect(rect, auto_dark_mode);
   }
 }
 
 void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
-    const Path& border_path,
-    int border_thickness,
-    int stroke_thickness,
     BoxSide side,
     Color color,
     EBorderStyle border_style) const {
   EBorderStyle s1;
-  EBorderStyle s2;
   if (border_style == EBorderStyle::kGroove) {
     s1 = EBorderStyle::kInset;
-    s2 = EBorderStyle::kOutset;
   } else {
     s1 = EBorderStyle::kOutset;
-    s2 = EBorderStyle::kInset;
   }
 
+  const bool darken_s1 = DarkenBoxSide(side, s1);
+  const AutoDarkMode auto_dark_mode = PaintAutoDarkMode(style_, element_role_);
+  const gfx::Rect rect = gfx::ToRoundedRect(outer_.Rect());
+
   // Paint full border
-  DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
-                      color, s1);
+  context_.SetFillColor(CalculateInsetOutsetColor(darken_s1, color));
+  context_.FillRect(rect, auto_dark_mode);
 
   // Paint inner only
   GraphicsContextStateSaver state_saver(context_);
@@ -1600,8 +1592,8 @@ void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
           style_, border_rect_, CenterOutsets(), sides_to_include_);
 
   context_.ClipContouredRect(clip_rect);
-  DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
-                      color, s2);
+  context_.SetFillColor(CalculateInsetOutsetColor(!darken_s1, color));
+  context_.FillRect(rect, auto_dark_mode);
 }
 
 gfx::Rect BoxBorderPainter::CalculateSideRectIncludingInner(

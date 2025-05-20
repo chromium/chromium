@@ -103,17 +103,8 @@ class BoxBorderPainter {
                                        Color,
                                        EBorderStyle) const;
   void DrawWideDottedBoxSideFromPath(const Path&, int thickness) const;
-  void DrawDoubleBoxSideFromPath(const Path&,
-                                 int thickness,
-                                 int draw_thickness,
-                                 BoxSide,
-                                 Color) const;
-  void DrawRidgeGrooveBoxSideFromPath(const Path&,
-                                      int thickness,
-                                      int draw_thickness,
-                                      BoxSide,
-                                      Color,
-                                      EBorderStyle) const;
+  void DrawDoubleBoxSideFromPath(Color) const;
+  void DrawRidgeGrooveBoxSideFromPath(BoxSide, Color, EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
   gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
 
