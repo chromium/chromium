@@ -24882,7 +24882,7 @@
                 {
                     "name": "Enabled_for_all_frames",
                     "params": {
-                        "Target": "AllFrames"
+                        "Target": "Interaction"
                     },
                     "enable_features": [
                         "VSyncAlignedPresent"
