@@ -747,7 +747,10 @@ if (use_blink) {
     ]
 
     if (is_android) {
-      sources += [ "android/motion_event_android_unittest.cc" ]
+      sources += [
+        "android/motion_event_android_unittest.cc",
+        "keycodes/keyboard_code_conversion_android_unittest.cc",
+      ]
       deps += [
         ":motionevent_jni_headers",
         "//ui/android:ui_full_java",
