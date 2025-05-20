@@ -327,24 +327,24 @@ std::u16string AutofillProfileComparator::NormalizeForComparison(
   // 2. Collapse consecutive punctuation/whitespace characters to a single
   //    space. We pretend the string has already started with whitespace in
   //    order to trim leading spaces.
+  //    If DISCARD_WHITESPACE was picked, remove all the punctuation/whitespace
+  //    characters altogether.
   //
   // 3. Remove diacritics (accents and other non-spacing marks) and perform
   //    case folding to lower-case.
   std::u16string result;
   result.reserve(text.length());
-  bool previous_was_whitespace = (whitespace_spec == RETAIN_WHITESPACE);
+  const bool retain_whitespace = whitespace_spec == RETAIN_WHITESPACE;
+  bool previous_was_whitespace = true;
   for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
-    if (IsPunctuationOrWhitespace(u_charType(iter.get()))) {
-      if (!previous_was_whitespace && whitespace_spec == RETAIN_WHITESPACE) {
-        result.push_back(' ');
-        previous_was_whitespace = true;
-      }
-    } else {
+    if (!IsPunctuationOrWhitespace(u_charType(iter.get()))) {
       previous_was_whitespace = false;
       base::WriteUnicodeCharacter(iter.get(), &result);
+    } else if (retain_whitespace && !previous_was_whitespace) {
+      result.push_back(' ');
+      previous_was_whitespace = true;
     }
   }
-
   // Trim off trailing whitespace if we left one.
   if (previous_was_whitespace && !result.empty()) {
     result.resize(result.size() - 1);
