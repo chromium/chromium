@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"

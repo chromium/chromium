@@ -79,7 +79,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
-    "//chrome/browser/metrics/structured:features",
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",

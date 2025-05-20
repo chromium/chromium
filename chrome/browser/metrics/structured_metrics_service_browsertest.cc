@@ -22,7 +22,6 @@
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/structured_events.h"
-#include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_service.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -109,10 +108,7 @@ class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
 class TestStructuredMetricsService : public StructuredMetricsServiceTestBase {
  public:
   TestStructuredMetricsService() {
-    feature_list_.InitWithFeatures(
-        {metrics::structured::kEnabledStructuredMetricsService,
-         ::features::kChromeStructuredMetrics},
-        {});
+    feature_list_.InitAndEnableFeature(::features::kChromeStructuredMetrics);
   }
 
  private:
@@ -285,34 +281,6 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
             GetSMService()->GetMetricsServiceClient()->GetVersionString());
 }
 #endif  //  BUILDFLAG(IS_CHROMEOS)
-
-class TestStructuredMetricsServiceDisabled
-    : public StructuredMetricsServiceTestBase {
- public:
-  TestStructuredMetricsServiceDisabled() {
-    feature_list_.InitWithFeatures(
-        {::features::kChromeStructuredMetrics},
-        {metrics::structured::kEnabledStructuredMetricsService});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
-                       ValidStateWhenDisabled) {
-  auto* sm_service = GetSMService();
-
-  // Enable consent for profile.
-  structured_metrics_mixin_.UpdateRecordingState(true);
-
-  // Everything should be null expect the recorder. The recorder is used by
-  // StructuredMetricsProvider when the service is disabled; therefore, it
-  // cannot be null.
-  EXPECT_THAT(sm_service->recorder(), testing::NotNull());
-  EXPECT_THAT(sm_service->reporting_service_.get(), testing::IsNull());
-  EXPECT_THAT(sm_service->scheduler_.get(), testing::IsNull());
-}
 
 // TODO(crbug.com/41485716): Flaky on linux-chromeos-rel.
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,

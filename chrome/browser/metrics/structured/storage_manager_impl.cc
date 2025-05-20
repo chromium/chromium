@@ -11,7 +11,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/metrics/structured/arena_event_buffer.h"
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 

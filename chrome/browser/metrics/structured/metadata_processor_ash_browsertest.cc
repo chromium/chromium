@@ -223,15 +223,6 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
         kAccountId1, device_local_account_policy_.GetBlob());
   }
 
-  void SetUp() override {
-    // These tests are only applicable if structured metrics service is enabled.
-    if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
-      GTEST_SKIP() << "Skipping test: Structured Metrics Service and CrOS "
-                      "Events must be enabled";
-    }
-    policy::DevicePolicyCrosBrowserTest::SetUp();
-  }
-
   void SetDevicePolicy() {
     UploadAndInstallDeviceLocalAccountPolicy();
     // Add an account with DeviceLocalAccountType::kPublicSession.

@@ -5425,7 +5425,6 @@ static_library("browser") {
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/chromeos/video_conference",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
-      "//chrome/browser/metrics/structured:features",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
       "//chrome/browser/nearby_sharing/client",

@@ -30,18 +30,6 @@ source_set("structured") {
   }
 }
 
-source_set("features") {
-  sources = [
-    "event_logging_features.cc",
-    "event_logging_features.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/metrics/structured:structured_metrics_features",
-  ]
-}
-
 static_library("test_support") {
   testonly = true
   sources = [

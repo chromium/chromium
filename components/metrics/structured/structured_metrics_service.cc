@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
@@ -21,6 +22,18 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics::structured {
+
+// Controls the minimum number of logs to be stored.
+constexpr size_t kMinLogQueueCount = 10;
+
+// Controls the minimum size of all logs that can be stored in bytes.
+constexpr size_t kMinLogQueueSizeBytes = 300 * 1024 * 1024;  // 300 KiB
+
+// Controls the maximum size of a single log in bytes.
+constexpr size_t kMaxLogSizeBytes = 1024 * 1024 * 1024;  // 1 MiB
+
+// Controls the upload interval.
+constexpr base::TimeDelta kUploadInterval = base::Minutes(10);
 
 #if BUILDFLAG(IS_CHROMEOS)
 StructuredMetricsService::ServiceIOHelper::ServiceIOHelper(
@@ -45,8 +58,7 @@ StructuredMetricsService::StructuredMetricsService(
       // This service is only enabled if both structured metrics and the service
       // flags are enabled.
       structured_metrics_enabled_(
-          base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics) &&
-          base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)),
+          base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics)),
       client_(client) {
   CHECK(client_);
   CHECK(local_state);
@@ -196,7 +208,7 @@ void StructuredMetricsService::Purge() {
 }
 
 base::TimeDelta StructuredMetricsService::GetUploadTimeInterval() {
-  return base::Seconds(GetUploadInterval());
+  return kUploadInterval;
 }
 
 void StructuredMetricsService::RotateLogsAndSend() {
@@ -389,9 +401,9 @@ std::string StructuredMetricsService::SerializeLog(
 UnsentLogStore::UnsentLogStoreLimits
 StructuredMetricsService::GetLogStoreLimits() {
   return UnsentLogStore::UnsentLogStoreLimits{
-      .min_log_count = static_cast<size_t>(kMinLogQueueCount.Get()),
-      .min_queue_size_bytes = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
-      .max_log_size_bytes = static_cast<size_t>(kMaxLogSizeBytes.Get()),
+      .min_log_count = kMinLogQueueCount,
+      .min_queue_size_bytes = kMinLogQueueSizeBytes,
+      .max_log_size_bytes = kMaxLogSizeBytes,
   };
 }
 

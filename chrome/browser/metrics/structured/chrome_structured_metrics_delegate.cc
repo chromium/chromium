@@ -20,7 +20,6 @@
 #include "chrome/browser/metrics/structured/ash_event_storage.h"  // nogncheck
 #include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"  // nogncheck
 #include "chrome/browser/metrics/structured/cros_events_processor.h"  // nogncheck
-#include "chrome/browser/metrics/structured/event_logging_features.h"  // nogncheck
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"  // nogncheck
 #include "chrome/browser/metrics/structured/metadata_processor_ash.h"  // nogncheck
 #include "chrome/browser/metrics/structured/oobe_structured_metrics_watcher.h"  // nogncheck
@@ -38,6 +37,9 @@ enum class StructuredMetricsPlatform {
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
+// The number of events that need to be recorded before an upload can occur.
+constexpr int kOobeUploadCount = 10;
+
 // Logs initialization of Structured Metrics as a record.
 void LogInitializationInChromeOSStructuredMetrics(
     StructuredMetricsPlatform platform) {
@@ -100,8 +102,8 @@ void ChromeStructuredMetricsDelegate::Initialize() {
 
   if (!ash::StartupUtils::IsOobeCompleted()) {
     Recorder::GetInstance()->AddEventsProcessor(
-        std::make_unique<OobeStructuredMetricsWatcher>(
-            service, GetOobeEventUploadCount()));
+        std::make_unique<OobeStructuredMetricsWatcher>(service,
+                                                       kOobeUploadCount));
   }
 
   Recorder::GetInstance()->AddEventsProcessor(

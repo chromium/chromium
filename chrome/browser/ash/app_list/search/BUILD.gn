@@ -92,7 +92,6 @@ static_library("search") {
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/release_notes",
-    "//chrome/browser/metrics/structured:features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/webui/ash/settings/search",
