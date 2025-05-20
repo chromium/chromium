@@ -508,7 +508,7 @@ public class FeedSurfaceCoordinatorTest {
             return false;
         }
         return ((FeedStream) mCoordinator.getMediatorForTesting().getCurrentStreamForTesting())
-                .getBoundStatusForTest();
+                .isBound();
     }
 
     private FeedSurfaceCoordinator createCoordinator(RecyclerView recyclerview) {

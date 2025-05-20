@@ -34,6 +34,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
@@ -564,7 +565,7 @@ public class FeedStream implements Stream {
         @Override
         public void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {
             assert ThreadUtils.runningOnUiThread();
-            if (mSliceViewTracker != null) {
+            if (isBound()) {
                 mSliceViewTracker.watchForFirstVisible(
                         getSliceIdFromView(view), viewedThreshold, runnable);
             }
@@ -808,7 +809,7 @@ public class FeedStream implements Stream {
         if (mUnreadContentObserver != null) {
             mUnreadContentObserver.destroy();
         }
-        if (mRecyclerView != null) {
+        if (isBound()) {
             unbind(false, false);
         }
         mBridge.destroy();
@@ -887,10 +888,24 @@ public class FeedStream implements Stream {
         }
     }
 
+    @EnsuresNonNullIf({
+        "mRecyclerView",
+        "mSliceViewTracker",
+        "mContentManager",
+    })
+    @VisibleForTesting
+    boolean isBound() {
+        if (mRecyclerView != null) {
+            assert mSliceViewTracker != null;
+            assert mContentManager != null;
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void unbind(boolean shouldPlaceSpacer, boolean switchingStream) {
-        // TODO: Add isBound() to check nullness of member variables.
-        if (mRecyclerView == null) return;
+        if (!isBound()) return;
 
         // Find out the specific reason for unbinding the stream.
         if (switchingStream) {
@@ -910,7 +925,7 @@ public class FeedStream implements Stream {
         mSnackbarControllers.clear();
         mWebFeedSnackbarController.dismissSnackbars();
 
-        assumeNonNull(mSliceViewTracker).destroy();
+        mSliceViewTracker.destroy();
         mSliceViewTracker = null;
         mSurfaceScope = null;
         mAccumulatedDySinceLastLoadMore = 0;
@@ -927,7 +942,7 @@ public class FeedStream implements Stream {
         dismissBottomSheet();
 
         // Clear handlers.
-        assumeNonNull(mContentManager).setHandlers(new HashMap<>());
+        mContentManager.setHandlers(new HashMap<>());
         mContentManager = null;
 
         mRecyclerView.removeOnScrollListener(mMainScrollListener);
@@ -980,7 +995,7 @@ public class FeedStream implements Stream {
 
     @VisibleForTesting
     void checkScrollingForLoadMore(int dy) {
-        if (mContentManager == null) return;
+        if (!isBound()) return;
 
         mAccumulatedDySinceLastLoadMore += dy;
         if (mAccumulatedDySinceLastLoadMore < 0) {
@@ -990,7 +1005,7 @@ public class FeedStream implements Stream {
                 < TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         mLoadMoreTriggerScrollDistanceDp,
-                        assumeNonNull(mRecyclerView).getResources().getDisplayMetrics())) {
+                        mRecyclerView.getResources().getDisplayMetrics())) {
             return;
         }
 
@@ -1025,14 +1040,15 @@ public class FeedStream implements Stream {
 
     /**
      * Attempts to load more content if it can be triggered.
+     *
      * @param lookaheadTrigger The threshold of off-screen cards below which the feed should attempt
-     *         to load more content. I.e., if there are less than or equal to |lookaheadTrigger|
-     *         cards left to show the user, then the feed should load more cards.
+     *     to load more content. I.e., if there are less than or equal to |lookaheadTrigger| cards
+     *     left to show the user, then the feed should load more cards.
      * @return true if loading more content can be triggered.
      */
     private boolean maybeLoadMore(int lookaheadTrigger) {
         // Checks if we've been unbinded.
-        if (mRecyclerView == null) {
+        if (!isBound()) {
             return false;
         }
         // Checks if loading more can be triggered.
@@ -1118,7 +1134,7 @@ public class FeedStream implements Stream {
         public void onStreamUpdated(byte[] data) {
             // There should be no updates while the surface is closed. If the surface was recently
             // closed, just ignore these.
-            if (mContentManager == null) return;
+            if (!isBound()) return;
             FeedUiProto.StreamUpdate streamUpdate;
             try {
                 streamUpdate = FeedUiProto.StreamUpdate.parseFrom(data);
@@ -1204,7 +1220,8 @@ public class FeedStream implements Stream {
             }
 
             updateContentsInPlace(newContentList);
-            assumeNonNull(mRecyclerView).post(mReliabilityLoggingBridge::onStreamUpdateFinished);
+            assert isBound();
+            mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
 
             // If we have new content, and the new content callback is set, then call it, and clear
             // the callback.
@@ -1314,16 +1331,16 @@ public class FeedStream implements Stream {
 
     /**
      * Restores the scroll state serialized to |savedInstanceState|.
-     * @return true if the scroll state was restored, or if the state could never be restored.
-     * false if we need to wait until more items are added to the recycler view to make it
-     * scrollable.
+     *
+     * @return true if the scroll state was restored, or if the state could never be restored. false
+     *     if we need to wait until more items are added to the recycler view to make it scrollable.
      */
     private boolean restoreScrollState(FeedScrollState state) {
-        assert (mRecyclerView != null);
+        assert isBound();
         if (state == null || state.lastPosition < 0 || state.position < 0) return true;
 
         // If too few items exist, defer scrolling until later.
-        if (assumeNonNull(mContentManager).getItemCount() <= state.lastPosition) return false;
+        if (mContentManager.getItemCount() <= state.lastPosition) return false;
         // Don't try to resume scrolling to a refresh spinner.
         if (mContentManager.getContent(state.lastPosition).getKey().equals(LOADING_SPINNER_KEY)) {
             return false;
@@ -1348,9 +1365,10 @@ public class FeedStream implements Stream {
         View childOfRoot = findChildViewContainingDescendant(mRecyclerView, view);
 
         if (childOfRoot != null) {
+            assert isBound();
             // View is a child of the recycler view, find slice using the index.
-            int position = assumeNonNull(mRecyclerView).getChildAdapterPosition(childOfRoot);
-            if (position >= 0 && position < assumeNonNull(mContentManager).getItemCount()) {
+            int position = mRecyclerView.getChildAdapterPosition(childOfRoot);
+            if (position >= 0 && position < mContentManager.getItemCount()) {
                 return mContentManager.getContent(position).getKey();
             }
         } else if (mBottomSheetContent != null
@@ -1393,13 +1411,6 @@ public class FeedStream implements Stream {
 
     void setShareWrapperForTest(ShareHelperWrapper shareWrapper) {
         mShareHelper = shareWrapper;
-    }
-
-    /**
-     * @return True if this feed has been bound.
-     */
-    public boolean getBoundStatusForTest() {
-        return mContentManager != null;
     }
 
     RecyclerView.OnScrollListener getScrollListenerForTest() {
