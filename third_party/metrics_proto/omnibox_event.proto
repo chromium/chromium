@@ -218,6 +218,10 @@ message OmniboxEventProto {
     // The searchbox in the Android Hub.
     ANDROID_HUB = 29;
 
+    // JumpStart Omnibox feature (Android): start Chrome to Search Activity on
+    // Low End devices.
+    JUMP_START = 30;
+
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
     // tools/metrics/histograms/metadata/omnibox/histograms.xml and also

@@ -136,6 +136,7 @@ chromium-metrics-reviews@google.com.
   <variant name="INVALID_SPEC" summary="invalid spec; shouldn't happen"/>
   <variant name="JOURNEYS"
       summary="Journeys landing page, side Panel or the NTP"/>
+  <variant name="JUMP_START" summary="JumpStart Omnibox (Android)"/>
   <variant name="LENS_SIDE_PANEL_SEARCHBOX"
       summary="Lens side panel searchbox"/>
   <variant name="NTP"
