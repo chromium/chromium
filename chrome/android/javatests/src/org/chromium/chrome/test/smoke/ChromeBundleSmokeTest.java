@@ -21,7 +21,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
@@ -33,7 +32,8 @@ import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 /** Smoke Test for Chrome bundles. */
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
-@DisabledTest(message = "crbug.com/372840602")
+// Do not disable this test unless you are confident you can re-enable it quickly.
+// This is the main test that prevents crash-on-launch bugs.
 public class ChromeBundleSmokeTest {
     private static final String TARGET_ACTIVITY =
             "org.chromium.chrome.browser.test_dummy.TestDummyActivity";

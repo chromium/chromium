@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
@@ -36,6 +35,8 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 /** Basic Test for Chrome Android to switch Tabs. */
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
+// Do not disable this test unless you are confident you can re-enable it quickly.
+// This is the main test that prevents crash-on-launch bugs.
 public class ChromeTabSwitcherTest {
     private static final String TAG = "SmokeTest";
     private static final String ACTIVITY_NAME = "com.google.android.apps.chrome.IntentDispatcher";
@@ -71,7 +72,8 @@ public class ChromeTabSwitcherTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/372837954")
+    // Do not disable this test unless you are confident you can re-enable it quickly.
+    // This is the main test that prevents crash-on-launch bugs.
     public void testTabSwitcher() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         String url = sEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
