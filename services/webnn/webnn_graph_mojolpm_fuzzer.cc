@@ -241,7 +241,10 @@ class WebnnGraphLPMFuzzer {
                testcase_->seed_for_input_data());
   }
 
-  bool IsFinished() { return action_index_ >= testcase_->actions_size(); }
+  // Cap the number of actions at 100 to avoid timeouts.
+  bool IsFinished() {
+    return action_index_ > 100 || action_index_ >= testcase_->actions_size();
+  }
 
  private:
   const raw_ref<const services::fuzzing::webnn_graph::proto::Testcase>
