@@ -209,6 +209,10 @@ def initialize_globals(import_channel: str):
           })
       ],
       # end export_include_dir.
+      # TODO: https://crbug.com/418746360 - Handle //base:build_date_internal
+      # for os:linux_glibc.
+      f'{MODULE_PREFIX}base_build_date_internal__testing': [('host_supported',
+                                                             True)],
   }
 
 
@@ -1972,6 +1976,40 @@ class WriteNativeLibrariesJavaSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
 
+class CopyActionSanitizer(BaseActionSanitizer):
+
+  def get_tool_files(self):
+    # CopyAction makes use of no tools, it simply relies on cp.
+    return set()
+
+  def get_cmd(self):
+    return (super().get_pre_cmd() + ['cp'] +
+            [shlex.quote(arg) for arg in self.target.args])
+
+  def get_srcs(self):
+    srcs = super().get_srcs()
+    if srcs:
+      raise Exception(
+          f'CopyAction {self.target.name} specifies {srcs=}. Only deps are supported'
+      )
+    deps = self.get_deps()
+    if len(deps) > 1:
+      raise Exception(
+          f'CopyAction {self.target.name} specifies multiple {deps=}. Only a single dep is supported'
+      )
+    return set(f':{label_to_module_name(dep)}' for dep in deps)
+
+  def sanitize(self):
+    # By convention, copy targets use their deps as args for the copy (see get_srcs).
+    if len(self.target.args) > 1:
+      raise Exception(
+          f'CopyAction {self.target.name} specifies {self.target.args=}. Only deps are supported'
+      )
+    self.target.args = [f'$(location {src})' for src in self.get_srcs()]
+    self.target.args.append('$(out)')
+    super().sanitize()
+
+
 class ProtocJavaSanitizer(BaseActionSanitizer):
 
   def __init__(self, target, arch, gn):
@@ -2028,6 +2066,8 @@ def get_action_sanitizer(gn, target, gn_type, arch, is_test_target):
     return JavaCppStringSanitizer(target, arch)
   if target.script == '//build/android/gyp/write_native_libraries_java.py':
     return WriteNativeLibrariesJavaSanitizer(target, arch)
+  if target.script == '//cp':
+    return CopyActionSanitizer(target, arch)
   if target.script == '//build/gn_run_binary.py':
     return GnRunBinarySanitizer(target, arch)
   if target.script == '//build/protoc_java.py':
@@ -2638,10 +2678,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       modules = create_action_foreach_modules(blueprint, gn, target,
                                               is_test_target)
   elif target.type == 'copy':
-    # TODO: careful now! copy targets are not supported yet, but this will stop
-    # traversing the dependency tree. For //base:base, this is not a big
-    # problem as libicu contains the only copy target which happens to be a
-    # leaf node.
+    # Copy targets are not supported: currently, we stop traversing the
+    # dependency tree when we encounter one.
     return ()
   elif target.type == 'java_library':
     modules = (create_java_module(bp_module_name, target, blueprint), )

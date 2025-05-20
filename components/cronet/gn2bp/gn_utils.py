@@ -568,15 +568,29 @@ class GnParser:
       target.outputs.update(outs)
       target.args = desc['args']
       target.type = "rust_bindgen"
-    elif target.type in ['action', 'action_foreach']:
+    elif (target.type in [
+        'action', 'action_foreach'
+        # GN's copy is translated to Soong by making it look like a GN's action
+        # with a special //cp script. This works well for its only usage:
+        # //base:build_date. As the list of supported copy target grows, we might
+        # need to revisit this decision.
+    ]) or (desc['type'] == 'copy' and target.name
+           in ['//base:build_date', '//base:build_date__testing']):
       target.arch[arch].inputs.update(desc.get('inputs', []))
       target.arch[arch].sources.update(desc.get('sources', []))
       outs = [_remove_out_prefix(x) for x in desc['outputs']]
       target.arch[arch].outputs.update(outs)
-      # While the arguments might differ, an action should always use the same script for every
-      # architecture. (gen_android_bp's get_action_sanitizer actually relies on this fact.
-      target.script = desc['script']
-      target.arch[arch].args = desc['args']
+      # We need to check desc['type'], not target.type: targets go through
+      # this code multiple times. If we checked for target.type, the second
+      # time we parsed a copy target, we would take the else branch.
+      if desc['type'] == 'copy':
+        target.type = 'action'
+        target.script = '//cp'
+      else:
+        # While the arguments might differ, an action should always use the same script for every
+        # architecture. (gen_android_bp's get_action_sanitizer actually relies on this fact.
+        target.script = desc['script']
+        target.arch[arch].args = desc['args']
       target.arch[
           arch].response_file_contents = self._get_response_file_contents(desc)
       # _get_jni_registration_deps will return the dependencies of a target if
@@ -590,8 +604,13 @@ class GnParser:
       target.transitive_jni_java_sources.update(
           metadata.get("jni_source_files", set()))
       self.jni_java_sources.update(metadata.get("jni_source_files", set()))
-    elif target.type in ('copy', 'group'):
-      # copy and group are bubbled upward without creating an equivalent GN target.
+    elif target.type == 'group':
+      # Group targets are bubbled upward without creating an equivalent GN target.
+      pass
+    elif target.type == 'copy':
+      # Copy targets, except for a few exception (see handling of action
+      # targets above), are bubbled upward without creating an equivalent
+      # GN target.
       pass
     elif target.type in ["rust_library", "rust_proc_macro"]:
       target.arch[arch].sources.update(source
@@ -649,7 +668,7 @@ class GnParser:
         target.update(dep, arch)  # Bubble up groups's cflags/ldflags etc.
         target.transitive_jni_java_sources.update(
             dep.transitive_jni_java_sources)
-      elif dep.type in ['action', 'action_foreach', 'copy']:
+      elif dep.type in ['action', 'action_foreach']:
         target.arch[arch].deps.add(dep.name)
         target.transitive_jni_java_sources.update(
             dep.transitive_jni_java_sources)
