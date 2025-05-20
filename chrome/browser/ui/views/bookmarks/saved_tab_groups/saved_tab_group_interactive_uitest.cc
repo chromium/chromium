@@ -62,6 +62,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
@@ -81,6 +82,10 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 #include "url/url_constants.h"
+
+namespace {
+constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
+}  // anonymous namespace
 
 namespace tab_groups {
 
@@ -175,6 +180,11 @@ class SavedTabGroupInteractiveTestBase
         WaitForState(kTabCountState, expected_count),
         StopObservingState(kTabCountState));
   }
+
+  MultiStep OpenTabGroupEditorMenu(tab_groups::TabGroupId group_id) {
+    return Steps(HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+                 WaitForShow(kTabGroupEditorBubbleId));
+  }
 };
 
 class SavedTabGroupInteractiveTest
@@ -207,11 +217,6 @@ class SavedTabGroupInteractiveTest
     return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
                                                kTabToHover, index),
                  MoveMouseTo(kTabToHover));
-  }
-
-  MultiStep OpenTabGroupEditorMenu(tab_groups::TabGroupId group_id) {
-    return Steps(HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
-                 WaitForShow(kTabGroupEditorBubbleId));
   }
 
   MultiStep WaitToFetchFavicon(int tab_index, const GURL& favicon_url) {
@@ -1172,6 +1177,57 @@ class TabGroupShortcutsInteractiveTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
+                       ScreenshotAcceleratorsInTabGroupEditorBubble) {
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const TabGroupId group_id = browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), OpenTabGroupEditorMenu(group_id),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      // Verify the tab group editor bubble has the accelerators for New tab in
+      // group and Close group.
+      Screenshot(kTabGroupEditorBubbleId,
+                 "tab_group_editor_bubble_with_accelerators", "6564307"),
+      // Close the tab group editor bubble to prevent flakes on mac.
+      HoverTabAt(0), ClickMouse(), WaitForHide(kTabGroupEditorBubbleId));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
+                       ScreenshotAcceleratorsInTabGroupSubmenu) {
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  const char kEverythingMenuRootViewId[] = "EverythingMenuRootView";
+
+  RunTestSequence(
+      FinishTabstripAnimations(), PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      NameViewRelative(
+          AppMenuModel::kTabGroupsMenuItem, kEverythingMenuRootViewId,
+          [](views::MenuItemView* item) { return item->GetSubmenu(); }),
+      WaitForShow(kEverythingMenuRootViewId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      // Verify the app menu has the accelerator for Create new tab group.
+      Screenshot(kEverythingMenuRootViewId,
+                 "tab_group_app_menu_with_accelerators", "6564307"),
+      // Close the app menu to prevent flakes on mac.
+      HoverTabAt(0), ClickMouse(),
+      WaitForHide(AppMenuModel::kTabGroupsMenuItem));
+}
 
 IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
                        NewTabAddedToEndOfActiveTabsGroupWithKeyboardShortcut) {

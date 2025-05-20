@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -35,7 +36,8 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
   TabGroupEditorBubbleViewDialogBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {}, {data_sharing::features::kDataSharingFeature,
-             data_sharing::features::kDataSharingJoinOnly});
+             data_sharing::features::kDataSharingJoinOnly,
+             tabs::kTabGroupShortcuts});
   }
 
  protected:

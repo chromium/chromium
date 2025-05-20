@@ -9,6 +9,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -62,7 +63,7 @@ class SharedTabGroupInteractiveUiTest
     scoped_feature_list_.InitWithFeatures(
         {tab_groups::kTabGroupSyncServiceDesktopMigration,
          data_sharing::features::kDataSharingFeature},
-        {});
+        {tabs::kTabGroupShortcuts});
     InProcessBrowserTest::SetUp();
   }
 
