@@ -53,7 +53,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS,
                 ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS,
                 ChromePreferenceKeys.DOWNLOAD_UMA_ENTRY,
-                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED,
                 ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
                 ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP,
                 ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,

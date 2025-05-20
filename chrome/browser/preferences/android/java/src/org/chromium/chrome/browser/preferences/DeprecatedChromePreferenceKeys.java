@@ -144,6 +144,7 @@ public class DeprecatedChromePreferenceKeys {
                 "darken_websites_enabled",
                 "enhanced_bookmark_signin_promo_show_count",
                 "first_run_signin_complete",
+                "first_run_tos_accepted",
                 "fre_promo_opt_out",
                 "grid_tab_switcher_enabled",
                 "home_page_button_force_enabled",

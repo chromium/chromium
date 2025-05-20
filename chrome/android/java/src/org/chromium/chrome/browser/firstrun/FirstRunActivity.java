@@ -694,11 +694,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public boolean didAcceptTermsOfService() {
-        return FirstRunUtils.didAcceptTermsOfService();
-    }
-
-    @Override
     public boolean isLaunchedFromCct() {
         return mLaunchedFromCct;
     }

@@ -32,14 +32,8 @@ import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 /** A {@link Fragment} that presents a set of search engines for the user to choose from. */
 @NullMarked
 public class DefaultSearchEngineFirstRunFragment extends Fragment implements FirstRunFragment {
-    @SearchEnginePromoType private int mSearchEnginePromoDialogType;
+    private @SearchEnginePromoType int mSearchEnginePromoDialogType;
     private boolean mShownRecorded;
-
-    /** Layout that displays the available search engines to the user. */
-    private RadioButtonLayout mEngineLayout;
-
-    /** The button that lets a user proceed to the next page after an engine is selected. */
-    private Button mButton;
 
     @Override
     public View onCreateView(
@@ -49,13 +43,16 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         View rootView =
                 inflater.inflate(
                         R.layout.default_search_engine_first_run_fragment, container, false);
-        mEngineLayout = rootView.findViewById(R.id.default_search_engine_dialog_options);
-        mButton = rootView.findViewById(R.id.button_primary);
-        mButton.setEnabled(false);
+        // Layout that displays the available search engines to the user.
+        RadioButtonLayout engineLayout =
+                rootView.findViewById(R.id.default_search_engine_dialog_options);
+        // The button that lets a user proceed to the next page after an engine is selected.
+        Button button = rootView.findViewById(R.id.button_primary);
+        button.setEnabled(false);
 
         ((TextView) rootView.findViewById(R.id.footer))
                 .setText(R.string.search_engine_dialog_footer);
-        mButton.setText(R.string.search_engine_dialog_confirm_button_title);
+        button.setText(R.string.search_engine_dialog_confirm_button_title);
 
         FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
         Profile profile = delegate.getProfileProviderSupplier().get().getOriginalProfile();
@@ -66,8 +63,8 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
             new DefaultSearchEngineDialogHelper(
                     mSearchEnginePromoDialogType,
                     LocaleManager.getInstance(),
-                    mEngineLayout,
-                    mButton,
+                    engineLayout,
+                    button,
                     getPageDelegate()::advanceToNextPage);
         }
 

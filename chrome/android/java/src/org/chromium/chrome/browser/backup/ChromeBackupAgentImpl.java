@@ -142,7 +142,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
     // Bool entries from SharedPreferences that should be backed up / restored.
     static final String[] BACKUP_ANDROID_BOOL_PREFS = {
-        ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED,
         ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
         ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
         ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,

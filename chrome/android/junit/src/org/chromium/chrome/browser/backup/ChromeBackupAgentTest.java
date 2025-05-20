@@ -173,7 +173,6 @@ public class ChromeBackupAgentTest {
         // but ChromeBackupAgentImpl is agnostic to that. The focus of these tests is making sure
         // that all the allowlisted prefs are backed up, and none other.
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true);
-        editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, false);
         editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
         editor.putBoolean(
@@ -281,9 +280,6 @@ public class ChromeBackupAgentTest {
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, 1);
         verify(backupData)
                 .writeEntityHeader(
-                        "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, 1);
-        verify(backupData)
-                .writeEntityHeader(
                         "AndroidDefault."
                                 + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
                         1);
@@ -322,11 +318,6 @@ public class ChromeBackupAgentTest {
             assertThat(
                     names,
                     hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
-            assertThat(
-                    names,
-                    hasItem(
-                            "AndroidDefault."
-                                    + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED));
             assertThat(
                     names,
                     hasItem(

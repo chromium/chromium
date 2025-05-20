@@ -44,15 +44,10 @@ public interface FirstRunPageDelegate {
      * run activity and start the main activity without setting any of the preferences tracking
      * whether first run has been completed.
      *
-     * Exposing this function is intended for use in scenarios where FRE is partially or completely
-     * skipped. (e.g. in accordance with Enterprise polices)
+     * <p>Exposing this function is intended for use in scenarios where FRE is partially or
+     * completely skipped. (e.g. in accordance with Enterprise polices)
      */
     void exitFirstRun();
-
-    /**
-     * @return Whether the user has accepted Chrome Terms of Service.
-     */
-    boolean didAcceptTermsOfService();
 
     /** Returns whether chrome is launched as a custom tab. */
     boolean isLaunchedFromCct();
