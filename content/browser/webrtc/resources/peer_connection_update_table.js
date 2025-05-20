@@ -222,6 +222,14 @@ export class PeerConnectionUpdateTable {
             sectionDetails.open = true;
             sectionSummary.textContent += ' munged';
             sectionSummary.style.backgroundColor = '#FBCEB1';
+            const lastLines = SDPUtils.splitLines(lastSections[index]);
+            // Show the first different line using a HTML title 'popover'.
+            for (let i = 0; i < lines.length && i < lastLines.length; i++) {
+              if (lines[i] !== lastLines[i]) {
+                sectionSummary.title = 'First different line: ' + lines[i];
+                break;
+              }
+            }
           }
           sectionDetails.appendChild(sectionSummary);
 
