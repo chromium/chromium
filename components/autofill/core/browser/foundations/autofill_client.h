@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/password_manager/autofill_password_manager_delegate.h"
+#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -326,8 +326,8 @@ class AutofillClient {
   // the window of this tab.
   virtual AutofillPlusAddressDelegate* GetPlusAddressDelegate();
 
-  // Returns the `AutofillPasswordManagerDelegate`.
-  virtual AutofillPasswordManagerDelegate* GetPasswordManagerDelegate();
+  // Returns the `PasswordManagerDelegate`.
+  virtual PasswordManagerDelegate* GetPasswordManagerDelegate();
 
   // TODO(crbug.com/365494310): Move these methods to a plus-address-specific
   // client class.

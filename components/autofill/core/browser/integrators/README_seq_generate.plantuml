@@ -14,16 +14,16 @@
  ' for display.
  '/
 @startuml
-Title: Generating suggestions with AutofillPasswordManagerDelegate
+Title: Generating suggestions with PasswordManagerDelegate
 
 participant BrowserAutofillManager as bam
 participant AutofillClient as afc
-participant AutofillPasswordManagerDelegate as apmd
+participant PasswordManagerDelegate as apmd
 participant PasswordAutofillManager_Frame_1 as pam1
 participant PasswordAutofillManager_Frame_2 as pam2
 
 bam -> afc:  getPasswordManagerDelegate()
-afc --> bam:  AutofillPasswordManagerDelegate
+afc --> bam:  PasswordManagerDelegate
 bam -> apmd:  GetSuggestions(TriggeringField)
 apmd -> apmd: for (apm : all_apm) GetSuggestionsForField(TriggeringField)
 apmd -> pam1: GetSuggestionsForField(TriggeringField)

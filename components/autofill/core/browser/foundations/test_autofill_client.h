@@ -36,7 +36,7 @@
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
-#include "components/autofill/core/browser/integrators/password_manager/autofill_password_manager_delegate.h"
+#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
@@ -194,7 +194,7 @@ class TestAutofillClientTemplate : public T {
     return identity_credential_delegate_.get();
   }
 
-  AutofillPasswordManagerDelegate* GetPasswordManagerDelegate() override {
+  PasswordManagerDelegate* GetPasswordManagerDelegate() override {
     return password_manager_delegate_.get();
   }
 
@@ -598,8 +598,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void set_password_manager_delegate(
-      std::unique_ptr<AutofillPasswordManagerDelegate>
-          password_manager_delegate) {
+      std::unique_ptr<PasswordManagerDelegate> password_manager_delegate) {
     password_manager_delegate_ = std::move(password_manager_delegate);
   }
 
@@ -623,7 +622,7 @@ class TestAutofillClientTemplate : public T {
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
-  std::unique_ptr<AutofillPasswordManagerDelegate> password_manager_delegate_;
+  std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
   TestAddressNormalizer test_address_normalizer_;
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
       mock_autofill_optimization_guide_ =

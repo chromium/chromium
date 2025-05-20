@@ -14,10 +14,10 @@
 @startuml
 interface "TouchToFillDelegate" as ttfd
 interface "FastCheckoutDelegate" as fcod
-interface "AutofillPasswordManagerDelegate" as pmd
+interface "PasswordManagerDelegate" as pmd
 interface "AutofillSuggestionDelegate" as asd
 class "AutofillExternalDelegate" as aed
-class "AutofillPasswordManagerDelegateImpl" as pmdi
+class "PasswordManagerDelegateImpl" as pmdi
 class "PasswordAutofillManager" as pam
 class "BrowserAutofillManager" as bam {
   + set_fast_checkout_delegate

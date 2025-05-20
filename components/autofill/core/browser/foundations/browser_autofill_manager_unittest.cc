@@ -78,8 +78,8 @@
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/password_manager/autofill_password_manager_delegate.h"
-#include "components/autofill/core/browser/integrators/password_manager/mock_autofill_password_manager_delegate.h"
+#include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
+#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -8881,7 +8881,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       external_delegate()->suggestions().front(), {});
 }
 
-// Fixture setting the BAM's `AutofillPasswordManagerDelegate` to a mock instead
+// Fixture setting the BAM's `PasswordManagerDelegate` to a mock instead
 // of the default `nullptr`. Enables any features if necessary.
 class BrowserAutofillManagerUsingPasswordDelegateTest
     : public BrowserAutofillManagerTest {
@@ -8896,19 +8896,16 @@ class BrowserAutofillManagerUsingPasswordDelegateTest
     BrowserAutofillManagerTest::TearDown();
   }
 
-  MockAutofillPasswordManagerDelegate& password_delegate() {
-    return *delegate_;
-  }
+  MockPasswordManagerDelegate& password_delegate() { return *delegate_; }
 
  private:
-  std::unique_ptr<AutofillPasswordManagerDelegate> CreatePasswordDelegate() {
-    auto password_delegate =
-        std::make_unique<MockAutofillPasswordManagerDelegate>();
+  std::unique_ptr<PasswordManagerDelegate> CreatePasswordDelegate() {
+    auto password_delegate = std::make_unique<MockPasswordManagerDelegate>();
     delegate_ = password_delegate.get();
     return password_delegate;
   }
 
-  raw_ptr<MockAutofillPasswordManagerDelegate> delegate_ = nullptr;
+  raw_ptr<MockPasswordManagerDelegate> delegate_ = nullptr;
 };
 
 // Test that the BAM queries the password delegate as soon as it's present.
