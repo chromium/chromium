@@ -337,11 +337,9 @@ class OOFCandidateStyleIterator {
 
     CHECK(element_);
 
-    element_->GetDocument()
-        .GetStyleEngine()
-        .UpdateStyleAndLayoutTreeForOutOfFlow(*element_, try_fallback_index,
-                                              try_set, try_tactics,
-                                              &anchor_evaluator_);
+    element_->GetDocument().GetStyleEngine().UpdateStyleForOutOfFlow(
+        *element_, try_fallback_index, try_set, try_tactics,
+        &anchor_evaluator_);
     CHECK(element_->GetLayoutObject());
     // Returns LayoutObject ComputedStyle instead of element style for layout
     // purposes. The style may be different, in particular for body -> html
@@ -355,9 +353,8 @@ class OOFCandidateStyleIterator {
   // Otherwise, the base style for generating auto anchor fallbacks.
   const ComputedStyle* style_ = nullptr;
 
-  // This evaluator is passed to
-  // StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow to evaluate anchor
-  // queries on the computed style.
+  // This evaluator is passed to StyleEngine::UpdateStyleForOutOfFlow to
+  // evaluate anchor queries on the computed style.
   AnchorEvaluatorImpl& anchor_evaluator_;
 
   // If the current style is applying a `position-try-fallbacks` fallback, this

@@ -4045,7 +4045,8 @@ const ComputedStyle* Element::StyleForLayoutObject(
     // may be that an update detected in the previous pass would no longer be
     // necessary if the animated property flipped back to the old style with no
     // change as the result.
-    DCHECK(GetDocument().GetStyleEngine().InInterleavedStyleRecalc() ||
+    DCHECK(GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() ||
+           GetDocument().GetStyleEngine().InPositionTryStyleRecalc() ||
            PostStyleUpdateScope::InPendingPseudoUpdate() ||
            element_animations->CssAnimations().PendingUpdate().IsEmpty());
     element_animations->CssAnimations().ClearPendingUpdate();
@@ -4285,11 +4286,11 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
-  // If we're in StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow, then
-  // anchor_evaluator may be non-nullptr to allow evaluation of anchor() and
-  // anchor-size() queries, and the try sets may be non-nullptr if we're
-  // attempting some position option [1]. These are only supposed to apply to
-  // the interleaving root itself (i.e. the out-of-flow element being laid out),
+  // If we're in StyleEngine::UpdateStyleForOutOfFlow, then anchor_evaluator
+  // may be non-nullptr to allow evaluation of anchor() and anchor-size()
+  // queries, and the try sets may be non-nullptr if we're attempting
+  // some position option [1]. These are only supposed to apply to the
+  // interleaving root itself (i.e. the out-of-flow element being laid out),
   // and not to descendants.
   //
   // [1] https://drafts.csswg.org/css-anchor-position-1/#fallback
@@ -4792,10 +4793,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
             .SetContainerQueryEvaluator(nullptr);
       } else if (old_style) {
         if (style_recalc_context.anchor_evaluator == nullptr) {
-          // position-try-fallbacks are only applied for
-          // UpdateStyleAndLayoutTreeForOutOfFlow during layout, so we need to
-          // reset the anchored(fallback) state to no fallback for normal style
-          // recalc.
+          // position-try-fallbacks are only applied for UpdateStyleForOutOfFlow
+          // during layout, so we need to reset the anchored(fallback) state to
+          // no fallback for normal style recalc.
           child_change = evaluator->ApplyAnchoredChanges(
               child_change, /*try_fallback_index=*/std::nullopt);
         }

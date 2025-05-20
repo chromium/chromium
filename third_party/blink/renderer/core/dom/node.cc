@@ -1832,9 +1832,15 @@ void Node::AttachLayoutTree(AttachContext& context) {
 }
 
 void Node::DetachLayoutTree(bool performing_reattach) {
+  // Re-attachment is not generally allowed from PositionTryStyleRecalc, but
+  // computing style for display:none pseudo elements will insert a pseudo
+  // element, compute the style, and remove it again, which includes a
+  // DetachLayoutTree().
   DCHECK(GetDocument().Lifecycle().StateAllowsDetach() ||
-         GetDocument().GetStyleEngine().InInterleavedStyleRecalc() ||
-         GetDocument().GetStyleEngine().InScrollMarkersAttachment());
+         GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() ||
+         GetDocument().GetStyleEngine().InScrollMarkersAttachment() ||
+         (GetDocument().GetStyleEngine().InPositionTryStyleRecalc() &&
+          IsPseudoElement() && !GetLayoutObject()));
   DCHECK(!performing_reattach ||
          GetDocument().GetStyleEngine().InRebuildLayoutTree() ||
          GetDocument().GetStyleEngine().InScrollMarkersAttachment());

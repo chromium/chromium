@@ -130,17 +130,16 @@ class StyleResolverTest : public PageTestBase {
     return style.MaxHeight();
   }
 
-  void UpdateStyleAndLayoutTreeForOutOfFlow(Element& element,
-                                            AtomicString try_name) {
+  void UpdateStyleForOutOfFlow(Element& element, AtomicString try_name) {
     ScopedCSSName* scoped_name =
         MakeGarbageCollected<ScopedCSSName>(try_name, &GetDocument());
     StyleRulePositionTry* rule =
         GetStyleEngine().GetPositionTryRule(*scoped_name);
     CHECK(rule);
-    GetStyleEngine().UpdateStyleAndLayoutTreeForOutOfFlow(
-        element, /*try_fallback_index*/ 0,
-        /*try_set=*/&rule->Properties(), kNoTryTactics,
-        /*anchor_evaluator=*/nullptr);
+    GetStyleEngine().UpdateStyleForOutOfFlow(element, /*try_fallback_index*/ 0,
+                                             /*try_set=*/&rule->Properties(),
+                                             kNoTryTactics,
+                                             /*anchor_evaluator=*/nullptr);
   }
 
   size_t GetCurrentOldStylesCount() {
@@ -3094,20 +3093,20 @@ TEST_F(StyleResolverTest, PositionTryStylesBasic_Cascade) {
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
   EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f1"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
   EXPECT_EQ(Length::Fixed(100), GetLeft(*try1));
 
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f2"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f2"));
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(100), GetTop(*try2));
   EXPECT_EQ(Length::Auto(), GetLeft(*try2));
 
   // Shorthand should also work
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f3"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f3"));
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -3143,7 +3142,7 @@ TEST_F(StyleResolverTest, PositionTryStylesResolveLogicalProperties_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
   // 'inset-inline-start' should resolve to 'bottom'
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f1"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
@@ -3152,7 +3151,7 @@ TEST_F(StyleResolverTest, PositionTryStylesResolveLogicalProperties_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
   // 'inset-block' with two parameters should set 'right' and then 'left'
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f2"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f2"));
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
@@ -3182,7 +3181,7 @@ TEST_F(StyleResolverTest, PositionTryStylesResolveRelativeLengthUnits_Cascade) {
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // '2em' should resolve to '40px'
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f1"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(40), GetTop(*try1));
@@ -3213,7 +3212,7 @@ TEST_F(StyleResolverTest, PositionTryStylesInBeforePseudoElement_Cascade) {
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // 'position-try-fallbacks' applies to ::before pseudo-element.
-  UpdateStyleAndLayoutTreeForOutOfFlow(*before, AtomicString("--f1"));
+  UpdateStyleForOutOfFlow(*before, AtomicString("--f1"));
   const ComputedStyle* try1 = before->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
@@ -3251,7 +3250,7 @@ TEST_F(StyleResolverTest, PositionTryStylesCSSWideKeywords_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f1"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
@@ -3259,7 +3258,7 @@ TEST_F(StyleResolverTest, PositionTryStylesCSSWideKeywords_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try1));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f2"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f2"));
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
@@ -3267,7 +3266,7 @@ TEST_F(StyleResolverTest, PositionTryStylesCSSWideKeywords_Cascade) {
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try2));
 
-  UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--f3"));
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f3"));
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -3299,7 +3298,7 @@ TEST_F(StyleResolverTest, PositionTryPropertyValueChange_Cascade) {
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--foo"));
+    UpdateStyleForOutOfFlow(*target, AtomicString("--foo"));
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     EXPECT_EQ(Length::Fixed(100), GetTop(*fallback));
@@ -3315,7 +3314,7 @@ TEST_F(StyleResolverTest, PositionTryPropertyValueChange_Cascade) {
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    UpdateStyleAndLayoutTreeForOutOfFlow(*target, AtomicString("--bar"));
+    UpdateStyleForOutOfFlow(*target, AtomicString("--bar"));
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     ASSERT_TRUE(fallback);
