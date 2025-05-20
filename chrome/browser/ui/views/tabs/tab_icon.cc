@@ -243,6 +243,10 @@ void TabIcon::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
+views::PaintInfo::ScaleType TabIcon::GetPaintScaleType() const {
+  return views::PaintInfo::ScaleType::kUniformScaling;
+}
+
 void TabIcon::OnThemeChanged() {
   views::View::OnThemeChanged();
   crashed_icon_ = gfx::ImageSkia();  // Force recomputation if crashed.

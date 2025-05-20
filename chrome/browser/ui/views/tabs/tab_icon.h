@@ -93,6 +93,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  views::PaintInfo::ScaleType GetPaintScaleType() const override;
   void OnThemeChanged() override;
 
   // views::AnimationDelegateViews:
