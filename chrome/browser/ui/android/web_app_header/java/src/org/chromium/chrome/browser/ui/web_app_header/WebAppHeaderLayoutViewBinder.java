@@ -44,6 +44,9 @@ class WebAppHeaderLayoutViewBinder {
             view.setOnWidthChanged(model.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK));
         } else if (key == WebAppHeaderLayoutProperties.BACKGROUND_COLOR) {
             view.setBackgroundColor(model.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
+        } else if (key == WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK) {
+            view.setOnVisibilityChangedCallback(
+                    model.get(WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK));
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }

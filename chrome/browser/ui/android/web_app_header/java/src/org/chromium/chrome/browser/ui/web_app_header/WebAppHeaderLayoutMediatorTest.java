@@ -16,6 +16,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Looper;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -258,6 +259,51 @@ public class WebAppHeaderLayoutMediatorTest {
                 mModel.get(WebAppHeaderLayoutProperties.PADDINGS));
         assertFalse(
                 "Header view should be gone", mModel.get(WebAppHeaderLayoutProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testHeaderInitiallyHidden_WidthSupplierUpdatesOnVisibilityChange() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+
+        mMediator =
+                new WebAppHeaderLayoutMediator(
+                        mModel,
+                        mHeaderDelegate,
+                        mDesktopWindowStateManager,
+                        mScrimManager,
+                        mTabSupplier,
+                        mNonDraggableAreasSupplier,
+                        mThemeColorProvider,
+                        SYS_APP_HEADER_HEIGHT,
+                        HEADER_BUTTON_HEIGHT);
+        mShadowLooper.idle();
+
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+
+        // View starts off visible.
+        assertTrue(
+                "IS_VISIBLE property should be true.",
+                mModel.get(WebAppHeaderLayoutProperties.IS_VISIBLE));
+        assertEquals(
+                "Width supplier should report SCREEN_WIDTH.",
+                Integer.valueOf(SCREEN_WIDTH),
+                mMediator.getWidthSupplierForTesting().get());
+
+        // Change the app header state to have a View.GONE app header view.
+        AppHeaderState goneState =
+                new AppHeaderState(
+                        WIDEST_UNOCCLUDED_RECT,
+                        WIDEST_UNOCCLUDED_RECT,
+                        /* isInDesktopWindow= */ false);
+        mMediator.onAppHeaderStateChanged(goneState);
+        mModel.get(WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK).onResult(View.GONE);
+        assertFalse(
+                "IS_VISIBLE property should be false.",
+                mModel.get(WebAppHeaderLayoutProperties.IS_VISIBLE));
+        assertEquals(
+                "Width supplier should be zero.",
+                Integer.valueOf(0),
+                mMediator.getWidthSupplierForTesting().get());
     }
 
     @Test

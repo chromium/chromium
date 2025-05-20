@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChangeListener {
 
     private @Nullable Callback<Integer> mOnWidthChanged;
+    private @Nullable Callback<Integer> mOnVisibilityChangedCallback;
 
     public WebAppHeaderLayout(Context context) {
         super(context);
@@ -57,6 +58,24 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
         mOnWidthChanged = onWidthChanged;
         if (mOnWidthChanged != null) {
             mOnWidthChanged.onResult(getWidth());
+        }
+    }
+
+    /**
+     * Callback that will be notified about visibility changes
+     *
+     * @param onVisibilityChangedCallback a {@link Callback} that accepts new visibility.
+     */
+    public void setOnVisibilityChangedCallback(
+            @Nullable Callback<Integer> onVisibilityChangedCallback) {
+        mOnVisibilityChangedCallback = onVisibilityChangedCallback;
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        // Make sure changedView == this, as any child view can trigger onvisibilityChanged.
+        if (changedView == this && mOnVisibilityChangedCallback != null) {
+            mOnVisibilityChangedCallback.onResult(visibility);
         }
     }
 

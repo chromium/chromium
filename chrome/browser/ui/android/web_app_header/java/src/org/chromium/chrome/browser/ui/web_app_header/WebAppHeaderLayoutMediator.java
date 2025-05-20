@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -106,6 +107,9 @@ class WebAppHeaderLayoutMediator
         mModel = model;
         // View should notify us about initial width.
         mModel.set(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK, this::onLayoutWidthUpdated);
+        mModel.set(
+                WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK,
+                this::onVisibilityChanged);
 
         final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
         if (appHeaderState != null) {
@@ -122,6 +126,13 @@ class WebAppHeaderLayoutMediator
 
         // Update draggable area even if width hasn't changed, because children might've changed.
         updateNonDraggableAreas();
+    }
+
+    private void onVisibilityChanged(int visibility) {
+        // If the web app header view is GONE, we should update the width to reflect this.
+        if (visibility == View.GONE) {
+            mWidthSupplier.set(0);
+        }
     }
 
     @Override
@@ -249,6 +260,10 @@ class WebAppHeaderLayoutMediator
     private int getDefaultMinHeight() {
         if (sMinHeaderHeightForTesting != null) return sMinHeaderHeightForTesting;
         return mWebAppMinHeaderHeight;
+    }
+
+    public ObservableSupplierImpl<Integer> getWidthSupplierForTesting() {
+        return mWidthSupplier;
     }
 
     static void setMinHeightForTesting(final int height) {

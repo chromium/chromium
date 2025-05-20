@@ -35,6 +35,9 @@ class WebAppHeaderLayoutProperties {
     static final WritableObjectPropertyKey<Callback<Integer>> WIDTH_CHANGED_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    static final WritableObjectPropertyKey<Callback<Integer>> VISIBILITY_CHANGED_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     /** Background color of the header */
     static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
@@ -47,6 +50,7 @@ class WebAppHeaderLayoutProperties {
                 NON_DRAGGABLE_AREAS,
                 WIDTH_CHANGED_CALLBACK,
                 BACKGROUND_COLOR,
+                VISIBILITY_CHANGED_CALLBACK,
             };
 
     private WebAppHeaderLayoutProperties() {}
