@@ -12,7 +12,7 @@ export function getHtml(this: TraceReportElement) {
   return html`
     ${this.isLoading_ ? html`<div class="spinner"></div>` :
     html`
-    <div class="trace-id-container">
+    <div>
       <button class="clickable-field copiable"
           title="${this.getTokenAsUuidString_()}"
           @click="${this.onCopyUuidClick_}">
@@ -20,13 +20,13 @@ export function getHtml(this: TraceReportElement) {
       </button>
       <div class="info">Trace ID</div>
     </div>
-    <div class="trace-date-created-container">
-      <div class="date-creation-value">
+    <div>
+      <div class="value">
         ${this.dateToString_(this.trace.creationTime)}
       </div>
       <div class="info">Date created</div>
     </div>
-    <div class="trace-scenario-container">
+    <div>
       <button class="clickable-field copiable"
           title="${this.trace.scenarioName}"
           @click="${this.onCopyScenarioClick_}">
@@ -34,27 +34,25 @@ export function getHtml(this: TraceReportElement) {
       </button>
       <div class="info">Scenario</div>
     </div>
-    <div class="trace-trigger-container">
+    <div>
       <button class="clickable-field copiable" title="${this.trace.uploadRuleName}"
           @click="${this.onCopyUploadRuleClick_}">
         ${this.trace.uploadRuleName}
       </button>
       ${this.trace.uploadRuleValue !== null ? html`
-        <div class="trace-trigger-value">
+        <div class="value">
           Value: ${this.trace.uploadRuleValue}
         </div>
       ` : nothing}
       <div class="info">Triggered rule</div>
     </div>
-    <div class="trace-size-container">
-      <div class="trace-size-value">${this.getTraceSize_()}</div>
+    <div>
+      <div class="value">${this.getTraceSize_()}</div>
       <div class="info">Uncompressed size</div>
     </div>
-    <div class="trace-upload-state-container">
-      <div class="upload-state-card ${this.getStateCssClass_()}"
-        title="${this.getStateText_()}">
-        ${this.getStateText_()}
-      </div>
+    <div class="upload-state-card ${this.getStateCssClass_()}"
+      title="${this.getStateText_()}">
+      ${this.getStateText_()}
     </div>
     <div class="actions-container">
       <cr-icon-button class="action-button" title="Upload Trace"

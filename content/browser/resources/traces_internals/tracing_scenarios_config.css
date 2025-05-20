@@ -15,9 +15,6 @@
   padding: 8px 12px;
 }
 
-:host h1 {
-}
-
 :host h3 {
   color: var(--cr-secondary-text-color);
 }

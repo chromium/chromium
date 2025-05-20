@@ -12,7 +12,7 @@
 
 :host {
   display: grid;
-  grid-template-columns: repeat(3, 1fr) 3fr auto 250px auto;
+  grid-template-columns: repeat(3, 1fr) 3fr auto auto auto;
   grid-auto-flow: column;
   grid-column-gap: 12px;
   grid-row-gap: 0;
@@ -52,60 +52,30 @@
   cursor: copy;
 }
 
-.trace-upload-state-container {
-  white-space: nowrap;
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-}
-
 .upload-state-card {
+  width: 250px;
+  white-space: nowrap;
+  font-weight: bold;
   border-radius: 1000px;
   font-size: 14px;
   display: flex;
   height: 34px;
   align-items: center;
   padding: 0 16px;
-}
-
-.upload-state-card:disabled {
-  opacity: var(--cr-disabled-opacity);
-  pointer-events: none;
-}
-
-.upload-state-card > iron-icon {
-  --iron-icon-width: 18px;
-  --iron-icon-height: 18px;
-  margin-inline-start: 16px;
-  margin-inline-end: 8px;
+  color: var(--cr-primary-text-color);
 }
 
 .state-default {
   border: none;
-  color: blue;
   background-color: lightblue;
-}
-
-.state-default > iron-icon {
-  --iron-icon-fill-color: blue;
 }
 
 .state-success {
   background-color: rgb(173, 255, 173);
-  color: rgb(6, 95, 6);
-}
-
-.state-success > iron-icon {
-  --iron-icon-fill-color: rgb(6, 95, 6);
 }
 
 .state-pending {
   background-color: orange;
-  color: rgb(204, 85, 0);
-}
-
-.state-pending > iron-icon {
-  --iron-icon-fill-color: rgb(204, 85, 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -156,9 +126,7 @@
   color: var(--cr-secondary-text-color);
 }
 
-.date-creation-value,
-.trace-trigger-value,
-.trace-size-value {
+.value {
   color: var(--cr-primary-text-color)
 }
 

@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 import './trace_report.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
 // <if expr="is_win">
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 // </if>
 
-import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from '//resources/js/assert.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';

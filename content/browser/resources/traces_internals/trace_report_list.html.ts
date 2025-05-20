@@ -18,7 +18,10 @@ function getReportHtml(this: TraceReportListElement) {
   }
 
   return html`${this.traces_.map((traceReport: ClientTraceReport) => html`
-    <trace-report .trace="${traceReport}"></trace-report>`)}`;
+    <trace-report
+        .trace="${traceReport}"
+        @show-toast="${this.showToastHandler_}">
+    </trace-report>`)}`;
   // clang-format on
 }
 

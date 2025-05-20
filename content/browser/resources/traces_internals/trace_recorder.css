@@ -17,10 +17,6 @@
   overflow-y: auto;
 }
 
-:host h3 {
-  color: var(--cr-secondary-text-color);
-}
-
 #action-panel {
   display: flex;
   justify-content: flex-end;
