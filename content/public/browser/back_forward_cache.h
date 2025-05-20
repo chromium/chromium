@@ -163,9 +163,8 @@ class CONTENT_EXPORT BackForwardCache {
     // will mask extension related reasons as "Extensions".
     const std::string report_string;
 
-    bool operator<(const DisabledReason&) const;
+    std::weak_ordering operator<=>(const DisabledReason&) const;
     bool operator==(const DisabledReason&) const;
-    bool operator!=(const DisabledReason&) const;
   };
 
   // Prevents the `render_frame_host` from entering the BackForwardCache. A

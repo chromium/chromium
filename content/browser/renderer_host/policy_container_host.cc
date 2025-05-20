@@ -35,31 +35,6 @@ std::string ConvertToString(const std::vector<T>& array) {
 
 namespace content {
 
-bool operator==(const PolicyContainerPolicies& lhs,
-                const PolicyContainerPolicies& rhs) {
-  return lhs.referrer_policy == rhs.referrer_policy &&
-         lhs.ip_address_space == rhs.ip_address_space &&
-         lhs.is_web_secure_context == rhs.is_web_secure_context &&
-         std::ranges::equal(lhs.content_security_policies,
-                            rhs.content_security_policies) &&
-         lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
-         lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
-         lhs.document_isolation_policy == rhs.document_isolation_policy &&
-         lhs.integrity_policy == rhs.integrity_policy &&
-         lhs.integrity_policy_report_only == rhs.integrity_policy_report_only &&
-         lhs.sandbox_flags == rhs.sandbox_flags &&
-         lhs.is_credentialless == rhs.is_credentialless &&
-         lhs.can_navigate_top_without_user_gesture ==
-             rhs.can_navigate_top_without_user_gesture &&
-         lhs.cross_origin_isolation_enabled_by_dip ==
-             rhs.cross_origin_isolation_enabled_by_dip;
-}
-
-bool operator!=(const PolicyContainerPolicies& lhs,
-                const PolicyContainerPolicies& rhs) {
-  return !(lhs == rhs);
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const PolicyContainerPolicies& policies) {
   out << "{ referrer_policy: " << policies.referrer_policy

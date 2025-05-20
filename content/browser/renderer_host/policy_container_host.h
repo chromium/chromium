@@ -82,6 +82,11 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   blink::mojom::PolicyContainerPoliciesPtr ToMojoPolicyContainerPolicies()
       const;
 
+  // PolicyContainerPolicies structs are comparable for equality.
+  CONTENT_EXPORT friend bool operator==(const PolicyContainerPolicies&,
+                                        const PolicyContainerPolicies&) =
+      default;
+
   // The referrer policy for the associated document. If not overwritten via a
   // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
   // header or a meta tag), the default referrer policy will be applied to the
@@ -154,12 +159,6 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // booleans to the renderer process and having it do the computation.
   bool cross_origin_isolation_enabled_by_dip = false;
 };
-
-// PolicyContainerPolicies structs are comparable for equality.
-CONTENT_EXPORT bool operator==(const PolicyContainerPolicies& lhs,
-                               const PolicyContainerPolicies& rhs);
-CONTENT_EXPORT bool operator!=(const PolicyContainerPolicies& lhs,
-                               const PolicyContainerPolicies& rhs);
 
 // Streams a human-readable string representation of |policies| to |out|.
 CONTENT_EXPORT std::ostream& operator<<(

@@ -1843,17 +1843,13 @@ BackForwardCache::DisabledReason::DisabledReason(
 
 BackForwardCache::DisabledReason::DisabledReason(
     const BackForwardCache::DisabledReason& reason) = default;
-bool BackForwardCache::DisabledReason::operator<(
+std::weak_ordering BackForwardCache::DisabledReason::operator<=>(
     const DisabledReason& other) const {
-  return std::tie(source, id) < std::tie(other.source, other.id);
+  return std::tie(source, id) <=> std::tie(other.source, other.id);
 }
 bool BackForwardCache::DisabledReason::operator==(
     const DisabledReason& other) const {
   return std::tie(source, id) == std::tie(other.source, other.id);
-}
-bool BackForwardCache::DisabledReason::operator!=(
-    const DisabledReason& other) const {
-  return !(*this == other);
 }
 
 BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(

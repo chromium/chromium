@@ -87,7 +87,6 @@ class CONTENT_EXPORT FrameTree {
     NodeIterator& AdvanceSkippingChildren();
 
     bool operator==(const NodeIterator& rhs) const;
-    bool operator!=(const NodeIterator& rhs) const { return !(*this == rhs); }
 
     FrameTreeNode* operator*() { return current_node_; }
 
