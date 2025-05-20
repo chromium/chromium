@@ -17,7 +17,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/hash/md5.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -26,8 +25,15 @@
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/obsolete/md5.h"
 
 namespace ash {
+
+namespace printing {
+crypto::obsolete::Md5 MakeMd5HasherForZeroconf() {
+  return {};
+}
+}  // namespace printing
 
 // Supported service names for printers.
 const char ZeroconfPrinterDetector::kIppServiceName[] = "_ipp._tcp.local";
@@ -144,19 +150,16 @@ class ParsedMetadata {
 // all to be considered the same printer.
 std::string ZeroconfPrinterId(const ServiceDescription& service,
                               const ParsedMetadata& metadata) {
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  base::MD5Update(&ctx, service.instance_name());
-  base::MD5Update(&ctx, metadata.product);
-  base::MD5Update(&ctx, metadata.UUID);
-  base::MD5Update(&ctx, metadata.usb_MFG);
-  base::MD5Update(&ctx, metadata.usb_MDL);
-  base::MD5Update(&ctx, metadata.ty);
-  base::MD5Update(&ctx, metadata.rp);
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
+  auto md5 = ash::printing::MakeMd5HasherForZeroconf();
+  md5.Update(service.instance_name());
+  md5.Update(metadata.product);
+  md5.Update(metadata.UUID);
+  md5.Update(metadata.usb_MFG);
+  md5.Update(metadata.usb_MDL);
+  md5.Update(metadata.ty);
+  md5.Update(metadata.rp);
   return base::StringPrintf("zeroconf-%s",
-                            base::MD5DigestToBase16(digest).c_str());
+                            base::ToLowerASCII(base::HexEncode(md5.Finish())));
 }
 
 // Attempt to fill |detected_printer| using the information in

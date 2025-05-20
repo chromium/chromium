@@ -17,7 +17,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -28,6 +27,7 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/obsolete/md5.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
@@ -35,6 +35,13 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
+namespace printing {
+crypto::obsolete::Md5 MakeMd5HasherForUsbPrinterUtil() {
+  return {};
+}
+}  // namespace printing
+
 namespace {
 
 using device::mojom::UsbDeviceInfo;
@@ -164,16 +171,16 @@ void OnDeviceOpen(mojo::Remote<device::mojom::UsbDevice> device,
                                             target, std::move(cb)));
 }
 
-// Incorporate the bytes of |val| into the incremental hash carried in |ctx| in
-// big-endian order.  |val| must be a simple integer type
-void MD5UpdateU8BigEndian(base::MD5Context* ctx,
-                          base::StrictNumeric<uint8_t> val) {
+// Incorporate the byte |val| into the incremental hash carried in |md5|.
+void Md5UpdateU8(crypto::obsolete::Md5& md5, base::StrictNumeric<uint8_t> val) {
   uint8_t tmp = val;
-  base::MD5Update(ctx, base::span_from_ref(tmp));
+  md5.Update(base::span_from_ref(tmp));
 }
-void MD5UpdateU16BigEndian(base::MD5Context* ctx,
+
+// Incorporate |val| into |md5| as a big-endian value.
+void Md5UpdateU16BigEndian(crypto::obsolete::Md5& md5,
                            base::StrictNumeric<uint16_t> val) {
-  base::MD5Update(ctx, base::U16ToBigEndian(val));
+  md5.Update(base::U16ToBigEndian(val));
 }
 
 // Update the hash with the contents of |str|.
@@ -184,8 +191,8 @@ void MD5UpdateU16BigEndian(base::MD5Context* ctx,
 //
 // This is a long way to say "UTF-16 is hard to hash, let's just convert
 // to UTF-8 and hash that", which avoids all of these issues.
-void MD5UpdateString16(base::MD5Context* ctx, const std::u16string& str) {
-  base::MD5Update(ctx, base::UTF16ToUTF8(str));
+void Md5UpdateString16(crypto::obsolete::Md5& md5, const std::u16string& str) {
+  md5.Update(base::UTF16ToUTF8(str));
 }
 
 // Get the usb printer id for |device|.  This is used both as the identifier for
@@ -209,20 +216,18 @@ std::string CreateUsbPrinterId(const UsbDeviceInfo& device_info) {
   static_assert(sizeof(device::GetDeviceVersion(device_info)) == 2,
                 "Version size changed");
 
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  MD5UpdateU8BigEndian(&ctx, device_info.class_code);
-  MD5UpdateU8BigEndian(&ctx, device_info.subclass_code);
-  MD5UpdateU8BigEndian(&ctx, device_info.protocol_code);
-  MD5UpdateU16BigEndian(&ctx, device_info.vendor_id);
-  MD5UpdateU16BigEndian(&ctx, device_info.product_id);
-  MD5UpdateU16BigEndian(&ctx, device::GetDeviceVersion(device_info));
-  base::MD5Update(&ctx, GetManufacturerName(device_info));
-  base::MD5Update(&ctx, GetProductName(device_info));
-  MD5UpdateString16(&ctx, GetSerialNumber(device_info));
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  return base::StringPrintf("usb-%s", base::MD5DigestToBase16(digest).c_str());
+  auto md5 = ash::printing::MakeMd5HasherForUsbPrinterUtil();
+  Md5UpdateU8(md5, device_info.class_code);
+  Md5UpdateU8(md5, device_info.subclass_code);
+  Md5UpdateU8(md5, device_info.protocol_code);
+  Md5UpdateU16BigEndian(md5, device_info.vendor_id);
+  Md5UpdateU16BigEndian(md5, device_info.product_id);
+  Md5UpdateU16BigEndian(md5, device::GetDeviceVersion(device_info));
+  md5.Update(GetManufacturerName(device_info));
+  md5.Update(GetProductName(device_info));
+  Md5UpdateString16(md5, GetSerialNumber(device_info));
+  return base::StringPrintf("usb-%s",
+                            base::ToLowerASCII(base::HexEncode(md5.Finish())));
 }
 
 // Creates a mojom filter which can be used to identify a basic USB printer.

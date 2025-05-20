@@ -10,6 +10,11 @@
 namespace crypto::obsolete {
 
 // static
+std::array<uint8_t, Md5::kSize> Md5::Hash(std::string_view data) {
+  return Hash(base::as_byte_span(data));
+}
+
+// static
 std::array<uint8_t, Md5::kSize> Md5::Hash(base::span<const uint8_t> data) {
   std::array<uint8_t, Md5::kSize> result;
   Md5 hasher;
@@ -49,6 +54,10 @@ Md5 Md5::MakeMd5HasherForTesting() {
 std::array<uint8_t, Md5::kSize> Md5::HashForTesting(
     base::span<const uint8_t> data) {
   return Hash(data);
+}
+
+void Md5::Update(std::string_view data) {
+  Update(base::as_byte_span(data));
 }
 
 void Md5::Update(base::span<const uint8_t> data) {

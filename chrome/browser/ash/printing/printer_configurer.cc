@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -36,10 +35,18 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/md5.h"
 #include "printing/printing_features.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace ash {
+
+namespace printing {
+// Not placed in namespace {} so it can be friended from //crypto.
+crypto::obsolete::Md5 MakeMd5HasherForPrinterConfigurer() {
+  return {};
+}
+}  // namespace printing
 
 namespace {
 
@@ -239,7 +246,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                        << printer.uri().GetNormalized(
                               /*always_print_port=*/true);
     if (base::FeatureList::IsEnabled(
-            printing::features::kAddPrinterViaPrintscanmgr)) {
+            ::printing::features::kAddPrinterViaPrintscanmgr)) {
       printscanmgr::CupsAddAutoConfiguredPrinterRequest request;
       request.set_name(printer.id());
       request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
@@ -305,7 +312,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                        << printer.uri().GetNormalized(
                               /*always_print_port=*/true);
     if (base::FeatureList::IsEnabled(
-            printing::features::kAddPrinterViaPrintscanmgr)) {
+            ::printing::features::kAddPrinterViaPrintscanmgr)) {
       printscanmgr::CupsAddManuallyConfiguredPrinterRequest request;
       request.set_name(printer.id());
       request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
@@ -447,17 +454,14 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
 // static
 std::string PrinterConfigurer::SetupFingerprint(const Printer& printer) {
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  base::MD5Update(&ctx, printer.id());
-  base::MD5Update(&ctx, printer.uri().GetNormalized(false));
-  base::MD5Update(&ctx, printer.ppd_reference().user_supplied_ppd_url);
-  base::MD5Update(&ctx, printer.ppd_reference().effective_make_and_model);
+  auto md5 = ash::printing::MakeMd5HasherForPrinterConfigurer();
+  md5.Update(printer.id());
+  md5.Update(printer.uri().GetNormalized(false));
+  md5.Update(printer.ppd_reference().user_supplied_ppd_url);
+  md5.Update(printer.ppd_reference().effective_make_and_model);
   char autoconf = printer.ppd_reference().autoconf ? 1 : 0;
-  base::MD5Update(&ctx, std::string(&autoconf, sizeof(autoconf)));
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  return std::string(reinterpret_cast<char*>(&digest.a[0]), sizeof(digest.a));
+  md5.Update(base::byte_span_from_ref(autoconf));
+  return std::string(base::as_string_view(md5.Finish()));
 }
 
 // static
