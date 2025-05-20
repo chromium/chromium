@@ -149,6 +149,20 @@ def generate_grd_file(id_map, file_list, output_file_path):
         output_file.write(doc.toxml(encoding='UTF-8'))
 
 
+# Generate the shortest string containing both `long` and `short` as
+# substrings. The full n-string problem is NP-complete, but we only use a crude
+# greedy heuristic.
+def superstring(long, short):
+    if long.find(short) >= 0:
+        return long
+    for i in range(len(short), 0, -1):
+        if long[-i:] == short[:i]:
+            return long + short[i:]
+        if short[-i:] == long[:i]:
+            return short + long[i:]
+    return long + short
+
+
 def generate_cpp_mapping(orderings, input_file_path, output_file_path):
     doc = parse(input_file_path)
     messages = doc.getElementsByTagName("message")
@@ -161,8 +175,7 @@ def generate_cpp_mapping(orderings, input_file_path, output_file_path):
         # this code will use `pt-pt` (Portuguese from Portugal).
         custom_locale_mappings = {"en-gb": "en", "pt-pt": "pt", "zh-cn": "zh"}
 
-        langs = ''
-        lang_map = {}
+        locales = set()
         message_map = []
         for message in messages:
             message_name = message.getAttribute('name')
@@ -171,19 +184,19 @@ def generate_cpp_mapping(orderings, input_file_path, output_file_path):
                 '_', 1)[1].lower().replace("_", "-")
             if locale in custom_locale_mappings:
                 locale = custom_locale_mappings[locale]
-            if locale not in lang_map:
-                # String concatenation is inefficientin Python, since strings
-                # are immutable. However, maintaining a list of chars and
-                # re-implementing find() is also unpleasant.
-                langs_idx = langs.find(locale)
-                if langs_idx < 0:
-                    lang_map[locale] = (len(langs), len(locale))
-                    langs += locale
-                else:
-                    # If locale is already a substring in the existing list,
-                    # the substring can simply be reused to save some space.
-                    lang_map[locale] = (langs_idx, len(locale))
+            # Add all locales first since iteration order is non-deterministic.
+            locales.add(locale)
             message_map.append((locale, base_message, message_name))
+
+        langs = ''
+        locales = sorted(locales, key=lambda x: (-len(x), x))
+        # Sort by length so that we add `ab-cd` before `ab` and `cd`
+        for locale in locales:
+            langs = superstring(langs, locale)
+
+        lang_map = {}
+        for locale in locales:
+            lang_map[locale] = langs.find(locale), len(locale)
 
         output_file.write(kStringMapCcPrefix)
         output_file.write(f'    "{langs}";\n')
