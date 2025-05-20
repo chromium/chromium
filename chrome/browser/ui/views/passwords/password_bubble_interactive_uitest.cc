@@ -1351,7 +1351,20 @@ IN_PROC_BROWSER_TEST_F(
                   EnsureNotPresent(SharedPasswordsNotificationView::kTopView));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, ClickNever) {
+class TwoButtonPasswordBubbleInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTest {
+ public:
+  TwoButtonPasswordBubbleInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kThreeButtonPasswordSaveDialog, false);
+  }
+  ~TwoButtonPasswordBubbleInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TwoButtonPasswordBubbleInteractiveUiTest, ClickNever) {
   SetupPendingPassword();
   const auto button = views::DialogClientView::kCancelButtonElementId;
   RunTestSequence(PressButton(button), WaitForHide(button),
@@ -1359,6 +1372,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, ClickNever) {
                       "PasswordManager.SaveUIDismissalReason",
                       password_manager::metrics_util::CLICKED_NEVER, 1));
 }
+
 class ThreeButtonPasswordBubbleInteractiveUiTest
     : public PasswordBubbleInteractiveUiTest {
  public:

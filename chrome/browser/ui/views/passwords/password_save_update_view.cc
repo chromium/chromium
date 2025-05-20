@@ -137,13 +137,6 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     accessibility_alert_ =
         root_view->AddChildView(std::make_unique<views::View>());
     AddChildViewRaw(accessibility_alert_.get());
-
-    if (base::FeatureList::IsEnabled(
-            features::kThreeButtonPasswordSaveDialog)) {
-      extra_view_ = SetExtraView(std::make_unique<views::MdTextButton>());
-      extra_view_->SetProperty(views::kElementIdentifierKey,
-                               kExtraButtonElementId);
-    }
   }
 
   {
@@ -163,13 +156,17 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
                 base::Unretained(this))));
 
     if (is_update_bubble_) {
-      CHECK(!extra_view_);
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
                                        &Controller::OnNoThanksClicked));
-    } else if (extra_view_) {
+    } else if (base::FeatureList::IsEnabled(
+                   features::kThreeButtonPasswordSaveDialog)) {
       // 3-button save dialog variant.
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
                                        &Controller::OnNotNowClicked));
+
+      extra_view_ = SetExtraView(std::make_unique<views::MdTextButton>());
+      extra_view_->SetProperty(views::kElementIdentifierKey,
+                               kExtraButtonElementId);
       extra_view_->SetCallback(
           base::BindOnce(button_clicked, base::Unretained(this),
                          &Controller::OnNeverForThisSiteClicked));
