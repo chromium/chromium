@@ -198,6 +198,10 @@ BASE_DECLARE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel);
 BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
 BASE_DECLARE_FEATURE(kManagedProfileRequiredInterstitial);
 
+// Enables using the same colors used for the default app menu button for the
+// avatar button states using default colors.
+BASE_DECLARE_FEATURE(kEnableAppMenuButtonColorsForDefaultAvatarButtonStates);
+
 BASE_DECLARE_FEATURE(kWebUITabStrip);
 
 // Controls whether the context menu is shown on a touch press or a touch

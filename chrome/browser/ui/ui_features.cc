@@ -302,6 +302,10 @@ BASE_FEATURE(kManagedProfileRequiredInterstitial,
              "ManagedProfileRequiredInterstitial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableAppMenuButtonColorsForDefaultAvatarButtonStates,
+             "EnableAppMenuButtonColorsForDefaultAvatarButtonStates",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables a web-based tab strip. See https://crbug.com/989131. Note this
 // feature only works when the ENABLE_WEBUI_TAB_STRIP buildflag is enabled.
 BASE_FEATURE(kWebUITabStrip,

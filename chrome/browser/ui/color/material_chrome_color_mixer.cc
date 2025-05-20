@@ -33,6 +33,11 @@ void ApplyDefaultChromeRefreshToolbarColors(ui::ColorMixer& mixer,
   mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuHighlightSeverityHigh] = {kColorAppMenuHighlightDefault};
+
+  mixer[kColorAvatarButtonHighlightManagementForeground] = {
+      kColorAppMenuExpandedForegroundDefault};
+  mixer[kColorAvatarButtonHighlightManagement] = {
+      kColorAppMenuHighlightDefault};
 }
 
 }  // namespace
