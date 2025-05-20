@@ -686,6 +686,7 @@ public class NewTabAnimationLayout extends Layout {
                 prevTabCount,
                 toolbarPosition[1],
                 compositorViewRect.top,
+                compositorViewRect.left,
                 mToolbarManager.getNtpTransitionPercentage());
 
         // {@link View#INVISIBLE} is needed to generate the geometry information.

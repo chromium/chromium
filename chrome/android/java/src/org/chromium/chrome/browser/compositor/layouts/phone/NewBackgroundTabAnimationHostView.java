@@ -59,6 +59,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
     private @AnimationType int mAnimationType;
     private boolean mIsTopToolbar;
     private int mStatusBarHeight;
+    private int mXOffset;
 
     /** Default constructor for inflation. */
     public NewBackgroundTabAnimationHostView(Context context, AttributeSet attrs) {
@@ -83,7 +84,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
     /* package */ AnimatorSet getAnimatorSet(float originX, float originY) {
         assert mAnimationType != AnimationType.UNINITIALIZED;
         int[] target = new int[2];
-        mFakeTabSwitcherButton.getButtonLocation(target, mStatusBarHeight);
+        mFakeTabSwitcherButton.getButtonLocation(target, mXOffset, mStatusBarHeight);
         target[0] -= Math.round(mLinkIcon.getWidth() / 2f);
         target[1] -= Math.round(mLinkIcon.getHeight() / 2f);
 
@@ -130,6 +131,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      * @param toolbarHeight Current height of the toolbar in the screen (absolute y-coordinate in
      *     the screen).
      * @param statusBarHeight The status bar height to calculate the y-offset within the screen.
+     * @param xOffset Offset for cases where the screen can't draw from x = 0.
      * @param ntpToolbarTransitionPercentage To know if the search box is in the toolbar position.
      */
     /* package */ void setUpAnimation(
@@ -141,8 +143,10 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
             int tabCount,
             int toolbarHeight,
             int statusBarHeight,
+            int xOffset,
             float ntpToolbarTransitionPercentage) {
         mStatusBarHeight = statusBarHeight;
+        mXOffset = xOffset;
         mIsTopToolbar = isTopToolbar;
         mFakeTabSwitcherButton.setTabCount(tabCount, isIncognito);
 
@@ -155,7 +159,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         Rect tabSwitcherRect = new Rect();
         boolean tabSwitcherButtonIsVisible =
                 tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
-        int horizontalMargin = tabSwitcherRect.left;
+        int horizontalMargin = tabSwitcherRect.left - xOffset;
         int verticalMargin = toolbarHeight - statusBarHeight;
 
         if (tabSwitcherButtonIsVisible || !isNtp) {
