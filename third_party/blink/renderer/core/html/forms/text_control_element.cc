@@ -123,6 +123,23 @@ void AppendWrappedNode(const Element& container,
   }
 }
 
+void AppendText(const String& value,
+                wtf_size_t start,
+                wtf_size_t limit,
+                ContainerNode& container) {
+  Document& doc = container.GetDocument();
+  if (!RuntimeEnabledFeatures::TextareaSplitTextEnabled()) {
+    container.AppendChild(
+        Text::Create(doc, value.Substring(start, limit - start)));
+    return;
+  }
+  constexpr wtf_size_t kTextChunkSize = 8192u;
+  for (wtf_size_t i = start; i < limit; i += kTextChunkSize) {
+    container.AppendChild(Text::Create(
+        doc, value.Substring(i, std::min(limit - i, kTextChunkSize))));
+  }
+}
+
 }  // namespace
 
 TextControlElement::TextControlElement(const QualifiedName& tag_name,
@@ -968,7 +985,12 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
     inner_editor->RemoveChildren();
   } else if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() ||
              IsA<HTMLInputElement>(this)) {
-    ReplaceChildrenWithText(inner_editor, value, ASSERT_NO_EXCEPTION);
+    if (RuntimeEnabledFeatures::TextareaSplitTextEnabled()) {
+      inner_editor->RemoveChildren();
+      AppendText(value, 0, value.length(), *inner_editor);
+    } else {
+      ReplaceChildrenWithText(inner_editor, value, ASSERT_NO_EXCEPTION);
+    }
   } else {
     inner_editor->RemoveChildren();
     // For <textarea>, \n is replaced with <br>.
@@ -992,13 +1014,12 @@ void TextControlElement::AppendTextOrBr(const String& value,
   while (start < value.length()) {
     wtf_size_t i = value.find('\n', start);
     if (i == WTF::kNotFound) {
-      container.AppendChild(Text::Create(doc, value.Substring(start)));
+      AppendText(value, start, value.length(), container);
       break;
     }
     if (start != i) {
       // Append [start, i).
-      container.AppendChild(
-          Text::Create(doc, value.Substring(start, i - start)));
+      AppendText(value, start, i, container);
     }
     // Append a BR.
     container.AppendChild(MakeGarbageCollected<HTMLBRElement>(doc));

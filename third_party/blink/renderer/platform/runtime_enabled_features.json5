@@ -4783,6 +4783,11 @@
       depends_on: ["FastSelectionSync", "TextareaLineEndingsAsBr"],
     },
     {
+      // crbug.com/341564372
+      name: "TextareaSplitText",
+      status: "experimental",
+    },
+    {
       // killswitch for fix in M137
       name: "TextareaStableResizing",
       status: "stable",
