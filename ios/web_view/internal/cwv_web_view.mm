@@ -461,7 +461,8 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
     return;
   }
 
-  CHECK([[CWVGlobalState sharedInstance] isStarted]);
+  DCHECK([[CWVGlobalState sharedInstance] isStarted]);
+  [[CWVGlobalState sharedInstance] start];
 }
 
 + (BOOL)chromeContextMenuEnabled {

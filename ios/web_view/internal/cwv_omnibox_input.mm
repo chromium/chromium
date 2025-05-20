@@ -65,7 +65,8 @@ WebViewSchemeClassifier::supported_schemes() {
     return;
   }
 
-  CHECK([[CWVGlobalState sharedInstance] isStarted]);
+  DCHECK([[CWVGlobalState sharedInstance] isStarted]);
+  [[CWVGlobalState sharedInstance] start];
 }
 
 - (instancetype)initWithText:(NSString*)inputText

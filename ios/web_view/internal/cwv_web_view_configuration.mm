@@ -61,7 +61,8 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
     return;
   }
 
-  CHECK([[CWVGlobalState sharedInstance] isStarted]);
+  DCHECK([[CWVGlobalState sharedInstance] isStarted]);
+  [[CWVGlobalState sharedInstance] start];
 
   ios_web_view::EnsureBrowserStateKeyedServiceFactoriesBuilt();
 
