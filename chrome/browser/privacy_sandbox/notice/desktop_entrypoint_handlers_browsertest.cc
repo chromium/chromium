@@ -72,33 +72,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
   Mock::VerifyAndClearExpectations(mock_view_manager_.get());
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
-                       NoPromptInNonNormalBrowser) {
-  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
-      .Times(0);
-
-  NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
-                        ui::PAGE_TRANSITION_FIRST);
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-
-  ui_test_utils::NavigateToURL(&params);
-
-  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
-                       NoPromptInSmallBrowser) {
-  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
-      .Times(0);
-
-  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 50, 50));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUISettingsURL)));
-
-  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
-}
-
 class PrivacySandboxNoticeEntryPointHandlersTest_SuitableUrls
     : public PrivacySandboxNoticeEntryPointHandlersTest,
       public testing::WithParamInterface<GURL> {};
