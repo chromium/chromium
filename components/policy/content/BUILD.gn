@@ -36,7 +36,12 @@ source_set("content") {
     "policy_blocklist_service.cc",
     "policy_blocklist_service.h",
   ]
-
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "password_manager_blocklist_policy.cc",
+      "password_manager_blocklist_policy.h",
+    ]
+  }
   deps = [
     ":safe_sites_navigation_throttle",
     "//components/keyed_service/content:content",

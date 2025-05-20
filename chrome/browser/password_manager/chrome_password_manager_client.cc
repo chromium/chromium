@@ -94,6 +94,9 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/policy/content/password_manager_blocklist_policy.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -2025,6 +2028,14 @@ void ChromePasswordManagerClient::HideFillingUI() {
 
 bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
     const GURL& url) const {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (IsPasswordManagerForUrlDisallowedByPolicy(url)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
   bool is_enabled = CanShowBubbleOnURL(url);
 
   // The password manager is disabled on Google Password Manager page.
@@ -2032,7 +2043,6 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
       GURL(password_manager::kPasswordManagerAccountDashboardURL)) {
     is_enabled = false;
   }
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
   // warnings until user interaction. If the current page has a delayed warning,
@@ -2056,6 +2066,29 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
   }
   return is_enabled;
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+bool ChromePasswordManagerClient::IsPasswordManagerForUrlDisallowedByPolicy(
+    const GURL& url) const {
+  if (!GetPrefs() || !GetPrefs()->HasPrefPath(
+                         policy::policy_prefs::kPasswordManagerBlocklist)) {
+    return false;
+  }
+  PasswordManagerBlocklistPolicy* blocklist_policy =
+      PasswordManagerBlocklistPolicyFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+
+  if (blocklist_policy &&
+      blocklist_policy->GetURLBlocklistState(url) ==
+          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    return true;
+  }
+
+  return false;
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 void ChromePasswordManagerClient::GenerationResultAvailable(
     PasswordGenerationType type,

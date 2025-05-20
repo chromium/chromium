@@ -440,6 +440,9 @@ class ChromePasswordManagerClient
   // Checks if the current page specified in |url| fulfils the conditions for
   // the password manager to be active on it.
   bool IsPasswordManagementEnabledForCurrentPage(const GURL& url) const;
+  // Checks if the current page specified in |url| has password manager
+  // blocklisted by policy.
+  bool IsPasswordManagerForUrlDisallowedByPolicy(const GURL& url) const;
 
   // Called back by the PasswordGenerationAgent when the generation flow is
   // completed. If |ui_data| is non-empty, will create a UI to display the

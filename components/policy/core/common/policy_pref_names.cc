@@ -190,6 +190,11 @@ const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 
 // A boolean value indicating whether the built-in AI APIs are enabled.
 const char kBuiltInAIAPIsEnabled[] = "policy.built_in_ai_apis_enabled";
-
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+// List of urls for which password manager is disabled/blocked.
+const char kPasswordManagerBlocklist[] = "policy.password_manager_blocklist";
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
 }  // namespace policy_prefs
 }  // namespace policy

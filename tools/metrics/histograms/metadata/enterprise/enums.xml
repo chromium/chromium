@@ -2230,6 +2230,7 @@ chromium-metrics-reviews@google.com.
   <int value="1359" label="NTPFootermanagementNoticeEnabled"/>
   <int value="1360" label="NTPFooterExtensionAttributionEnabled"/>
   <int value="1361" label="ClearWindowNameForNewBrowsingContextGroup"/>
+  <int value="1362" label="PasswordManagerBlocklist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

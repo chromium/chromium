@@ -1360,6 +1360,7 @@ policies:
   1359: NTPFooterManagementNoticeEnabled
   1360: NTPFooterExtensionAttributionEnabled
   1361: ClearWindowNameForNewBrowsingContextGroup
+  1362: PasswordManagerBlocklist
 
 atomic_groups:
   1: Homepage

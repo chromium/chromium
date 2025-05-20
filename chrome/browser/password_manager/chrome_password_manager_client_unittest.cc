@@ -70,6 +70,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
@@ -641,6 +642,52 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Test for the PasswordManagerBlocklist policy.
+TEST_F(ChromePasswordManagerClientTest, PasswordManagerBlocklistPolicy) {
+  // Make sure saving passwords is enabled.
+  ON_CALL(settings_service(),
+          IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
+      .WillByDefault(Return(true));
+  // Check that the blocklist is initially empty.
+  EXPECT_TRUE(profile()
+                  ->GetTestingPrefService()
+                  ->GetList(policy::policy_prefs::kPasswordManagerBlocklist)
+                  .empty());
+  // Add a URL to the blocklist.
+  {
+    base::Value::List blocked_list;
+    blocked_list.Append("https://example.com");
+    profile()->GetTestingPrefService()->SetList(
+        policy::policy_prefs::kPasswordManagerBlocklist,
+        std::move(blocked_list));
+  }
+
+  // Verify the URL was added.
+  EXPECT_FALSE(profile()
+                   ->GetTestingPrefService()
+                   ->GetList(policy::policy_prefs::kPasswordManagerBlocklist)
+                   .empty());
+  // Expect the password manager to be disallowed for the URL
+  // and thus saving passwords should be disallowed.
+  EXPECT_FALSE(
+      GetClient()->IsSavingAndFillingEnabled(GURL("https://example.com")));
+  // Clear the blocklist pref.
+  profile()->GetTestingPrefService()->ClearPref(
+      policy::policy_prefs::kPasswordManagerBlocklist);
+  // Verify blocklist is empty.
+  EXPECT_TRUE(profile()
+                  ->GetTestingPrefService()
+                  ->GetList(policy::policy_prefs::kPasswordManagerBlocklist)
+                  .empty());
+  // Password manager and saving passwords should be allowed again
+  EXPECT_TRUE(
+      GetClient()->IsSavingAndFillingEnabled(GURL("https://example.com")));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
   constexpr char kUrl[] = "https://www.foo.com/login.html";
@@ -1943,7 +1990,6 @@ TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
   EXPECT_CALL(accepted_callback, Run);
   view->Confirm();
 }
-
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

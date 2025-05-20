@@ -3669,7 +3669,10 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
+      sources += [
+        "../browser/policy/test/password_manager_blocklist_policy_browsertest.cc",
+        "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc",
+      ]
     }
 
     if (is_win || is_mac || is_linux) {
