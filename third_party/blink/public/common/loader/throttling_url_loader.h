@@ -114,7 +114,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::optional<std::vector<std::string>> cors_exempt_header_list =
           std::nullopt,
-      ClientReceiverDelegate* client_receiver_delegate = nullptr);
+      ClientReceiverDelegate* client_receiver_delegate = nullptr,
+      const std::vector<int>* initiator_origin_trial_features = nullptr);
 
   ThrottlingURLLoader(const ThrottlingURLLoader&) = delete;
   ThrottlingURLLoader& operator=(const ThrottlingURLLoader&) = delete;
@@ -174,7 +175,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
              uint32_t options,
              network::ResourceRequest* url_request,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             std::optional<std::vector<std::string>> cors_exempt_header_list);
+             std::optional<std::vector<std::string>> cors_exempt_header_list,
+             const std::vector<int>* initiator_origin_trial_features);
 
   void StartNow();
   void RestartWithURLResetNow();
