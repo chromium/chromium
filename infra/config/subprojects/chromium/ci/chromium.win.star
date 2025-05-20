@@ -461,10 +461,14 @@ ci.builder(
                     shards = 4,
                 ),
             ),
-            "sync_integration_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 3,
-                ),
+            # TODO(crbug.com/419089901): Re-enable after the suite works.
+            #"sync_integration_tests": targets.mixin(
+            #    swarming = targets.swarming(
+            #        shards = 3,
+            #    ),
+            #),
+            "sync_integration_tests": targets.remove(
+                reason = "Having infra failure (crbug.com/419089901)",
             ),
             "telemetry_perf_unittests": targets.remove(
                 reason = "Some test cases fail on win-rel (crbug/40622135).",
