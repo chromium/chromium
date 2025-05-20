@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -41,19 +42,13 @@
 namespace {
 
 using ::content_settings::CookieControlsUtil;
+using ::privacy_sandbox::IsTrackingProtectionsUi;
 
 const ui::ImageModel GetThirdPartyCookiesIcon(
     bool third_party_cookies_enabled) {
   return PageInfoViewFactory::GetImageModel(
       third_party_cookies_enabled ? views::kEyeRefreshIcon
                                   : views::kEyeCrossedRefreshIcon);
-}
-
-// TODO(crbug.com/388294499): Move this logic into the privacy_sandbox/
-// directory.
-bool IsActUi(CookieControlsState controls_state) {
-  return controls_state == CookieControlsState::kActiveTp ||
-         controls_state == CookieControlsState::kPausedTp;
 }
 
 class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
@@ -246,7 +241,7 @@ void PageInfoCookiesContentView::SyncSettingsLinkClicked(
 
 void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
-  if (IsActUi(cookie_info.controls_state)) {
+  if (IsTrackingProtectionsUi(cookie_info.controls_state)) {
     SetIncognitoTrackingProtectionsDescription(cookie_info.enforcement,
                                                cookie_info.controls_state);
   } else {
@@ -263,7 +258,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
             ChromeLayoutProvider::Get()->GetDistanceMetric(
                 DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
   }
-  if (IsActUi(cookie_info.controls_state)) {
+  if (IsTrackingProtectionsUi(cookie_info.controls_state)) {
     InitIncognitoTrackingProtectionSettingsButton();
   }
   InitCookiesDialogButton();
@@ -444,7 +439,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   tracking_protection_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON);
 
-  if (IsActUi(controls_state)) {
+  if (IsTrackingProtectionsUi(controls_state)) {
     third_party_cookies_row_->SetVisible(false);
     tracking_protection_button_->SetVisible(true);
     third_party_cookies_container_->SetCrossAxisAlignment(
