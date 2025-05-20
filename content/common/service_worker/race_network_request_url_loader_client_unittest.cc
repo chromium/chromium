@@ -145,7 +145,9 @@ class ResponseBodyDataPipeReader {
 
   std::string ConsumeChunk() {
     const std::string chunk = chunk_;
-    EXPECT_EQ(body_->EndReadData(chunk_.size()), MOJO_RESULT_OK);
+    MojoResult result = body_->EndReadData(chunk_.size());
+    EXPECT_TRUE(result == MOJO_RESULT_OK ||
+                result == MOJO_RESULT_FAILED_PRECONDITION);
     chunk_ = "";
 
     return chunk;
@@ -290,32 +292,20 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest, Basic) {
   SetUpURLLoaderClient(network::GetDataPipeDefaultAllocationSize());
 
   const std::string kExpectedBody = "abc";
-  WriteData(kExpectedBody);
 
-  base::RunLoop run_loop;
   SetOnCommitResponseCallback(base::BindOnce(
-      [](std::string expected_body,
-         const network::mojom::URLResponseHeadPtr& response_head,
-         mojo::ScopedDataPipeConsumerHandle body) {
-        base::span<const uint8_t> buffer;
-        MojoResult result =
-            body->BeginReadData(MOJO_BEGIN_READ_DATA_FLAG_NONE, buffer);
-        ASSERT_EQ(result, MOJO_RESULT_OK);
-        EXPECT_EQ(base::as_string_view(buffer), expected_body);
-        result = body->EndReadData(buffer.size());
-        ASSERT_EQ(result, MOJO_RESULT_OK);
-      },
-      kExpectedBody));
-  SetOnCompletedCallback(base::BindOnce(
-      [](base::OnceClosure done,
-         scoped_refptr<base::SequencedTaskRunner> task_runner, int error_code,
-         const char* reason) {
-        EXPECT_EQ(error_code, net::OK);
-        task_runner->PostTask(FROM_HERE, std::move(done));
-      },
-      run_loop.QuitClosure(), base::SequencedTaskRunner::GetCurrentDefault()));
+      &ServiceWorkerRaceNetworkRequestURLLoaderClientTest::WatchResponseBody,
+      base::Unretained(this)));
+  SetOnCompletedCallback(base::BindOnce([](int error_code, const char* reason) {
+    EXPECT_EQ(error_code, net::OK);
+  }));
+
+  WriteData(kExpectedBody);
   CompleteResponse(net::OK);
-  run_loop.Run();
+
+  RunUntilStateChange(/*resume_state=*/false);
+  EXPECT_EQ(state(), State::kChunkReceived);
+  EXPECT_EQ(ConsumeChunk(), kExpectedBody);
 
   // Check the response for fetch handler
   client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/false);
@@ -330,7 +320,6 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   // Expected input size should be larger than the data pipe size.
   const std::string kExpectedBody = "abcdefghijklmnop";
   ASSERT_GT(kExpectedBody.size(), data_pipe_capacity_num_bytes);
-  WriteData(kExpectedBody);
 
   // Set the callback for OnCommitResponse. This callback start watching the
   // response body data pipe.
@@ -342,6 +331,8 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   SetOnCompletedCallback(base::BindOnce([](int error_code, const char* reason) {
     EXPECT_EQ(error_code, net::OK);
   }));
+
+  WriteData(kExpectedBody);
   CompleteResponse(net::OK);
 
   // Waiting for the first data chunk is received. The first chunk is the
@@ -376,14 +367,13 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
 }
 
 TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
-       LargeDataOverBufferSize_SlowConsuming) {
+       LargeDataOverBufferSize_ConsumingOrder) {
   const uint32_t data_pipe_capacity_num_bytes = 4;
   SetUpURLLoaderClient(data_pipe_capacity_num_bytes);
 
   // Expected input size should be larger than the data pipe size.
-  const std::string kExpectedBody = "abcdefghijklmnop";
+  const std::string kExpectedBody = "abcdef";
   ASSERT_GT(kExpectedBody.size(), data_pipe_capacity_num_bytes);
-  WriteData(kExpectedBody);
 
   // Set the callback for OnCommitResponse. This callback start watching the
   // response body data pipe.
@@ -395,6 +385,8 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   SetOnCompletedCallback(base::BindOnce([](int error_code, const char* reason) {
     EXPECT_EQ(error_code, net::OK);
   }));
+
+  WriteData(kExpectedBody);
   CompleteResponse(net::OK);
 
   // Waiting for the first data chunk is received. The first chunk is the
@@ -403,15 +395,10 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
       kExpectedBody.substr(0, data_pipe_capacity_num_bytes);
   RunUntilStateChange(/*resume_state=*/false);
   EXPECT_EQ(state(), State::kChunkReceived);
-  client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/false);
-  EXPECT_EQ(client_for_fetch_handler()->state(), State::kChunkReceived);
-
-  // Consume the chunk in the data pipe for the fetch handler first to let
-  // ServiceWorkerRaceNetworkRequestURLLoaderClient retry writing to data pipes
-  // by getting |MOJO_RESULT_SHOULD_WAIT|.
-  EXPECT_EQ(client_for_fetch_handler()->ConsumeChunk(), first_chunk);
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ConsumeChunk(), first_chunk);
+
+  // The client for the fetch handler is not ready yet.
+  EXPECT_EQ(client_for_fetch_handler()->state(), State::kWaiting);
 
   // Consume the second chunk.
   const std::string second_chunk = kExpectedBody.substr(
@@ -420,8 +407,12 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   EXPECT_EQ(state(), State::kChunkReceived);
   EXPECT_EQ(ConsumeChunk(), second_chunk);
   base::RunLoop().RunUntilIdle();
-  client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/true);
-  EXPECT_EQ(client_for_fetch_handler()->ConsumeChunk(), second_chunk);
+
+  // After the whole data is processed, the client for the fetch handler will be
+  // ready.
+  client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/false);
+  EXPECT_EQ(client_for_fetch_handler()->state(), State::kChunkReceived);
+  EXPECT_EQ(client_for_fetch_handler()->ConsumeChunk(), first_chunk);
 }
 
 TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
@@ -432,7 +423,6 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   // Expected input size should be larger than the data pipe size.
   const std::string kExpectedBody = "abcdefghijklmnopqrstu";
   ASSERT_GT(kExpectedBody.size(), data_pipe_capacity_num_bytes);
-  WriteData(kExpectedBody);
 
   // Set the callback for OnCommitResponse. This callback start watching the
   // response body data pipe.
@@ -444,22 +434,23 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   SetOnCompletedCallback(base::BindOnce([](int error_code, const char* reason) {
     EXPECT_EQ(error_code, net::OK);
   }));
+
+  WriteData(kExpectedBody);
   CompleteResponse(net::OK);
 
   // Waiting for the first data chunk is received.
   RunUntilStateChange(/*resume_state=*/false);
   EXPECT_EQ(state(), State::kChunkReceived);
-  client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/false);
-  EXPECT_EQ(client_for_fetch_handler()->state(), State::kChunkReceived);
 
   // Abort the consumer handle after the first data chunk has arrived.
+  ConsumeChunk();
   AbortBodyConsumerHandle();
+  base::RunLoop().RunUntilIdle();
 
   // Once the data pipe for RaceNetworkRequest is closed, the fetch handler side
   // data pipe is also closed.
-  client_for_fetch_handler()->ConsumeChunk();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(client_for_fetch_handler()->IsDisconnected());
+  EXPECT_EQ(client_state(),
+            ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kAborted);
 }
 
 TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
@@ -467,10 +458,7 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   const uint32_t data_pipe_capacity_num_bytes = 8;
   SetUpURLLoaderClient(data_pipe_capacity_num_bytes);
 
-  // Expected input size should be larger than the data pipe size.
-  const std::string kExpectedBody = "abcdefghijklmnopqrstu";
-  ASSERT_GT(kExpectedBody.size(), data_pipe_capacity_num_bytes);
-  WriteData(kExpectedBody);
+  const std::string kExpectedBody = "abcde";
 
   // Set the callback for OnCommitResponse. This callback start watching the
   // response body data pipe.
@@ -482,21 +470,27 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   SetOnCompletedCallback(base::BindOnce([](int error_code, const char* reason) {
     EXPECT_EQ(error_code, net::OK);
   }));
+
+  WriteData(kExpectedBody);
   CompleteResponse(net::OK);
+
+  // Consume the whole data for the network request.
+  RunUntilStateChange(/*resume_state=*/false);
+  EXPECT_EQ(state(), State::kChunkReceived);
+  ConsumeChunk();
 
   // Waiting for the first data chunk is received.
   client_for_fetch_handler()->RunUntilStateChange(/*resume_state=*/false);
   EXPECT_EQ(client_for_fetch_handler()->state(), State::kChunkReceived);
-  RunUntilStateChange(/*resume_state=*/false);
-  EXPECT_EQ(state(), State::kChunkReceived);
 
   // Abort the consumer handle after the first data chunk has arrived.
   client_for_fetch_handler()->AbortBodyConsumerHandle();
+  base::RunLoop().RunUntilIdle();
 
-  // Once the data pipe for RaceNetworkRequest is closed, the fetch handler side
-  // data pipe is also closed.
-  ConsumeChunk();
-  EXPECT_TRUE(IsDisconnected());
+  // Since the network request is finished successfully, the state is already
+  // set as completed.
+  EXPECT_EQ(client_state(),
+            ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kCompleted);
 }
 
 TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
@@ -507,10 +501,19 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   const std::string kExpectedBody = "abcdefghijklmnopqrstu";
   ASSERT_GT(kExpectedBody.size(), data_pipe_capacity_num_bytes);
 
+  SetOnCommitResponseCallback(base::BindOnce(
+      &ServiceWorkerRaceNetworkRequestURLLoaderClientTest::WatchResponseBody,
+      base::Unretained(this)));
+
   // Set the callback for the commit completion.
   SetOnCompletedCallback(base::BindOnce([](int error_code, const char* reason) {
     EXPECT_EQ(error_code, net::ERR_FAILED);
   }));
+
+  // Set kWithoutServiceWorker. This imitates the fetch handler fallback case.
+  owner()->SetCommitResponsibility(
+      ServiceWorkerRaceNetworkRequestURLLoaderClient::FetchResponseFrom::
+          kWithoutServiceWorker);
 
   // |client_| receives the response and expect |state_| is changed to
   // kResponseReceived.
@@ -518,11 +521,6 @@ TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest,
   EXPECT_EQ(
       client_state(),
       ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kResponseReceived);
-
-  // Set kWithoutServiceWorker. This imitates the fetch handler fallback case.
-  owner()->SetCommitResponsibility(
-      ServiceWorkerRaceNetworkRequestURLLoaderClient::FetchResponseFrom::
-          kWithoutServiceWorker);
 
   // |client_| suddenly receives the network error, and expect |state_| is
   // changed to kCompleted directly from kResponseReceived.

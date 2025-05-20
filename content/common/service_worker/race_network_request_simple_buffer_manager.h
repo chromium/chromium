@@ -38,13 +38,13 @@ class CONTENT_EXPORT RaceNetworkRequestSimpleBufferManager
   // Starts writing the buffered data into `producer_handle`. Run the `callback`
   // after all buffered data is written.
   void Clone(mojo::ScopedDataPipeProducerHandle producer_handle,
-             base::OnceClosure callback);
+             base::OnceCallback<void(bool)> callback);
 
  private:
   void OnWriteAvailable(MojoResult result,
                         const mojo::HandleSignalsState& state);
   void MaybeWriteData();
-  void Finish();
+  void Finish(bool success);
   std::string_view GetDataFromBuffer();
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
   std::string buffered_body_;
@@ -53,7 +53,7 @@ class CONTENT_EXPORT RaceNetworkRequestSimpleBufferManager
 
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> producer_handle_watcher_;
-  base::OnceClosure clone_complete_callback_;
+  base::OnceCallback<void(bool)> clone_complete_callback_;
 
   base::WeakPtrFactory<RaceNetworkRequestSimpleBufferManager> weak_factory_{
       this};

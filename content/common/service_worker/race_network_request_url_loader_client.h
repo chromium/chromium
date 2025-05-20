@@ -221,8 +221,8 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   void CloneResponse();
   void CloneResponseForFetchHandler();
-  void OnCloneCompleted();
-  void OnCloneCompletedForFetchHandler();
+  void OnCloneCompleted(bool success);
+  void OnCloneCompletedForFetchHandler(bool success);
 
   State state_ = State::kWaitForBody;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
