@@ -7,7 +7,9 @@ package org.chromium.components.search_engines;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helpers to access feature params for {@link SearchEnginesFeatures}. */
 @NullMarked
@@ -15,6 +17,21 @@ public final class SearchEnginesFeatureUtils {
 
     static final String ENABLE_CHOICE_APIS_DEBUG_SWITCH = "enable-choice-apis-debug";
     static final String ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH = "enable-choice-apis-fake-backend";
+    private static final int CHOICE_APIS_CONNECTION_MAX_RETRIES = 2;
+    private static @Nullable SearchEnginesFeatureUtils sInstance;
+
+    public static SearchEnginesFeatureUtils getInstance() {
+        if (sInstance == null) {
+            sInstance = new SearchEnginesFeatureUtils();
+        }
+        return sInstance;
+    }
+
+    public static void setInstanceForTesting(SearchEnginesFeatureUtils instance) {
+        var oldInstance = sInstance;
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldInstance);
+    }
 
     /**
      * Whether verbose logs associated with device choice APIs should be enabled.
@@ -128,6 +145,11 @@ public final class SearchEnginesFeatureUtils {
         return SearchEnginesFeatureMap.getInstance()
                 .getFieldTrialParamByFeatureAsInt(
                         SearchEnginesFeatures.CLAY_BACKEND_CONNECTION_V2, "max_retries", 2);
+    }
+
+    /** Number of times a failed backend call will be retried. */
+    public int choiceApisConnectionMaxRetries() {
+        return CHOICE_APIS_CONNECTION_MAX_RETRIES;
     }
 
     @VisibleForTesting
