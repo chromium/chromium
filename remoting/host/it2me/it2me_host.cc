@@ -656,6 +656,11 @@ void It2MeHost::UpdateLocalSessionPolicies(
       local_session_policies->clipboard_size_bytes = 0;
     }
 
+    if (!chrome_os_enterprise_params_->maximum_session_duration.is_zero()) {
+      local_session_policies->maximum_session_duration =
+          chrome_os_enterprise_params_->maximum_session_duration;
+    }
+
 #if BUILDFLAG(IS_CHROMEOS)
     bool enterprise_file_transfer_allowed =
         platform_policies
