@@ -45,6 +45,7 @@ import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -72,6 +73,7 @@ public class StatusMediator
     private final Supplier<Profile> mProfileSupplier;
     private final @Nullable Supplier<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier;
+    private final boolean mAlwaysShowDseIconOnNtp;
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPaintPreview;
@@ -167,6 +169,7 @@ public class StatusMediator
 
         mIsTablet = isTablet;
         mShowStatusIconWhenUrlFocused = mIsTablet;
+        mAlwaysShowDseIconOnNtp = OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled();
 
         mPermissionDialogController = permissionDialogController;
         mPermissionDialogController.addObserver(this);
@@ -322,7 +325,7 @@ public class StatusMediator
         if (!shouldShowLogo) return;
 
         if (mProfileSupplier.hasValue() && isNtpVisible()) {
-            setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
+            setStatusIconShown(mAlwaysShowDseIconOnNtp || mUrlHasFocus || mUrlFocusPercent > 0);
         } else {
             setStatusIconShown(true);
         }
@@ -353,7 +356,7 @@ public class StatusMediator
         updateStatusVisibility();
 
         // Only fade the animation on the new tab page.
-        if (mProfileSupplier.hasValue() && isNtpVisible()) {
+        if (mProfileSupplier.hasValue() && isNtpVisible() && !mAlwaysShowDseIconOnNtp) {
             setStatusIconAlpha(percent);
         } else {
             setStatusIconAlpha(1f);
@@ -459,7 +462,8 @@ public class StatusMediator
     }
 
     private boolean isNtpVisible() {
-        return mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
+        return mLocationBarDataProvider.getNewTabPageDelegate() != null
+                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
     }
 
     /**
@@ -565,7 +569,7 @@ public class StatusMediator
             return true;
         }
 
-        return (mUrlHasFocus || mUrlFocusPercent > 0)
+        return (mAlwaysShowDseIconOnNtp || mUrlHasFocus || mUrlFocusPercent > 0)
                 && isNtpVisible()
                 && mProfileSupplier.hasValue();
     }

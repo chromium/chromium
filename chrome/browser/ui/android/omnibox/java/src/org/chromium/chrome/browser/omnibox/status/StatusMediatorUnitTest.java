@@ -39,6 +39,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -57,6 +58,7 @@ import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -197,12 +199,33 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void searchEngineLogo_isGoogleLogo_hideAfterUnfocusFinished() {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
 
         mMediator.setUrlHasFocus(true);
         mMediator.setUrlHasFocus(false);
         Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+    }
+
+    @Test
+    @SmallTest
+    public void searchEngineLogoPersistent() {
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+
+        mMediator.setUrlHasFocus(true);
+        mMediator.setUrlHasFocus(false);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertTrue(mMediator.shouldDisplaySearchEngineIcon());
+
+        mMediator.setUrlFocusChangePercent(0.5f);
+        Assert.assertEquals(1f, mModel.get(StatusProperties.STATUS_ICON_ALPHA), 0f);
+
+        doReturn(false).when(mNewTabPageDelegate).isCurrentlyVisible();
+
+        mMediator.setUrlHasFocus(true);
+        mMediator.setUrlHasFocus(false);
+        Assert.assertFalse(mMediator.shouldDisplaySearchEngineIcon());
     }
 
     @Test
@@ -218,6 +241,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void searchEngineLogo_isGoogleLogoOnNtp() {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
 
@@ -229,6 +253,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void searchEngineLogo_isGoogleLogoOnNtpTablet() {
         setupStatusMediator(/* isTablet= */ true);
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
@@ -366,6 +391,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void searchEngineLogo_intermediateUrlFocusPercent() {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
         mMediator.setUrlFocusChangePercent(0f);

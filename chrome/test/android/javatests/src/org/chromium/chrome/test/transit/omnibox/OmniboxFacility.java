@@ -60,7 +60,10 @@ public class OmniboxFacility extends Facility<PageStation> {
                     declareView(
                             ACTION_CONTAINER,
                             ViewElement.newOptions().unscoped().displayingAtLeast(50).build());
-            micButtonElement = declareView(MIC_BUTTON, ViewElement.displayingAtLeastOption(50));
+            micButtonElement =
+                    declareView(
+                            MIC_BUTTON,
+                            ViewElement.newOptions().unscoped().displayingAtLeast(50).build());
             declareNoView(DELETE_BUTTON);
         } else {
             if (mHostStation.getActivity().isTablet()) {

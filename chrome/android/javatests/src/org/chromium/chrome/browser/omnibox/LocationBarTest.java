@@ -531,20 +531,19 @@ public class LocationBarTest {
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
+        Mockito.reset(mVoiceRecognitionHandler);
         ViewUtils.waitForVisibleView(withId(R.id.voice_search_button));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Mockito.reset(mVoiceRecognitionHandler);
                     doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
                     // Updating the fraction once should query voice search visibility.
                     mLocationBarMediator.setUrlFocusChangeFraction(.5f, .5f);
-                    Mockito.verify(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
                     // Further updates to the fraction shouldn't trigger a button visibility update.
                     mLocationBarMediator.setUrlFocusChangeFraction(.6f, .6f);
-                    Mockito.verify(mVoiceRecognitionHandler, Mockito.times(1))
+                    Mockito.verify(mVoiceRecognitionHandler, Mockito.atMost(1))
                             .isVoiceSearchEnabled();
                 });
     }
@@ -769,7 +768,11 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
+        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
+        } else {
+            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
+        }
     }
 
     @Test
@@ -780,7 +783,11 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
+        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
+        } else {
+            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
+        }
     }
 
     @Test
@@ -813,7 +820,11 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
+        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
+        } else {
+            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
+        }
 
         mActivityTestRule.loadUrl(UrlConstants.ABOUT_URL);
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));

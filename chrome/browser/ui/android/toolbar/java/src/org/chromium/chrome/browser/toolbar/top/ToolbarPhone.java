@@ -278,6 +278,8 @@ public class ToolbarPhone extends ToolbarLayout
     // to webpages.
     private boolean mIsInLoadingPhaseFromNtpToWebpage;
 
+    private final boolean mAlwaysShowDseIconOnNtp;
+
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
 
@@ -315,6 +317,7 @@ public class ToolbarPhone extends ToolbarLayout
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
                         LocationBarBackgroundColorAlphaForNtp);
+        mAlwaysShowDseIconOnNtp = OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled();
     }
 
     @Override
@@ -1069,8 +1072,15 @@ public class ToolbarPhone extends ToolbarLayout
                             isLocationBarRtl,
                             locationBarBaseTranslationX,
                             isUrlFocusChangeInProgressWithScrollCompleted));
+            // A url expansion fraction < 1.0 fades and translates the DSE icon away from its final
+            // state. If the DSE icon is always visible on the NTP, it should stay at full alpha and
+            // in its final location rather than being affected by scroll offset.
+            float ntpUrlExpansionFraction =
+                    mAlwaysShowDseIconOnNtp && isLocationBarShownInNtp
+                            ? 1.0f
+                            : mNtpSearchBoxScrollFraction;
             mLocationBar.setUrlFocusChangeFraction(
-                    mNtpSearchBoxScrollFraction, mUrlFocusChangeFraction);
+                    ntpUrlExpansionFraction, mUrlFocusChangeFraction);
 
             // Only transition theme colors if in static tab mode that is not the NTP or while
             // focusing on the NTP. In NTP, toolbar and locationbar need to transite color only when
@@ -1220,7 +1230,9 @@ public class ToolbarPhone extends ToolbarLayout
         // Skip if in or entering tab switcher mode.
         if (mTabSwitcherState == TAB_SWITCHER || mTabSwitcherState == ENTERING_TAB_SWITCHER) return;
 
-        boolean isExpanded = mUrlExpansionFraction > 0f;
+        boolean isExpanded =
+                mUrlExpansionFraction > 0f
+                        || (mAlwaysShowDseIconOnNtp && isLocationBarShownInNtp());
         boolean isPartiallyExpanded = isExpanded && mUrlExpansionFraction < 1f;
         // We only need to avoid getting clipped in the period where the fakebox drawable belongs to
         // us but is taller than our bounds. It doesn't yet belong to us when the expansion fraction

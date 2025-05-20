@@ -672,15 +672,15 @@ public class LocationBarCoordinator
     /**
      * Updates progress of current the URL focus change animation.
      *
-     * @param ntpSearchBoxScrollFraction The degree to which the omnibox has expanded to full width
-     *     in NTP due to the NTP search box is being scrolled up.
+     * @param ntpUrlExpansionFraction The degree to which the omnibox has expanded to full width on
+     *     the NTP.
      * @param urlFocusChangeFraction The degree to which the omnibox has expanded due to it is
      *     getting focused.
      */
     public void setUrlFocusChangeFraction(
-            float ntpSearchBoxScrollFraction, float urlFocusChangeFraction) {
+            float ntpUrlExpansionFraction, float urlFocusChangeFraction) {
         mLocationBarMediator.setUrlFocusChangeFraction(
-                ntpSearchBoxScrollFraction, urlFocusChangeFraction);
+                ntpUrlExpansionFraction, urlFocusChangeFraction);
     }
 
     /**
