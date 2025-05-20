@@ -47,6 +47,7 @@
 #include <array>
 #include <fstream>
 #include <string>
+#include <vector>
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 
@@ -83,6 +84,10 @@ extern v8::Local<v8::Object> RecordReplayGetBytecode(
 #define CDPERROR_NOTALIVE 1002
 
 namespace blink {
+
+// This URL will prevent the script from being reported to the recorder.
+constexpr const char* kInternalScriptURL = "record-replay-internal";
+
 // using RemoteObjectIdTypeRaw = v8_inspector::String16;
 // The actual type for RemoteObjectId
 using RemoteObjectIdTypeRaw = std::u16string;
@@ -123,16 +128,28 @@ static LocalFrame* GetLocalFrameRoot(v8::Isolate* isolate) {
     return nullptr;
   }
 
-  LocalFrame *f = currentWindow->GetFrame();
+  LocalFrame* f = currentWindow->GetFrame();
   if (!f || f->IsDetached() || f->IsProvisional()) {
-    recordreplay::Print("[RuntimeError] GetLocalFrameRoot: window has no frame.");
+    recordreplay::Print(
+        "[RuntimeError] GetLocalFrameRoot: window has no usable frame. "
+        "win=%d frame=%d isDetached=%d isProvisional=%d "
+        "isMainFrame=%d isLocalRoot=%d url=%s",
+        currentWindow->RecordReplayId(), (f ? f->RecordReplayId() : -1),
+        f ? f->IsDetached() : -1, f ? f->IsProvisional() : -1,
+        f ? f->IsMainFrame() : -1, f ? f->IsLocalRoot() : -1,
+        (f && f->GetDocument())
+            ? f->GetDocument()->Url().GetString().Utf8().c_str()
+            : "<no-doc>");
     return nullptr;
   }
 
   LocalFrame& root = f->LocalFrameRoot();
 
   if (root.IsDetached() || root.IsProvisional()) {
-    recordreplay::Print("[RuntimeError] GetLocalFrameRoot: root is detached or provisional.");
+    recordreplay::Print(
+        "[RuntimeError] GetLocalFrameRoot: root is detached or provisional "
+        "frame=%d.",
+        root.RecordReplayId());
     return nullptr;
   }
 
@@ -610,6 +627,7 @@ const char* gOnNewWindowScript = R""""(
   //      __RECORD_REPLAY__?
   window.__RECORD_REPLAY__ = window.top.__RECORD_REPLAY__;
   window.__RECORD_REPLAY_ARGUMENTS__ = window.top.__RECORD_REPLAY_ARGUMENTS__;
+  window.__RECORD_REPLAY_ETERNAL_STATE__ = window.top.__RECORD_REPLAY_ETERNAL_STATE__;
 })()
 )"""";
 
@@ -857,7 +875,7 @@ static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single string");
 
-  recordreplay::AutoDisallowEvents disallow("SendCDPMessage");;
+  recordreplay::AutoDisallowEvents disallow("SendCDPMessage");
 
   v8::Isolate* isolate = args.GetIsolate();
   absl::optional<int> contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
@@ -1029,6 +1047,11 @@ static void fromJsCheckPersistentId(const v8::FunctionCallbackInfo<v8::Value>& a
                                                  args.GetIsolate()->GetCurrentContext(),
                                                  args[0]);
   }
+}
+
+static std::vector<std::string>& GetRegisteredRootFrameScripts() {
+  static std::vector<std::string>* scripts = new std::vector<std::string>();
+  return *scripts;
 }
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -2340,10 +2363,21 @@ static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, cons
   }
 }
 
+static void fromJsRegisterRootFrameScript(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() &&
+        "must be called with a single string");
+
+  v8::String::Utf8Value script(args.GetIsolate(), args[0]);
+  GetRegisteredRootFrameScripts().emplace_back(*script);
+}
+
 static bool TestEnv(const char* env) {
   const char* v = getenv(env);
   return v && v[0] && v[0] != '0';
 }
+
+static v8::Eternal<v8::Object>* gRecordReplayEternalState;
 
 static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* localFrame) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -2464,11 +2498,20 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
   SetFunctionProperty(isolate, args, "getPersistentId", fromJsGetPersistentId);
   SetFunctionProperty(isolate, args, "checkPersistentId", fromJsCheckPersistentId);
   SetFunctionProperty(isolate, args, "getProgressCounter", fromJsGetProgressCounter);
+  SetFunctionProperty(isolate, args, "registerRootFrameScript",
+                      fromJsRegisterRootFrameScript);
 
   // exported for tests
   SetFunctionProperty(
     isolate, args, "forTestingSerializeValueToArray",
     ForTestingSerializeValueToArray);
+
+  if (gRecordReplayEternalState == nullptr) {
+    gRecordReplayEternalState =
+        new v8::Eternal<v8::Object>(isolate, v8::Object::New(isolate));
+  }
+  DefineProperty(isolate, context->Global(), "__RECORD_REPLAY_ETERNAL_STATE__",
+                 gRecordReplayEternalState->Get(isolate));
 }
 
 void InitializeRecordReplay(
@@ -2500,13 +2543,10 @@ static void InitializeReplayScripts(v8::Isolate* isolate, LocalFrame* localFrame
   // Initialize __RECORD_REPLAY__ things.
   InitializeRecordReplayApiObjects(isolate, localFrame);
 
-  // This URL will prevent the script from being reported to the recorder.
-  const char* InternalScriptURL = "record-replay-internal";
-
   if (recordreplay::FeatureEnabled("collect-source-maps") &&
       !TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_COLLECTION")) {
     recordreplay::AutoMarkReplayCode amrc;
-    RunScript(isolate, context, ReadReplaySourcemapHandlerScript().Utf8().c_str(), InternalScriptURL);
+    RunScript(isolate, context, ReadReplaySourcemapHandlerScript().Utf8().c_str(), kInternalScriptURL);
   }
 
   if (recordreplay::FeatureEnabled("force-main-world-initialization")) {
@@ -2522,7 +2562,7 @@ static void InitializeReplayScripts(v8::Isolate* isolate, LocalFrame* localFrame
       recordreplay::AutoDisallowEvents disallow("InitializeReplayScripts");
 
       // Run `commandHandlerScript`.
-      RunScript(isolate, context, commandHandlerScript.Utf8().c_str(), InternalScriptURL);
+      RunScript(isolate, context, commandHandlerScript.Utf8().c_str(), kInternalScriptURL);
     }
   }
 }
@@ -2564,7 +2604,13 @@ void OnRootFrameInitAfterCheckpoint(v8::Isolate* isolate, LocalFrame* localFrame
         nullptr, localFrame->GetDocument()->Url().GetString().Utf8().c_str());
   }
 
-  // 2. Initialize React and Redux Devtools stubs.
+  // 2. Initialize registered root frame scripts
+  for (const auto& script : GetRegisteredRootFrameScripts()) {
+    recordreplay::AutoDisallowEvents disallow("RunRegisteredRootFrameScripts");
+    RunScript(isolate, context, script.c_str(), kInternalScriptURL);
+  }
+
+  // 3. Initialize React and Redux Devtools stubs.
   if (recordreplay::FeatureEnabled("react-devtools-backend") &&
       !TestEnv("RECORD_REPLAY_DISABLE_REACT_DEVTOOLS")) {
     // Note: We use a special URL for the react devtools as this script needs
