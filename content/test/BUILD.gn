@@ -161,6 +161,8 @@ static_library("test_support") {
     "../browser/sms/test/mock_sms_web_contents_delegate.h",
     "../browser/sms/test/mock_user_consent_handler.cc",
     "../browser/sms/test/mock_user_consent_handler.h",
+    "../browser/tracing/test_tracing_session.cc",
+    "../browser/tracing/test_tracing_session.h",
     "../browser/usb/usb_test_utils.cc",
     "../browser/usb/usb_test_utils.h",
     "../browser/web_package/mock_signed_exchange_handler.cc",
@@ -3309,8 +3311,14 @@ test("content_unittests") {
   ]
 
   if (!is_ios) {
-    data_deps += [ "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor" ]
-    data += [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor" ]
+    data_deps += [
+      "//third_party/perfetto/protos/perfetto/config:descriptor",
+      "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
+    ]
+    data += [
+      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
+      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/config.descriptor",
+    ]
   }
 
   # Platforms where sqlite_dev_shell is defined.
@@ -3646,9 +3654,15 @@ if (is_ios) {
 if (is_apple) {
   bundle_data("content_test_perfetto_bundle_data") {
     testonly = true
-    _relative_path = "third_party/perfetto/protos/perfetto/config/chrome"
-    public_deps = [ "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor_gen" ]
-    sources = [ "$root_gen_dir/$_relative_path/scenario_config.descriptor" ]
+    _relative_path = "third_party/perfetto/protos/perfetto/config"
+    public_deps = [
+      "//third_party/perfetto/protos/perfetto/config:descriptor_gen",
+      "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor_gen",
+    ]
+    sources = [
+      "$root_gen_dir/$_relative_path/chrome/scenario_config.descriptor",
+      "$root_gen_dir/$_relative_path/config.descriptor",
+    ]
     outputs =
         [ "{{bundle_resources_dir}}/gen/$_relative_path/{{source_file_part}}" ]
   }

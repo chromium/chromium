@@ -21,6 +21,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_session.h"
+#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 #include "third_party/snappy/src/snappy.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -36,10 +38,73 @@
 
 namespace content {
 
+namespace {
+
+std::optional<perfetto::protos::gen::TraceConfig> ParseSerializedTraceConfig(
+    const base::span<const uint8_t>& config_bytes) {
+  perfetto::protos::gen::TraceConfig config;
+  if (config_bytes.empty()) {
+    return std::nullopt;
+  }
+  if (config.ParseFromArray(config_bytes.data(), config_bytes.size())) {
+    return config;
+  }
+  return std::nullopt;
+}
+
+class TraceReader : public base::RefCountedThreadSafe<TraceReader> {
+ public:
+  explicit TraceReader(
+      std::unique_ptr<perfetto::TracingSession> tracing_session,
+      base::OnceCallback<void(std::optional<mojo_base::BigBuffer>)>
+          on_trace_data_complete,
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : tracing_session(std::move(tracing_session)),
+        on_trace_data_complete(std::move(on_trace_data_complete)),
+        task_runner(std::move(task_runner)) {}
+
+  std::unique_ptr<perfetto::TracingSession> tracing_session;
+  std::string serialized_trace;
+  base::OnceCallback<void(std::optional<mojo_base::BigBuffer>)>
+      on_trace_data_complete;
+  scoped_refptr<base::SequencedTaskRunner> task_runner;
+
+  static void ReadTrace(scoped_refptr<TraceReader> reader) {
+    reader->tracing_session->ReadTrace(
+        [reader](perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
+          if (args.size) {
+            reader->serialized_trace.append(args.data, args.size);
+          }
+          if (!args.has_more) {
+            reader->task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::OnceCallback<void(
+                           std::optional<mojo_base::BigBuffer>)> callback,
+                       std::string&& serialized_trace) {
+                      base::span<const char> trace_span(serialized_trace);
+                      std::move(callback).Run(
+                          mojo_base::BigBuffer(base::as_bytes(trace_span)));
+                    },
+                    std::move(reader->on_trace_data_complete),
+                    std::move(reader->serialized_trace)));
+          }
+        });
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<TraceReader>;
+
+  ~TraceReader() = default;
+};
+
+}  // namespace
+
 TraceReportHandler::TraceReportHandler(
     mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
     mojo::PendingRemote<trace_report::mojom::Page> page)
-    : receiver_(this, std::move(receiver)),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       trace_upload_list_(BackgroundTracingManagerImpl::GetInstance()),
       background_tracing_manager_(BackgroundTracingManagerImpl::GetInstance()),
@@ -55,7 +120,8 @@ TraceReportHandler::TraceReportHandler(
     TraceUploadList& trace_upload_list,
     BackgroundTracingManagerImpl& background_tracing_manager,
     TracingDelegate* tracing_delegate)
-    : receiver_(this, std::move(receiver)),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       trace_upload_list_(trace_upload_list),
       background_tracing_manager_(background_tracing_manager),
@@ -95,6 +161,134 @@ void TraceReportHandler::DownloadTrace(const base::Token& uuid,
                   }
                 },
                 std::move(callback)));
+}
+
+void TraceReportHandler::StartTraceSession(mojo_base::BigBuffer config_pb,
+                                           StartTraceSessionCallback callback) {
+  if (tracing_session_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  start_callback_ = std::move(callback);
+  tracing_session_ = CreateTracingSession();
+
+  auto trace_config = ParseSerializedTraceConfig(base::span(config_pb));
+  if (!trace_config ||
+      !tracing::AdaptPerfettoConfigForChrome(&(*trace_config))) {
+    std::move(start_callback_).Run(false);
+    return;
+  }
+  session_unguessable_name_ = base::UnguessableToken::Create();
+  trace_config->set_unique_session_name(session_unguessable_name_.ToString());
+  tracing_session_->Setup(*trace_config);
+  tracing_session_->SetOnStartCallback(
+      [task_runner = task_runner_, weak_ptr = weak_factory_.GetWeakPtr()]() {
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(&TraceReportHandler::OnTracingStart, weak_ptr));
+      });
+  tracing_session_->SetOnErrorCallback(
+      [task_runner = task_runner_,
+       weak_ptr = weak_factory_.GetWeakPtr()](perfetto::TracingError error) {
+        task_runner->PostTask(
+            FROM_HERE, base::BindOnce(&TraceReportHandler::OnTracingError,
+                                      weak_ptr, error));
+      });
+  tracing_session_->SetOnStopCallback(
+      [task_runner = task_runner_, weak_ptr = weak_factory_.GetWeakPtr()]() {
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(&TraceReportHandler::OnTracingStop, weak_ptr));
+      });
+  tracing_session_->Start();
+}
+
+void TraceReportHandler::CloneTraceSession(CloneTraceSessionCallback callback) {
+  if (!tracing_session_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  auto cloned_session = CreateTracingSession();
+  auto trace_reader = base::MakeRefCounted<TraceReader>(
+      std::move(cloned_session), std::move(callback), task_runner_);
+  perfetto::TracingSession::CloneTraceArgs args{
+      .unique_session_name = session_unguessable_name_.ToString()};
+  trace_reader->tracing_session->CloneTrace(
+      args,
+      [trace_reader](perfetto::TracingSession::CloneTraceCallbackArgs args) {
+        if (!args.success) {
+          std::move(trace_reader->on_trace_data_complete).Run(std::nullopt);
+          return;
+        }
+        TraceReader::ReadTrace(std::move(trace_reader));
+      });
+}
+
+void TraceReportHandler::StopTraceSession(StopTraceSessionCallback callback) {
+  if (!tracing_session_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  stop_callback_ = std::move(callback);
+  tracing_session_->Stop();
+}
+
+void TraceReportHandler::GetBufferUsage(GetBufferUsageCallback callback) {
+  if (!tracing_session_ || on_buffer_usage_callback_) {
+    std::move(callback).Run(false, 0, false);
+    return;
+  }
+
+  on_buffer_usage_callback_ = std::move(callback);
+  tracing_session_->GetTraceStats(
+      [task_runner = task_runner_, weak_ptr = weak_factory_.GetWeakPtr()](
+          perfetto::TracingSession::GetTraceStatsCallbackArgs args) {
+        tracing::ReadTraceStats(
+            args, base::BindOnce(&TraceReportHandler::OnBufferUsage, weak_ptr),
+            task_runner);
+      });
+}
+
+void TraceReportHandler::OnBufferUsage(bool success,
+                                       float percent_full,
+                                       bool data_loss) {
+  if (on_buffer_usage_callback_) {
+    std::move(on_buffer_usage_callback_).Run(success, percent_full, data_loss);
+  }
+}
+
+void TraceReportHandler::OnTracingError(perfetto::TracingError error) {
+  if (start_callback_) {
+    std::move(start_callback_).Run(false);
+  }
+  if (stop_callback_) {
+    std::move(stop_callback_).Run(false);
+  }
+  page_->OnTraceComplete(std::nullopt);
+}
+
+void TraceReportHandler::OnTracingStop() {
+  if (stop_callback_) {
+    std::move(stop_callback_).Run(true);
+  }
+  auto trace_reader = base::MakeRefCounted<TraceReader>(
+      std::move(tracing_session_),
+      base::BindOnce(&TraceReportHandler::OnTraceComplete,
+                     weak_factory_.GetWeakPtr()),
+      task_runner_);
+  TraceReader::ReadTrace(std::move(trace_reader));
+}
+
+void TraceReportHandler::OnTracingStart() {
+  if (start_callback_) {
+    std::move(start_callback_).Run(true);
+  }
+}
+
+void TraceReportHandler::OnTraceComplete(
+    std::optional<mojo_base::BigBuffer> serialized_trace) {
+  page_->OnTraceComplete(std::move(serialized_trace));
 }
 
 void TraceReportHandler::GetAllTraceReports(
@@ -171,7 +365,7 @@ void TraceReportHandler::SetScenariosConfigFromBuffer(
     mojo_base::BigBuffer config_pb,
     SetScenariosConfigFromBufferCallback callback) {
   auto field_tracing_config =
-      tracing::ParseSerializedTracingScenariosConfig(config_pb.byte_span());
+      tracing::ParseSerializedTracingScenariosConfig(base::span(config_pb));
   if (!field_tracing_config) {
     std::move(callback).Run(false);
     return;
@@ -258,5 +452,10 @@ void TraceReportHandler::DisableSystemTracing(
   tracing_delegate_->DisableSystemTracing(std::move(callback));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+std::unique_ptr<perfetto::TracingSession>
+TraceReportHandler::CreateTracingSession() {
+  return perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+}
 
 }  // namespace content

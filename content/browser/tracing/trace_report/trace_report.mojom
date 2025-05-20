@@ -80,6 +80,25 @@ interface TraceReportHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
+  // Starts the tracing session from a serialized proto config defined as
+  // `perfetto.protos.TraceConfig`. This isn't using ProtoWrapper
+  // because it's not compatible with cppgen proto headers used by perfetto.
+  // PageHandler supports only one tracing session at a time.
+  StartTraceSession(mojo_base.mojom.BigBuffer config_pb) => (bool success);
+
+  // Clones the current tracing session in read-only mode and returns the
+  // captured trace snapshot, or null if the operation fails.
+  CloneTraceSession() => (mojo_base.mojom.BigBuffer? trace);
+
+  // Stops the current tracing session. If successful, this will read the trace
+  // payload and return it via Page::OnTraceComplete().
+  StopTraceSession() => (bool success);
+
+  // Returns buffer usage stats for the current tracing session. PageHandler
+  // supports only one request at a time.
+  GetBufferUsage()
+      => (bool success, float percent_full, bool data_loss);
+
   // Get visual data for all the traces currently stored locally.
   GetAllTraceReports() => (array<ClientTraceReport> reports);
 
@@ -150,4 +169,7 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
+  // When a tracing session completes, either from calling PageHandler::Stop()
+  // or by itself, this is invoked with the serialized trace payload.
+  OnTraceComplete(mojo_base.mojom.BigBuffer? trace);
 };

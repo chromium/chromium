@@ -4,8 +4,13 @@
 
 #include "content/browser/tracing/trace_report/trace_report_handler.h"
 
+#include "base/base_paths.h"
+#include "base/path_service.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_proto_loader.h"
 #include "base/token.h"
+#include "content/browser/tracing/test_tracing_session.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -19,6 +24,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
+
+using testing::_;
+
+perfetto::protos::gen::TraceConfig ParseTraceConfigFromText(
+    const std::string& proto_text) {
+  base::TestProtoLoader config_loader(
+      base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT)
+          .Append(FILE_PATH_LITERAL("third_party/perfetto/protos/perfetto/"
+                                    "config/config.descriptor")),
+      "perfetto.protos.TraceConfig");
+  std::string serialized_message;
+  config_loader.ParseFromText(proto_text, serialized_message);
+  perfetto::protos::gen::TraceConfig destination;
+  destination.ParseFromString(serialized_message);
+  return destination;
+}
 
 class FakeTraceUploadList : public TraceUploadList {
  public:
@@ -50,6 +71,11 @@ class MockTracePage : public trace_report::mojom::Page {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  MOCK_METHOD(void,
+              OnTraceComplete,
+              (std::optional<mojo_base::BigBuffer>),
+              (override));
+
   mojo::Receiver<trace_report::mojom::Page> receiver_{this};
 };
 
@@ -73,6 +99,26 @@ class MockTracingDelegate : public TracingDelegate {
 #endif
 };
 
+class TraceReportHandlerForTesting : public TraceReportHandler {
+ public:
+  TraceReportHandlerForTesting(
+      mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
+      mojo::PendingRemote<trace_report::mojom::Page> page,
+      TraceUploadList& trace_upload_list,
+      BackgroundTracingManagerImpl& background_tracing_manager,
+      TracingDelegate* tracing_delegate)
+      : TraceReportHandler(std::move(receiver),
+                           std::move(page),
+                           trace_upload_list,
+                           background_tracing_manager,
+                           tracing_delegate) {}
+
+ protected:
+  std::unique_ptr<perfetto::TracingSession> CreateTracingSession() override {
+    return std::make_unique<TestTracingSession>();
+  }
+};
+
 // A fixture to test TraceReportHandler.
 class TraceReportHandlerTest : public testing::Test {
  public:
@@ -84,7 +130,7 @@ class TraceReportHandlerTest : public testing::Test {
         std::make_unique<BackgroundTracingManagerImpl>();
     // Expect the Database to be opened before executing each test.
     EXPECT_CALL(fake_trace_upload_list_, OpenDatabaseIfExists());
-    handler_ = std::make_unique<TraceReportHandler>(
+    handler_ = std::make_unique<TraceReportHandlerForTesting>(
         mojo::PendingReceiver<trace_report::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), fake_trace_upload_list_,
         *background_tracing_manager_, &mock_tracing_delegate_);
@@ -98,6 +144,154 @@ class TraceReportHandlerTest : public testing::Test {
   testing::NiceMock<MockTracingDelegate> mock_tracing_delegate_;
   std::unique_ptr<TraceReportHandler> handler_;
 };
+
+TEST_F(TraceReportHandlerTest, TracingStartStop) {
+  auto trace_config =
+      ParseTraceConfigFromText(R"pb(
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      )pb")
+          .SerializeAsString();
+  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+      start_callback;
+  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
+                                  base::span<const char>(trace_config))),
+                              start_callback.Get());
+
+  {
+    base::RunLoop run_loop_start;
+    EXPECT_CALL(start_callback, Run(true))
+        .WillOnce(base::test::RunOnceClosure(run_loop_start.QuitClosure()));
+    run_loop_start.Run();
+  }
+
+  base::MockCallback<TraceReportHandler::StopTraceSessionCallback>
+      stop_callback;
+  handler_->StopTraceSession(stop_callback.Get());
+  {
+    base::RunLoop run_loop_stop;
+    EXPECT_CALL(stop_callback, Run(true)).Times(1);
+
+    EXPECT_CALL(mock_page_,
+                OnTraceComplete(testing::Truly(
+                    [](const std::optional<mojo_base::BigBuffer>& trace) {
+                      return base::as_string_view(base::as_chars(
+                                 base::span(*trace))) == "this is a trace";
+                    })))
+        .WillOnce(base::test::RunOnceClosure(run_loop_stop.QuitClosure()));
+
+    run_loop_stop.Run();
+  }
+}
+
+TEST_F(TraceReportHandlerTest, TracingTimer) {
+  auto trace_config = ParseTraceConfigFromText(R"pb(
+                        data_sources: { config: { name: "Stop" } }
+                      )pb")
+                          .SerializeAsString();
+  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
+                                  base::span<const char>(trace_config))),
+                              base::DoNothing());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(
+      mock_page_,
+      OnTraceComplete(
+          testing::Truly([](const std::optional<mojo_base::BigBuffer>& trace) {
+            return base::as_string_view(base::as_chars(base::span(*trace))) ==
+                   "this is a trace";
+          })))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(TraceReportHandlerTest, TracingStartFail) {
+  auto trace_config = ParseTraceConfigFromText(R"pb(
+                        data_sources: { config: { name: "Invalid" } }
+                      )pb")
+                          .SerializeAsString();
+  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+      start_callback;
+  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
+                                  base::span<const char>(trace_config))),
+                              start_callback.Get());
+
+  {
+    base::RunLoop run_loop_stop;
+    EXPECT_CALL(start_callback, Run(false))
+        .WillOnce(base::test::RunOnceClosure(run_loop_stop.QuitClosure()));
+    run_loop_stop.Run();
+  }
+}
+
+TEST_F(TraceReportHandlerTest, TracingClone) {
+  auto trace_config =
+      ParseTraceConfigFromText(R"pb(
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      )pb")
+          .SerializeAsString();
+  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+      start_callback;
+  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
+                                  base::span<const char>(trace_config))),
+                              start_callback.Get());
+
+  {
+    base::RunLoop run_loop_start;
+    EXPECT_CALL(start_callback, Run(true))
+        .WillOnce(base::test::RunOnceClosure(run_loop_start.QuitClosure()));
+    run_loop_start.Run();
+  }
+
+  base::MockCallback<TraceReportHandler::CloneTraceSessionCallback>
+      clone_callback;
+  handler_->CloneTraceSession(clone_callback.Get());
+  {
+    base::RunLoop run_loop_clone;
+
+    EXPECT_CALL(clone_callback,
+                Run(testing::Truly(
+                    [](const std::optional<mojo_base::BigBuffer>& trace) {
+                      return base::as_string_view(base::as_chars(
+                                 base::span(*trace))) == "this is a trace";
+                    })))
+        .WillOnce(base::test::RunOnceClosure(run_loop_clone.QuitClosure()));
+
+    run_loop_clone.Run();
+  }
+}
+
+TEST_F(TraceReportHandlerTest, TracingBufferUsage) {
+  auto trace_config =
+      ParseTraceConfigFromText(R"pb(
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      )pb")
+          .SerializeAsString();
+  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+      start_callback;
+  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
+                                  base::span<const char>(trace_config))),
+                              start_callback.Get());
+
+  {
+    base::RunLoop run_loop_start;
+    EXPECT_CALL(start_callback, Run(true))
+        .WillOnce(base::test::RunOnceClosure(run_loop_start.QuitClosure()));
+    run_loop_start.Run();
+  }
+
+  base::MockCallback<TraceReportHandler::GetBufferUsageCallback>
+      buffer_callback;
+  handler_->GetBufferUsage(buffer_callback.Get());
+  {
+    base::RunLoop run_loop_buffer;
+
+    EXPECT_CALL(buffer_callback, Run(true, _, _))
+        .WillOnce(base::test::RunOnceClosure(run_loop_buffer.QuitClosure()));
+
+    run_loop_buffer.Run();
+  }
+}
 
 TEST_F(TraceReportHandlerTest, GetAllTraceReports) {
   base::MockCallback<TraceReportHandler::GetAllTraceReportsCallback> callback;
