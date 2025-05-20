@@ -19,6 +19,11 @@
 #include "net/base/net_errors.h"
 
 namespace gpu {
+namespace {
+
+constexpr int kCacheIndex = 1;
+
+}
 
 // GpuDiskCacheEntry handles the work of caching/updating the cached
 // blobs.
@@ -206,6 +211,14 @@ void GpuDiskCacheEntry::OnEntryOpenComplete(disk_cache::EntryResult result) {
 int GpuDiskCacheEntry::OpenCallback(int rv) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (rv == net::OK) {
+    size_t existing_size =
+        base::checked_cast<size_t>(entry_->GetDataSize(kCacheIndex));
+    if (existing_size != blob_.size()) {
+      // The blob has changed.
+      return WriteCallback(net::OK);
+    }
+
+    // The blob is unchanged.
     cache_->backend()->OnExternalCacheHit(key_);
     cache_->EntryComplete(this);
     return rv;
@@ -253,10 +266,10 @@ int GpuDiskCacheEntry::WriteCallback(int rv) {
 
   op_type_ = WRITE_DATA;
   auto io_buf = base::MakeRefCounted<net::StringIOBuffer>(blob_);
-  return entry_->WriteData(1, 0, io_buf.get(), blob_.length(),
+  return entry_->WriteData(kCacheIndex, 0, io_buf.get(), blob_.length(),
                            base::BindOnce(&GpuDiskCacheEntry::OnOpComplete,
                                           weak_ptr_factory_.GetWeakPtr()),
-                           false);
+                           /*truncate=*/true);
 }
 
 int GpuDiskCacheEntry::IOComplete(int rv) {

@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/test_completion_callback.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -181,6 +182,63 @@ TEST_F(GpuDiskCacheTest, MultipleLoaderCallbacks) {
   int rv2 = cache->SetAvailableCallback(available_cb2.callback());
   ASSERT_EQ(net::OK, available_cb2.GetResult(rv2));
   EXPECT_EQ(count, loaded_calls);
+}
+
+TEST_F(GpuDiskCacheTest, ModifyExistingKey) {
+  InitCache();
+
+  scoped_refptr<GpuDiskCache> cache = factory()->Create(handle_);
+  ASSERT_TRUE(cache.get() != nullptr);
+
+  {
+    net::TestCompletionCallback available_cb;
+    int rv = cache->SetAvailableCallback(available_cb.callback());
+    ASSERT_EQ(net::OK, available_cb.GetResult(rv));
+  }
+  EXPECT_EQ(0, cache->Size());
+
+  cache->Cache(kCacheKey, kCacheValue2);
+
+  {
+    net::TestCompletionCallback complete_cb;
+    int rv = cache->SetCacheCompleteCallback(complete_cb.callback());
+    ASSERT_EQ(net::OK, complete_cb.GetResult(rv));
+  }
+  EXPECT_EQ(1, cache->Size());
+
+  // Cache a different value to the same key. The new value should be smaller
+  // than old value to ensure the old value is fully removed from cache.
+  cache->Cache(kCacheKey, kCacheValue);
+  ASSERT_LT(std::string_view(kCacheKey).size(),
+            std::string_view(kCacheKey2).size());
+
+  {
+    net::TestCompletionCallback complete_cb;
+    int rv = cache->SetCacheCompleteCallback(complete_cb.callback());
+    ASSERT_EQ(net::OK, complete_cb.GetResult(rv));
+  }
+  EXPECT_EQ(1, cache->Size());
+
+  // Close, re-open, and verify that the second Cache() modified the value on
+  // disk.
+  cache = nullptr;
+  std::vector<std::pair<std::string, std::string>> loaded_data;
+  cache = factory()->Create(
+      handle_,
+      base::BindLambdaForTesting(
+          [&loaded_data](const GpuDiskCacheHandle& handle,
+                         const std::string& key, const std::string& value) {
+            loaded_data.emplace_back(key, value);
+          }));
+  ASSERT_TRUE(cache.get() != nullptr);
+
+  {
+    net::TestCompletionCallback available_cb;
+    int rv = cache->SetAvailableCallback(available_cb.callback());
+    ASSERT_EQ(net::OK, available_cb.GetResult(rv));
+  }
+  EXPECT_THAT(loaded_data,
+              testing::ElementsAre(std::pair(kCacheKey, kCacheValue)));
 }
 
 TEST_F(GpuDiskCacheTest, ReleasedCacheHandle) {
