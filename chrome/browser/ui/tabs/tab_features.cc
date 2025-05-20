@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
@@ -336,6 +337,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   resource_usage_helper_ = std::make_unique<TabResourceUsageTabHelper>(tab);
 
   memory_saver_chip_helper_ = std::make_unique<MemorySaverChipTabHelper>(tab);
+
+  tab_alert_controller_ =
+      std::make_unique<TabAlertController>(tab.GetContents());
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 

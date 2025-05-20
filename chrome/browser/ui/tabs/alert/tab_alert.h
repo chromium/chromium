@@ -7,6 +7,7 @@
 
 namespace tabs {
 // Alert states for a tab. Any number of these (or none) may apply at once.
+// LINT.IfChange(TabAlert)
 enum class TabAlert {
   MEDIA_RECORDING,        // Audio/Video [both] being recorded, consumed by tab.
   TAB_CAPTURING,          // Tab contents being captured.
@@ -24,6 +25,9 @@ enum class TabAlert {
   VIDEO_RECORDING,           // Video [only] being recorded, consumed by tab.
   GLIC_ACCESSING,            // Glic is accessing the tab's contents.
 };
+// Any changes to the TabAlert enum needs to be updated in CompareAlerts as
+// well.
+// LINT.ThenChange(/chrome/browser/ui/tabs/alert/tab_alert_controller.cc)
 }  // namespace tabs
 
 #endif  // CHROME_BROWSER_UI_TABS_ALERT_TAB_ALERT_H_

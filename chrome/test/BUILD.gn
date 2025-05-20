@@ -8299,6 +8299,7 @@ test("unit_tests") {
       "//chrome/browser/ui/safety_hub:unit_tests",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/tab_contents:unit_tests",
+      "//chrome/browser/ui/tabs/alert:unit_tests",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:unit_tests",
       "//chrome/browser/ui/toasts/api:unit_tests",

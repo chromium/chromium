@@ -107,6 +107,7 @@ class NewTabFooterController;
 
 namespace tabs {
 
+class TabAlertController;
 class TabInterface;
 class TabDialogManager;
 
@@ -254,6 +255,10 @@ class TabFeatures {
   }
 #endif
 
+  TabAlertController* tab_alert_controller() {
+    return tab_alert_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
   virtual void Init(TabInterface& tab, Profile* profile);
@@ -391,6 +396,8 @@ class TabFeatures {
   std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
 
   std::unique_ptr<MemorySaverChipTabHelper> memory_saver_chip_helper_;
+
+  std::unique_ptr<TabAlertController> tab_alert_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

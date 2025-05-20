@@ -1723,6 +1723,8 @@ static_library("ui") {
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/tabs:tab_strip_model_observer_impl",
       "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/tabs/alert:impl",
+      "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toasts/api:toasts",
