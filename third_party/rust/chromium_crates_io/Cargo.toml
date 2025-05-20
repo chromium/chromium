@@ -103,6 +103,6 @@ version = "1"
 features = ["nightly_portable_simd"]  # For std::simd coverage.
 
 [dependencies.zip]
-version = "2.6.1"
+version = "3.0.0"
 default-features = false
 features = ["deflate-flate2"]

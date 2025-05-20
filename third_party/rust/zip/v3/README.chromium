@@ -1,0 +1,11 @@
+Name: zip
+URL: https://crates.io/crates/zip
+Version: 3.0.0
+Revision: 8c01cb7fec6c4f696f8306f1942044dcf1a8f5b2
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/zip-v3/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Library to support the reading and writing of zip files.
+

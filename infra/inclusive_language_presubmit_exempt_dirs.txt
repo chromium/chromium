@@ -657,7 +657,6 @@ third_party/rust/chromium_crates_io/vendor/clap-v4/src 4 2
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-v0_12 4 2
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-v0_12/examples 1 1
 third_party/rust/chromium_crates_io/vendor/crc32fast-v1/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8 3 3
 third_party/rust/chromium_crates_io/vendor/cxx-v1 1 1
 third_party/rust/chromium_crates_io/vendor/cxx-v1/book 1 1
 third_party/rust/chromium_crates_io/vendor/cxx-v1/book/src 3 1
@@ -737,8 +736,8 @@ third_party/rust/chromium_crates_io/vendor/windows-strings-v0_4 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering 2 1
-third_party/rust/chromium_crates_io/vendor/zip-v2 2 2
-third_party/rust/chromium_crates_io/vendor/zip-v2/src 1 1
+third_party/rust/chromium_crates_io/vendor/zip-v3 2 2
+third_party/rust/chromium_crates_io/vendor/zip-v3/src 1 1
 third_party/screen-ai 1 1
 third_party/sentencepiece/src 2 2
 third_party/sentencepiece/src/doc 3 1
