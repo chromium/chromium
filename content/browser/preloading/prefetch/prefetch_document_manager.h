@@ -100,12 +100,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   // Returns a tuple: (can_prefetch_now, prefetch_to_evict). 'can_prefetch_now'
   // is true if we can prefetch |next_prefetch| based on the state of the
-  // document, and the number of existing completed prefetches (only if
-  // |kPrefetchNewLimits| is enabled). The eagerness of |next_prefetch| is taken
-  // into account when making the decision. 'prefetch_to_evict' is set to an
-  // existing prefetch if one needs to be evicted to make space for the prefetch
-  // of |next_prefetch|, or nullptr otherwise. 'prefetch_to_evict' will only be
-  // non-null if 'can_prefetch_now' is true.
+  // document, and the number of existing completed prefetches. The eagerness of
+  // |next_prefetch| is taken into account when making the decision.
+  // 'prefetch_to_evict' is set to an existing prefetch if one needs to be
+  // evicted to make space for the prefetch of |next_prefetch|, or nullptr
+  // otherwise. 'prefetch_to_evict' will only be non-null if 'can_prefetch_now'
+  // is true.
   std::tuple<bool, base::WeakPtr<PrefetchContainer>> CanPrefetchNow(
       PrefetchContainer* next_prefetch);
 

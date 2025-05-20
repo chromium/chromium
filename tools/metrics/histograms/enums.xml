@@ -22598,12 +22598,11 @@ Called by update_net_error_codes.py.-->
   </int>
   <int value="50" label="Prefetch Evicted: Candidate Removed">
     The prefetch was evicted to make room for a newer prefetch because the
-    corresponding SpeculationCandidate was removed. This currently only happens
-    when |kPrefetchNewLimits| is enabled.
+    corresponding SpeculationCandidate was removed.
   </int>
   <int value="51" label="Prefetch Evicted: Old Prefetch">
     The prefetch was evicted to make room for a newer prefetch beacuse it was
-    old. This currently only happens when |kPrefetchNewLimits| is enabled.
+    old.
   </int>
   <int value="52"
       label="Prefetch Not Eligible: Redirected from ServiceWorker-controlled

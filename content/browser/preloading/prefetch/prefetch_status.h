@@ -222,8 +222,7 @@ enum class PrefetchStatus {
   // The prefetch was not made because preloading was disabled.
   kPrefetchIneligiblePreloadingDisabled = 48,
 
-  // The prefetch was evicted to make room for a newer prefetch. This currently
-  // only happens when |kPrefetchNewLimits| is enabled.
+  // The prefetch was evicted to make room for a newer prefetch.
   // kPrefetchEvicted = 49, DEPRECATED
   kPrefetchEvictedAfterCandidateRemoved = 50,
   kPrefetchEvictedForNewerPrefetch = 51,
