@@ -67,6 +67,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/unzip_service/UTF8 (Bug 903664).zip",
     "//components/test/data/unzip_service/Wrong CRC.zip",
     "//components/test/data/unzip_service/bad_archive.zip",
+    "//components/test/data/unzip_service/bad_archive_hang.zip",
     "//components/test/data/unzip_service/bd646",
     "//components/test/data/unzip_service/bd646.xz",
     "//components/test/data/unzip_service/bug953599.zip",

@@ -489,8 +489,10 @@ local ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib
     buf = (unsigned char*)ALLOC(BUFSIZE);
     if (buf==NULL)
         return CENTRALDIRINVALID;
+    if (relativeOffset > uPosFound)
+        return CENTRALDIRINVALID;
     // Zip64 EOCDR is at least 48 bytes long.
-    while (relativeOffset <= uPosFound - 48) {
+    while (uPosFound - relativeOffset >= 48) {
         int found = 0;
         uLong uReadSize = uPosFound - relativeOffset;
         if (uReadSize > BUFSIZE) {
