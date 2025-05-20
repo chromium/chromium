@@ -95,19 +95,14 @@ enum class CollaborationServiceShareOrManageEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 
-// Steps in a collaboration flow that has user wait time.
-// These values are persisted to logs. Entries should not be renumbered and
-// number values should never be reused.
-// LINT.IfChange(CollaborationServiceStep)
 enum class CollaborationServiceStep {
   kUnknown = 0,
-  kAuthenticationSuccess = 1,
-  kServicesInitialized = 2,
+  kAuthenticationInitToSuccess = 1,
+  kWaitingForServicesInitialization = 2,
   kLinkReadyAfterGroupCreation = 3,
   kTabGroupFetchedAfterPeopleGroupJoined = 4,
   kMaxValue = kTabGroupFetchedAfterPeopleGroupJoined,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceStep)
 
 void RecordJoinEvent(data_sharing::Logger* logger,
                      CollaborationServiceJoinEvent event);

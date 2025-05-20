@@ -429,9 +429,10 @@ class AuthenticatingState : public ControllerState,
 
  private:
   void FinishAndTransition() {
-    RecordLatency(GetLogger(),
-                  metrics::CollaborationServiceStep::kAuthenticationSuccess,
-                  base::Time::Now() - start_time_);
+    RecordLatency(
+        GetLogger(),
+        metrics::CollaborationServiceStep::kAuthenticationInitToSuccess,
+        base::Time::Now() - start_time_);
     controller->delegate()->NotifySignInAndSyncStatusChange();
     controller->TransitionTo(StateId::kWaitingForServicesToInitialize);
   }
@@ -483,9 +484,10 @@ class WaitingForServicesToInitialize
   }
 
   void OnProcessingFinishedWithSuccess() override {
-    RecordLatency(GetLogger(),
-                  metrics::CollaborationServiceStep::kServicesInitialized,
-                  base::Time::Now() - start_time_);
+    RecordLatency(
+        GetLogger(),
+        metrics::CollaborationServiceStep::kWaitingForServicesInitialization,
+        base::Time::Now() - start_time_);
     controller->TransitionTo(StateId::kCheckingFlowRequirements);
   }
 

@@ -153,18 +153,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceShareOrManageEvent) -->
 
-<!-- LINT.IfChange(CollaborationServiceStep) -->
-
-<enum name="CollaborationServiceStep">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Time for authentication success"/>
-  <int value="2" label="Time for services initialization"/>
-  <int value="3" label="Time for link to be ready after group creation"/>
-  <int value="4" label="Time for tab group to be fetched after group creation"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceStep) -->
-
 </enums>
 
 </histogram-configuration>
