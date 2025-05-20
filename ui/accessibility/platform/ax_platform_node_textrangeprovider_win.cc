@@ -1199,9 +1199,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
 
   LONG i = 0;
   for (const gfx::NativeViewAccessible& descendant : descendants) {
-    IRawElementProviderSimple* raw_provider;
+    Microsoft::WRL::ComPtr<IRawElementProviderSimple> raw_provider;
     descendant->QueryInterface(IID_PPV_ARGS(&raw_provider));
-    SafeArrayPutElement(safe_array, &i, raw_provider);
+    SafeArrayPutElement(safe_array, &i, raw_provider.Get());
     ++i;
   }
 
