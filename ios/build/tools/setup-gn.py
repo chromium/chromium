@@ -152,6 +152,8 @@ class GnGenerator(object):
     args.append(
         ('target_environment', self.TARGET_ENVIRONMENT_VALUES[self._target]))
     args.append(('target_platform', self.TARGET_PLATFORM_VALUES[self._target]))
+    if self.TARGET_PLATFORM_VALUES[self._target] == '"tvos"':
+      args.append(('use_blink', True))
 
     # Add user overrides after the other configurations so that they can
     # refer to them and override them.
