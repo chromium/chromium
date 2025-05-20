@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.CrosPerUser.DaemonStoreWriteFailed"
     enum="PerUserDaemonStoreFail" expires_after="2023-04-16">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Records the status of writing the per-user metrics state to daemon-store (or
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.CrosPerUser.IdReset" enum="PerUserIdType"
     expires_after="2024-02-04">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>asvitkine@chromium.org</owner>
   <summary>
     Counts the number of times an ID was reset. The client ID is reset when a
@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.CrosPerUser.UserLogStoreState" enum="PerUserLogStoreState"
     expires_after="2023-04-16">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>asvitkine@chromium.org</owner>
   <summary>
     Records the state that metrics service is in when user log store was set or
@@ -823,7 +823,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.StructuredMetrics.EventFileSize" units="KB"
     expires_after="2024-02-01">
   <owner>tby@chromium.org</owner>
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     File size of events recorded outside of Chrome. This metric is recorded for
     every file processed by an external metrics scan, which reads the events
@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.StructuredMetrics.EventRecordingState2"
     enum="StructuredMetricsEventRecordingState2" expires_after="2024-02-01">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -848,7 +848,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.StructuredMetrics.EventSerializedSize" units="bytes"
     expires_after="2024-04-28">
   <owner>andrewbregger@google.com</owner>
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     The serialized size in bytes of a Structured Metrics event. This is the size
     the event uses when serialized to be uploaded.
@@ -857,7 +857,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.StructuredMetrics.EventsRecordedBeforeInit" units="scans"
     expires_after="2024-04-28">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     Number of events recorded before private keys are initialized to hash
@@ -868,7 +868,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.StructuredMetrics.ExternalMetricScansPerUpload"
     units="count" expires_after="2024-04-28">
   <owner>andrewbregger@google.com</owner>
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     The number of external metric scans from platform2 were performed since the
     last Structured Metric upload. An external metric scan collects events that
@@ -879,7 +879,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.StructuredMetrics.InternalError2"
     enum="StructuredMetricsInternalError2" expires_after="2025-11-16">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -891,7 +891,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.StructuredMetrics.KeyValidationState"
     enum="StructuredMetricsKeyValidationState" expires_after="2024-02-01">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -907,7 +907,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.StructuredMetrics.NumEventsInUpload" units="count"
     expires_after="2025-11-16">
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -920,7 +920,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.StructuredMetrics.NumFilesPerExternalMetricsScan"
     units="count" expires_after="2025-11-16">
   <owner>tby@chromium.org</owner>
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     How many files in the external Structured metrics directory before an
     external metrics scan is triggered. The external metrics scan will read the
@@ -931,7 +931,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.StructuredMetrics.UploadSize" units="bytes"
     expires_after="2024-02-01">
   <owner>andrewbregger@google.com</owner>
-  <owner>jongahn@chromium.org</owner>
+  <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     The serialized size in bytes of the Structured Metrics payload attached to
