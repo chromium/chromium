@@ -255,6 +255,15 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
   node.target_id = wire.target_id;
+  node.view_transition_target_id = wire.view_transition_target_id;
+  node.closest_ancestor_with_cached_render_surface_id =
+      wire.closest_ancestor_with_cached_render_surface_id;
+  node.closest_ancestor_with_copy_request_id =
+      wire.closest_ancestor_with_copy_request_id;
+  node.closest_ancestor_being_captured_id =
+      wire.closest_ancestor_being_captured_id;
+  node.closest_ancestor_with_shared_element_id =
+      wire.closest_ancestor_with_shared_element_id;
   node.view_transition_element_resource_id =
       wire.view_transition_element_resource_id;
   node.filters = wire.filters;
@@ -676,6 +685,8 @@ base::expected<void, std::string> CreateOrUpdateLayers(
     if (!layer) {
       layer = CreateLayer(host_impl, layers, *wire);
     }
+    // TODO(crbug.com/418022040): Make sure we support re-creating Layers with
+    // a previously used Id.
     RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
   }
   for (auto id : *layer_order) {

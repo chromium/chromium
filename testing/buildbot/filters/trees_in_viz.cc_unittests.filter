@@ -49,8 +49,3 @@
 
 # TODO(crbug.com/406010462) View transition requests are lost between cc and viz
 -LayerTreeHostTestDamagePropagatesFromViewTransitionSurface.RunMultiThread_DelegatingRenderer
-
-# TODO(crbug.com/383016428) Readback of layers outside of the viewport stopped
-# working since crrev.com/c/6383158.
--All/LayerTreeHostReadbackPixelTest.ReadbackNonRootLayerOutsideViewport/*
--All/LayerTreeHostReadbackPixelTest.ReadbackOutsideViewportWhenNoDamage/*

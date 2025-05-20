@@ -162,6 +162,16 @@ void ComputePropertyTreeNodeUpdate(
       old_node->subtree_size == new_node.subtree_size &&
       old_node->blend_mode == new_node.blend_mode &&
       old_node->target_id == new_node.target_id &&
+      old_node->view_transition_target_id ==
+          new_node.view_transition_target_id &&
+      old_node->closest_ancestor_with_cached_render_surface_id ==
+          new_node.closest_ancestor_with_cached_render_surface_id &&
+      old_node->closest_ancestor_with_copy_request_id ==
+          new_node.closest_ancestor_with_copy_request_id &&
+      old_node->closest_ancestor_being_captured_id ==
+          new_node.closest_ancestor_being_captured_id &&
+      old_node->closest_ancestor_with_shared_element_id ==
+          new_node.closest_ancestor_with_shared_element_id &&
       old_node->view_transition_element_resource_id ==
           new_node.view_transition_element_resource_id &&
       old_node->has_copy_request == new_node.has_copy_request &&
@@ -216,6 +226,15 @@ void ComputePropertyTreeNodeUpdate(
   wire->subtree_size = new_node.subtree_size;
   wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
   wire->target_id = new_node.target_id;
+  wire->view_transition_target_id = new_node.view_transition_target_id;
+  wire->closest_ancestor_with_cached_render_surface_id =
+      new_node.closest_ancestor_with_cached_render_surface_id;
+  wire->closest_ancestor_with_copy_request_id =
+      new_node.closest_ancestor_with_copy_request_id;
+  wire->closest_ancestor_being_captured_id =
+      new_node.closest_ancestor_being_captured_id;
+  wire->closest_ancestor_with_shared_element_id =
+      new_node.closest_ancestor_with_shared_element_id;
   wire->view_transition_element_resource_id =
       new_node.view_transition_element_resource_id;
   wire->copy_output_requests = std::move(copy_requests);
