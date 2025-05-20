@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -415,8 +416,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     }
 
     /** Sets the search box hint text. */
-    void setUrlBarHintText(String hintText) {
-        mModel.set(UrlBarProperties.HINT_TEXT, hintText);
+    void setUrlBarHintText(@StringRes int hintTextRes) {
+        mModel.set(UrlBarProperties.HINT_TEXT, hintTextRes);
     }
 
     void setShowOriginOnly(boolean showOriginOnly) {

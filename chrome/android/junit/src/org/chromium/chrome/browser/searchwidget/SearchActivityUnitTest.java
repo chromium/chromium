@@ -888,9 +888,7 @@ public class SearchActivityUnitTest {
         ShadowProfileManager.setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
-        String expectedText = mActivity.getResources().getString(R.string.hub_search_empty_hint);
-
-        verify(urlBarCoordinator).setUrlBarHintText(expectedText);
+        verify(urlBarCoordinator).setUrlBarHintText(R.string.hub_search_empty_hint);
     }
 
     @Test

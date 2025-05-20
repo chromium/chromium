@@ -650,9 +650,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 isIncognito
                         ? R.string.hub_search_empty_hint_incognito
                         : R.string.hub_search_empty_hint;
-        mLocationBarCoordinator
-                .getUrlBarCoordinator()
-                .setUrlBarHintText(getResources().getString(hintTextRes));
+        mLocationBarCoordinator.getUrlBarCoordinator().setUrlBarHintText(hintTextRes);
     }
 
     /* package */ boolean loadUrl(@NonNull OmniboxLoadUrlParams params, boolean isIncognito) {

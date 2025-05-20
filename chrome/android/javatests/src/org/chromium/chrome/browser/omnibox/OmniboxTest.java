@@ -114,7 +114,7 @@ public class OmniboxTest {
                 mActivityTestRule
                         .getActivity()
                         .getResources()
-                        .getString(R.string.omnibox_empty_hint_with_dse_name, "Google"),
+                        .getString(R.string.omnibox_empty_hint),
                 urlBar.getHint().toString());
 
         // Type something in the omnibox.

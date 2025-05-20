@@ -11,6 +11,7 @@ import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -369,9 +370,9 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setUrlBarHintText(String)
+     * @see UrlBarMediator#setUrlBarHintText(int)
      */
-    public void setUrlBarHintText(String hintTextRes) {
+    public void setUrlBarHintText(@StringRes int hintTextRes) {
         mMediator.setUrlBarHintText(hintTextRes);
     }
 }
