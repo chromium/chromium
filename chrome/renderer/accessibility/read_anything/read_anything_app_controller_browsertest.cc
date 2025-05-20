@@ -1999,6 +1999,37 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       InitAXPositionWithNode_PreprocessesTextForSpeech) {
+  // Text indices:             0123456789012345678901234567890
+  std::u16string sentence1 = u"Never feel heavy ";
+  std::u16string sentence2 = u"or earthbound, ";
+  std::u16string sentence3 = u"no worries or doubts interfere.";
+
+  static constexpr ui::AXNodeID kId1 = 2;
+  static constexpr ui::AXNodeID kId2 = 3;
+  static constexpr ui::AXNodeID kId3 = 4;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
+              IsEmpty());
+
+  InitializeWithAndProcessNodes({std::move(static_text1),
+                                 std::move(static_text2),
+                                 std::move(static_text3)});
+
+  // After initializing, GetHighlightForCurrentSegmentIndex should return
+  // highlights, since this means text was preprocessed.
+  EXPECT_EQ(
+      read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false).size(),
+      1u);
+
+  std::vector<ui::AXNodeID> node_ids = controller().GetCurrentText();
+  EXPECT_EQ(node_ids.size(), 3u);
+}
+
 TEST_F(ReadAnythingAppControllerTest, ScrollToTargetNode_ScrollsIfGoogleDocs) {
   ui::AXNodeData root;
   ui::AXNodeData node;

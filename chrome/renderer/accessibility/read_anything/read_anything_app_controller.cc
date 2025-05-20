@@ -1034,8 +1034,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getCurrentTextEndIndex",
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
-      .SetMethod("preprocessTextForSpeech",
-                 &ReadAnythingAppController::PreprocessTextForSpeech)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
       .SetMethod("onSpeechPlayingStateChanged",
                  &ReadAnythingAppController::OnSpeechPlayingStateChanged)
@@ -1802,6 +1800,9 @@ void ReadAnythingAppController::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
   ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
   read_aloud_model_.InitAXPositionWithNode(ax_node, model_.active_tree_id());
+  // TODO: crbug.com/411198154: This should only be called if the ax position
+  // is not already initialized.
+  PreprocessTextForSpeech();
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {

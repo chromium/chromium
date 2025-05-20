@@ -418,10 +418,6 @@ export class FakeReadingMode {
     return '';
   }
 
-  // Begins processing the speech segments on the current page to be used by
-  // Read Aloud.
-  preprocessTextForSpeech() {}
-
   // Returns a list of node ids and ranges (start and length) associated with
   // the index within the given text segment. The intended use is for
   // highlighting the ranges. Note that a highlight can span over multiple

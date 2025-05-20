@@ -143,14 +143,10 @@ suite('SpeechController', () => {
 
   suite('initializeSpeechTree', () => {
     let initAxPositionWithNode: number;
-    let startedPreprocess: boolean = false;
 
     setup(() => {
       chrome.readingMode.initAxPositionWithNode = (nodeId) => {
         initAxPositionWithNode = nodeId;
-      };
-      chrome.readingMode.preprocessTextForSpeech = () => {
-        startedPreprocess = true;
       };
     });
 
@@ -158,7 +154,6 @@ suite('SpeechController', () => {
       speechController.initializeSpeechTree();
 
       assertFalse(!!initAxPositionWithNode);
-      assertFalse(startedPreprocess);
       assertFalse(speechController.isSpeechTreeInitialized());
     });
 
@@ -166,20 +161,14 @@ suite('SpeechController', () => {
       const id1 = 10;
       const id2 = 12;
       speechController.initializeSpeechTree(id1);
-      startedPreprocess = false;
-
       speechController.initializeSpeechTree(id2);
-
       assertEquals(id1, initAxPositionWithNode);
-      assertFalse(startedPreprocess);
     });
 
     test('initializes speech tree', () => {
       const id = 14;
       speechController.initializeSpeechTree(id);
-
       assertEquals(id, initAxPositionWithNode);
-      assertTrue(startedPreprocess);
       assertTrue(speechController.isSpeechTreeInitialized());
     });
   });
