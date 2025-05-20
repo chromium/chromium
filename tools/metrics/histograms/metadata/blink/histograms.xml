@@ -839,6 +839,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CookiesTime.AblationDelay2" units="ms"
+    expires_after="2025-10-26">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Time (in ms) added to Cookies operation with IPC call from the CookieJar
+    used for ablation study purpose. This is incremented to 2 because the
+    Blink.CookiesTime.AblationDelay metrics also includes the metrics for the
+    operation without IPC call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
     expires_after="2025-11-02">
   <owner>gjc@chromium.org</owner>
@@ -4850,6 +4862,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.SetCookieTime.AblationDelay" units="ms"
+    expires_after="2025-10-26">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Time (in ms) added to SetCookie operation from the CookieJar used for
+    ablation study purpose.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Sms.BackendAvailability"
     enum="WebOTPBackendAvailability" expires_after="2025-08-12">
   <owner>yigu@chromium.org</owner>
@@ -5538,20 +5560,6 @@ chromium-metrics-reviews@google.com.
   <token key="CookieOperation">
     <variant name="Cookies"/>
     <variant name="CookiesEnabled"/>
-    <variant name="SetCookie"/>
-  </token>
-</histogram>
-
-<histogram name="Blink.{CookieOperation}Time.AblationDelay" units="ms"
-    expires_after="2025-10-26">
-  <owner>elkurin@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Time (in ms) added to {CookieOperation} operation from the CookieJar used
-    for ablation study purpose.
-  </summary>
-  <token key="CookieOperation">
-    <variant name="Cookies"/>
     <variant name="SetCookie"/>
   </token>
 </histogram>

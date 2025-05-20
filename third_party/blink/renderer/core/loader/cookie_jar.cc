@@ -222,10 +222,11 @@ String CookieJar::Cookies() {
   base::TimeDelta elapsed = timer.Elapsed();
   base::UmaHistogramTimes("Blink.CookiesTime", elapsed);
 
-  if (base::FeatureList::IsEnabled(kCookieJarAblation)) {
+  // We should run the ablation study only for scenarios with ipc.
+  if (base::FeatureList::IsEnabled(kCookieJarAblation) && ipc_needed) {
     base::TimeDelta delay = elapsed * kCookieJarAblationDelayFactor.Get() +
                             kCookieJarAblationDelayOffset.Get();
-    base::UmaHistogramMediumTimes("Blink.CookiesTime.AblationDelay", delay);
+    base::UmaHistogramMediumTimes("Blink.CookiesTime.AblationDelay2", delay);
     if (delay.is_positive()) {
       base::PlatformThread::Sleep(delay);
     }
