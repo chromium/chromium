@@ -1826,6 +1826,78 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
   ad_document.Complete("<body></body>");
 }
 
+// Tests a scenario where a non-subresource-filter-flagged script redirects to a
+// subresource-filter-flagged URL, and this script creates an iframe.
+//
+// This test specifically verifies the *current* behavior affected by
+// crbug.com/417756984. Due to this bug, the ad-tagging decision for the
+// iframe is incorrectly based on the script's *initial*
+// non-subresource-filter-flagged URL. Consequently, this test expects the
+// iframe to NOT be ad-tagged.
+//
+// Once the bug is fixed, the iframe should be ad-tagged, and its ad script
+// ancestry should contain one script.
+TEST_F(
+    AdTrackerSimTest,
+    AdScriptAncestry_ScriptRedirectedFromNonFilterlistedUrlToFilterlistedUrl) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+
+  SimRequest::Params params;
+  params.redirect_url = ad_script_url;
+
+  String redirect_from_script_url =
+      "https://example.com/redirect-from-script.js";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Scenario:
+  // 1. A script (redirect_from_script_url) is loaded directly in the main
+  //    frame.
+  // 2. This script gets redirected to a subresource-filter-flagged URL
+  //    (ad_script_url).
+  // 3. The script (ad_script_url) then creates an iframe (child_frame).
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest redirect_from_script(redirect_from_script_url,
+                                             "text/javascript", params);
+
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="https://example.com/redirect-from-script.js"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document.html';
+    document.body.appendChild(iframe);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Current behavior (due to crbug.com/417756984):
+  // The frame is NOT ad-tagged, as the ad-tagging decision is incorrectly based
+  // on the creation script's initial URL.
+  //
+  // Expected behavior (post-fix):
+  // The frame is ad-tagged, as its creation script's final URL matches the
+  // filterlist.
+  //
+  // TODO: Update the expectations once the bug is fixed.
+  // EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+  // EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 0u);
+
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(redirect_from_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
 // Tests that `IsAdScriptInStack` returns the correct ad script ancestry when
 // the final ad frame is created through script execution originating from an
 // initial subresource-filter-flagged ad script. The stack ad script for this
@@ -2238,7 +2310,7 @@ TEST_F(
 
   String redirect_from_script_url =
       "https://example.com/redirect-from-script.js?ad=true";
-  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_script_url = "https://example.com/ad_script.js";
   String ad_document_url = "https://example.com/ad_document.html";
 
   // Scenario:
@@ -2256,7 +2328,7 @@ TEST_F(
 
   main_resource_->Complete(R"HTML(
     <body>
-      <script src="script.js?ad=true"></script>
+      <script src="ad_script.js"></script>
     </body>
   )HTML");
 
@@ -2277,6 +2349,12 @@ TEST_F(
   // There is one ad script in the ancestry. The resource request's initial
   // ad-tagged status propagates to the final URL after the redirect, so the
   // script does not require further ancestor attribution.
+  //
+  // Note: due to crbug.com/417756984, the real reason for this 'one script'
+  // outcome is because the ancestor attribution decision is erroneously
+  // dictated only by the script's initial, filterlisted URL. Coincidentally,
+  // this bug's outcome aligns with the intended behavior for this specific
+  // scenario.
   auto* child_frame =
       To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
   EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
@@ -2286,6 +2364,91 @@ TEST_F(
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(redirect_from_script_url));
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
+// Tests a scenario where a transitively added, non-subresource-filter-flagged
+// script redirects to a subresource-filter-flagged URL, and this script creates
+// an iframe.
+//
+// This test specifically verifies the *current* behavior affected by
+// crbug.com/417756984. Due to this bug, the ad script ancestor decision is
+// incorrectly based on the script's *initial* non-subresource-filter-flagged
+// URL. This results in ancestor attribution, and the frame's creation ad script
+// ancestry includes two scripts.
+//
+// Once the bug is fixed, the frame's creation ad script ancestry should contain
+// one script. Ancestor attribution should not occur for the redirecting script
+// because its final URL matches the filterlist.
+TEST_F(
+    AdTrackerSimTest,
+    AdScriptAncestry_TransitiveScriptRedirectedFromNonFilterlistedUrlToFilterlistedUrl) {
+  String final_ad_script_url = "https://example.com/script.js?ad=true";
+
+  SimRequest::Params params;
+  params.redirect_url = final_ad_script_url;
+
+  String redirect_from_script_url =
+      "https://example.com/redirect-from-script.js";
+  String ad_script_url = "https://example.com/ad_script.js";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Scenario:
+  // 1. An ad script (ad_script_url) is loaded directly in the main frame.
+  // 2. This ad script loads another script (redirect_from_script_url), which
+  //    gets redirected to a subresource-filter-flagged URL
+  //    (final_ad_script_url).
+  // 3. The final script (final_ad_script_url) creates an iframe (child_frame).
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest final_ad_script(final_ad_script_url, "text/javascript");
+  SimSubresourceRequest redirect_from_script(redirect_from_script_url,
+                                             "text/javascript", params);
+
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="ad_script.js"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const script = document.createElement('script');
+    script.src = 'redirect-from-script.js';
+    document.body.appendChild(script);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  final_ad_script.Complete(R"SCRIPT(
+    const iframe = document.createElement('iframe');
+    iframe.src = 'ad_document.html';
+    document.body.appendChild(iframe);
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Current behavior (due to crbug.com/417756984):
+  // There are two ad scripts in the ancestry. Ancestor attribution occurs
+  // because the decision is erroneously dictated by the script's initial,
+  // non-filterlisted URL.
+  //
+  // Expected behavior (post-fix):
+  // The frame's creation ad script ancestry contains one script. Ancestor
+  // attribution does not occur because the transitive script's final URL
+  // matches the filterlist.
+  //
+  // TODO: Update expectations once the bug is fixed.
+  // EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 1u);
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+
+  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().size(), 2u);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(redirect_from_script_url));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(final_ad_script_url));
 
   // Clean up for SimTest expectations.
   ad_document.Complete("<body></body>");
