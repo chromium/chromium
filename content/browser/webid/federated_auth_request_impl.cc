@@ -38,8 +38,6 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
-#include "content/browser/webid/jwt_signer.h"
-#include "content/browser/webid/sd_jwt.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -55,7 +53,6 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -63,8 +60,6 @@ using base::Value;
 using blink::mojom::DisconnectStatus;
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProviderConfig;
-using blink::mojom::IdentityProviderConfigPtr;
-using blink::mojom::IdentityProviderRequestOptions;
 using blink::mojom::IdentityProviderRequestOptionsPtr;
 using blink::mojom::RegisterIdpStatus;
 using blink::mojom::RequestTokenStatus;
@@ -238,10 +233,10 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
       permission_context, identity_registry, std::move(receiver));
 }
 
-std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>
+std::vector<IdentityProviderRequestOptionsPtr>
 FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
-    std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers) {
-  std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> result;
+    std::vector<IdentityProviderRequestOptionsPtr>& providers) {
+  std::vector<IdentityProviderRequestOptionsPtr> result;
 
   std::vector<GURL> registered_config_urls =
       permission_delegate_->GetRegisteredIdPs();
@@ -260,7 +255,7 @@ FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
     }
 
     for (auto& configURL : registered_config_urls) {
-      blink::mojom::IdentityProviderRequestOptionsPtr idp = provider->Clone();
+      IdentityProviderRequestOptionsPtr idp = provider->Clone();
       // Keep `from_idp_registration_api` so it is clear this is a registered
       // provider.
       idp->config->config_url = configURL;
@@ -294,7 +289,7 @@ void FederatedAuthRequestImpl::RequestToken(
   // Expand the providers list with registered providers.
   if (IsFedCmIdPRegistrationEnabled()) {
     for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
-      std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers =
+      std::vector<IdentityProviderRequestOptionsPtr> providers =
           MaybeAddRegisteredProviders(idp_get_params_ptr->providers);
       if (providers.empty()) {
         render_frame_host().AddMessageToConsole(
@@ -1762,7 +1757,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
           (accounts_dialog_display_time_ -
            ready_to_display_accounts_dialog_time_));
 
-  const blink::mojom::IdentityProviderRequestOptionsPtr& provider =
+  const IdentityProviderRequestOptionsPtr& provider =
       idp_infos_[idp_config_url]->provider;
   DCHECK(provider);
 
@@ -2128,7 +2123,7 @@ bool FederatedAuthRequestImpl::OnResolve(
   fedcm_metrics_->RecordContinueOnPopupResult(
       FedCmContinueOnPopupResult::kTokenReceived);
 
-  const blink::mojom::IdentityProviderRequestOptionsPtr& provider =
+  const IdentityProviderRequestOptionsPtr& provider =
       idp_infos_[idp_config_url]->provider;
   DCHECK(provider);
 

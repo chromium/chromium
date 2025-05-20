@@ -23,8 +23,6 @@
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
 #include "content/browser/webid/idp_network_request_manager.h"
-#include "content/browser/webid/jwt_signer.h"
-#include "content/browser/webid/sd_jwt.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/federated_auth_autofill_source.h"
@@ -33,27 +31,16 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
-
-namespace gfx {
-class Image;
-}
-
-namespace blink::common::webid {
-struct LoginStatusOptions;
-}  // namespace blink::common::webid
 
 namespace content {
 
 class FederatedAuthDisconnectRequest;
 class FederatedAuthUserInfoRequest;
-class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
-class FederatedSdJwtHandler;
 
 using blink::mojom::IdentityProviderGetParametersPtr;
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
@@ -367,13 +354,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void MarkUserAsSignedIn(const GURL& idp_config_url,
                           const std::string& account_id);
 
-  void ProcessSdJwt(const GURL& selected_idp_config_url,
-                    const std::string& token);
-  void OnDisclosureParsed(base::RepeatingClosure cb,
-                          const std::string& json,
-                          data_decoder::DataDecoder::ValueOrError result);
-  void OnSdJwtParsed(const GURL& selected_idp_config_url,
-                     const sdjwt::Jwt& token);
   void CompleteUserInfoRequest(
       FederatedAuthUserInfoRequest* request,
       RequestUserInfoCallback callback,

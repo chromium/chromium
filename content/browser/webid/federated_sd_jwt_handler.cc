@@ -15,6 +15,7 @@
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/jwt_signer.h"
 #include "content/browser/webid/sd_jwt.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/hash.h"
