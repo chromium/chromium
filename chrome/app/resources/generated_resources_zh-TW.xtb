@@ -794,7 +794,7 @@
 <translation id="1545775234664667895">已安裝「<ph name="THEME_NAME" />」主題</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{你的無痕視窗不會重新開啟。}other{你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="1546280085599573572">這個擴充功能已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
-<translation id="1546452108651444655"><ph name="CHILD_NAME" /> 要求安裝具有下列功能的<ph name="EXTENSION_TYPE" />：</translation>
+<translation id="1546452108651444655"><ph name="CHILD_NAME" />要求安裝需要下列權限的<ph name="EXTENSION_TYPE" />：</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 設定檔</translation>
 <translation id="1547936895218027488">按一下側邊面板圖示即可開啟</translation>
@@ -2363,7 +2363,7 @@
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可編輯「<ph name="FILENAME" />」</translation>
 <translation id="2613747923081026172">建立群組</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{在這個擴充功能中開啟並編輯「<ph name="FILE1" />」}other{在這個應用程式中開啟並編輯「<ph name="FILE1" />」和其他檔案}}</translation>
-<translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
+<translation id="2616366145935564096">讀取以及變更你在<ph name="WEBSITE_1" />的資料</translation>
 <translation id="2618797463720777311">設定鄰近分享功能</translation>
 <translation id="2619340799655338321">播放/暫停</translation>
 <translation id="261953424982546039">Chrome 研究室功能(&amp;L)...</translation>
@@ -7642,7 +7642,7 @@
 <translation id="6406506848690869874">同步</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">已允許在裝置上儲存資料</translation>
-<translation id="6408118934673775994">讀取及變更你在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 網站上的資料</translation>
+<translation id="6408118934673775994">讀取及變更你在<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />和<ph name="WEBSITE_3" />的資料</translation>
 <translation id="6410257289063177456">圖片檔</translation>
 <translation id="6410328738210026208">變更版本並執行 Powerwash</translation>
 <translation id="6410390304316730527">安全瀏覽功能可保護你不受到攻擊，攻擊者可能會誘騙你從事一些危險行為，例如安裝惡意軟體或洩漏個人資訊 (例如密碼、電話號碼或信用卡資訊)。如果你停用這項功能，瀏覽不熟悉或風評不佳的網站時，請提高警覺。</translation>
@@ -8045,7 +8045,7 @@
 <translation id="6697172646384837537">選取密碼匯入位置</translation>
 <translation id="6697492270171225480">找不到網頁時顯示類似的網頁建議</translation>
 <translation id="6697690052557311665">如要共用項目，請在「檔案」應用程式中的資料夾上按一下右鍵，然後選取 [與 Linux 共用]。</translation>
-<translation id="6698810901424468597">讀取及變更你在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 網站上的資料</translation>
+<translation id="6698810901424468597">讀取及變更你在<ph name="WEBSITE_1" />和<ph name="WEBSITE_2" />上的資料</translation>
 <translation id="6700093763382332031">行動數據 SIM 卡鎖定</translation>
 <translation id="6700480081846086223">投放 <ph name="HOST_NAME" /></translation>
 <translation id="670121579181704262">同步功能已開啟(&amp;S)</translation>

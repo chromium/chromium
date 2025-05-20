@@ -948,7 +948,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4146671046252289537">Mover para o fim da próxima palavra</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4150201353443180367">Visualização</translation>
-<translation id="4151054805501931758">Retoque do retrato</translation>
+<translation id="4151054805501931758">Melhorar retrato</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />).
 Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</translation>
 <translation id="4158003972857765638">Organize num novo espaço de trabalho</translation>
@@ -998,7 +998,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4280601795273309128">As atualizações de segurança terminaram. Atualize o dispositivo.</translation>
 <translation id="4283888303416325161">Introduzir palavra-passe para uma maior segurança</translation>
-<translation id="4285498937028063278">Soltar</translation>
+<translation id="4285498937028063278">Desafixar</translation>
 <translation id="428715201724021596">A estabelecer ligação ao perfil. Esta ação pode demorar alguns minutos.</translation>
 <translation id="4287250812980588583">Janela do Chrome</translation>
 <translation id="4291322857434980285">{NUM_APPS,plural, =1{Volume do microfone controlado pela app <ph name="APP_NAME" />}other{Volume do microfone controlado por # apps}}</translation>
