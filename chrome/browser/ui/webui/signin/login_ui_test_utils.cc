@@ -54,7 +54,8 @@ const char kGetPasswordFieldFromDiceSigninPage[] =
 // success or failure notification is fired.
 class SignInObserver : public signin::IdentityManager::Observer {
  public:
-  SignInObserver() = default;
+  explicit SignInObserver(signin::ConsentLevel consent_level)
+      : consent_level_(consent_level) {}
 
   // Returns whether a GoogleSigninSucceeded event has happened.
   bool DidSignIn() { return signed_in_; }
@@ -88,7 +89,7 @@ class SignInObserver : public signin::IdentityManager::Observer {
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+    if (event.GetEventTypeFor(consent_level_) !=
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       return;
     }
@@ -108,6 +109,7 @@ class SignInObserver : public signin::IdentityManager::Observer {
   }
 
  private:
+  const signin::ConsentLevel consent_level_;
   // Bool to mark an observed event as seen prior to calling Wait(), used to
   // prevent the observer from blocking.
   bool seen_ = false;
@@ -444,7 +446,7 @@ bool SignInWithUI(Browser* browser,
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
-  SignInObserver signin_observer;
+  SignInObserver signin_observer(consent_level);
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_signin_observation(&signin_observer);
