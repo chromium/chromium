@@ -27,7 +27,7 @@ const CGFloat kSidePannelAnimationDuration = 0.4;
 const CGFloat kSidePannelOutlineBorderWidth = 1.0;
 
 // The corner radius of the outline that surrounds the results page.
-const CGFloat kSidePannelOutlineCornerRadius = 8.0;
+const CGFloat kSidePannelOutlineCornerRadius = 13.0;
 
 // The lateral inset ammount of the border outlining the results page.
 const CGFloat kSidePannelOutlineLateralInset = 8.0;
@@ -37,7 +37,7 @@ const CGFloat kSidePannelOutlineBottomInset = 8.0;
 
 // The corner radius of the selection UI when presented in the side panel
 // presentation.
-const CGFloat kSelectionUICornerRadius = 14.0;
+const CGFloat kSelectionUICornerRadius = 13.0;
 
 }  // namespace
 
