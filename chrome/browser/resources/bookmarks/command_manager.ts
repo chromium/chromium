@@ -403,11 +403,15 @@ export class BookmarksCommandManagerElement extends
         chrome.bookmarkManagerPrivate.redo();
         break;
       case Command.OPEN_INCOGNITO:
-      case Command.OPEN_NEW_GROUP:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_SPLIT_VIEW:
         this.openBookmarkIds_(this.expandIds_(itemIds), command);
+        break;
+      case Command.OPEN_NEW_GROUP:
+        // Do not expand itemsIds because the folder node is needed to associate
+        // with a tab group.
+        this.openBookmarkIds_(Array.from(itemIds), command);
         break;
       case Command.OPEN:
         if (this.isFolder_(itemIds)) {
