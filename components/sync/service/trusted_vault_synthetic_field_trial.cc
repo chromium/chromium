@@ -11,11 +11,12 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
@@ -78,15 +79,16 @@ float DeterministicFloatBetweenZeroAndOneFromGaiaId(const GaiaId& gaia_id,
   CHECK(!gaia_id.empty());
 
   const std::string_view kSuffix = "TrustedVaultAutoUpgrade";
-  uint64_t value = 0;
 
-  std::unique_ptr<crypto::SecureHash> sha256(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  sha256->Update(gaia_id.ToString().data(), gaia_id.ToString().length());
-  sha256->Update(salt.data(), salt.length());
-  sha256->Update(kSuffix.data(), kSuffix.length());
-  sha256->Finish(&value, sizeof(value));
+  crypto::hash::Hasher sha256(crypto::hash::HashKind::kSha256);
+  sha256.Update(gaia_id.ToString());
+  sha256.Update(salt);
+  sha256.Update(kSuffix);
 
+  std::array<uint8_t, crypto::hash::kSha256Size> full_hash;
+  sha256.Finish(full_hash);
+
+  uint64_t value = base::U64FromNativeEndian(base::span(full_hash).first<8>());
   const int kResolution = 100000;
   return 1.0f * (value % kResolution) / kResolution;
 }
