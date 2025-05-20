@@ -63,19 +63,6 @@ void PartitionImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void PartitionImpl::BindOriginContext(
-    const url::Origin& origin,
-    mojo::PendingReceiver<mojom::OriginContext> receiver) {
-  auto iter = origin_contexts_.find(origin);
-  if (iter == origin_contexts_.end()) {
-    auto result = origin_contexts_.emplace(
-        origin, std::make_unique<OriginContextImpl>(this, origin));
-    iter = result.first;
-  }
-
-  iter->second->BindReceiver(std::move(receiver));
-}
-
 void PartitionImpl::BindSessionStorageControl(
     mojo::PendingReceiver<mojom::SessionStorageControl> receiver) {
   session_storage_ = std::make_unique<SessionStorageImpl>(
@@ -108,10 +95,6 @@ void PartitionImpl::OnDisconnect() {
     // Deletes |this|.
     service_->RemovePartition(this);
   }
-}
-
-void PartitionImpl::RemoveOriginContext(const url::Origin& origin) {
-  origin_contexts_.erase(origin);
 }
 
 }  // namespace storage

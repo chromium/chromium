@@ -5,17 +5,11 @@
 module storage.mojom;
 
 import "components/services/storage/public/mojom/local_storage_control.mojom";
-import "components/services/storage/public/mojom/origin_context.mojom";
 import "components/services/storage/public/mojom/session_storage_control.mojom";
-import "url/mojom/origin.mojom";
 
 // Partition controls an isolated storage partition owned by the Storage
 // Service. This is analogous to the browser's own storage partition concept.
 interface Partition {
-  // Binds a new OriginContext scoped to |origin| within this Partition.
-  BindOriginContext(url.mojom.Origin origin,
-                    pending_receiver<OriginContext> receiver);
-
   // Binds the main control interface for Session Storage in this partition.
   BindSessionStorageControl(pending_receiver<SessionStorageControl> receiver);
 
