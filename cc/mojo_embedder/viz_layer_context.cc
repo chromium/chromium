@@ -474,6 +474,17 @@ viz::mojom::TilePtr SerializeTile(
   auto wire = viz::mojom::Tile::New();
   wire->column_index = tile.tiling_i_index();
   wire->row_index = tile.tiling_j_index();
+
+  // If a Tile is being deleted, mark the reason as deleted. This is essential
+  // to distinguish deleted tiles from OOMed OR RESOURCE_MODE tiles with no
+  // resources. OOMed tiles have no content but are still required in order to
+  // perform checkerboard.
+  if (tile.deleted()) {
+    wire->contents = viz::mojom::TileContents::NewMissingReason(
+        mojom::MissingTileReason::kTileDeleted);
+    return wire;
+  }
+
   switch (tile.draw_info().mode()) {
     case TileDrawInfo::OOM_MODE:
       wire->contents = viz::mojom::TileContents::NewMissingReason(
