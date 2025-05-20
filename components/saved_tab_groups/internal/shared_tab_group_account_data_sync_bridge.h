@@ -119,6 +119,13 @@ class SharedTabGroupAccountDataSyncBridge : public syncer::DataTypeSyncBridge,
   // cache.
   void RemoveEntitySpecifics(const std::string& storage_key);
 
+  // Conversion method to create a EntityData object for a given
+  // SavedTabGroupTab. Tab group must exist and be shared, and tab must have a
+  // "last seen" time set.
+  std::unique_ptr<syncer::EntityData> CreateEntityDataFromSavedTabGroupTab(
+      const SavedTabGroupModel& model,
+      const SavedTabGroupTab& tab);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.

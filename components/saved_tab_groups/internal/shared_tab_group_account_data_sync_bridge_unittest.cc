@@ -35,6 +35,7 @@ using testing::Invoke;
 using testing::Matcher;
 using testing::Not;
 using testing::Return;
+using testing::ReturnRef;
 using testing::SaveArgPointee;
 using testing::Sequence;
 using testing::UnorderedElementsAre;
@@ -87,6 +88,38 @@ sync_pb::SharedTabGroupAccountDataSpecifics CreateTabGroupAccountSpecifics(
   return specifics;
 }
 
+sync_pb::SharedTabGroupAccountDataSpecifics AddUnknownFieldsToSpecifics(
+    sync_pb::SharedTabGroupAccountDataSpecifics specifics) {
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics extended_specifics;
+  extended_specifics.set_extra_field_for_testing("extra_field");
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics_with_unknown_fields;
+  bool success = specifics_with_unknown_fields.ParseFromString(
+      extended_specifics.SerializeAsString());
+  CHECK(success);
+  specifics.MergeFrom(specifics_with_unknown_fields);
+  return specifics;
+}
+
+bool HasUnknownExtraField(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics extended_specifics;
+  bool success =
+      extended_specifics.ParseFromString(specifics.SerializeAsString());
+  CHECK(success);
+  return extended_specifics.extra_field_for_testing() == "extra_field";
+}
+
+// Returns the extra (unsupported) field from `specifics` which don't have a
+// corresponding field in proto.
+std::string GetGroupExtraFieldFromSpecifics(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics extended_specifics;
+  bool success =
+      extended_specifics.ParseFromString(specifics.SerializeAsString());
+  CHECK(success);
+  return extended_specifics.extra_field_for_testing();
+}
+
 syncer::EntityData CreateEntityData(
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics,
     base::Time creation_time = base::Time::Now()) {
@@ -134,6 +167,16 @@ sync_pb::EntityMetadata CreateMetadata(
   return metadata;
 }
 
+MATCHER_P(EntityDataHasGroupUnsupportedFields, extra_field, "") {
+  const sync_pb::SharedTabGroupAccountDataSpecifics& arg_specifics =
+      arg.specifics.shared_tab_group_account_data();
+  return GetGroupExtraFieldFromSpecifics(arg_specifics) == extra_field;
+}
+
+MATCHER_P(GroupSpecificsHasUnsupportedField, extra_field, "") {
+  return GetGroupExtraFieldFromSpecifics(arg) == extra_field;
+}
+
 class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
  public:
   SharedTabGroupAccountDataSyncBridgeTest()
@@ -143,8 +186,9 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
 
   // Creates the bridges and initializes the model. Returns true when succeeds.
   void InitializeBridgeAndModel() {
-    ON_CALL(processor_, IsTrackingMetadata())
-        .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, IsTrackingMetadata()).WillByDefault(Return(true));
+    ON_CALL(processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
 
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
@@ -714,6 +758,90 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key1));
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key2));
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       UnknownFields_RetainedAcrossRestartAndSentToSync) {
+  // Create a shared tab group with two tabs.
+  const CollaborationId kCollaborationId("collaboration");
+  const SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
+  const base::Uuid& group_id = created_group.saved_guid();
+
+  const SavedTabGroupTab& created_tab1 = created_group.saved_tabs()[0];
+  const base::Uuid& tab_id1 = created_tab1.saved_tab_guid();
+
+  InitializeBridgeAndModel();
+  model().AddedLocally(created_group);
+
+  EXPECT_EQ(model().Count(), 1);
+  EXPECT_TRUE(model().Contains(group_id));
+  EXPECT_FALSE(created_tab1.last_seen_time().has_value());
+
+  // Send timestamp update for both tabs from sync.
+  base::Time last_seen_time1 = base::Time::Now();
+  syncer::EntityChangeList change_list1;
+
+  // Let tab 1 have unknown fields from sync.
+  auto remote_specifics1 =
+      AddUnknownFieldsToSpecifics(CreateTabGroupAccountSpecifics(
+          kCollaborationId, created_tab1, last_seen_time1));
+  ASSERT_TRUE(HasUnknownExtraField(remote_specifics1));
+  sync_pb::EntitySpecifics entity_specifics;
+  *entity_specifics.mutable_shared_tab_group_account_data() = remote_specifics1;
+  sync_pb::EntitySpecifics trimmed_specifics1 =
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics);
+  ON_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics(_))
+      .WillByDefault(ReturnRef(trimmed_specifics1));
+
+  change_list1.push_back(CreateAddEntityChange(remote_specifics1));
+
+  ASSERT_EQ(GetNumTabDetailsInStore(), 0u);
+
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list1));
+
+  // Retrieve the tabs from model after the model has been updated. Verify the
+  // last seen timestamps.
+  const SavedTabGroup* group = model().Get(group_id);
+  const SavedTabGroupTab* tab1 = group->GetTab(tab_id1);
+  const std::string storage_key1 = CreateClientTagForSharedTab(*group, *tab1);
+
+  ASSERT_TRUE(tab1->last_seen_time().has_value());
+  ASSERT_EQ(tab1->last_seen_time(), last_seen_time1);
+  ASSERT_EQ(GetNumTabDetailsInStore(), 1u);
+
+  // Update the last seen timestamp for tab1 locally. The updated timestamp
+  // should be sent to sync.
+  base::Time last_seen_time3 = base::Time::Now() + base::Seconds(55);
+
+  syncer::EntityData entity_data;
+  EXPECT_CALL(mock_processor(), Put(Eq(storage_key1), _, _))
+      .WillOnce(SaveArgPointeeMove<1>(&entity_data));
+  model().UpdateTabLastSeenTime(group_id, tab_id1, last_seen_time3,
+                                TriggerSource::LOCAL);
+
+  // Verify the written specifics.
+  const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
+      entity_data.specifics.shared_tab_group_account_data();
+  EXPECT_EQ(kCurrentSharedTabGroupDataSpecificsProtoVersion,
+            specifics.version());
+  EXPECT_EQ(tab_id1.AsLowercaseString(), specifics.guid());
+  EXPECT_TRUE(specifics.has_shared_tab_details());
+
+  // Verify that unknown field is intact.
+  EXPECT_TRUE(HasUnknownExtraField(specifics));
+
+  // Mock browser restart and reload specifics from storage.
+  StoreMetadataAndReset();
+  ASSERT_EQ(model_.get(), nullptr);
+
+  InitializeBridgeAndModel();
+  task_environment_.RunUntilIdle();
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> specifics1 =
+      bridge().GetSpecificsForStorageKey(storage_key1);
+  // Verify that unknown field is intact after reading from storage.
+  ASSERT_TRUE(specifics1.has_value());
+  EXPECT_TRUE(HasUnknownExtraField(*specifics1));
 }
 
 TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
