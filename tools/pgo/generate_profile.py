@@ -499,6 +499,14 @@ def main():
             '--also-run-disabled-tests',
             '--story-tag-filter=motionmark_fixed_2_seconds',
         ])
+        if platform == 'mobile':
+            benchmarks.append([
+                f'rendering.{platform}',
+                '--also-run-disabled-tests',
+                '--story-tag-filter=motionmark_fixed_2_seconds',
+                '--extra-browser-args=--enable-features=DefaultPassthroughCommandDecoder',
+            ])
+
 
     fail_count = run_benchmarks(benchmarks, args)
     if fail_count:
