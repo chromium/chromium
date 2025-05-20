@@ -1004,7 +1004,7 @@ void AiDataKeyedService::OnActionFinished(
   // handles getting a new observation.
 
   glic::FocusedTabData focused_tab_data{tab_->GetContents()->GetWeakPtr()};
-  glic::GlicPageContextFetcher::Fetch(
+  glic::FetchPageContext(
       focused_tab_data, DefaultOptions(),
       base::BindOnce(&AiDataKeyedService::ConvertToBrowserActionResult,
                      weak_factory_.GetWeakPtr(), std::move(callback), task_id_,

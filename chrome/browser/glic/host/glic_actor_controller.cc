@@ -169,7 +169,7 @@ void GlicActorController::GetContextFromFocusedTab(
   // with GlicKeyedService::GetContextFromFocusedTab(). It's not clear yet if
   // the same permission checks, etc. should apply here.
 
-  GlicPageContextFetcher::Fetch(focused_tab_data, options, std::move(callback));
+  FetchPageContext(focused_tab_data, options, std::move(callback));
 }
 
 base::WeakPtr<const GlicActorController> GlicActorController::GetWeakPtr()

@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -149,7 +150,7 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
       auto options = mojom::GetTabContextOptions::New();
       options->include_annotated_page_content = true;
 
-      GlicPageContextFetcher::Fetch(
+      FetchPageContext(
           glic_service->GetFocusedTabData(), *options,
           base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
             mojo_base::ProtoWrapper& serialized_apc =
