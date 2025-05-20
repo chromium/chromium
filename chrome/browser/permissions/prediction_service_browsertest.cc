@@ -332,7 +332,11 @@ class SignatureModelPredictionServiceBrowserTest
                                          {permissions::features::
                                               kPermissionsAIv1,
                                           permissions::features::
-                                              kPermissionsAIv3}) {}
+                                              kPermissionsAIv3,
+                                          permissions::features::
+                                              kPermissionsAIv3Geolocation,
+                                          permissions::features::
+                                              kPermissionsAIv3Geolocation}) {}
 
   void TriggerCpssV1AndVerifyUi(
       PermissionAction permission_action,
@@ -476,6 +480,9 @@ class Aiv3ModelPredictionServiceBrowserTest
                                               {}},
                                              {permissions::features::
                                                   kPermissionsAIv3,
+                                              {}},
+                                             {permissions::features::
+                                                  kPermissionsAIv3Geolocation,
                                               {}},
                                          },
                                          /*disabled_features=*/{}) {

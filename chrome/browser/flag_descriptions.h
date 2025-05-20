@@ -1905,6 +1905,9 @@ extern const char kPermissionsAIv1Description[];
 extern const char kPermissionsAIv3Name[];
 extern const char kPermissionsAIv3Description[];
 
+extern const char kPermissionsAIv3GeolocationName[];
+extern const char kPermissionsAIv3GeolocationDescription[];
+
 extern const char kPermissionSiteSettingsRadioButtonName[];
 extern const char kPermissionSiteSettingsRadioButtonDescription[];
 

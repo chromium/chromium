@@ -339,14 +339,16 @@ INSTANTIATE_TEST_SUITE_P(
          PredictionSource::kOnDeviceAiv1AndServerSideModel},
         {/*test_name=*/"UsePermissionsAiv3OnDesktop",
          /*enabled_features=*/
-         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv3},
+         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv3,
+          permissions::features::kPermissionsAIv3Geolocation},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv3AndServerSideModel},
         {/*test_name=*/"UsePermissionsAiv3OverAiv1OnDesktop",
          /*enabled_features=*/
          {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv1,
-          permissions::features::kPermissionsAIv3},
+          permissions::features::kPermissionsAIv3,
+          permissions::features::kPermissionsAIv3Geolocation},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv3AndServerSideModel},

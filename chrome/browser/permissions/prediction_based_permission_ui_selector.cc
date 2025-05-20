@@ -457,7 +457,9 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   bool use_aiv1 =
       base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1);
   bool use_aiv3 =
-      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3);
+      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionsAIv3Geolocation);
   if (use_aiv1 || use_aiv3) {
     // Init `permission_relevance` here to avoid a crash during
     // `ConvertToProtoRelevance` execution.
@@ -647,7 +649,13 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   if (use_server_side) {
     // Aiv3 takes priority over Aiv1 if both are enabled.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
+    if (request_type == permissions::RequestType::kNotifications &&
+        base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
+      return PredictionSource::kOnDeviceAiv3AndServerSideModel;
+    }
+    if (request_type == permissions::RequestType::kGeolocation &&
+        base::FeatureList::IsEnabled(
+            permissions::features::kPermissionsAIv3Geolocation)) {
       return PredictionSource::kOnDeviceAiv3AndServerSideModel;
     }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

@@ -17495,6 +17495,7 @@ from previous Chrome versions.
   <int value="1298352720" label="CompanionEnablePageContent:disabled"/>
   <int value="1298734793" label="OsSettingsAppNotificationsPage:disabled"/>
   <int value="1298788828" label="WebID:disabled"/>
+  <int value="1298821980" label="PermissionsAIv3Geolocation:enabled"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>
   <int value="1298981651" label="disable-new-task-manager"/>
   <int value="1299336534"
@@ -19084,6 +19085,7 @@ from previous Chrome versions.
   <int value="1881174782" label="disable-brotli"/>
   <int value="1882177465" label="JourneysKeywordFiltering:enabled"/>
   <int value="1882197308" label="UseChromeOSDirectVideoDecoder:disabled"/>
+  <int value="1882500830" label="PermissionsAIv3Geolocation:disabled"/>
   <int value="1883000826" label="IsolatedSandboxedIframesName:disabled"/>
   <int value="1883558610" label="GalleryAppPdfEditNotification:disabled"/>
   <int value="1883856892" label="SupportToolCopyTokenButton:disabled"/>
