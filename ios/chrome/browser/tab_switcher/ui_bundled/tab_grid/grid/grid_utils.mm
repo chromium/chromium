@@ -66,8 +66,7 @@ int WebStateIndexFromGridDropItemIndex(WebStateList* web_state_list,
   // groups before it.
   for (NSUInteger i = 0;
        i < drop_item_index && web_state_index < web_state_list->count(); ++i) {
-    CHECK(web_state_list->ContainsIndex(web_state_index),
-          base::NotFatalUntil::M128);
+    CHECK(web_state_list->ContainsIndex(web_state_index));
     const TabGroup* tabGroup =
         web_state_list->GetGroupOfWebStateAt(web_state_index);
     if (tabGroup) {

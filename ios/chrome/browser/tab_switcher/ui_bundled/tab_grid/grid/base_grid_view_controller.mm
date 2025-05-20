@@ -1881,8 +1881,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Updates the number of results found on the search open tabs section header.
 - (void)updateSearchResultsHeader {
-  CHECK_EQ(_mode, TabGridMode::kSearch, base::NotFatalUntil::M129);
-  CHECK_GT(_searchText.length, 0ul, base::NotFatalUntil::M129);
+  CHECK_EQ(_mode, TabGridMode::kSearch);
+  CHECK_GT(_searchText.length, 0ul);
   NSInteger tabSectionIndex = [self.diffableDataSource
       indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
   GridHeader* headerView = base::apple::ObjCCast<
