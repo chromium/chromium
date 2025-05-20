@@ -52,10 +52,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_visibility_state.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/hash.h"
-#include "crypto/sha2.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
@@ -137,12 +133,6 @@ bool IsFrameActive(RenderFrameHost* frame) {
 bool IsFrameVisible(RenderFrameHost* frame) {
   return frame && frame->IsActive() &&
          frame->GetVisibilityState() == content::PageVisibilityState::kVisible;
-}
-
-std::vector<uint8_t> Sha256(std::string_view data) {
-  auto hash = crypto::hash::Sha256(base::as_byte_span(data));
-  std::vector<uint8_t> result{hash.begin(), hash.end()};
-  return result;
 }
 
 bool CanBypassPermissionStatusCheck(
@@ -1425,17 +1415,11 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     // Checked previously.
     DCHECK(IsFedCmDelegationEnabled());
 
-    // Creates a throw away private key for a one-time use for
-    // a single presentation. The public key gets sent to the
-    // VC issuance endpoint and gets bound to the issued SD-JWT
-    // by the issuer, delegating the presentation to the holder.
-    // The browser selectively discloses the fields that were
-    // requested and binds the audience and the nonce to the
-    // Key Binding JWT before returning to the verifier.
-    private_key_ = crypto::ECPrivateKey::Create();
     endpoint = idp_info.endpoints.issuance;
+    federated_sdjwt_handler_ = std::make_unique<FederatedSdJwtHandler>(
+        idp_info.provider, render_frame_host(), this);
     query = ComputeUrlEncodedTokenPostDataForIssuers(
-        account_id, *sdjwt::ExportPublicKey(*private_key_), "vc+sd-jwt");
+        account_id, federated_sdjwt_handler_->GetPublicKey(), "vc+sd-jwt");
   } else {
     endpoint = idp_info.endpoints.token;
     query = ComputeUrlEncodedTokenPostData(
@@ -1789,7 +1773,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
   DCHECK(provider);
 
   if (provider->format && *provider->format == blink::mojom::Format::kSdJwt) {
-    ProcessSdJwt(idp_config_url, token.value());
+    federated_sdjwt_handler_->ProcessSdJwt(token.value());
     return;
   }
 
@@ -1806,112 +1790,6 @@ void FederatedAuthRequestImpl::CompleteRequestWithError(
   CompleteRequest(result, token_status, token_error_,
                   /*selected_idp_config_url=*/std::nullopt,
                   /*token=*/"", should_delay_callback);
-}
-
-void FederatedAuthRequestImpl::ProcessSdJwt(const GURL& config_url,
-                                            const std::string& token) {
-  // Checked previously.
-  DCHECK(IsFedCmDelegationEnabled());
-
-  auto value = sdjwt::SdJwt::Parse(token);
-  if (!value) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             /*token_status=*/std::nullopt,
-                             /*should_delay_callback=*/false);
-    return;
-  }
-
-  auto sd_jwt = sdjwt::SdJwt::From(*value);
-  if (!sd_jwt) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             /*token_status=*/std::nullopt,
-                             /*should_delay_callback=*/false);
-    return;
-  }
-
-  // Each of the disclosures is an individual JSON Object.
-  // Parse them all and use BarrierCallback to get a callback when all
-  // parsing is done.
-  auto callback = BarrierClosure(
-      sd_jwt->disclosures.size(),
-      base::BindOnce(&FederatedAuthRequestImpl::OnSdJwtParsed,
-                     weak_ptr_factory_.GetWeakPtr(), config_url, sd_jwt->jwt));
-
-  for (const auto& json : sd_jwt->disclosures) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        json.value(),
-        base::BindOnce(&FederatedAuthRequestImpl::OnDisclosureParsed,
-                       weak_ptr_factory_.GetWeakPtr(), callback, json.value()));
-  }
-}
-
-void FederatedAuthRequestImpl::OnDisclosureParsed(
-    base::RepeatingClosure cb,
-    const std::string& json,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_list()) {
-    cb.Run();
-    return;
-  }
-
-  auto disclosure = sdjwt::Disclosure::From(result->GetList());
-  if (!disclosure) {
-    // Ignore invalid disclosure structures.
-    cb.Run();
-    return;
-  }
-
-  disclosures_.push_back({disclosure->name, sdjwt::JSONString(json)});
-  cb.Run();
-}
-
-void FederatedAuthRequestImpl::OnSdJwtParsed(const GURL& config_url,
-                                             const sdjwt::Jwt& jwt) {
-  const blink::mojom::IdentityProviderRequestOptionsPtr& provider =
-      idp_infos_[config_url]->provider;
-  DCHECK(provider);
-
-  std::vector<std::string> fields = {kFedCmDefaultFieldName,
-                                     kFedCmDefaultFieldEmail,
-                                     kFedCmDefaultFieldPicture};
-  if (provider->fields) {
-    fields = *provider->fields;
-  }
-
-  auto selected = sdjwt::SdJwt::Disclose(disclosures_, fields);
-
-  disclosures_.clear();
-
-  if (!selected) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             /*token_status=*/std::nullopt,
-                             /*should_delay_callback=*/false);
-    return;
-  }
-
-  sdjwt::SdJwt result;
-  result.jwt = jwt;
-  result.disclosures = *selected;
-
-  auto sdjwtkb = sdjwt::SdJwtKb::Create(
-      result, origin().Serialize(), provider->nonce,
-      /*iat=*/base::Time::Now(), base::BindRepeating(Sha256),
-      sdjwt::CreateJwtSigner(std::move(private_key_)));
-
-  if (!sdjwtkb) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             /*token_status=*/std::nullopt,
-                             /*should_delay_callback=*/false);
-    return;
-  }
-
-  auto token = sdjwtkb->Serialize();
-  // TODO(crbug.com/380367784): introduce and use a more specific
-  // TokenStatus type for SD-JWTs.
-  CompleteRequest(FederatedAuthRequestResult::kSuccess,
-                  TokenStatus::kSuccessUsingTokenInHttpResponse,
-                  /*token_error=*/std::nullopt, config_url, token,
-                  /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::CompleteRequest(
@@ -2102,6 +1980,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   // instance we destroy that first.
   request_dialog_controller_.reset();
   fedcm_accounts_fetcher_.reset();
+  federated_sdjwt_handler_.reset();
   network_manager_.reset();
   fedcm_metrics_.reset();
   account_id_ = std::string();
@@ -2136,8 +2015,6 @@ void FederatedAuthRequestImpl::CleanUp() {
   had_transient_user_activation_ = false;
   did_show_ui_ = false;
   rp_mode_ = RpMode::kPassive;
-  private_key_.reset();
-  disclosures_.clear();
 }
 
 void FederatedAuthRequestImpl::AddDevToolsIssue(
@@ -2299,7 +2176,7 @@ bool FederatedAuthRequestImpl::OnResolve(
   DCHECK(provider);
 
   if (provider->format && *provider->format == blink::mojom::Format::kSdJwt) {
-    ProcessSdJwt(idp_config_url, token);
+    federated_sdjwt_handler_->ProcessSdJwt(token);
     return true;
   }
 

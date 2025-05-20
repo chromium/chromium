@@ -2422,6 +2422,8 @@ source_set("browser") {
     "webid/federated_auth_request_page_data.h",
     "webid/federated_auth_user_info_request.cc",
     "webid/federated_auth_user_info_request.h",
+    "webid/federated_sd_jwt_handler.cc",
+    "webid/federated_sd_jwt_handler.h",
     "webid/flags.cc",
     "webid/flags.h",
     "webid/identity_provider_info.cc",

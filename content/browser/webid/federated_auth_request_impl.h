@@ -17,6 +17,7 @@
 #include "content/browser/webid/fedcm_accounts_fetcher.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/fedcm_url_computations.h"
+#include "content/browser/webid/federated_sd_jwt_handler.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
@@ -51,6 +52,7 @@ class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
+class FederatedSdJwtHandler;
 
 using blink::mojom::IdentityProviderGetParametersPtr;
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
@@ -284,6 +286,16 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::optional<content::FedCmRequestIdTokenStatus> token_status,
       bool should_delay_callback);
 
+  // Completes request. Displays a dialog if there is an error and the error is
+  // during a fetch triggered by an IdP sign-in status change.
+  void CompleteRequest(
+      blink::mojom::FederatedAuthRequestResult result,
+      std::optional<content::FedCmRequestIdTokenStatus> token_status,
+      std::optional<TokenError> token_error,
+      const std::optional<GURL>& selected_idp_config_url,
+      const std::string& token,
+      bool should_delay_callback);
+
  private:
   friend class FederatedAuthRequestImplTest;
 
@@ -358,15 +370,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void MarkUserAsSignedIn(const GURL& idp_config_url,
                           const std::string& account_id);
 
-  // Completes request. Displays a dialog if there is an error and the error is
-  // during a fetch triggered by an IdP sign-in status change.
-  void CompleteRequest(
-      blink::mojom::FederatedAuthRequestResult result,
-      std::optional<content::FedCmRequestIdTokenStatus> token_status,
-      std::optional<TokenError> token_error,
-      const std::optional<GURL>& selected_idp_config_url,
-      const std::string& token,
-      bool should_delay_callback);
   void ProcessSdJwt(const GURL& selected_idp_config_url,
                     const std::string& token);
   void OnDisclosureParsed(base::RepeatingClosure cb,
@@ -547,6 +550,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   std::unique_ptr<FedCmAccountsFetcher> fedcm_accounts_fetcher_;
 
+  std::unique_ptr<FederatedSdJwtHandler> federated_sdjwt_handler_;
+
   // Set of pending user info requests.
   base::flat_set<std::unique_ptr<FederatedAuthUserInfoRequest>>
       user_info_requests_;
@@ -628,14 +633,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Keeps track of the state of the verifying dialog. Is std::nullopt when the
   // verifying dialog has not been shown.
   std::optional<FedCmVerifyingDialogResult> verifying_dialog_result_;
-
-  // A private key that is used to bind the token when the token "format" is
-  // "vc+sd-jwt".
-  std::unique_ptr<crypto::ECPrivateKey> private_key_;
-
-  // A list of disclosures that were parsed in the token response, when
-  // the token's format is "vc+sd-jwt".
-  std::vector<std::pair<std::string, content::sdjwt::JSONString>> disclosures_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
