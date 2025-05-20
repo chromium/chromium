@@ -14,6 +14,7 @@
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -39,6 +41,7 @@ using ::blink::WebInputEvent;
 using ::blink::WebInputEventResult;
 using ::blink::WebKeyboardEvent;
 using ::blink::WebLocalFrame;
+using ::blink::WebMouseEvent;
 using ::blink::WebNode;
 using ::blink::WebString;
 
@@ -100,10 +103,15 @@ const std::unordered_map<char, KeyInfo>& GetKeyInfoMap() {
   return *key_info_map;
 }
 
-bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
-  // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
-  // we'll have to implement the different insertion modes.
-  frame.ExecuteCommand(WebString::FromUTF8("SelectAll"));
+bool PrepareTargetForMode(WebLocalFrame& frame,
+                          mojom::TypeAction::Mode mode,
+                          bool is_target_editable) {
+  // Skip prepration if target is not editable.
+  if (is_target_editable) {
+    // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
+    // we'll have to implement the different insertion modes.
+    frame.ExecuteCommand(WebString::FromUTF8("SelectAll"));
+  }
   return true;
 }
 
@@ -246,58 +254,80 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   mojom::ToolTargetPtr& target = action_->target;
   CHECK(target);
 
+  bool is_target_editable;
+
   if (target->is_coordinate()) {
-    NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-    std::move(callback).Run(MakeErrorResult());
-    return;
-  }
-  int32_t dom_node_id = target->get_dom_node_id();
-
-  WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
-  if (node.IsNull()) {
-    ACTOR_LOG() << "Cannot find dom node with id " << dom_node_id;
-    std::move(callback).Run(MakeErrorResult());
-    return;
-  }
-
-  // Validate Node is an editable element
-  // TODO(crbug.com/414398425): This seems too restrictive for non-input cases.
-  if (!node.IsElementNode()) {
-    ACTOR_LOG() << "Target node " << node << " is not an element.";
-    std::move(callback).Run(MakeErrorResult());
-    return;
-  }
-  WebElement element = node.To<WebElement>();
-  if (!element.IsEditable()) {
-    ACTOR_LOG() << "Target element " << element << " is not editable.";
-    std::move(callback).Run(MakeErrorResult());
-    return;
-  }
-
-  // Check and set focus if needed.
-  if (!IsNodeFocused(frame_.get(), node)) {
-    if (element.IsFocusable()) {
-      element.Focus();
-    } else {
-      ACTOR_LOG() << "Target element " << element
-                  << " is not focusable for typing.";
+    // Injecting a click first at the coordinate.
+    gfx::PointF click_point(target->get_coordinate());
+    if (!IsPointWithinViewport(click_point, frame_.get())) {
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kClickInvalidPoint));
+      return;
+    }
+    mojom::ActionResultPtr result = CreateAndDispatchClick(
+        blink::WebMouseEvent::Button::kLeft, 1, click_point,
+        frame_->GetWebFrame()->FrameWidget());
+    // Cancel rest of typing if initial click failed.
+    if (!IsOk(*result)) {
+      std::move(callback).Run(std::move(result));
+      return;
+    }
+    blink::WebHitTestResult htresult =
+        frame_->GetWebFrame()->FrameWidget()->HitTestResultAt(click_point);
+    // Only prepare target if the hit test result indicates the node is
+    // editable.
+    is_target_editable = htresult.IsContentEditable();
+  } else {
+    int32_t dom_node_id = target->get_dom_node_id();
+    WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
+    if (node.IsNull()) {
+      ACTOR_LOG() << "Cannot find dom node with id " << dom_node_id;
       std::move(callback).Run(MakeErrorResult());
       return;
     }
+
+    // Validate Node is an editable element
+    // TODO(crbug.com/414398425): This seems too restrictive for non-input
+    // cases.
+    if (!node.IsElementNode()) {
+      ACTOR_LOG() << "Target node " << node << " is not an element.";
+      std::move(callback).Run(MakeErrorResult());
+      return;
+    }
+    WebElement element = node.To<WebElement>();
+    if (!element.IsEditable()) {
+      ACTOR_LOG() << "Target element " << element << " is not editable.";
+      std::move(callback).Run(MakeErrorResult());
+      return;
+    }
+
+    // Check and set focus if needed.
+    if (!IsNodeFocused(frame_.get(), node)) {
+      if (element.IsFocusable()) {
+        element.Focus();
+      } else {
+        ACTOR_LOG() << "Target element " << element
+                    << " is not focusable for typing.";
+        std::move(callback).Run(MakeErrorResult());
+        return;
+      }
+    }
+    is_target_editable = true;
   }
 
-  if (!PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode)) {
+  if (!PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode,
+                            is_target_editable)) {
     ACTOR_LOG() << "Failed to prepare target element based on mode: "
                 << action_->mode;
     std::move(callback).Run(MakeErrorResult());
     return;
   }
 
-  // Note: Focus and preparing the target performs actions which lead to script
-  // execution so `node` may no longer be focused (it or its frame could be
-  // disconnected). However, sites sometimes do unexpected things to work around
-  // issues so to keep those working we proceed to key dispatch without checking
-  // this.
+  // Note: Focus and preparing the target performs actions which lead to
+  // script execution so `node` may no longer be focused (it or its frame
+  // could be disconnected). However, sites sometimes do unexpected things to
+  // work around issues so to keep those working we proceed to key dispatch
+  // without checking this.
 
   if (!base::IsStringASCII(action_->text)) {
     // TODO(crbug.com/409032824): Add support beyond ASCII.

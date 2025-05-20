@@ -7,16 +7,31 @@
 #include <sstream>
 
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/latency/latency_info.h"
+
+namespace {
+constexpr base::TimeDelta kClickDelay = base::Milliseconds(50);
+}
 
 namespace actor {
+
+using ::blink::WebCoalescedInputEvent;
+using ::blink::WebFrameWidget;
+using ::blink::WebInputEvent;
+using ::blink::WebInputEventResult;
+using ::blink::WebMouseEvent;
+using ::blink::WebNode;
 
 std::optional<gfx::PointF> InteractionPointFromWebNode(
     const blink::WebNode& node) {
@@ -78,6 +93,45 @@ std::string ToDebugString(const mojom::ToolTargetPtr& target) {
   }
   ss << ")";
   return ss.str();
+}
+
+mojom::ActionResultPtr CreateAndDispatchClick(WebMouseEvent::Button button,
+                                              int count,
+                                              const gfx::PointF& click_point,
+                                              WebFrameWidget* widget) {
+  WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown,
+                           WebInputEvent::kNoModifiers, ui::EventTimeForNow());
+  mouse_down.button = button;
+  mouse_down.click_count = count;
+  mouse_down.SetPositionInWidget(click_point);
+  // TODO(crbug.com/402082828): Find a way to set screen position.
+  //   const gfx::Rect offset =
+  //     render_frame_host_->GetRenderWidgetHost()->GetView()->GetViewBounds();
+  //   mouse_event_.SetPositionInScreen(point.x() + offset.x(),
+  //                                    point.y() + offset.y());
+
+  WebMouseEvent mouse_up = mouse_down;
+  WebInputEventResult result = widget->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
+
+  if (result == WebInputEventResult::kHandledSuppressed) {
+    return MakeResult(mojom::ActionResultCode::kClickSuppressed);
+  }
+
+  mouse_up.SetType(WebInputEvent::Type::kMouseUp);
+  mouse_up.SetTimeStamp(mouse_down.TimeStamp() + kClickDelay);
+
+  // TODO(crbug.com/402082828): Delay the mouse up to simulate natural click
+  // after ToolExecutor lifetime update.
+
+  result = widget->HandleInputEvent(
+      WebCoalescedInputEvent(std::move(mouse_up), ui::LatencyInfo()));
+
+  if (result == WebInputEventResult::kHandledSuppressed) {
+    return MakeResult(mojom::ActionResultCode::kClickSuppressed);
+  }
+
+  return MakeOkResult();
 }
 
 }  // namespace actor

@@ -26,6 +26,9 @@ optimization_guide::proto::BrowserAction MakeNavigate(
 optimization_guide::proto::BrowserAction MakeType(int content_node_id,
                                                   std::string_view text,
                                                   bool follow_by_enter);
+optimization_guide::proto::BrowserAction MakeType(const gfx::Point& type_point,
+                                                  std::string_view text,
+                                                  bool follow_by_enter);
 optimization_guide::proto::BrowserAction MakeSelect(int content_node_id,
                                                     std::string_view value);
 

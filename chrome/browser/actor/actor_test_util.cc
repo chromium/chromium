@@ -13,6 +13,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace actor {
 
@@ -89,6 +90,22 @@ BrowserAction MakeType(int content_node_id,
   BrowserAction action;
   TypeAction* type_action = action.add_action_information()->mutable_type();
   type_action->mutable_target()->set_content_node_id(content_node_id);
+  type_action->set_text(text);
+  // TODO(crbug.com/409570203): Tests should set a mode.
+  type_action->set_mode(
+      TypeAction_TypeMode::TypeAction_TypeMode_UNKNOWN_TYPE_MODE);
+  type_action->set_follow_by_enter(follow_by_enter);
+  return action;
+}
+
+BrowserAction MakeType(const gfx::Point& type_point,
+                       std::string_view text,
+                       bool follow_by_enter) {
+  BrowserAction action;
+  TypeAction* type_action = action.add_action_information()->mutable_type();
+  Coordinate* coordinate = type_action->mutable_target()->mutable_coordinate();
+  coordinate->set_x(type_point.x());
+  coordinate->set_y(type_point.y());
   type_action->set_text(text);
   // TODO(crbug.com/409570203): Tests should set a mode.
   type_action->set_mode(

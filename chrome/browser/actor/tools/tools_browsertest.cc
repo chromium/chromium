@@ -619,6 +619,169 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FocusMovesFocus) {
             EvalJs(web_contents(), "document.getElementById('input2').value"));
 }
 
+// Basic test of the TypeTool coordinate target - ensure typed string is entered
+// into a node at the coordinate.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtCoordinate) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::string typed_string = "test";
+  // Type into coordinate of input box.
+  {
+    gfx::Point type_point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), "input"));
+    BrowserAction action =
+        MakeType(type_point, typed_string, /*follow_by_enter=*/true);
+
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectOkResult(result);
+
+    EXPECT_EQ(typed_string,
+              EvalJs(web_contents(), "document.getElementById('input').value"));
+  }
+  // Type into coordinate of editable div.
+  {
+    gfx::Point type_point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), "editableDiv"));
+    BrowserAction action =
+        MakeType(type_point, typed_string, /*follow_by_enter=*/true);
+
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectOkResult(result);
+
+    EXPECT_EQ(typed_string,
+              EvalJs(web_contents(),
+                     "document.getElementById('editableDiv').textContent"));
+  }
+}
+
+// Ensure the type tool correctly sends the events to element at the
+// coordinates.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EventsSentToCoordinates) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  // Send event to an editable div.
+  {
+    gfx::Point type_point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), "editableDiv"));
+
+    // Send 'a'. Ensure a click event is observed first on element at the
+    // coordinate.
+    std::string typed_string = "a";
+    BrowserAction action =
+        MakeType(type_point, typed_string, /*follow_by_enter=*/false);
+
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectOkResult(result);
+
+    EXPECT_EQ(
+        // click
+        "mousedown(" + type_point.ToString() + "),mouseup(" +
+            type_point.ToString() + "),click(" + type_point.ToString() +
+            "),"
+            // a
+            "keydown,input,keyup",
+        EvalJs(web_contents(), "input_event_log.join(',')"));
+  }
+
+  ASSERT_TRUE(ExecJs(web_contents(), "input_event_log = []"));
+
+  // Send event to a focusable but not editable div.
+  {
+    gfx::Point type_point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), "focusableDiv"));
+
+    // Send 'a'. Ensure a click event is observed first on element at the
+    // coordinate.
+    std::string typed_string = "a";
+    BrowserAction action =
+        MakeType(type_point, typed_string, /*follow_by_enter=*/false);
+
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectOkResult(result);
+
+    EXPECT_EQ(
+        // click
+        "mousedown(" + type_point.ToString() + "),mouseup(" +
+            type_point.ToString() + "),click(" + type_point.ToString() +
+            "),"
+            // a
+            "keydown,keyup",
+        EvalJs(web_contents(), "input_event_log.join(',')"));
+  }
+}
+
+// Ensure the type tool correctly sends the events to an unfocusable element at
+// the coordinates.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest,
+                       TypeTool_EventsSentToUnfocusableCoordinate) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  // Set coordinate to an unfocusable div.
+
+  gfx::Point type_point = gfx::ToFlooredPoint(
+      GetCenterCoordinatesOfElementWithId(web_contents(), "unfocusableDiv"));
+
+  // Send 'a'. Ensure a click event is observed first on element at the
+  // coordinate.
+  std::string typed_string = "a";
+  BrowserAction action =
+      MakeType(type_point, typed_string, /*follow_by_enter=*/false);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+
+  // Only the click is handled by the node at coordinate.
+  EXPECT_EQ(
+      // click
+      "mousedown(" + type_point.ToString() + "),mouseup(" +
+          type_point.ToString() + "),click(" + type_point.ToString() + ")",
+      EvalJs(web_contents(), "input_event_log.join(',')"));
+  // The keydown and keyup event will go to the body now that div is
+  // unfocusable.
+  EXPECT_EQ(
+      // a
+      "keydown,keyup",
+      EvalJs(web_contents(), "body_input_event_log.join(',')"));
+}
+
+// Ensure the type tool will fail if target coordinate is offscreen.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_SentToOffScreenCoordinates) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/type_input_coordinate.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  // Send 'a' to an offscreen coordinate and observe failure.
+  std::string typed_string = "a";
+  BrowserAction action =
+      MakeType({-1, 0}, typed_string, /*follow_by_enter=*/false);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kClickInvalidPoint);
+
+  EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+}
+
 // ===============================================
 // Mouse Move Tool
 // ===============================================
