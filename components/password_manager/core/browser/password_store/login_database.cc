@@ -1672,14 +1672,9 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
   }
 
 #if BUILDFLAG(IS_IOS)
-  base::Time start = base::Time::Now();
   for (const auto& form : forms) {
     DeleteEncryptedPasswordFromKeychain(form.keychain_identifier);
   }
-  base::UmaHistogramMediumTimes(
-      "PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginsCreatedBetween."
-      "KeychainLatency",
-      base::Time::Now() - start);
 #endif
 
   sql::Statement s(

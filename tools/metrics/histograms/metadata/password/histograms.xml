@@ -3544,18 +3544,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginsCreatedBetween.KeychainLatency"
-    units="ms" expires_after="2025-06-29">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Real-time duration of passwords bulk deletion from the Keychain inside
-    RemoveLoginsCreatedBetween() method on iOS. Recorded as soon as it
-    completes.
-  </summary>
-</histogram>
-
-<histogram
     name="PasswordManager.PasswordStoreProxyBackend.PasswordRemovalStatus"
     enum="BooleanSuccess" expires_after="2025-08-31">
   <owner>vsemeniuk@google.com</owner>
