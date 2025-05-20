@@ -1891,9 +1891,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOCKING_EDIT_HOME_SCREEN_LOTTIE_INSTRUCTION" desc="Title of the instruction shown in the Docking Promo Lottie, which describes the Edit Home Screen text when the user long presses on the Chrome app.">
         Edit Home Screen
       </message>
-      <message name="IDS_IOS_DOCKING_PROMO_NO_THANKS_BUTTON_TITLE" desc="Title of the button that dismisses the Docking Promo.">
-        No Thanks
-      </message>
       <message name="IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE" desc="Title of the primary button in the Docking Promo, which confirms the promo has been seen by the user.">
         Got it
       </message>

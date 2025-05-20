@@ -27,17 +27,7 @@ NSString* const kEditHomeScreenKeypath = @"edit_home_screen";
 
 }  // namespace
 
-@implementation DockingPromoViewController {
-  BOOL _remindMeLater;
-}
-
-- (instancetype)initWithRemindMeLater:(BOOL)remindMeLater {
-  self = [super initWithNibName:nil bundle:nil];
-  if (self) {
-    _remindMeLater = remindMeLater;
-  }
-  return self;
-}
+@implementation DockingPromoViewController
 
 #pragma mark - UIViewController
 
@@ -54,10 +44,7 @@ NSString* const kEditHomeScreenKeypath = @"edit_home_screen";
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE);
   self.secondaryActionString =
-      _remindMeLater
-          ? l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE)
-          : l10n_util::GetNSString(
-                IDS_IOS_DOCKING_PROMO_NO_THANKS_BUTTON_TITLE);
+      l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE);
 
   // Set the text localization.
   NSString* editHomeScreenTitle = l10n_util::GetNSString(

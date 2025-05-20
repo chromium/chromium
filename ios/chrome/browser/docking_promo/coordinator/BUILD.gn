@@ -21,8 +21,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/docking_promo/ui",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
-    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
-    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",
