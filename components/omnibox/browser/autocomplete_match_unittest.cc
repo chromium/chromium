@@ -29,6 +29,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -1133,6 +1134,16 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
       // All other suggestion types should result in non-empty vector icons.
       EXPECT_FALSE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
     }
+  }
+
+  // When the match has a SuggestTemplateInfo, its icon should be set.
+  // This checks the full range to ensure any new additions get mapped.
+  match.suggest_template = omnibox::SuggestTemplateInfo();
+  for (int i = omnibox::SuggestTemplateInfo::IconType_MIN;
+       i <= omnibox::SuggestTemplateInfo::IconType_MAX; i++) {
+    match.suggest_template->set_type_icon(
+        static_cast<omnibox::SuggestTemplateInfo::IconType>(i));
+    EXPECT_FALSE(match.GetVectorIcon(false).is_empty());
   }
 }
 #endif

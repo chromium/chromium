@@ -56,6 +56,7 @@
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -539,6 +540,28 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark,
     const TemplateURL* turl) const {
+  if (suggest_template.has_value() && suggest_template->has_type_icon()) {
+    // Update this assertion and the switch below whenever values are added.
+    static_assert(omnibox::SuggestTemplateInfo::IconType_MAX ==
+                  omnibox::SuggestTemplateInfo::TRENDING);
+    switch (suggest_template->type_icon()) {
+      case omnibox::SuggestTemplateInfo::ICON_TYPE_UNSPECIFIED:
+        // When not specified, fall back on regular match icon logic below.
+        break;
+      case omnibox::SuggestTemplateInfo::HISTORY:
+        return vector_icons::kHistoryChromeRefreshIcon;
+      case omnibox::SuggestTemplateInfo::SEARCH_LOOP:
+        return vector_icons::kSearchChromeRefreshIcon;
+      case omnibox::SuggestTemplateInfo::SEARCH_LOOP_WITH_SPARKLE:
+        return omnibox::kSearchSparkIcon;
+      case omnibox::SuggestTemplateInfo::TRENDING:
+        return omnibox::kTrendingUpChromeRefreshIcon;
+      default:
+        // Out of range value defaults to search loupe.
+        return vector_icons::kSearchChromeRefreshIcon;
+    }
+  }
+
   // If the user bookmarks 'chrome://history/q=query', a/ corresponding answer
   // match shouldn't show the bookmark star.
   if (is_bookmark && type != Type::HISTORY_EMBEDDINGS_ANSWER)
