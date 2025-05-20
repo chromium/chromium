@@ -2142,37 +2142,6 @@ public class CronetUrlRequestContextTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Global metrics delta is supported only by the native implementation")
-    public void testGetGlobalMetricsDeltas() throws Exception {
-        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
-
-        byte[] delta1 = cronetEngine.getGlobalMetricsDeltas();
-
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder =
-                cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
-        builder.build().start();
-        callback.blockForDone();
-        // Fetch deltas on a different thread the second time to make sure this is permitted.
-        // See crbug.com/719448
-        FutureTask<byte[]> task =
-                new FutureTask<byte[]>(
-                        new Callable<byte[]>() {
-                            @Override
-                            public byte[] call() {
-                                return cronetEngine.getGlobalMetricsDeltas();
-                            }
-                        });
-        new Thread(task).start();
-        byte[] delta2 = task.get();
-        assertThat(delta2).isNotEmpty();
-        assertThat(delta2).isNotEqualTo(delta1);
-    }
-
-    @Test
-    @SmallTest
-    @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK},
             reason = "Deliberate manual creation of native engines")
     public void testCronetEngineBuilderConfig() throws Exception {

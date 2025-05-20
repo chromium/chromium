@@ -644,9 +644,6 @@ public class CronetTestRule implements TestRule {
             mCronetEngine = mBuilder.build();
             mImplementation.verifyCronetEngineInstance(mCronetEngine);
 
-            // Start collecting metrics.
-            mCronetEngine.getGlobalMetricsDeltas();
-
             if (mNetLogEnabled) {
                 File dataDir = new File(PathUtils.getDataDirectory());
                 File netLogDir = new File(dataDir, "NetLog");
