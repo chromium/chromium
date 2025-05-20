@@ -26,6 +26,7 @@ component("x11") {
   deps = [
     "//base",
     "//skia",
+    "//ui/base:features",
     "//ui/display",
     "//ui/events:events_base",
     "//ui/events/devices",

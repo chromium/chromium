@@ -152,6 +152,12 @@ BASE_FEATURE(kOverrideDefaultOzonePlatformHintToAuto,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
+// Chrome for Linux should eventually use XInput2 key events.
+// See https://crbug.com/412608405 for context.
+BASE_FEATURE(kXInput2KeyEvents,
+             "XInput2KeyEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 BASE_FEATURE(kInputMethodSettingsUiUpdate,
