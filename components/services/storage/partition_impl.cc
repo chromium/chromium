@@ -8,13 +8,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 #include "components/services/storage/dom_storage/session_storage_impl.h"
-#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "components/services/storage/storage_service_impl.h"
 
 namespace storage {
@@ -103,13 +101,6 @@ void PartitionImpl::BindLocalStorageControl(
   local_storage_ = std::make_unique<LocalStorageImpl>(
       path_.value_or(base::FilePath()),
       base::SequencedTaskRunner::GetCurrentDefault(), std::move(receiver));
-}
-
-void PartitionImpl::BindServiceWorkerStorageControl(
-    mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver) {
-  service_worker_storage_ = std::make_unique<ServiceWorkerStorageControlImpl>(
-      path_.value_or(base::FilePath()),
-      std::move(receiver));
 }
 
 void PartitionImpl::OnDisconnect() {
