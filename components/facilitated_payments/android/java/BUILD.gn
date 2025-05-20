@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "src/org/chromium/components/facilitated_payments/DeviceDelegate.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClient.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java",
     "src/org/chromium/components/facilitated_payments/SecureData.java",
@@ -27,6 +28,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "src/org/chromium/components/facilitated_payments/DeviceDelegate.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java",
     "src/org/chromium/components/facilitated_payments/SecureData.java",
     "src/org/chromium/components/facilitated_payments/SecurePayload.java",

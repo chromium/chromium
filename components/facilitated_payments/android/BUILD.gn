@@ -6,6 +6,8 @@ import("//testing/test.gni")
 
 static_library("android") {
   sources = [
+    "device_delegate_android.cc",
+    "device_delegate_android.h",
     "facilitated_payments_api_client_android.cc",
     "facilitated_payments_api_client_android.h",
     "secure_payload_android.cc",
