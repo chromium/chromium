@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,8 +21,9 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -31,14 +34,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Base class for creating autofill save card prompts that support displaying legal message line.
  */
+@NullMarked
 public abstract class AutofillSaveCardPromptBase implements ModalDialogProperties.Controller {
     private final AutofillSaveCardPromptBaseDelegate mBaseDelegate;
 
     protected PropertyModel mDialogModel;
-    protected ModalDialogManager mModalDialogManager;
+    protected @Nullable ModalDialogManager mModalDialogManager;
     protected Context mContext;
     protected View mDialogView;
-    private SpannableStringBuilder mSpannableStringBuilder;
+    private @Nullable SpannableStringBuilder mSpannableStringBuilder;
 
     interface AutofillSaveCardPromptBaseDelegate {
         /** Called when a link is clicked. */
@@ -195,6 +199,7 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
     }
 
     public void dismiss(@DialogDismissalCause int dismissalCause) {
+        assumeNonNull(mModalDialogManager);
         mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);
     }
 }

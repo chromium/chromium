@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -11,6 +13,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
@@ -22,6 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
  * button.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillSnackbarController implements SnackbarManager.SnackbarController {
     private final SnackbarManager mSnackbarManager;
     private long mNativeAutofillSnackbarView;
@@ -33,7 +38,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     }
 
     @Override
-    public void onAction(Object actionData) {
+    public void onAction(@Nullable Object actionData) {
         if (mNativeAutofillSnackbarView == 0) {
             return;
         }
@@ -45,7 +50,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     }
 
     @Override
-    public void onDismissNoAction(Object actionData) {
+    public void onDismissNoAction(@Nullable Object actionData) {
         if (mNativeAutofillSnackbarView == 0) {
             return;
         }
@@ -55,8 +60,9 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     @CalledByNative
     static AutofillSnackbarController create(
             long nativeAutofillSnackbarView, WindowAndroid windowAndroid) {
-        return new AutofillSnackbarController(
-                nativeAutofillSnackbarView, SnackbarManagerProvider.from(windowAndroid));
+        SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        assumeNonNull(snackbarManager);
+        return new AutofillSnackbarController(nativeAutofillSnackbarView, snackbarManager);
     }
 
     /**

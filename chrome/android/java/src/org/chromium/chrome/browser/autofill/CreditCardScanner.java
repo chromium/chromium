@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.IntentRequestTracker;
 
 /**
@@ -11,12 +13,13 @@ import org.chromium.ui.base.IntentRequestTracker;
  * cards. The default implementation cannot scan cards. An implementing subclass must provide a
  * factory that builds its instances.
  */
+@NullMarked
 public class CreditCardScanner {
     /**
      * Can be used to build subclasses of the scanner without the user of the class knowing about
      * the subclass name.
      */
-    private static Factory sFactory;
+    private static @Nullable Factory sFactory;
 
     /** The delegate to notify of scanning result. */
     protected final Delegate mDelegate;
@@ -91,7 +94,7 @@ public class CreditCardScanner {
      *
      * @param tracker The intent request tracker used to show the scanner intent.
      */
-    public void scan(IntentRequestTracker tracker) {
+    public void scan(@Nullable IntentRequestTracker tracker) {
         mDelegate.onScanCancelled();
     }
 }

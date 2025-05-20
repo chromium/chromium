@@ -13,11 +13,13 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.LoadingView;
 
 /** The view of the autofill virtual card enrollment bottom sheet UI. */
+@NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetView {
     /** The view that contains all other views. */
     final ViewGroup mContentView;

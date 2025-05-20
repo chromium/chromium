@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -23,15 +25,16 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
  * a tab or layout changes (e.g., going into the "tab overview"), so the bottom sheet can be
  * dismissed. Ignores page navigations.
  */
+@NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetLifecycle
         implements Callback<TabModelSelector>, TabModelObserver, LayoutStateObserver {
     private final Callback<TabModel> mCurrentTabModelObserver = this::onTabModelSelected;
     private final LayoutStateProvider mLayoutStateProvider;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private Runnable mOnEndOfLifecycle;
+    private @Nullable Runnable mOnEndOfLifecycle;
     private boolean mHasBegun;
-    private TabModelSelector mTabModelSelector;
-    private TabModel mTabModel;
+    private @Nullable TabModelSelector mTabModelSelector;
+    private @Nullable TabModel mTabModel;
 
     /**
      * Constructs the lifecycle for the virtual card number (VCN) enrollment bottom sheet.
@@ -81,8 +84,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
         mLayoutStateProvider.removeObserver(this);
         mTabModelSelectorSupplier.removeObserver(this);
 
-        if (mTabModelSelector != null)
+        if (mTabModelSelector != null) {
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+        }
         if (mTabModel != null) mTabModel.removeObserver(this);
 
         mHasBegun = false;
@@ -90,6 +94,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
     private void endLifecycleAndNotifyCaller() {
         end();
+        assumeNonNull(mOnEndOfLifecycle);
         mOnEndOfLifecycle.run();
     }
 

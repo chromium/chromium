@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** The model of the autofill virtual card number (VCN) enrollment bottom sheet UI. */
+@NullMarked
 /*package*/ abstract class AutofillVcnEnrollBottomSheetProperties {
     /** Opens links. */
     static interface LinkOpener {
@@ -106,13 +109,13 @@ import java.util.function.Function;
     /** Issuer icon. */
     static class IssuerIcon {
         /** The bitmap for the issuer icon. */
-        final Bitmap mBitmap;
+        final @Nullable Bitmap mBitmap;
 
         /** The resource id for the issuer icon. */
         final @DrawableRes int mIconResource;
 
         /** The url for an issuer icon. */
-        final GURL mIconUrl;
+        final @Nullable GURL mIconUrl;
 
         /** The width of the issuer icon. */
         final int mWidth;
