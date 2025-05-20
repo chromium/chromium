@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -153,6 +154,10 @@ void PaintTimingDetector::NotifyPaintFinished() {
   LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
   if (window) {
     DOMWindowPerformance::performance(*window)->OnPaintFinished();
+
+    if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
+      heuristics->OnPaintFinished();
+    }
   }
 
   PaintTiming::From(*frame_view_->GetFrame().GetDocument())

@@ -1969,15 +1969,13 @@ void ContainerNode::CheckSoftNavigationHeuristicsTracking(
   }
   if (SoftNavigationHeuristics* heuristics =
           window->GetSoftNavigationHeuristics()) {
+    // When a child node, which is an HTML-element, is modified within a parent
+    // (added, moved, etc), mark that child as modified by soft navigation.
+    // Otherwise, if the child is not an HTML-element, mark the parent instead.
     // TODO(crbug.com/1521100): This does not filter out updates from isolated
     // worlds. Should it?
-    if (heuristics->ModifiedDOM()) {
-      if (inserted_node.IsHTMLElement()) {
-        inserted_node.SetIsModifiedBySoftNavigation();
-      } else {
-        SetIsModifiedBySoftNavigation();
-      }
-    }
+    Node* updated_node = inserted_node.IsHTMLElement() ? &inserted_node : this;
+    heuristics->ModifiedDOM(updated_node);
   }
 }
 

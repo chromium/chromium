@@ -70,8 +70,7 @@ void RecordPotentialSoftNavigationPaint(LocalFrameView* frame_view,
   if (LocalDOMWindow* window = frame.DomWindow()) {
     if (SoftNavigationHeuristics* heuristics =
             window->GetSoftNavigationHeuristics()) {
-      heuristics->RecordPaint(&frame, rect.size().GetArea(),
-                              node->IsModifiedBySoftNavigation());
+      heuristics->RecordPaint(&frame, rect, node);
     }
   }
 }
