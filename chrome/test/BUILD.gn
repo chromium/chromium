@@ -6308,7 +6308,6 @@ test("unit_tests") {
     "../browser/signin/chrome_signin_proxying_url_loader_factory_unittest.cc",
     "../browser/signin/chrome_signin_url_loader_throttle_unittest.cc",
     "../browser/signin/header_modification_delegate_impl_unittest.cc",
-    "../browser/signin/reauth_tab_helper_unittest.cc",
     "../browser/signin/signin_profile_attributes_updater_unittest.cc",
     "../browser/site_isolation/chrome_site_isolation_policy_unittest.cc",
     "../browser/ssl/daily_navigation_counter_unittest.cc",

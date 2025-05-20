@@ -11,7 +11,6 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "build/buildflag.h"
-#include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"

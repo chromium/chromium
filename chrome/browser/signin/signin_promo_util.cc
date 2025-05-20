@@ -7,7 +7,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
