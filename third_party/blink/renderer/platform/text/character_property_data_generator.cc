@@ -500,8 +500,10 @@ class LineBreakData {
             "\"third_party/blink/renderer/platform/wtf/text/wtf_uchar.h\"\n"
             "\nnamespace {\n\n");
 
-    fprintf(fp, "constexpr UChar kFastLineBreakMinChar = 0x%02X;\n", kMinChar);
-    fprintf(fp, "constexpr UChar kFastLineBreakMaxChar = 0x%02X;\n", kMaxChar);
+    fprintf(fp, "inline constexpr UChar kFastLineBreakMinChar = 0x%02X;\n",
+            kMinChar);
+    fprintf(fp, "inline constexpr UChar kFastLineBreakMaxChar = 0x%02X;\n",
+            kMaxChar);
 
     // Define macros.
     fprintf(fp,
