@@ -157,11 +157,8 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
                      history_embeddings::GetFeatureParameters()
                          .search_query_minimum_word_count);
-  source->AddString(
-      "historyEmbeddingsSettingsUrl",
-      optimization_guide::features::IsAiSettingsPageRefreshEnabled()
-          ? chrome::kHistorySearchV2SettingURL
-          : chrome::kHistorySearchSettingURL);
+  source->AddString("historyEmbeddingsSettingsUrl",
+                    chrome::kHistorySearchSettingURL);
 
   bool logging_disabled_by_enterprise =
       profile->GetPrefs()->GetInteger(

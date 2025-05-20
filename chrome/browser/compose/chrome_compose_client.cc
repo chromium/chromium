@@ -801,10 +801,7 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
       break;
   }
 
-  chrome::ShowSettingsSubPage(
-      browser, optimization_guide::features::IsAiSettingsPageRefreshEnabled()
-                   ? chrome::kAiHelpMeWriteSubpage
-                   : chrome::kOfferWritingHelpSubpage);
+  chrome::ShowSettingsSubPage(browser, chrome::kAiHelpMeWriteSubpage);
 }
 
 void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {

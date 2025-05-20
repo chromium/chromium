@@ -84,11 +84,6 @@ bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
     case UserVisibleFeatureKey::kPasswordChangeSubmission:
       break;
   }
-  DCHECK(!is_graduated ||
-         !base::FeatureList::IsEnabled(
-             *GetFeatureToUseToCheckSettingsVisibility(feature)))
-      << "Feature should not be both graduated and visible in settings: "
-      << GetFeatureToUseToCheckSettingsVisibility(feature)->name;
   return is_graduated;
 }
 

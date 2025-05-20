@@ -96,14 +96,6 @@
     "expiry_milestone": 139
   },
   {
-    "name": "ai-settings-page-refresh",
-    "owners": [
-      "zalmashni@google.com",
-      "rainhard@chromium.org",
-      "chrome-browser-privacy-team@google.com"],
-    "expiry_milestone": 139
-  },
-  {
     "name": "align-surface-layer-impl-to-pixel-grid",
     "owners": [
       "wjmaclean@google.com", "pdr@google.com", "jonross@google.com"

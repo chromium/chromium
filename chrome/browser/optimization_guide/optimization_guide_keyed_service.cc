@@ -766,7 +766,8 @@ bool OptimizationGuideKeyedService::IsSettingVisible(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (optimization_guide::features::kShowAiSettingsForTesting.Get()) {
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kAiSettingsPageForceAvailable)) {
     return true;
   }
 #endif

@@ -166,7 +166,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
-        {optimization_guide::features::kAiSettingsPageRefresh});
+        {});
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -2384,9 +2384,13 @@ TEST_F(ChromeComposeClientTest, BugReportOpensCorrectURL) {
             new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
 }
 
-// TODO(crbug.com/362225975): Remove after AiSettingsPageRefresh and
-// ComposeProactiveNudge are launched.
+// TODO(crbug.com/400504728): Remove after ComposeProactiveNudge is launched.
 TEST_F(ChromeComposeClientTest, LearnMoreLinkOpensCorrectURL) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {compose::features::kEnableCompose},
+      {compose::features::kEnableComposeProactiveNudge});
+
   GURL learn_more_url("https://support.google.com/chrome?p=help_me_write");
 
   ShowDialogAndBindMojo();

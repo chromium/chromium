@@ -69,7 +69,8 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Not visible because model execution capability was disabled for
              the user account"/>
-  <int value="7" label="Not visible because the feature is already graduated"/>
+  <int value="7"
+      label="DEPRECATED: Not visible because the feature is already graduated"/>
   <int value="8"
       label="Not visible because the device is unsupported by the feature."/>
 </enum>

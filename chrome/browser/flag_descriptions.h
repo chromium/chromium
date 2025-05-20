@@ -59,9 +59,6 @@ extern const char kAcceleratedVideoEncodeDescription[];
 extern const char kAdjustCanCreateCanvas2DResourceProviderName[];
 extern const char kAdjustCanCreateCanvas2DResourceProviderDescription[];
 
-extern const char kAiSettingsPageRefreshName[];
-extern const char kAiSettingsPageRefreshDescription[];
-
 extern const char kAiSettingsPageEnterpriseDisabledName[];
 extern const char kAiSettingsPageEnterpriseDisabledDescription[];
 

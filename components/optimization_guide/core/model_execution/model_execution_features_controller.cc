@@ -355,16 +355,6 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
       break;
   }
 
-  // Graduated feature should never be visible in settings.
-  // TODO(crbug.com/362225975): This code can be removed when the settings
-  // refresh is launched.
-  if (features::internal::IsGraduatedFeature(feature) &&
-      !features::IsAiSettingsPageRefreshEnabled()) {
-    metrics_recorder.SetResult(
-        feature, SettingsVisibilityResult::kNotVisibleGraduatedFeature);
-    return false;
-  }
-
   // Check feature-specific requirements.
   if (feature == UserVisibleFeatureKey::kHistorySearch) {
     SettingsVisibilityResult result = ShouldHideHistorySearch();

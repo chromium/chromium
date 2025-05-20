@@ -588,11 +588,6 @@ inline constexpr char kHistorySearchLearnMorePageManagedURL[] =
 
 // The URL for the Settings page to enable history search.
 inline constexpr char16_t kHistorySearchSettingURL[] =
-    u"chrome://settings/historySearch";
-
-// The URL for the Settings page to enable history search when
-// AiSettingsPageRefresh flag is enabled.
-inline constexpr char16_t kHistorySearchV2SettingURL[] =
     u"chrome://settings/ai/historySearch";
 
 // The URL for the "Learn more" page for Wallpaper Search.

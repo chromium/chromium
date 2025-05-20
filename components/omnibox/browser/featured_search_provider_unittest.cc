@@ -667,10 +667,7 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
   // feature is enabled).
   {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        {{history_embeddings::kHistoryEmbeddings},
-         {optimization_guide::features::kAiSettingsPageRefresh}},
-        {});
+    features.InitWithFeatures({{history_embeddings::kHistoryEmbeddings}}, {});
     mock_setting(false, false);
     {
       SCOPED_TRACE("");
@@ -769,44 +766,6 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
     {
       SCOPED_TRACE("");
       RunAndVerifyIph(scope_input, {});
-    }
-  }
-
-  // TODO(crbug.com/362225975): Remove after AiSettingsPageRefresh is launched.
-  //   History Embeddings Promo points to chrome://settings/historySearch when
-  //   AI refresh flag is disabled.
-  {
-    base::test::ScopedFeatureList features_without_ai_refresh;
-    features_without_ai_refresh.InitWithFeatures(
-        {history_embeddings::kHistoryEmbeddings},
-        {optimization_guide::features::kAiSettingsPageRefresh});
-    mock_setting(true, false);
-    {
-      SCOPED_TRACE("");
-      RunAndVerifyIph(
-          scope_input,
-          {{IphType::kHistoryEmbeddingsSettingsPromo,
-            // Should end with whitespace since there's a link following it.
-            u"For a more powerful way to search your browsing history, turn "
-            u"on ",
-            u"History search, powered by AI",
-            GURL("chrome://settings/historySearch")}});
-    }
-
-    // History Embeddings Disclaimer points to chrome://settings/historySearch
-    // when AI refresh flag is disabled.
-    mock_setting(true, true);
-    {
-      SCOPED_TRACE("");
-      RunAndVerifyIph(
-          scope_input,
-          {{IphType::kHistoryEmbeddingsDisclaimer,
-            // Should end with whitespace since there's a link following it.
-            u"Your searches, best matches, and their page contents are sent to "
-            u"Google and may be seen by human reviewers to improve this "
-            u"feature. "
-            u"This is an experimental feature and won't always get it right. ",
-            u"Learn more", GURL("chrome://settings/historySearch")}});
     }
   }
 }

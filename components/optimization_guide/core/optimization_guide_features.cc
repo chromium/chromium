@@ -176,13 +176,12 @@ BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
              "OnDeviceModelFetchPerformanceClassEveryStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the "Synapse" refreshed AI settings page.
-BASE_FEATURE(kAiSettingsPageRefresh,
-             "AiSettingsPageRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kShowAiSettingsForTesting{
-    &kAiSettingsPageRefresh, "show_ai_settings_for_testing", false};
+// Force show the AI page and all AI feature sub-pages in settings, even if they
+// would be unavailable otherwise. This is meant for development and test
+// purposes only.
+BASE_FEATURE(kAiSettingsPageForceAvailable,
+             "AiSettingsPageForceAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable AI settings page integration with Privacy Guide.
 BASE_FEATURE(kPrivacyGuideAiSettings,
@@ -899,12 +898,6 @@ int GetOnDeviceModelValidationAttemptCount() {
 
 bool ShouldEnableOptimizationGuideIconView() {
   return base::FeatureList::IsEnabled(kOptimizationGuideIconView);
-}
-
-bool IsAiSettingsPageRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kAiSettingsPageRefresh) ||
-         base::FeatureList::IsEnabled(kPrivacyGuideAiSettings) ||
-         base::FeatureList::IsEnabled(kAiSettingsPageEnterpriseDisabledUi);
 }
 
 bool IsPrivacyGuideAiSettingsEnabled() {

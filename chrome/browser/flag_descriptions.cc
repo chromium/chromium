@@ -26,10 +26,6 @@ const char kAdjustCanCreateCanvas2DResourceProviderDescription[] =
     "Changes CanvasRenderingContxt2D::CanCreateCanvas2DResourceProvider() "
     "to check for provider recreation rather than bridge recreation";
 
-const char kAiSettingsPageRefreshName[] = "AI settings page refresh";
-const char kAiSettingsPageRefreshDescription[] =
-    "Enables a revamp of the existing AI settings page.";
-
 const char kAiSettingsPageEnterpriseDisabledName[] =
     "AI settings page enterprise disabled UI";
 const char kAiSettingsPageEnterpriseDisabledDescription[] =

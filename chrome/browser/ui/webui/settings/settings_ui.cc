@@ -648,8 +648,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                autofill::AutofillAiAction::kListEntityInstancesInSettings)},
   };
 
-  const bool show_ai_settings_for_testing =
-      optimization_guide::features::kShowAiSettingsForTesting.Get();
+  const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(
+      optimization_guide::features::kAiSettingsPageForceAvailable);
 
   // Show the AI features section in the AI page if any of the AI features are
   // enabled.

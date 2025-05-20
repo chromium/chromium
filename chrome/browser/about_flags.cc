@@ -11553,9 +11553,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kPasswordFormGroupedAffiliations)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"ai-settings-page-refresh", flag_descriptions::kAiSettingsPageRefreshName,
-     flag_descriptions::kAiSettingsPageRefreshDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(optimization_guide::features::kAiSettingsPageRefresh)},
     {"privacy-guide-ai-settings",
      flag_descriptions::kPrivacyGuideAiSettingsName,
      flag_descriptions::kPrivacyGuideAiSettingsDescription, kOsDesktop,
