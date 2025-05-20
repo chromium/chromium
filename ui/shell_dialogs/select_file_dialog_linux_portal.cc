@@ -19,6 +19,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -399,7 +400,7 @@ DbusDictionary SelectFileDialogLinuxPortal::BuildOptionsDictionary(
       break;
   }
 
-  if (!default_path.empty()) {
+  if (!default_path.empty() && base::IsStringUTF8(default_path.value())) {
     if (default_path_exists) {
       // If this is an existing directory, navigate to that directory, with no
       // filename.
