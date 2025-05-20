@@ -36,14 +36,19 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -94,35 +99,62 @@ public class FamilyLinkControlsTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
     public void testDeletingOnDeviceDataBlockedForSupervisedUsers() {
         SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.SITE_DATA);
+            SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.SITE_DATA);
         PreferenceFragmentCompat preferenceFragment =
-                (PreferenceFragmentCompat) settingsActivity.getMainFragment();
+            (PreferenceFragmentCompat) settingsActivity.getMainFragment();
         PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
-        ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
+        BinaryStatePermissionPreference binary_radio_button =
+            preferenceScreen.findPreference("binary_radio_button");
+
+        // When deleting cookies are blocked through Family Link, the toggle will be checked and
+        // disabled
+        Assert.assertTrue(binary_radio_button.isChecked());
+        Assert.assertFalse(binary_radio_button.isEnabled());
+        onView(
+            allOf(
+                withId(android.R.id.summary),
+                hasSibling(withId(R.id.radio_button_layout))))
+        .check(
+            matches(
+                withText(
+                    containsString(
+                        settingsActivity.getString(
+                            org.chromium.chrome.test.R.string.managed_by_your_parent)))));
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testDeletingOnDeviceDataBlockedForSupervisedUsers2() {
+        SettingsActivity settingsActivity =
+            SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.SITE_DATA);
+        PreferenceFragmentCompat preferenceFragment =
+            (PreferenceFragmentCompat) settingsActivity.getMainFragment();
+        PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
+            ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
 
         // When deleting cookies are blocked through Family Link, the toggle will be checked and
         // disabled
         Assert.assertTrue(binary_toggle.isChecked());
         Assert.assertFalse(binary_toggle.isEnabled());
         onView(
-                        allOf(
-                                withId(android.R.id.summary),
-                                hasSibling(
-                                        allOf(
-                                                withText(
-                                                        org.chromium.chrome.test.R.string
-                                                                .site_data_page_title),
-                                                withId(android.R.id.title)))))
-                .check(
-                        matches(
-                                withText(
-                                        containsString(
-                                                settingsActivity.getString(
-                                                        org.chromium.chrome.test.R.string
-                                                                .managed_by_your_parent)))));
+            allOf(
+                withId(android.R.id.summary),
+                hasSibling(
+                    allOf(
+                        withText(
+                            org.chromium.chrome.test.R.string.site_data_page_title),
+                        withId(android.R.id.title)))))
+        .check(
+            matches(
+                withText(
+                    containsString(
+                        settingsActivity.getString(
+                            org.chromium.chrome.test.R.string.managed_by_your_parent)))));
         settingsActivity.finish();
     }
 

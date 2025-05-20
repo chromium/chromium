@@ -37,9 +37,10 @@ found in the LICENSE file.
     <TextView
         android:id="@android:id/summary"
         style="@style/PreferenceSummary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintHorizontal_weight="1" />
+        android:layout_marginTop="8dp"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/managed_disclaimer_text"
