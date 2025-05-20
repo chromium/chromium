@@ -86,6 +86,7 @@ class ChromeFacilitatedPaymentsClient
       base::RepeatingCallback<void(payments::facilitated::UiEvent)>
           ui_event_listener) final;
   autofill::StrikeDatabase* GetStrikeDatabase() final;
+  bool IsPixAccountLinkingSupported() const final;
 
   // Register any allowlists with the OptimizationGuide framework, so that
   // individual features can later request to check whether the current main

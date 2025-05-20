@@ -113,6 +113,9 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // returned so check before use.
   virtual autofill::StrikeDatabase* GetStrikeDatabase() = 0;
 
+  // Checks if Pix account linking is supported by the platform.
+  virtual bool IsPixAccountLinkingSupported() const;
+
   // Virtual so it can be overridden in tests.
   virtual void InitPixAccountLinkingFlow();
 

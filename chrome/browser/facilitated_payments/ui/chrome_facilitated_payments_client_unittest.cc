@@ -41,6 +41,9 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
 class MockPixAccountLinkingManager
     : public payments::facilitated::PixAccountLinkingManager {
  public:
+  explicit MockPixAccountLinkingManager(
+      payments::facilitated::FacilitatedPaymentsClient* client)
+      : PixAccountLinkingManager(client) {}
   ~MockPixAccountLinkingManager() override = default;
 
   MOCK_METHOD(void, MaybeShowPixAccountLinkingPrompt, (), (override));
@@ -58,7 +61,7 @@ class ChromeFacilitatedPaymentsClientTest
     controller_ = controller.get();
     client_->SetFacilitatedPaymentsControllerForTesting(std::move(controller));
     auto pix_account_linking_manager =
-        std::make_unique<MockPixAccountLinkingManager>();
+        std::make_unique<MockPixAccountLinkingManager>(client_.get());
     pix_account_linking_manager_ = pix_account_linking_manager.get();
     client_->SetPixAccountLinkingManagerForTesting(
         std::move(pix_account_linking_manager));

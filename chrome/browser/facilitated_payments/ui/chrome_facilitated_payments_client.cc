@@ -4,6 +4,8 @@
 
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 
+#include <memory>
+
 #include "base/android/build_info.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
@@ -17,6 +19,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/android/device_delegate_android.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -32,7 +35,7 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
     : content::WebContentsUserData<ChromeFacilitatedPaymentsClient>(
           *web_contents),
       driver_factory_(web_contents,
-                      /*client=*/this),
+                      /* client= */ this),
       facilitated_payments_controller_(
           std::make_unique<FacilitatedPaymentsController>(web_contents)),
       optimization_guide_decider_(optimization_guide_decider) {
@@ -168,6 +171,10 @@ autofill::StrikeDatabase* ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
   }
 
   return autofill::StrikeDatabaseFactory::GetForProfile(profile);
+}
+
+bool ChromeFacilitatedPaymentsClient::IsPixAccountLinkingSupported() const {
+  return payments::facilitated::IsWalletEligibleForPixAccountLinking();
 }
 
 void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {

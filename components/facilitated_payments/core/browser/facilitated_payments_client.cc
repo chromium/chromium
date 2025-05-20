@@ -16,9 +16,9 @@
 
 namespace payments::facilitated {
 
-FacilitatedPaymentsClient::FacilitatedPaymentsClient() {
-  pix_account_linking_manager_ = std::make_unique<PixAccountLinkingManager>();
-}
+FacilitatedPaymentsClient::FacilitatedPaymentsClient()
+    : pix_account_linking_manager_(
+          std::make_unique<PixAccountLinkingManager>(/* client= */ this)) {}
 
 FacilitatedPaymentsClient::~FacilitatedPaymentsClient() = default;
 
@@ -38,6 +38,10 @@ void FacilitatedPaymentsClient::DismissPrompt() {}
 
 void FacilitatedPaymentsClient::SetUiEventListener(
     base::RepeatingCallback<void(UiEvent)> ui_event_listener) {}
+
+bool FacilitatedPaymentsClient::IsPixAccountLinkingSupported() const {
+  return false;
+}
 
 void FacilitatedPaymentsClient::InitPixAccountLinkingFlow() {
   pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt();

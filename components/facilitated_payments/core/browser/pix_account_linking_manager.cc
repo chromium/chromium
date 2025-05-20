@@ -4,8 +4,19 @@
 
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 
+#include "base/check_deref.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+
 namespace payments::facilitated {
 
-void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {}
+PixAccountLinkingManager::PixAccountLinkingManager(
+    FacilitatedPaymentsClient* client)
+    : client_(CHECK_DEREF(client)) {}
+
+void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
+  if (!client_->IsPixAccountLinkingSupported()) {
+    return;
+  }
+}
 
 }  // namespace payments::facilitated
