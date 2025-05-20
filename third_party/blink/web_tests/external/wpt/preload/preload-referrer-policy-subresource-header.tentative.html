@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
+<meta name=variant content="?isCrossOriginPreload=true&isCrossOriginResource=true">
+<meta name=variant content="?isCrossOriginPreload=true&isCrossOriginResource=false">
+<meta name=variant content="?isCrossOriginPreload=false&isCrossOriginResource=true">
+<meta name=variant content="?isCrossOriginPreload=false&isCrossOriginResource=false">
 <title>The referrerpolicy attribute on Link header should be ignored for subresources</title>
 <meta name="timeout" content="long">
 <script src="resources/dummy.js?link-header-preload2"></script>
@@ -64,17 +68,16 @@ const policies = [
 "strict-origin-when-cross-origin",
 "unsafe-url"]
 
+const params = new URLSearchParams(location.search);
+const isCrossOriginPreload = params.get('isCrossOriginPreload') === 'true';
+const isCrossOriginResource = params.get('isCrossOriginResource') === 'true';
 for (const preloadPolicy of policies) {
     for (const resourcePolicy of policies) {
-        for (const isCrossOriginPreload of [true, false]) {
-            for (const isCrossOriginResource of [true, false]) {
-                test_referrer_policy(
-                    preloadPolicy,
-                    resourcePolicy,
-                    isCrossOriginPreload,
-                    isCrossOriginResource);
-            }
-        }
+        test_referrer_policy(
+            preloadPolicy,
+            resourcePolicy,
+            isCrossOriginPreload,
+            isCrossOriginResource);
     }
 }
 
