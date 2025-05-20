@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -263,10 +264,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::flat_map<GURL, IdentityProviderGetInfo>& GetTokenRequestGetInfos() {
     return token_request_get_infos_;
   }
-  void SetMetricsEndpoint(const GURL& idp_config_url,
-                          const GURL& metrics_endpoint) {
-    metrics_endpoints_[idp_config_url] = metrics_endpoint;
-  }
   GURL login_url() { return login_url_; }
   bool HadAccoundIdBeforeLogin(const std::string& account_id) {
     return account_ids_before_login_.contains(account_id);
@@ -383,13 +380,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       blink::mojom::RequestUserInfoStatus status,
       std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
 
-  // Notifies metrics endpoint that either the user did not select the IDP in
-  // the prompt or that there was an error in fetching data for the IDP.
-  void SendFailedTokenRequestMetrics(
-      const GURL& metrics_endpoint,
-      blink::mojom::FederatedAuthRequestResult result);
-  void SendSuccessfulTokenRequestMetrics(const GURL& idp_config_url);
-
   // When two APIs that are associated with the same frame, hence
   // fedcm_metrics_, are triggered concurrently, we need to reset
   // `fedcm_metrics` to record UKM for the first request when it's completed and
@@ -480,9 +470,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Helper that records FedCM UMA and UKM metrics. Initialized in the
   // RequestToken() method, so all metrics must be recorded after that.
   std::unique_ptr<FedCmMetrics> fedcm_metrics_;
-
-  // Populated in OnAllConfigAndWellKnownFetched().
-  base::flat_map<GURL, GURL> metrics_endpoints_;
 
   // Populated by OnFetchDataForIdpSucceeded() and OnIdpMismatch().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;

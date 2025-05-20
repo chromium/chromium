@@ -105,6 +105,48 @@ void FedCmAccountsFetcher::FetchEndpointsForIdps(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void FedCmAccountsFetcher::SendAllFailedTokenRequestMetrics(
+    blink::mojom::FederatedAuthRequestResult result,
+    bool did_show_ui) {
+  DCHECK(IsFedCmMetricsEndpointEnabled());
+  for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
+    SendFailedTokenRequestMetrics(metrics_endpoint_kv.second, result,
+                                  did_show_ui);
+  }
+}
+
+void FedCmAccountsFetcher::SendSuccessfulTokenRequestMetrics(
+    const GURL& idp_config_url,
+    base::TimeDelta api_call_to_show_dialog_time,
+    base::TimeDelta show_dialog_to_continue_clicked_time,
+    base::TimeDelta account_selected_to_token_response_time,
+    base::TimeDelta api_call_to_token_response_time,
+    bool did_show_ui) {
+  DCHECK(IsFedCmMetricsEndpointEnabled());
+
+  for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
+    const GURL& metrics_endpoint = metrics_endpoint_kv.second;
+    if (!metrics_endpoint.is_valid()) {
+      continue;
+    }
+
+    if (metrics_endpoint_kv.first == idp_config_url) {
+      network_manager_->SendSuccessfulTokenRequestMetrics(
+          metrics_endpoint, api_call_to_show_dialog_time,
+          show_dialog_to_continue_clicked_time,
+          account_selected_to_token_response_time,
+          api_call_to_token_response_time);
+    } else {
+      // Send kUserFailure so that IDP cannot tell difference between user
+      // selecting a different IDP and user dismissing dialog without
+      // selecting any IDP.
+      network_manager_->SendFailedTokenRequestMetrics(
+          metrics_endpoint, did_show_ui,
+          MetricsEndpointErrorCode::kUserFailure);
+    }
+  }
+}
+
 void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
     std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
   config_fetcher_.reset();
@@ -122,8 +164,8 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
         token_request_get_infos.find(identity_provider_config_url);
     CHECK(get_info_it != token_request_get_infos.end());
 
-    federated_auth_request_impl_->SetMetricsEndpoint(
-        identity_provider_config_url, fetch_result.endpoints.metrics);
+    metrics_endpoints_[identity_provider_config_url] =
+        fetch_result.endpoints.metrics;
 
     std::unique_ptr<IdentityProviderInfo> idp_info =
         std::make_unique<IdentityProviderInfo>(
@@ -173,33 +215,34 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
       }
     }
 
-    // The login url should be valid unless IdP login status API is disabled.
+    // The login url should be valid unless IdP login status API is
+    // disabled.
     if (idp_info->metadata.idp_login_url.is_valid()) {
       federated_auth_request_impl_->SetIdpLoginInfo(
           idp_info->metadata.idp_login_url, idp_info->provider->login_hint,
           idp_info->provider->domain_hint);
     }
 
-    // Make sure that we don't fetch accounts if the IDP sign-in bit is reset to
-    // false during the API call. e.g. by the login/logout HEADER.
+    // Make sure that we don't fetch accounts if the IDP sign-in bit is
+    // reset to false during the API call. e.g. by the login/logout HEADER.
     // In the active flow we get here even if the IDP sign-in bit was false
-    // originally, because we need the well-known and config files to find the
-    // login URL.
+    // originally, because we need the well-known and config files to find
+    // the login URL.
     idp_info->has_failing_idp_signin_status =
         webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
             *render_frame_host_, identity_provider_config_url,
             permission_delegate_);
     if (idp_info->has_failing_idp_signin_status) {
-      // If the user is logged out and we are in a active-mode, allow the user
-      // to sign-in to the IdP and return early.
+      // If the user is logged out and we are in a active-mode, allow the
+      // user to sign-in to the IdP and return early.
       if (params_.rp_mode == blink::mojom::RpMode::kActive) {
         federated_auth_request_impl_->MaybeShowActiveModeModalDialog(
             identity_provider_config_url, idp_info->metadata.idp_login_url);
         return;
       }
-      // Do not send metrics for IDP where the user is not signed-in in order
-      // to prevent IDP from using the user IP to make a probabilistic model
-      // of which websites a user visits.
+      // Do not send metrics for IDP where the user is not signed-in in
+      // order to prevent IDP from using the user IP to make a probabilistic
+      // model of which websites a user visits.
       idp_info->endpoints.metrics = GURL();
 
       federated_auth_request_impl_->OnFetchDataForIdpFailed(
@@ -362,7 +405,8 @@ void FedCmAccountsFetcher::OnAccountsFetchSucceeded(
   } else {
     GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
     network_manager_->FetchAccountPicturesAndBrandIcons(
-        std::move(accounts), std::move(idp_info), /*rp_brand_icon_url=*/GURL(),
+        std::move(accounts), std::move(idp_info),
+        /*rp_brand_icon_url=*/GURL(),
         base::BindOnce(&FedCmAccountsFetcher::OnFetchDataForIdpSucceeded,
                        weak_ptr_factory_.GetWeakPtr(),
                        IdpNetworkRequestManager::ClientMetadata()));
@@ -425,9 +469,9 @@ bool FedCmAccountsFetcher::FilterAccountsWithLabel(
   }
 
   // Filter out all accounts whose labels do not match the requested label.
-  // Note that it is technically possible for us to end up with more than one
-  // account afterwards, in which case the multiple account chooser would be
-  // shown.
+  // Note that it is technically possible for us to end up with more than
+  // one account afterwards, in which case the multiple account chooser
+  // would be shown.
   size_t accounts_remaining = 0u;
   for (auto& account : accounts) {
     if (!base::Contains(account->labels, label)) {
@@ -449,9 +493,9 @@ bool FedCmAccountsFetcher::FilterAccountsWithLoginHint(
   }
 
   // Filter out all accounts whose ID and whose email do not match the login
-  // hint. Note that it is technically possible for us to end up with more than
-  // one account afterwards, in which case the multiple account chooser would be
-  // shown.
+  // hint. Note that it is technically possible for us to end up with more
+  // than one account afterwards, in which case the multiple account chooser
+  // would be shown.
   size_t accounts_remaining = 0u;
   for (auto& account : accounts) {
     if (account->is_filtered_out) {
@@ -579,13 +623,14 @@ void FedCmAccountsFetcher::HandleAccountsFetchFailure(
   }
 
   if (params_.mediation_requirement == MediationRequirement::kSilent) {
-    // By this moment we know that the user has granted permission in the past
-    // for the RP/IdP. Because otherwise we have returned already in
+    // By this moment we know that the user has granted permission in the
+    // past for the RP/IdP. Because otherwise we have returned already in
     // `ShouldFailBeforeFetchingAccounts`. It means that we can do the
     // following without privacy cost:
     // 1. Reject the promise immediately without delay
     // 2. Not to show any UI to respect `mediation: silent`
-    // TODO(crbug.com/40266561): validate the statement above with stakeholders
+    // TODO(crbug.com/40266561): validate the statement above with
+    // stakeholders
     federated_auth_request_impl_->OnFetchDataForIdpFailed(
         std::move(idp_info),
         FederatedAuthRequestResult::kSilentMediationFailure,
@@ -594,9 +639,9 @@ void FedCmAccountsFetcher::HandleAccountsFetchFailure(
     return;
   }
 
-  // We are going to show mismatch UI, so fetch the brand icon URL (needed at
-  // least for passive mode). We currently never need the RP icon for mismatch
-  // UI.
+  // We are going to show mismatch UI, so fetch the brand icon URL (needed
+  // at least for passive mode). We currently never need the RP icon for
+  // mismatch UI.
   network_manager_->FetchIdpBrandIcon(
       std::move(idp_info), base::BindOnce(&FedCmAccountsFetcher::OnIdpMismatch,
                                           weak_ptr_factory_.GetWeakPtr()));
@@ -613,6 +658,20 @@ void FedCmAccountsFetcher::OnIdpMismatch(
       GetDisclosureFields(idp_info->provider->fields),
       /*has_login_status_mismatch=*/true);
   federated_auth_request_impl_->OnIdpMismatch(std::move(idp_info));
+}
+
+void FedCmAccountsFetcher::SendFailedTokenRequestMetrics(
+    const GURL& metrics_endpoint,
+    blink::mojom::FederatedAuthRequestResult result,
+    bool did_show_ui) {
+  DCHECK(IsFedCmMetricsEndpointEnabled());
+  if (!metrics_endpoint.is_valid()) {
+    return;
+  }
+
+  network_manager_->SendFailedTokenRequestMetrics(
+      metrics_endpoint, did_show_ui,
+      FederatedAuthRequestResultToMetricsEndpointErrorCode(result));
 }
 
 }  // namespace content

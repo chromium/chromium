@@ -7,6 +7,8 @@
 
 #include <set>
 
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/fedcm_config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
@@ -64,6 +66,19 @@ class FedCmAccountsFetcher {
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
   void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
+
+  // Notifies metrics endpoint that either the user did not select the IDP in
+  // the prompt or that there was an error in fetching data for the IDP.
+  void SendAllFailedTokenRequestMetrics(
+      blink::mojom::FederatedAuthRequestResult result,
+      bool did_show_ui);
+  void SendSuccessfulTokenRequestMetrics(
+      const GURL& idp_config_url,
+      base::TimeDelta api_call_to_show_dialog_time,
+      base::TimeDelta show_dialog_to_continue_clicked_time,
+      base::TimeDelta account_selected_to_token_response_time,
+      base::TimeDelta api_call_to_token_response_time,
+      bool did_show_ui);
 
  private:
   void OnAllConfigAndWellKnownFetched(
@@ -124,7 +139,15 @@ class FedCmAccountsFetcher {
 
   void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
 
+  void SendFailedTokenRequestMetrics(
+      const GURL& metrics_endpoint,
+      blink::mojom::FederatedAuthRequestResult result,
+      bool did_show_ui);
+
   std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
+
+  // Populated in OnAllConfigAndWellKnownFetched().
+  base::flat_map<GURL, GURL> metrics_endpoints_;
 
   // Owned by FederatedAuthRequestImpl.
   raw_ref<RenderFrameHost> render_frame_host_;
