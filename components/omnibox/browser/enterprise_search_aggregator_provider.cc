@@ -541,6 +541,13 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
+  if (input.current_page_classification() ==
+          metrics::OmniboxEventProto::NTP_REALBOX &&
+      !omnibox_feature_configs::SearchAggregatorProvider::Get()
+           .realbox_unscoped_suggestions) {
+    return false;
+  }
+
   // TODO(crbug.com/380642693): Add backoff check.
   return true;
 }
