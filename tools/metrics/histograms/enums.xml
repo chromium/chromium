@@ -12800,6 +12800,7 @@ from previous Chrome versions.
   <int value="-482188490" label="ImpulseScrollAnimations:disabled"/>
   <int value="-481626345" label="WebAppEnableScopeExtensions:enabled"/>
   <int value="-481238673" label="EnableAndroidGamepadVibration:disabled"/>
+  <int value="-480376207" label="OmniboxMiaZPS:enabled"/>
   <int value="-480263549" label="AutofillShadowDOM:disabled"/>
   <int value="-479908983" label="PrintPreviewCrosPrimary:disabled"/>
   <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
@@ -18231,6 +18232,7 @@ from previous Chrome versions.
   <int value="1575978252" label="PasswordLeakDetection:enabled"/>
   <int value="1575982187" label="SendPasswords:disabled"/>
   <int value="1576879780" label="StarterPackExpansion:enabled"/>
+  <int value="1577064342" label="OmniboxMiaZPS:disabled"/>
   <int value="1577205328"
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>
   <int value="1577651674" label="SafetyHub:enabled"/>
