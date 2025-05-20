@@ -2965,7 +2965,16 @@ config("symbols") {
         # Disable putting the compiler command line into the debug info to
         # prevent some types of non-determinism.
         "-gno-codeview-command-line",
+
+        # Deterministically choose one source line number out of all merged
+        # source line numbers to avoid line 0 debug info when multiple
+        # instructions are merged.
+        # See https://crbug.com/415272777.
+        "-mllvm",
+        "-pick-merged-source-locations"
       ]
+
+      rustflags = [ "-Cllvm-args=-pick-merged-source-locations"]
     } else {
       cflags = [ "/Zi" ]  # Produce PDB file, no edit and continue.
     }
