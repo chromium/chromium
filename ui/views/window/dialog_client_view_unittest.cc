@@ -164,24 +164,6 @@ class DialogClientViewTest : public test::WidgetTest {
     delegate_->DialogModelChanged();
   }
 
-  Button* GetButtonByAccessibleName(View* root, const std::u16string& name) {
-    Button* button = Button::AsButton(root);
-    if (button && button->GetViewAccessibility().GetCachedName() == name) {
-      return button;
-    }
-    for (views::View* child : root->children()) {
-      button = GetButtonByAccessibleName(child, name);
-      if (button) {
-        return button;
-      }
-    }
-    return nullptr;
-  }
-
-  Button* GetButtonByAccessibleName(const std::u16string& name) {
-    return GetButtonByAccessibleName(widget_->GetRootView(), name);
-  }
-
   DialogClientView* client_view() {
     return static_cast<DialogClientView*>(widget_->client_view());
   }
@@ -807,9 +789,9 @@ TEST_F(DialogClientViewTest, ButtonLayoutWithExtra) {
 
   widget()->Show();
 
-  Button* ok = GetButtonByAccessibleName(u"ok");
-  Button* cancel = GetButtonByAccessibleName(u"cancel");
-  Button* extra = GetButtonByAccessibleName(u"extra");
+  View* ok = client_view()->ok_button();
+  View* cancel = client_view()->cancel_button();
+  View* extra = client_view()->extra_view();
 
   ASSERT_NE(ok, cancel);
   ASSERT_NE(ok, extra);
@@ -868,9 +850,9 @@ TEST_F(DialogClientViewTest, LayoutWithHiddenExtraView) {
 
   SizeAndLayoutWidget();
 
-  auto* ok = GetButtonByAccessibleName(u"ok");
-  auto* cancel = GetButtonByAccessibleName(u"cancel");
-  auto* extra = GetButtonByAccessibleName(u"extra");
+  View* ok = client_view()->ok_button();
+  View* cancel = client_view()->cancel_button();
+  View* extra = client_view()->extra_view();
 
   int ok_left = ok->bounds().x();
   int cancel_left = cancel->bounds().x();
