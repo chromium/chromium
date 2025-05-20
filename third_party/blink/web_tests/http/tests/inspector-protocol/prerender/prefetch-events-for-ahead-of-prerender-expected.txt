@@ -3,34 +3,6 @@ Running test: prefetchStatusUpdatedShouldBeEmittedForPrefetchAheadOfPrerender
 Preload.prefetchStatusUpadted should be emitted for prefetch ahead of prerender
 [
     [0] : {
-        method : Preload.prerenderStatusUpdated
-        params : {
-            key : {
-                action : Prerender
-                loaderId : <string>
-                url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
-            }
-            pipelineId : <string>
-            pipelineIdIndex : 0
-            status : Pending
-        }
-        sessionId : <string>
-    }
-    [1] : {
-        method : Preload.prerenderStatusUpdated
-        params : {
-            key : {
-                action : Prerender
-                loaderId : <string>
-                url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
-            }
-            pipelineId : <string>
-            pipelineIdIndex : 0
-            status : Running
-        }
-        sessionId : <string>
-    }
-    [2] : {
         method : Preload.prefetchStatusUpdated
         params : {
             initiatingFrameId : <string>
@@ -44,6 +16,34 @@ Preload.prefetchStatusUpadted should be emitted for prefetch ahead of prerender
             prefetchStatus : PrefetchNotFinishedInTime
             prefetchUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
             requestId : <string>
+            status : Running
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Preload.prerenderStatusUpdated
+        params : {
+            key : {
+                action : Prerender
+                loaderId : <string>
+                url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+            }
+            pipelineId : <string>
+            pipelineIdIndex : 0
+            status : Pending
+        }
+        sessionId : <string>
+    }
+    [2] : {
+        method : Preload.prerenderStatusUpdated
+        params : {
+            key : {
+                action : Prerender
+                loaderId : <string>
+                url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+            }
+            pipelineId : <string>
+            pipelineIdIndex : 0
             status : Running
         }
         sessionId : <string>

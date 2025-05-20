@@ -85,6 +85,8 @@ BASE_FEATURE(kPrefetchBrowsingDataRemoval,
 BASE_FEATURE(kPrefetchScheduler,
              "PrefetchScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kPrefetchSchedulerProgressSyncBestEffort{
+    &kPrefetchScheduler, "kPrefetchSchedulerProgressSyncBestEffort", true};
 
 BASE_FEATURE(kPrefetchSchedulerTesting,
              "PrefetchSchedulerTesting",
