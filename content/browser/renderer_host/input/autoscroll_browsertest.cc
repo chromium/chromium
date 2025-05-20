@@ -261,8 +261,17 @@ IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest, GSUGSEValidPositionInWidget) {
 }
 
 // Checks that wheel scrolling works after autoscroll cancelation.
+// TODO(https://crbug.com/418936120): Flaky on
+// linux-blink-web-tests-force-accessibility-rel
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WheelScrollingWorksAfterAutoscrollCancel \
+  DISABLED_WheelScrollingWorksAfterAutoscrollCancel
+#else
+#define MAYBE_WheelScrollingWorksAfterAutoscrollCancel \
+  WheelScrollingWorksAfterAutoscrollCancel
+#endif
 IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest,
-                       WheelScrollingWorksAfterAutoscrollCancel) {
+                       MAYBE_WheelScrollingWorksAfterAutoscrollCancel) {
   LoadURL(kAutoscrollDataURL);
 
   // Start autoscroll with middle click.
