@@ -97,13 +97,20 @@ public class IncognitoNotificationServiceTest {
                 });
 
         boolean isIncognitoNotificationDisplayed = false;
-        for (StatusBarNotificationProxy statusBarNotification : getActiveNotifications()) {
-            if (IncognitoNotificationManager.INCOGNITO_TABS_OPEN_TAG.equals(
-                    statusBarNotification.getTag())) {
-                isIncognitoNotificationDisplayed = true;
-            }
-        }
-        assertTrue(isIncognitoNotificationDisplayed);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    List<? extends StatusBarNotificationProxy> activeNotifications =
+                            getActiveNotifications();
+                    boolean found = false;
+                    for (StatusBarNotificationProxy notification : activeNotifications) {
+                        if (IncognitoNotificationManager.INCOGNITO_TABS_OPEN_TAG.equals(
+                                notification.getTag())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    Criteria.checkThat(found, Matchers.is(true));
+                });
     }
 
     @Test
@@ -224,7 +231,6 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
-    @DisabledTest(message = "https://crbug.com/418782004")
     public void testCloseAllIncognitoNotificationIsDisplayed() {
         launchIncognitoTabAndEnsureNotificationDisplayed();
     }
@@ -232,7 +238,6 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
-    @DisabledTest(message = "https://crbug.com/418782004")
     public void testCloseAllIncognitoNotificationForIncognitoCct_DoesNotCloseCct()
             throws PendingIntent.CanceledException {
         launchIncognitoTabAndEnsureNotificationDisplayed();
