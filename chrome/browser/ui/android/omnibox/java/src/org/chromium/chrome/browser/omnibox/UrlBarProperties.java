@@ -178,8 +178,9 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<View.OnLongClickListener> LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** Specifies the resource ID for the url bar hint text. */
-    public static final WritableIntPropertyKey HINT_TEXT = new WritableIntPropertyKey();
+    /** Specifies the url bar hint text. */
+    public static final WritableObjectPropertyKey<String> HINT_TEXT =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {

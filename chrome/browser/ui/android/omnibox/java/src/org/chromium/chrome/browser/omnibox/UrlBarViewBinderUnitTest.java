@@ -190,11 +190,10 @@ public class UrlBarViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetHintText() {
-        mModel.set(HINT_TEXT, R.string.hub_search_empty_hint);
-        Assert.assertEquals(mActivity.getString(R.string.hub_search_empty_hint), mUrlBar.getHint());
-        mModel.set(HINT_TEXT, R.string.hub_search_empty_hint_incognito);
-        Assert.assertEquals(
-                mActivity.getString(R.string.hub_search_empty_hint_incognito), mUrlBar.getHint());
+        mModel.set(HINT_TEXT, "Hint Text");
+        Assert.assertEquals("Hint Text", mUrlBar.getHint());
+        mModel.set(HINT_TEXT, "Different Hint Text");
+        Assert.assertEquals("Different Hint Text", mUrlBar.getHint());
     }
 
     @Test

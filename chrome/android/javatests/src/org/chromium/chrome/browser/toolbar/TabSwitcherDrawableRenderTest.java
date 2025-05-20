@@ -46,7 +46,7 @@ public class TabSwitcherDrawableRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_TAB_GROUPS)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     @ClassRule
