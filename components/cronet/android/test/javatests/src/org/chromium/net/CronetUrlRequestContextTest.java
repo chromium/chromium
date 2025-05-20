@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.build.BuildConfig;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.DisableAutomaticNetLog;
@@ -2258,8 +2259,16 @@ public class CronetUrlRequestContextTest {
             throws Exception {
         CronetProvider nativeProvider =
                 new NativeCronetProvider(mTestRule.getTestFramework().getContext());
-        assertThat(nativeProvider.createBuilder().getDefaultUserAgent())
-                .doesNotContain("AndroidHttpClient");
+        // TODO(crbug.com/412608685): Cronet in AOSP always forces the user agent to
+        // AndroidHttpClient, breaking the assumption of this test. Drop this once the
+        // divergence is fixed.
+        if (BuildConfig.CRONET_FOR_AOSP_BUILD) {
+            assertThat(nativeProvider.createBuilder().getDefaultUserAgent())
+                    .contains("AndroidHttpClient");
+        } else {
+            assertThat(nativeProvider.createBuilder().getDefaultUserAgent())
+                    .doesNotContain("AndroidHttpClient");
+        }
     }
 
     // Creates a CronetEngine on another thread and then one on the main thread.  This shouldn't
