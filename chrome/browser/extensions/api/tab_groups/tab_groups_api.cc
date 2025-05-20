@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,6 +31,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/gfx/range/range.h"
 
 using tabs::TabModel;
@@ -236,7 +236,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(id);
 
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
-  tab_group->SetVisualData(std::move(new_visual_data));
+  tab_strip_model->ChangeTabGroupVisuals(id, std::move(new_visual_data));
 
   if (!has_callback())
     return RespondNow(NoArguments());

@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -63,6 +62,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_view_host.h"
@@ -1384,13 +1384,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   // Add the tab to a group.
   tab_groups::TabGroupId group =
       browser()->tab_strip_model()->AddToNewGroup({0});
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group)
-      ->SetVisualData(tab_groups::TabGroupVisualData(
-          u"Group title", tab_groups::TabGroupColorId::kGreen,
-          /*is_collapsed=*/false));
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group, tab_groups::TabGroupVisualData(u"Group title",
+                                            tab_groups::TabGroupColorId::kGreen,
+                                            /*is_collapsed=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowMappingHasGroupDataAfterRestart) {
@@ -1601,7 +1598,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
 
-  group->SetVisualData(visual_data);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(group_id, visual_data);
   CloseTab(grouped_tab_index);
 
   ASSERT_NO_FATAL_FAILURE(RestoreTab(0, grouped_tab_index));
@@ -1635,7 +1632,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab) {
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
   ASSERT_TRUE(group);
-  group->SetVisualData(visual_data);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(group_id, visual_data);
 
   CloseTab(grouped_tab_index);
 
@@ -1671,9 +1668,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoCollapsedGroup) {
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
   const tab_groups::TabGroupVisualData visual_data(
       u"Foo", tab_groups::TabGroupColorId::kCyan, true);
-  TabGroup* group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
-  group->SetVisualData(visual_data);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group_id, visual_data);
 
   CloseTab(closed_tab_index);
 
@@ -1714,9 +1709,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
 
-  group->SetVisualData(visual_data_1);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group->id(),
+                                                       visual_data_1);
   CloseTab(closed_tab_index);
-  group->SetVisualData(visual_data_2);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group->id(),
+                                                       visual_data_2);
 
   ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
   ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -1772,18 +1769,17 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
   AddHTTPSSchemeTabs(browser(), 3);
   constexpr int tab_count = 4;
 
-  TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
   tab_groups::TabGroupId group1 = browser()->tab_strip_model()->AddToNewGroup(
       {tab_count - 3, tab_count - 2});
   tab_groups::TabGroupVisualData group1_data(u"Foo",
                                              tab_groups::TabGroupColorId::kRed);
-  group_model->GetTabGroup(group1)->SetVisualData(group1_data);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group1, group1_data);
 
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({tab_count - 1});
   tab_groups::TabGroupVisualData group2_data(
       u"Bar", tab_groups::TabGroupColorId::kBlue);
-  group_model->GetTabGroup(group2)->SetVisualData(group2_data);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group2, group2_data);
 
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, active_browser_list_->size());
@@ -2525,7 +2521,7 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   tab_groups::TabGroupColorId original_color =
       tab_groups::TabGroupColorId::kRed;
   tab_groups::TabGroupVisualData og_visual_data(original_title, original_color);
-  tab_group->SetVisualData(og_visual_data);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group, og_visual_data);
 
   std::optional<tab_groups::SavedTabGroup> saved_group =
       service->GetGroup(group);
@@ -2586,7 +2582,7 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   tab_groups::TabGroupColorId original_color =
       tab_groups::TabGroupColorId::kRed;
   tab_groups::TabGroupVisualData og_visual_data(original_title, original_color);
-  tab_group->SetVisualData(og_visual_data);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group, og_visual_data);
 
   const std::optional<tab_groups::SavedTabGroup> saved_group =
       service->GetGroup(group);
@@ -3083,11 +3079,8 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   // Set the visual data here.
   tab_groups::TabGroupVisualData original_visual_data(
       u"Title", tab_groups::TabGroupColorId::kYellow);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group)
-      ->SetVisualData(original_visual_data, true);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group, original_visual_data, true);
 
   ASSERT_TRUE(service->GetGroup(group));
   base::Uuid saved_group_id = service->GetGroup(group)->saved_guid();
@@ -3230,7 +3223,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSycnedServiceTest, RestoreCollapsedGroupTab) {
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
   ASSERT_TRUE(group);
-  group->SetVisualData(visual_data);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group->id(),
+                                                       visual_data);
 
   CloseTab(grouped_tab_index);
 

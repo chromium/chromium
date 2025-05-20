@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_UNPINNED_TAB_COLLECTION_H_
-#define CHROME_BROWSER_UI_TABS_UNPINNED_TAB_COLLECTION_H_
+#ifndef COMPONENTS_TABS_PUBLIC_UNPINNED_TAB_COLLECTION_H_
+#define COMPONENTS_TABS_PUBLIC_UNPINNED_TAB_COLLECTION_H_
 
 #include <optional>
 
@@ -32,4 +32,4 @@ class UnpinnedTabCollection : public TabCollection {
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_UNPINNED_TAB_COLLECTION_H_
+#endif  // COMPONENTS_TABS_PUBLIC_UNPINNED_TAB_COLLECTION_H_

@@ -97,7 +97,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -157,6 +156,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -1375,13 +1375,13 @@ void FocusPreviousTabGroup(Browser* browser) {
     std::optional<tab_groups::TabGroupId> new_group_id =
         tab_strip_model->GetTabGroupForTab(new_index);
     if (new_group_id && new_group_id != current_group_id) {
-      std::optional<int> first_tab_of_group =
+      tabs::TabInterface* first_tab_of_group =
           tab_strip_model->group_model()
               ->GetTabGroup(new_group_id.value())
               ->GetFirstTab();
       CHECK(first_tab_of_group);
       tab_strip_model->ActivateTabAt(
-          first_tab_of_group.value(),
+          tab_strip_model->GetIndexOfTab(first_tab_of_group),
           TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kKeyboard));
       return;

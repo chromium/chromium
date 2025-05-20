@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 
-#include <cstddef>
 #include <memory>
 #include <optional>
 
-#include "base/not_fatal_until.h"
-#include "base/notreached.h"
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
-#include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {

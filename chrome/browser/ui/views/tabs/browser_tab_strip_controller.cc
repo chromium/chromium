@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -69,6 +68,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -77,6 +77,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ipc/ipc_message.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -84,6 +85,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
@@ -559,7 +561,8 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
   if (origin != ToggleTabGroupCollapsedStateOrigin::kMenuAction ||
       should_toggle_group) {
     tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
-    model_->group_model()->GetTabGroup(group)->SetVisualData(
+    model_->ChangeTabGroupVisuals(
+        group,
         tab_groups::TabGroupVisualData(GetGroupTitle(group),
                                        GetGroupColorId(group),
                                        !is_currently_collapsed),
@@ -685,9 +688,24 @@ std::u16string BrowserTabStripController::GetGroupTitle(
   return model_->group_model()->GetTabGroup(group)->visual_data()->title();
 }
 
+// TODO(crbug.com/418774949) Combine with ExistingTabGroupSubMenuModel and move
+// To TabGroupFeatures.
 std::u16string BrowserTabStripController::GetGroupContentString(
     const tab_groups::TabGroupId& group) const {
-  return model_->group_model()->GetTabGroup(group)->GetContentString();
+  CHECK(model_->SupportsTabGroups());
+
+  const TabGroup* tab_group = model_->group_model()->GetTabGroup(group);
+  CHECK(tab_group);
+
+  constexpr size_t kContextMenuTabTitleMaxLength = 30;
+  std::u16string format_string = l10n_util::GetPluralStringFUTF16(
+      IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tab_group->tab_count() - 1);
+  std::u16string short_title;
+  gfx::ElideString(
+      TabUIHelper::FromWebContents(tab_group->GetFirstTab()->GetContents())
+          ->GetTitle(),
+      kContextMenuTabTitleMaxLength, &short_title);
+  return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
 }
 
 tab_groups::TabGroupColorId BrowserTabStripController::GetGroupColorId(
@@ -712,12 +730,17 @@ bool BrowserTabStripController::IsGroupCollapsed(
 void BrowserTabStripController::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {
-  model_->group_model()->GetTabGroup(group)->SetVisualData(visual_data);
+  model_->ChangeTabGroupVisuals(group, visual_data);
 }
 
 std::optional<int> BrowserTabStripController::GetFirstTabInGroup(
     const tab_groups::TabGroupId& group) const {
-  return model_->group_model()->GetTabGroup(group)->GetFirstTab();
+  tabs::TabInterface* tab =
+      model_->group_model()->GetTabGroup(group)->GetFirstTab();
+  if (!tab) {
+    return std::nullopt;
+  }
+  return model_->GetIndexOfTab(tab);
 }
 
 gfx::Range BrowserTabStripController::ListTabsInGroup(

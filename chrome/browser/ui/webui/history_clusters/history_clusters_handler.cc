@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -50,6 +49,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -477,7 +477,7 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
       // Copy and modify the existing visual data with a new title.
       tab_groups::TabGroupVisualData visual_data = *tab_group->visual_data();
       visual_data.SetTitle(base::UTF8ToUTF16(*tab_group_name));
-      tab_group->SetVisualData(visual_data);
+      model->ChangeTabGroupVisuals(new_group_id, visual_data);
     }
   }
 }

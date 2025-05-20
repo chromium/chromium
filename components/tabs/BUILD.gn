@@ -11,7 +11,11 @@ source_set("public") {
     "public/split_tab_visual_data.h",
     "public/supports_handles.h",
     "public/tab_collection.h",
+    "public/tab_group.h",
+    "public/tab_group_tab_collection.h",
     "public/tab_interface.h",
+    "public/tab_strip_collection.h",
+    "public/unpinned_tab_collection.h",
   ]
 
   # TODO(crbug.com/404296389): Move to the non-public target and refactor
@@ -22,6 +26,7 @@ source_set("public") {
     "//base",
     "//components/tab_groups",
   ]
+  deps = [ "//ui/gfx/range" ]
 }
 
 source_set("tabs") {
@@ -32,6 +37,10 @@ source_set("tabs") {
     "split_tab_visual_data.cc",
     "tab_collection.cc",
     "tab_collection_storage.cc",
+    "tab_group.cc",
+    "tab_group_tab_collection.cc",
+    "tab_strip_collection.cc",
+    "unpinned_tab_collection.cc",
   ]
   deps = [ ":public" ]
 }
@@ -53,5 +62,6 @@ source_set("unit_tests") {
     ":tabs",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/range",
   ]
 }

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -42,6 +41,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -230,13 +230,15 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabData) {
       browser()->GetTabStripModel()->AddToNewGroup({0}));
   auto vis_data1 = *tab_group1->visual_data();
   vis_data1.SetTitle(u"ok");
-  tab_group1->SetVisualData(vis_data1);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(tab_group1->id(),
+                                                       vis_data1);
 
   auto* tab_group2 = browser()->GetTabStripModel()->group_model()->GetTabGroup(
       browser()->GetTabStripModel()->AddToNewGroup({1, 2}));
   auto vis_data2 = *tab_group1->visual_data();
   vis_data2.SetTitle(u"ok");
-  tab_group2->SetVisualData(vis_data2);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(tab_group2->id(),
+                                                       vis_data2);
 
   AiData ai_data = LoadSimplePageAndData();
   ASSERT_TRUE(ai_data.has_value());
@@ -253,13 +255,15 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerText) {
       browser()->GetTabStripModel()->AddToNewGroup({0}));
   auto vis_data1 = *tab_group1->visual_data();
   vis_data1.SetTitle(u"ok");
-  tab_group1->SetVisualData(vis_data1);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(tab_group1->id(),
+                                                       vis_data1);
 
   auto* tab_group2 = browser()->GetTabStripModel()->group_model()->GetTabGroup(
       browser()->GetTabStripModel()->AddToNewGroup({1, 2}));
   auto vis_data2 = *tab_group1->visual_data();
   vis_data2.SetTitle(u"ok");
-  tab_group2->SetVisualData(vis_data2);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(tab_group2->id(),
+                                                       vis_data2);
 
   AiData ai_data = LoadSimplePageAndData();
   ASSERT_TRUE(ai_data.has_value());

@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 
 #include <memory>
 #include <optional>
 
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_group.h"
 
 namespace tabs {
 
 TabGroupTabCollection::TabGroupTabCollection(
     tab_groups::TabGroupId group_id,
-    tab_groups::TabGroupVisualData visual_data,
-    TabGroupController* controller)
+    tab_groups::TabGroupVisualData visual_data)
     : TabCollection(TabCollection::Type::GROUP,
                     {TabCollection::Type::SPLIT},
                     /*supports_tabs=*/true) {
-  group_ = std::make_unique<TabGroup>(controller, group_id, visual_data);
+  group_ = std::make_unique<TabGroup>(this, group_id, visual_data);
 }
 
 TabGroupTabCollection::~TabGroupTabCollection() = default;

@@ -17,7 +17,6 @@
 #include "base/types/pass_key.h"
 
 class TabGroup;
-class TabGroupController;
 class TabStripModel;
 namespace tab_groups {
 enum class TabGroupColorId;
@@ -32,7 +31,7 @@ class TabGroupId;
 // need to be reflected in the view.
 class TabGroupModel {
  public:
-  explicit TabGroupModel(TabGroupController* controller);
+  TabGroupModel();
   ~TabGroupModel();
 
   // Returns whether a tab group with the given |id| exists.
@@ -64,8 +63,6 @@ class TabGroupModel {
   // Used to maintain insertion order of TabGroupsIds added to the
   // TabGroupModel.
   std::vector<tab_groups::TabGroupId> group_ids_;
-
-  raw_ptr<TabGroupController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_MODEL_H_

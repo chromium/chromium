@@ -268,12 +268,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {
   std::vector<int> indices = {1, 2};
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup(indices);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group_id)
-      ->SetVisualData(tab_groups::TabGroupVisualData(
-          u"Test Group", tab_groups::TabGroupColorId::kGrey));
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group_id, tab_groups::TabGroupVisualData(
+                    u"Test Group", tab_groups::TabGroupColorId::kGrey));
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 

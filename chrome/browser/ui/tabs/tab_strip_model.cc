@@ -56,7 +56,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
-#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -64,11 +63,8 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -95,8 +91,10 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
-#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -168,9 +166,8 @@ TabGroupModelFactory* TabGroupModelFactory::GetInstance() {
   return factory_instance;
 }
 
-std::unique_ptr<TabGroupModel> TabGroupModelFactory::Create(
-    TabGroupController* controller) {
-  return std::make_unique<TabGroupModel>(controller);
+std::unique_ptr<TabGroupModel> TabGroupModelFactory::Create() {
+  return std::make_unique<TabGroupModel>();
 }
 
 DetachedTabCollection::DetachedTabCollection(
@@ -242,7 +239,7 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
   contents_data_ = std::make_unique<tabs::TabStripCollection>();
 
   if (group_model_factory) {
-    group_model_ = group_model_factory->Create(this);
+    group_model_ = group_model_factory->Create();
   }
   scrubbing_metrics_.Init();
 }
@@ -1801,8 +1798,7 @@ void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(SupportsTabGroups());
   std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
-      std::make_unique<tabs::TabGroupTabCollection>(group_id, visual_data,
-                                                    this);
+      std::make_unique<tabs::TabGroupTabCollection>(group_id, visual_data);
   group_model_->AddTabGroup(group_collection->GetTabGroup(),
                             base::PassKey<TabStripModel>());
   contents_data_->CreateTabGroup(std::move(group_collection));
@@ -1887,14 +1883,20 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
 
   for (const auto& kv : indices_per_tab_group) {
     const TabGroup* group = group_model_->GetTabGroup(kv.first);
-    const int first_tab_in_group = group->GetFirstTab().value();
-    const int last_tab_in_group = group->GetLastTab().value();
+    CHECK(group);
+    gfx::Range group_index_range = group->ListTabs();
+    tabs::TabInterface* first_tab_in_group = group->GetFirstTab();
+    CHECK(first_tab_in_group);
+    int first_tab_index = GetIndexOfTab(first_tab_in_group);
+
+    tabs::TabInterface* last_tab_in_group = group->GetLastTab();
+    int last_tab_index = GetIndexOfTab(last_tab_in_group);
 
     // This is an estimate. If the group is non-contiguous it will be
     // larger than the true size. This can happen while dragging tabs in
     // or out of a group.
-    const int num_tabs_in_group = last_tab_in_group - first_tab_in_group + 1;
-    const int group_midpoint = first_tab_in_group + num_tabs_in_group / 2;
+    const int group_midpoint =
+        first_tab_index + (group_index_range.length() / 2);
 
     // Split group into |left_of_group| and |right_of_group| depending on
     // whether the index is closest to the left or right edge.
@@ -1907,9 +1909,9 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
         right_of_group.push_back(index);
       }
     }
-    MoveTabsAndSetPropertiesImpl(left_of_group, first_tab_in_group,
-                                 std::nullopt, false);
-    MoveTabsAndSetPropertiesImpl(right_of_group, last_tab_in_group + 1,
+    MoveTabsAndSetPropertiesImpl(left_of_group, first_tab_index, std::nullopt,
+                                 false);
+    MoveTabsAndSetPropertiesImpl(right_of_group, last_tab_index + 1,
                                  std::nullopt, false);
   }
 }
@@ -1953,10 +1955,27 @@ void TabStripModel::OpenTabGroupEditor(const tab_groups::TabGroupId& group) {
   }
 }
 
-void TabStripModel::OnTabGroupVisualsChanged(
-    const tab_groups::TabGroupId& group,
-    const TabGroupChange::VisualsChange& visuals) {
-  TabGroupChange change(this, group, visuals);
+void TabStripModel::ChangeTabGroupVisuals(
+    const tab_groups::TabGroupId& group_id,
+    tab_groups::TabGroupVisualData visual_data,
+    bool is_customized) {
+  TabGroup* tab_group = group_model_->GetTabGroup(group_id);
+
+  // Move current visuals to old_visuals before updating
+  tab_groups::TabGroupVisualData old_visuals = *tab_group->visual_data();
+  TabGroupChange::VisualsChange visuals;
+  visuals.old_visuals = &old_visuals;
+  visuals.new_visuals = &visual_data;
+
+  tab_group->SetVisualData(visual_data, is_customized);
+  NotifyTabGroupVisualsChanged(group_id, visuals);
+}
+
+void TabStripModel::NotifyTabGroupVisualsChanged(
+    const tab_groups::TabGroupId& group_id,
+    TabGroupChange::VisualsChange visuals) {
+  // Notify the controller of the visual change
+  TabGroupChange change(this, group_id, visuals);
   for (auto& observer : observers_) {
     observer.OnTabGroupChanged(change);
   }
@@ -2126,10 +2145,6 @@ void TabStripModel::NotifySplitTabAttached(
       split_id, tabs_in_split,
       SplitTabChange::SplitTabAddReason::kInsertedFromAnotherTabstrip,
       *GetSplitData(split_id)->visual_data());
-}
-
-std::u16string TabStripModel::GetTitleAt(int index) const {
-  return TabUIHelper::FromWebContents(GetWebContentsAt(index))->GetTitle();
 }
 
 int TabStripModel::GetTabCount() const {
@@ -3578,8 +3593,7 @@ void TabStripModel::AddToNewGroupImpl(
           new_group,
           tab_groups::TabGroupVisualData(
               std::u16string(),
-              group_model_->GetNextColor(base::PassKey<TabStripModel>())),
-          this);
+              group_model_->GetNextColor(base::PassKey<TabStripModel>())));
   group_model_->AddTabGroup(group_collection->GetTabGroup(),
                             base::PassKey<TabStripModel>());
   contents_data_->CreateTabGroup(std::move(group_collection));
@@ -3645,8 +3659,13 @@ void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
   }
 
   const TabGroup* group_object = group_model_->GetTabGroup(group);
-  int first_tab_in_group = group_object->GetFirstTab().value();
-  int last_tab_in_group = group_object->GetLastTab().value();
+
+  tabs::TabInterface* first_tab_in_group = group_object->GetFirstTab();
+  CHECK(first_tab_in_group);
+  int first_tab_index = GetIndexOfTab(first_tab_in_group);
+
+  tabs::TabInterface* last_tab_in_group = group_object->GetLastTab();
+  int last_tab_index = GetIndexOfTab(last_tab_in_group);
 
   // Split |new_indices| into |tabs_left_of_group| and |tabs_right_of_group| to
   // be moved to proper destination index. Directly set the group for indices
@@ -3654,9 +3673,9 @@ void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
   std::vector<int> tabs_left_of_group;
   std::vector<int> tabs_right_of_group;
   for (int index : indices) {
-    if (index < first_tab_in_group) {
+    if (index < first_tab_index) {
       tabs_left_of_group.push_back(index);
-    } else if (index > last_tab_in_group) {
+    } else if (index > last_tab_index) {
       tabs_right_of_group.push_back(index);
     }
   }
@@ -3665,12 +3684,12 @@ void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
     std::vector<int> all_tabs = tabs_left_of_group;
     all_tabs.insert(all_tabs.end(), tabs_right_of_group.begin(),
                     tabs_right_of_group.end());
-    MoveTabsAndSetPropertiesImpl(all_tabs, last_tab_in_group + 1, group, false);
+    MoveTabsAndSetPropertiesImpl(all_tabs, last_tab_index + 1, group, false);
   } else {
-    MoveTabsAndSetPropertiesImpl(tabs_left_of_group, first_tab_in_group, group,
+    MoveTabsAndSetPropertiesImpl(tabs_left_of_group, first_tab_index, group,
                                  false);
-    MoveTabsAndSetPropertiesImpl(tabs_right_of_group, last_tab_in_group + 1,
-                                 group, false);
+    MoveTabsAndSetPropertiesImpl(tabs_right_of_group, last_tab_index + 1, group,
+                                 false);
   }
 }
 
@@ -3972,7 +3991,7 @@ void TabStripModel::TabGroupStateChanged(
     // TabGroupChange::kCreated.
     if (is_group_empty) {
       TabGroupChange::VisualsChange visuals;
-      OnTabGroupVisualsChanged(new_group.value(), visuals);
+      NotifyTabGroupVisualsChanged(new_group.value(), visuals);
     }
   }
 }

@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -62,6 +61,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -77,6 +77,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/event_monitor.h"
@@ -437,12 +438,12 @@ TabDragController::Liveness TabDragController::Init(
     const tab_groups::TabGroupId group_id = source_view->group().value();
     const std::optional<tab_groups::TabGroupId> active_group_id =
         tab_strip_model->GetActiveTab()->GetGroup();
-    const std::optional<int> group_starting_index =
-        tab_strip_model->group_model()->GetTabGroup(group_id)->GetFirstTab();
+    gfx::Range group_range =
+        tab_strip_model->group_model()->GetTabGroup(group_id)->ListTabs();
     const int active_tab_index_within_group =
         (active_group_id.has_value() && active_group_id.value() == group_id &&
-         group_starting_index.has_value())
-            ? tab_strip_model->active_index() - group_starting_index.value()
+         !group_range.is_empty())
+            ? tab_strip_model->active_index() - group_range.GetMin()
             : 0;
     ref->drag_data_.group_drag_data_ = std::make_optional<GroupDragData>(
         group_id, active_tab_index_within_group);
@@ -1839,10 +1840,8 @@ void TabDragController::RevertGroupAt(size_t drag_index) {
         attached_context_->GetTabStripModel()->DetachTabGroupForInsertion(
             group_id),
         target_index);
-    source_context_->GetTabStripModel()
-        ->group_model()
-        ->GetTabGroup(group_id)
-        ->SetVisualData(first_tab_in_group.tab_group_data->group_visual_data);
+    source_context_->GetTabStripModel()->ChangeTabGroupVisuals(
+        group_id, first_tab_in_group.tab_group_data->group_visual_data);
     return;
   }
 

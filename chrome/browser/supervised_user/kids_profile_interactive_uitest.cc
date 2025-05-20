@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/browser_user.h"
 #include "chrome/test/supervised_user/family_live_test.h"
@@ -45,7 +46,11 @@ bool IsYouTubeInterstitialDisplayedInIframe(Browser& browser,
                                             std::string_view iframe_name) {
   content::WebContents* web_contents = nullptr;
   for (int i = 0; i < browser.GetTabStripModel()->GetTabCount(); ++i) {
-    if (browser.GetTabStripModel()->GetTitleAt(i) == tab_title) {
+    std::u16string wc_title =
+        TabUIHelper::FromWebContents(
+            browser.GetTabStripModel()->GetWebContentsAt(i))
+            ->GetTitle();
+    if (wc_title == tab_title) {
       web_contents = browser.GetTabStripModel()->GetWebContentsAt(i);
       break;
     }

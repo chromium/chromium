@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -28,6 +27,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -1036,9 +1036,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   tab_strip()->tab_at(1)->SetGroup(group);
-  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
-      tab_groups::TabGroupVisualData(u"Test title",
-                                     tab_groups::TabGroupColorId::kBlue));
+  tab_strip_model()->ChangeTabGroupVisuals(
+      group, tab_groups::TabGroupVisualData(
+                 u"Test title", tab_groups::TabGroupColorId::kBlue));
 
   auto* group_header = tab_strip()->group_header(group);
   std::u16string group_title = tab_strip_model()
@@ -1059,7 +1059,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   // Validating tab_group name update & collapsed state change should update the
   // accessible name.
-  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
+  tab_strip_model()->ChangeTabGroupVisuals(
+      group,
       tab_groups::TabGroupVisualData(u"", tab_groups::TabGroupColorId::kBlue));
   group_title = tab_strip_model()
                     ->group_model()
@@ -1076,9 +1077,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
             l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
                                        u"\"New Tab\"", collapsed_state));
 
-  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
-      tab_groups::TabGroupVisualData(u"New test title",
-                                     tab_groups::TabGroupColorId::kBlue));
+  tab_strip_model()->ChangeTabGroupVisuals(
+      group, tab_groups::TabGroupVisualData(
+                 u"New test title", tab_groups::TabGroupColorId::kBlue));
   collapsed_state = GetCollapsedState(group);
   EXPECT_FALSE(tab_strip()->IsGroupCollapsed(group));
   group_title = tab_strip_model()
@@ -1238,9 +1239,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderTooltipText) {
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   tab_strip()->tab_at(1)->SetGroup(group);
-  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
-      tab_groups::TabGroupVisualData(u"Non empty title text",
-                                     tab_groups::TabGroupColorId::kBlue));
+  tab_strip_model()->ChangeTabGroupVisuals(
+      group, tab_groups::TabGroupVisualData(
+                 u"Non empty title text", tab_groups::TabGroupColorId::kBlue));
 
   auto* group_header = tab_strip()->group_header(group);
   std::u16string group_title = tab_strip_model()
@@ -1257,9 +1258,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderTooltipText) {
           std::u16string(group_header->GetTitleTextForTesting()),
           tab_strip()->GetGroupContentString(group_header->group().value())));
 
-  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
-      tab_groups::TabGroupVisualData(std::u16string(),
-                                     tab_groups::TabGroupColorId::kBlue));
+  tab_strip_model()->ChangeTabGroupVisuals(
+      group, tab_groups::TabGroupVisualData(
+                 std::u16string(), tab_groups::TabGroupColorId::kBlue));
 
   EXPECT_EQ(group_header->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
@@ -1276,9 +1277,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   tab_strip()->tab_at(1)->SetGroup(group);
-  tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
-      tab_groups::TabGroupVisualData(u"Non empty title text",
-                                     tab_groups::TabGroupColorId::kBlue));
+  tab_strip_model()->ChangeTabGroupVisuals(
+      group, tab_groups::TabGroupVisualData(
+                 u"Non empty title text", tab_groups::TabGroupColorId::kBlue));
 
   auto* group_header = tab_strip()->group_header(group);
   std::u16string group_title = tab_strip_model()

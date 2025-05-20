@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -38,6 +37,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
@@ -217,22 +217,20 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
-
   // Create 3 groups with different titles.
   const tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kGrey;
 
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
   tab_groups::TabGroupVisualData visual_data1(u"Sample title", color);
-  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
 
   tab_groups::TabGroupId group2 = tab_strip_model->AddToNewGroup({1});
   tab_groups::TabGroupVisualData visual_data2(u"Sample title suffixed", color);
-  tab_group_model->GetTabGroup(group2)->SetVisualData(visual_data2);
+  tab_strip_model->ChangeTabGroupVisuals(group2, visual_data2);
 
   tab_groups::TabGroupId group3 = tab_strip_model->AddToNewGroup({2});
   tab_groups::TabGroupVisualData visual_data3(u"Prefixed Sample title", color);
-  tab_group_model->GetTabGroup(group3)->SetVisualData(visual_data3);
+  tab_strip_model->ChangeTabGroupVisuals(group3, visual_data3);
 
   // Query by title and verify results.
   const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
@@ -253,23 +251,21 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
-
   // Create 3 groups with different colors.
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
   tab_groups::TabGroupVisualData visual_data1(
       std::u16string(), tab_groups::TabGroupColorId::kGrey);
-  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
 
   tab_groups::TabGroupId group2 = tab_strip_model->AddToNewGroup({1});
   tab_groups::TabGroupVisualData visual_data2(
       std::u16string(), tab_groups::TabGroupColorId::kRed);
-  tab_group_model->GetTabGroup(group2)->SetVisualData(visual_data2);
+  tab_strip_model->ChangeTabGroupVisuals(group2, visual_data2);
 
   tab_groups::TabGroupId group3 = tab_strip_model->AddToNewGroup({2});
   tab_groups::TabGroupVisualData visual_data3(
       std::u16string(), tab_groups::TabGroupColorId::kBlue);
-  tab_group_model->GetTabGroup(group3)->SetVisualData(visual_data3);
+  tab_strip_model->ChangeTabGroupVisuals(group3, visual_data3);
 
   // Query by color and verify results.
   const char* kColorQueryInfo = R"([{"color": "blue"}])";
@@ -326,13 +322,11 @@ TEST_F(SharedTabGroupExtensionsTabUtilTest, TabGroupsQueryShared) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
-
   // Create a group that is unshared.
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
   tab_groups::TabGroupVisualData visual_data1(
       std::u16string(), tab_groups::TabGroupColorId::kGrey);
-  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
 
   const char* not_shared_query = R"([{"shared": false}])";
   const char* shared_query = R"([{"shared": true}])";
@@ -386,13 +380,11 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsGetSuccess) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
-
   // Create a group.
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
       u"Title", tab_groups::TabGroupColorId::kBlue);
-  tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
+  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsGetFunction to get the group object.
@@ -431,7 +423,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSuccess) {
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
-  tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
+  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsUpdateFunction to update the title and color.
@@ -476,7 +468,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
-  tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
+  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
 
   tab_groups::TabGroupSyncService* saved_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(
@@ -787,8 +779,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsOnUpdated) {
 
   tab_groups::TabGroupVisualData visual_data(u"Title",
                                              tab_groups::TabGroupColorId::kRed);
-  tab_strip_model->group_model()->GetTabGroup(group)->SetVisualData(
-      visual_data);
+  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
 
   EXPECT_EQ(1u, event_observer.events().size());
   EXPECT_TRUE(base::Contains(event_observer.events(),

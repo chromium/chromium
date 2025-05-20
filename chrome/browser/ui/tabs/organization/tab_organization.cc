@@ -11,10 +11,10 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace {
@@ -222,8 +222,8 @@ void TabOrganization::Accept() {
       tab_strip_model->group_model()->GetTabGroup(group_id_.value());
   tab_groups::TabGroupVisualData new_visual_data(
       GetDisplayName(), tab_group->visual_data()->color());
-  tab_group->SetVisualData(std::move(new_visual_data),
-                           tab_group->IsCustomized());
+  tab_strip_model->ChangeTabGroupVisuals(tab_group->id(), new_visual_data,
+                                         tab_group->IsCustomized());
 
   // If |this| has been destroyed, there is no need to notify the observers:
   // in practice, the only observer is the TabOrganizationSession which owns

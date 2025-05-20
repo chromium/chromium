@@ -23,7 +23,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -70,7 +69,7 @@ class TabGroupModelFactory {
   TabGroupModelFactory& operator=(const TabGroupModelFactory&) = delete;
 
   static TabGroupModelFactory* GetInstance();
-  std::unique_ptr<TabGroupModel> Create(TabGroupController* controller);
+  std::unique_ptr<TabGroupModel> Create();
 };
 
 // Have DetachedTabCollection object as a container of the `collection_` so
@@ -174,7 +173,7 @@ class ScopedTabStripModalUI {
 // accessed on the UI thread.
 //
 ////////////////////////////////////////////////////////////////////////////////
-class TabStripModel : public TabGroupController {
+class TabStripModel {
  public:
   using TabIterator = tabs::TabCollection::Iterator;
 
@@ -196,7 +195,7 @@ class TabStripModel : public TabGroupController {
   TabStripModel(const TabStripModel&) = delete;
   TabStripModel& operator=(const TabStripModel&) = delete;
 
-  ~TabStripModel() override;
+  ~TabStripModel();
 
   // Retrieves the TabStripModelDelegate associated with this TabStripModel.
   TabStripModelDelegate* delegate() const { return delegate_; }
@@ -211,6 +210,11 @@ class TabStripModel : public TabGroupController {
 
   // Retrieve the number of WebContentses/emptiness of the TabStripModel.
   int count() const;
+
+  // TODO(crbug.com/417291958) remove this function since its the same as
+  // count().
+  int GetTabCount() const;
+
   bool empty() const;
 
   // Retrieve the Profile associated with this TabStripModel.
@@ -267,8 +271,8 @@ class TabStripModel : public TabGroupController {
 
   // Creates a group object so that group_model can link it with once group
   // collection owns it.
-  // TODO(392952244): Remove this after replacing callers with detaching and
-  // attaching groups.
+  // TODO(crbug.com/392952244): Remove this after replacing callers with
+  // detaching and attaching groups.
   void AddTabGroup(const tab_groups::TabGroupId group_id,
                    tab_groups::TabGroupVisualData visual_data);
 
@@ -492,8 +496,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
-  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
-      int index) const override;
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(int index) const;
 
   // If a tab inserted at |index| would be within a tab group, return that
   // group's ID. Otherwise, return nullopt. If |index| points to the first tab
@@ -647,14 +650,15 @@ class TabStripModel : public TabGroupController {
   // Saves tabs with url supported by Read Later.
   void AddToReadLater(const std::vector<int>& indices);
 
-  // TabGroupController:
-  void OpenTabGroupEditor(const tab_groups::TabGroupId& group) override;
-  void OnTabGroupVisualsChanged(
-      const tab_groups::TabGroupId& group,
-      const TabGroupChange::VisualsChange& visuals) override;
-  std::u16string GetTitleAt(int index) const override;
-  // The same as count(), but overridden for TabGroup to access.
-  int GetTabCount() const override;
+  // Notifies all group observers that the TabGroupEditor is opening. This is
+  // used by Views that want to force the editor to open without having to find
+  // the group's header view in the Tab Strip.
+  void OpenTabGroupEditor(const tab_groups::TabGroupId& group);
+
+  // Updates the group visuals and notifies observers.
+  void ChangeTabGroupVisuals(const tab_groups::TabGroupId& group,
+                             tab_groups::TabGroupVisualData visual_data,
+                             bool is_customized = false);
 
   // Returns iterators for traversing through all the tabs in the tabstrip.
   TabIterator begin() const;
@@ -832,6 +836,10 @@ class TabStripModel : public TabGroupController {
   // and notify observers.
   void OnChange(const TabStripModelChange& change,
                 const TabStripSelectionChange& selection);
+
+  // Notify observers that a `group` was created.
+  void NotifyTabGroupVisualsChanged(const tab_groups::TabGroupId& group_id,
+                                    TabGroupChange::VisualsChange visuals);
 
   // Notify observers that a `group` was created.
   void NotifyTabGroupCreated(const tab_groups::TabGroupId& group);

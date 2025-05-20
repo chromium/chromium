@@ -23,6 +23,7 @@
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/range/range.h"
 
 namespace tab_groups {
@@ -376,14 +377,14 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
       tab_strip_model->group_model()->GetTabGroup(tab_group_id);
 
   // Activate the first tab in the group.
-  std::optional<int> first_tab = tab_group->GetFirstTab();
-  DCHECK(first_tab.has_value());
-  tab_strip_model->ActivateTabAt(first_tab.value());
+  tabs::TabInterface* first_tab = tab_group->GetFirstTab();
+  DCHECK(first_tab);
+  tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(first_tab));
 
   // Update the group to use the saved title and color.
   TabGroupVisualData visual_data(saved_group.title(), saved_group.color(),
                                  /*is_collapsed=*/false);
-  tab_group->SetVisualData(visual_data, /*is_customized=*/true);
+  tab_strip_model->ChangeTabGroupVisuals(tab_group_id, visual_data);
 
   const std::optional<SavedTabGroup> saved_group2 =
       service_->GetGroup(saved_group.saved_guid());

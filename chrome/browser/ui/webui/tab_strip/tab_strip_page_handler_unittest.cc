@@ -214,20 +214,12 @@ TEST_F(TabStripPageHandlerTest, GetGroupVisualData) {
       browser()->tab_strip_model()->AddToNewGroup({0});
   const tab_groups::TabGroupVisualData group1_visuals(
       u"Group 1", tab_groups::TabGroupColorId::kGreen);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group1)
-      ->SetVisualData(group1_visuals);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(group1, group1_visuals);
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({1});
   const tab_groups::TabGroupVisualData group2_visuals(
       u"Group 2", tab_groups::TabGroupColorId::kCyan);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group2)
-      ->SetVisualData(group2_visuals);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(group2, group2_visuals);
 
   tab_strip::mojom::PageHandler::GetGroupVisualDataCallback callback =
       base::BindLambdaForTesting(
@@ -248,11 +240,8 @@ TEST_F(TabStripPageHandlerTest, GroupVisualDataChangedEvent) {
       browser()->tab_strip_model()->AddToNewGroup({0});
   const tab_groups::TabGroupVisualData new_visual_data(
       u"My new title", tab_groups::TabGroupColorId::kGreen);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(expected_group_id)
-      ->SetVisualData(new_visual_data);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(expected_group_id,
+                                                      new_visual_data);
 
   EXPECT_CALL(
       page_,
@@ -400,11 +389,8 @@ TEST_F(TabStripPageHandlerTest, MoveGroupAcrossWindows) {
   // Create some visual data to make sure it gets transferred.
   const tab_groups::TabGroupVisualData visual_data(
       u"My group", tab_groups::TabGroupColorId::kGreen);
-  new_browser.get()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group_id)
-      ->SetVisualData(visual_data);
+  new_browser.get()->tab_strip_model()->ChangeTabGroupVisuals(group_id,
+                                                              visual_data);
 
   content::WebContents* moved_contents1 =
       new_browser.get()->tab_strip_model()->GetWebContentsAt(0);
@@ -456,11 +442,8 @@ TEST_F(TabStripPageHandlerTest, NoopMoveGroupAcrossWindowsBreaksContiguity) {
   // Create some visual data to make sure it gets transferred.
   const tab_groups::TabGroupVisualData visual_data(
       u"My group", tab_groups::TabGroupColorId::kGreen);
-  new_browser.get()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group_id)
-      ->SetVisualData(visual_data);
+  new_browser.get()->tab_strip_model()->ChangeTabGroupVisuals(group_id,
+                                                              visual_data);
 
   web_ui()->ClearTrackedCalls();
 

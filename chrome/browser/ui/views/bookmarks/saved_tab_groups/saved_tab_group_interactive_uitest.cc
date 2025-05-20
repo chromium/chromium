@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/test/tab_strip_interactive_test_mixin.h"
@@ -53,6 +52,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -924,7 +924,8 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                         old_visual_data->color()),
       // Update the text and color.
       Do([&]() {
-        group->SetVisualData(/*visual_data=*/{new_title, new_color});
+        browser()->tab_strip_model()->ChangeTabGroupVisuals(
+            group_id, {new_title, new_color});
       }),
       // Verify the button has the same color and title as the tab group.
       CheckViewProperty(kSavedTabGroupButtonElementId,

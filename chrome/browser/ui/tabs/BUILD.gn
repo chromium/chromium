@@ -73,11 +73,8 @@ if (!is_android) {
 
   source_set("tab_group") {
     sources = [
-      "tab_group.h",
-      "tab_group_controller.h",
       "tab_group_deletion_dialog_controller.h",
       "tab_group_model.h",
-      "tab_group_tab_collection.h",
       "tab_group_theme.h",
     ]
 
@@ -94,10 +91,8 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
-      "tab_group.cc",
       "tab_group_deletion_dialog_controller.cc",
       "tab_group_model.cc",
-      "tab_group_tab_collection.cc",
       "tab_group_theme.cc",
     ]
 
@@ -188,7 +183,6 @@ if (!is_android) {
 
   source_set("tab_strip") {
     sources = [
-      "tab_strip_collection.h",
       "tab_strip_model.h",
       "tab_strip_model_delegate.h",
       "tab_strip_model_stats_recorder.h",
@@ -213,7 +207,6 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
-      "tab_strip_collection.cc",
       "tab_strip_model.cc",
       "tab_strip_model_delegate.cc",
       "tab_strip_model_stats_recorder.cc",
@@ -263,7 +256,6 @@ if (!is_android) {
       "tab_style.h",
       "tab_types.h",
       "tab_utils.h",
-      "unpinned_tab_collection.h",
     ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {
@@ -316,7 +308,6 @@ if (!is_android) {
       "tab_renderer_data.cc",
       "tab_style.cc",
       "tab_utils.cc",
-      "unpinned_tab_collection.cc",
     ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {

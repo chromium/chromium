@@ -71,7 +71,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -111,6 +110,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
       *tsm->group_model()->GetTabGroup(group1)->visual_data();
   const tab_groups::TabGroupVisualData group2_data(
       u"Foo", tab_groups::TabGroupColorId::kBlue, true);
-  tsm->group_model()->GetTabGroup(group2)->SetVisualData(group2_data);
+  tsm->ChangeTabGroupVisuals(group2, group2_data);
 
   Browser* const new_browser = QuitBrowserAndRestore(browser());
   TabStripModel* const new_tsm = new_browser->tab_strip_model();
@@ -3003,12 +3003,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWithTabRemovedFromGroup) {
 
   // This ensures SessionService knows about the savedtabgroup. It shouldn't be
   // necessary.
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(tab_group_id)
-      ->SetVisualData(tab_groups::TabGroupVisualData(
-          u"x", tab_groups::TabGroupColorId::kGrey));
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      tab_group_id,
+      tab_groups::TabGroupVisualData(u"x", tab_groups::TabGroupColorId::kGrey));
 
   QuitBrowserAndRestore(
       browser(), GURL(), true, base::BindLambdaForTesting([&]() {
@@ -4604,21 +4601,17 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
   EXPECT_EQ(2u, service->GetAllGroups().size());
 
   // Update the visual data of the new groups.
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group1)
-      ->SetVisualData(tab_groups::TabGroupVisualData(
-                          u"Group1", tab_groups::TabGroupColorId::kGrey),
-                      true);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group1,
+      tab_groups::TabGroupVisualData(u"Group1",
+                                     tab_groups::TabGroupColorId::kGrey),
+      true);
 
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group2)
-      ->SetVisualData(tab_groups::TabGroupVisualData(
-                          u"Group2", tab_groups::TabGroupColorId::kBlue),
-                      true);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group2,
+      tab_groups::TabGroupVisualData(u"Group2",
+                                     tab_groups::TabGroupColorId::kBlue),
+      true);
 
   // Close the browser and restore the last session
   Browser* restored = QuitBrowserAndRestore(browser());

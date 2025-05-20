@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -75,6 +74,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "tab_group_editor_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -681,7 +681,8 @@ void TabGroupEditorBubbleView::UpdateGroup() {
   tab_groups::TabGroupVisualData new_data(
       std::u16string(title_field_->GetText()), updated_color,
       current_visual_data->is_collapsed());
-  tab_group->SetVisualData(new_data, tab_group->IsCustomized());
+  browser_->tab_strip_model()->ChangeTabGroupVisuals(group_, new_data,
+                                                     tab_group->IsCustomized());
 }
 
 const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {

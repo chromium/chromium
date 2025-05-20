@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -72,6 +71,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1383,7 +1383,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   tab_groups::TabGroupId group2 = model->AddToNewGroup({1});
   const tab_groups::TabGroupVisualData new_data(
       u"Foo", tab_groups::TabGroupColorId::kCyan);
-  group_model->GetTabGroup(group2)->SetVisualData(new_data);
+  model->ChangeTabGroupVisuals(group2, new_data);
   StopAnimating(tab_strip);
 
   // Dragging the tab in the first index to the tab in the second index switches

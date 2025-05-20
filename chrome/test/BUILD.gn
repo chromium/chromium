@@ -12059,6 +12059,7 @@ source_set("sync_integration_test_support") {
     "//components/sync",
     "//components/sync:test_support",
     "//components/tab_groups:tab_groups",
+    "//components/tabs:public",
     "//components/webapps/common",
     "//content/public/browser",
     "//content/test:test_support",

@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -44,6 +43,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
@@ -174,9 +174,8 @@ void BrowserLiveTabContext::SetVisualDataForGroup(
   CHECK(tab_strip_model);
   TabGroupModel* group_model = tab_strip_model->group_model();
   CHECK(group_model);
-  TabGroup* tab_group = group_model->GetTabGroup(group);
-  CHECK(tab_group);
-  tab_group->SetVisualData(std::move(visual_data));
+  CHECK(group_model->ContainsTabGroup(group));
+  tab_strip_model->ChangeTabGroupVisuals(group, std::move(visual_data));
 }
 
 const gfx::Rect BrowserLiveTabContext::GetRestoredBounds() const {

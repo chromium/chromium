@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -36,6 +35,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -327,7 +327,7 @@ void OpenAllIfAllowed(
           tab_groups::TabGroupVisualData new_visual_data(
               folder_title.value(), current_visual_data->color(),
               current_visual_data->is_collapsed());
-          group->SetVisualData(new_visual_data);
+          model->ChangeTabGroupVisuals(group->id(), new_visual_data);
 
           model->OpenTabGroupEditor(new_group_id.value());
         }

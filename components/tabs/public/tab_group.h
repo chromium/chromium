@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_GROUP_H_
-#define CHROME_BROWSER_UI_TABS_TAB_GROUP_H_
+#ifndef COMPONENTS_TABS_PUBLIC_TAB_GROUP_H_
+#define COMPONENTS_TABS_PUBLIC_TAB_GROUP_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include <map>
 #include <memory>
-#include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/types/pass_key.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"
 
-class TabGroupController;
-class TabGroupModel;
+namespace tabs {
+
+class TabGroupTabCollection;
+class TabInterface;
+
+}  // namespace tabs
 
 // The metadata and state of a tab group. This handles state changes that are
 // specific to tab groups and not grouped tabs. The latter (i.e. the groupness
@@ -30,7 +27,7 @@ class TabGroupModel;
 // handles similar notifications for tab group state changes.
 class TabGroup {
  public:
-  TabGroup(TabGroupController* controller,
+  TabGroup(tabs::TabGroupTabCollection* collection,
            const tab_groups::TabGroupId& id,
            const tab_groups::TabGroupVisualData& visual_data);
   ~TabGroup();
@@ -49,18 +46,8 @@ class TabGroup {
   void SetGroupIsClosing(bool is_closing);
   bool IsGroupClosing() { return is_closing_; }
 
-  // Returns a user-visible string describing the contents of the group, such as
-  // "Google Search and 3 other tabs". Used for accessibly describing the group,
-  // as well as for displaying in context menu items and tooltips when the group
-  // is unnamed.
-  std::u16string GetContentString() const;
-
-  // Updates internal bookkeeping for group contents, and notifies the
-  // controller that contents changed when a tab is added.
+  // Updates internal bookkeeping for group contents.
   void AddTab();
-
-  // Updates internal bookkeeping for group contents, and notifies the
-  // controller that contents changed when a tab is removed.
   void RemoveTab();
 
   // The number of tabs in this group, determined by AddTab() and
@@ -73,15 +60,13 @@ class TabGroup {
   // Returns whether the user has explicitly set the visual data themselves.
   bool IsCustomized() const;
 
-  // Gets the model index of this group's first tab, or nullopt if it is
-  // empty. Similar to ListTabs() it traverses through TabStripModel's
-  // tabs. Unlike ListTabs() this is always safe to call.
-  std::optional<int> GetFirstTab() const;
+  // Get the first tab in the Tab Group or nullptr if the group is currently
+  // empty.
+  tabs::TabInterface* GetFirstTab() const;
 
-  // Gets the model index of this group's last tab, or nullopt if it is
-  // empty. Similar to ListTabs() it traverses through TabStripModel's
-  // tabs. Unlike ListTabs() this is always safe to call.
-  std::optional<int> GetLastTab() const;
+  // Get the last tab in the Tab Group or nullptr if the group is currently
+  // empty.
+  tabs::TabInterface* GetLastTab() const;
 
   // Returns the range of tab model indices this group contains. Notably
   // does not rely on the TabGroup's internal metadata, but rather
@@ -102,13 +87,9 @@ class TabGroup {
   // steps.
   gfx::Range ListTabs() const;
 
-  void set_controller(TabGroupController* controller,
-                      base::PassKey<TabGroupModel>) {
-    controller_ = controller;
-  }
-
  private:
-  raw_ptr<TabGroupController> controller_;
+  // The collection that owns the TabGroup.
+  raw_ptr<tabs::TabGroupTabCollection> collection_;
 
   tab_groups::TabGroupId id_;
   std::unique_ptr<tab_groups::TabGroupVisualData> visual_data_;
@@ -119,4 +100,4 @@ class TabGroup {
   bool is_customized_ = false;
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_H_
+#endif  // COMPONENTS_TABS_PUBLIC_TAB_GROUP_H_

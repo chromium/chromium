@@ -369,7 +369,6 @@ TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
 
   TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
 
   // Associate a tab to a given tab group.
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
@@ -378,7 +377,7 @@ TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
   const tab_groups::TabGroupColorId sample_color =
       tab_groups::TabGroupColorId::kGrey;
   tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
-  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
 
   // Get Tabs and Tab Group details.
   tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
@@ -465,7 +464,6 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
 
   TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
 
   // Associate a tab to a given tab group.
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
@@ -474,7 +472,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
   const tab_groups::TabGroupColorId sample_color =
       tab_groups::TabGroupColorId::kGrey;
   tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
-  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
 
   // Close a group and its tabs.
   tab_strip_model->CloseAllTabsInGroup(group1);
@@ -533,8 +531,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
   const tab_groups::TabGroupColorId sample_color =
       tab_groups::TabGroupColorId::kGrey;
   tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
-  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
 
   // Close the tabs associated with a browser.
   browser1()->tab_strip_model()->CloseAllTabs();
@@ -784,8 +781,7 @@ TEST_F(TabSearchPageHandlerTest,
   const tab_groups::TabGroupColorId sample_color =
       tab_groups::TabGroupColorId::kGrey;
   tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
-  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
 
   browser1()->tab_strip_model()->CloseAllTabs();
   browser2()->tab_strip_model()->CloseAllTabs();

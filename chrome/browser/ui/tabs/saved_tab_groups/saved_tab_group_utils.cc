@@ -58,6 +58,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 namespace tab_groups {
@@ -568,21 +569,20 @@ void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
       browser_for_activation->tab_strip_model()->group_model()->GetTabGroup(
           local_group_id);
 
-  std::optional<int> first_tab = tab_group->GetFirstTab();
-  std::optional<int> last_tab = tab_group->GetLastTab();
+  gfx::Range tab_group_index_range = tab_group->ListTabs();
+  CHECK(!tab_group_index_range.is_empty());
+
   int active_index = browser_for_activation->tab_strip_model()->active_index();
-  CHECK(first_tab.has_value());
-  CHECK(last_tab.has_value());
   CHECK_GE(active_index, 0);
 
-  if (active_index >= first_tab.value() && active_index <= last_tab) {
+  if (active_index >= static_cast<int>(tab_group_index_range.GetMin()) &&
+      active_index < static_cast<int>(tab_group_index_range.GetMax())) {
     browser_for_activation->window()->Activate();
     return;
   }
 
   browser_for_activation->ActivateContents(
-      browser_for_activation->tab_strip_model()->GetWebContentsAt(
-          first_tab.value()));
+      tab_group->GetFirstTab()->GetContents());
 
   base::RecordAction(
       base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));

@@ -64,7 +64,6 @@
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -81,6 +80,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1016,10 +1016,10 @@ class SessionRestoreImpl : public BrowserListObserver {
       const tab_groups::TabGroupId& new_tab_group_id =
           new_group_ids.at(session_tab_group->id);
       if (session_tab_group->saved_guid) {
-        // We add this mapping to ensure the call to TabGroup::SetVisualData
-        // results in writing the saved guid to disk. This ensures we do not
-        // duplicate saved tab groups if there is a crash prior to or during
-        // model initialization.
+        // We add this mapping to ensure the call to
+        // TabStripModel::ChangeTabGroupVisuals results in writing the saved
+        // guid to disk. This ensures we do not duplicate saved tab groups if
+        // there is a crash prior to or during model initialization.
         session_service->AddSavedTabGroupsMapping(
             new_tab_group_id, session_tab_group->saved_guid.value());
       }
@@ -1028,7 +1028,8 @@ class SessionRestoreImpl : public BrowserListObserver {
           browser->tab_strip_model()->group_model()->GetTabGroup(
               new_tab_group_id);
       CHECK(model_tab_group);
-      model_tab_group->SetVisualData(session_tab_group->visual_data);
+      browser->tab_strip_model()->ChangeTabGroupVisuals(
+          new_tab_group_id, session_tab_group->visual_data);
 
       ProcessSavedGroup(browser->profile(), new_tab_group_id,
                         session_tab_group->saved_guid);

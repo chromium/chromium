@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/common/channel_info.h"
@@ -46,6 +45,7 @@
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -878,7 +878,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   TabGroup* local_group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
   ASSERT_THAT(local_group, NotNull());
-  local_group->SetVisualData(
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      local_id,
       TabGroupVisualData(u"Title", TabGroupColorId::kBlue,
                          /*is_collapsed=*/true),
       /*is_customized=*/true);
@@ -920,7 +921,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
       browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
   ASSERT_THAT(local_group, NotNull());
   ASSERT_EQ(1, local_group->tab_count());
-  local_group->SetVisualData(
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      local_id,
       TabGroupVisualData(u"Title", TabGroupColorId::kBlue,
                          /*is_collapsed=*/true),
       /*is_customized=*/true);

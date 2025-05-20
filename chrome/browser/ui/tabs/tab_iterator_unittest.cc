@@ -5,16 +5,16 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
-#include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -64,16 +64,14 @@ TEST_F(TabCollectionIteratorTest, IteratorWithoutChildren) {
 }
 
 TEST_F(TabCollectionIteratorTest, IteratorWithOnlyCollection) {
-  collection()->AddCollection(
-      std::make_unique<tabs::TabGroupTabCollection>(
-          tab_groups::TabGroupId::GenerateNew(),
-          tab_groups::TabGroupVisualData(), GetTabStripModel()),
-      0);
-  collection()->AddCollection(
-      std::make_unique<tabs::TabGroupTabCollection>(
-          tab_groups::TabGroupId::GenerateNew(),
-          tab_groups::TabGroupVisualData(), GetTabStripModel()),
-      0);
+  collection()->AddCollection(std::make_unique<tabs::TabGroupTabCollection>(
+                                  tab_groups::TabGroupId::GenerateNew(),
+                                  tab_groups::TabGroupVisualData()),
+                              0);
+  collection()->AddCollection(std::make_unique<tabs::TabGroupTabCollection>(
+                                  tab_groups::TabGroupId::GenerateNew(),
+                                  tab_groups::TabGroupVisualData()),
+                              0);
 
   EXPECT_EQ(*collection()->begin(), nullptr);
   EXPECT_EQ(*collection()->end(), nullptr);
@@ -97,7 +95,7 @@ TEST_F(TabCollectionIteratorTest, IteratorWithMixedTabsAndCollections) {
   std::unique_ptr<tabs::TabGroupTabCollection> group_one =
       std::make_unique<tabs::TabGroupTabCollection>(
           tab_groups::TabGroupId::GenerateNew(),
-          tab_groups::TabGroupVisualData(), GetTabStripModel());
+          tab_groups::TabGroupVisualData());
 
   group_one->AddTab(
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
@@ -118,7 +116,7 @@ TEST_F(TabCollectionIteratorTest, IteratorWithMixedTabsAndCollections) {
   std::unique_ptr<tabs::TabGroupTabCollection> group_two =
       std::make_unique<tabs::TabGroupTabCollection>(
           tab_groups::TabGroupId::GenerateNew(),
-          tab_groups::TabGroupVisualData(), GetTabStripModel());
+          tab_groups::TabGroupVisualData());
 
   group_two->AddTab(
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),

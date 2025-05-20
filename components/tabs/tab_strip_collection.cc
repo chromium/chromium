@@ -2,25 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_strip_collection.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
-#include <cstddef>
 #include <memory>
 #include <optional>
-#include <utility>
-#include <variant>
+#include <set>
 
 #include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
-#include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 
 namespace tabs {
 
@@ -57,13 +55,13 @@ void TabStripCollection::AddTabRecursive(
       !GetTabGroupCollection(new_group_id.value())) {
     // Attempt to create a new group for the tab.
     TabGroupTabCollection* group_collection =
-          MaybeAttachDetachedGroupCollection(index, new_group_id.value());
+        MaybeAttachDetachedGroupCollection(index, new_group_id.value());
 
-      // New empty group was attached, append tab to the group.
-      CHECK(group_collection->ChildCount() == 0);
-      TabInterface* inserted_tab = group_collection->AddTab(std::move(tab), 0);
-      CHECK(GetIndexOfTabRecursive(inserted_tab) == index);
-      return;
+    // New empty group was attached, append tab to the group.
+    CHECK(group_collection->ChildCount() == 0);
+    TabInterface* inserted_tab = group_collection->AddTab(std::move(tab), 0);
+    CHECK(GetIndexOfTabRecursive(inserted_tab) == index);
+    return;
   }
 
   auto [tab_collection_ptr, insert_index] =

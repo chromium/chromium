@@ -33,9 +33,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -51,6 +49,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -4716,7 +4716,7 @@ TEST_F(TabStripModelTest, SetVisualDataForGroup) {
 
   const tab_groups::TabGroupVisualData new_data(
       u"Foo", tab_groups::TabGroupColorId::kCyan);
-  tabstrip()->group_model()->GetTabGroup(group)->SetVisualData(new_data);
+  tabstrip()->ChangeTabGroupVisuals(group, new_data);
   const tab_groups::TabGroupVisualData* data =
       tabstrip()->group_model()->GetTabGroup(group)->visual_data();
   EXPECT_EQ(data->title(), new_data.title());
@@ -4736,7 +4736,7 @@ TEST_F(TabStripModelTest, VisualDataChangeNotifiesObservers) {
 
   const tab_groups::TabGroupVisualData new_data(
       u"Foo", tab_groups::TabGroupColorId::kBlue);
-  tabstrip()->group_model()->GetTabGroup(group)->SetVisualData(new_data);
+  tabstrip()->ChangeTabGroupVisuals(group, new_data);
 
   // Now check that we are notified when we change it, once at creation
   // and once from the explicit update.

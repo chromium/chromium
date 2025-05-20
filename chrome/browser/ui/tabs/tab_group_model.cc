@@ -12,14 +12,12 @@
 
 #include "base/containers/contains.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
-#include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 
-TabGroupModel::TabGroupModel(TabGroupController* controller)
-    : controller_(controller) {}
+TabGroupModel::TabGroupModel() = default;
 
 TabGroupModel::~TabGroupModel() = default;
 
@@ -30,7 +28,6 @@ void TabGroupModel::AddTabGroup(TabGroup* group, base::PassKey<TabStripModel>) {
   CHECK(!ContainsTabGroup(group->id()));
   group_ids_.emplace_back(group->id());
   groups_[group->id()] = group;
-  group->set_controller(controller_, base::PassKey<TabGroupModel>());
 }
 
 bool TabGroupModel::ContainsTabGroup(const tab_groups::TabGroupId& id) const {
@@ -45,9 +42,6 @@ TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {
 void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id,
                                    base::PassKey<TabStripModel>) {
   CHECK(ContainsTabGroup(id));
-  // TODO(397754004): Set the controller for the group to nullptr. This might
-  // break callers that try to query any group related information of remove
-  // notification from tabstripmodel.
   std::erase(group_ids_, id);
   groups_.erase(id);
 }
