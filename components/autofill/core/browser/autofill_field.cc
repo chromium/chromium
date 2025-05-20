@@ -150,6 +150,13 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
 // want to prioritize local heuristics over the autocomplete type.
 bool PreferHeuristicOverHtml(FieldType heuristic_type,
                              HtmlFieldType html_type) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
+      heuristic_type == EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
+      html_type == HtmlFieldType::kEmail) {
+    return true;
+  }
+
   return base::Contains(kAutofillHeuristicsVsHtmlOverrides,
                         std::make_pair(heuristic_type, html_type));
 }
@@ -161,6 +168,12 @@ bool PreferHeuristicOverHtml(FieldType heuristic_type,
 // can help the server to "learn" the correct classification for these fields.
 bool PreferHeuristicOverServer(FieldType heuristic_type,
                                FieldType server_type) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
+      heuristic_type == EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
+      server_type == EMAIL_ADDRESS) {
+    return true;
+  }
   // Until we gain confidence in the precision of AutofillAI predictions, they
   // should not overrule local heuristics. The AutofillAI prediction itself can
   // always be retrieved via `GetAutofillAiServerTypePredictions`.

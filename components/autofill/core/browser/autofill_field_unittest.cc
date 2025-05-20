@@ -322,6 +322,10 @@ class AutofillLocalHeuristicsOverridesTest
     : public testing::TestWithParam<AutofillLocalHeuristicsOverridesParams> {
  public:
   AutofillLocalHeuristicsOverridesTest() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_{
+      features::kAutofillEnableEmailOrLoyaltyCardsFilling};
 };
 
 // Tests the correctness of local heuristic overrides while computing the
@@ -417,6 +421,18 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = ADDRESS_HOME_LINE2,
             .heuristic_type = ADDRESS_HOME_OVERFLOW,
             .expected_result = ADDRESS_HOME_OVERFLOW,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnrecognized,
+            .server_type = EMAIL_ADDRESS,
+            .heuristic_type = EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+            .expected_result = EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kEmail,
+            .server_type = NO_SERVER_DATA,
+            .heuristic_type = EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+            .expected_result = EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
             .expected_source = AutofillPredictionSource::kHeuristics},
         // Test non-override behaviour.
         AutofillLocalHeuristicsOverridesParams{
