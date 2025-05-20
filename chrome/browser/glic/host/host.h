@@ -108,6 +108,7 @@ class Host {
 
   // Returns the list of page handlers for glic WebUI pages.
   std::vector<GlicPageHandler*> GetPageHandlersForTesting();
+  GlicPageHandler* GetPrimaryPageHandlerForTesting();
 
   // TODO(b/409332639): Hide direct access to the web client.
   GlicWebClientAccess* GetPrimaryWebClient();

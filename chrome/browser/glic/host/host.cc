@@ -92,6 +92,26 @@ void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
   info.page_handler = page_handler;
   page_handlers_.push_back(std::move(info));
 
+  // We effectively just want to pick the first page handler as the primary one.
+  // There are two reasons why there can be more than one glic page handler:
+  // 1. The chrome://glic URL can be loaded in a tab, which is used for
+  //    development sometimes.
+  // 2. The glic window supports right-click->Reload. When this happens, there
+  //    is momentarily two page handlers for the same web contents. Since this
+  //    can affect real users, it needs to be handled specially here.
+  if (contents_ &&
+      contents_->web_contents() == page_handler->webui_contents()) {
+    if (primary_page_handler_) {
+      // Allow replacing the primary page handler if the new handler is running
+      // in the primary web contents. Note that the old handler may also have
+      // the same web contents, but in the case of Reload, it will be removed
+      // soon.
+      WebUiStateChanged(primary_page_handler_,
+                        mojom::WebUiState::kUninitialized);
+      primary_page_handler_ = nullptr;
+    }
+    primary_page_handler_ = page_handler;
+  }
   if (!primary_page_handler_) {
     primary_page_handler_ = page_handler;
   }
@@ -234,6 +254,10 @@ std::vector<GlicPageHandler*> Host::GetPageHandlersForTesting() {
   return base::ToVector(
       page_handlers_,
       [](PageHandlerInfo& e) -> GlicPageHandler* { return e.page_handler; });
+}
+
+GlicPageHandler* Host::GetPrimaryPageHandlerForTesting() {
+  return primary_page_handler_;
 }
 
 void Host::PanelWillOpenComplete(GlicWebClientAccess* client,

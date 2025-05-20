@@ -509,6 +509,25 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testReload) {
   });
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testReloadWebUi) {
+  WebUIStateListener listener(&host());
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  ExecuteJsTest();
+
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  window_controller().Reload();
+  listener.WaitForWebUiState(mojom::WebUiState::kUninitialized);
+  ExecuteJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return host().GetPageHandlersForTesting().size() == 1; }));
+  // Reloading the WebUI should trigger loading a second page handler.
+  // That page handler should become the primary page handler.
+  // This assertion is a regression test for b/418258791.
+  ASSERT_TRUE(host().GetPrimaryPageHandlerForTesting());
+}
+
 // The client navigates to the 'sorry' page before it finishes initialize().
 // Chrome should show this page.
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageBeforeInitialize) {
