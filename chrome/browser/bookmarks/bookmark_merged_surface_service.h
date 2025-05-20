@@ -95,6 +95,14 @@ class BookmarkMergedSurfaceService
   const bookmarks::BookmarkNode* GetDefaultParentForNewNodes(
       const BookmarkParentFolder& folder) const;
 
+  // Returns the node encapuslated in `managed_folder`.
+  // The bookmark model must be loaded prior to calling this function.
+  // Note: `managed_folder` should be a managed folder. This function should
+  // only be used to determine the parent of existing managed nodes in a merged
+  // surfaces, and not for adding new nodes.
+  const bookmarks::BookmarkNode* GetParentForManagedNode(
+      const BookmarkParentFolder& managed_folder) const;
+
   // Moves `node` to `new_parent` at position `index`.
   // If `BookmarkParentFolder` is a permanent bookmark folder:
   // - `index` is expected to be the position across storages.

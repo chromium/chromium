@@ -314,9 +314,13 @@ static_library("test_support") {
     sources += [
       "../browser/bookmarks/bookmark_test_helpers.cc",
       "../browser/bookmarks/bookmark_test_helpers.h",
+      "../browser/bookmarks/bookmark_test_utils.cc",
+      "../browser/bookmarks/bookmark_test_utils.h",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
     ]
+
+    deps += [ "//components/bookmarks/managed:managed" ]
   }
 
   if (enable_extensions_core) {
@@ -7640,8 +7644,6 @@ test("unit_tests") {
       "../browser/bookmarks/bookmark_merged_surface_service_unittest.cc",
       "../browser/bookmarks/bookmark_parent_folder_children_unittest.cc",
       "../browser/bookmarks/bookmark_parent_folder_unittest.cc",
-      "../browser/bookmarks/bookmark_test_utils.cc",
-      "../browser/bookmarks/bookmark_test_utils.h",
       "../browser/bookmarks/permanent_folder_ordering_tracker_unittest.cc",
       "../browser/browser_commands_unittest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",

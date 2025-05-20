@@ -238,6 +238,8 @@ BookmarkMergedSurfaceService::GetDefaultParentForNewNodes(
     const BookmarkParentFolder& folder) const {
   CHECK(loaded());
   if (folder.HoldsNonPermanentFolder()) {
+    const bookmarks::BookmarkNode* node = folder.as_non_permanent_folder();
+    CHECK(!IsNodeManaged(node));
     return folder.as_non_permanent_folder();
   }
 
@@ -245,6 +247,20 @@ BookmarkMergedSurfaceService::GetDefaultParentForNewNodes(
   CHECK(!IsPermanentManagedFolder(folder));
   return GetPermanentFolderOrderingTracker(*folder.as_permanent_folder())
       .GetDefaultParentForNewNodes();
+}
+
+const bookmarks::BookmarkNode*
+BookmarkMergedSurfaceService::GetParentForManagedNode(
+    const BookmarkParentFolder& folder) const {
+  CHECK(loaded());
+  if (folder.HoldsNonPermanentFolder()) {
+    const bookmarks::BookmarkNode* node = folder.as_non_permanent_folder();
+    CHECK(IsNodeManaged(node));
+    return node;
+  }
+
+  CHECK(IsPermanentManagedFolder(folder));
+  return managed_permanent_node();
 }
 
 void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,

@@ -203,6 +203,10 @@ class BookmarkUIOperationsHelperMergedSurfaces
   // a choice of a highlighted node.
   // This function returns the default parent to use for non-merged surfaces UIs
   // triggered from merged surfaces.
+  // This function treats managed nodes as some operations are allowed; e.g.
+  // opening the bookmark manager with a managed node highlighted. This should
+  // not be used by managed folders if intended to be used for adding new nodes,
+  // since managed bookmarks do not support creating nodes.
   const bookmarks::BookmarkNode* GetDefaultParentForNonMergedSurfaces() const;
 
  protected:
