@@ -10,6 +10,7 @@ import Foundation
 class NetworkProcess: NSObject, ChildProcessExtension, NetworkingExtension {
   override required init() {
     super.init()
+    ChildProcessStarted()
     ChildProcessInit(self)
   }
 

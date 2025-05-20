@@ -10,6 +10,7 @@ import Foundation
 class GPUProcess: NSObject, ChildProcessExtension, RenderingExtension {
   override required init() {
     super.init()
+    ChildProcessStarted()
     ChildProcessInit(self)
     GpuProcessInit()
   }

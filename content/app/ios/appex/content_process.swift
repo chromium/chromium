@@ -10,6 +10,7 @@ import Foundation
 class ContentProcess: NSObject, ChildProcessExtension, WebContentExtension {
   override required init() {
     super.init()
+    ChildProcessStarted()
     ChildProcessInit(self)
   }
 

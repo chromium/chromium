@@ -16,6 +16,7 @@
 extern "C" {
 #endif
 
+void ChildProcessStarted();
 void ChildProcessInit(id<ChildProcessExtension> process);
 void GpuProcessInit();
 void ChildProcessHandleNewConnection(xpc_connection_t connection);

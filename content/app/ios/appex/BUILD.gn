@@ -28,6 +28,14 @@ source_set("child_process_bridge") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("app_side_shim") {
+  sources = [ "child_process.mm" ]
+
+  deps = [ "//base/allocator:early_zone_registration_apple" ]
+
+  public_deps = [ ":child_process_bridge_header" ]
+}
+
 swift_source_set("content_process") {
   sources = [ "content_process.swift" ]
   bridge_header = "child_process_bridge.h"
@@ -39,7 +47,7 @@ swift_source_set("content_process") {
     "BrowserEngineKit.framework",
   ]
 
-  deps = [ ":child_process_bridge_header" ]
+  deps = [ ":app_side_shim" ]
 }
 
 swift_source_set("network_process") {
@@ -53,7 +61,7 @@ swift_source_set("network_process") {
     "BrowserEngineKit.framework",
   ]
 
-  deps = [ ":child_process_bridge_header" ]
+  deps = [ ":app_side_shim" ]
 }
 
 swift_source_set("gpu_process") {
@@ -67,5 +75,5 @@ swift_source_set("gpu_process") {
     "BrowserEngineKit.framework",
   ]
 
-  deps = [ ":child_process_bridge_header" ]
+  deps = [ ":app_side_shim" ]
 }
