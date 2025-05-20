@@ -11,19 +11,13 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 # This file is depended upon from builds that don't include all
 # of Chromium, so nothing in here should assume the existence of
 # Chromium or Blink. It's OK for subdirectories (e.g. the fuzzers
 # or research subdirectories) to have dependencies on other parts
 # of Chromium, but not this file.
-
-declare_args() {
-  # Build individual_fuzztest_wrapper if use_fuzztest_wrapper is set.
-  # Some projects doesn't have //base and cannot build
-  # individual_fuzztest_wrapper.
-  use_fuzztest_wrapper = true
-}
 
 # Temporary target for legacy reasons. Some third party repos explicitly
 # refer to libfuzzer_main though they should refer to fuzzer_engine_main
