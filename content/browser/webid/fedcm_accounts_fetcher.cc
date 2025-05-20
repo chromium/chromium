@@ -345,7 +345,7 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
         accounts.begin(), accounts.end(),
         [&](const IdentityRequestAccountPtr& account) {
           return !account->is_filtered_out &&
-                 !federated_auth_request_impl_->HadAccoundIdBeforeLogin(
+                 !federated_auth_request_impl_->HadAccountIdBeforeLogin(
                      account->id);
         });
     if (new_unfiltered > 0u) {

@@ -252,7 +252,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return token_request_get_infos_;
   }
   GURL login_url() { return login_url_; }
-  bool HadAccoundIdBeforeLogin(const std::string& account_id) {
+  bool HadAccountIdBeforeLogin(const std::string& account_id) {
     return account_ids_before_login_.contains(account_id);
   }
   // Return the FedCmMetrics for use by FedCmAccountsFetcher.
