@@ -19,6 +19,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 import '../i18n_setup.js';
+import './fingerprint_icons.html.js';
 import './fingerprint_progress_arc.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
