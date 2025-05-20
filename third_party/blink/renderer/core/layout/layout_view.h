@@ -258,8 +258,11 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   bool AffectedByResizedInitialContainingBlock(const LayoutResult&);
 
   // Update generated counters after style and layout tree update.
-  // container - The container for container queries, otherwise nullptr.
-  void UpdateCountersAfterStyleChange(LayoutObject* container = nullptr);
+  // interleaving_root - For interleaved style recalcs, this is the container
+  // for size container queries and the anchored element for fallback queries,
+  // otherwise nullptr.
+  void UpdateCountersAfterStyleChange(
+      LayoutObject* interleaving_root = nullptr);
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;
