@@ -157,6 +157,12 @@ std::string ProductSpecificationsSyncBridge::GetClientTag(
   return GetStorageKey(entity_data);
 }
 
+bool ProductSpecificationsSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_product_comparison());
+  return !entity_data.specifics.product_comparison().uuid().empty();
+}
+
 std::unique_ptr<syncer::DataBatch>
 ProductSpecificationsSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
