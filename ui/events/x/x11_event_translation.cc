@@ -4,7 +4,6 @@
 
 #include "ui/events/x/x11_event_translation.h"
 
-#include <numeric>
 #include <vector>
 
 #include "base/check.h"
@@ -26,21 +25,6 @@
 namespace ui {
 
 namespace {
-
-// This function is a shim for approximately emulating the state field of
-// legacy XKB key events, using information from XI2 key events, for
-// consumption by GTK.
-uint32_t XkbStateFromXI2Event(const x11::Input::DeviceEvent& xievent) {
-  uint32_t mods = xievent.mods.effective & 0xff;
-  uint8_t buttons = std::reduce(xievent.button_mask.begin(),
-                                xievent.button_mask.end(), 0, std::bit_or<>());
-  // For some reason, the XInput2 button mask needs to be right-shifted by one
-  // to match the XKB button mask.
-  buttons = (buttons >> 1) & 0x1f;
-  // The group (bits 13-14 of the XKB state) is deliberately omitted because
-  // it's not used by GdkModifierType.
-  return (static_cast<uint32_t>(buttons) << 8) | mods;
-}
 
 int XkbGroupForCoreState(int state) {
   return (state >> 13) & 0x3;

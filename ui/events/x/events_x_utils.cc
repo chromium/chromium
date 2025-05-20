@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -466,9 +467,9 @@ EventType EventTypeFromXEvent(const x11::Event& xev) {
   return EventType::kUnknown;
 }
 
-int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
-  const auto state = static_cast<int>(key.state);
-
+int GetEventFlagsFromXEvent(x11::KeyCode keycode,
+                            uint32_t state,
+                            bool send_event) {
 #if BUILDFLAG(IS_CHROMEOS)
   const int ime_fabricated_flag = 0;
 #else
@@ -481,10 +482,10 @@ int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
   //
   // We have to send these fabricated key events to XIM so it can correctly
   // handle the character compositions.
-  const auto detail = static_cast<uint8_t>(key.detail);
   const auto shift_lock_mask =
-      static_cast<int>(x11::KeyButMask::Shift | x11::KeyButMask::Lock);
-  const bool fabricated_by_xim = detail == 0 && (state & ~shift_lock_mask) == 0;
+      static_cast<uint32_t>(x11::KeyButMask::Shift | x11::KeyButMask::Lock);
+  const bool fabricated_by_xim =
+      keycode == x11::KeyCode{} && (state & ~shift_lock_mask) == 0;
   const int ime_fabricated_flag =
       fabricated_by_xim ? ui::EF_IME_FABRICATED_KEY : 0;
 #endif
@@ -496,7 +497,8 @@ int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
 int EventFlagsFromXEvent(const x11::Event& xev) {
   if (auto* key = xev.As<x11::KeyEvent>()) {
     XModifierStateWatcher::GetInstance()->UpdateStateFromXEvent(xev);
-    return GetEventFlagsFromXKeyEvent(*key, xev.send_event());
+    return GetEventFlagsFromXEvent(
+        key->detail, static_cast<uint32_t>(key->state), xev.send_event());
   }
   if (auto* button = xev.As<x11::ButtonEvent>()) {
     int flags = GetEventFlagsFromXState(button->state);
@@ -853,6 +855,18 @@ bool IsAltPressed() {
 
 int GetModifierKeyState() {
   return XModifierStateWatcher::GetInstance()->state();
+}
+
+uint32_t XkbStateFromXI2Event(const x11::Input::DeviceEvent& xievent) {
+  uint32_t mods = xievent.mods.effective & 0xff;
+  uint8_t buttons = std::reduce(xievent.button_mask.begin(),
+                                xievent.button_mask.end(), 0, std::bit_or<>());
+  // For some reason, the XInput2 button mask needs to be right-shifted by one
+  // to match the XKB button mask.
+  buttons = (buttons >> 1) & 0x1f;
+  // The group (bits 13-14 of the XKB state) is deliberately omitted because
+  // it's not used by GdkModifierType.
+  return (static_cast<uint32_t>(buttons) << 8) | mods;
 }
 
 void ResetTimestampRolloverCountersForTesting() {
