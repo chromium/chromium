@@ -2050,7 +2050,7 @@ ToEventReportWindows(const attribution_reporting::EventReportWindows& windows) {
 }
 
 std::unique_ptr<Array<double>> ToTriggerData(
-    const attribution_reporting::TriggerSpecs::TriggerData& trigger_data) {
+    const attribution_reporting::TriggerDataSet::TriggerData& trigger_data) {
   return std::make_unique<Array<double>>(trigger_data.begin(),
                                          trigger_data.end());
 }
@@ -2289,7 +2289,7 @@ void StorageHandler::OnSourceHandled(
               ToAggregationKeysEntries(registration.aggregation_keys))
           .SetExpiry(registration.expiry.InSeconds())
           .SetTriggerData(
-              ToTriggerData(registration.trigger_specs.trigger_data()))
+              ToTriggerData(registration.trigger_data.trigger_data()))
           .SetEventReportWindows(
               ToEventReportWindows(registration.event_report_windows))
           .SetAggregatableReportWindow(

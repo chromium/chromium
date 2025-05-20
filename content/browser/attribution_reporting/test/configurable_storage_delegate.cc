@@ -120,7 +120,7 @@ void ConfigurableStorageDelegate::ShuffleReports(
 AttributionResolverDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
-    const attribution_reporting::TriggerSpecs&,
+    const attribution_reporting::TriggerDataSet&,
     const attribution_reporting::EventReportWindows&,
     attribution_reporting::MaxEventLevelReports,
     attribution_reporting::EventLevelEpsilon,

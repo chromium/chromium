@@ -223,9 +223,9 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
   ASSIGN_OR_RETURN(
       const auto randomized_response_data,
       delegate_->GetRandomizedResponse(
-          common_info.source_type(), reg.trigger_specs,
-          reg.event_report_windows, reg.max_event_level_reports,
-          reg.event_level_epsilon, reg.attribution_scopes_data),
+          common_info.source_type(), reg.trigger_data, reg.event_report_windows,
+          reg.max_event_level_reports, reg.event_level_epsilon,
+          reg.attribution_scopes_data),
       [&](auto error) -> StoreSourceResult {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         switch (error) {
@@ -254,7 +254,7 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
         }
       });
   DCHECK(attribution_reporting::IsValid(
-      randomized_response_data.response(), reg.trigger_specs,
+      randomized_response_data.response(), reg.trigger_data,
       reg.event_report_windows, reg.max_event_level_reports));
 
   // Force the creation of the database if it doesn't exist, as we need to
@@ -875,7 +875,7 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
     return CreateReportResult::Deduplicated();
   }
 
-  std::optional<uint32_t> trigger_data = source.trigger_specs().find(
+  std::optional<uint32_t> trigger_data = source.trigger_data().find(
       event_trigger->data, source.trigger_data_matching());
   if (!trigger_data.has_value()) {
     return CreateReportResult::NoMatchingTriggerData();

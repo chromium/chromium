@@ -26,7 +26,7 @@ class AttributionScopesData;
 class EventLevelEpsilon;
 class EventReportWindows;
 class MaxEventLevelReports;
-class TriggerSpecs;
+class TriggerDataSet;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -134,7 +134,7 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // limit.
   virtual GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
-      const attribution_reporting::TriggerSpecs&,
+      const attribution_reporting::TriggerDataSet&,
       const attribution_reporting::EventReportWindows&,
       attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon,

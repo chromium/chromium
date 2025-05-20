@@ -41,7 +41,7 @@ class AggregatableNamedBudgetCandidate;
 class AggregatableValues;
 class AggregationKeys;
 class AttributionScopesData;
-class TriggerSpecs;
+class TriggerDataSet;
 }  // namespace attribution_reporting
 
 namespace net {
@@ -118,7 +118,7 @@ class SourceBuilder {
 
   SourceBuilder& SetDebugReporting(bool debug_reporting);
 
-  SourceBuilder& SetTriggerSpecs(attribution_reporting::TriggerSpecs);
+  SourceBuilder& SetTriggerData(attribution_reporting::TriggerDataSet);
 
   SourceBuilder& SetEventReportWindows(
       attribution_reporting::EventReportWindows);

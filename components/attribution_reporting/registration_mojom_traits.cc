@@ -178,17 +178,17 @@ bool StructTraits<attribution_reporting::mojom::EventReportWindowsDataView,
 }
 
 // static
-bool StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
-                  attribution_reporting::TriggerSpecs>::
-    Read(attribution_reporting::mojom::TriggerSpecsDataView data,
-         attribution_reporting::TriggerSpecs* out) {
+bool StructTraits<attribution_reporting::mojom::TriggerDataSetDataView,
+                  attribution_reporting::TriggerDataSet>::
+    Read(attribution_reporting::mojom::TriggerDataSetDataView data,
+         attribution_reporting::TriggerDataSet* out) {
   std::vector<uint32_t> trigger_data;
   if (!data.ReadTriggerData(&trigger_data)) {
     return false;
   }
 
   auto result =
-      attribution_reporting::TriggerSpecs::Create(std::move(trigger_data));
+      attribution_reporting::TriggerDataSet::Create(std::move(trigger_data));
   if (!result.has_value()) {
     return false;
   }
@@ -351,7 +351,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadTriggerSpecs(&out->trigger_specs)) {
+  if (!data.ReadTriggerData(&out->trigger_data)) {
     return false;
   }
 

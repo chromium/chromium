@@ -45,17 +45,17 @@ enum SourceRegistrationError {
   kTriggerDataMatchingValueInvalid = 27,
 
   // Deprecated: kTriggerSpecsWrongType = 28,
-  kTriggerSpecTriggerDataMissing = 29,
-  kTriggerSpecTriggerDataListInvalid = 30,
+  // Deprecated: kTriggerSpecTriggerDataMissing = 29,
+  // Deprecated: kTriggerSpecTriggerDataListInvalid = 30,
   kTriggerDataListInvalid = 31,
   kDuplicateTriggerData = 32,
-  kTriggerSpecDuplicateTriggerData = 33,
+  // Deprecated: kTriggerSpecDuplicateTriggerData = 33,
 
   kExcessiveTriggerData = 34,
-  kTriggerSpecExcessiveTriggerData = 35,
+  // Deprecated: kTriggerSpecExcessiveTriggerData = 35,
   kInvalidTriggerDataForMatchingMode = 36,
 
-  kTopLevelTriggerDataAndTriggerSpecs = 37,
+  // Deprecated: kTopLevelTriggerDataAndTriggerSpecs = 37,
 
   // Deprecated: kSummaryOperatorValueInvalid = 38,
 

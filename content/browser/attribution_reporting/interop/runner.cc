@@ -301,7 +301,7 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
   // AttributionResolverDelegateImpl:
   GetRandomizedResponseResult GetRandomizedResponse(
       const attribution_reporting::mojom::SourceType source_type,
-      const attribution_reporting::TriggerSpecs& trigger_specs,
+      const attribution_reporting::TriggerDataSet& trigger_data,
       const attribution_reporting::EventReportWindows& event_report_windows,
       const attribution_reporting::MaxEventLevelReports max_event_level_reports,
       const attribution_reporting::EventLevelEpsilon epsilon,
@@ -311,7 +311,7 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 
     ASSIGN_OR_RETURN(auto response_data,
                      AttributionResolverDelegateImpl::GetRandomizedResponse(
-                         source_type, trigger_specs, event_report_windows,
+                         source_type, trigger_data, event_report_windows,
                          max_event_level_reports, epsilon, scopes_data));
 
     auto it = randomized_responses_.find(base::Time::Now());
@@ -321,11 +321,11 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 
     // Avoid crashing in `AttributionStorageSql::StoreSource()` by returning an
     // arbitrary error here, which will manifest as unexpected test output.
-    if (!attribution_reporting::IsValid(it->second, trigger_specs,
+    if (!attribution_reporting::IsValid(it->second, trigger_data,
                                         event_report_windows,
                                         max_event_level_reports)) {
-      LOG(ERROR) << "invalid randomized response with trigger_specs="
-                 << trigger_specs;
+      LOG(ERROR) << "invalid randomized response with trigger_data="
+                 << trigger_data;
       return base::unexpected(attribution_reporting::RandomizedResponseError::
                                   kExceedsChannelCapacityLimit);
     }

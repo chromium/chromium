@@ -1532,16 +1532,18 @@ TEST_F(AttributionStorageSqlTest,
   EXPECT_THAT(
       storage()->GetActiveSources(),
       UnorderedElementsAre(
-          AllOf(Property(&StoredSource::source_event_id, 1u),
-                Property(
-                    &StoredSource::trigger_specs,
-                    Property(&attribution_reporting::TriggerSpecs::trigger_data,
-                             ElementsAre(0, 1, 2, 3, 4, 5, 6, 7)))),
-          AllOf(Property(&StoredSource::source_event_id, 2u),
-                Property(
-                    &StoredSource::trigger_specs,
-                    Property(&attribution_reporting::TriggerSpecs::trigger_data,
-                             ElementsAre(0, 1))))));
+          AllOf(
+              Property(&StoredSource::source_event_id, 1u),
+              Property(
+                  &StoredSource::trigger_data,
+                  Property(&attribution_reporting::TriggerDataSet::trigger_data,
+                           ElementsAre(0, 1, 2, 3, 4, 5, 6, 7)))),
+          AllOf(
+              Property(&StoredSource::source_event_id, 2u),
+              Property(
+                  &StoredSource::trigger_data,
+                  Property(&attribution_reporting::TriggerDataSet::trigger_data,
+                           ElementsAre(0, 1))))));
 }
 
 // Having the missing field default to the correct value allows us to avoid a

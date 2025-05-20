@@ -62,13 +62,13 @@ EventReportWindows EventReportWindowsWithCount(int num_report_windows) {
   return *EventReportWindows::Create(base::Days(0), std::move(deltas));
 }
 
-TriggerSpecs TriggerSpecsWithCardinality(int trigger_data_cardinality) {
-  TriggerSpecs::TriggerData trigger_data;
-  for (int i = 0; i < trigger_data_cardinality; ++i) {
+TriggerDataSet TriggerDataSetWithCardinality(int cardinality) {
+  TriggerDataSet::TriggerData trigger_data;
+  for (int i = 0; i < cardinality; ++i) {
     trigger_data.insert(i);
   }
 
-  return *TriggerSpecs::Create(std::move(trigger_data));
+  return *TriggerDataSet::Create(std::move(trigger_data));
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -158,8 +158,8 @@ std::ostream& operator<<(std::ostream& out, const OsRegistrationItem& item) {
              << ", debug_reporting=" << item.debug_reporting << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, const TriggerSpecs& specs) {
-  return out << specs.ToJson();
+std::ostream& operator<<(std::ostream& out, const TriggerDataSet& set) {
+  return out << set.ToJson();
 }
 
 std::ostream& operator<<(

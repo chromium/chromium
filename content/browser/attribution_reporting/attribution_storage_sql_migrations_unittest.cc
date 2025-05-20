@@ -599,9 +599,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion66ToCurrent) {
         "1,2,'https://a.s.test','https://r.test',5,6,7,8,0,0,0,0,13,"
         "'https://s.test',15,16,17,'','',?,21,22,NULL,NULL)"));
 
-    // Calling `mutable_trigger_data()` forces creation of the field, even
-    // when `trigger_specs.empty()` below, so that the presence check in
-    // `DeserializeTriggerSpecs()` doesn't mistakenly use the defaults
+    // Calling `mutable_trigger_data()` forces creation of the field
+    // so that the presence check in
+    // `DeserializeTriggerDataSet()` doesn't mistakenly use the defaults
     // corresponding to the field being absent, as opposed to its inner list
     // being empty.
     proto::AttributionReadOnlySourceData msg_source;

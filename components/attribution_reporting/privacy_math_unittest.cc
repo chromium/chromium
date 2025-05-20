@@ -36,7 +36,7 @@ namespace {
 
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::MaxEventLevelReports;
-using ::attribution_reporting::TriggerSpecs;
+using ::attribution_reporting::TriggerDataSet;
 using ::attribution_reporting::mojom::SourceType;
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
@@ -472,7 +472,7 @@ TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
     SCOPED_TRACE(i);
 
     EXPECT_THAT(internal::GetFakeReportsForSequenceIndex(
-                    TriggerSpecs(test_case.source_type),
+                    TriggerDataSet(test_case.source_type),
                     *EventReportWindows::FromDefaults(base::Days(30),
                                                       test_case.source_type),
                     MaxEventLevelReports(test_case.source_type),
@@ -483,20 +483,21 @@ TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
   }
 }
 
-void RunRandomFakeReportsTest(const TriggerSpecs& specs,
+void RunRandomFakeReportsTest(const TriggerDataSet& trigger_data,
                               const EventReportWindows& event_report_windows,
                               const MaxEventLevelReports max_reports,
                               const int num_samples,
                               const double tolerance) {
   std::map<std::vector<FakeEventLevelReport>, int> output_counts;
-  ASSERT_OK_AND_ASSIGN(const uint32_t num_states,
-                       GetNumStates(specs, event_report_windows, max_reports));
+  ASSERT_OK_AND_ASSIGN(
+      const uint32_t num_states,
+      GetNumStates(trigger_data, event_report_windows, max_reports));
   for (int i = 0; i < num_samples; i++) {
     // Use epsilon = 0 to ensure that random data is always sampled from the RR
     // mechanism.
     ASSERT_OK_AND_ASSIGN(
         RandomizedResponseData response,
-        DoRandomizedResponse(specs, event_report_windows, max_reports,
+        DoRandomizedResponse(trigger_data, event_report_windows, max_reports,
                              /*epsilon=*/0, SourceType::kNavigation,
                              /*scopes_data=*/std::nullopt,
                              PrivacyMathConfig()));
@@ -552,7 +553,7 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Event_MatchesExpectedDistribution) {
   // For the distribution check, the probability of failure with `tolerance` is
   // at most 1e-9.
   RunRandomFakeReportsTest(
-      TriggerSpecs(SourceType::kEvent),
+      TriggerDataSet(SourceType::kEvent),
       *EventReportWindows::FromDefaults(base::Days(30), SourceType::kEvent),
       MaxEventLevelReports(1),
       /*num_samples=*/100'000,
@@ -567,7 +568,7 @@ TEST(PrivacyMathTest,
   //
   // For the distribution check, the probability of failure with `tolerance` is
   // at most .0002.
-  RunRandomFakeReportsTest(TriggerSpecs(SourceType::kNavigation),
+  RunRandomFakeReportsTest(TriggerDataSet(SourceType::kNavigation),
                            *EventReportWindows::FromDefaults(
                                base::Days(30), SourceType::kNavigation),
                            MaxEventLevelReports(3),
@@ -583,7 +584,7 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
   // For the distribution check, the probability of failure with `tolerance` is
   // at most 1e-9.
 
-  const auto kSpecs = *TriggerSpecs::Create({
+  const auto kTriggerData = *TriggerDataSet::Create({
       1,
       5,
       3,
@@ -597,10 +598,11 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
   const MaxEventLevelReports kMaxReports(2);
 
   // The distribution check will fail with probability 6e-7.
-  ASSERT_OK_AND_ASSIGN(const uint32_t num_states,
-                       GetNumStates(kSpecs, kEventReportWindows, kMaxReports));
+  ASSERT_OK_AND_ASSIGN(
+      const uint32_t num_states,
+      GetNumStates(kTriggerData, kEventReportWindows, kMaxReports));
   EXPECT_EQ(45, num_states);
-  RunRandomFakeReportsTest(kSpecs, kEventReportWindows, kMaxReports,
+  RunRandomFakeReportsTest(kTriggerData, kEventReportWindows, kMaxReports,
                            /*num_samples=*/100'000,
                            /*tolerance=*/0.1);
 }
@@ -631,21 +633,23 @@ TEST(PrivacyMathTest, GetNumStates) {
   for (const auto& test_case : kNumStateTestCases) {
     const auto event_report_windows =
         EventReportWindowsWithCount(test_case.num_report_windows);
-    const auto specs =
-        TriggerSpecsWithCardinality(test_case.trigger_data_cardinality);
+    const auto trigger_data =
+        TriggerDataSetWithCardinality(test_case.trigger_data_cardinality);
     EXPECT_EQ(test_case.expected_num_states,
-              GetNumStates(specs, event_report_windows, test_case.max_reports));
+              GetNumStates(trigger_data, event_report_windows,
+                           test_case.max_reports));
   }
 }
 
-TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
+TEST(PrivacyMathTest, NumStatesForTriggerDataSet_UniqueSampling) {
   for (const auto& test_case : kNumStateTestCases) {
     const auto event_report_windows =
         EventReportWindowsWithCount(test_case.num_report_windows);
-    const auto specs =
-        TriggerSpecsWithCardinality(test_case.trigger_data_cardinality);
+    const auto trigger_data =
+        TriggerDataSetWithCardinality(test_case.trigger_data_cardinality);
     ASSERT_EQ(test_case.expected_num_states,
-              GetNumStates(specs, event_report_windows, test_case.max_reports));
+              GetNumStates(trigger_data, event_report_windows,
+                           test_case.max_reports));
 
     if (!test_case.expected_num_states.has_value() ||
         *test_case.expected_num_states > 10000) {
@@ -655,7 +659,7 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
     std::set<std::vector<FakeEventLevelReport>> seen_outputs;
     for (uint32_t i = 0; i < *test_case.expected_num_states; i++) {
       if (auto output = internal::GetFakeReportsForSequenceIndex(
-              specs, event_report_windows, test_case.max_reports, i);
+              trigger_data, event_report_windows, test_case.max_reports, i);
           output.has_value()) {
         seen_outputs.insert(*std::move(output));
       }
@@ -670,12 +674,12 @@ TEST(PrivacyMathTest, NumStatesHistogramRecorded) {
     base::HistogramTester histograms;
     const auto event_report_windows =
         EventReportWindowsWithCount(test_case.num_report_windows);
-    const auto specs =
-        TriggerSpecsWithCardinality(test_case.trigger_data_cardinality);
-    auto channel_capacity_response =
-        DoRandomizedResponse(specs, event_report_windows, test_case.max_reports,
-                             /*epsilon=*/14, SourceType::kNavigation,
-                             /*scopes_data=*/std::nullopt, PrivacyMathConfig());
+    const auto trigger_data =
+        TriggerDataSetWithCardinality(test_case.trigger_data_cardinality);
+    auto channel_capacity_response = DoRandomizedResponse(
+        trigger_data, event_report_windows, test_case.max_reports,
+        /*epsilon=*/14, SourceType::kNavigation,
+        /*scopes_data=*/std::nullopt, PrivacyMathConfig());
 
     if (test_case.expected_num_states.has_value()) {
       histograms.ExpectUniqueSample(
@@ -691,9 +695,9 @@ TEST(PrivacyMathTest, NumStatesHistogramRecorded) {
 // Regression test for http://crbug.com/1503728 in which the optimized
 // randomized-response incorrectly returned the trigger data *index* rather than
 // the trigger data *value* in the fake reports.
-TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
+TEST(PrivacyMathTest, NonDefaultTriggerData) {
   // Note that the trigger data does not start at 0.
-  const auto kSpecs = *TriggerSpecs::Create({123});
+  const auto kTriggerData = *TriggerDataSet::Create({123});
   const EventReportWindows kEventReportWindows;
   const MaxEventLevelReports kMaxReports(1);
 
@@ -704,7 +708,7 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   do {
     ASSERT_OK_AND_ASSIGN(
         RandomizedResponseData response_data,
-        DoRandomizedResponse(kSpecs, kEventReportWindows, kMaxReports,
+        DoRandomizedResponse(kTriggerData, kEventReportWindows, kMaxReports,
                              /*epsilon=*/0, SourceType::kNavigation,
                              /*scopes_data=*/std::nullopt,
                              PrivacyMathConfig()));
@@ -718,7 +722,7 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsChannelCapacity) {
   constexpr PrivacyMathConfig kConfig{.max_channel_capacity_navigation = 1};
 
   auto channel_capacity_response =
-      DoRandomizedResponse(TriggerSpecs(SourceType::kNavigation),
+      DoRandomizedResponse(TriggerDataSet(SourceType::kNavigation),
                            EventReportWindows(), MaxEventLevelReports(1),
                            /*epsilon=*/14, SourceType::kNavigation,
                            /*scopes_data=*/std::nullopt, kConfig);
@@ -730,7 +734,7 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsChannelCapacity) {
 TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
   // Navigation
   auto channel_capacity_response = DoRandomizedResponse(
-      TriggerSpecs(SourceType::kNavigation), EventReportWindows(),
+      TriggerDataSet(SourceType::kNavigation), EventReportWindows(),
       MaxEventLevelReports(1),
       /*epsilon=*/14, SourceType::kNavigation,
       AttributionScopesData::Create(AttributionScopesSet({"1"}),
@@ -744,7 +748,7 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
 
   // Event
   channel_capacity_response = DoRandomizedResponse(
-      TriggerSpecs(SourceType::kEvent), EventReportWindows(),
+      TriggerDataSet(SourceType::kEvent), EventReportWindows(),
       MaxEventLevelReports(1),
       /*epsilon=*/14, SourceType::kEvent,
       AttributionScopesData::Create(AttributionScopesSet({"1"}),
@@ -757,21 +761,21 @@ TEST(PrivacyMathTest, RandomizedResponse_ExceedsScopesChannelCapacity) {
       ErrorIs(RandomizedResponseError::kExceedsScopesChannelCapacityLimit));
 }
 
-// Regression test for http://crbug.com/1504144 in which empty specs cause an
-// invalid iterator dereference and thus a crash.
+// Regression test for http://crbug.com/1504144 in which empty trigger data
+// causes an invalid iterator dereference and thus a crash.
 TEST(PrivacyMathTest, UnaryChannel) {
   const struct {
     const char* desc;
-    TriggerSpecs trigger_specs;
+    TriggerDataSet trigger_data;
     MaxEventLevelReports max_reports;
   } kTestCases[] = {
       {
-          .desc = "empty-specs",
+          .desc = "empty-trigger-data",
           .max_reports = MaxEventLevelReports(20),
       },
       {
           .desc = "zero-max-reports",
-          .trigger_specs = TriggerSpecs(SourceType::kNavigation),
+          .trigger_data = TriggerDataSet(SourceType::kNavigation),
           .max_reports = MaxEventLevelReports(0),
       },
   };
@@ -781,15 +785,15 @@ TEST(PrivacyMathTest, UnaryChannel) {
 
     ASSERT_OK_AND_ASSIGN(
         const uint32_t num_states,
-        GetNumStates(test_case.trigger_specs, EventReportWindows(),
+        GetNumStates(test_case.trigger_data, EventReportWindows(),
                      test_case.max_reports));
     EXPECT_EQ(1u, num_states);
 
     EXPECT_EQ(RandomizedResponseData(
                   /*rate=*/1,
                   /*response=*/std::vector<FakeEventLevelReport>()),
-              DoRandomizedResponse(test_case.trigger_specs,
-                                   EventReportWindows(), test_case.max_reports,
+              DoRandomizedResponse(test_case.trigger_data, EventReportWindows(),
+                                   test_case.max_reports,
                                    /*epsilon=*/0, SourceType::kNavigation,
                                    /*scopes_data=*/std::nullopt,
                                    PrivacyMathConfig()));
@@ -797,7 +801,7 @@ TEST(PrivacyMathTest, UnaryChannel) {
 }
 
 TEST(PrivacyMathTest, IsValid) {
-  const TriggerSpecs kSpecs(SourceType::kNavigation);
+  const TriggerDataSet kTriggerData(SourceType::kNavigation);
   const auto kEventReportWindows = *EventReportWindows::FromDefaults(
       base::Days(30), SourceType::kNavigation);
   const MaxEventLevelReports kMaxReports(1);
@@ -870,7 +874,7 @@ TEST(PrivacyMathTest, IsValid) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    EXPECT_EQ(test_case.expected, IsValid(test_case.response, kSpecs,
+    EXPECT_EQ(test_case.expected, IsValid(test_case.response, kTriggerData,
                                           kEventReportWindows, kMaxReports));
   }
 }

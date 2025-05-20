@@ -165,7 +165,7 @@ void AttributionResolverDelegateImpl::ShuffleReports(
 AttributionResolverDelegate::GetRandomizedResponseResult
 AttributionResolverDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
-    const attribution_reporting::TriggerSpecs& trigger_specs,
+    const attribution_reporting::TriggerDataSet& trigger_data,
     const attribution_reporting::EventReportWindows& event_report_windows,
     const attribution_reporting::MaxEventLevelReports max_event_level_reports,
     attribution_reporting::EventLevelEpsilon epsilon,
@@ -176,7 +176,7 @@ AttributionResolverDelegateImpl::GetRandomizedResponse(
   ASSIGN_OR_RETURN(
       auto response,
       attribution_reporting::DoRandomizedResponse(
-          trigger_specs, event_report_windows, max_event_level_reports, epsilon,
+          trigger_data, event_report_windows, max_event_level_reports, epsilon,
           source_type, scopes_data, config_.privacy_math_config));
 
   switch (noise_mode_) {

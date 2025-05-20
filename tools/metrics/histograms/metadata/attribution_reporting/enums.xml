@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
       label="Corresponding source - destination sites query failed"/>
   <int value="27" label="Corresponding source - invalid destination sites"/>
   <int value="28" label="Corresponding source - construction failed"/>
-  <int value="29" label="Corresponding source - invalid trigger specs"/>
+  <int value="29" label="Corresponding source - invalid trigger data"/>
   <int value="30" label="Corresponding source - dedup key query failed"/>
   <int value="31"
       label="Corresponding source - invalid randomized response rate"/>
@@ -361,16 +361,18 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="event_report_windows' end time value is invalid"/>
   <int value="27" label="trigger_data_matching value is invalid"/>
   <int value="28" label="(Obsolete) trigger_specs has wrong type"/>
-  <int value="29" label="trigger spec's trigger_data missing"/>
-  <int value="30" label="trigger_spec's trigger_data not a valid list"/>
+  <int value="29" label="(Obsolete) trigger spec's trigger_data missing"/>
+  <int value="30"
+      label="(Obsolete) trigger_spec's trigger_data not a valid list"/>
   <int value="31" label="trigger_data not a valid list"/>
   <int value="32" label="duplicate trigger data"/>
-  <int value="33" label="trigger_specs duplicate trigger data"/>
+  <int value="33" label="(Obsolete) trigger_specs duplicate trigger data"/>
   <int value="34" label="excessive trigger data"/>
-  <int value="35" label="trigger_specs excessive trigger data"/>
+  <int value="35" label="(Obsolete) trigger_specs excessive trigger data"/>
   <int value="36" label="invalid trigger data for matching mode"/>
   <int value="37"
-      label="top-level trigger_data and specs are mutually exclusive"/>
+      label="(Obsolete) top-level trigger_data and specs are mutually
+             exclusive"/>
   <int value="38" label="(Obsolete) summary_operator value is invalid"/>
   <int value="39" label="(Obsolete) summary_buckets not a valid list"/>
   <int value="40" label="(Obsolete) summary_buckets value invalid"/>

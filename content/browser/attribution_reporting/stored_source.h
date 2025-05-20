@@ -62,7 +62,7 @@ class CONTENT_EXPORT StoredSource {
       attribution_reporting::DestinationSet,
       base::Time source_time,
       base::Time expiry_time,
-      attribution_reporting::TriggerSpecs,
+      attribution_reporting::TriggerDataSet,
       attribution_reporting::EventReportWindows,
       attribution_reporting::MaxEventLevelReports,
       base::Time aggregatable_report_window_time,
@@ -106,8 +106,8 @@ class CONTENT_EXPORT StoredSource {
     return aggregatable_report_window_time_;
   }
 
-  const attribution_reporting::TriggerSpecs& trigger_specs() const {
-    return trigger_specs_;
+  const attribution_reporting::TriggerDataSet& trigger_data() const {
+    return trigger_data_;
   }
 
   const attribution_reporting::EventReportWindows& event_report_windows()
@@ -187,7 +187,7 @@ class CONTENT_EXPORT StoredSource {
                attribution_reporting::DestinationSet,
                base::Time source_time,
                base::Time expiry_time,
-               attribution_reporting::TriggerSpecs,
+               attribution_reporting::TriggerDataSet,
                attribution_reporting::EventReportWindows,
                attribution_reporting::MaxEventLevelReports,
                base::Time aggregatable_report_window_time,
@@ -213,7 +213,7 @@ class CONTENT_EXPORT StoredSource {
   attribution_reporting::DestinationSet destination_sites_;
   base::Time source_time_;
   base::Time expiry_time_;
-  attribution_reporting::TriggerSpecs trigger_specs_;
+  attribution_reporting::TriggerDataSet trigger_data_;
   attribution_reporting::EventReportWindows event_report_windows_;
   attribution_reporting::MaxEventLevelReports max_event_level_reports_;
   base::Time aggregatable_report_window_time_;

@@ -41,7 +41,7 @@ constexpr uint32_t DefaultTriggerDataCardinality(SourceType source_type) {
   }
 }
 
-base::expected<TriggerSpecs::TriggerData, SourceRegistrationError>
+base::expected<TriggerDataSet::TriggerData, SourceRegistrationError>
 ParseTriggerData(const base::Value& value) {
   const base::Value::List* list = value.GetIfList();
   if (!list) {
@@ -53,7 +53,7 @@ ParseTriggerData(const base::Value& value) {
     return base::unexpected(SourceRegistrationError::kExcessiveTriggerData);
   }
 
-  TriggerSpecs::TriggerData trigger_data;
+  TriggerDataSet::TriggerData trigger_data;
   trigger_data.reserve(size);
 
   for (const base::Value& item : *list) {
@@ -70,13 +70,13 @@ ParseTriggerData(const base::Value& value) {
   return trigger_data;
 }
 
-bool IsTriggerDataValid(const TriggerSpecs::TriggerData& trigger_data) {
+bool IsTriggerDataValid(const TriggerDataSet::TriggerData& trigger_data) {
   return trigger_data.size() <= kMaxTriggerDataPerSource;
 }
 
 base::expected<void, SourceRegistrationError>
 ValidateTriggerDataForTriggerDataMatching(
-    const TriggerSpecs::TriggerData& trigger_data,
+    const TriggerDataSet::TriggerData& trigger_data,
     TriggerDataMatching trigger_data_matching) {
   switch (trigger_data_matching) {
     case TriggerDataMatching::kExact:
@@ -128,7 +128,7 @@ void Serialize(base::Value::Dict& dict,
   }
 }
 
-std::optional<uint32_t> TriggerSpecs::find(
+std::optional<uint32_t> TriggerDataSet::find(
     uint64_t trigger_data,
     TriggerDataMatching trigger_data_matching) const {
   switch (trigger_data_matching) {
@@ -150,14 +150,13 @@ std::optional<uint32_t> TriggerSpecs::find(
 }
 
 // static
-base::expected<TriggerSpecs, SourceRegistrationError>
-TriggerSpecs::ParseTopLevelTriggerData(
+base::expected<TriggerDataSet, SourceRegistrationError> TriggerDataSet::Parse(
     const base::Value::Dict& registration,
     SourceType source_type,
     TriggerDataMatching trigger_data_matching) {
   const base::Value* trigger_data = registration.Find(kTriggerData);
   if (!trigger_data) {
-    return TriggerSpecs(source_type);
+    return TriggerDataSet(source_type);
   }
 
   ASSIGN_OR_RETURN(TriggerData trigger_data_set,
@@ -166,10 +165,10 @@ TriggerSpecs::ParseTopLevelTriggerData(
   RETURN_IF_ERROR(ValidateTriggerDataForTriggerDataMatching(
       trigger_data_set, trigger_data_matching));
 
-  return TriggerSpecs(std::move(trigger_data_set));
+  return TriggerDataSet(std::move(trigger_data_set));
 }
 
-TriggerSpecs::TriggerSpecs(SourceType source_type) {
+TriggerDataSet::TriggerDataSet(SourceType source_type) {
   uint32_t cardinality = DefaultTriggerDataCardinality(source_type);
 
   TriggerData::container_type trigger_data;
@@ -183,37 +182,37 @@ TriggerSpecs::TriggerSpecs(SourceType source_type) {
 }
 
 // static
-std::optional<TriggerSpecs> TriggerSpecs::Create(TriggerData trigger_data) {
+std::optional<TriggerDataSet> TriggerDataSet::Create(TriggerData trigger_data) {
   if (!IsTriggerDataValid(trigger_data)) {
     return std::nullopt;
   }
-  return TriggerSpecs(std::move(trigger_data));
+  return TriggerDataSet(std::move(trigger_data));
 }
 
-TriggerSpecs::TriggerSpecs(TriggerData trigger_data)
+TriggerDataSet::TriggerDataSet(TriggerData trigger_data)
     : trigger_data_(std::move(trigger_data)) {
   CHECK(IsTriggerDataValid(trigger_data_));
 }
 
-TriggerSpecs::TriggerSpecs() = default;
+TriggerDataSet::TriggerDataSet() = default;
 
-TriggerSpecs::~TriggerSpecs() = default;
+TriggerDataSet::~TriggerDataSet() = default;
 
-TriggerSpecs::TriggerSpecs(const TriggerSpecs&) = default;
+TriggerDataSet::TriggerDataSet(const TriggerDataSet&) = default;
 
-TriggerSpecs& TriggerSpecs::operator=(const TriggerSpecs&) = default;
+TriggerDataSet& TriggerDataSet::operator=(const TriggerDataSet&) = default;
 
-TriggerSpecs::TriggerSpecs(TriggerSpecs&&) = default;
+TriggerDataSet::TriggerDataSet(TriggerDataSet&&) = default;
 
-TriggerSpecs& TriggerSpecs::operator=(TriggerSpecs&&) = default;
+TriggerDataSet& TriggerDataSet::operator=(TriggerDataSet&&) = default;
 
-base::Value::Dict TriggerSpecs::ToJson() const {
+base::Value::Dict TriggerDataSet::ToJson() const {
   base::Value::Dict dict;
   Serialize(dict);
   return dict;
 }
 
-void TriggerSpecs::Serialize(base::Value::Dict& dict) const {
+void TriggerDataSet::Serialize(base::Value::Dict& dict) const {
   auto trigger_data_list =
       base::Value::List::with_capacity(trigger_data_.size());
 

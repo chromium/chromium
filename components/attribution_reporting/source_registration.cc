@@ -150,9 +150,9 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
   ASSIGN_OR_RETURN(result.max_event_level_reports,
                    MaxEventLevelReports::Parse(registration, source_type));
 
-  ASSIGN_OR_RETURN(result.trigger_specs, TriggerSpecs::ParseTopLevelTriggerData(
-                                             registration, source_type,
-                                             result.trigger_data_matching));
+  ASSIGN_OR_RETURN(result.trigger_data,
+                   TriggerDataSet::Parse(registration, source_type,
+                                         result.trigger_data_matching));
 
   ASSIGN_OR_RETURN(result.filter_data,
                    FilterData::FromJSON(registration.Find(kFilterData)));
@@ -250,7 +250,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
   event_report_windows.Serialize(dict);
   max_event_level_reports.Serialize(dict);
 
-  trigger_specs.Serialize(dict);
+  trigger_data.Serialize(dict);
 
   SerializeTimeDeltaInSeconds(dict, kAggregatableReportWindow,
                               aggregatable_report_window);

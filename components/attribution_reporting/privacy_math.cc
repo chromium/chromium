@@ -50,11 +50,11 @@ uint32_t g_max_trigger_state_cardinality = std::numeric_limits<uint32_t>::max();
 }  // namespace
 
 base::expected<uint32_t, RandomizedResponseError> GetNumStates(
-    const TriggerSpecs& specs,
+    const TriggerDataSet& trigger_data,
     const EventReportWindows& event_report_windows,
     const MaxEventLevelReports max_event_level_reports) {
   const int max_reports = max_event_level_reports;
-  if (specs.trigger_data().empty() || max_reports == 0) {
+  if (trigger_data.trigger_data().empty() || max_reports == 0) {
     return 1;
   }
 
@@ -63,8 +63,8 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStates(
   base::CheckedNumeric<uint32_t> num_states =
       internal::GetNumberOfStarsAndBarsSequences(
           /*num_stars=*/static_cast<uint32_t>(max_reports),
-          /*num_bars=*/static_cast<uint32_t>(specs.trigger_data().size() *
-                                             num_windows));
+          /*num_bars=*/static_cast<uint32_t>(
+              trigger_data.trigger_data().size() * num_windows));
 
   if (!num_states.IsValid() ||
       num_states.ValueOrDie() > g_max_trigger_state_cardinality) {
@@ -134,7 +134,7 @@ double GetRandomizedResponseRate(uint32_t num_states, double epsilon) {
 }
 
 bool IsValid(const RandomizedResponse& response,
-             const TriggerSpecs& specs,
+             const TriggerDataSet& trigger_data,
              const EventReportWindows& event_report_windows,
              MaxEventLevelReports max_event_level_reports) {
   if (!response.has_value()) {
@@ -146,7 +146,7 @@ bool IsValid(const RandomizedResponse& response,
          std::ranges::all_of(
              *response, [&](const FakeEventLevelReport& report) {
                const bool has_trigger_data =
-                   specs.trigger_data().contains(report.trigger_data);
+                   trigger_data.trigger_data().contains(report.trigger_data);
 
                return has_trigger_data && report.window_index >= 0 &&
                       base::MakeStrictNum(report.window_index) <
@@ -384,11 +384,11 @@ double ComputeChannelCapacityScopes(
 
 base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(
-    const TriggerSpecs& specs,
+    const TriggerDataSet& trigger_data,
     const EventReportWindows& event_report_windows,
     const MaxEventLevelReports max_event_level_reports,
     base::StrictNumeric<uint32_t> random_stars_and_bars_sequence_index) {
-  const int trigger_data_cardinality = specs.trigger_data().size();
+  const int trigger_data_cardinality = trigger_data.trigger_data().size();
   const int max_reports = max_event_level_reports;
 
   ASSIGN_OR_RETURN(
@@ -425,7 +425,7 @@ GetFakeReportsForSequenceIndex(
 
     fake_reports.push_back({
         .trigger_data =
-            *std::next(specs.trigger_data().begin(), trigger_data_index),
+            *std::next(trigger_data.trigger_data().begin(), trigger_data_index),
         .window_index = result.quot,
     });
   }
@@ -436,16 +436,16 @@ GetFakeReportsForSequenceIndex(
 }  // namespace internal
 
 base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponse(const TriggerSpecs& specs,
+DoRandomizedResponse(const TriggerDataSet& trigger_data,
                      const EventReportWindows& event_report_windows,
                      const MaxEventLevelReports max_event_level_reports,
                      double epsilon,
                      mojom::SourceType source_type,
                      const std::optional<AttributionScopesData>& scopes_data,
                      const PrivacyMathConfig& config) {
-  ASSIGN_OR_RETURN(
-      const uint32_t num_states,
-      GetNumStates(specs, event_report_windows, max_event_level_reports));
+  ASSIGN_OR_RETURN(const uint32_t num_states,
+                   GetNumStates(trigger_data, event_report_windows,
+                                max_event_level_reports));
   base::UmaHistogramCounts100000("Conversions.NumTriggerStates",
                                  base::ClampedNumeric(num_states));
 
@@ -478,8 +478,8 @@ DoRandomizedResponse(const TriggerSpecs& specs,
     uint32_t sequence_index = base::RandGenerator(num_states);
     ASSIGN_OR_RETURN(fake_reports,
                      internal::GetFakeReportsForSequenceIndex(
-                         specs, event_report_windows, max_event_level_reports,
-                         sequence_index));
+                         trigger_data, event_report_windows,
+                         max_event_level_reports, sequence_index));
   }
   return RandomizedResponseData(rate, std::move(fake_reports));
 }

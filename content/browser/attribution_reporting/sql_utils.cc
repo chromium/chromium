@@ -55,7 +55,7 @@ using ::attribution_reporting::AggregatableNamedBudgetDefs;
 using ::attribution_reporting::AggregatableTriggerConfig;
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::TriggerSpecs;
+using ::attribution_reporting::TriggerDataSet;
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
@@ -188,7 +188,7 @@ void SetReadOnlySourceData(
 }  // namespace
 
 std::string SerializeReadOnlySourceData(
-    const TriggerSpecs& trigger_specs,
+    const TriggerDataSet& trigger_data,
     const EventReportWindows& event_report_windows,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
@@ -202,17 +202,16 @@ std::string SerializeReadOnlySourceData(
 
   if (
       // Calling `mutable_trigger_data()` forces creation of the field, even
-      // when `trigger_specs.empty()` below, so that the presence check in
-      // `DeserializeTriggerSpecs()` doesn't mistakenly use the defaults
+      // when `trigger_data.trigger_data().empty()` below, so that the presence check in
+      // `DeserializeTriggerDataSet()` doesn't mistakenly use the defaults
       // corresponding to the field being absent, as opposed to its inner list
       // being empty.
       auto* mutable_trigger_data = msg.mutable_trigger_data();
-      !trigger_specs.trigger_data().empty()) {
+      !trigger_data.trigger_data().empty()) {
     SetReadOnlySourceData(&event_report_windows, max_event_level_reports, msg);
 
-    for (uint32_t trigger_data : trigger_specs.trigger_data()) {
-      mutable_trigger_data->add_trigger_data(trigger_data);
-    }
+    mutable_trigger_data->mutable_trigger_data()->Add(
+        trigger_data.trigger_data().begin(), trigger_data.trigger_data().end());
   } else {
     SetReadOnlySourceData(/*event_report_windows=*/nullptr,
                           max_event_level_reports, msg);
@@ -476,16 +475,16 @@ DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
                                      /*source_origin=*/std::nullopt);
 }
 
-std::optional<TriggerSpecs> DeserializeTriggerSpecs(
+std::optional<TriggerDataSet> DeserializeTriggerDataSet(
     const proto::AttributionReadOnlySourceData& msg,
     SourceType source_type) {
   if (!msg.has_trigger_data()) {
-    return TriggerSpecs(source_type);
+    return TriggerDataSet(source_type);
   }
 
-  return TriggerSpecs::Create(
-      TriggerSpecs::TriggerData(msg.trigger_data().trigger_data().begin(),
-                                msg.trigger_data().trigger_data().end()));
+  return TriggerDataSet::Create(
+      TriggerDataSet::TriggerData(msg.trigger_data().trigger_data().begin(),
+                                  msg.trigger_data().trigger_data().end()));
 }
 
 std::optional<EventReportWindows> DeserializeEventReportWindows(

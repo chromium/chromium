@@ -84,8 +84,8 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::source_event_id, 0),
               Field(&SourceRegistration::destination_set, destination),
               Field(&SourceRegistration::expiry, base::Days(30)),
-              Field(&SourceRegistration::trigger_specs,
-                    TriggerSpecs(SourceType::kNavigation)),
+              Field(&SourceRegistration::trigger_data,
+                    TriggerDataSet(SourceType::kNavigation)),
               Field(&SourceRegistration::event_report_windows,
                     *EventReportWindows::FromDefaults(base::Days(30),
                                                       SourceType::kNavigation)),
@@ -438,7 +438,7 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.source_event_id = 7;
                 r.trigger_data_matching = mojom::TriggerDataMatching::kExact;
                 r.event_level_epsilon = EventLevelEpsilon(0);
-                r.trigger_specs = TriggerSpecs(SourceType::kNavigation);
+                r.trigger_data = TriggerDataSet(SourceType::kNavigation);
                 r.event_report_windows = EventReportWindows();
                 r.max_event_level_reports = MaxEventLevelReports(8);
                 r.aggregatable_debug_reporting_config =

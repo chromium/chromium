@@ -31,7 +31,7 @@ class EventReportWindows;
 class FilterData;
 class MaxEventLevelReports;
 class SuitableOrigin;
-class TriggerSpecs;
+class TriggerDataSet;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -60,7 +60,7 @@ std::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
     int val);
 
 std::string SerializeReadOnlySourceData(
-    const attribution_reporting::TriggerSpecs&,
+    const attribution_reporting::TriggerDataSet&,
     const attribution_reporting::EventReportWindows&,
     attribution_reporting::MaxEventLevelReports,
     double randomized_response_rate,
@@ -77,7 +77,7 @@ std::optional<attribution_reporting::FilterData> DeserializeFilterData(
     sql::Statement&,
     int col);
 
-std::optional<attribution_reporting::TriggerSpecs> DeserializeTriggerSpecs(
+std::optional<attribution_reporting::TriggerDataSet> DeserializeTriggerDataSet(
     const proto::AttributionReadOnlySourceData&,
     attribution_reporting::mojom::SourceType);
 

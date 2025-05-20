@@ -338,10 +338,10 @@ mojom("registration_mojom") {
               "namespace attribution_reporting { class EventReportWindows; }"
         },
         {
-          mojom = "attribution_reporting.mojom.TriggerSpecs"
-          cpp = "::attribution_reporting::TriggerSpecs"
+          mojom = "attribution_reporting.mojom.TriggerDataSet"
+          cpp = "::attribution_reporting::TriggerDataSet"
           forward_declaration =
-              "namespace attribution_reporting { class TriggerSpecs; }"
+              "namespace attribution_reporting { class TriggerDataSet; }"
         },
         {
           mojom = "attribution_reporting.mojom.SourceAggregatableDebugReportingConfig"

@@ -22,7 +22,7 @@ namespace attribution_reporting {
 class AttributionScopesData;
 class EventReportWindows;
 class MaxEventLevelReports;
-class TriggerSpecs;
+class TriggerDataSet;
 
 struct FakeEventLevelReport {
   uint32_t trigger_data;
@@ -41,7 +41,7 @@ using RandomizedResponse = std::optional<std::vector<FakeEventLevelReport>>;
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 bool IsValid(const RandomizedResponse&,
-             const TriggerSpecs&,
+             const TriggerDataSet&,
              const EventReportWindows&,
              MaxEventLevelReports);
 
@@ -88,7 +88,7 @@ double GetRandomizedResponseRate(uint32_t num_states, double epsilon);
 // Returns the number of possible output states for the given API configuration.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<uint32_t, RandomizedResponseError> GetNumStates(
-    const TriggerSpecs&,
+    const TriggerDataSet&,
     const EventReportWindows&,
     MaxEventLevelReports);
 
@@ -114,7 +114,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) PrivacyMathConfig {
 // Otherwise will return a vector of fake reports.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponse(const TriggerSpecs&,
+DoRandomizedResponse(const TriggerDataSet&,
                      const EventReportWindows&,
                      MaxEventLevelReports,
                      double epsilon,
@@ -204,7 +204,7 @@ double ComputeChannelCapacityScopes(
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(
-    const TriggerSpecs&,
+    const TriggerDataSet&,
     const EventReportWindows&,
     MaxEventLevelReports,
     base::StrictNumeric<uint32_t> random_stars_and_bars_sequence_index);

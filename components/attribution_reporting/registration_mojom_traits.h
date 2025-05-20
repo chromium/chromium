@@ -140,15 +140,15 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
-                 attribution_reporting::TriggerSpecs> {
-  static const attribution_reporting::TriggerSpecs::TriggerData& trigger_data(
-      const attribution_reporting::TriggerSpecs& specs) {
-    return specs.trigger_data();
+    StructTraits<attribution_reporting::mojom::TriggerDataSetDataView,
+                 attribution_reporting::TriggerDataSet> {
+  static const attribution_reporting::TriggerDataSet::TriggerData& trigger_data(
+      const attribution_reporting::TriggerDataSet& trigger_data) {
+    return trigger_data.trigger_data();
   }
 
-  static bool Read(attribution_reporting::mojom::TriggerSpecsDataView data,
-                   attribution_reporting::TriggerSpecs* out);
+  static bool Read(attribution_reporting::mojom::TriggerDataSetDataView data,
+                   attribution_reporting::TriggerDataSet* out);
 };
 
 template <>
@@ -306,9 +306,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.aggregatable_report_window;
   }
 
-  static const attribution_reporting::TriggerSpecs& trigger_specs(
+  static const attribution_reporting::TriggerDataSet& trigger_data(
       const attribution_reporting::SourceRegistration& source) {
-    return source.trigger_specs;
+    return source.trigger_data;
   }
 
   static const attribution_reporting::EventReportWindows& event_report_windows(

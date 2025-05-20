@@ -100,7 +100,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.source_time().InMillisecondsFSinceUnixEpoch(),
       source.expiry_time().InMillisecondsFSinceUnixEpoch(),
       source.event_report_windows(),
-      base::ToVector(source.trigger_specs().trigger_data()),
+      base::ToVector(source.trigger_data().trigger_data()),
       source.max_event_level_reports(),
       source.aggregatable_report_window_time().InMillisecondsFSinceUnixEpoch(),
       common_info.source_type(), source.priority(), source.debug_key(),

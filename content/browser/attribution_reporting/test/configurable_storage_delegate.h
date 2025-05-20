@@ -42,7 +42,7 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
   void ShuffleReports(std::vector<AttributionReport>&) override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
-      const attribution_reporting::TriggerSpecs&,
+      const attribution_reporting::TriggerDataSet&,
       const attribution_reporting::EventReportWindows&,
       attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon,

@@ -117,8 +117,8 @@ class PrivacyMathPerfTest
 
     const EventReportWindows event_report_windows =
         EventReportWindowsWithCount(tc.num_windows);
-    const TriggerSpecs specs =
-        TriggerSpecsWithCardinality(tc.trigger_data_cardinality);
+    const TriggerDataSet trigger_data =
+        TriggerDataSetWithCardinality(tc.trigger_data_cardinality);
     const MaxEventLevelReports max_event_level_reports(tc.max_reports);
 
     std::optional<AttributionScopesData> scopes;
@@ -131,8 +131,8 @@ class PrivacyMathPerfTest
 
     base::LapTimer timer;
     do {
-      auto result =
-          func(specs, event_report_windows, max_event_level_reports, scopes);
+      auto result = func(trigger_data, event_report_windows,
+                         max_event_level_reports, scopes);
       ::benchmark::DoNotOptimize(result);
       timer.NextLap();
     } while (!timer.HasTimeLimitExpired());
@@ -149,11 +149,11 @@ TEST_P(PrivacyMathPerfTest, NumStates) {
     GTEST_SKIP();
   }
   Run("AttributionReporting.NumStates",
-      [](const TriggerSpecs& specs,
+      [](const TriggerDataSet& trigger_data,
          const EventReportWindows& event_report_windows,
          const MaxEventLevelReports max_event_level_reports,
          const std::optional<AttributionScopesData>& scopes) {
-        return GetNumStates(specs, event_report_windows,
+        return GetNumStates(trigger_data, event_report_windows,
                             max_event_level_reports);
       });
 }
@@ -166,12 +166,12 @@ TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
   };
 
   Run("AttributionReporting.RandomizedResponse",
-      [&](const TriggerSpecs& specs,
+      [&](const TriggerDataSet& trigger_data,
           const EventReportWindows& event_report_windows,
           const MaxEventLevelReports max_event_level_reports,
           const std::optional<AttributionScopesData>& scopes) {
         return DoRandomizedResponse(
-            specs, event_report_windows, max_event_level_reports,
+            trigger_data, event_report_windows, max_event_level_reports,
             /*epsilon=*/0,
             /*source_type=*/mojom::SourceType::kNavigation, scopes, kConfig);
       });

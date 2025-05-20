@@ -74,7 +74,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   base::TimeDelta expiry = kMaxSourceExpiry;
   EventReportWindows event_report_windows;
   MaxEventLevelReports max_event_level_reports;
-  TriggerSpecs trigger_specs;
+  TriggerDataSet trigger_data;
   base::TimeDelta aggregatable_report_window = expiry;
   int64_t priority = 0;
   FilterData filter_data;

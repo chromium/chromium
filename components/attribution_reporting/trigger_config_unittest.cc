@@ -104,23 +104,23 @@ TEST(TriggerDataMatchingTest, Serialize) {
   }
 }
 
-TEST(TriggerSpecsTest, Default) {
-  EXPECT_THAT(TriggerSpecs(SourceType::kEvent),
-              Property(&TriggerSpecs::trigger_data, ElementsAre(0, 1)));
+TEST(TriggerDataSetTest, Default) {
+  EXPECT_THAT(TriggerDataSet(SourceType::kEvent),
+              Property(&TriggerDataSet::trigger_data, ElementsAre(0, 1)));
 
-  EXPECT_THAT(TriggerSpecs(SourceType::kNavigation),
-              Property(&TriggerSpecs::trigger_data,
+  EXPECT_THAT(TriggerDataSet(SourceType::kNavigation),
+              Property(&TriggerDataSet::trigger_data,
                        ElementsAre(0, 1, 2, 3, 4, 5, 6, 7)));
 }
 
-TEST(TriggerSpecsTest, Parse) {
+TEST(TriggerDataSetTest, Parse) {
   const struct {
     const char* desc;
     const char* json;
     SourceType source_type = SourceType::kNavigation;
     TriggerDataMatching trigger_data_matching = TriggerDataMatching::kExact;
 
-    ::testing::Matcher<base::expected<TriggerSpecs, SourceRegistrationError>>
+    ::testing::Matcher<base::expected<TriggerDataSet, SourceRegistrationError>>
         matches_top_level_trigger_data;
   } kTestCases[] = {
       {
@@ -128,14 +128,14 @@ TEST(TriggerSpecsTest, Parse) {
           .json = R"json({})json",
           .source_type = SourceType::kNavigation,
           .matches_top_level_trigger_data =
-              ValueIs(TriggerSpecs(SourceType::kNavigation)),
+              ValueIs(TriggerDataSet(SourceType::kNavigation)),
       },
       {
           .desc = "missing_event",
           .json = R"json({})json",
           .source_type = SourceType::kEvent,
           .matches_top_level_trigger_data =
-              ValueIs(TriggerSpecs(SourceType::kEvent)),
+              ValueIs(TriggerDataSet(SourceType::kEvent)),
       },
       {
           .desc = "trigger_data_wrong_type",
@@ -147,7 +147,7 @@ TEST(TriggerSpecsTest, Parse) {
           .desc = "trigger_data_empty",
           .json = R"json({"trigger_data": []})json",
           .matches_top_level_trigger_data =
-              ValueIs(Property(&TriggerSpecs::trigger_data, IsEmpty())),
+              ValueIs(Property(&TriggerDataSet::trigger_data, IsEmpty())),
       },
       {
           .desc = "trigger_data_too_long",
@@ -189,19 +189,19 @@ TEST(TriggerSpecsTest, Parse) {
           .desc = "trigger_data_value_minimal",
           .json = R"json({"trigger_data": [0]})json",
           .matches_top_level_trigger_data =
-              ValueIs(Property(&TriggerSpecs::trigger_data, ElementsAre(0))),
+              ValueIs(Property(&TriggerDataSet::trigger_data, ElementsAre(0))),
       },
       {
           .desc = "trigger_data_value_maximal",
           .json = R"json({"trigger_data": [4294967295]})json",
           .matches_top_level_trigger_data = ValueIs(
-              Property(&TriggerSpecs::trigger_data, ElementsAre(4294967295))),
+              Property(&TriggerDataSet::trigger_data, ElementsAre(4294967295))),
       },
       {
           .desc = "trigger_data_value_trailing_zero",
           .json = R"json({"trigger_data": [2.0]})json",
           .matches_top_level_trigger_data =
-              ValueIs(Property(&TriggerSpecs::trigger_data, ElementsAre(2))),
+              ValueIs(Property(&TriggerDataSet::trigger_data, ElementsAre(2))),
       },
       {
           .desc = "trigger_data_value_duplicate",
@@ -218,7 +218,7 @@ TEST(TriggerSpecsTest, Parse) {
             24, 25, 26, 27, 28, 29, 30, 31
           ]})json",
           .matches_top_level_trigger_data =
-              ValueIs(Property(&TriggerSpecs::trigger_data, SizeIs(32))),
+              ValueIs(Property(&TriggerDataSet::trigger_data, SizeIs(32))),
       },
       {
           .desc = "trigger_data_invalid_for_modulus_non_contiguous",
@@ -247,35 +247,33 @@ TEST(TriggerSpecsTest, Parse) {
 
     const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
 
-    EXPECT_THAT(
-        TriggerSpecs::ParseTopLevelTriggerData(dict, test_case.source_type,
-                                               test_case.trigger_data_matching),
-        test_case.matches_top_level_trigger_data);
+    EXPECT_THAT(TriggerDataSet::Parse(dict, test_case.source_type,
+                                      test_case.trigger_data_matching),
+                test_case.matches_top_level_trigger_data);
   }
 }
 
-TEST(TriggerSpecsTest, ToJson) {
-  const auto kSpecs = *TriggerSpecs::Create(
+TEST(TriggerDataSetTest, ToJson) {
+  const auto kSet = *TriggerDataSet::Create(
       /*trigger_data=*/{1, 5, 3, 4294967295});
 
   base::Value::Dict dict;
-  kSpecs.Serialize(dict);
+  kSet.Serialize(dict);
 
   EXPECT_THAT(dict, base::test::IsJson(R"json({
     "trigger_data": [1, 3, 5, 4294967295]
   })json"));
 }
 
-TEST(TriggerSpecsTest, Find) {
+TEST(TriggerDataSetTest, Find) {
   {
-    const TriggerSpecs kSpecs;
+    const TriggerDataSet kSet;
 
-    EXPECT_FALSE(kSpecs.find(/*trigger_data=*/1, TriggerDataMatching::kExact));
-    EXPECT_FALSE(
-        kSpecs.find(/*trigger_data=*/1, TriggerDataMatching::kModulus));
+    EXPECT_FALSE(kSet.find(/*trigger_data=*/1, TriggerDataMatching::kExact));
+    EXPECT_FALSE(kSet.find(/*trigger_data=*/1, TriggerDataMatching::kModulus));
   }
 
-  const auto kSpecs = *TriggerSpecs::Create(
+  const auto kSet = *TriggerDataSet::Create(
       /*trigger_data=*/{1, 3, 4, 5});
 
   const struct {
@@ -309,16 +307,16 @@ TEST(TriggerSpecsTest, Find) {
     SCOPED_TRACE(test_case.trigger_data);
 
     EXPECT_EQ(
-        kSpecs.find(test_case.trigger_data, test_case.trigger_data_matching),
+        kSet.find(test_case.trigger_data, test_case.trigger_data_matching),
         test_case.expected);
   }
 }
 
-// Technically redundant with `TriggerSpecsTest.Find`, but included to
-// demonstrate the expected behavior for real-world trigger specs, of which
-// `TriggerSpecs()` can return a subset.
-TEST(TriggerSpecsTest, Find_ModulusContiguous) {
-  const auto kSpecs = *TriggerSpecs::Create(
+// Technically redundant with `TriggerDataSetTest.Find`, but included to
+// demonstrate the expected behavior for real-world trigger data, of which
+// `TriggerDataSet()` can return a subset.
+TEST(TriggerDataSetTest, Find_ModulusContiguous) {
+  const auto kSet = *TriggerDataSet::Create(
       /*trigger_data=*/{0, 1, 2});
 
   const struct {
@@ -331,9 +329,8 @@ TEST(TriggerSpecsTest, Find_ModulusContiguous) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.trigger_data);
 
-    EXPECT_EQ(
-        kSpecs.find(test_case.trigger_data, TriggerDataMatching::kModulus),
-        test_case.expected);
+    EXPECT_EQ(kSet.find(test_case.trigger_data, TriggerDataMatching::kModulus),
+              test_case.expected);
   }
 }
 

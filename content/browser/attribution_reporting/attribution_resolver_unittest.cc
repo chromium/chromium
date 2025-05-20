@@ -108,7 +108,7 @@ using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::kDefaultFilteringId;
 using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::TriggerSpecs;
+using ::attribution_reporting::TriggerDataSet;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
 using ::blink::mojom::AggregatableReportHistogramContribution;
@@ -4744,7 +4744,7 @@ TEST_F(AttributionResolverTest, LimitHit_FakeReportDeleted) {
           SourceBuilder()
               .SetDestinationSites(
                   {net::SchemefulSite::Deserialize("https://d1.test")})
-              .SetTriggerSpecs(TriggerSpecs(SourceType::kEvent))
+              .SetTriggerData(TriggerDataSet(SourceType::kEvent))
               .SetEventReportWindows(
                   *attribution_reporting::EventReportWindows::Create(
                       base::Days(0), {base::Days(1), base::Days(2)}))

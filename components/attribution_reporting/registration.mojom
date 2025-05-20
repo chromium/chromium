@@ -72,8 +72,8 @@ struct EventReportWindows {
   array<mojo_base.mojom.TimeDelta> end_times;
 };
 
-// https://wicg.github.io/attribution-reporting-api/#trigger-specs-header
-struct TriggerSpecs {
+// https://wicg.github.io/attribution-reporting-api/#trigger-data-set
+struct TriggerDataSet {
   array<uint32> trigger_data;
 };
 
@@ -130,7 +130,7 @@ struct SourceRegistration {
   // Specifies how long this source is eligible for attribution.
   mojo_base.mojom.TimeDelta expiry;
 
-  TriggerSpecs trigger_specs;
+  TriggerDataSet trigger_data;
 
   EventReportWindows event_report_windows;
 

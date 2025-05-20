@@ -170,7 +170,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceDestinationSitesQueryFailed = 26,
     kSourceInvalidDestinationSites = 27,
     kStoredSourceConstructionFailed = 28,
-    kSourceInvalidTriggerSpecs = 29,
+    kSourceInvalidTriggerData = 29,
     kSourceDedupKeyQueryFailed = 30,
     kSourceInvalidRandomizedResponseRate = 31,
     kSourceInvalidAttributionScopesData = 32,
