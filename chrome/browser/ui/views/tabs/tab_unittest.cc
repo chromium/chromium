@@ -262,12 +262,12 @@ class TabTest : public ChromeViewsTestBase {
   base::SimpleTestTickClock fake_clock_;
 };
 
-class AlertIndicatorButtonTest : public ChromeViewsTestBase {
+class TabContentsTest : public ChromeViewsTestBase {
  public:
-  AlertIndicatorButtonTest() = default;
-  AlertIndicatorButtonTest(const AlertIndicatorButtonTest&) = delete;
-  AlertIndicatorButtonTest& operator=(const AlertIndicatorButtonTest&) = delete;
-  ~AlertIndicatorButtonTest() override = default;
+  TabContentsTest() = default;
+  TabContentsTest(const TabContentsTest&) = delete;
+  TabContentsTest& operator=(const TabContentsTest&) = delete;
+  ~TabContentsTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -766,7 +766,7 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
 
 // This test verifies that the tab has its icon state updated when the alert
 // animation fade-out finishes.
-TEST_F(AlertIndicatorButtonTest, ShowsAndHidesAlertIndicator) {
+TEST_F(TabContentsTest, ShowsAndHidesAlertIndicator) {
   controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);
   controller_->AddTab(1, TabActive::kActive);
   Tab* media_tab = tab_strip_->tab_at(0);
@@ -807,7 +807,7 @@ TEST_F(AlertIndicatorButtonTest, ShowsAndHidesAlertIndicator) {
 
 // This test verifies that the alert indicator for a camera and/or mic is
 // visible at least for 5 seconds even if a camera/mic stopped being used.
-TEST_F(AlertIndicatorButtonTest, MinHoldDurationTest) {
+TEST_F(TabContentsTest, MinHoldDurationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   controller_->AddTab(0, TabActive::kActive);
@@ -838,7 +838,7 @@ TEST_F(AlertIndicatorButtonTest, MinHoldDurationTest) {
 
 // This test verifies that the alert indicator for a camera and/or mic has
 // 1-second fadeout animation after it was visible for longer than 5 seconds.
-TEST_F(AlertIndicatorButtonTest, 1SecondFadeoutAnimationTest) {
+TEST_F(TabContentsTest, 1SecondFadeoutAnimationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   controller_->AddTab(0, TabActive::kActive);
@@ -906,7 +906,7 @@ TEST_F(TabTest, AccessibleProperties) {
   EXPECT_EQ(ax::mojom::Role::kTab, data.role);
 }
 
-TEST_F(AlertIndicatorButtonTest, AccessibleNameChanged) {
+TEST_F(TabContentsTest, AccessibleNameChanged) {
   controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);
 
   TabRendererData old_data = tab_strip_->tab_at(0)->data();
@@ -923,8 +923,7 @@ TEST_F(AlertIndicatorButtonTest, AccessibleNameChanged) {
       tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
 }
 
-TEST_F(AlertIndicatorButtonTest,
-       AccessibleNameChangesWithCollaborationMessages) {
+TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
   TestingProfile profile;
 
   controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);

@@ -4298,12 +4298,15 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
     switch (tab_data.collaboration_messaging->collaboration_event()) {
       case collaboration::messaging::CollaborationEvent::TAB_ADDED:
         title = l10n_util::GetStringFUTF16(
-            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB, given_name);
+                    IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,
+                    given_name) +
+                u", " + title;
         break;
       case collaboration::messaging::CollaborationEvent::TAB_UPDATED:
         title = l10n_util::GetStringFUTF16(
-            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
-            given_name);
+                    IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
+                    given_name) +
+                u", " + title;
         break;
       default:
         NOTREACHED();
