@@ -25,14 +25,12 @@ namespace ash {
 
 class ReleaseNotesNotificationTest
     : public BrowserWithTestWindowTest,
-      public ::testing::WithParamInterface</*forest_feature=*/bool> {
+      public ::testing::WithParamInterface</*notification_eligible=*/bool> {
  public:
-  ReleaseNotesNotificationTest() : forest_feature_enabled_(GetParam()) {}
-
+  ReleaseNotesNotificationTest() : notification_eligible_(GetParam()) {}
   ReleaseNotesNotificationTest(const ReleaseNotesNotificationTest&) = delete;
   ReleaseNotesNotificationTest& operator=(const ReleaseNotesNotificationTest&) =
       delete;
-
   ~ReleaseNotesNotificationTest() override = default;
 
   // BrowserWithTestWindowTest:
@@ -46,15 +44,17 @@ class ReleaseNotesNotificationTest
                             base::Unretained(this)));
     release_notes_notification_ =
         std::make_unique<ReleaseNotesNotification>(profile());
-    if (forest_feature_enabled()) {
+    if (notification_eligible()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kReleaseNotesNotificationAllChannels,
-                                features::kForestFeature},
+                                features::
+                                    kReleaseNotesNotificationAlwaysEligible},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kReleaseNotesNotificationAllChannels},
-          /*disabled_features=*/{features::kForestFeature});
+          /*disabled_features=*/{
+              features::kReleaseNotesNotificationAlwaysEligible});
     }
   }
 
@@ -72,7 +72,7 @@ class ReleaseNotesNotificationTest
 
   void OnNotificationAdded() { notification_count_++; }
 
-  bool forest_feature_enabled() const { return forest_feature_enabled_; }
+  bool notification_eligible() const { return notification_eligible_; }
 
  protected:
   bool HasReleaseNotesNotification() {
@@ -90,14 +90,18 @@ class ReleaseNotesNotificationTest
  private:
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  const bool forest_feature_enabled_;
+  const bool notification_eligible_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ReleaseNotesNotificationTest,
-                         /*forest_feature=*/testing::Bool());
+                         /*notification_eligible=*/testing::Bool());
 
 TEST_P(ReleaseNotesNotificationTest, DoNotShowReleaseNotesNotification) {
+  if (notification_eligible()) {
+    GTEST_SKIP() << "Notification is always shown with the notification "
+                    "eligible feature turned on.";
+  }
   auto release_notes_storage = std::make_unique<ReleaseNotesStorage>(profile());
 
   // Set the pref to the last shown milestone to ensure release notes do not
@@ -120,11 +124,11 @@ TEST_P(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
 
   release_notes_notification_->MaybeShowReleaseNotes();
 
-  // If forest feature is enabled, then release notes should not show.
-  EXPECT_EQ(forest_feature_enabled(), !HasReleaseNotesNotification());
-  EXPECT_EQ(forest_feature_enabled() ? 0 : 1, notification_count_);
-  EXPECT_EQ(forest_feature_enabled(),
-            !release_notes_storage->ShouldShowSuggestionChip());
+  // If notification eligible is enabled, then release notes should show.
+  EXPECT_EQ(notification_eligible(), HasReleaseNotesNotification());
+  EXPECT_EQ(notification_eligible() ? 1 : 0, notification_count_);
+  EXPECT_EQ(notification_eligible(),
+            release_notes_storage->ShouldShowSuggestionChip());
   if (HasReleaseNotesNotification()) {
     EXPECT_TRUE(HasReleaseNotesNotification());
     EXPECT_EQ(ui::SubstituteChromeOSDeviceType(

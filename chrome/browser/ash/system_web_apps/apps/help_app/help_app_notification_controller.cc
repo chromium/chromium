@@ -60,12 +60,11 @@ HelpAppNotificationController::HelpAppNotificationController(Profile* profile)
 HelpAppNotificationController::~HelpAppNotificationController() = default;
 
 void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
-  if (IsNotificationShownForCurrentMilestone(profile_) &&
-      !base::FeatureList::IsEnabled(
-          features::kReleaseNotesNotificationAlwaysEligible)) {
+  if (IsNotificationShownForCurrentMilestone(profile_)) {
     return;
   }
-  if (features::IsForestFeatureEnabled()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kReleaseNotesNotificationAlwaysEligible)) {
     return;
   }
   ReleaseNotesStorage release_notes_storage(profile_);
