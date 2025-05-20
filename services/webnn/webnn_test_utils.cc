@@ -157,10 +157,6 @@ void GraphInfoBuilder::BuildPad(OperandId input_operand_id,
       pad->mode =
           mojom::PaddingMode::NewReflection(mojom::ReflectionPadding::New());
       break;
-    case mojom::PaddingMode::Tag::kSymmetric:
-      pad->mode =
-          mojom::PaddingMode::NewSymmetric(mojom::SymmetricPadding::New());
-      break;
   }
 
   graph_info_->operations.push_back(mojom::Operation::NewPad(std::move(pad)));

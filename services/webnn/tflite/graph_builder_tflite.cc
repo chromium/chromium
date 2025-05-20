@@ -5655,15 +5655,6 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
                             .Union();
       break;
     }
-    case mojom::PaddingMode::Tag::kSymmetric: {
-      operator_code = ::tflite::BuiltinOperator::BuiltinOperator_MIRROR_PAD;
-      builtin_options_type =
-          ::tflite::BuiltinOptions::BuiltinOptions_MirrorPadOptions;
-      builtin_options = ::tflite::CreateMirrorPadOptions(
-                            builder_, ::tflite::MirrorPadMode_SYMMETRIC)
-                            .Union();
-      break;
-    }
   }
 
   const TensorIndex output_tensor_index =

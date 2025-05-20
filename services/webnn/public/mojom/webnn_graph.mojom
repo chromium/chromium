@@ -351,13 +351,10 @@ struct EdgePadding {};
 
 struct ReflectionPadding {};
 
-struct SymmetricPadding {};
-
 union PaddingMode {
   ConstantPadding constant;
   EdgePadding edge;
   ReflectionPadding reflection;
-  SymmetricPadding symmetric;
 };
 
 // This operator performs the following normalization, defined as:

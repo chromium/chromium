@@ -2556,9 +2556,6 @@ void CreateOperatorNodeForPad(const ContextProperties& context_properties,
     case mojom::PaddingMode::Tag::kReflection:
       padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_REFLECTION;
       break;
-    case mojom::PaddingMode::Tag::kSymmetric:
-      padding_mode = DML_PADDING_MODE::DML_PADDING_MODE_SYMMETRIC;
-      break;
   }
 
   const auto& beginning_padding = pad->beginning_padding;

@@ -1337,10 +1337,6 @@ OperationPtr CreatePadOperation(const OperandToIdMap& operand_to_id_map,
       pad_mojo->mode = blink_mojom::PaddingMode::NewReflection(
           blink_mojom::ReflectionPadding::New());
       break;
-    case blink::V8MLPaddingMode::Enum::kSymmetric:
-      pad_mojo->mode = blink_mojom::PaddingMode::NewSymmetric(
-          blink_mojom::SymmetricPadding::New());
-      break;
   }
   pad_mojo->label = options->label();
 

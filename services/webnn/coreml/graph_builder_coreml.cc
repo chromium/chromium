@@ -4590,10 +4590,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
       mode = "constant";
       constant = operation.mode->get_constant()->value;
       break;
-    case mojom::PaddingMode::Tag::kSymmetric:
-      // TODO: crbug.com/354101904 - figure out out how to emulate this or
-      // resolve the incompabitility at spec level.
-      return NewNotSupportedError("Unsupported mode symmetric for pad.");
     case mojom::PaddingMode::Tag::kEdge:
       mode = "replicate";
       break;

@@ -143,8 +143,7 @@ dictionary MLLstmCellOptions : MLOperatorOptions {
 enum MLPaddingMode {
   "constant",
   "edge",
-  "reflection",
-  "symmetric"
+  "reflection"
 };
 
 dictionary MLPadOptions : MLOperatorOptions {
