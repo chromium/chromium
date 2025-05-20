@@ -64,3 +64,14 @@ Running outside of `xvfb.py` directly on the host X server should work, but is
 not explicitly documented here.
 The host must have `xserver-xorg-core`, `xserver-xorg-video-dummy` and `x11-xserver-utils` packages installed. See [`//testing/xvfb.py`](/testing/xvfb.py) for more details on the
 required Xorg/XRandR setup.
+
+#### Headless Chrome
+
+Chrome Headless Mode supports headless screen configuration using `--screen-info` command line switch on Linux, Windows and Mac since m138. The following example starts Chrome in headless mode with a virtual screen that has two displays: a primary one with resolution 1600x1200 pixels, and a secondary one with the same resolution but with portrait orientation and located to the right of the primary display.
+
+```bash
+./chrome --headless --screen-info={1600x1200}{1200x1600}
+```
+
+Please refer to [components/headless/screen_info/README.md](components/headless/screen_info/README.md) document for more information about `--screen-info` command line switch.
+
