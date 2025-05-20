@@ -2069,10 +2069,6 @@ const Browser* TabStrip::GetBrowser() const {
   return controller_->GetBrowser();
 }
 
-int TabStrip::GetInactiveTabWidth() const {
-  return tab_container_->GetInactiveTabWidth();
-}
-
 bool TabStrip::IsFrameCondensed() const {
   return controller_->IsFrameCondensed();
 }
@@ -2561,5 +2557,4 @@ ADD_READONLY_PROPERTY_METADATA(SkColor,
                                ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(float, HoverOpacityForRadialHighlight)
 ADD_READONLY_PROPERTY_METADATA(int, ActiveTabWidth)
-ADD_READONLY_PROPERTY_METADATA(int, InactiveTabWidth)
 END_METADATA

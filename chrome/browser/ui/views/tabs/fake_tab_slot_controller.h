@@ -97,7 +97,6 @@ class FakeTabSlotController : public TabSlotController {
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override {}
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override {}
   const Browser* GetBrowser() const override;
-  int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
 

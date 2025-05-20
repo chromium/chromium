@@ -186,7 +186,6 @@ class TabStripTestBase : public ChromeViewsTestBase {
   }
 
   int GetActiveTabWidth() { return tab_strip_->GetActiveTabWidth(); }
-  int GetInactiveTabWidth() { return tab_strip_->GetInactiveTabWidth(); }
 
   // End any outstanding drag and animate tabs back to their ideal bounds.
   void StopDragging() { tab_strip_->GetDragContext()->StoppedDragging(); }
@@ -477,18 +476,15 @@ TEST_P(TabStripTest, CachedWidthsReportCorrectSize) {
   SetMaxTabStripWidth(1000);
 
   EXPECT_EQ(standard_width, GetActiveTabWidth());
-  EXPECT_EQ(standard_width, GetInactiveTabWidth());
 
   SetMaxTabStripWidth(240);
 
   EXPECT_LT(GetActiveTabWidth(), standard_width);
-  EXPECT_EQ(GetInactiveTabWidth(), GetActiveTabWidth());
 
   SetMaxTabStripWidth(50);
 
   EXPECT_EQ(TabStyle::Get()->GetMinimumActiveWidth(/*is_split*/ false),
             GetActiveTabWidth());
-  EXPECT_EQ(TabStyle::Get()->GetMinimumInactiveWidth(), GetInactiveTabWidth());
 }
 
 // The active tab should always be at least as wide as its minimum width.

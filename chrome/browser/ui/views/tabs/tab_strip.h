@@ -340,7 +340,6 @@ class TabStrip : public views::View,
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override;
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   const Browser* GetBrowser() const override;
-  int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;

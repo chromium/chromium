@@ -131,7 +131,6 @@ class TabContainerImpl : public TabContainer,
   get_group_views_for_testing() const override;
 
   int GetActiveTabWidth() const override;
-  int GetInactiveTabWidth() const override;
 
   gfx::Rect GetIdealBounds(int model_index) const override;
   gfx::Rect GetIdealBounds(tab_groups::TabGroupId group) const override;

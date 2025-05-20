@@ -676,11 +676,6 @@ int CompoundTabContainer::GetActiveTabWidth() const {
   return unpinned_tab_container_->GetActiveTabWidth();
 }
 
-int CompoundTabContainer::GetInactiveTabWidth() const {
-  // Only the unpinned container has variable-width tabs.
-  return unpinned_tab_container_->GetInactiveTabWidth();
-}
-
 gfx::Rect CompoundTabContainer::GetIdealBounds(int model_index) const {
   // Ideal bounds for pinned tabs are fine as-is.
   if (model_index < NumPinnedTabs()) {
