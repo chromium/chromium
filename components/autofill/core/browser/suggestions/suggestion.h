@@ -278,6 +278,7 @@ struct Suggestion {
     kGooglePasswordManager,
     kGooglePay,
     kGoogleWallet,
+    kGoogleWalletMonochrome,
     kHome,
     kHttpWarning,
     kHttpsInvalid,

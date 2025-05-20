@@ -71,7 +71,8 @@ constexpr int kChromeRefreshIconSize = 20;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr int kGooglePayLogoWidth = 40;
 // The icon size used in the suggestion dropdown for displaying the Google
-// Wallet icon in the "Manage loyalty cards" entry.
+// Wallet icon in the "Manage loyalty cards" entry and in all loyalty cards
+// submenu entries.
 constexpr int kGoogleWalletIconSize = 20;
 #endif
 
@@ -141,6 +142,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePasswordManager:
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGoogleWallet:
+    case Suggestion::Icon::kGoogleWalletMonochrome:
     case Suggestion::Icon::kHome:
     case Suggestion::Icon::kHttpsInvalid:
     case Suggestion::Icon::kHttpWarning:
@@ -367,7 +369,13 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #else
       return std::nullopt;
 #endif
-
+    case Suggestion::Icon::kGoogleWalletMonochrome:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return ImageModelFromVectorIcon(vector_icons::kGoogleWalletMonochromeIcon,
+                                      kGoogleWalletIconSize);
+#else
+      return std::nullopt;
+#endif
     case Suggestion::Icon::kIban:
     case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kOfferTag:
