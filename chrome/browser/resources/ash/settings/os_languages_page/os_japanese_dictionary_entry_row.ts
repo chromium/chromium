@@ -145,6 +145,13 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
   }
 
   private async deleteEntry_(): Promise<void> {
+    if (this.locallyAdded) {
+      // Clear this local entry by just syncing to mozc dictionary.
+      // This will cause a UI refresh.
+      this.dispatchSavedEvent_();
+      return;
+    }
+
     const dictionarySaved =
         (await UserDataServiceProvider.getRemote()
              .deleteJapaneseDictionaryEntry(this.dictId, this.index))
