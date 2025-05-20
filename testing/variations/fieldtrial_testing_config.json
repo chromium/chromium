@@ -11147,16 +11147,25 @@
             ]
         }
     ],
-    "HeapProfilerExcludeChromeOSRenderers": [
+    "HeapProfilingLoadFactor": [
         {
             "platforms": [
-                "chromeos"
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "params": {
-                        "renderer-prob-pct": "0"
+                        "browser-hash-set-load-factor": "0.7",
+                        "gpu-hash-set-load-factor": "0.7",
+                        "network-hash-set-load-factor": "0.7",
+                        "renderer-hash-set-load-factor": "0.7",
+                        "utility-hash-set-load-factor": "0.7"
                     },
                     "enable_features": [
                         "HeapProfilerReporting"
