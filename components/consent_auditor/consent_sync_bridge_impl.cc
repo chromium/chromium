@@ -153,6 +153,12 @@ std::string ConsentSyncBridgeImpl::GetStorageKey(
   return GetStorageKeyFromSpecifics(entity_data.specifics.user_consent());
 }
 
+bool ConsentSyncBridgeImpl::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  // USER_CONSENT is a commit only data type so this method is not called.
+  NOTREACHED();
+}
+
 void ConsentSyncBridgeImpl::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   // Sync can only be stopped after initialization.
