@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/profiles",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/search_engines",
+    "//components/metrics_services_manager",
     "//components/regional_capabilities",
     "//components/regional_capabilities:country_access_reason",
     "//components/search_engines",
@@ -81,7 +82,10 @@ if (!is_android) {
 
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-      sources = [ "search_engine_choice_dialog_browsertest.cc" ]
+      sources = [
+        "search_engine_choice_dialog_browsertest.cc",
+        "search_engine_choice_service_browsertest.cc",
+      ]
 
       deps = [
         ":search_engine_choice",
@@ -103,6 +107,8 @@ if (!is_android) {
         "//components/keep_alive_registry",
         "//components/keyed_service/content",
         "//components/keyed_service/core",
+        "//components/metrics:test_support",
+        "//components/metrics_services_manager",
         "//components/search_engines",
         "//components/search_engines:test_support",
         "//components/version_info",

@@ -348,6 +348,8 @@ if (!is_cronet_build || is_ios) {
   static_library("test_support") {
     testonly = true
     sources = [
+      "test/scoped_metrics_id_provider.cc",
+      "test/scoped_metrics_id_provider.h",
       "test/test_enabled_state_provider.cc",
       "test/test_enabled_state_provider.h",
       "test/test_metrics_log_uploader.cc",

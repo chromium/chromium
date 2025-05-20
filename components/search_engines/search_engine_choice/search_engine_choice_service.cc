@@ -650,6 +650,12 @@ void SearchEngineChoiceService::ClearCountryIdCacheForTesting() {
   regional_capabilities_service_->ClearCountryIdCacheForTesting();  // IN-TEST
 }
 
+SearchEngineChoiceService::Client&
+SearchEngineChoiceService::GetClientForTesting() {
+  CHECK_IS_TEST();
+  return *client_.get();
+}
+
 bool SearchEngineChoiceService::IsDsePropagationAllowedForGuest() const {
   if (client_->IsProfileEligibleForDseGuestPropagation()) {
     return regional_capabilities_service_->IsInEeaCountry();

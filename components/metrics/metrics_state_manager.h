@@ -24,6 +24,10 @@
 class PrefService;
 class PrefRegistrySimple;
 
+namespace metrics_services_manager {
+class MetricsServicesManager;
+}
+
 namespace metrics {
 
 class EnabledStateProvider;
@@ -232,6 +236,7 @@ class MetricsStateManager final {
                            ProvisionalClientId_PersistedAcrossFirstRuns);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, ResetBackup);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, ResetMetricsIDs);
+  friend class ::metrics_services_manager::MetricsServicesManager;
 
   // Designates which entropy source was returned from this class.
   // This is used for testing to validate that we return the correct source
@@ -280,6 +285,12 @@ class MetricsStateManager final {
                       StartupVisibility startup_visibility,
                       StoreClientInfoCallback store_client_info,
                       LoadClientInfoCallback load_client_info);
+
+  // Returns the ClonedInstallDetector. This is useful in case we're checking
+  // whether an install was detected in this session.
+  // Marked as private (exposed selectively via friend classes) for the metrics
+  // team to be able to control and monitor if/how this function gets called.
+  const ClonedInstallDetector& GetClonedInstallDetector() const;
 
   // Returns a MetricsStateManagerProvider instance and sets its
   // |log_normal_metric_state_.gen| with the provided random seed.

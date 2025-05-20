@@ -62,6 +62,13 @@ class SearchEngineChoiceService : public KeyedService {
 
     // Returns whether Chrome detected in this current run that its data has
     // been transferred / restored to a new device.
+    //
+    // In practice, this function is not reliable on desktop. That's because
+    // "detected in current session" happens asynchronously, so it's possible
+    // to call this function and get a "false" value in a session where it will
+    // end up returning true at some point. And in the next session, "detected
+    // in current session" would be false too. It's possible to miss an actual
+    // true value due to timing of calls to this function.
     virtual bool IsDeviceRestoreDetectedInCurrentSession() = 0;
 
     // Returns whether the search engine choice described in `choice_metadata`
@@ -138,6 +145,10 @@ class SearchEngineChoiceService : public KeyedService {
   // in tests.
   // TODO(crbug.com/328040066): Move to `//components/regional_capabilities`.
   void ClearCountryIdCacheForTesting();
+
+  // Returns a reference to the `SearchEngineChoiceService::Client` owned and
+  // used by this service.
+  Client& GetClientForTesting();
 
   // Returns whether the profile is eligible for the default search engine to be
   // used across all guest sessions.

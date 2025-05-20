@@ -15,10 +15,15 @@
 namespace metrics {
 class MetricsService;
 class MetricsServiceClient;
+class ClonedInstallDetector;
 }  // namespace metrics
 
 namespace metrics::structured {
 class StructuredMetricsService;
+}
+
+namespace search_engines {
+class SearchEngineChoiceServiceClient;
 }
 
 namespace ukm {
@@ -120,7 +125,17 @@ class MetricsServicesManager {
   std::unique_ptr<const variations::EntropyProviders>
   CreateEntropyProvidersForTesting();
 
+  // Returns the ClonedInstallDetector associated with the `client_`.
+  metrics::ClonedInstallDetector* GetClonedInstallDetectorForTesting();
+
  private:
+  friend class search_engines::SearchEngineChoiceServiceClient;
+
+  // Returns the ClonedInstallDetector associated with the `client_`.
+  // Marked as private (exposed selectively via friend classes) for the metrics
+  // team to be able to control and monitor if/how this function gets called.
+  const metrics::ClonedInstallDetector& GetClonedInstallDetector() const;
+
   // Returns the MetricsServiceClient, creating it if it hasn't been
   // created yet (and additionally creating the MetricsService in that case).
   metrics::MetricsServiceClient* GetMetricsServiceClient();

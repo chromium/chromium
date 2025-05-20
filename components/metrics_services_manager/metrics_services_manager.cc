@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/metrics/dwa/dwa_recorder.h"
@@ -109,6 +110,18 @@ MetricsServicesManager::CreateEntropyProvidersForTesting() {
   // Setting enable_limited_entropy_mode=true to maximize code coverage.
   return client_->GetMetricsStateManager()->CreateEntropyProviders(
       /*enable_limited_entropy_mode=*/true);
+}
+
+metrics::ClonedInstallDetector*
+MetricsServicesManager::GetClonedInstallDetectorForTesting() {
+  CHECK_IS_TEST();
+  return client_->GetMetricsStateManager()
+      ->cloned_install_detector_for_testing();  // IN-TEST
+}
+
+const metrics::ClonedInstallDetector&
+MetricsServicesManager::GetClonedInstallDetector() const {
+  return client_->GetMetricsStateManager()->GetClonedInstallDetector();
 }
 
 metrics::MetricsServiceClient*

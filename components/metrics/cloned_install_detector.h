@@ -15,6 +15,8 @@ class PrefService;
 
 namespace metrics {
 
+class MachineIdProvider;
+
 // A struct that holds cloned install related fields in prefs that need to be
 // reported in the system_profile.
 struct ClonedInstallInfo {
@@ -55,7 +57,7 @@ class ClonedInstallDetector {
   static void ClearClonedInstallInfo(PrefService* local_state);
 
   // Updates cloned install info fields in |local_state| on reset.
-  static void RecordClonedInstallInfo(PrefService* local_state);
+  void RecordClonedInstallInfo(PrefService* local_state);
 
   // Returns true for the whole session if we detected a cloned install during
   // the construction of a client id.
@@ -75,6 +77,11 @@ class ClonedInstallDetector {
   // be declared as friends since they live in a different namespace).
   void SaveMachineIdForTesting(PrefService* local_state,
                                const std::string& raw_id);
+
+  // Sets `machine_id_provider` as the global testing provider instance, that
+  // gets used over the default ones used in prod.
+  static void SetMachineIdProviderForTesting(
+      MachineIdProvider* machine_id_provider);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ClonedInstallDetectorTest, SaveId);

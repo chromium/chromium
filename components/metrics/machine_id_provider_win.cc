@@ -18,15 +18,17 @@
 
 namespace metrics {
 
-// static
-bool MachineIdProvider::HasId() {
+MachineIdProvider::MachineIdProvider() = default;
+
+MachineIdProvider::~MachineIdProvider() = default;
+
+bool MachineIdProvider::HasId() const {
   return true;
 }
 
 // On windows, the machine id is based on the serial number of the drive Chrome
 // is running from.
-// static
-std::string MachineIdProvider::GetMachineId() {
+std::string MachineIdProvider::GetMachineId() const {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 

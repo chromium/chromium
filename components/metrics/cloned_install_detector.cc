@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -23,6 +24,26 @@
 namespace metrics {
 
 namespace {
+
+MachineIdProvider* g_machine_id_provider_for_testing = nullptr;
+
+bool HasMachineId() {
+  if (g_machine_id_provider_for_testing) {
+    CHECK_IS_TEST();
+    return g_machine_id_provider_for_testing->HasId();
+  }
+
+  return MachineIdProvider().HasId();
+}
+
+std::string GetMachineId() {
+  if (g_machine_id_provider_for_testing) {
+    CHECK_IS_TEST();
+    return g_machine_id_provider_for_testing->GetMachineId();
+  }
+
+  return MachineIdProvider().GetMachineId();
+}
 
 uint32_t HashRawId(const std::string& value) {
   uint64_t hash = base::HashMetricName(value);
@@ -54,15 +75,16 @@ ClonedInstallDetector::~ClonedInstallDetector() {
 }
 
 void ClonedInstallDetector::CheckForClonedInstall(PrefService* local_state) {
-  if (!MachineIdProvider::HasId())
+  if (!HasMachineId()) {
     return;
+  }
 
   base::Time check_initiated_timestamp = base::Time::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&MachineIdProvider::GetMachineId),
+      base::BindOnce(&GetMachineId),
       base::BindOnce(&ClonedInstallDetector::SaveMachineId,
                      weak_ptr_factory_.GetWeakPtr(), local_state,
                      check_initiated_timestamp));
@@ -134,6 +156,13 @@ ClonedInstallDetector::AddOnClonedInstallDetectedCallback(
 void ClonedInstallDetector::SaveMachineIdForTesting(PrefService* local_state,
                                                     const std::string& raw_id) {
   SaveMachineId(local_state, base::Time::Now(), raw_id);
+}
+
+// static
+void ClonedInstallDetector::SetMachineIdProviderForTesting(
+    MachineIdProvider* machine_id_provider) {
+  CHECK_IS_TEST();
+  g_machine_id_provider_for_testing = machine_id_provider;
 }
 
 // static
