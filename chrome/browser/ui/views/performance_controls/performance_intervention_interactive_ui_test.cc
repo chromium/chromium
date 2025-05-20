@@ -442,17 +442,18 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        TakeSuggestedAction) {
   RunTestSequence(
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, GetURL()),
       AddInstrumentedTab(kSecondTab, GetURL()),
-      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
-      TriggerOnActionableTabListChange({1, 2}),
+      AddInstrumentedTab(kThirdTab, GetURL()), WaitForShow(kThirdTab),
+      TriggerOnActionableTabListChange({0, 1}),
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDeactivateButton),
       ObserveState(kTabDiscardedState, 2),
       PressButton(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDeactivateButton),
-      WaitForState(kTabDiscardedState, true), CheckTabDiscardStatus(0, false),
-      CheckTabDiscardStatus(1, true), CheckTabDiscardStatus(2, true));
+      WaitForState(kTabDiscardedState, true), CheckTabDiscardStatus(0, true),
+      CheckTabDiscardStatus(1, true), CheckTabDiscardStatus(2, false));
 }
 
 // The dialog should discard tabs suggested in the tab list
@@ -462,9 +463,10 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
   const char kSuggestedCloseButton[] = "SuggestedCloseButton";
 
   RunTestSequence(
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, GetURL()),
       AddInstrumentedTab(kSecondTab, GetURL()),
-      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
-      TriggerOnActionableTabListChange({1, 2}),
+      AddInstrumentedTab(kThirdTab, GetURL()), WaitForShow(kThirdTab),
+      TriggerOnActionableTabListChange({0, 1}),
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionTabList),
@@ -489,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       PressButton(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDeactivateButton),
       WaitForState(kTabDiscardedState, true), CheckTabDiscardStatus(0, false),
-      CheckTabDiscardStatus(1, false), CheckTabDiscardStatus(2, true));
+      CheckTabDiscardStatus(1, true), CheckTabDiscardStatus(2, false));
 }
 
 // Intervention dialog should only show when the performance intervention
