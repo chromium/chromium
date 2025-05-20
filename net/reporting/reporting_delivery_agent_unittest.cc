@@ -76,7 +76,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
 
     cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                        std::move(report_body), /*depth=*/0,
-                       /*queued=*/tick_clock()->NowTicks(), /*attempts=*/0,
+                       /*queued=*/tick_clock()->NowTicks(),
                        ReportingTargetType::kDeveloper);
   }
 
@@ -89,17 +89,16 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     cache()->AddReport(reporting_source, network_anonymization_key, url,
                        kUserAgent_, group, kType_, std::move(report_body),
                        /*depth=*/0, /*queued=*/tick_clock()->NowTicks(),
-                       /*attempts=*/0, ReportingTargetType::kDeveloper);
+                       ReportingTargetType::kDeveloper);
   }
 
   void AddEnterpriseReport(const GURL& url, const std::string& group) {
     base::Value::Dict report_body;
     report_body.Set("key", "value");
-    cache()->AddReport(/*reporting_source=*/std::nullopt,
-                       net::NetworkAnonymizationKey(), url, kUserAgent_, group,
-                       kType_, std::move(report_body), /*depth=*/0,
-                       /*queued=*/tick_clock()->NowTicks(), /*attempts=*/0,
-                       ReportingTargetType::kEnterprise);
+    cache()->AddReport(
+        /*reporting_source=*/std::nullopt, net::NetworkAnonymizationKey(), url,
+        kUserAgent_, group, kType_, std::move(report_body), /*depth=*/0,
+        /*queued=*/tick_clock()->NowTicks(), ReportingTargetType::kEnterprise);
   }
 
   // The first report added to the cache is uploaded immediately, and a timer is

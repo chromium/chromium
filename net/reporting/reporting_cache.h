@@ -80,7 +80,6 @@ class NET_EXPORT ReportingCache {
       base::Value::Dict body,
       int depth,
       base::TimeTicks queued,
-      int attempts,
       ReportingTargetType target_type) = 0;
 
   // Gets all reports in the cache. The returned pointers are valid as long as

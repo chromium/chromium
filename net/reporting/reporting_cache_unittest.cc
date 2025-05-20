@@ -116,8 +116,7 @@ class ReportingCacheTest : public ReportingTestBase,
       const std::string& type,
       base::Value::Dict body,
       int depth,
-      base::TimeTicks queued,
-      int attempts) {
+      base::TimeTicks queued) {
     const base::Value::Dict body_clone(body.Clone());
 
     // The public API will only give us the (unordered) full list of reports in
@@ -127,8 +126,9 @@ class ReportingCacheTest : public ReportingTestBase,
     std::vector<raw_ptr<const ReportingReport, VectorExperimental>> before;
     cache()->GetReports(&before);
     cache()->AddReport(std::nullopt, network_anonymization_key, url, user_agent,
-                       group, type, std::move(body), depth, queued, attempts,
+                       group, type, std::move(body), depth, queued,
                        ReportingTargetType::kDeveloper);
+
     std::vector<raw_ptr<const ReportingReport, VectorExperimental>> after;
     cache()->GetReports(&after);
 
@@ -143,7 +143,7 @@ class ReportingCacheTest : public ReportingTestBase,
         EXPECT_EQ(body_clone, report->body);
         EXPECT_EQ(depth, report->depth);
         EXPECT_EQ(queued, report->queued);
-        EXPECT_EQ(attempts, report->attempts);
+        EXPECT_EQ(0, report->attempts);
         return report;
       }
     }
@@ -273,7 +273,7 @@ TEST_P(ReportingCacheTest, Reports) {
   EXPECT_TRUE(reports.empty());
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_, 0,
+                     kType_, base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kEnterprise);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
@@ -313,10 +313,10 @@ TEST_P(ReportingCacheTest, RemoveAllReports) {
   LoadReportingClients();
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_, 0,
+                     kType_, base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_, 0,
+                     kType_, base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(2, observer()->cached_reports_update_count());
 
@@ -335,7 +335,7 @@ TEST_P(ReportingCacheTest, RemovePendingReports) {
   LoadReportingClients();
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_, 0,
+                     kType_, base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
@@ -374,7 +374,7 @@ TEST_P(ReportingCacheTest, RemoveAllPendingReports) {
   LoadReportingClients();
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_, 0,
+                     kType_, base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
@@ -416,10 +416,11 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
   const base::TimeTicks now = base::TimeTicks();
   const ReportingReport* report1 =
       AddAndReturnReport(kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                         base::Value::Dict(), 0, now + base::Seconds(200), 0);
+                         base::Value::Dict(), 0, now + base::Seconds(200));
   const ReportingReport* report2 =
       AddAndReturnReport(kOtherNak_, kUrl1_, kUserAgent_, kGroup2_, kType_,
-                         base::Value::Dict(), 0, now + base::Seconds(100), 1);
+                         base::Value::Dict(), 0, now + base::Seconds(100));
+  cache()->IncrementReportsAttempts({report2});
   // Mark report1 and report2 as pending.
   EXPECT_THAT(cache()->GetReportsToDeliver(),
               ::testing::UnorderedElementsAre(report1, report2));
@@ -460,10 +461,10 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
   // Add two new reports that will show up as "queued".
   const ReportingReport* report3 =
       AddAndReturnReport(kNak_, kUrl2_, kUserAgent_, kGroup1_, kType_,
-                         base::Value::Dict(), 2, now + base::Seconds(200), 0);
+                         base::Value::Dict(), 2, now + base::Seconds(200));
   const ReportingReport* report4 =
       AddAndReturnReport(kOtherNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                         base::Value::Dict(), 0, now + base::Seconds(300), 0);
+                         base::Value::Dict(), 0, now + base::Seconds(300));
   actual = cache()->GetReportsAsValue();
   expected = base::test::ParseJson(base::StringPrintf(
       R"json(
@@ -532,13 +533,13 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
   // Queue a V1 report for each of these sources, and a V0 report (with a null
   // source) for the same URL.
   cache()->AddReport(source1, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                     base::Value::Dict(), 0, kNowTicks_, 0,
+                     base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   cache()->AddReport(source2, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                     base::Value::Dict(), 0, kNowTicks_, 0,
+                     base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   cache()->AddReport(std::nullopt, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                     base::Value::Dict(), 0, kNowTicks_, 0,
+                     base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(3, observer()->cached_reports_update_count());
 
@@ -1656,7 +1657,7 @@ TEST_P(ReportingCacheTest, EvictOldestReport) {
   for (size_t i = 0; i < max_report_count; ++i) {
     cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
                        kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                       0, ReportingTargetType::kDeveloper);
+                       ReportingTargetType::kDeveloper);
     tick_clock()->Advance(base::Minutes(1));
   }
   EXPECT_EQ(max_report_count, report_count());
@@ -1664,7 +1665,7 @@ TEST_P(ReportingCacheTest, EvictOldestReport) {
   // Add one more report to force the cache to evict one.
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0, ReportingTargetType::kDeveloper);
+                     ReportingTargetType::kDeveloper);
 
   // Make sure the cache evicted a report to make room for the new one, and make
   // sure the report evicted was the earliest-queued one.
@@ -1688,7 +1689,7 @@ TEST_P(ReportingCacheTest, DontEvictPendingReports) {
   for (size_t i = 0; i < max_report_count; ++i) {
     reports.push_back(AddAndReturnReport(kNak_, kUrl1_, kUserAgent_, kGroup1_,
                                          kType_, base::Value::Dict(), 0,
-                                         tick_clock()->NowTicks(), 0));
+                                         tick_clock()->NowTicks()));
     tick_clock()->Advance(base::Minutes(1));
   }
   EXPECT_EQ(max_report_count, report_count());
@@ -1700,7 +1701,7 @@ TEST_P(ReportingCacheTest, DontEvictPendingReports) {
   // Add one more report to force the cache to evict one. Since the cache has
   // only pending reports, it will be forced to evict the *new* report!
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_, 0,
+                     kType_, base::Value::Dict(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
 
   // Make sure the cache evicted a report, and make sure the report evicted was
