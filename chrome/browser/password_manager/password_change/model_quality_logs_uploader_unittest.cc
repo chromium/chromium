@@ -230,3 +230,57 @@ TEST_F(ModelQualityLogsUploaderTest, LatencyRecordedForAllSteps) {
                 .request_latency_ms(),
             expected_latency_ms);
 }
+
+TEST_F(ModelQualityLogsUploaderTest, OpenFormTargetElementNotFound) {
+  const base::Time fake_start_time = base::Time::Now();
+  ModelQualityLogsUploader logs_uploader(profile());
+  // Set initial open form data for ACTION_SUCCESS status.
+  optimization_guide::proto::PasswordChangeResponse open_form_response;
+  open_form_response.mutable_open_form_data()->set_page_type(
+      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
+  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
+  logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
+                                   fake_start_time);
+  const optimization_guide::proto::LogAiDataRequest intial_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      intial_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+
+  // Call function that overwrites the status to ELEMENT_NOT_FOUND status.
+  logs_uploader.OpenFormTargetElementNotFound();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, FormNotDetectedAfterOpening) {
+  const base::Time fake_start_time = base::Time::Now();
+  ModelQualityLogsUploader logs_uploader(profile());
+  // Set initial open form data for ACTION_SUCCESS status.
+  optimization_guide::proto::PasswordChangeResponse open_form_response;
+  open_form_response.mutable_open_form_data()->set_page_type(
+      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
+  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
+  logs_uploader.SetOpenFormQuality(open_form_response, CreateLoggingData(),
+                                   fake_start_time);
+  const optimization_guide::proto::LogAiDataRequest intial_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      intial_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+
+  // Call function that overwrites the status to FORM_NOT_FOUND status.
+  logs_uploader.FormNotDetectedAfterOpening();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_NOT_FOUND);
+}

@@ -33,6 +33,14 @@ class ModelQualityLogsUploader {
       std::unique_ptr<LoggingData> logging_data,
       base::Time server_request_start_time);
 
+  // To be called if no form is seen after actuating on
+  // Step=OPEN_FORM_STEP.
+  void FormNotDetectedAfterOpening();
+
+  // To be called if element to click was not found
+  // in Step=OPEN_FORM_STEP.
+  void OpenFormTargetElementNotFound();
+
   // Sets quality data for Step=SUBMIT_FORM_STEP.
   void SetSubmitFormQuality(
       const optimization_guide::proto::PasswordChangeResponse& response,
