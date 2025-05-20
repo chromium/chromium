@@ -211,8 +211,8 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
 
   crd_admin_session_controller_ = std::make_unique<CrdAdminSessionController>();
 
-  // DBusThreadManager or DeviceSettingsService may be
-  // uninitialized on unit tests.
+  // DBusThreadManager or DeviceSettingsService may be uninitialized (e.g.
+  // during unit tests).
   if (ash::DBusThreadManager::IsInitialized() &&
       ash::DeviceSettingsService::IsInitialized()) {
     std::unique_ptr<DeviceCloudPolicyStoreAsh> device_cloud_policy_store =
@@ -528,7 +528,7 @@ void BrowserPolicyConnectorAsh::Shutdown() {
 
   device_fm_registration_token_uploaders_.clear();
 
-  // `InvalidationListener` must be destroyed after its dependants
+  // `InvalidationListener` must be destroyed after its dependents
   // (`device_cert_provisioning_scheduler_`,
   // `device_local_account_policy_service_`, `device_cloud_policy_invalidator_`,
   // `device_remote_commands_invalidator_`, and

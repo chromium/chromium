@@ -149,20 +149,20 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Delegates to `ash::InstallAttributes::Get()`.
   ash::InstallAttributes* GetInstallAttributes() const;
 
-  // May be nullptr.
-  // TODO(b/281771191) Document when this can return nullptr.
+  // May be uninitialized (nullptr) when DBusThreadManager or
+  // DeviceSettingsService is uninitialized (e.g. in unit tests).
   DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() const {
     return device_cloud_policy_manager_;
   }
 
-  // May be nullptr.
-  // TODO(b/281771191) Document when this can return nullptr.
+  // May be uninitialized (nullptr) if BrowserPolicyConnectorAsh::Init() hasn't
+  // been called yet.
   DeviceLocalAccountPolicyService* GetDeviceLocalAccountPolicyService() const {
     return device_local_account_policy_service_.get();
   }
 
-  // May be nullptr.
-  // TODO(b/281771191) Document when this can return nullptr.
+  // May be uninitialized (nullptr), when DBusThreadManager or
+  // DeviceSettingsService is uninitialized (e.g. in unit tests).
   ServerBackedStateKeysBroker* GetStateKeysBroker() const {
     return state_keys_broker_.get();
   }
