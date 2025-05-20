@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -19,9 +20,23 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   std::optional<FieldAndMatchInfo> match;
-
-  if (ParseField(context, scanner, "EMAIL_ADDRESS", &match)) {
-    return std::make_unique<EmailFieldParser>(std::move(*match));
+  const size_t saved_cursor = scanner->CursorPosition();
+  // Try parsing an email field.
+  const bool parsed_email =
+      ParseField(context, scanner, "EMAIL_ADDRESS", &match);
+  if (parsed_email) {
+    // Try parsing the same field as a loyalty card field.
+    scanner->RewindTo(saved_cursor);
+    const bool parsed_loyalty_card =
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
+        ParseField(context, scanner, "LOYALTY_MEMBERSHIP_ID", &match);
+    if (parsed_loyalty_card) {
+      return std::make_unique<EmailFieldParser>(std::move(*match),
+                                                EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
+    }
+    scanner->Advance();
+    return std::make_unique<EmailFieldParser>(std::move(*match), EMAIL_ADDRESS);
   }
 
   // TODO(crbug.com/361560365): Consider moving this into the JSON files once
@@ -35,20 +50,23 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
     // Since this is either a placeholder or a label match, it's technically not
     // necessarily a high quality label match. However, since this logic
     // predates the low/high quality label distinction, its behavior was kept.
-    return std::make_unique<EmailFieldParser>(FieldAndMatchInfo{
-        field,
-        {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}});
+    return std::make_unique<EmailFieldParser>(
+        FieldAndMatchInfo{field,
+                          {.matched_attribute =
+                               MatchInfo::MatchAttribute::kHighQualityLabel}},
+        EMAIL_ADDRESS);
   }
 
   return nullptr;
 }
 
-EmailFieldParser::EmailFieldParser(FieldAndMatchInfo match)
-    : match_(std::move(match)) {}
+EmailFieldParser::EmailFieldParser(FieldAndMatchInfo match,
+                                   FieldType email_type)
+    : match_(std::move(match)), email_type_(email_type) {}
 
 void EmailFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(match_, EMAIL_ADDRESS, kBaseEmailParserScore,
+  AddClassification(match_, email_type_, kBaseEmailParserScore,
                     field_candidates);
 }
 

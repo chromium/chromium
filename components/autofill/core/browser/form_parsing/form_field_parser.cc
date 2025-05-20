@@ -313,6 +313,11 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     permitted_single_field_types.insert(LOYALTY_MEMBERSHIP_ID);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableEmailOrLoyaltyCardsFilling)) {
+    permitted_single_field_types.insert(EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
+  }
+
   // For historic reasons email addresses are only retained if they appear in
   // a <form> tag. It's unclear whether that's necessary.
   FieldTypeSet permitted_single_field_types_in_form{EMAIL_ADDRESS};
