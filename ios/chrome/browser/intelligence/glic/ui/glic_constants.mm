@@ -29,3 +29,4 @@ NSString* const kGLICConsentSecondBoxBodyText =
     @"incididunt ut labore et dolore magna ali.";
 NSString* const kGLICConsentFootNoteText =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
+NSString* const kGLICLearnAboutYourChoices = @"https://support.google.com/";

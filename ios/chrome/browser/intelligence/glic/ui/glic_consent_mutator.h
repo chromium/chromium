@@ -18,6 +18,9 @@
 // Did close GLIC Promo UI.
 - (void)didCloseGLICPromo;
 
+// Handle tap on learn about your choices.
+- (void)handleLearnAboutYourChoicesTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_UI_GLIC_CONSENT_MUTATOR_H_
