@@ -1530,6 +1530,11 @@
       status: "experimental",
     },
     {
+      // Allow sibling-index() and sibling-count() in @container queries
+      name: "CSSSiblingFunctionsInContainerQueries",
+      status: "experimental",
+    },
+    {
       name: "CSSSignRelatedFunctions",
       status: "stable",
     },
