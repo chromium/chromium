@@ -6,7 +6,8 @@ import {OffscreenCommandType} from '../offscreen_command_type.js';
 
 import * as PumpkinConstants from './parse/pumpkin/pumpkin_constants.js';
 
-const SANDBOXED_PUMPKIN_TAGGER_JS_FILE = 'parse/sandboxed_pumpkin_tagger.js';
+const SANDBOXED_PUMPKIN_TAGGER_JS_FILE =
+    'dictation/parse/sandboxed_pumpkin_tagger.js';
 
 /**
  * Offscreen way to communicate to pumpkin via worker.
