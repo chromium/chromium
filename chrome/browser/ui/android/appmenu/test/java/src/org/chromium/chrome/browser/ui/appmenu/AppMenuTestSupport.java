@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -40,16 +40,16 @@ public class AppMenuTestSupport {
     public static void onOptionsItemSelected(AppMenuCoordinator coordinator, int itemId) {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
-                .onOptionsItemSelected(itemId, /* triggeringMotionEvent= */ null);
+                .onOptionsItemSelected(itemId, /* triggeringMotion= */ null);
     }
 
     /**
      * Simulates a click on a menu item.
      *
-     * @see #callOnItemClick(AppMenuCoordinator, int, MotionEvent)
+     * @see #callOnItemClick(AppMenuCoordinator, int, MotionEventInfo)
      */
     public static void callOnItemClick(AppMenuCoordinator coordinator, int menuItemId) {
-        callOnItemClick(coordinator, menuItemId, /* triggeringMotionEvent= */ null);
+        callOnItemClick(coordinator, menuItemId, /* triggeringMotion= */ null);
     }
 
     /**
@@ -57,13 +57,13 @@ public class AppMenuTestSupport {
      *
      * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
      * @param menuItemId The id of the menu item to click.
-     * @param triggeringMotionEvent The {@link MotionEvent} that triggered the click. See {@link
-     *     AppMenuClickHandler#onItemClick(PropertyModel, MotionEvent)}.
+     * @param triggeringMotion The {@link MotionEventInfo} that triggered the click. See {@link
+     *     AppMenuClickHandler#onItemClick(PropertyModel, MotionEventInfo)}.
      */
     public static void callOnItemClick(
             AppMenuCoordinator coordinator,
             int menuItemId,
-            @Nullable MotionEvent triggeringMotionEvent) {
+            @Nullable MotionEventInfo triggeringMotion) {
         PropertyModel model =
                 ((AppMenuCoordinatorImpl) coordinator)
                         .getAppMenuHandlerImplForTesting()
@@ -73,7 +73,7 @@ public class AppMenuTestSupport {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
                 .getAppMenu()
-                .onItemClick(model, triggeringMotionEvent);
+                .onItemClick(model, triggeringMotion);
     }
 
     /**

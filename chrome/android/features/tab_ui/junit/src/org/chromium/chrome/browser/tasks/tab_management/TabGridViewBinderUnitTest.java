@@ -32,7 +32,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.ContextThemeWrapper;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
@@ -69,6 +68,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.components.browser_ui.util.OnPeripheralClickListener;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Junit Tests for {@link TabGridViewBinder}. */
@@ -486,13 +486,13 @@ public final class TabGridViewBinderUnitTest {
                             public void run(
                                     View view,
                                     int tabId,
-                                    @Nullable MotionEvent triggeringMotionEvent) {}
+                                    @Nullable MotionEventInfo triggeringMotion) {}
 
                             @Override
                             public void run(
                                     View view,
                                     String syncId,
-                                    @Nullable MotionEvent triggeringMotionEvent) {}
+                                    @Nullable MotionEventInfo triggeringMotion) {}
                         });
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
 

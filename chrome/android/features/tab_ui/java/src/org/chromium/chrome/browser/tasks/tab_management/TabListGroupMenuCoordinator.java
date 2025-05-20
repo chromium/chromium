@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.StringRes;
@@ -20,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -68,7 +68,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     TabListMediator.TabActionListener getTabActionListener() {
         return new TabListMediator.TabActionListener() {
             @Override
-            public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
+            public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                 @Nullable TabModel tabModel = getTabModel();
                 if (tabModel == null) return;
 
@@ -88,7 +88,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             }
 
             @Override
-            public void run(View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {
+            public void run(View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
                 // Intentional no-op.
             }
         };

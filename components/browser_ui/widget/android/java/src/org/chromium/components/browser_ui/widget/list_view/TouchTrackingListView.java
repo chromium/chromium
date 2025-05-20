@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 /**
  * A custom {@link ListView} that tracks touch events.
@@ -52,12 +53,12 @@ public final class TouchTrackingListView extends ListView implements ListViewTou
             new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
-                    mLastSingleTapUpInfo = ListViewTouchInfo.fromMotionEvent(e);
+                    mLastSingleTapUpInfo = MotionEventInfo.fromMotionEvent(e);
                     return true;
                 }
             };
 
-    private @Nullable ListViewTouchInfo mLastSingleTapUpInfo;
+    private @Nullable MotionEventInfo mLastSingleTapUpInfo;
 
     public TouchTrackingListView(Context context) {
         this(context, /* attrs= */ null);
@@ -84,7 +85,7 @@ public final class TouchTrackingListView extends ListView implements ListViewTou
     }
 
     @Override
-    public @Nullable ListViewTouchInfo getLastSingleTapUp() {
+    public @Nullable MotionEventInfo getLastSingleTapUp() {
         return mLastSingleTapUpInfo;
     }
 }

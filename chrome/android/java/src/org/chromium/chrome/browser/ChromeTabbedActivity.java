@@ -23,7 +23,6 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
@@ -284,6 +283,7 @@ import org.chromium.components.browser_ui.edge_to_edge.TabbedSystemBarColorHelpe
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -3224,7 +3224,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     @Override
     public boolean onMenuOrKeyboardAction(
-            final int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent) {
+            final int id, boolean fromMenu, @Nullable MotionEventInfo triggeringMotion) {
         final Tab currentTab = getActivityTab();
         boolean currentTabIsNtp = isTabNtp(currentTab);
         if (id == R.id.new_tab_menu_id) {
@@ -3328,7 +3328,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
             RecordUserAction.record("MobileMenuRecentTabs");
         } else if (id == R.id.close_tab) {
-            // TODO(crbug.com/375468032): use triggeringMotionEvent to decide
+            // TODO(crbug.com/375468032): use triggeringMotion to decide
             // TabClosureParams.allowUndo.
             getCurrentTabModel()
                     .getTabRemover()
@@ -3336,7 +3336,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             TabClosureParams.closeTab(currentTab).build(), /* allowDialog= */ true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
-            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotionEvent);
+            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
 
             // Close both incognito and normal tabs.
             Runnable closeAllTabsRunnable =
@@ -3351,7 +3351,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     closeAllTabsRunnable);
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
-            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotionEvent);
+            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
 
             // Close only incognito tabs
             Runnable closeAllTabsRunnable =
@@ -3439,7 +3439,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
             RecordUserAction.record("MobileMenuNtpCustomization");
         } else {
-            return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotionEvent);
+            return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
         }
         return true;
     }

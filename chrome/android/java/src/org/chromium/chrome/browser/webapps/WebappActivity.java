@@ -10,7 +10,6 @@ import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_WEBAPK_PACKAG
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.view.MotionEvent;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 /** Displays a webapp in a nearly UI-less Chrome (InfoBars still appear). */
 public class WebappActivity extends BaseCustomTabActivity {
@@ -69,7 +69,7 @@ public class WebappActivity extends BaseCustomTabActivity {
 
     @Override
     public boolean onMenuOrKeyboardAction(
-            int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent) {
+            int id, boolean fromMenu, @Nullable MotionEventInfo triggeringMotion) {
         // Disable creating bookmark.
         if (id == R.id.bookmark_this_page_id) {
             return true;
@@ -83,7 +83,7 @@ public class WebappActivity extends BaseCustomTabActivity {
             }
             return true;
         }
-        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotionEvent);
+        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
     }
 
     @Override

@@ -243,7 +243,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     public void onSwipeTab_Delete() {
         mItemTouchHelperCallback.onSwiped(mMockViewHolder1, POSITION1);
 
-        verify(mTabClosedListener).run(mItemView1, TAB1_ID, /* triggeringMotionEvent= */ null);
+        verify(mTabClosedListener).run(mItemView1, TAB1_ID, /* triggeringMotion= */ null);
     }
 
     @Test

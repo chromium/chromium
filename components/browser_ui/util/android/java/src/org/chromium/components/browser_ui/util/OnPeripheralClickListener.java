@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.util.MotionEventUtils;
 
 /**
@@ -35,7 +36,7 @@ public final class OnPeripheralClickListener implements View.OnTouchListener {
 
                             @Override
                             public boolean onSingleTapUp(MotionEvent e) {
-                                onPeripheralClickRunnable.run(e);
+                                onPeripheralClickRunnable.run(MotionEventInfo.fromMotionEvent(e));
                                 return true;
                             }
                         });
@@ -57,8 +58,8 @@ public final class OnPeripheralClickListener implements View.OnTouchListener {
         /**
          * Called when a peripheral click is detected.
          *
-         * @param triggeringMotionEvent {@link MotionEvent} that triggered the click.
+         * @param triggeringMotion {@link MotionEventInfo} that triggered the click.
          */
-        void run(MotionEvent triggeringMotionEvent);
+        void run(MotionEventInfo triggeringMotion);
     }
 }

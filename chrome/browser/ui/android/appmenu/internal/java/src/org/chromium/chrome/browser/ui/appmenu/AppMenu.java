@@ -20,7 +20,6 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -55,6 +54,7 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -453,13 +453,13 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     }
 
     @Override
-    public void onItemClick(PropertyModel model, @Nullable MotionEvent triggeringMotionEvent) {
+    public void onItemClick(PropertyModel model, @Nullable MotionEventInfo triggeringMotion) {
         if (!model.get(AppMenuItemProperties.ENABLED)) return;
 
         int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
         mSelectedItemBeforeDismiss = true;
         dismiss();
-        mHandler.onOptionsItemSelected(id, triggeringMotionEvent);
+        mHandler.onOptionsItemSelected(id, triggeringMotion);
     }
 
     @Override

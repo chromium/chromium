@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -384,19 +385,19 @@ class AppMenuHandlerImpl
      * Called when a menu item is selected.
      *
      * @param itemId The menu item ID.
-     * @param triggeringMotionEvent The {@link MotionEvent} that triggered the click; it is {@code
+     * @param triggeringMotion The {@link MotionEventInfo} that triggered the click; it is {@code
      *     null} if {@link MotionEvent} wasn't available when the click was detected, such as in
      *     {@link android.view.View.OnClickListener}.
      */
     @VisibleForTesting
-    void onOptionsItemSelected(int itemId, @Nullable MotionEvent triggeringMotionEvent) {
+    void onOptionsItemSelected(int itemId, @Nullable MotionEventInfo triggeringMotion) {
         if (mTestOptionsItemSelectedListener != null) {
             mTestOptionsItemSelectedListener.onResult(itemId);
             return;
         }
 
         mAppMenuDelegate.onOptionsItemSelected(
-                itemId, mDelegate.getBundleForMenuItem(itemId), triggeringMotionEvent);
+                itemId, mDelegate.getBundleForMenuItem(itemId), triggeringMotion);
     }
 
     /**

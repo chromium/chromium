@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -214,14 +215,14 @@ public class TabListViewHolderTest {
     private final TabListMediator.TabActionListener mMockCloseListener =
             new TabListMediator.TabActionListener() {
                 @Override
-                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
+                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mCloseClicked.set(true);
                     mCloseTabId.set(tabId);
                 }
 
                 @Override
                 public void run(
-                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
+                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {}
             };
     private final AtomicBoolean mCloseClicked = new AtomicBoolean();
     private final AtomicInteger mCloseTabId = new AtomicInteger();
@@ -229,14 +230,14 @@ public class TabListViewHolderTest {
     private final TabListMediator.TabActionListener mMockSelectedListener =
             new TabListMediator.TabActionListener() {
                 @Override
-                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
+                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mSelectClicked.set(true);
                     mSelectTabId.set(tabId);
                 }
 
                 @Override
                 public void run(
-                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
+                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {}
             };
     private final AtomicBoolean mSelectClicked = new AtomicBoolean();
     private final AtomicInteger mSelectTabId = new AtomicInteger();
@@ -244,14 +245,14 @@ public class TabListViewHolderTest {
     private final TabListMediator.TabActionListener mMockCreateGroupButtonListener =
             new TabListMediator.TabActionListener() {
                 @Override
-                public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
+                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mCreateGroupButtonClicked.set(true);
                     mCreateGroupTabId.set(tabId);
                 }
 
                 @Override
                 public void run(
-                        View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
+                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {}
             };
     private final AtomicBoolean mCreateGroupButtonClicked = new AtomicBoolean();
     private final AtomicInteger mCreateGroupTabId = new AtomicInteger();

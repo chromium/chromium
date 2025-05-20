@@ -18,7 +18,6 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Size;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -74,6 +73,7 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -214,7 +214,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     return new TabActionListener() {
                         @Override
                         public void run(
-                                View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
+                                View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                             // Intentional no-op.
                         }
 
@@ -222,7 +222,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         public void run(
                                 View view,
                                 String syncId,
-                                @Nullable MotionEvent triggeringMotionEvent) {
+                                @Nullable MotionEventInfo triggeringMotion) {
                             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
                             mIsOpeningLastItem =
                                     getArchivedTabCount() == savedTabGroup.savedTabs.size();

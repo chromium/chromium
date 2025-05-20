@@ -163,6 +163,7 @@ android_library("unit_device_javatests") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/collaboration/public:core_java",
     "//components/commerce/core:proto_java",

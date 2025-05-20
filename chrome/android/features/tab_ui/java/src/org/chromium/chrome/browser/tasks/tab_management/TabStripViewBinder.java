@@ -66,7 +66,7 @@ class TabStripViewBinder {
                             data.tabActionListener.run(
                                     v,
                                     model.get(TabProperties.TAB_ID),
-                                    /* triggeringMotionEvent= */ null);
+                                    /* triggeringMotion= */ null);
                         });
             } else {
                 button.setOnClickListener(
@@ -75,7 +75,7 @@ class TabStripViewBinder {
                                     .run(
                                             v,
                                             model.get(TabProperties.TAB_ID),
-                                            /* triggeringMotionEvent= */ null);
+                                            /* triggeringMotion= */ null);
                         });
             }
             setContentDescription(view, model);

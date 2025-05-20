@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
@@ -177,8 +178,10 @@ public class CloseAllTabsDialogTest {
                                         : null));
     }
 
-    /** Creates a {@link MotionEvent} that matches one from a mouse and would trigger a click. */
-    private static MotionEvent createClickTriggeringMotionFromMouse() {
+    /**
+     * Creates a {@link MotionEventInfo} that matches one from a mouse and would trigger a click.
+     */
+    private static MotionEventInfo createClickTriggeringMotionFromMouse() {
         long downTime = SystemClock.uptimeMillis();
 
         PointerProperties pointerProperties = new MotionEvent.PointerProperties();
@@ -189,21 +192,22 @@ public class CloseAllTabsDialogTest {
         pointerCoords.x = 0;
         pointerCoords.y = 0;
 
-        return MotionEvent.obtain(
-                downTime,
-                downTime + 50,
-                MotionEvent.ACTION_UP,
-                /* pointerCount= */ 1,
-                new PointerProperties[] {pointerProperties},
-                new PointerCoords[] {pointerCoords},
-                /* metaState= */ 0,
-                /* buttonState= */ 0,
-                /* xPrecision= */ 1.0f,
-                /* yPrecision= */ 1.0f,
-                /* deviceId= */ 0,
-                /* edgeFlags= */ 0,
-                InputDevice.SOURCE_MOUSE,
-                /* flags= */ 0);
+        return MotionEventInfo.fromMotionEvent(
+                MotionEvent.obtain(
+                        downTime,
+                        downTime + 50,
+                        MotionEvent.ACTION_UP,
+                        /* pointerCount= */ 1,
+                        new PointerProperties[] {pointerProperties},
+                        new PointerCoords[] {pointerCoords},
+                        /* metaState= */ 0,
+                        /* buttonState= */ 0,
+                        /* xPrecision= */ 1.0f,
+                        /* yPrecision= */ 1.0f,
+                        /* deviceId= */ 0,
+                        /* edgeFlags= */ 0,
+                        InputDevice.SOURCE_MOUSE,
+                        /* flags= */ 0));
     }
 
     /**

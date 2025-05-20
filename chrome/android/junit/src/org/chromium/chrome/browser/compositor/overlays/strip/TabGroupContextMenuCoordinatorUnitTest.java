@@ -60,9 +60,9 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
-import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -358,7 +358,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createTouchMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -379,7 +379,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createMouseMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -410,7 +410,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createTouchMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -431,7 +431,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createMouseMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,

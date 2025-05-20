@@ -153,10 +153,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Shopping
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
-import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -993,7 +993,7 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView2,
                         mModelList.get(1).model.get(TabProperties.TAB_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
         verify(mGridCardOnClickListenerProvider)
                 .onTabSelecting(mModelList.get(1).model.get(TabProperties.TAB_ID), true);
@@ -1011,10 +1011,9 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView1,
                         mModelList.get(0).model.get(TabProperties.TAB_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
-        verify(mOpenGroupActionListener)
-                .run(mItemView1, TAB1_ID, /* triggeringMotionEvent= */ null);
+        verify(mOpenGroupActionListener).run(mItemView1, TAB1_ID, /* triggeringMotion= */ null);
     }
 
     @Test
@@ -1029,10 +1028,9 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView1,
                         mModelList.get(0).model.get(TabProperties.TAB_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
-        verify(mOpenGroupActionListener)
-                .run(mItemView1, TAB1_ID, /* triggeringMotionEvent= */ null);
+        verify(mOpenGroupActionListener).run(mItemView1, TAB1_ID, /* triggeringMotion= */ null);
     }
 
     @Test
@@ -1046,7 +1044,7 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView2,
                         mModelList.get(1).model.get(TabProperties.TAB_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
         TabClosureParams params = TabClosureParams.closeTab(mTab2).allowUndo(true).build();
         verify(mTabRemover)
@@ -1068,7 +1066,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void sendsCloseSignalCorrectly_TriggeringMotionEventFromMouse_DisallowUndo() {
+    public void sendsCloseSignalCorrectly_TriggeringMotionFromMouse_DisallowUndo() {
         mMediator.setActionOnAllRelatedTabsForTesting(false);
         mModelList
                 .get(1)
@@ -1078,12 +1076,13 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView2,
                         mModelList.get(1).model.get(TabProperties.TAB_ID),
-                        TabUiTestHelper.createMouseMotionEvent(
-                                /* downTime= */ SystemClock.uptimeMillis(),
-                                /* eventTime= */ SystemClock.uptimeMillis() + 200,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0));
+                        MotionEventInfo.fromMotionEvent(
+                                TabUiTestHelper.createMouseMotionEvent(
+                                        /* downTime= */ SystemClock.uptimeMillis(),
+                                        /* eventTime= */ SystemClock.uptimeMillis() + 200,
+                                        MotionEvent.ACTION_UP,
+                                        /* x= */ 0,
+                                        /* y= */ 0)));
 
         verify(mTabRemover)
                 .closeTabs(
@@ -1103,7 +1102,7 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView2,
                         mModelList.get(1).model.get(TabProperties.TAB_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
         verify(mTabRemover)
                 .closeTabs(
@@ -1124,7 +1123,7 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView2,
                         mModelList.get(1).model.get(TabProperties.TAB_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
         verify(mTabRemover)
                 .closeTabs(
@@ -4037,7 +4036,7 @@ public class TabListMediatorUnitTest {
                 .get(1)
                 .model
                 .get(TabProperties.TAB_CLICK_LISTENER)
-                .run(mItemView2, TAB2_ID, /* triggeringMotionEvent= */ null);
+                .run(mItemView2, TAB2_ID, /* triggeringMotion= */ null);
         assertThat(mModelList.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertEquals(fetcher2, mModelList.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
     }
@@ -4083,7 +4082,7 @@ public class TabListMediatorUnitTest {
                 .get(1)
                 .model
                 .get(TabProperties.TAB_CLICK_LISTENER)
-                .run(mItemView2, TAB2_ID, /* triggeringMotionEvent= */ null);
+                .run(mItemView2, TAB2_ID, /* triggeringMotion= */ null);
         assertThat(mModelList.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertNotEquals(fetcher2, mModelList.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
     }
@@ -4321,7 +4320,7 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createTouchMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -4341,7 +4340,7 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createMouseMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -4370,7 +4369,7 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createTouchMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -4390,7 +4389,7 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createMouseMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -4974,7 +4973,7 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView1,
                         mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
         // Assert that the tab group has been removed from the model list and archive status reset.
         assertEquals(TAB, mModelList.get(0).model.get(CARD_TYPE));
@@ -4995,10 +4994,10 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView1,
                         mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
 
         verify(mOpenGroupActionListener)
-                .run(mItemView1, SYNC_GROUP_ID1, /* triggeringMotionEvent= */ null);
+                .run(mItemView1, SYNC_GROUP_ID1, /* triggeringMotion= */ null);
     }
 
     @Test
@@ -5049,7 +5048,7 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView1,
                         mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID),
-                        /* triggeringMotionEvent= */ null);
+                        /* triggeringMotion= */ null);
         assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
     }
 

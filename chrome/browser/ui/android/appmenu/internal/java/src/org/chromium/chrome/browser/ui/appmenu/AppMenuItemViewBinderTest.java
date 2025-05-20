@@ -42,6 +42,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -63,7 +64,7 @@ public class AppMenuItemViewBinderTest {
         public PropertyModel lastLongClickedModel;
 
         @Override
-        public void onItemClick(PropertyModel model, @Nullable MotionEvent triggeringMotionEvent) {
+        public void onItemClick(PropertyModel model, @Nullable MotionEventInfo triggeringMotion) {
             onClickCallback.notifyCalled();
             lastClickedModel = model;
         }

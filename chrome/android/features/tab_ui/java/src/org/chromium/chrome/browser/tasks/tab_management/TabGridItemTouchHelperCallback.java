@@ -272,7 +272,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             mTabClosedListener.run(
                     viewHolder.itemView,
                     simpleViewHolder.model.get(TabProperties.TAB_ID),
-                    /* triggeringMotionEvent= */ null);
+                    /* triggeringMotion= */ null);
 
             RecordUserAction.record("MobileStackViewSwipeCloseTab." + mComponentName);
         } else if (simpleViewHolder.model.get(CARD_TYPE) == MESSAGE) {

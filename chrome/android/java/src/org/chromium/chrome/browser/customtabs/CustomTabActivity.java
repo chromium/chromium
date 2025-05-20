@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -305,9 +306,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public boolean onOptionsItemSelected(
-            int itemId,
-            @Nullable Bundle menuItemData,
-            @Nullable MotionEvent triggeringMotionEvent) {
+            int itemId, @Nullable Bundle menuItemData, @Nullable MotionEventInfo triggeringMotion) {
         int menuIndex =
                 CustomTabAppMenuPropertiesDelegate.getIndexOfMenuItemFromBundle(menuItemData);
         if (menuIndex >= 0) {
@@ -321,12 +320,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             return true;
         }
 
-        return super.onOptionsItemSelected(itemId, menuItemData, triggeringMotionEvent);
+        return super.onOptionsItemSelected(itemId, menuItemData, triggeringMotion);
     }
 
     @Override
     public boolean onMenuOrKeyboardAction(
-            int id, boolean fromMenu, @Nullable MotionEvent triggeringMotionEvent) {
+            int id, boolean fromMenu, @Nullable MotionEventInfo triggeringMotion) {
         if (id == R.id.bookmark_this_page_id) {
             mTabBookmarkerSupplier.get().addOrEditBookmark(getActivityTab());
             RecordUserAction.record("MobileMenuAddToBookmarks");
@@ -372,7 +371,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             }
             return true;
         }
-        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotionEvent);
+        return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
     }
 
     @Override

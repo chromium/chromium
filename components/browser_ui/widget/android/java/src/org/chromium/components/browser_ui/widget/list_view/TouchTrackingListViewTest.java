@@ -32,7 +32,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -79,7 +79,7 @@ public class TouchTrackingListViewTest {
                                     MotionEvent.TOOL_TYPE_MOUSE));
 
                     // Assert
-                    ListViewTouchInfo touchInfo = touchTrackingListView.getLastSingleTapUp();
+                    MotionEventInfo touchInfo = touchTrackingListView.getLastSingleTapUp();
                     assertNotNull(touchInfo);
                     assertEquals(MotionEvent.ACTION_UP, touchInfo.action);
                     assertEquals(InputDevice.SOURCE_MOUSE, touchInfo.source);

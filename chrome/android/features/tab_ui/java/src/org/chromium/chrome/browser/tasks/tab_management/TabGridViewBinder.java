@@ -11,7 +11,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.OnPeripheralClickListener;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageView;
@@ -294,7 +294,7 @@ class TabGridViewBinder {
             view.setOnClickListener(
                     v ->
                             runTabActionListener(
-                                    listener, v, propertyModel, /* triggeringMotionEvent= */ null));
+                                    listener, v, propertyModel, /* triggeringMotion= */ null));
         }
     }
 
@@ -322,12 +322,9 @@ class TabGridViewBinder {
         view.setOnTouchListener(
                 new OnPeripheralClickListener(
                         view,
-                        triggeringMotionEvent ->
+                        triggeringMotion ->
                                 runTabActionListener(
-                                        tabActionListener,
-                                        view,
-                                        propertyModel,
-                                        triggeringMotionEvent)));
+                                        tabActionListener, view, propertyModel, triggeringMotion)));
     }
 
     static void setNullableLongClickListener(
@@ -340,7 +337,7 @@ class TabGridViewBinder {
             view.setOnLongClickListener(
                     v -> {
                         runTabActionListener(
-                                listener, v, propertyModel, /* triggeringMotionEvent= */ null);
+                                listener, v, propertyModel, /* triggeringMotion= */ null);
                         return true;
                     });
         }
@@ -350,15 +347,12 @@ class TabGridViewBinder {
             @NonNull TabActionListener tabActionListener,
             @NonNull View view,
             @NonNull PropertyModel propertyModel,
-            @Nullable MotionEvent triggeringMotionEvent) {
+            @Nullable MotionEventInfo triggeringMotion) {
         if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
             tabActionListener.run(
-                    view,
-                    propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID),
-                    triggeringMotionEvent);
+                    view, propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID), triggeringMotion);
         } else {
-            tabActionListener.run(
-                    view, propertyModel.get(TabProperties.TAB_ID), triggeringMotionEvent);
+            tabActionListener.run(view, propertyModel.get(TabProperties.TAB_ID), triggeringMotion);
         }
     }
 

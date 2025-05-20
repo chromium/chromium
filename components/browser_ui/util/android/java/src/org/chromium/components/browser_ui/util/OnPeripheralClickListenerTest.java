@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.util.OnPeripheralClickListener.OnPeripheralClickRunnable;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 @NullMarked
@@ -185,7 +186,7 @@ public class OnPeripheralClickListenerTest {
         int mNumTimesRun;
 
         @Override
-        public void run(MotionEvent triggeringMotionEvent) {
+        public void run(MotionEventInfo triggeringMotion) {
             mNumTimesRun++;
         }
     }

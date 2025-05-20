@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 class TestAppMenuDelegate implements AppMenuDelegate {
     public final CallbackHelper itemSelectedCallbackHelper = new CallbackHelper();
@@ -17,9 +17,7 @@ class TestAppMenuDelegate implements AppMenuDelegate {
 
     @Override
     public boolean onOptionsItemSelected(
-            int itemId,
-            @Nullable Bundle menuItemData,
-            @Nullable MotionEvent triggeringMotionEvent) {
+            int itemId, @Nullable Bundle menuItemData, @Nullable MotionEventInfo triggeringMotion) {
         lastSelectedItemId = itemId;
         itemSelectedCallbackHelper.notifyCalled();
         return true;

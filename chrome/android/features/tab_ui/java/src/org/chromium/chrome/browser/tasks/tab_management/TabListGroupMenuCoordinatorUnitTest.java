@@ -246,9 +246,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
 
-        mMenuCoordinator
-                .getTabActionListener()
-                .run(mView, TAB_ID, /* triggeringMotionEvent= */ null);
+        mMenuCoordinator.getTabActionListener().run(mView, TAB_ID, /* triggeringMotion= */ null);
 
         verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)
@@ -271,9 +269,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
 
-        mMenuCoordinator
-                .getTabActionListener()
-                .run(mView, TAB_ID, /* triggeringMotionEvent= */ null);
+        mMenuCoordinator.getTabActionListener().run(mView, TAB_ID, /* triggeringMotion= */ null);
 
         verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)

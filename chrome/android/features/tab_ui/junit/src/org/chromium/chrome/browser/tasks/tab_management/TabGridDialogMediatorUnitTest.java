@@ -120,9 +120,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
-import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
@@ -1511,7 +1511,7 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createTouchMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -1532,7 +1532,7 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createMouseMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -1563,7 +1563,7 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createTouchMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
@@ -1584,7 +1584,7 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                ListViewTouchInfo.fromMotionEvent(
+                MotionEventInfo.fromMotionEvent(
                         TabUiTestHelper.createMouseMotionEvent(
                                 downMotionTime,
                                 /* eventTime= */ downMotionTime + 50,
