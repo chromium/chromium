@@ -371,8 +371,9 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
 
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
-  ASSERT_EQ(1u, devices.size());
-  EXPECT_EQ(device_info->guid(), devices[0].guid());
+
+  // FCM channel (VAPID) is not supported.
+  ASSERT_EQ(0u, devices.size());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {

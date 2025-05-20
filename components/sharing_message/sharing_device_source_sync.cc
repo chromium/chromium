@@ -153,11 +153,9 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
     sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const {
   std::set<SharingSpecificFields::EnabledFeatures> accepted_features{
       required_feature};
-  bool can_send_via_vapid = CanSendViaVapid(sync_service_);
   bool can_send_via_sender_id = CanSendViaSenderID(sync_service_);
 
-  std::erase_if(devices, [accepted_features, can_send_via_vapid,
-                          can_send_via_sender_id](
+  std::erase_if(devices, [accepted_features, can_send_via_sender_id](
                              const syncer::DeviceInfo* device) {
     // Checks if |last_updated_timestamp| is not too old.
     if (IsStale(*device)) {
@@ -170,17 +168,12 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
     }
 
     // Checks if message can be sent via either VAPID or sender ID.
-    auto& vapid_target_info = device->sharing_info()->vapid_target_info;
     auto& sender_id_target_info = device->sharing_info()->sender_id_target_info;
-    bool vapid_channel_valid =
-        (can_send_via_vapid && !vapid_target_info.fcm_token.empty() &&
-         !vapid_target_info.p256dh.empty() &&
-         !vapid_target_info.auth_secret.empty());
     bool sender_id_channel_valid =
         (can_send_via_sender_id && !sender_id_target_info.fcm_token.empty() &&
          !sender_id_target_info.p256dh.empty() &&
          !sender_id_target_info.auth_secret.empty());
-    if (!vapid_channel_valid && !sender_id_channel_valid) {
+    if (!sender_id_channel_valid) {
       return true;
     }
 

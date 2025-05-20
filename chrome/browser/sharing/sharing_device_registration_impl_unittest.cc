@@ -76,12 +76,9 @@ class FakeInstanceID : public instance_id::InstanceID {
                 base::TimeDelta time_to_live,
                 std::set<Flags> flags,
                 GetTokenCallback callback) override {
-    // TODO(crbug.com/40253551): Verify that only `kSharingSenderID` is used.
-    if (authorized_entity == kSharingSenderID) {
-      std::move(callback).Run(kSenderIdFCMToken, result_);
-    } else {
-      std::move(callback).Run(fcm_token_, result_);
-    }
+    ASSERT_EQ(authorized_entity, kSharingSenderID)
+        << "Unexpected authorized_entity: " << authorized_entity;
+    std::move(callback).Run(kSenderIdFCMToken, result_);
   }
 
   void ValidateToken(const std::string& authorized_entity,
