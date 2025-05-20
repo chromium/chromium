@@ -212,9 +212,6 @@ class AILanguageModel : public AIContextBoundObject,
   // owned by `context_bound_object_set_`, and they will be destroyed together.
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
 
-  // Holds state for any currently active prompt.
-  std::unique_ptr<PromptState> prompt_state_;
-
   // Holds the queue of operations to be run.
   base::queue<QueueCallback> queue_;
   // Whether a task is currently running.
@@ -222,6 +219,10 @@ class AILanguageModel : public AIContextBoundObject,
 
   std::unique_ptr<optimization_guide::SafetyChecker> safety_checker_;
   base::WeakPtr<optimization_guide::ModelClient> model_client_;
+
+  // Holds state for any currently active prompt. This holds a reference to
+  // `safety_checker_` so must be ordered after that member.
+  std::unique_ptr<PromptState> prompt_state_;
 
   mojo::Receiver<blink::mojom::AILanguageModel> receiver_{this};
 

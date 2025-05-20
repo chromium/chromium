@@ -667,6 +667,20 @@ TEST_F(AILanguageModelTest, Destroy) {
   run_loop.Run();
 }
 
+TEST_F(AILanguageModelTest, DestroyWithActivePrompt) {
+  fake_broker_.settings().set_execute_delay(base::Minutes(1));
+  auto session = CreateSession();
+  base::RunLoop run_loop;
+  session.set_disconnect_handler(run_loop.QuitClosure());
+
+  TestStreamingResponder responder;
+  session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+  session->Destroy();
+  run_loop.Run();
+
+  EXPECT_FALSE(responder.WaitForCompletion());
+}
+
 TEST_F(AILanguageModelTest, UnsupportedLanguage) {
   base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
   AITestUtils::MockCreateLanguageModelClient language_model_client;
