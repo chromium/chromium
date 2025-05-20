@@ -9,9 +9,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace privacy_sandbox {
+
+constexpr int kMinRequiredDialogHeight = 100;
+
 //-----------------------------------------------------------------------------
 // EntryPointHandler
 //-----------------------------------------------------------------------------
@@ -83,8 +87,25 @@ void NavigationHandler::HandleNewNavigation(
     return;
   }
 
-  // TODO(crbug.com/408016824):  Finish implementing checks needed before
-  // showing notice.
+  // Avoid showing the prompt on popups, pip, anything that isn't a normal
+  // browser.
+  if (browser_window_interface->GetType() !=
+      BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
+
+  // If the windows height is too small, it is difficult to read or interact
+  // with the dialog. The dialog is blocking modal, that is why we want to
+  // prevent it from showing if there isn't enough space. The PrivacySandbox
+  // prompt can always fit inside a normal tabbed window due to its minimum
+  // width, so checking the height is enough here.
+  auto* web_contents =
+      browser_window_interface->GetWebContentsModalDialogHostForWindow();
+  if (!web_contents || web_contents->GetMaximumDialogSize().height() <
+                           kMinRequiredDialogHeight) {
+    return;
+  }
+
   // TODO(crbug.com/408016824):  Add error-event histograms.
 
   HandleEntryPoint(browser_window_interface);
