@@ -8,6 +8,9 @@ source_set("model") {
     "welcome_back_prefs.mm",
   ]
   public_deps = [ "//components/prefs" ]
-  deps = [ "//ios/chrome/browser/first_run/ui_bundled/best_features/ui:best_features_item" ]
+  deps = [
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/ui:best_features_item",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
   frameworks = [ "UIKit.framework" ]
 }

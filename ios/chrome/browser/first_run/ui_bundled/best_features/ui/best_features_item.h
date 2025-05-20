@@ -8,7 +8,8 @@
 #import <UIKit/UIKit.h>
 
 // An enum representing the different features promoted by Bling's Best
-// Features.
+// Features. These values should not be reordered or reused.
+// LINT.IfChange(BestFeaturesItemType)
 enum class BestFeaturesItemType {
   kLensSearch = 0,
   kEnhancedSafeBrowsing = 1,
@@ -19,6 +20,7 @@ enum class BestFeaturesItemType {
   kAutofillPasswordsInOtherApps = 6,
   kSharePasswordsWithFamily = 7
 };
+// LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.mm:IntToBestFeaturesItemType)
 
 // Holds properties and values needed to configure the items in the Best
 // Features Screen.

@@ -7,8 +7,39 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-std::string PrefNameForBestFeaturesItemType(BestFeaturesItemType item_type);
+namespace {
+
+// Returns a `BestFeaturesItemType` from a given int.
+// LINT.IfChange(IntToBestFeaturesItemType)
+std::optional<BestFeaturesItemType> IntToBestFeaturesItemType(
+    const std::optional<int>& optional_value) {
+  if (optional_value.has_value()) {
+    int value = optional_value.value();
+    switch (value) {
+      case 0:
+        return BestFeaturesItemType::kLensSearch;
+      case 1:
+        return BestFeaturesItemType::kEnhancedSafeBrowsing;
+      case 2:
+        return BestFeaturesItemType::kLockedIncognitoTabs;
+      case 3:
+        return BestFeaturesItemType::kSaveAndAutofillPasswords;
+      case 4:
+        return BestFeaturesItemType::kTabGroups;
+      case 5:
+        return BestFeaturesItemType::kPriceTrackingAndInsights;
+      case 6:
+        return BestFeaturesItemType::kAutofillPasswordsInOtherApps;
+      case 7:
+        return BestFeaturesItemType::kSharePasswordsWithFamily;
+    }
+  }
+  return std::nullopt;
+}
+// LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h:BestFeaturesItemType)
+}  // anonymous namespace
 
 const char kWelcomeBackEligibleItems[] = "ios.welcomeback.eligible_items";
 
@@ -17,21 +48,21 @@ void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry) {
   // the features in the feature repository.
   base::Value::List default_welcome_back_items;
   default_welcome_back_items.Append(
-      PrefNameForBestFeaturesItemType(BestFeaturesItemType::kLensSearch));
-  default_welcome_back_items.Append(PrefNameForBestFeaturesItemType(
-      BestFeaturesItemType::kEnhancedSafeBrowsing));
-  default_welcome_back_items.Append(PrefNameForBestFeaturesItemType(
-      BestFeaturesItemType::kLockedIncognitoTabs));
-  default_welcome_back_items.Append(PrefNameForBestFeaturesItemType(
-      BestFeaturesItemType::kSaveAndAutofillPasswords));
-  default_welcome_back_items.Append(PrefNameForBestFeaturesItemType(
-      BestFeaturesItemType::kAutofillPasswordsInOtherApps));
-  default_welcome_back_items.Append(PrefNameForBestFeaturesItemType(
-      BestFeaturesItemType::kSharePasswordsWithFamily));
+      static_cast<int>(BestFeaturesItemType::kLensSearch));
   default_welcome_back_items.Append(
-      PrefNameForBestFeaturesItemType(BestFeaturesItemType::kTabGroups));
-  default_welcome_back_items.Append(PrefNameForBestFeaturesItemType(
-      BestFeaturesItemType::kPriceTrackingAndInsights));
+      static_cast<int>(BestFeaturesItemType::kEnhancedSafeBrowsing));
+  default_welcome_back_items.Append(
+      static_cast<int>(BestFeaturesItemType::kLockedIncognitoTabs));
+  default_welcome_back_items.Append(
+      static_cast<int>(BestFeaturesItemType::kSaveAndAutofillPasswords));
+  default_welcome_back_items.Append(
+      static_cast<int>(BestFeaturesItemType::kAutofillPasswordsInOtherApps));
+  default_welcome_back_items.Append(
+      static_cast<int>(BestFeaturesItemType::kSharePasswordsWithFamily));
+  default_welcome_back_items.Append(
+      static_cast<int>(BestFeaturesItemType::kTabGroups));
+  default_welcome_back_items.Append(
+      static_cast<int>(BestFeaturesItemType::kPriceTrackingAndInsights));
 
   registry->RegisterListPref(kWelcomeBackEligibleItems,
                              std::move(default_welcome_back_items));
@@ -39,30 +70,22 @@ void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry) {
 
 void MarkWelcomeBackFeatureUsed(PrefService* local_state,
                                 BestFeaturesItemType item_type) {
-  std::string pref = PrefNameForBestFeaturesItemType(item_type);
+  int pref = static_cast<int>(item_type);
   ScopedListPrefUpdate update(local_state, kWelcomeBackEligibleItems);
   update->EraseValue(base::Value(pref));
 }
 
-// Return a string name for the `BestFeaturesItemType`.
-std::string PrefNameForBestFeaturesItemType(BestFeaturesItemType item_type) {
-  using enum BestFeaturesItemType;
-  switch (item_type) {
-    case kLensSearch:
-      return "Search with Google Lens";
-    case kEnhancedSafeBrowsing:
-      return "Enhanced Safe Browsing";
-    case kLockedIncognitoTabs:
-      return "Locked Incognito tabs";
-    case kSaveAndAutofillPasswords:
-      return "Never forget your passwords";
-    case kAutofillPasswordsInOtherApps:
-      return "Passwords in other apps";
-    case kSharePasswordsWithFamily:
-      return "Share passwords";
-    case kTabGroups:
-      return "Tab groups";
-    case kPriceTrackingAndInsights:
-      return "Price tracking and insights";
+std::vector<BestFeaturesItemType> GetWelcomeBackEligibleItems() {
+  std::vector<BestFeaturesItemType> item_list;
+  const base::Value::List& list_pref =
+      GetApplicationContext()->GetLocalState()->GetList(
+          kWelcomeBackEligibleItems);
+  for (const base::Value& value : list_pref) {
+    std::optional<BestFeaturesItemType> item =
+        IntToBestFeaturesItemType(value.GetIfInt());
+    if (item.has_value()) {
+      item_list.push_back(item.value());
+    }
   }
+  return item_list;
 }

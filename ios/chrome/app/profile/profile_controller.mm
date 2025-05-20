@@ -47,6 +47,7 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/app/profile/session_metrics_profile_agent.h"
+#import "ios/chrome/app/profile/welcome_back_screen_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -56,6 +57,7 @@
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
@@ -657,6 +659,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
         [_state addAgent:[[DockingPromoProfileAgent alloc] init]];
         break;
     }
+  }
+
+  if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+    [_state addAgent:[[WelcomeBackScreenProfileAgent alloc] init]];
   }
 }
 

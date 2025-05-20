@@ -44,6 +44,7 @@ source_set("profile_controller") {
     ":profile",
     ":search_engine_choice_profile_agent",
     ":session_metrics_profile_agent",
+    ":welcome_back_profile_agent",
     "//base",
     "//components/content_settings/core/browser",
     "//components/feature_engagement/public",
@@ -61,6 +62,7 @@ source_set("profile_controller") {
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
     "//ios/chrome/browser/reading_list/model",
@@ -277,6 +279,34 @@ source_set("identity_confirmation_profile_agent") {
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
+}
+
+source_set("welcome_back_profile_agent") {
+  sources = [
+    "welcome_back_screen_profile_agent.h",
+    "welcome_back_screen_profile_agent.mm",
+  ]
+  public_deps = [ ":profile" ]
+  deps = [
+    "//base",
+    "//components/previous_session_info",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//ios/chrome/app/profile:profile",
+    "//ios/chrome/app/profile:profile",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
+    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("test_utils") {

@@ -12,14 +12,15 @@
 class PrefRegistrySimple;
 enum class BestFeaturesItemType;
 
-// Pref holding the list of items that are eligible for display.
-extern const char kWelcomeBackEligibleItems[];
-
 // Registers the prefs associated with Welcome Back.
 void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Erases an item from `kWelcomeBackEligibleItems`.
 void MarkWelcomeBackFeatureUsed(PrefService* local_state,
                                 BestFeaturesItemType item_type);
+
+// Returns a vector of `kWelcomeBackEligibleItems`. This is used to check the
+// current eligible items.
+std::vector<BestFeaturesItemType> GetWelcomeBackEligibleItems();
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_WELCOME_BACK_MODEL_WELCOME_BACK_PREFS_H_
