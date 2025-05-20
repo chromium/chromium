@@ -33,7 +33,8 @@ static const char kGraphicsTracingCategories[] =
 static const char kDetailedGraphicsTracingCategories[] =
     "-*,blink,cc,gpu,renderer.scheduler,sequence_manager,v8,toplevel,viz,evdev,"
     "input,benchmark,disabled-by-default-skia,disabled-by-default-skia.gpu,"
-    "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders";
+    "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders,"
+    "disabled-by-default-gpu.dawn,disabled-by-default-gpu.graphite.dawn";
 
 static const char kNavigationTracingCategories[] =
     "-*,benchmark,toplevel,ipc,base,browser,navigation,omnibox,ui,shutdown,"
