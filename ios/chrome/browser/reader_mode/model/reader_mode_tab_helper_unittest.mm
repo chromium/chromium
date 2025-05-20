@@ -52,6 +52,7 @@ class ReaderModeTabHelperTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
 
     web_state_->SetVisibleURL(test_url_);
+    web_state_->SetBrowserState(profile_.get());
 
     // Set up the fake web frames manager.
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
@@ -219,11 +220,9 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
 }
 
-// Tests that histograms related to distillation results are recorded after the
-// JavaScript execution. For feature `EnableReaderMode`, the entry point must
-// be selected to turn on distillation.
-// TODO(crbug.com/409940117): Decouple the heuristic and distillation.
-TEST_F(ReaderModeTabHelperTest, TriggerDistillerOnPageLoaded) {
+// Tests that histograms related to heuristic results are recorded after the
+// JavaScript execution.
+TEST_F(ReaderModeTabHelperTest, TriggerHeuristicOnPageLoaded) {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{kEnableReaderModeDistillerHeuristicForMetrics,
@@ -239,8 +238,19 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerOnPageLoaded) {
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
   ExpectHeuristicResultEntriesCount(1u);
-  histogram_tester_.ExpectTotalCount(
-      kReaderModeHeuristicClassificationHistogram, 1);
+}
+
+// Tests that histograms related to the distillation are recorded when the
+// Reader Mode becomes active.
+TEST_F(ReaderModeTabHelperTest, TriggerDistillationOnActive) {
+  scoped_feature_list_.InitAndEnableFeature(kEnableReaderMode);
+
+  LoadWebpage();
+  task_environment_.RunUntilIdle();
+
+  reader_mode_tab_helper()->SetActive(true);
+  task_environment_.RunUntilIdle();
+
   histogram_tester_.ExpectTotalCount(kReaderModeDistillerLatencyHistogram, 1);
   histogram_tester_.ExpectTotalCount(kReaderModeAmpClassificationHistogram, 1);
   ExpectDistillerLatencyEntriesCount(1u);
@@ -248,7 +258,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerOnPageLoaded) {
 }
 
 // Tests that distillation heuristic is canceled after a web state is destroyed.
-TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsDistill) {
+TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsHeuristic) {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{kEnableReaderModeDistillerHeuristicForMetrics,

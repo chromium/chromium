@@ -5,6 +5,7 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 data/http_server_files/OWNERS
+data/http_server_files/article.html
 data/http_server_files/autofill_refill_test.html
 data/http_server_files/autofill_smoke_test.html
 data/http_server_files/browsing_prevent_default_test_page.html

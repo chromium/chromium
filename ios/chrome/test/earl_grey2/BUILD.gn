@@ -230,6 +230,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history:eg2_tests",
     "//ios/chrome/browser/price_notifications/ui_bundled:eg2_tests",
     "//ios/chrome/browser/qr_scanner/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/reader_mode/ui:eg2_tests",
     "//ios/chrome/browser/reading_list/ui_bundled:eg2_tests",
     "//ios/chrome/browser/recent_tabs/ui_bundled:eg2_tests",
     "//ios/chrome/browser/sad_tab/ui_bundled:eg2_tests",

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_view_controller.h"
 
+#import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -20,6 +21,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.view.accessibilityIdentifier = kReaderModeViewAccessibilityIdentifier;
 }
 
 - (void)willMoveToParentViewController:(UIViewController*)parent {

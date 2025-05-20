@@ -55,6 +55,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // the `url` content.
   void HandleReaderModeHeuristicResult(const GURL& url,
                                        ReaderModeHeuristicResult result);
+
   // Records the Reader Mode heuristic latency from when the JavaScript is
   // executed to when all scores are computed for the heuristic result.
   void RecordReaderModeHeuristicLatency(const base::TimeDelta& latency);
@@ -87,7 +88,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Callback for handling completion of the page distillation.
   void PageDistillationCompleted(
-      ReaderModeHeuristicResult heuristic_result,
       base::TimeTicks start_time,
       const GURL& page_url,
       const std::string& html,

@@ -71,10 +71,6 @@ extern const char kReaderModeHeuristicResultHistogram[];
 // Histogram name for Reader Mode heuristic latency.
 extern const char kReaderModeHeuristicLatencyHistogram[];
 
-// Histogram name for the classification comparing the Reader Mode
-// heuristic result and the distillation output.
-extern const char kReaderModeHeuristicClassificationHistogram[];
-
 // Histogram name for Reader Mode distillation latency.
 extern const char kReaderModeDistillerLatencyHistogram[];
 

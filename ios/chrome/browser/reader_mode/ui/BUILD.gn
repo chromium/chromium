@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "constants.h",
+    "constants.mm",
     "reader_mode_consumer.h",
     "reader_mode_view_controller.h",
     "reader_mode_view_controller.mm",
@@ -24,4 +26,23 @@ source_set("options") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "reader_mode_egtest.mm" ]
+  deps = [
+    ":ui",
+    "//components/dom_distiller/core",
+    "//components/dom_distiller/core/mojom",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+    "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
