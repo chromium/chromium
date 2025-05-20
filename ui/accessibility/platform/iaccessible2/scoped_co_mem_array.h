@@ -20,6 +20,7 @@
 #include "base/win/windows_types.h"
 
 struct IA2TextSelection;
+struct IUnknown;
 
 namespace ui {
 
@@ -85,6 +86,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) ScopedCoMemArray {
 template <>
 void ScopedCoMemArray<IA2TextSelection>::FreeContents(
     base::span<const IA2TextSelection> contents);
+
+// Release the reference to each IUnknown pointer in the array.
+template <>
+void ScopedCoMemArray<IUnknown*>::FreeContents(
+    base::span<IUnknown* const> contents);
 
 }  // namespace ui
 

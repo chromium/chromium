@@ -4,6 +4,10 @@
 
 #include "ui/accessibility/platform/iaccessible2/scoped_co_mem_array.h"
 
+#include <unknwn.h>
+
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 
@@ -20,6 +24,12 @@ void ScopedCoMemArray<IA2TextSelection>::FreeContents(
       selection.endObj->Release();
     }
   }
+}
+
+template <>
+void ScopedCoMemArray<IUnknown*>::FreeContents(
+    base::span<IUnknown* const> contents) {
+  std::ranges::for_each(contents, &IUnknown::Release);
 }
 
 }  // namespace ui

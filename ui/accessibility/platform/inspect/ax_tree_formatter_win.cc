@@ -737,27 +737,32 @@ void AXTreeFormatterWin::AddIA2TableProperties(
     dict->Set("table_columns", static_cast<int>(table_columns));
 }
 
-static std::u16string ProcessAccessiblesArray(IUnknown** accessibles,
-                                              LONG num_accessibles) {
+static std::u16string ProcessAccessiblesArray(
+    base::span<IUnknown* const> accessibles) {
   std::u16string related_accessibles_string;
-  if (num_accessibles <= 0)
+  if (!accessibles.size()) {
     return related_accessibles_string;
+  }
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
-  for (int index = 0; index < num_accessibles; index++) {
-    related_accessibles_string += (index > 0) ? u"," : u"<";
-    Microsoft::WRL::ComPtr<IUnknown> unknown = accessibles[index];
+  for (IUnknown* unknown_ptr : accessibles) {
+    base::StrAppend(&related_accessibles_string,
+                    {related_accessibles_string.empty() ? u"<" : u","});
+    Microsoft::WRL::ComPtr<IUnknown> unknown(unknown_ptr);
     Microsoft::WRL::ComPtr<IAccessible> accessible;
     if (SUCCEEDED(unknown.As(&accessible))) {
       base::win::ScopedBstr name;
-      if (S_OK == accessible->get_accName(variant_self, name.Receive()))
-        related_accessibles_string += base::WideToUTF16(name.Get());
-      else
-        related_accessibles_string += u"no name";
+      if (S_OK == accessible->get_accName(variant_self, name.Receive())) {
+        base::StrAppend(&related_accessibles_string,
+                        {base::WideToUTF16(name.Get())});
+      } else {
+        base::StrAppend(&related_accessibles_string, {u"no name"});
+      }
     }
   }
 
-  return related_accessibles_string + u">";
+  base::StrAppend(&related_accessibles_string, {u">"});
+  return related_accessibles_string;
 }
 
 void AXTreeFormatterWin::AddIA2TableCellProperties(
@@ -777,25 +782,21 @@ void AXTreeFormatterWin::AddIA2TableCellProperties(
     dict->Set("ia2_table_cell_row_index", static_cast<int>(row_index));
   }
 
-  LONG n_row_header_cells;
-  IUnknown** row_headers;
-  if (SUCCEEDED(
-          ia2cell->get_rowHeaderCells(&row_headers, &n_row_header_cells)) &&
-      n_row_header_cells > 0) {
+  ScopedCoMemArray<IUnknown*> row_headers;
+  if (SUCCEEDED(ia2cell->get_rowHeaderCells(row_headers.Receive(),
+                                            row_headers.ReceiveSize())) &&
+      row_headers.size() > 0) {
     std::u16string accessibles_desc =
-        ProcessAccessiblesArray(row_headers, n_row_header_cells);
-    CoTaskMemFree(row_headers);  // Free the array manually.
+        ProcessAccessiblesArray(row_headers.as_span());
     dict->Set("row_headers", accessibles_desc);
   }
 
-  LONG n_column_header_cells;
-  IUnknown** column_headers;
-  if (SUCCEEDED(ia2cell->get_columnHeaderCells(&column_headers,
-                                               &n_column_header_cells)) &&
-      n_column_header_cells > 0) {
+  ScopedCoMemArray<IUnknown*> column_headers;
+  if (SUCCEEDED(ia2cell->get_columnHeaderCells(column_headers.Receive(),
+                                               column_headers.ReceiveSize())) &&
+      column_headers.size() > 0) {
     std::u16string accessibles_desc =
-        ProcessAccessiblesArray(column_headers, n_column_header_cells);
-    CoTaskMemFree(column_headers);  // Free the array manually.
+        ProcessAccessiblesArray(column_headers.as_span());
     dict->Set("column_headers", accessibles_desc);
   }
 }
