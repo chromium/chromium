@@ -197,20 +197,21 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     }
 
     /**
-     * Allows calling |edit| with a single callback used for both 'done' and 'cancel'.
-     * @see #edit(AutofillContact, Callback, Callback)
+     * Allows calling |showEditPrompt| with a single callback used for both 'done' and 'cancel'.
+     *
+     * @see #showEditPrompt(AutofillContact, Callback, Callback)
      */
-    public void edit(
+    public void showEditPrompt(
             @Nullable final AutofillContact toEdit, final Callback<AutofillContact> callback) {
-        edit(toEdit, callback, callback);
+        showEditPrompt(toEdit, callback, callback);
     }
 
     @Override
-    public void edit(
+    public void showEditPrompt(
             @Nullable final AutofillContact toEdit,
             final Callback<AutofillContact> doneCallback,
             final Callback<AutofillContact> cancelCallback) {
-        super.edit(toEdit, doneCallback, cancelCallback);
+        super.showEditPrompt(toEdit, doneCallback, cancelCallback);
         mDoneCallback = doneCallback;
         mCancelCallback = cancelCallback;
 

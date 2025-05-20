@@ -169,12 +169,13 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     }
 
     /**
-     * Allows calling |edit| with a single callback used for both 'done' and 'cancel'.
-     * @see #edit(AutofillAddress, Callback, Callback)
+     * Allows calling |showEditPrompt| with a single callback used for both 'done' and 'cancel'.
+     *
+     * @see #showEditPrompt(AutofillAddress, Callback, Callback)
      */
-    public void edit(
+    public void showEditPrompt(
             @Nullable final AutofillAddress toEdit, final Callback<AutofillAddress> callback) {
-        edit(toEdit, callback, callback);
+        showEditPrompt(toEdit, callback, callback);
     }
 
     /**
@@ -189,11 +190,11 @@ public class AddressEditor extends EditorBase<AutofillAddress>
      * [ phone number field  ] <----- phone is always present.
      */
     @Override
-    public void edit(
+    public void showEditPrompt(
             @Nullable final AutofillAddress toEdit,
             final Callback<AutofillAddress> doneCallback,
             final Callback<AutofillAddress> cancelCallback) {
-        super.edit(toEdit, doneCallback, cancelCallback);
+        super.showEditPrompt(toEdit, doneCallback, cancelCallback);
         if (mAutofillProfileBridge == null) mAutofillProfileBridge = new AutofillProfileBridge();
         mDoneCallback = doneCallback;
         mCancelCallback = cancelCallback;

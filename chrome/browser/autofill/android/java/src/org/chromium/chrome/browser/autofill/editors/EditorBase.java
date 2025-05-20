@@ -49,9 +49,9 @@ public abstract class EditorBase<T extends EditableOption> {
      *     with null (`toEdit` was null), incomplete information (`toEdit` was incomplete), invalid
      *     information (`toEdit` was invalid), or even with complete and valid information (`toEdit`
      *     was both complete and valid to begin with).
-     *     <p>TODO(crbug.com/40259080) Rename this method to showEditPrompt.
      */
-    protected void edit(@Nullable T toEdit, Callback<T> doneCallback, Callback<T> cancelCallback) {
+    protected void showEditPrompt(
+            @Nullable T toEdit, Callback<T> doneCallback, Callback<T> cancelCallback) {
         assert doneCallback != null;
         assert cancelCallback != null;
         assert mEditorDialog != null;
