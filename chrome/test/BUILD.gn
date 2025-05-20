@@ -15,7 +15,6 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
-import("//chrome/browser/sync/test/integration/sync_integration_tests.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chrome/test/include_js_tests.gni")
@@ -2004,19 +2003,15 @@ if (is_android) {
   }
 
   test("android_sync_integration_tests") {
-    configs += [ "//build/config:precompiled_headers" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     use_default_launcher = false
     android_manifest =
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
 
-    deps = android_sync_integration_tests_deps + [
-             "//chrome/browser/sync",
-             "//chrome/browser/ui:ui_features",
-           ]
-    sources = sync_integration_tests_sources
-    data = android_sync_integration_tests_data
+    deps = [
+      "//chrome/browser/sync/test/integration:sync_integration_tests_impl",
+      "//chrome/browser/sync/test/integration:sync_integration_tests_java",
+    ]
   }
 
   static_library("test_support_ui_android") {
@@ -12139,170 +12134,8 @@ source_set("sync_integration_test_support") {
 if (!is_android) {
   test("sync_integration_tests") {
     use_xvfb = use_xvfb_in_this_config
-
-    sources = sync_integration_tests_sources
-
-    data = [
-      "//chrome/test/data/password/",
-      "//chrome/test/data/sync/",
-      "//chrome/test/data/webapps_integration/",
-      "//chrome/test/data/web_apps/",
-      "//chrome/test/data/banners/",
-      "//net/tools/testserver/",
-      "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    ]
-
-    # TODO(phajdan.jr): Only temporary, to make transition easier.
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    deps = [
-      ":browser_tests_runner",
-      ":sync_integration_test_support",
-      ":test_support",
-      ":test_support_ui",
-      "//chrome:packed_resources",
-      "//chrome:resources",
-      "//chrome:strings",
-      "//chrome/app:chrome_dll_resources",
-      "//chrome/app:command_ids",
-      "//chrome/browser/affiliations",
-      "//chrome/browser/apps/link_capturing",
-      "//chrome/browser/autofill",
-      "//chrome/browser/browsing_data:constants",
-      "//chrome/browser/metrics/desktop_session_duration",
-      "//chrome/browser/plus_addresses",
-      "//chrome/browser/prefs",
-      "//chrome/browser/reading_list",
-      "//chrome/browser/search_engines",
-      "//chrome/browser/sync",
-      "//chrome/browser/themes",
-      "//chrome/browser/ui:browser_navigator_params_headers",
-      "//chrome/browser/ui:ui_features",
-      "//chrome/browser/web_applications:features",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/common",
-      "//chrome/renderer",
-      "//components/app_constants",
-      "//components/bookmarks/browser",
-      "//components/bookmarks/test",
-      "//components/browser_sync",
-      "//components/commerce/core:feature_list",
-      "//components/consent_auditor",
-      "//components/data_sharing/public",
-      "//components/favicon/core",
-      "//components/history/content/browser",
-      "//components/history/core/common",
-      "//components/password_manager/core/browser/sharing",
-      "//components/plus_addresses",
-      "//components/plus_addresses:test_support",
-      "//components/plus_addresses/settings",
-      "//components/plus_addresses/settings:test_support",
-      "//components/plus_addresses/webdata",
-      "//components/power_bookmarks/common:test_support",
-      "//components/power_bookmarks/core",
-      "//components/reading_list/core",
-      "//components/reading_list/core:test_support",
-      "//components/saved_tab_groups/internal:tab_group_sync_bridge",
-      "//components/saved_tab_groups/test_support",
-      "//components/search_engines",
-      "//components/send_tab_to_self",
-      "//components/spellcheck/common",
-      "//components/sync",
-      "//components/sync:test_support",
-      "//components/sync_bookmarks",
-      "//components/sync_device_info:test_support",
-      "//components/sync_preferences:common_syncable_prefs_database",
-      "//components/trusted_vault",
-      "//components/trusted_vault:test_support",
-      "//components/undo",
-      "//components/version_info",
-      "//components/webapps/browser",
-      "//components/webapps/common",
-      "//components/webauthn/core/browser",
-      "//components/webauthn/core/browser:passkey_model",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/blink/public:blink",
-      "//third_party/icu",
-      "//third_party/leveldatabase",
-    ]
-
-    data_deps = [
-      "//testing:test_scripts_shared",
-      "//testing/buildbot/filters:sync_integration_tests_filters",
-      "//third_party/angle:includes",
-    ]
-
-    if (is_linux || is_chromeos || is_win) {
-      data_deps += [ "//chrome:packed_resources" ]
-    }
-
-    if (is_mac) {
-      # Dictionary sync is disabled on Mac.
-      sources -= [
-        "//chrome/browser/sync/test/integration/single_client_dictionary_sync_test.cc",
-        "//chrome/browser/sync/test/integration/two_client_dictionary_sync_test.cc",
-      ]
-
-      data_deps += [
-        "//chrome",
-        "//chrome:chrome_framework",
-      ]
-    }
-    if (is_win) {
-      deps += [
-        "//chrome:other_version",
-        "//third_party/wtl",
-        "//ui/resources",
-      ]
-    }
-    if (is_chromeos) {
-      sources += [
-        "//chrome/browser/sync/test/integration/single_client_app_list_sync_test.cc",
-        "//chrome/browser/sync/test/integration/single_client_arc_package_sync_test.cc",
-        "//chrome/browser/sync/test/integration/single_client_cookies_sync_test.cc",
-        "//chrome/browser/sync/test/integration/single_client_os_preferences_sync_test.cc",
-        "//chrome/browser/sync/test/integration/single_client_printers_sync_test.cc",
-        "//chrome/browser/sync/test/integration/single_client_wifi_configuration_sync_test.cc",
-        "//chrome/browser/sync/test/integration/single_client_workspace_desk_sync_test.cc",
-        "//chrome/browser/sync/test/integration/two_client_app_list_sync_test.cc",
-        "//chrome/browser/sync/test/integration/two_client_arc_package_sync_test.cc",
-        "//chrome/browser/sync/test/integration/two_client_os_preferences_sync_test.cc",
-        "//chrome/browser/sync/test/integration/two_client_printers_sync_test.cc",
-        "//chrome/browser/sync/test/integration/two_client_workspace_desk_sync_test.cc",
-      ]
-      deps += [
-        "//chrome/browser/ash/app_list",
-        "//chrome/browser/ash/app_list/arc",
-        "//chrome/browser/ash/app_list/test:test_support",
-        "//chrome/browser/ash/crosapi",
-        "//chrome/browser/ash/floating_sso",
-        "//chrome/browser/ash/floating_sso:test_support",
-        "//chrome/browser/ash/printing",
-        "//chrome/browser/ash/sync",
-        "//chrome/browser/ash/system_web_apps/test_support",
-        "//chromeos/ash/components/browser_context_helper",
-        "//chromeos/ash/components/dbus/shill",
-        "//chromeos/ash/components/sync_wifi",
-        "//chromeos/ash/components/sync_wifi:test_support",
-        "//chromeos/printing",
-        "//chromeos/services/network_config/public/cpp",
-        "//components/desks_storage",
-      ]
-    }
-
-    if (toolkit_views) {
-      deps += [ "//ui/views" ]
-    }
-    if (enable_printing) {
-      deps += [ "//printing" ]
-    }
-    if (enable_glic) {
-      deps += [
-        "//chrome/browser/glic",
-        "//chrome/browser/glic/test_support",
-      ]
-    }
+    deps =
+        [ "//chrome/browser/sync/test/integration:sync_integration_tests_impl" ]
   }
 
   test("sync_performance_tests") {
