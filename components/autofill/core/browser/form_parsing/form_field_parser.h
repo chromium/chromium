@@ -284,9 +284,6 @@ class FormFieldParser {
                                      DenseSet<FormControlType> match_type);
 
  protected:
-  // Returns true if |field_type| is a single field parseable type.
-  static bool IsSingleFieldParseableType(FieldType field_type);
-
   // Derived classes must implement this interface to supply field type
   // information.  |ParseFormFields| coordinates the parsing and extraction
   // of types from an input vector of |AutofillField| objects and delegates

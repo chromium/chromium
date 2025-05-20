@@ -820,10 +820,4 @@ bool FormFieldParser::MatchesFormControlType(
   return match_type.contains(type);
 }
 
-// static
-bool FormFieldParser::IsSingleFieldParseableType(FieldType field_type) {
-  return field_type == MERCHANT_PROMO_CODE || field_type == IBAN_VALUE ||
-         field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
-}
-
 }  // namespace autofill
