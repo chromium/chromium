@@ -34,12 +34,16 @@ module blink.mojom;
 //
 // The names of features in this enum should map to the identifiers (i.e. .yml
 // file names) used by the WebDX community group at the W3C
-// (https://github.com/web-platform-dx/web-features/tree/main/features).
-// Those identifiers are all lower case alphanumeric identifiers, with dashes
-// (-) as word separators. To translate those identifier names to enum names
-// here, start with a lower case 'k', then camelcase the name and remove the
-// dashes. I.e. "view-transitions" becomes kViewTransitions. More discussion
-// about WebDX feature identifier naming can be found at
+// (https://github.com/web-platform-dx/web-features/tree/main/features). Those
+// identifiers are all lower case alphanumeric identifiers, with dashes (-) as
+// word separators. To translate those identifier names to enum names,
+// capitalize the first alphabetic character in each sequence of alphabetic
+// characters, then remove dashes. I.e. "view-transitions" becomes
+// kViewTransitions, canvas-2d-color-management becomes
+// kCanvas2DColorManagement, etc. This translation should match the behavior of
+// id.title().replace("-", "") in Python or SUBSTITUTE(PROPER(id), "-", "") in
+// Google Sheets. More discussion about WebDX feature identifier naming can be
+// found at
 // https://github.com/web-platform-dx/web-features/tree/main/docs#identifiers
 //
 // In the event that you're adding a use counter for a feature that is yet to be
