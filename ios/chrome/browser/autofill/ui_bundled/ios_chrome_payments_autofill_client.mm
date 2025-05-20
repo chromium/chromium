@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
@@ -61,17 +62,28 @@ std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
                                       std::move(delegate));
 }
 
-// Returns true if the card to be saved has 0 strikes (i.e the user has not
+// Returns true if the card to be saved locally has 0 strikes (i.e the user has
+// not rejected offer for the card previously) and
+// `kAutofillLocalSaveCardBottomSheet` feature is enabled.
+bool ShouldShowSaveCardBottomSheetForLocalSave(
+    const PaymentsAutofillClient::SaveCreditCardOptions& options) {
+  return options.num_strikes.has_value() && options.num_strikes.value() == 0 &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillLocalSaveCardBottomSheet);
+}
+
+// Returns true if the card to be uploaded has 0 strikes (i.e the user has not
 // rejected upload offer for the card previously) and, both cardholder name
 // and expiration date are present and `kAutofillSaveCardBottomSheet` feature
 // is enabled.
-bool ShowSaveCardBottomSheet(
+bool ShouldShowSaveCardBottomSheetForUploadSave(
     const PaymentsAutofillClient::SaveCreditCardOptions& options) {
   return options.num_strikes.has_value() && options.num_strikes.value() == 0 &&
          !options.should_request_name_from_user &&
          !options.should_request_expiration_date_from_user &&
          base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
 }
+
 }  // namespace
 
 IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
@@ -104,11 +116,14 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
     SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
-  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
-          AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
-          std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
-                                                     options))));
+  CHECK(!card.GetInfo(CREDIT_CARD_EXP_MONTH, client_->GetAppLocale()).empty());
+  CHECK(!card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, client_->GetAppLocale())
+             .empty());
+
+  ShowSaveCreditCard(
+      AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
+      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options),
+      ShouldShowSaveCardBottomSheetForLocalSave(options));
 }
 
 void IOSChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
@@ -122,36 +137,13 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
       client_->GetIdentityManager()->FindExtendedAccountInfo(
           client_->GetIdentityManager()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin));
-  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
-      options, card, legal_message_lines, account_info);
-  // Delegate providing callbacks for the save card UI.
-  std::unique_ptr<AutofillSaveCardDelegate> common_delegate =
-      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
-  show_save_card_bottom_sheet_ = ShowSaveCardBottomSheet(options);
-  if (show_save_card_bottom_sheet_) {
-    AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
-        AutofillBottomSheetTabHelper::FromWebState(web_state_);
-    std::unique_ptr<SaveCardBottomSheetModel> model =
-        std::make_unique<SaveCardBottomSheetModel>(std::move(ui_info),
-                                                   std::move(common_delegate));
-    save_card_bottom_sheet_model_ = model->GetWeakPtr();
-    bottom_sheet_tab_helper->ShowSaveCardBottomSheet(std::move(model));
-    return;
-  }
-  if (base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)) {
-    // Logs the decision to not show the bottomsheet for users with flag
-    // enabled.
-    autofill_metrics::LogSaveCreditCardPromptResultIOS(
-        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
-        common_delegate->is_for_upload(),
-        common_delegate->GetSaveCreditCardOptions(),
-        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
-            kBottomSheet);
-  }
-
-  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
-          std::move(ui_info), std::move(common_delegate))));
+  show_save_card_bottom_sheet_for_upload_ =
+      ShouldShowSaveCardBottomSheetForUploadSave(options);
+  ShowSaveCreditCard(
+      AutofillSaveCardUiInfo::CreateForUploadSave(
+          options, card, legal_message_lines, account_info),
+      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options),
+      show_save_card_bottom_sheet_for_upload_);
 }
 
 // TODO(crbug.com/413418918): Remove optional from
@@ -171,7 +163,7 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
   } else if (save_card_bottom_sheet_model_) {
     save_card_bottom_sheet_model_->CreditCardUploadCompleted(
         card_saved, std::move(callback));
-  } else if (show_save_card_bottom_sheet_) {
+  } else if (show_save_card_bottom_sheet_for_upload_) {
     // If a bottomsheet was showing before and was dismissed before getting the
     // save card result, the weak ref to save card bottomsheet model would be
     // invalid since model's lifecycle is same as the UI's and, the callback
@@ -439,6 +431,38 @@ IOSChromePaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 
 PaymentsDataManager& IOSChromePaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
+}
+
+void IOSChromePaymentsAutofillClient::ShowSaveCreditCard(
+    AutofillSaveCardUiInfo ui_info,
+    std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate,
+    bool should_show_save_card_bottomsheet) {
+  if (should_show_save_card_bottomsheet) {
+    AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
+        AutofillBottomSheetTabHelper::FromWebState(web_state_);
+    std::unique_ptr<SaveCardBottomSheetModel> model =
+        std::make_unique<SaveCardBottomSheetModel>(
+            std::move(ui_info), std::move(save_card_delegate));
+    save_card_bottom_sheet_model_ = model->GetWeakPtr();
+    bottom_sheet_tab_helper->ShowSaveCardBottomSheet(std::move(model));
+    return;
+  }
+  if (save_card_delegate->is_for_upload()
+          ? base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
+          : base::FeatureList::IsEnabled(
+                features::kAutofillLocalSaveCardBottomSheet)) {
+    // Logs the decision to not show the bottomsheet for users with flag
+    // enabled.
+    autofill_metrics::LogSaveCreditCardPromptResultIOS(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+        save_card_delegate->is_for_upload(),
+        save_card_delegate->GetSaveCreditCardOptions(),
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+            kBottomSheet);
+  }
+  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
+      std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
+          std::move(ui_info), std::move(save_card_delegate))));
 }
 
 }  // namespace autofill::payments

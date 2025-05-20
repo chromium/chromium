@@ -12,6 +12,8 @@
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
@@ -141,6 +143,14 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   }
 
  private:
+  // Shows save card UI offering upload or local save. If
+  // `should_show_save_card_bottomsheet` is true shows bottomsheet otherwise
+  // shows infobar.
+  void ShowSaveCreditCard(
+      AutofillSaveCardUiInfo ui_info,
+      std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate,
+      bool should_show_save_card_bottomsheet);
+
   const raw_ref<autofill::ChromeAutofillClientIOS> client_;
 
   const raw_ref<infobars::InfoBarManager> infobar_manager_;
@@ -190,8 +200,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   base::WeakPtr<SaveCardBottomSheetModel> save_card_bottom_sheet_model_;
 
   // Indicates whether the save card bottom sheet should be presented instead of
-  // the infobar.
-  bool show_save_card_bottom_sheet_;
+  // the infobar for uploading the card to server.
+  bool show_save_card_bottom_sheet_for_upload_;
 };
 
 }  // namespace payments
