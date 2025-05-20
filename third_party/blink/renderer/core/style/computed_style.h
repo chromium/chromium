@@ -1577,6 +1577,9 @@ class ComputedStyle final : public ComputedStyleBase {
       }
       effective |= kContainsBlockSize;
     }
+    if (container_type & kContainerTypeAnchored) {
+      effective |= kContainsStyle;
+    }
     if (!IsContentVisibilityVisible(content_visibility)) {
       effective |= kContainsStyle;
       effective |= kContainsLayout;

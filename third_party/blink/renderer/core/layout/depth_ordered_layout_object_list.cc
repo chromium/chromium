@@ -57,7 +57,7 @@ bool ListModificationAllowedFor(const LayoutObject& object) {
   // We are allowed to insert/remove orthogonal writing mode roots during
   // layout for interleaved style recalcs, but only when these roots are fully
   // managed by LayoutNG.
-  return object.GetDocument().GetStyleEngine().InContainerQueryStyleRecalc();
+  return object.GetDocument().GetStyleEngine().InInterleavedStyleRecalc();
 }
 
 }  // namespace

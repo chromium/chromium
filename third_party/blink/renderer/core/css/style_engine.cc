@@ -3691,6 +3691,19 @@ void StyleEngine::UpdateStyleForNonEligibleSizeContainer(Element& container) {
   RecalcStyleForContainer(container, change);
 }
 
+void StyleEngine::PostInterleavedRecalcUpdate(
+    const Element& interleaving_root) {
+  // Update quotes only if there are any scopes marked dirty.
+  if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
+    tree->UpdateQuotes();
+  }
+  GetDocument().GetLayoutView()->UpdateCountersAfterStyleChange(
+      interleaving_root.GetLayoutObject());
+  GetDocument().InvalidatePendingSVGResources();
+  GetDocument().UpdateScrollMarkerGroupRelations();
+  GetDocument().UpdateScrollMarkerGroupToScrollableAreasMap();
+}
+
 void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
     Element& container,
     const LogicalSize& logical_size,
@@ -3778,10 +3791,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
     RebuildLayoutTree(&container);
   }
 
-  // Update quotes only if there are any scopes marked dirty.
-  if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-    tree->UpdateQuotes();
-  }
   if (container == GetDocument().documentElement()) {
     // If the container is the root element, there may be body styles which have
     // changed as a result of the new container query evaluation, and if
@@ -3789,14 +3798,11 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
     // styles.
     GetStyleResolver().PropagateStyleToViewport();
   }
-  GetDocument().GetLayoutView()->UpdateCountersAfterStyleChange(
-      container.GetLayoutObject());
-  GetDocument().InvalidatePendingSVGResources();
-  GetDocument().UpdateScrollMarkerGroupRelations();
-  GetDocument().UpdateScrollMarkerGroupToScrollableAreasMap();
+
+  PostInterleavedRecalcUpdate(container);
 }
 
-void StyleEngine::UpdateStyleForOutOfFlow(
+void StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
     Element& element,
     std::optional<wtf_size_t> try_fallback_index,
     const CSSPropertyValueSet* try_set,
@@ -3807,6 +3813,7 @@ void StyleEngine::UpdateStyleForOutOfFlow(
 
   base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
 
+  NthIndexCache nth_index_cache(GetDocument());
   UpdateViewportSize();
 
   StyleRecalcContext style_recalc_context =
@@ -3833,6 +3840,21 @@ void StyleEngine::UpdateStyleForOutOfFlow(
     style_recalc_root_.Update(nullptr, &element);
     RecalcStyle(change, style_recalc_context);
   }
+  if (NeedsLayoutTreeRebuild()) {
+    if (layout_tree_rebuild_root_.GetRootNode()->IsDocumentNode()) {
+      // Avoid traversing from outside the OOF root. We know none of the
+      // elements outside the subtree should be marked dirty in this pass, but
+      // we may have fallen back to the document root.
+      layout_tree_rebuild_root_.Clear();
+      layout_tree_rebuild_root_.Update(nullptr, &element);
+    } else {
+      DCHECK(FlatTreeTraversal::ContainsIncludingPseudoElement(
+          element, *layout_tree_rebuild_root_.GetRootNode()));
+    }
+    RebuildLayoutTree(&element);
+  }
+
+  PostInterleavedRecalcUpdate(element);
 }
 
 StyleRulePositionTry* StyleEngine::GetPositionTryRule(
@@ -4234,7 +4256,7 @@ bool StyleEngine::MarkReattachAllowed() const {
 }
 
 bool StyleEngine::MarkStyleDirtyAllowed() const {
-  if (GetDocument().InStyleRecalc() || InContainerQueryStyleRecalc()) {
+  if (GetDocument().InStyleRecalc() || InInterleavedStyleRecalc()) {
     return allow_mark_style_dirty_from_recalc_;
   }
   return !InRebuildLayoutTree();

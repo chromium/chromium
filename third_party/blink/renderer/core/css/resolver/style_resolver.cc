@@ -1641,9 +1641,9 @@ bool CanApplyInlineStyleIncrementally(Element* element,
   }
 
   // ComputedStyles produced by OOF-interleaving (StyleEngine::
-  // UpdateStyleForOutOfFlow) have this flag set. We can not apply the style
-  // incrementally on top of this, because ComputedStyles produced by normal
-  // style recalcs should not have this flag.
+  // UpdateStyleAndLayoutTreeForOutOfFlow) have this flag set. We can not apply
+  // the style incrementally on top of this, because ComputedStyles produced by
+  // normal style recalcs should not have this flag.
   if (element->GetComputedStyle()->HasAnchorEvaluator()) {
     return false;
   }

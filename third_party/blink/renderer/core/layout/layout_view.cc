@@ -948,32 +948,35 @@ bool LayoutView::AffectedByResizedInitialContainingBlock(
   return add_result.is_new_entry;
 }
 
-void LayoutView::UpdateCountersAfterStyleChange(LayoutObject* container) {
+void LayoutView::UpdateCountersAfterStyleChange(
+    LayoutObject* interleaving_root) {
   NOT_DESTROYED();
-  if (!needs_marker_counter_update_)
+  if (!needs_marker_counter_update_) {
     return;
-
-  DCHECK(!container ||
-         (container->View() == this && container->IsDescendantOf(this) &&
-          GetDocument().GetStyleEngine().InContainerQueryStyleRecalc()))
-      << "The container parameter is currently only for scoping updates for "
-         "container query style recalcs";
+  }
+  DCHECK(!interleaving_root ||
+         (interleaving_root->View() == this &&
+          interleaving_root->IsDescendantOf(this) &&
+          GetDocument().GetStyleEngine().InInterleavedStyleRecalc()))
+      << "The interleaving_root parameter is currently only for scoped updates "
+         "for "
+         "interleaved style recalcs";
 
   needs_marker_counter_update_ = false;
   if (!HasLayoutCounters() && !HasLayoutListItems()) {
     return;
   }
 
-  // For container queries style recalc, we know the counter styles didn't
-  // change outside the container. Hence, we can start the update traversal from
-  // the container.
-  LayoutObject* start = container ? container : this;
-  // Additionally, if the container contains style, we know list-item counters
-  // inside the container cannot affect list-item counters outside the
-  // container, which means we can limit the traversal to the container subtree.
-  LayoutObject* stay_within =
-      container && container->ShouldApplyStyleContainment() ? container
-                                                            : nullptr;
+  // For interleaved style recalcs, we know the counter styles didn't change
+  // outside the interleaving root. Hence, we can start the update traversal
+  // from the interleaving_root.
+  LayoutObject* start = interleaving_root ? interleaving_root : this;
+  // Additionally, since the interleaving_root contains style, we know list-item
+  // counters inside the interleaving_root cannot affect list-item counters
+  // outside the interleaving_root, which means we can limit the traversal to
+  // the interleaving_root subtree.
+  CHECK(!interleaving_root || interleaving_root->ShouldApplyStyleContainment());
+  LayoutObject* stay_within = interleaving_root;
 
   for (LayoutObject* layout_object = start; layout_object;
        layout_object = layout_object->NextInPreOrder(stay_within)) {

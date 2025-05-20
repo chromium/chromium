@@ -4903,7 +4903,7 @@ void LayoutObject::ClearPaintFlags() {
 
 bool LayoutObject::IsAllowedToModifyLayoutTreeStructure(Document& document) {
   return document.Lifecycle().StateAllowsLayoutTreeMutations() ||
-         document.GetStyleEngine().InContainerQueryStyleRecalc() ||
+         document.GetStyleEngine().InInterleavedStyleRecalc() ||
          document.GetStyleEngine().InScrollMarkersAttachment();
 }
 
