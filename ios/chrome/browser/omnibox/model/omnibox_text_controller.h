@@ -50,6 +50,9 @@ class OmniboxViewIOS;
 /// Returns whether the omnibox is first responder.
 - (BOOL)isOmniboxFirstResponder;
 
+/// Focuses the omnibox.
+- (void)focusOmnibox;
+
 /// Ends omnibox editing / defocus the omnibox.
 - (void)endEditing;
 

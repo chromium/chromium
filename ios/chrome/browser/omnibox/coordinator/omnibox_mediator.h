@@ -16,6 +16,7 @@ class FaviconLoader;
 @protocol LoadQueryCommands;
 @protocol OmniboxCommands;
 @protocol OmniboxConsumer;
+@protocol OmniboxMediatorDelegate;
 @class OmniboxTextController;
 @class SceneState;
 class TemplateURLService;
@@ -29,6 +30,9 @@ class Tracker;
 @interface OmniboxMediator : NSObject <OmniboxMutator,
                                        OmniboxTextControllerDelegate,
                                        OmniboxViewControllerPasteDelegate>
+
+/// Delegate for events in this class.
+@property(nonatomic, weak) id<OmniboxMediatorDelegate> delegate;
 
 /// Controller of the omnibox text.
 @property(nonatomic, weak) OmniboxTextController* omniboxTextController;

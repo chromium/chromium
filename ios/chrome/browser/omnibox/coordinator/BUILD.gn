@@ -9,6 +9,7 @@ source_set("coordinator") {
     "omnibox_coordinator.mm",
     "omnibox_mediator.h",
     "omnibox_mediator.mm",
+    "omnibox_mediator_delegate.h",
     "zero_suggest_prefetch_helper.h",
     "zero_suggest_prefetch_helper.mm",
   ]

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_mediator.h"
+#import "ios/chrome/browser/omnibox/coordinator/omnibox_mediator_delegate.h"
 #import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/omnibox/coordinator/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
@@ -60,7 +61,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-@interface OmniboxCoordinator () <OmniboxAssistiveKeyboardMediatorDelegate>
+@interface OmniboxCoordinator () <OmniboxAssistiveKeyboardMediatorDelegate,
+                                  OmniboxMediatorDelegate>
 
 // View controller managed by this coordinator.
 @property(nonatomic, strong) OmniboxViewController* viewController;
@@ -146,6 +148,7 @@
                             self.profile)
           isLensOverlay:_isLensOverlay];
 
+  self.mediator.delegate = self;
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.templateURLService = templateURLService;
@@ -272,33 +275,7 @@
 }
 
 - (void)focusOmnibox {
-  if (!self.keyboardAccessoryView &&
-      (!self.searchOnlyUI || experimental_flags::IsOmniboxDebuggingEnabled())) {
-    TemplateURLService* templateURLService =
-        ios::TemplateURLServiceFactory::GetForProfile(self.profile);
-    self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
-        self.textField, kDotComTLD, _keyboardMediator, templateURLService,
-        HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands));
-  }
-
-  if (![self.textField isFirstResponder]) {
-    base::RecordAction(base::UserMetricsAction("MobileOmniboxFocused"));
-
-    // In multiwindow context, -becomeFirstRepsonder is not enough to get the
-    // keyboard input. The window will not automatically become key. Make it key
-    // manually. UITextField does this under the hood when tapped from
-    // -[UITextInteractionAssistant(UITextInteractionAssistant_Internal)
-    // setFirstResponderIfNecessaryActivatingSelection:]
-    if (base::ios::IsMultipleScenesSupported()) {
-      [self.textField.window makeKeyAndVisible];
-    }
-
-    [self.textField becomeFirstResponder];
-    // Ensures that the accessibility system focuses the text field instead of
-    // the popup crbug.com/1469173.
-    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                    self.textField);
-  }
+  [_omniboxTextController focusOmnibox];
 }
 
 - (void)endEditing {
@@ -370,6 +347,19 @@
 
 - (void)omniboxAssistiveKeyboardDidTapDebuggerButton {
   [self.popupCoordinator toggleOmniboxDebuggerView];
+}
+
+#pragma mark - OmniboxMediatorDelegate
+
+- (void)omniboxMediatorDidBeginEditing:(OmniboxMediator*)mediator {
+  if (!self.keyboardAccessoryView &&
+      (!self.searchOnlyUI || experimental_flags::IsOmniboxDebuggingEnabled())) {
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForProfile(self.profile);
+    self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
+        self.textField, kDotComTLD, _keyboardMediator, templateURLService,
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands));
+  }
 }
 
 #pragma mark - private

@@ -6,6 +6,7 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -87,6 +88,29 @@
 
 - (BOOL)isOmniboxFirstResponder {
   return [self.textField isFirstResponder];
+}
+
+- (void)focusOmnibox {
+  UITextField* textField = self.textField;
+  if ([textField isFirstResponder]) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileOmniboxFocused"));
+
+  // In multiwindow context, -becomeFirstRepsonder is not enough to get the
+  // keyboard input. The window will not automatically become key. Make it key
+  // manually. UITextField does this under the hood when tapped from
+  // -[UITextInteractionAssistant(UITextInteractionAssistant_Internal)
+  // setFirstResponderIfNecessaryActivatingSelection:]
+  if (base::ios::IsMultipleScenesSupported()) {
+    [textField.window makeKeyAndVisible];
+  }
+
+  [textField becomeFirstResponder];
+  // Ensures that the accessibility system focuses the text field instead of
+  // the popup crbug.com/1469173.
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  textField);
 }
 
 - (void)endEditing {
