@@ -746,7 +746,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4164514562270305824">Automatski briši preuzimanja</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> čiji se broj završava sa <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Nemoj dozvoliti</translation>
-<translation id="417138788035229076">Upravljajte grupom</translation>
+<translation id="417138788035229076">Upravljanje grupom</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="417273154673973994">{count,plural, =1{1 grupa kartica je zatvorena i sačuvana}one{{count} grupa kartica je zatvorena i sačuvana}few{{count} grupe kartica su zatvorene i sačuvane}other{{count} grupa kartica je zatvoreno i sačuvano}}</translation>
 <translation id="417612446554534067">Pošaljite na svoje uređaje</translation>

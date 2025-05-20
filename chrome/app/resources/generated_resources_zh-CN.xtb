@@ -1077,7 +1077,7 @@
 <translation id="173628468822554835">知道了。默认情况下，您访问的新网站不会向您发送通知。</translation>
 <translation id="1737968601308870607">提交错误</translation>
 <translation id="1740414789702358061"><ph name="SITE_ACCESS" />。选择即可更改网站权限</translation>
-<translation id="1741190788710022490">自适应充电</translation>
+<translation id="1741190788710022490">自动调节充电</translation>
 <translation id="174123615272205933">自定义</translation>
 <translation id="1741314857973421784">继续</translation>
 <translation id="1743970419083351269">关闭下载内容栏</translation>
@@ -2627,7 +2627,7 @@
 <translation id="2794977172822818797">添加当前网站</translation>
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
 <translation id="2798347533012571708">保留更新</translation>
-<translation id="2799162042226656283">您的 Chrome 数据</translation>
+<translation id="2799162042226656283">您的 Chrome</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2800309299477632167">自定义按键映射</translation>
 <translation id="2800760947029405028">上传图片</translation>
