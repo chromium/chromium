@@ -39,4 +39,17 @@ function refreshInDocumentPipWindow() {
     return true;
 }
 
+function getPipWindowPageTitle() {
+  return pipWindow.document.title;
+}
+
+function setPipWindowPageTitle(title) {
+  pipWindow.document.title = title;
+  return true;
+}
+
+function getWindowPageTitle() {
+  return document.title;
+}
+
 </script>

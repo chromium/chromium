@@ -943,8 +943,15 @@ std::u16string Browser::GetWindowTitleForTab(int index) const {
   std::u16string title = base::UTF8ToUTF16(user_title_);
 
   if (title.empty()) {
-    title = FormatTitleForDisplay(
-        tab_strip_model_->GetWebContentsAt(index)->GetTitle());
+    title = tab_strip_model_->GetWebContentsAt(index)->GetTitle();
+    if (is_type_picture_in_picture()) {
+      content::WebContents* pip_web_contents =
+          PictureInPictureWindowManager::GetInstance()->GetWebContents();
+      if (pip_web_contents) {
+        title = pip_web_contents->GetTitle();
+      }
+    }
+    title = FormatTitleForDisplay(title);
   }
 
   if (title.empty() && (is_type_normal() || is_type_popup())) {

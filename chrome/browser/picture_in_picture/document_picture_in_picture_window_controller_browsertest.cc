@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -258,6 +259,22 @@ class DocumentPictureInPictureWindowControllerBrowserTest
         true, base::Minutes(1))
         .Wait();
     EXPECT_NE(browser_view->GetBounds().origin(), gfx::Point(0, 0));
+  }
+
+  const std::string GetPipWindowPageTitle(content::WebContents* web_contents) {
+    return EvalJs(web_contents, "getPipWindowPageTitle();").ExtractString();
+  }
+
+  void SetPipWindowPageTitle(content::WebContents* web_contents,
+                             std::string title) {
+    std::string script =
+        base::StrCat({"setPipWindowPageTitle(\"", title, "\");"});
+
+    ASSERT_EQ(true, EvalJs(web_contents, script));
+  }
+
+  const std::string GetWindowPageTitle(content::WebContents* web_contents) {
+    return EvalJs(web_contents, "getWindowPageTitle();").ExtractString();
   }
 
   // Watch for destruction of a WebContents. `is_destroyed()` will report if the
@@ -919,4 +936,43 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   // The picture-in-picture window should no longer have system focus.
   EXPECT_TRUE(widget_activation_waiter.WaitForActivationState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       AccessibleTabLabelReturnsCorrectTitle) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* opener_web_contents = window_controller()->GetWebContents();
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+
+  // Verify that the pip window page title is empty and, the opener window page
+  // title is not.
+  const std::string pip_window_page_title =
+      GetPipWindowPageTitle(opener_web_contents);
+  EXPECT_TRUE(pip_window_page_title.empty());
+  const std::string window_page_title = GetWindowPageTitle(opener_web_contents);
+  EXPECT_FALSE(window_page_title.empty());
+
+  // Verify that the accessible label returns the opener window page title, when
+  // the pip window page title is not set.
+  EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
+            browser_view->GetAccessibleTabLabel(
+                browser()->tab_strip_model()->active_index()));
+
+  // Set the pip window page title and ensure that the pip and opener window
+  // page titles are different.
+  const std::string new_pip_window_page_title = "Test PiP Page Title";
+  SetPipWindowPageTitle(opener_web_contents, new_pip_window_page_title);
+  EXPECT_EQ(new_pip_window_page_title,
+            GetPipWindowPageTitle(opener_web_contents));
+  EXPECT_NE(new_pip_window_page_title, window_page_title);
+
+  // Verify that, although the pip window page title is set, the accessible
+  // label returns the opener window page title.
+  EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
+            browser_view->GetAccessibleTabLabel(
+                browser()->tab_strip_model()->active_index()));
 }
