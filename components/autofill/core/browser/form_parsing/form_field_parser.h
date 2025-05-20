@@ -169,6 +169,15 @@ class FormFieldParser {
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       FieldCandidatesMap& field_candidates);
 
+  // Search for standalone loyalty card fields inside `fields`. Standalone
+  // loyalty card fields are fields that should exclusively accept loyalty card
+  // numbers, differentiating them from multi-purpose input fields that might
+  // also accept emails or other data types
+  static void ParseStandaloneLoyaltyCardFields(
+      ParsingContext& context,
+      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      FieldCandidatesMap& field_candidates);
+
   // Search for standalone CVC fields inside `fields`. Standalone CVC fields
   // are CVC fields that should appear without any credit card field or email
   // address in the same form. Each field has a derived unique name that is

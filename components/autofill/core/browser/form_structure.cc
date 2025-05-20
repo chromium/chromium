@@ -692,6 +692,11 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
       FormFieldParser::ParseStandaloneEmailFields(context, fields_,
                                                   field_type_map);
     }
+    // Try parsing standalone loyalty card fields after an attempt has been
+    // made to parse multi-purpose input fields e.g. email or loyalty number
+    // fields.
+    FormFieldParser::ParseStandaloneLoyaltyCardFields(context, fields_,
+                                                      field_type_map);
   }
   return field_type_map;
 }

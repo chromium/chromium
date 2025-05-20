@@ -398,18 +398,26 @@ void FormFieldParser::ParseSingleFields(
   ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling)) {
-    // Loyalty Cards pass.
-    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, processed_fields,
-                        field_candidates);
-  }
-
   if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     // In some countries we observe address forms that are particularly small
     // (e.g. only a zip code.)
     ParseFormFieldsPass(AddressFieldParser::ParseStandaloneZip, context,
                         processed_fields, field_candidates);
+  }
+}
+
+void FormFieldParser::ParseStandaloneLoyaltyCardFields(
+    ParsingContext& context,
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    FieldCandidatesMap& field_candidates) {
+  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+      RemoveCheckableFields(fields);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling)) {
+    // Loyalty Cards pass.
+    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, processed_fields,
+                        field_candidates);
   }
 }
 
