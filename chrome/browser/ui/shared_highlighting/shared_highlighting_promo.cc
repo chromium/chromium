@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/render_frame_host.h"

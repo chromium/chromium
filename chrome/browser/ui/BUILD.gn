@@ -1152,8 +1152,6 @@ static_library("ui") {
       "sad_tab_types.h",
       "scoped_tabbed_browser_displayer.cc",
       "scoped_tabbed_browser_displayer.h",
-      "shared_highlighting/shared_highlighting_promo.cc",
-      "shared_highlighting/shared_highlighting_promo.h",
       "singleton_tabs.cc",
       "singleton_tabs.h",
       "startup/automation_infobar_delegate.cc",
@@ -1651,6 +1649,7 @@ static_library("ui") {
       "//chrome/browser/ui/search:impl",
       "//chrome/browser/ui/search_engine_choice",
       "//chrome/browser/ui/search_engine_choice:impl",
+      "//chrome/browser/ui/shared_highlighting",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
 
