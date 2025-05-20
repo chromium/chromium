@@ -224,7 +224,6 @@ const extensions::Extension* InstallExtensionWithContext(
   scoped_refptr<extensions::CrxInstaller> installer =
       extensions::CrxInstaller::CreateSilent(browser_context);
   installer->set_allow_silent_install(true);
-  installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
   installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
   installer->set_off_store_install_allow_reason(
       extensions::CrxInstaller::OffStoreInstallAllowReason::

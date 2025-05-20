@@ -98,7 +98,6 @@ class InfoBarsTest : public InProcessBrowserTest {
     scoped_refptr<extensions::CrxInstaller> installer(
         extensions::CrxInstaller::Create(browser()->profile(),
                                          std::move(client)));
-    installer->set_install_cause(extension_misc::INSTALL_CAUSE_AUTOMATION);
     installer->InstallCrx(path);
 
     observer.WaitForExtensionLoaded();

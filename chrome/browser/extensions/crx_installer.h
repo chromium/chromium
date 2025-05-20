@@ -219,11 +219,11 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
     original_mime_type_ = original_mime_type;
   }
 
-  extension_misc::CrxInstallCause install_cause() const {
-    return install_cause_;
+  bool was_triggered_by_user_download() const {
+    return was_triggered_by_user_download_;
   }
-  void set_install_cause(extension_misc::CrxInstallCause install_cause) {
-    install_cause_ = install_cause;
+  void set_was_triggered_by_user_download() {
+    was_triggered_by_user_download_ = true;
   }
 
   OffStoreInstallAllowReason off_store_install_allow_reason() const {
@@ -519,9 +519,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // Ignored unless `require_extension_mime_type_` is true.
   std::string original_mime_type_;
 
-  // What caused this install?  Used only for histograms that report
-  // on failure rates, broken down by the cause of the install.
-  extension_misc::CrxInstallCause install_cause_;
+  // Was the extension install initiated by a user downloading the extension?
+  bool was_triggered_by_user_download_ = false;
 
   // Creation flags to use for the extension.  These flags will be used
   // when calling Extension::Create() by the crx installer.

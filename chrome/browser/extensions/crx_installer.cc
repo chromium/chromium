@@ -123,7 +123,6 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
       apps_require_extension_mime_type_(false),
       allow_silent_install_(false),
       grant_permissions_(true),
-      install_cause_(extension_misc::INSTALL_CAUSE_UNSET),
       creation_flags_(Extension::NO_FLAGS),
       off_store_install_allow_reason_(OffStoreInstallDisallowed),
       did_handle_successfully_(true),
@@ -297,7 +296,6 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
 
   expected_id_ = extension_id;
   install_source_ = extension->location();
-  install_cause_ = extension_misc::INSTALL_CAUSE_UPDATE;
   InitializeCreationFlagsForUpdate(extension, Extension::NO_FLAGS);
 
   const ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
@@ -397,8 +395,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
         l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALL_NOT_ENABLED));
   }
 
-  if (install_cause_ == extension_misc::INSTALL_CAUSE_USER_DOWNLOAD &&
-      !is_gallery_install() &&
+  if (was_triggered_by_user_download() && !is_gallery_install() &&
       off_store_install_allow_reason_ == OffStoreInstallDisallowed) {
     // Don't delete source in this case so that the user can install
     // manually if they want.
@@ -1005,8 +1002,9 @@ void CrxInstaller::ReportSuccessFromSharedFileThread() {
   DCHECK(shared_file_task_runner_->RunsTasksInCurrentSequence());
 
   // Tracking number of extensions installed by users
-  if (install_cause() == extension_misc::INSTALL_CAUSE_USER_DOWNLOAD)
+  if (was_triggered_by_user_download()) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.ExtensionInstalled", 1, 2);
+  }
 
   if (!content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
@@ -1172,7 +1170,6 @@ void CrxInstaller::CheckUpdateFromSettingsPage() {
     update_from_settings_page_ = true;
     expected_id_ = installed_extension->id();
     install_source_ = installed_extension->location();
-    install_cause_ = extension_misc::INSTALL_CAUSE_UPDATE;
   }
 }
 

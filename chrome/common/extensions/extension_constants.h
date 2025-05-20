@@ -319,17 +319,6 @@ inline constexpr char kComponentUpdaterTTSEngineExtensionId[] =
     "gjjabgpgjpampikjhjpfhneeoapjbjaf";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-// What causes an extension to be installed? Used in histograms, so don't
-// change existing values.
-enum CrxInstallCause {
-  INSTALL_CAUSE_UNSET = 0,
-  INSTALL_CAUSE_USER_DOWNLOAD,
-  INSTALL_CAUSE_UPDATE,
-  INSTALL_CAUSE_EXTERNAL_FILE,
-  INSTALL_CAUSE_AUTOMATION,
-  NUM_INSTALL_CAUSES
-};
-
 // The states that an app can be in, as reported by chrome.app.installState
 // and chrome.app.runningState.
 inline constexpr char kAppStateNotInstalled[] = "not_installed";

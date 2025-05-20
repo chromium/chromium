@@ -305,7 +305,6 @@ bool ExternalProviderManager::OnExternalExtensionFileFound(
   installer->set_expected_id(info.extension_id);
   installer->set_expected_version(info.version,
                                   true /* fail_install_if_unexpected */);
-  installer->set_install_cause(extension_misc::INSTALL_CAUSE_EXTERNAL_FILE);
   installer->set_install_immediately(info.install_immediately);
   installer->set_creation_flags(info.creation_flags);
 

@@ -551,8 +551,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, AllowOffStore) {
 
     scoped_refptr<CrxInstaller> crx_installer(
         CrxInstaller::Create(profile(), mock_prompt->CreatePrompt()));
-    crx_installer->set_install_cause(
-        extension_misc::INSTALL_CAUSE_USER_DOWNLOAD);
+    crx_installer->set_was_triggered_by_user_download();
 
     if (kTestData[i]) {
       crx_installer->set_off_store_install_allow_reason(

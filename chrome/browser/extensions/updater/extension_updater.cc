@@ -979,7 +979,6 @@ scoped_refptr<CrxInstaller> ExtensionUpdater::CreateUpdateInstaller(
   }
 
   installer->set_delete_source(file_ownership_passed);
-  installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
 
   return installer;
 }

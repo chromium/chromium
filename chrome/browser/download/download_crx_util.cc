@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/user_script.h"
 
@@ -105,7 +106,7 @@ scoped_refptr<extensions::CrxInstaller> CreateCrxInstaller(
 
   installer->set_error_on_unsupported_requirements(true);
   installer->set_delete_source(true);
-  installer->set_install_cause(extension_misc::INSTALL_CAUSE_USER_DOWNLOAD);
+  installer->set_was_triggered_by_user_download();
   installer->set_original_mime_type(download_item.GetOriginalMimeType());
   installer->set_apps_require_extension_mime_type(true);
 
