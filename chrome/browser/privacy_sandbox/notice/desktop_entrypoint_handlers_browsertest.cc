@@ -55,18 +55,7 @@ class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
   std::unique_ptr<MockDesktopViewManager> mock_view_manager_;
 };
 
-// Test that navigation alerts view manager.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
-                       TestNavigationCallsEntryPointCallback) {
-  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
-      .Times(1);
-  // Navigate
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
-}
-
-// Test that navigation alerts view manager.
+// Test that navigation to unsuitable URLS do not alert view manager.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
                        UnsuitableUrl) {
   EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
@@ -77,14 +66,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAutofillSubPage)};
 
   for (size_t i = 0; i < urls_to_open.size(); ++i) {
-    if (i == 0) {
-      // Open the first URL in a new tab to trigger a new tab helper.
-      ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-          browser(), urls_to_open[i], WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    } else {
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls_to_open[i]));
-    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls_to_open[i]));
   }
 
   Mock::VerifyAndClearExpectations(mock_view_manager_.get());
@@ -116,6 +98,33 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
 
   Mock::VerifyAndClearExpectations(mock_view_manager_.get());
 }
+
+class PrivacySandboxNoticeEntryPointHandlersTest_SuitableUrls
+    : public PrivacySandboxNoticeEntryPointHandlersTest,
+      public testing::WithParamInterface<GURL> {};
+
+// Test that navigation to suitable URLS alert view manager.
+IN_PROC_BROWSER_TEST_P(PrivacySandboxNoticeEntryPointHandlersTest_SuitableUrls,
+                       SuitableUrl) {
+  GURL url_to_open = GetParam();
+
+  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
+      .Times(1);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_to_open));
+
+  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
+}
+
+// Define the test parameters.
+INSTANTIATE_TEST_SUITE_P(
+    AllSuitableUrls,
+    PrivacySandboxNoticeEntryPointHandlersTest_SuitableUrls,
+    testing::Values(GURL(chrome::kChromeUINewTabURL),
+                    GURL(chrome::kChromeUINewTabPageURL),
+                    GURL(url::kAboutBlankURL),
+                    GURL(chrome::kChromeUISettingsURL),
+                    GURL(chrome::kChromeUIHistoryURL)));
 
 }  // namespace
 }  // namespace privacy_sandbox
