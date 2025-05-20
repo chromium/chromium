@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,18 +33,6 @@
 namespace net {
 
 namespace {
-
-// Calculate the power of two nearest to, but less than, |n|.
-// |n| must be at least 2.
-size_t CalculateNearestPowerOfTwo(size_t n) {
-  DCHECK_GT(n, 1u);
-
-  size_t ret = size_t(1) << (sizeof(size_t) * 8 - 1);
-  while (ret >= n)
-    ret >>= 1;
-
-  return ret;
-}
 
 // All test data replicated from
 // https://github.com/google/certificate-transparency/blob/c41b090ecc14ddd6b3531dc7e5ce36b21e253fdd/cpp/merkletree/merkle_tree_test.cc
@@ -615,7 +604,7 @@ std::string HashTree(std::string leaves[], size_t tree_size) {
     return HashLeaf(leaves[0]);
 
   // Find the index of the last leaf in the left sub-tree.
-  const size_t split = CalculateNearestPowerOfTwo(tree_size);
+  const size_t split = std::bit_floor(tree_size - 1);
 
   // Hash the left and right sub-trees, then hash the results.
   return ct::internal::HashNodes(HashTree(leaves, split),
@@ -636,7 +625,7 @@ std::vector<std::string> CreateAuditProof(std::string leaves[],
     return proof;
 
   // Find the index of the first leaf in the right sub-tree.
-  const size_t split = CalculateNearestPowerOfTwo(tree_size);
+  const size_t split = std::bit_floor(tree_size - 1);
 
   // Recurse down the correct branch of the tree (left or right) to reach the
   // leaf with |leaf_index|. Add the hash of the branch not taken at each step
@@ -677,7 +666,7 @@ std::vector<std::string> CreateConsistencyProof(std::string leaves[],
   }
 
   // Find the index of the last leaf in the left sub-tree.
-  const size_t split = CalculateNearestPowerOfTwo(new_tree_size);
+  const size_t split = std::bit_floor(new_tree_size - 1);
 
   if (old_tree_size <= split) {
     // Root of the old tree is in the left subtree of the new tree.
