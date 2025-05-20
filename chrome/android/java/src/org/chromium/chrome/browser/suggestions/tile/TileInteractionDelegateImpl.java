@@ -11,8 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.base.CancelableRunnable;
-import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -47,22 +45,9 @@ class TileInteractionDelegateImpl
 
     private @Nullable Runnable mOnClickRunnable;
     private @Nullable Runnable mOnRemoveRunnable;
-    private @Nullable Long mTouchTime;
     private @Nullable CancelableRunnable mPrerenderRunnable;
     private @Nullable GURL mPrerenderedUrl;
     private @Nullable GURL mScheduldedPrerenderingUrl;
-
-    private void maybeRecordTouchDuration(boolean taken) {
-        if (mTouchTime == null) return;
-
-        long duration = TimeUtils.elapsedRealtimeMillis() - mTouchTime;
-        mTouchTime = null;
-        RecordHistogram.recordLongTimesHistogram(
-                taken
-                        ? "Prerender.Experimental.NewTabPage.TouchDuration.Taken"
-                        : "Prerender.Experimental.NewTabPage.TouchDuration.NotTaken",
-                duration);
-    }
 
     public TileInteractionDelegateImpl(
             ContextMenuManager contextMenuManager,
@@ -87,8 +72,6 @@ class TileInteractionDelegateImpl
     // TileGroup.TileInteractionDelegate => OnClickListener implementation.
     @Override
     public void onClick(View view) {
-        maybeRecordTouchDuration(true);
-
         SuggestionsMetrics.recordTileTapped();
         mTileDragDelegate.reset();
         if (mOnClickRunnable != null) mOnClickRunnable.run();
@@ -167,10 +150,8 @@ class TileInteractionDelegateImpl
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View view, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mTouchTime = TimeUtils.elapsedRealtimeMillis();
             maybePrerender(mTile.getUrl());
         } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-            maybeRecordTouchDuration(false);
             cancelPrerender();
         }
 

@@ -107,12 +107,6 @@ public class TileInteractionDelegateTest {
     @Test
     public void testTileInteractionDelegateTaken() {
         HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
-
-        histogramWatcherBuilder.expectIntRecord(
-                "Prerender.Experimental.NewTabPage.TouchDuration.Taken", 0);
-        histogramWatcherBuilder.expectNoRecords(
-                "Prerender.Experimental.NewTabPage.TouchDuration.NotTaken");
-
         HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
 
         TileGroup tileGroup =
@@ -140,12 +134,6 @@ public class TileInteractionDelegateTest {
     @Test
     public void testTileInteractionDelegateNotTaken() {
         HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
-
-        histogramWatcherBuilder.expectIntRecord(
-                "Prerender.Experimental.NewTabPage.TouchDuration.NotTaken", 0);
-        histogramWatcherBuilder.expectNoRecords(
-                "Prerender.Experimental.NewTabPage.TouchDuration.Taken");
-
         HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
 
         TileGroup tileGroup =
