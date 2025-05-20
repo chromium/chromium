@@ -377,7 +377,15 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotAggregatedWithInvalidEmail) {
 // country. The data file contains two profiles with valid phone numbers and two
 // profiles with invalid phone numbers from their respective country.
 // Profiles with an invalid number are imported, but their number is removed.
-IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
+// TODO(https://crbug.com/418932421): Flaky on Mac 13 Tests.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ProfileSavedWithValidCountryPhone \
+  DISABLED_ProfileSavedWithValidCountryPhone
+#else
+#define MAYBE_ProfileSavedWithValidCountryPhone \
+  ProfileSavedWithValidCountryPhone
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillTest, MAYBE_ProfileSavedWithValidCountryPhone) {
   std::vector<FormMap> profiles = {
       {{"NAME_FIRST", "Bob"},
        {"NAME_LAST", "Smith"},
@@ -469,7 +477,15 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
 //   The phone number does not have a leading '+'.
 //   The phone number has a leading international direct dialing (IDD) code.
 // This does not apply to US numbers. For US numbers, '+' is removed.
-IN_PROC_BROWSER_TEST_F(AutofillTest, UsePlusSignForInternationalNumber) {
+// TODO(https://crbug.com/418932421): Flaky on Mac 13 Tests.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UsePlusSignForInternationalNumber \
+  DISABLED_UsePlusSignForInternationalNumber
+#else
+#define MAYBE_UsePlusSignForInternationalNumber \
+  UsePlusSignForInternationalNumber
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillTest, MAYBE_UsePlusSignForInternationalNumber) {
   std::vector<FormMap> profiles;
 
   FormMap data1;
@@ -580,7 +596,16 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Minimum address values needed during aggregation are: address line 1, city,
 // state, and zip code.
 // Profiles are merged when data for address line 1 and city match.
-IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotMergedWhenNoMinAddressData) {
+// TODO(https://crbug.com/418932421): Flaky on Mac 13 Tests.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ProfilesNotMergedWhenNoMinAddressData \
+  DISABLED_ProfilesNotMergedWhenNoMinAddressData
+#else
+#define MAYBE_ProfilesNotMergedWhenNoMinAddressData \
+  ProfilesNotMergedWhenNoMinAddressData
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillTest,
+                       MAYBE_ProfilesNotMergedWhenNoMinAddressData) {
   AggregateProfilesIntoAutofillPrefs("dataset_no_address.txt");
 
   ASSERT_EQ(
