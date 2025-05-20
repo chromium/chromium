@@ -54,6 +54,20 @@ void ContentData::Trace(Visitor* visitor) const {
   visitor->Trace(next_);
 }
 
+String ContentData::ConcatenateAltText(const ContentData& first_alt_data) {
+  DCHECK(first_alt_data.IsAlt());
+  StringBuilder alt_text;
+  for (const ContentData* content_data = &first_alt_data; content_data;
+       content_data = content_data->Next()) {
+    if (auto* alt_counter = DynamicTo<AltCounterContentData>(content_data)) {
+      alt_text.Append(alt_counter->GetText());
+    } else {
+      alt_text.Append(To<AltTextContentData>(content_data)->GetText());
+    }
+  }
+  return alt_text.ToString();
+}
+
 LayoutObject* ImageContentData::CreateLayoutObject(LayoutObject& owner) const {
   LayoutImage* image = LayoutImage::CreateAnonymous(owner.GetDocument());
   bool match_parent_size = image_ && image_->IsGeneratedImage();

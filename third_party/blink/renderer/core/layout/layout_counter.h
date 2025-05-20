@@ -45,7 +45,9 @@ class LayoutCounter : public LayoutText {
     return counter_->Identifier();
   }
 
-  void UpdateCounter(Vector<int> counter_values);
+  // Generates, sets and returns counter text based on computed counter values
+  // and list separators.
+  String UpdateCounter(Vector<int> counter_values);
 
   // Returns true if <counter-style> is "disclosure-open" or
   // "disclosure-closed".

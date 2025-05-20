@@ -418,7 +418,7 @@ BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
 
   int quote_depth = 0;
   for (; content; content = content->Next()) {
-    if (content->IsAltText() || content->IsNone()) {
+    if (content->IsAlt() || content->IsNone()) {
       continue;
     }
     LayoutObject* child = content->CreateLayoutObject(*margin_layout_box);

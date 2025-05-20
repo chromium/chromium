@@ -78,7 +78,7 @@ void LayoutCounter::WillBeDestroyed() {
   LayoutText::WillBeDestroyed();
 }
 
-void LayoutCounter::UpdateCounter(Vector<int> counter_values) {
+String LayoutCounter::UpdateCounter(Vector<int> counter_values) {
   NOT_DESTROYED();
   const CounterStyle* counter_style = NullableCounterStyle();
   String text = GenerateCounterText(counter_style, counter_values.front());
@@ -89,6 +89,7 @@ void LayoutCounter::UpdateCounter(Vector<int> counter_values) {
     }
   }
   SetTextIfNeeded(text);
+  return text;
 }
 
 const CounterStyle* LayoutCounter::NullableCounterStyle() const {
