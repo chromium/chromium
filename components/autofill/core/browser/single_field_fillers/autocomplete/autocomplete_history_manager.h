@@ -58,6 +58,7 @@ class AutocompleteHistoryManager : public KeyedService {
       const std::vector<FormFieldData>& fields,
       bool is_autocomplete_enabled);
 
+  // Cancels all outstanding queries and clears out the `pending_queries_` map.
   virtual void CancelPendingQueries();
 
   virtual void OnRemoveCurrentSingleFieldSuggestion(
@@ -108,9 +109,6 @@ class AutocompleteHistoryManager : public KeyedService {
   // autocomplete additions.
   void SendSuggestions(const std::vector<AutocompleteEntry>& entries,
                        QueryHandler query_handler);
-
-  // Cancels all outstanding queries and clears out the |pending_queries_| map.
-  void CancelAllPendingQueries();
 
   // Function handling WebDataService responses of type AUTOFILL_VALUE_RESULT.
   // |current_handle| is the DB query handle, and is used to retrieve the

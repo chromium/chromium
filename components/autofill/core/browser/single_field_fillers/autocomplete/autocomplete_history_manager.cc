@@ -52,7 +52,7 @@ bool IsMeaningfulFieldName(const std::u16string& name) {
 AutocompleteHistoryManager::AutocompleteHistoryManager() = default;
 
 AutocompleteHistoryManager::~AutocompleteHistoryManager() {
-  CancelAllPendingQueries();
+  CancelPendingQueries();
 }
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
@@ -243,16 +243,6 @@ void AutocompleteHistoryManager::SendSuggestions(
 
   std::move(query_handler.on_suggestions_returned_)
       .Run(query_handler.field_id_, suggestions);
-}
-
-void AutocompleteHistoryManager::CancelAllPendingQueries() {
-  if (profile_database_) {
-    for (const auto& [handle, query_handler] : pending_queries_) {
-      profile_database_->CancelRequest(handle);
-    }
-  }
-
-  pending_queries_.clear();
 }
 
 void AutocompleteHistoryManager::OnAutofillValuesReturned(
