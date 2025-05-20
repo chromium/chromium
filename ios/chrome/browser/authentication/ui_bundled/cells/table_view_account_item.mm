@@ -45,7 +45,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
 
-  CHECK(self.image, base::NotFatalUntil::M123);
+  CHECK(self.image);
   cell.imageView.image = self.image;
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
