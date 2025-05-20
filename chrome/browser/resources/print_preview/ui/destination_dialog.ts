@@ -108,9 +108,7 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
       return;
     }
 
-    this.$.printList.updateList(
-        'destinations', destination => destination.key,
-        this.destinationStore.destinations());
+    this.$.printList.destinations = this.destinationStore.destinations();
 
     this.loadingDestinations_ =
         this.destinationStore.isPrintDestinationSearchInProgress;

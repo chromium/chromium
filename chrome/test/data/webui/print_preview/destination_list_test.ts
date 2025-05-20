@@ -6,10 +6,9 @@ import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, getTrustedHTML} from 'chrome://print/print_preview.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('DestinationListTest', function() {
   let list: PrintPreviewDestinationListElement;
@@ -40,28 +39,28 @@ suite('DestinationListTest', function() {
         '#testList')!;
     list.searchQuery = null;
     list.destinations = destinations;
-    flush();
+    return microtasksFinished();
   });
 
   // Tests that the list correctly shows and hides destinations based on the
   // value of the search query.
-  test('FilterDestinations', function() {
-    const items = list.shadowRoot!.querySelectorAll(
-        'print-preview-destination-list-item');
-    const noMatchHint = list.shadowRoot!.querySelector<HTMLElement>(
-        '.no-destinations-message')!;
-    const ironList = list.$.list;
+  test('FilterDestinations', async function() {
+    const items =
+        list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
+    const noMatchHint =
+        list.shadowRoot.querySelector<HTMLElement>('.no-destinations-message')!;
+    const infiniteList = list.$.list;
 
     // Query is initialized to null. All items are shown and the hint is
     // hidden.
-    assertFalse(ironList.hidden);
+    assertFalse(infiniteList.hidden);
     items.forEach(item => assertFalse((item.parentNode as HTMLElement).hidden));
     assertTrue(noMatchHint.hidden);
 
     // Searching for "e" should show "One", "Three", and "Five".
     list.searchQuery = /(e)/ig;
-    flush();
-    assertFalse(ironList.hidden);
+    await microtasksFinished();
+    assertFalse(infiniteList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
           (item.destination!.displayName === 'Two' ||
@@ -71,8 +70,8 @@ suite('DestinationListTest', function() {
 
     // Searching for "ABC" should show "One" and "Three".
     list.searchQuery = /(ABC)/ig;
-    flush();
-    assertFalse(ironList.hidden);
+    await microtasksFinished();
+    assertFalse(infiniteList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
           item.destination!.displayName !== 'One' &&
@@ -82,8 +81,8 @@ suite('DestinationListTest', function() {
 
     // Searching for "F" should show "Four" and "Five"
     list.searchQuery = /(F)/ig;
-    flush();
-    assertFalse(ironList.hidden);
+    await microtasksFinished();
+    assertFalse(infiniteList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
           item.destination!.displayName !== 'Four' &&
@@ -94,14 +93,14 @@ suite('DestinationListTest', function() {
     // Searching for UVW should show no destinations and display the "no
     // match" hint.
     list.searchQuery = /(UVW)/ig;
-    flush();
-    assertTrue(ironList.hidden);
+    await microtasksFinished();
+    assertTrue(infiniteList.hidden);
     assertFalse(noMatchHint.hidden);
 
     // Searching for 123 should show destinations "Three", "Four", and "Five".
     list.searchQuery = /(123)/ig;
-    flush();
-    assertFalse(ironList.hidden);
+    await microtasksFinished();
+    assertFalse(infiniteList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
       return !(item.parentNode as HTMLElement).hidden &&
           (item.destination!.displayName === 'One' ||
@@ -111,8 +110,8 @@ suite('DestinationListTest', function() {
 
     // Clearing the query restores the original state.
     list.searchQuery = null;
-    flush();
-    assertFalse(ironList.hidden);
+    await microtasksFinished();
+    assertFalse(infiniteList.hidden);
     items.forEach(
         item => assertFalse((item.parentNode! as HTMLElement).hidden));
     assertTrue(noMatchHint.hidden);
@@ -122,7 +121,7 @@ suite('DestinationListTest', function() {
   // the destination is clicked or the enter key is pressed.
   test(
       'FireDestinationSelected', function() {
-        const items = list.shadowRoot!.querySelectorAll(
+        const items = list.shadowRoot.querySelectorAll(
             'print-preview-destination-list-item');
         let whenDestinationSelected =
             eventToPromise('destination-selected', list);

@@ -53,7 +53,7 @@ suite('DestinationDialogTest', function() {
   function validatePrinterList() {
     const list =
         dialog.shadowRoot.querySelector('print-preview-destination-list');
-    const printerItems = list!.shadowRoot!.querySelectorAll(
+    const printerItems = list!.shadowRoot.querySelectorAll(
         'print-preview-destination-list-item');
     const getDisplayedName = (item: PrintPreviewDestinationListItemElement) =>
         item.shadowRoot.querySelector('.name')!.textContent;

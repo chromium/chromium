@@ -2,97 +2,62 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import './destination_list_item.js';
-import './print_preview_vars.css.js';
 import '/strings.m.js';
-import './throbber.css.js';
 
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 
-import {getTemplate} from './destination_list.html.js';
+import {getCss} from './destination_list.css.js';
+import {getHtml} from './destination_list.html.js';
 import type {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
 
-const DESTINATION_ITEM_HEIGHT = 32;
+const DESTINATION_ITEM_HEIGHT: number = 32;
 
 export interface PrintPreviewDestinationListElement {
   $: {
-    list: IronListElement,
+    list: HTMLElement,
   };
 }
 
-const PrintPreviewDestinationListElementBase =
-    ListPropertyUpdateMixin(PolymerElement);
-
-export class PrintPreviewDestinationListElement extends
-    PrintPreviewDestinationListElementBase {
+export class PrintPreviewDestinationListElement extends CrLitElement {
   static get is() {
     return 'print-preview-destination-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      destinations: {
-        type: Array,
-        value: () => [],
-      },
-
-      searchQuery: Object,
-
-      loadingDestinations: {
-        type: Boolean,
-        value: false,
-      },
-
-      matchingDestinations_: {
-        type: Array,
-        value: () => [],
-      },
-
-      hasDestinations_: {
-        type: Boolean,
-        value: true,
-      },
-
-      throbberHidden_: {
-        type: Boolean,
-        value: false,
-      },
-
-      hideList_: {
-        type: Boolean,
-        value: false,
-      },
+      destinations: {type: Array},
+      searchQuery: {type: Object},
+      loadingDestinations: {type: Boolean},
+      matchingDestinations_: {type: Array},
+      hasDestinations_: {type: Boolean},
+      throbberHidden_: {type: Boolean},
+      hideList_: {type: Boolean},
     };
   }
 
-  declare destinations: Destination[];
-  declare searchQuery: RegExp|null;
-  declare loadingDestinations: boolean;
-  declare private matchingDestinations_: Destination[];
-  declare private hasDestinations_: boolean;
-  declare private throbberHidden_: boolean;
-  declare private hideList_: boolean;
+  accessor destinations: Destination[] = [];
+  accessor searchQuery: RegExp|null;
+  accessor loadingDestinations: boolean = false;
+  protected accessor matchingDestinations_: Destination[] = [];
+  protected accessor hasDestinations_: boolean = true;
+  protected accessor throbberHidden_: boolean = false;
+  protected accessor hideList_: boolean = false;
 
   private boundUpdateHeight_: ((e: Event) => void)|null = null;
-
-  static get observers() {
-    return [
-      'updateMatchingDestinations_(' +
-          'destinations.*, searchQuery, loadingDestinations)',
-    ];
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -108,16 +73,14 @@ export class PrintPreviewDestinationListElement extends
     this.boundUpdateHeight_ = null;
   }
 
-  /**
-   * This is a workaround to ensure that the iron-list correctly updates the
-   * displayed destination information when the elements in the
-   * |matchingDestinations_| array change, instead of using stale information
-   * (a known iron-list issue). The event needs to be fired while the list is
-   * visible, so firing it immediately when the change occurs does not always
-   * work.
-   */
-  private forceIronResize_() {
-    this.$.list.fire('iron-resize');
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('destinations') ||
+        changedProperties.has('searchQuery') ||
+        changedProperties.has('loadingDestinations')) {
+      this.updateMatchingDestinations_();
+    }
   }
 
   private updateHeight_(numDestinations?: number) {
@@ -156,14 +119,11 @@ export class PrintPreviewDestinationListElement extends
 
     // Update the height before updating the list.
     this.updateHeight_(matchingDestinations.length);
-    this.updateList(
-        'matchingDestinations_', destination => destination.key,
-        matchingDestinations);
 
-    this.forceIronResize_();
+    this.matchingDestinations_ = matchingDestinations;
   }
 
-  private onKeydown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter') {
       this.onDestinationSelected_(e);
       e.stopPropagation();
@@ -173,7 +133,7 @@ export class PrintPreviewDestinationListElement extends
   /**
    * @param e Event containing the destination that was selected.
    */
-  private onDestinationSelected_(e: Event) {
+  protected onDestinationSelected_(e: Event) {
     if ((e.composedPath()[0] as HTMLElement).tagName === 'A') {
       return;
     }
@@ -189,8 +149,16 @@ export class PrintPreviewDestinationListElement extends
   /**
    * Returns a 1-based index for aria-rowindex.
    */
-  private getAriaRowindex_(index: number): number {
+  protected getAriaRowindex_(index: number): number {
     return index + 1;
+  }
+
+  protected onDestinationRowFocus_(e: Event) {
+    // Forward focus to the 'print-preview-destination-list-item'.
+    const item =
+        (e.target as HTMLElement).querySelector<HTMLElement>('.list-item');
+    assert(!!item);
+    item.focus();
   }
 }
 
