@@ -152,27 +152,6 @@ class ServiceWorkerTaskQueue
     auto operator<=>(const SequencedContextId& rhs) const = default;
   };
 
-  // Browser process worker state of an activated extension.
-  enum class BrowserState {
-    // Initial state, not started.
-    kNotStarted,
-    // Worker has completed starting at least once (i.e. has seen
-    // DidStartWorkerForScope).
-    kStarted,
-    // Worker has completed starting at least once and has run all pending
-    // tasks (i.e. has seen DidStartWorkerForScope and
-    // DidStartServiceWorkerContext).
-    kReady,
-  };
-
-  // Render process worker state of an activated extension.
-  enum class RendererState {
-    // Worker thread has not started or has been stopped/terminated.
-    kNotActive,
-    // Worker thread has started and it's running.
-    kActive,
-  };
-
   // Convenience method to return the ServiceWorkerTaskQueue for a given
   // `context`.
   static ServiceWorkerTaskQueue* Get(content::BrowserContext* context);
