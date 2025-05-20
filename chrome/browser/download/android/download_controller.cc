@@ -24,7 +24,6 @@
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/download/android/dangerous_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/android/download_utils.h"
 #include "chrome/browser/download/android/new_navigation_observer.h"

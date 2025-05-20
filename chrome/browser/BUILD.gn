@@ -2975,8 +2975,6 @@ static_library("browser") {
       "dom_distiller/tab_utils_android.cc",
       "download/android/dangerous_download_dialog_bridge.cc",
       "download/android/dangerous_download_dialog_bridge.h",
-      "download/android/dangerous_download_infobar_delegate.cc",
-      "download/android/dangerous_download_infobar_delegate.h",
       "download/android/download_callback_validator.cc",
       "download/android/download_callback_validator.h",
       "download/android/download_controller.cc",

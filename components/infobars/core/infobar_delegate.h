@@ -125,7 +125,7 @@ class InfoBarDelegate {
     SYNC_ERROR_INFOBAR_DELEGATE_IOS = 58,
     UPGRADE_INFOBAR_DELEGATE_IOS = 59,
     // Removed: WINDOW_ERROR_INFOBAR_DELEGATE_ANDROID = 60,
-    DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 61,
+    // Removed: DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 61,
     // Removed: DESKTOP_SEARCH_REDIRECTION_INFOBAR_DELEGATE = 62,
     // Removed: UPDATE_PASSWORD_INFOBAR_DELEGATE_MOBILE = 63,
     // Removed: DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID = 64,
@@ -190,7 +190,7 @@ class InfoBarDelegate {
     PDF_INFOBAR_DELEGATE = 123,
     INSTALLER_DOWNLOADER_INFOBAR_DELEGATE = 124,
   };
-  // LINT.ThenChange(//metrics/histograms/metadata/browser/enums.xml)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:InfoBarIdentifier)
 
   // Describes navigation events, used to decide whether infobars should be
   // dismissed.

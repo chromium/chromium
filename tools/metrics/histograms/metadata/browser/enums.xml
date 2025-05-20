@@ -257,7 +257,8 @@ chromium-metrics-reviews@google.com.
   <int value="58" label="SYNC_ERROR_INFOBAR_DELEGATE_IOS"/>
   <int value="59" label="UPGRADE_INFOBAR_DELEGATE"/>
   <int value="60" label="WINDOW_ERROR_INFOBAR_DELEGATE_ANDROID"/>
-  <int value="61" label="DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="61"
+      label="DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="62" label="WINDOWS_DESKTOP_SEARCH_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="63" label="UPDATE_PASSWORD_INFOBAR_DELEGATE_MOBILE"/>
   <int value="64" label="DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID"/>
