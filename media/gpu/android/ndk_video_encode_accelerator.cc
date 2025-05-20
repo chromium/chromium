@@ -1074,7 +1074,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     }
 
     TemporalScalabilityIdExtractor::BitstreamMetadata bits_md;
-    if (!svc_parser_->ParseChunk(output_dst.subspan(mc_buffer_size),
+    if (!svc_parser_->ParseChunk(output_dst.first(mc_buffer_size),
                                  input_since_keyframe_count_, bits_md)) {
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                          "Parse bitstream failed"});
