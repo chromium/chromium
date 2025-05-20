@@ -66,26 +66,6 @@ const char kServiceWorkerVersion[] = "version";
 
 ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
 
-// Prevent check on multiple workers per extension for testing purposes.
-bool g_allow_multiple_workers_per_extension = false;
-
-// Wrapper around `ServiceWorkerState->SetWorkerId` with additional check
-// against `g_allow_multiple_workers_per_extension`. See crbug.com/40936639.
-void SetWorkerId(ServiceWorkerState* worker_state,
-                 const WorkerId& worker_id,
-                 const ProcessManager* process_manager) {
-  if (worker_state->worker_id() && *worker_state->worker_id() != worker_id) {
-    // Sanity check that the old worker is gone.
-    // TODO(crbug.com/40936639): remove
-    // `g_allow_multiple_workers_per_extension` once bug is fixed so that this
-    // DCHECK() will be default behavior everywhere. Also upgrade to a CHECK
-    // once the bug is completely fixed.
-    DCHECK(!process_manager->HasServiceWorker(*worker_state->worker_id()) ||
-           g_allow_multiple_workers_per_extension);
-  }
-  worker_state->SetWorkerId(worker_id);
-}
-
 }  // namespace
 
 ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
@@ -141,15 +121,6 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
-                        true);
-  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime",
-                      base::Time::Now() - start_time);
-
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK(worker_state);
-  const WorkerId worker_id = {extension_id, process_id, version_id, thread_id};
-
   // Note: If the worker has already stopped on worker thread
   // (DidStopServiceWorkerContext) before we got here (i.e. the browser has
   // finished starting the worker), then |worker_state_map_| will hold the
@@ -158,12 +129,11 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
   // renderer before we execute tasks in the browser process. This will also
   // avoid holding the worker in |worker_state_map_| until deactivation as noted
   // above.
-  DCHECK_NE(ServiceWorkerState::BrowserState::kStarted,
-            worker_state->browser_state())
-      << "Worker was already loaded";
-  SetWorkerId(worker_state, worker_id, ProcessManager::Get(browser_context_));
-  worker_state->SetBrowserState(ServiceWorkerState::BrowserState::kStarted);
-
+  const WorkerId worker_id = {extension_id, process_id, version_id, thread_id};
+  ServiceWorkerState* worker_state = GetWorkerState(context_id);
+  DCHECK(worker_state);
+  worker_state->DidStartWorkerForScope(worker_id, start_time,
+                                       ProcessManager::Get(browser_context_));
   RunPendingTasksIfWorkerReady(context_id);
 }
 
@@ -275,18 +245,13 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
 
   const SequencedContextId context_id = {
       extension_id, browser_context_->UniqueId(), activation_token};
-
   const WorkerId worker_id = {extension_id, render_process_id,
                               service_worker_version_id, thread_id};
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
-  DCHECK_NE(ServiceWorkerState::RendererState::kActive,
-            worker_state->renderer_state())
-      << "Worker already started";
 
-  SetWorkerId(worker_state, worker_id, ProcessManager::Get(browser_context_));
-  worker_state->SetRendererState(ServiceWorkerState::RendererState::kActive);
-
+  worker_state->DidStartServiceWorkerContext(
+      worker_id, ProcessManager::Get(browser_context_));
   RunPendingTasksIfWorkerReady(context_id);
 }
 
@@ -1143,12 +1108,6 @@ size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
       lazy_context_id.browser_context()->UniqueId(), *activation_token};
   std::vector<PendingTask>* tasks = pending_tasks(context_id);
   return tasks ? tasks->size() : 0;
-}
-
-// static
-base::AutoReset<bool>
-ServiceWorkerTaskQueue::AllowMultipleWorkersPerExtensionForTesting() {
-  return base::AutoReset<bool>(&g_allow_multiple_workers_per_extension, true);
 }
 
 const ServiceWorkerState* ServiceWorkerTaskQueue::GetWorkerState(

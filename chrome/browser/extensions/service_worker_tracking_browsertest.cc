@@ -203,8 +203,7 @@ class ServiceWorkerIdTrackingBrowserTest
       : allow_multiple_worker_per_extension_in_worker_id_set_(
             WorkerIdSet::AllowMultipleWorkersPerExtensionForTesting()),
         allow_multiple_workers_per_extension_in_task_queue_(
-            ServiceWorkerTaskQueue::
-                AllowMultipleWorkersPerExtensionForTesting()) {}
+            ServiceWorkerState::AllowMultipleWorkersPerExtensionForTesting()) {}
 
  protected:
   void SetUpOnMainThread() override {
