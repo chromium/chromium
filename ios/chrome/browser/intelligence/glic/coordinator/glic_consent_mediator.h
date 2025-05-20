@@ -9,16 +9,14 @@
 
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_mutator.h"
 
-class Browser;
+class PrefService;
 
 @protocol GLICConsentMediatorDelegate;
 
 // GLIC consent Mediator.
 @interface GLICConsentMediator : NSObject <GLICConsentMutator>
 
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithPrefService:(PrefService*)prefService;
 
 // The delegate for this mediator.
 @property(nonatomic, weak) id<GLICConsentMediatorDelegate> delegate;

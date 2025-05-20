@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/intelligence/glic/metrics/glic_metrics.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_navigation_controller.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface GLICConsentCoordinator () <UISheetPresentationControllerDelegate,
@@ -30,7 +29,10 @@
 
 // Starts the coordinator.
 - (void)start {
-  _mediator = [[GLICConsentMediator alloc] initWithBrowser:self.browser];
+  PrefService* pref_service = self.profile->GetPrefs();
+  CHECK(pref_service);
+
+  _mediator = [[GLICConsentMediator alloc] initWithPrefService:pref_service];
   _mediator.delegate = self;
 
   _navigationController = [[GLICNavigationController alloc] init];

@@ -27,7 +27,4 @@ extern NSString* const kGLICConsentSecondBoxTitleText;
 extern NSString* const kGLICConsentSecondBoxBodyText;
 extern NSString* const kGLICConsentFootNoteText;
 
-// Links.
-extern NSString* const kGLICLearnAboutYourChoices;
-
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_UI_GLIC_CONSTANTS_H_
