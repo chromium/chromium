@@ -436,4 +436,12 @@ BASE_FEATURE(kEnableSearchAggregatorPolicy,
              "EnableSearchAggregatorPolicy",
              ENABLED);
 
+// If enabled, site search engines, defined by the `SiteSearchSettings` policy,
+// can be marked as user-overridable by administrators using an
+// `allow_user_override` field. This setting is stored in preferences and
+// determines if the engine can be overridden on the Settings page.
+BASE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy,
+             "EnableSiteSearchAllowUserOverridePolicy",
+             DISABLED);
+
 }  // namespace omnibox

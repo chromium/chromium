@@ -1795,6 +1795,12 @@ const char kEnableLazyLoadImageForInvisiblePageName[] =
 const char kEnableLazyLoadImageForInvisiblePageDescription[] =
     "Respect the loading = lazy attribute for images even on invisible pages.";
 
+const char kEnableSiteSearchAllowUserOverridePolicyName[] =
+    "Enable allow_user_override field for SiteSearchSettings policy";
+const char kEnableSiteSearchAllowUserOverridePolicyDescription[] =
+    "Enable the field that allows organizations to set a Site Search engine "
+    "that can be overridden by the user.";
+
 const char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
 const char kEnableLensStandaloneName[] = "Enable Lens features in Chrome.";
 const char kEnableLensStandaloneDescription[] =

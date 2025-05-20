@@ -29,13 +29,14 @@ double kTimestamp = static_cast<double>(
     base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
 base::Value::Dict GenerateSearchPrefEntry(const std::string& keyword,
-                                          bool featured) {
+                                          bool featured,
+                                          bool enforced_by_policy) {
   base::Value::Dict entry;
   entry.Set(DefaultSearchManager::kShortName, keyword + "name");
   entry.Set(DefaultSearchManager::kKeyword, featured ? "@" + keyword : keyword);
   entry.Set(DefaultSearchManager::kURL,
             std::string("https://") + keyword + ".com/{searchTerms}");
-  entry.Set(DefaultSearchManager::kEnforcedByPolicy, false);
+  entry.Set(DefaultSearchManager::kEnforcedByPolicy, enforced_by_policy);
   entry.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
   entry.Set(DefaultSearchManager::kFaviconURL,
             std::string("https://") + keyword + ".com/favicon.ico");
@@ -45,9 +46,10 @@ base::Value::Dict GenerateSearchPrefEntry(const std::string& keyword,
   return entry;
 }
 
-base::Value::Dict GenerateSiteSearchPrefEntry(const std::string& keyword) {
+base::Value::Dict GenerateSiteSearchPrefEntry(const std::string& keyword,
+                                              bool enforced_by_policy = true) {
   base::Value::Dict entry =
-      GenerateSearchPrefEntry(keyword, /*featured=*/false);
+      GenerateSearchPrefEntry(keyword, /*featured=*/false, enforced_by_policy);
   entry.Set(DefaultSearchManager::kPolicyOrigin,
             static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch));
   return entry;
@@ -55,7 +57,8 @@ base::Value::Dict GenerateSiteSearchPrefEntry(const std::string& keyword) {
 
 base::Value::Dict GenerateSearchAggregatorPrefEntry(const std::string& keyword,
                                                     bool featured) {
-  base::Value::Dict entry = GenerateSearchPrefEntry(keyword, featured);
+  base::Value::Dict entry =
+      GenerateSearchPrefEntry(keyword, featured, /*enforced_by_policy=*/true);
   entry.Set(DefaultSearchManager::kPolicyOrigin,
             static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator));
   entry.Set(DefaultSearchManager::kSuggestionsURL,
@@ -89,13 +92,7 @@ class EnterpriseSearchManagerTest : public EnterpriseSearchManagerTestBase {
 
   void SetUp() override {
     EnterpriseSearchManagerTestBase::SetUp();
-
-    scoped_feature_list_.InitAndEnableFeature(
-        omnibox::kEnableSearchAggregatorPolicy);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EnterpriseSearchManagerTest, EmptyList) {
@@ -110,14 +107,194 @@ TEST_F(EnterpriseSearchManagerTest, EmptyList) {
       base::Value::List());
 }
 
-TEST_F(EnterpriseSearchManagerTest, SiteSearchOnly) {
+TEST_F(EnterpriseSearchManagerTest,
+       SiteSearchOnly_AllowUserOverrideFeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+
   base::Value::List pref_value;
   pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
+  pref_value.Append(
+      GenerateSiteSearchPrefEntry("mail", /*enforced_by_policy=*/false));
+  pref_value.Append(
+      GenerateSiteSearchPrefEntry("calendar", /*enforced_by_policy=*/false));
 
   base::MockRepeatingCallback<void(
       EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
       callback;
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Pointee(Property(&TemplateURLData::keyword, u"work")),
+                  Pointee(Property(&TemplateURLData::keyword, u"docs")),
+                  Pointee(Property(&TemplateURLData::keyword, u"mail")),
+                  Pointee(Property(&TemplateURLData::keyword, u"calendar")))))
+      .Times(1);
+
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+      std::move(pref_value));
+
+  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_THAT(final_overridden_keywords, IsEmpty());
+}
+
+TEST_F(EnterpriseSearchManagerTest, SiteSearchOnly_AllowUserOverrideFeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+
+  base::Value::List pref_value;
+  pref_value.Append(GenerateSiteSearchPrefEntry("work"));
+  pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
+  pref_value.Append(
+      GenerateSiteSearchPrefEntry("mail", /*enforced_by_policy=*/false));
+  pref_value.Append(
+      GenerateSiteSearchPrefEntry("calendar", /*enforced_by_policy=*/false));
+
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Pointee(Property(&TemplateURLData::keyword, u"work")),
+                  Pointee(Property(&TemplateURLData::keyword, u"docs")),
+                  Pointee(Property(&TemplateURLData::keyword, u"mail")),
+                  Pointee(Property(&TemplateURLData::keyword, u"calendar")))))
+      .Times(1);
+
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+      std::move(pref_value));
+
+  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_THAT(final_overridden_keywords, IsEmpty());
+}
+
+TEST_F(EnterpriseSearchManagerTest,
+       SiteSearch_SetOverriddenKeyword_AllowUserOverrideFeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+
+  base::Value::List pref_value;
+  pref_value.Append(GenerateSiteSearchPrefEntry("work"));
+  pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
+  pref_value.Append(
+      GenerateSiteSearchPrefEntry("mail", /*enforced_by_policy=*/false));
+  pref_value.Append(
+      GenerateSiteSearchPrefEntry("calendar", /*enforced_by_policy=*/false));
+
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Pointee(Property(&TemplateURLData::keyword, u"work")),
+                  Pointee(Property(&TemplateURLData::keyword, u"docs")),
+                  Pointee(Property(&TemplateURLData::keyword, u"mail")),
+                  Pointee(Property(&TemplateURLData::keyword, u"calendar")))))
+      .Times(1);
+
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+      std::move(pref_value));
+
+  // Mark "mail" as overridden by user.
+  manager.AddOverriddenKeyword("mail");
+
+  const base::Value::List& overridden_keywords_pref = pref_service()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_THAT(overridden_keywords_pref.size(), 1);
+  EXPECT_TRUE(overridden_keywords_pref.contains("mail"));
+}
+
+TEST_F(
+    EnterpriseSearchManagerTest,
+    SiteSearch_ResetOverriddenKeywordWhenEnforced_AllowUserOverrideFeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+
+  base::Value::List initial_pref_value;
+  initial_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
+  initial_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
+  initial_pref_value.Append(
+      GenerateSiteSearchPrefEntry("mail", /*enforced_by_policy=*/false));
+
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(ElementsAre(Pointee(Property(&TemplateURLData::keyword, u"work")),
+                      Pointee(Property(&TemplateURLData::keyword, u"docs")),
+                      Pointee(Property(&TemplateURLData::keyword, u"mail")))))
+      .Times(1);
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Pointee(Property(&TemplateURLData::keyword, u"work")),
+                  Pointee(Property(&TemplateURLData::keyword, u"docs")),
+                  Pointee(Property(&TemplateURLData::keyword, u"mail")),
+                  Pointee(Property(&TemplateURLData::keyword, u"calendar")))))
+      .Times(1);
+
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+      std::move(initial_pref_value));
+
+  // Mark "mail" as overridden by user.
+  manager.AddOverriddenKeyword("mail");
+  const base::Value::List& overridden_keywords_pref = pref_service()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_TRUE(overridden_keywords_pref.contains("mail"));
+
+  // Update policy to make "mail" enforced and add "calendar" as enforced.
+  base::Value::List updated_pref_value;
+  updated_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
+  updated_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
+  updated_pref_value.Append(
+      GenerateSiteSearchPrefEntry("mail", /*enforced_by_policy=*/true));
+  updated_pref_value.Append(
+      GenerateSiteSearchPrefEntry("calendar", /*enforced_by_policy=*/true));
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+      std::move(updated_pref_value));
+
+  EXPECT_THAT(overridden_keywords_pref, IsEmpty());
+}
+
+TEST_F(EnterpriseSearchManagerTest,
+       SiteSearch_RemoveKeywordWhenNotInPolicy_AllowUserOverrideFeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+
+  base::Value::List initial_pref_value;
+  initial_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
+  initial_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
+  initial_pref_value.Append(
+      GenerateSiteSearchPrefEntry("mail", /*enforced_by_policy=*/false));
+  initial_pref_value.Append(
+      GenerateSiteSearchPrefEntry("calendar", /*enforced_by_policy=*/false));
+
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Pointee(Property(&TemplateURLData::keyword, u"work")),
+                  Pointee(Property(&TemplateURLData::keyword, u"docs")),
+                  Pointee(Property(&TemplateURLData::keyword, u"mail")),
+                  Pointee(Property(&TemplateURLData::keyword, u"calendar")))))
+      .Times(1);
   EXPECT_CALL(
       callback,
       Run(ElementsAre(Pointee(Property(&TemplateURLData::keyword, u"work")),
@@ -127,10 +304,25 @@ TEST_F(EnterpriseSearchManagerTest, SiteSearchOnly) {
   EnterpriseSearchManager manager(pref_service(), callback.Get());
   pref_service()->SetManagedPref(
       EnterpriseSearchManager::kSiteSearchSettingsPrefName,
-      std::move(pref_value));
+      std::move(initial_pref_value));
+
+  const base::Value::List& overridden_keywords_pref = pref_service()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_THAT(overridden_keywords_pref, IsEmpty());
+
+  // Update policy to remove "mail" and "calendar".
+  base::Value::List updated_pref_value;
+  updated_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
+  updated_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+      std::move(updated_pref_value));
+
+  EXPECT_THAT(overridden_keywords_pref, IsEmpty());
 }
 
-TEST_F(EnterpriseSearchManagerTest, SearchAggregatorsOnly) {
+TEST_F(EnterpriseSearchManagerTest,
+       SearchAggregatorsOnly_AllowUserOverrideFeatureOff) {
   base::Value::List pref_value;
   pref_value.Append(
       GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
@@ -150,6 +342,41 @@ TEST_F(EnterpriseSearchManagerTest, SearchAggregatorsOnly) {
   pref_service()->SetManagedPref(
       EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
       std::move(pref_value));
+
+  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_THAT(final_overridden_keywords, IsEmpty());
+}
+
+TEST_F(EnterpriseSearchManagerTest,
+       SearchAggregatorsOnly_AllowUserOverrideFeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+
+  base::Value::List pref_value;
+  pref_value.Append(
+      GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
+  pref_value.Append(
+      GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/false));
+
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Pointee(Property(&TemplateURLData::keyword, u"@aggregator")),
+                  Pointee(Property(&TemplateURLData::keyword, u"aggregator")))))
+      .Times(1);
+
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      std::move(pref_value));
+
+  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_THAT(final_overridden_keywords, IsEmpty());
 }
 
 TEST_F(EnterpriseSearchManagerTest,

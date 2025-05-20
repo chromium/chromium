@@ -4139,6 +4139,15 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-site-search-allow-user-override-policy",
+    "owners": [
+      "alexwchen@chromium.org",
+      "mahmadi@chromium.org",
+      "cbe-productivity@google.com"
+    ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "enable-smart-card-web-api",
     "owners": ["zgroza@chromium.org", "iwa-team@google.com"],
     "expiry_milestone": 142

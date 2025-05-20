@@ -30,6 +30,18 @@ namespace policy {
 
 namespace {
 
+bool IsAllowUserOverrideFieldEnabled() {
+  // Check that FeatureList is available as a protection against early startup
+  // crashes. Some policy providers are initialized very early even before
+  // base::FeatureList is available, but when policies are finally applied, the
+  // feature stack is fully initialized. The instance check ensures that the
+  // final decision is delayed until all features are initialized, without any
+  // other downstream effect.
+  return base::FeatureList::GetInstance() &&
+         base::FeatureList::IsEnabled(
+             omnibox::kEnableSiteSearchAllowUserOverridePolicy);
+}
+
 // Converts a site search policy entry `policy_dict` into a dictionary to be
 // saved to prefs, with fields corresponding to `TemplateURLData`.
 base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
@@ -56,7 +68,13 @@ base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
 
   dict.Set(DefaultSearchManager::kPolicyOrigin,
            static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch));
-  dict.Set(DefaultSearchManager::kEnforcedByPolicy, true);
+
+  const bool allow_user_override =
+      policy_dict.FindBool(SiteSearchPolicyHandler::kAllowUserOverride)
+          .value_or(false);
+  dict.Set(DefaultSearchManager::kEnforcedByPolicy,
+           !IsAllowUserOverrideFieldEnabled() || !allow_user_override);
+
   dict.Set(DefaultSearchManager::kIsActive,
            static_cast<int>(TemplateURLData::ActiveStatus::kTrue));
 
@@ -113,6 +131,8 @@ const char SiteSearchPolicyHandler::kName[] = "name";
 const char SiteSearchPolicyHandler::kShortcut[] = "shortcut";
 const char SiteSearchPolicyHandler::kUrl[] = "url";
 const char SiteSearchPolicyHandler::kFeatured[] = "featured";
+const char SiteSearchPolicyHandler::kAllowUserOverride[] =
+    "allow_user_override";
 
 const int SiteSearchPolicyHandler::kMaxSiteSearchProviders = 100;
 const int SiteSearchPolicyHandler::kMaxFeaturedProviders = 3;

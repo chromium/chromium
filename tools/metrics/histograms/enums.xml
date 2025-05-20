@@ -15795,6 +15795,8 @@ from previous Chrome versions.
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
   <int value="661537613" label="WebNotesPublish:enabled"/>
   <int value="661566521" label="MediaAppImageMantisRemoveBackground:enabled"/>
+  <int value="661979157"
+      label="EnableSiteSearchAllowUserOverridePolicy:disabled"/>
   <int value="662001716" label="ToolbarIphAndroid:disabled"/>
   <int value="662331859" label="ConversionMeasurement:enabled"/>
   <int value="662707634" label="DynamicColorAndroid:enabled"/>
@@ -19252,6 +19254,8 @@ from previous Chrome versions.
   <int value="1938279796" label="PromosOnLocalNtp:disabled"/>
   <int value="1938772705" label="PrivacySandboxAdTopicsContentParity:enabled"/>
   <int value="1939413645" label="enable-invalid-cert-collection"/>
+  <int value="1939639779"
+      label="EnableSiteSearchAllowUserOverridePolicy:enabled"/>
   <int value="1939884866" label="web-otp-backend"/>
   <int value="1940625534" label="NewOverviewUi:disabled"/>
   <int value="1941013139" label="FedCmUseOtherAccount:disabled"/>

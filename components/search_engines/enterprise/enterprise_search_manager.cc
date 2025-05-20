@@ -13,6 +13,8 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 
@@ -33,6 +35,11 @@ std::unique_ptr<TemplateURLData> DictToTemplateURLData(
 // policy.
 const char EnterpriseSearchManager::kSiteSearchSettingsPrefName[] =
     "site_search_settings.template_url_data";
+// A list to hold the keywords of site search engines which the user
+// has overridden.
+const char
+    EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName[] =
+        "site_search_settings.overridden_keywords";
 
 // A dictionary to hold all TemplateURL data related to the enterprise search
 // aggregator defined by policy.
@@ -71,6 +78,7 @@ EnterpriseSearchManager::~EnterpriseSearchManager() = default;
 void EnterpriseSearchManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kSiteSearchSettingsPrefName);
+  registry->RegisterListPref(kSiteSearchSettingsOverriddenKeywordsPrefName);
   registry->RegisterListPref(kEnterpriseSearchAggregatorSettingsPrefName);
   registry->RegisterBooleanPref(
       kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName, false);
@@ -120,8 +128,30 @@ EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
     return LoadingResult::kUnavailable;
   }
 
+  // Get the list of engines from the main policy pref.
+  const base::Value::List& engine_list = pref->GetValue()->GetList();
+  // For site search engines, load the
+  // `kSiteSearchSettingsOverriddenKeywordsPrefName` pref dictionary.
+  if (base::FeatureList::IsEnabled(
+          omnibox::kEnableSiteSearchAllowUserOverridePolicy) &&
+      pref->name() == kSiteSearchSettingsPrefName) {
+    LoadOverriddenKeywordsPref(engine_list);
+  }
+
   LoadingResult result = LoadingResult::kAvailableEmpty;
-  for (const base::Value& engine : pref->GetValue()->GetList()) {
+  for (const base::Value& engine : engine_list) {
+    const base::Value::Dict& engine_dict = engine.GetDict();
+    const std::string* keyword =
+        engine_dict.FindString(DefaultSearchManager::kKeyword);
+    CHECK(keyword);
+    if (base::FeatureList::IsEnabled(
+            omnibox::kEnableSiteSearchAllowUserOverridePolicy) &&
+        pref_service_
+            ->GetList(EnterpriseSearchManager::
+                          kSiteSearchSettingsOverriddenKeywordsPrefName)
+            .contains(*keyword)) {
+      continue;
+    }
     search_engines->emplace_back(DictToTemplateURLData(engine));
     result = LoadingResult::kAvailableNonEmpty;
   }
@@ -151,4 +181,43 @@ EnterpriseSearchManager::LoadSearchAggregator(
         return DictToTemplateURLData(mock_engine);
       });
   return LoadingResult::kAvailableNonEmpty;
+}
+
+void EnterpriseSearchManager::LoadOverriddenKeywordsPref(
+    const base::Value::List& engine_list) {
+  ScopedListPrefUpdate overridden_keywords_update(
+      pref_service_, kSiteSearchSettingsOverriddenKeywordsPrefName);
+  base::Value::List& overridden_keywords_list =
+      overridden_keywords_update.Get();
+
+  // Keep track of keywords present in the current policy along with whether
+  // they are enforced by policy.
+  base::flat_map<std::string, bool> policy_keywords_enforced_status;
+  for (const base::Value& engine : engine_list) {
+    const base::Value::Dict& engine_dict = engine.GetDict();
+    const std::string* keyword =
+        engine_dict.FindString(DefaultSearchManager::kKeyword);
+    CHECK(keyword);
+    bool enforced_by_policy =
+        engine_dict.FindBool(DefaultSearchManager::kEnforcedByPolicy)
+            .value_or(false);
+    policy_keywords_enforced_status[*keyword] = enforced_by_policy;
+  }
+
+  // Remove keywords from the overridden keywords list for engines that are no
+  // longer present in the policy or that are NOW enforced.
+  overridden_keywords_list.EraseIf(
+      [&policy_keywords_enforced_status](const base::Value& v) {
+        auto it = policy_keywords_enforced_status.find(v.GetString());
+        return it == policy_keywords_enforced_status.end() || it->second;
+      });
+}
+
+void EnterpriseSearchManager::AddOverriddenKeyword(const std::string& keyword) {
+  if (!pref_service_) {
+    return;
+  }
+  ScopedListPrefUpdate overridden_keywords_update(
+      pref_service_, kSiteSearchSettingsOverriddenKeywordsPrefName);
+  overridden_keywords_update.Get().Append(keyword);
 }

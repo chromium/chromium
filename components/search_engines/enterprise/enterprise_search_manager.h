@@ -23,6 +23,7 @@ class PrefRegistrySyncable;
 class EnterpriseSearchManager {
  public:
   static const char kSiteSearchSettingsPrefName[];
+  static const char kSiteSearchSettingsOverriddenKeywordsPrefName[];
   static const char kEnterpriseSearchAggregatorSettingsPrefName[];
   static const char
       kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName[];
@@ -59,6 +60,10 @@ class EnterpriseSearchManager {
   // set.
   bool GetRequireShortcutValue() const;
 
+  // Adds a keyword to the `kSiteSearchSettingsOverriddenKeywordsPrefName`
+  // pref, indicating that the user has overridden the associated engine.
+  void AddOverriddenKeyword(const std::string& keyword);
+
  private:
   // Handles changes to managed prefs due to policy updates. Calls
   // NotifyObserver() if search providers may have changed. Invokes
@@ -71,6 +76,10 @@ class EnterpriseSearchManager {
 
   LoadingResult LoadSearchAggregator(
       EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines);
+
+  // Updates the `kSiteSearchSettingsOverriddenKeywordsPrefName` pref based
+  // on the provided list of site search engines.
+  void LoadOverriddenKeywordsPref(const base::Value::List& engine_list);
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;

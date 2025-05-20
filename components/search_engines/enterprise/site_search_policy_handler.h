@@ -21,6 +21,7 @@ class SiteSearchPolicyHandler : public SimpleSchemaValidatingPolicyHandler {
   static const char kShortcut[];
   static const char kUrl[];
   static const char kFeatured[];
+  static const char kAllowUserOverride[];
 
   // The maximum number of site search providers to be defined via policy, to
   // avoid issues with very long lists.
