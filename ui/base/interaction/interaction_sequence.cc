@@ -639,6 +639,15 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
               data.result == false ? std::make_optional(data.aborted_data)
                                    : std::nullopt);
         }
+      } else if (reason == AbortedReason::kSequenceTimedOut) {
+        for (const auto& data : next_step()->subsequence_data) {
+          if (data.result == false) {
+            aborted_data.subsequence_failures.emplace_back(data.aborted_data);
+          } else if (data.result != true && data.sequence) {
+            aborted_data.subsequence_failures.emplace_back(
+                data.sequence->BuildAbortedData(reason));
+          }
+        }
       }
       if (const auto* ctx =
               std::get_if<ui::ElementContext>(&next_step()->context)) {
@@ -1593,11 +1602,22 @@ void PrintTo(const InteractionSequence::AbortedData& data, std::ostream* os) {
   }
   if (data.aborted_reason ==
       InteractionSequence::AbortedReason::kSubsequenceFailed) {
-    *os << "; subsequence failures:";
+    *os << "\nsubsequence failures:";
     size_t i = 0;
     for (auto& subsequence : data.subsequence_failures) {
       if (subsequence) {
-        *os << " { subsequence " << i << " failed " << *subsequence << " }";
+        *os << "\n - subsequence " << i << " failed: " << *subsequence;
+      }
+      ++i;
+    }
+  } else if (data.aborted_reason ==
+                 InteractionSequence::AbortedReason::kSequenceTimedOut &&
+             !data.subsequence_failures.empty()) {
+    *os << "\nsubsequence failures and timeouts:";
+    size_t i = 0;
+    for (auto& subsequence : data.subsequence_failures) {
+      if (subsequence) {
+        *os << "\n - subsequence " << i << ": " << *subsequence;
       }
       ++i;
     }
