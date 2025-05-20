@@ -97,12 +97,12 @@ export class PrintPreviewPreviewAreaElement extends
 
   accessor destination: Destination;
   accessor documentModifiable: boolean = false;
-  accessor error: Error;
+  accessor error: Error|null = null;
   accessor margins: Margins;
-  accessor measurementSystem: MeasurementSystem|null;
+  accessor measurementSystem: MeasurementSystem|null = null;
   accessor pageSize: Size;
   accessor previewState: PreviewAreaState = PreviewAreaState.LOADING;
-  accessor state: State;
+  accessor state: State = State.NOT_READY;
   private accessor pluginLoadComplete_: boolean = false;
   private accessor documentReady_: boolean = false;
 

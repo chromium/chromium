@@ -57,7 +57,7 @@ export class PrintPreviewSearchBoxElement extends
   }
 
   override accessor autofocus: boolean = false;
-  accessor searchQuery: RegExp|null;
+  accessor searchQuery: RegExp|null = null;
   private lastQuery_: string = '';
 
   override firstUpdated() {

@@ -44,7 +44,7 @@ export class PrintPreviewButtonStripElement extends CrLitElement {
 
   accessor destination: Destination;
   accessor firstLoad: boolean = false;
-  accessor state: State;
+  accessor state: State = State.NOT_READY;
   protected accessor printButtonEnabled_: boolean = false;
   protected accessor printButtonLabel_: string =
       loadTimeData.getString('printButton');

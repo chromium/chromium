@@ -87,14 +87,14 @@ export class PrintPreviewMarginControlElement extends
   }
 
   accessor disabled: boolean = false;
-  accessor side: CustomMarginsOrientation;
+  accessor side: CustomMarginsOrientation = CustomMarginsOrientation.TOP;
   accessor invalid: boolean = false;
   accessor invisible: boolean = false;
-  accessor measurementSystem: MeasurementSystem|null;
-  accessor scaleTransform: number;
+  accessor measurementSystem: MeasurementSystem|null = null;
+  accessor scaleTransform: number = 1;
   accessor translateTransform: Coordinate2d;
   accessor pageSize: Size;
-  accessor clipSize: Size|null;
+  accessor clipSize: Size|null = null;
 
   private accessor focused_: boolean = false;
   private accessor positionInPts_: number = 0;

@@ -47,9 +47,9 @@ export class PrintPreviewMarginsSettingsElement extends
   }
 
   accessor disabled: boolean = false;
-  accessor state: State;
+  accessor state: State = State.NOT_READY;
   protected accessor marginsDisabled_: boolean = false;
-  private accessor pagesPerSheet_: number;
+  private accessor pagesPerSheet_: number = 1;
   private loaded_: boolean = false;
 
   override connectedCallback() {

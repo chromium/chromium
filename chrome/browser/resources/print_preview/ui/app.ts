@@ -82,7 +82,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     };
   }
 
-  accessor state: State;
+  accessor state: State = State.NOT_READY;
   protected accessor controlsManaged_: boolean = false;
   protected accessor destination_: Destination;
   private accessor destinationsManaged_: boolean = false;
@@ -396,13 +396,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           this.onFileSelectionCancel_.bind(this) :
           this.onPrintFailed_.bind(this);
       whenPrintDone.then(this.close_.bind(this), onError);
-    }
-  }
-
-  private onErrorChange_() {
-    if (this.error_ !== Error.NONE) {
-      this.nativeLayer_!.recordInHistogram(
-          'PrintPreview.StateError', this.error_, Error.MAX_BUCKET);
     }
   }
 

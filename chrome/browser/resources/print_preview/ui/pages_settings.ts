@@ -102,7 +102,7 @@ export class PrintPreviewPagesSettingsElement extends
   protected accessor hasError_: boolean = false;
   private accessor inputString_: string = '';
   private accessor pagesToPrint_: number[] = [];
-  private accessor rangesToPrint_: Range[];
+  private accessor rangesToPrint_: Range[] = [];
   private accessor selection_: PagesValue = PagesValue.ALL;
 
   /**
@@ -437,14 +437,6 @@ export class PrintPreviewPagesSettingsElement extends
    */
   protected isSinglePage_(): boolean {
     return this.pageCount === 1;
-  }
-
-  /**
-   * @return Whether to hide the hint.
-   */
-  private hintHidden_(): boolean {
-    return this.errorState_ === PagesInputErrorState.NO_ERROR ||
-        this.errorState_ === PagesInputErrorState.EMPTY;
   }
 
   /**

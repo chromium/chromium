@@ -45,10 +45,10 @@ export class PrintPreviewDpiSettingsElement extends
     };
   }
 
-  accessor capability: DpiCapability|null;
+  accessor capability: DpiCapability|null = null;
   accessor disabled: boolean = false;
   protected accessor capabilityWithLabels_: DpiCapability|null = null;
-  private lastSelectedValue_: DpiOption;
+  private lastSelectedValue_: DpiOption|null = null;
 
   override connectedCallback() {
     super.connectedCallback();

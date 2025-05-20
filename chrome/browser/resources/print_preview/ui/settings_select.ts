@@ -40,7 +40,7 @@ export class PrintPreviewSettingsSelectElement extends
     };
   }
 
-  override accessor ariaLabel: string;
+  override accessor ariaLabel: string = '';
   accessor capability: CapabilityWithReset&{option: SelectOption[]}|null = null;
   accessor settingName: keyof Settings;
   accessor disabled: boolean = false;

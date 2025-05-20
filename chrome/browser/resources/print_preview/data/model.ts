@@ -807,6 +807,7 @@ export class PrintPreviewModelElement extends CrLitElement {
         this.margins.get(CustomMarginsOrientation.BOTTOM) > 0;
   }
 
+  // <if expr="is_win or is_macosx">
   private updateRasterizeAvailable_() {
     // Need document settings to know if source is PDF.
     if (this.documentSettings === undefined) {
@@ -815,6 +816,7 @@ export class PrintPreviewModelElement extends CrLitElement {
 
     this.setSettingPath_('rasterize.available', this.isRasterizeAvailable_());
   }
+  // </if>
 
   /**
    * @return Whether the rasterization setting should be available.

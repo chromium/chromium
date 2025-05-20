@@ -55,10 +55,10 @@ export class PrintPreviewCopiesSettingsElement extends
     };
   }
 
-  accessor capability: CopiesCapability|null;
+  accessor capability: CopiesCapability|null = null;
   accessor disabled: boolean = false;
-  protected accessor copiesMax_: number;
-  protected accessor currentValue_: string;
+  protected accessor copiesMax_: number = DEFAULT_MAX_COPIES;
+  protected accessor currentValue_: string = '';
   protected accessor inputValid_: boolean = false;
   private accessor collateAvailable_: boolean = false;
 

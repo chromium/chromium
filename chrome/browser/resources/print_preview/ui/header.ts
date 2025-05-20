@@ -47,11 +47,11 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   }
 
   accessor destination: Destination;
-  accessor error: Error;
-  accessor state: State;
+  accessor error: Error|null = null;
+  accessor state: State = State.NOT_READY;
   accessor managed: boolean = false;
   private accessor sheetCount_: number = 0;
-  protected accessor summary_: string|null;
+  protected accessor summary_: string|null = null;
 
   override connectedCallback() {
     super.connectedCallback();

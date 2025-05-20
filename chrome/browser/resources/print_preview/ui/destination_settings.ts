@@ -105,9 +105,9 @@ export class PrintPreviewDestinationSettingsElement extends
   accessor destination: Destination|null = null;
   accessor destinationState: DestinationState = DestinationState.INIT;
   accessor disabled: boolean = false;
-  accessor error: Error;
+  accessor error: Error|null = null;
   accessor firstLoad: boolean = false;
-  accessor state: State;
+  accessor state: State = State.NOT_READY;
   protected accessor destinationStore_: DestinationStore|null = null;
   protected accessor displayedDestinations_: Destination[] = [];
   private accessor isDialogOpen_: boolean = false;
@@ -115,7 +115,6 @@ export class PrintPreviewDestinationSettingsElement extends
   protected accessor pdfPrinterDisabled_: boolean = false;
   protected accessor loaded_: boolean = false;
 
-  private lastUser_: string = '';
   private tracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {

@@ -123,10 +123,10 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   accessor destination: Destination|null = null;
   accessor destinationCapabilities_: Cdd|null = null;
   accessor destinationState: DestinationState;
-  accessor error: Error;
+  accessor error: Error|null = null;
   accessor isPdf: boolean = false;
   accessor pageCount: number;
-  accessor state: State;
+  accessor state: State = State.NOT_READY;
   protected accessor settingsAvailable_: Record<keyof Settings, boolean>;
   protected accessor controlsDisabled_: boolean = false;
   protected accessor firstLoad_: boolean = true;

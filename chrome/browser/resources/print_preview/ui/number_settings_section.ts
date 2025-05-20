@@ -64,13 +64,13 @@ export class PrintPreviewNumberSettingsSectionElement extends
   accessor currentValue: string;
   accessor defaultValue: string;
   accessor disabled: boolean = false;
-  accessor hintMessage: string;
-  accessor inputAriaLabel: string;
-  accessor inputLabel: string;
+  accessor hintMessage: string = '';
+  accessor inputAriaLabel: string = '';
+  accessor inputLabel: string = '';
   accessor inputValid: boolean = true;
-  accessor minValue: number;
-  accessor maxValue: number;
-  protected accessor errorMessage_: string;
+  accessor minValue: number|undefined;
+  accessor maxValue: number|undefined;
+  protected accessor errorMessage_: string = '';
 
   override firstUpdated() {
     this.addEventListener('input-change', e => this.onInputChangeEvent_(e));

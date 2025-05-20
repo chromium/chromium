@@ -64,9 +64,9 @@ export class PrintPreviewScalingSettingsElement extends
   protected accessor customSelected_: boolean = false;
   protected accessor dropdownDisabled_: boolean = false;
   protected accessor inputValid_: boolean = false;
-  private accessor settingKey_: keyof Settings;
-  private accessor scalingTypeValue_: ScalingType;
-  private accessor scalingTypePdfValue_: ScalingType;
+  private accessor settingKey_: keyof Settings = 'scalingType';
+  private accessor scalingTypeValue_: ScalingType = ScalingType.DEFAULT;
+  private accessor scalingTypePdfValue_: ScalingType = ScalingType.DEFAULT;
 
   private lastValidScaling_: string = '';
 
@@ -201,10 +201,6 @@ export class PrintPreviewScalingSettingsElement extends
         this.currentValue_ !== this.getSettingValue('scaling')) {
       this.setSetting('scaling', this.currentValue_);
     }
-  }
-
-  private onDisabledChanged_() {
-    this.dropdownDisabled_ = this.disabled && this.inputValid_;
   }
 
   /**
