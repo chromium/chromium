@@ -133,3 +133,11 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   EXPECT_EQ(description_max_width, 0);
   EXPECT_EQ(iph_link_max_width, 0);
 }
+
+TEST(OmniboxMatchCellViewTest, FullCenteredSquare) {
+  extern gfx::Rect FullCenteredSquare(const gfx::Size& size);
+  EXPECT_EQ(FullCenteredSquare({0, 0}), gfx::Rect(0, 0, 0, 0));
+  EXPECT_EQ(FullCenteredSquare({28, 28}), gfx::Rect(0, 0, 28, 28));
+  EXPECT_EQ(FullCenteredSquare({50, 20}), gfx::Rect(15, 0, 20, 20));
+  EXPECT_EQ(FullCenteredSquare({20, 50}), gfx::Rect(0, 15, 20, 20));
+}

@@ -147,6 +147,14 @@ END_METADATA
 
 }  // namespace
 
+// Produces the largest centered square gfx::Rect that fits within a rectangle
+// from origin to `size`.
+gfx::Rect FullCenteredSquare(const gfx::Size& size) {
+  int side = std::min(size.width(), size.height());
+  return gfx::Rect((size.width() - side) / 2, (size.height() - side) / 2, side,
+                   side);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // OmniboxMatchCellView:
 
@@ -408,14 +416,28 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   // Weather icon square background should be the same color as the pop-up
   // background. The experimental thumbnail is treated similar to the
   // weather icon and is likewise resized to reduce downscaling artifacts.
-  if (is_weather_answer ||
-      (match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
-       omnibox_feature_configs::ContextualSearch::Get()
-           .open_lens_action_uses_thumbnail)) {
-    // Explicitly resize the weather icon to avoid pixelation.
-    gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::RESIZE_GOOD,
-        gfx::Size(kWeatherImageSize, kWeatherImageSize));
+  // However, thumbnails are usually rectangular and should preserve aspect
+  // ratio by cropping edges and scaling to fill, not by shrinking to fit.
+  const bool is_thumbnail =
+      match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
+      omnibox_feature_configs::ContextualSearch::Get()
+          .open_lens_action_uses_thumbnail;
+  if (is_weather_answer || is_thumbnail) {
+    // Explicitly resize to avoid pixelation. Note the thumbnail uses best
+    // quality because it makes a noticeable difference for so much downscaling.
+    // UX also suggested a 5% opacity black overlay to reduce white on white
+    // edgeless thumbnail effect. Reducing HSL lightness does this efficiently.
+    gfx::ImageSkia resized_image =
+        is_thumbnail ? gfx::ImageSkiaOperations::CreateHSLShiftedImage(
+                           gfx::ImageSkiaOperations::CreateResizedImage(
+                               gfx::ImageSkiaOperations::ExtractSubset(
+                                   image, FullCenteredSquare(image.size())),
+                               skia::ImageOperations::RESIZE_BEST,
+                               gfx::Size(kWeatherImageSize, kWeatherImageSize)),
+                           {-1, -1, 0.5 - (0.05 / 2)})
+                     : gfx::ImageSkiaOperations::CreateResizedImage(
+                           image, skia::ImageOperations::RESIZE_GOOD,
+                           gfx::Size(kWeatherImageSize, kWeatherImageSize));
     answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
             gfx::SizeF(kWeatherBackgroundSize, kWeatherBackgroundSize),
