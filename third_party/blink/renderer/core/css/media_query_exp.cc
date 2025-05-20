@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -366,6 +368,9 @@ static inline bool FeatureWithAspectRatio(const String& media_feature) {
 }
 
 bool MediaQueryExp::IsViewportDependent() const {
+  if (!HasMediaFeature()) {
+    return false;
+  }
   return media_feature_ == media_feature_names::kWidthMediaFeature ||
          media_feature_ == media_feature_names::kHeightMediaFeature ||
          media_feature_ == media_feature_names::kMinWidthMediaFeature ||
@@ -384,6 +389,9 @@ bool MediaQueryExp::IsViewportDependent() const {
 }
 
 bool MediaQueryExp::IsDeviceDependent() const {
+  if (!HasMediaFeature()) {
+    return false;
+  }
   return media_feature_ ==
              media_feature_names::kDeviceAspectRatioMediaFeature ||
          media_feature_ == media_feature_names::kDeviceWidthMediaFeature ||
@@ -399,6 +407,9 @@ bool MediaQueryExp::IsDeviceDependent() const {
 }
 
 bool MediaQueryExp::IsWidthDependent() const {
+  if (!HasMediaFeature()) {
+    return false;
+  }
   return media_feature_ == media_feature_names::kWidthMediaFeature ||
          media_feature_ == media_feature_names::kMinWidthMediaFeature ||
          media_feature_ == media_feature_names::kMaxWidthMediaFeature ||
@@ -409,6 +420,9 @@ bool MediaQueryExp::IsWidthDependent() const {
 }
 
 bool MediaQueryExp::IsHeightDependent() const {
+  if (!HasMediaFeature()) {
+    return false;
+  }
   return media_feature_ == media_feature_names::kHeightMediaFeature ||
          media_feature_ == media_feature_names::kMinHeightMediaFeature ||
          media_feature_ == media_feature_names::kMaxHeightMediaFeature ||
@@ -419,19 +433,28 @@ bool MediaQueryExp::IsHeightDependent() const {
 }
 
 bool MediaQueryExp::IsInlineSizeDependent() const {
+  if (!HasMediaFeature()) {
+    return false;
+  }
   return media_feature_ == media_feature_names::kInlineSizeMediaFeature ||
          media_feature_ == media_feature_names::kMinInlineSizeMediaFeature ||
          media_feature_ == media_feature_names::kMaxInlineSizeMediaFeature;
 }
 
 bool MediaQueryExp::IsBlockSizeDependent() const {
+  if (!HasMediaFeature()) {
+    return false;
+  }
   return media_feature_ == media_feature_names::kBlockSizeMediaFeature ||
          media_feature_ == media_feature_names::kMinBlockSizeMediaFeature ||
          media_feature_ == media_feature_names::kMaxBlockSizeMediaFeature;
 }
 
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)
-    : media_feature_(other.MediaFeature()), bounds_(other.bounds_) {}
+    : type_(other.type_),
+      media_feature_(other.media_feature_),
+      reference_value_(other.reference_value_),
+      bounds_(other.bounds_) {}
 
 MediaQueryExp::MediaQueryExp(const String& media_feature,
                              const MediaQueryExpValue& value)
@@ -440,7 +463,15 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
 
 MediaQueryExp::MediaQueryExp(const String& media_feature,
                              const MediaQueryExpBounds& bounds)
-    : media_feature_(media_feature), bounds_(bounds) {}
+    : type_(Type::kMediaFeature),
+      media_feature_(media_feature),
+      bounds_(bounds) {}
+
+MediaQueryExp::MediaQueryExp(const CSSUnparsedDeclarationValue& reference_value,
+                             const MediaQueryExpBounds& bounds)
+    : type_(Type::kStyleRange),
+      reference_value_(reference_value),
+      bounds_(bounds) {}
 
 MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
                                     CSSParserTokenStream& stream,
@@ -576,14 +607,26 @@ MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
   return MediaQueryExp(media_feature, bounds);
 }
 
+MediaQueryExp MediaQueryExp::Create(const MediaQueryExpValue& reference_value,
+                                    const MediaQueryExpBounds& bounds) {
+  DCHECK(RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled());
+  const CSSUnparsedDeclarationValue* value =
+      DynamicTo<CSSUnparsedDeclarationValue>(reference_value.GetCSSValue());
+  DCHECK(value);
+  return MediaQueryExp(*value, bounds);
+}
+
 MediaQueryExp::~MediaQueryExp() = default;
 
 void MediaQueryExp::Trace(Visitor* visitor) const {
+  visitor->Trace(reference_value_);
   visitor->Trace(bounds_);
 }
 
 bool MediaQueryExp::operator==(const MediaQueryExp& other) const {
-  return (other.media_feature_ == media_feature_) && (bounds_ == other.bounds_);
+  return (other.type_ == type_) && (other.media_feature_ == media_feature_) &&
+         (other.reference_value_ == reference_value_) &&
+         (bounds_ == other.bounds_);
 }
 
 String MediaQueryExp::Serialize() const {
@@ -591,7 +634,11 @@ String MediaQueryExp::Serialize() const {
   // <mf-boolean> e.g. (color)
   // <mf-plain>  e.g. (width: 100px)
   if (!bounds_.IsRange()) {
-    result.Append(media_feature_);
+    if (HasMediaFeature()) {
+      result.Append(media_feature_);
+    } else {
+      result.Append(reference_value_->CssText());
+    }
     if (bounds_.right.IsValid()) {
       result.Append(": ");
       result.Append(bounds_.right.value.CssText());
@@ -603,7 +650,11 @@ String MediaQueryExp::Serialize() const {
       result.Append(MediaQueryOperatorToString(bounds_.left.op));
       result.Append(" ");
     }
-    result.Append(media_feature_);
+    if (HasMediaFeature()) {
+      result.Append(media_feature_);
+    } else {
+      result.Append(reference_value_->CssText());
+    }
     if (bounds_.right.IsValid()) {
       result.Append(" ");
       result.Append(MediaQueryOperatorToString(bounds_.right.op));
@@ -787,33 +838,35 @@ void MediaQueryFeatureExpNode::CollectExpressions(
 
 MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
     const {
-  if (exp_.MediaFeature() == media_feature_names::kStuckMediaFeature) {
-    return kFeatureSticky;
-  } else if (exp_.MediaFeature() == media_feature_names::kSnappedMediaFeature) {
-    return kFeatureSnap;
-  } else if (exp_.MediaFeature() ==
-             media_feature_names::kScrollableMediaFeature) {
-    return kFeatureScrollable;
-  } else if (exp_.MediaFeature() ==
-             media_feature_names::kScrollDirectionMediaFeature) {
-    return kFeatureScrollDirection;
-  } else if (exp_.MediaFeature() ==
-             media_feature_names::kFallbackMediaFeature) {
-    return kFeatureAnchored;
-  } else if (exp_.IsInlineSizeDependent()) {
-    return kFeatureInlineSize;
-  } else if (exp_.IsBlockSizeDependent()) {
-    return kFeatureBlockSize;
-  } else {
-    FeatureFlags flags = 0;
-    if (exp_.IsWidthDependent()) {
-      flags |= kFeatureWidth;
+  if (exp_.HasMediaFeature()) {
+    if (exp_.MediaFeature() == media_feature_names::kStuckMediaFeature) {
+      return kFeatureSticky;
+    } else if (exp_.MediaFeature() ==
+               media_feature_names::kSnappedMediaFeature) {
+      return kFeatureSnap;
+    } else if (exp_.MediaFeature() ==
+               media_feature_names::kScrollableMediaFeature) {
+      return kFeatureScrollable;
+    } else if (exp_.MediaFeature() ==
+               media_feature_names::kScrollDirectionMediaFeature) {
+      return kFeatureScrollDirection;
+    } else if (exp_.MediaFeature() ==
+               media_feature_names::kFallbackMediaFeature) {
+      return kFeatureAnchored;
+    } else if (exp_.IsInlineSizeDependent()) {
+      return kFeatureInlineSize;
+    } else if (exp_.IsBlockSizeDependent()) {
+      return kFeatureBlockSize;
     }
-    if (exp_.IsHeightDependent()) {
-      flags |= kFeatureHeight;
-    }
-    return flags;
   }
+  FeatureFlags flags = 0;
+  if (exp_.IsWidthDependent()) {
+    flags |= kFeatureWidth;
+  }
+  if (exp_.IsHeightDependent()) {
+    flags |= kFeatureHeight;
+  }
+  return flags;
 }
 
 void MediaQueryFeatureExpNode::Trace(Visitor* visitor) const {

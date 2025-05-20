@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -205,6 +206,40 @@ bool IsGtGe(MediaQueryOperator op) {
   return op == MediaQueryOperator::kGt || op == MediaQueryOperator::kGe;
 }
 
+// Consume a MediaQueryExpValue without parsing against the feature grammar.
+// Only used for container style queries for range syntax.
+std::optional<MediaQueryExpValue> ConsumeUnparsed(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  wtf_size_t start = stream.Offset();
+  // Skip until the first comparison delimiter.
+  while (!stream.AtEnd()) {
+    stream.SkipUntilPeekedTypeIs<kDelimiterToken>();
+    if (stream.AtEnd()) {
+      break;
+    }
+    if (IsComparisonDelimiter(stream.Peek().Delimiter())) {
+      break;
+    }
+    if (!stream.AtEnd()) {
+      stream.Consume();  // kDelimiterToken
+    }
+  }
+  wtf_size_t end = stream.Offset();
+  String value_string(stream.StringRangeAt(start, end - start).ToString());
+  if (value_string.empty()) {
+    return std::nullopt;
+  }
+
+  CSSVariableData* data =
+      CSSVariableData::Create(value_string, /* is_animation_tainted= */ false,
+                              /* is_attr_tainted= */ false,
+                              /*needs_variable_resolution=*/false);
+  const CSSValue* value =
+      MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
+  return MediaQueryExpValue(*value);
+}
+
 }  // namespace
 
 MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
@@ -288,6 +323,62 @@ AtomicString MediaQueryParser::ConsumeUnprefixedName(
   return name;
 }
 
+// <style-range> = <unparsed> <mf-comparison> <unparsed>
+//               | <unparsed> <mf-lt> <unparsed> <mf-lt> <unparsed>
+//               | <unparsed> <mf-gt> <unparsed> <mf-gt> <unparsed>
+//
+// Where <unparsed> is a <declaration-value> that does not allow
+// any of the delimiters accepted by <mf-lt> or <mf-gt>.
+const MediaQueryExpNode* MediaQueryParser::ConsumeStyleFeatureRange(
+    CSSParserTokenStream& stream) {
+  CSSParserTokenStream::State start = stream.Save();
+  std::optional<MediaQueryExpValue> value1 =
+      ConsumeUnparsed(stream, fake_context_);
+  if (!value1.has_value() || stream.AtEnd()) {
+    stream.Restore(start);
+    return nullptr;
+  }
+
+  MediaQueryOperator op1 = ConsumeComparison(stream);
+  if (op1 == MediaQueryOperator::kNone) {
+    stream.Restore(start);
+    return nullptr;
+  }
+
+  std::optional<MediaQueryExpValue> value2 =
+      ConsumeUnparsed(stream, fake_context_);
+  if (!value2.has_value()) {
+    stream.Restore(start);
+    return nullptr;
+  }
+
+  if (stream.AtEnd()) {
+    MediaQueryExpComparison left(*value1, op1);
+    MediaQueryExpComparison right;
+    return MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
+        value2.value(), MediaQueryExpBounds(left, right)));
+  }
+
+  MediaQueryOperator op2 = ConsumeComparison(stream);
+  if (op2 == MediaQueryOperator::kNone ||
+      std::abs(static_cast<int>(op2) - static_cast<int>(op1)) > 1) {
+    stream.Restore(start);
+    return nullptr;
+  }
+
+  std::optional<MediaQueryExpValue> value3 =
+      ConsumeUnparsed(stream, fake_context_);
+  if (!value3.has_value() || !stream.AtEnd()) {
+    stream.Restore(start);
+    return nullptr;
+  }
+
+  MediaQueryExpComparison left(*value1, op1);
+  MediaQueryExpComparison right(*value3, op2);
+  return MakeGarbageCollected<MediaQueryFeatureExpNode>(
+      MediaQueryExp::Create(value2.value(), MediaQueryExpBounds(left, right)));
+}
+
 const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
@@ -322,6 +413,13 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     }
 
     stream.Restore(start);
+  }
+
+  if (feature_set.SupportsStyleRange() &&
+      RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled()) {
+    // A feature set must either support regular ranges *or* style ranges.
+    CHECK(!feature_set.SupportsRange());
+    return ConsumeStyleFeatureRange(stream);
   }
 
   if (!feature_set.SupportsRange()) {

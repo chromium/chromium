@@ -51,9 +51,13 @@ class CORE_EXPORT MediaQueryParser {
     // Returns true is the feature name is case sensitive.
     virtual bool IsCaseSensitive(const AtomicString& feature) const = 0;
 
-    // Whether the features support range syntax. This is typically false for
-    // style container queries.
+    // Whether the features support media query range syntax. This is typically
+    // false for style container queries.
     virtual bool SupportsRange() const = 0;
+
+    // Whether the features support style query range syntax, e.g. queries like
+    // 10em < 10px < 10% or --x > --y > --z
+    virtual bool SupportsStyleRange() const = 0;
 
     // Whether the features are evaluated in an element context
     // (true for container queries, false for media queries).
@@ -74,6 +78,7 @@ class CORE_EXPORT MediaQueryParser {
       return false;
     }
     bool SupportsRange() const override { return true; }
+    bool SupportsStyleRange() const override { return false; }
     bool SupportsElementDependent() const override { return false; }
   };
 
@@ -123,6 +128,9 @@ class CORE_EXPORT MediaQueryParser {
     // <mf-name> appears on the right, e.g. 10px > width.
     kRight
   };
+
+  const MediaQueryExpNode* ConsumeStyleFeatureRange(
+      CSSParserTokenStream& stream);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //

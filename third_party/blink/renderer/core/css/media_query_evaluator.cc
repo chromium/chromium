@@ -1726,6 +1726,12 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
     return KleeneValue::kUnknown;
   }
 
+  if (feature.HasStyleRange()) {
+    // TODO(crbug.com/408011559): Add support for container style queries
+    // ranges.
+    return KleeneValue::kFalse;
+  }
+
   if (CSSVariableParser::IsValidVariableName(feature.Name())) {
     return EvalStyleFeature(feature, result_flags);
   }
@@ -1776,8 +1782,12 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
 
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
-  // Style features do not support the range syntax.
-  DCHECK(!bounds.IsRange());
+  if (bounds.IsRange()) {
+    // TODO(crbug.com/408011559): Add support for container style queries
+    // ranges.
+    return KleeneValue::kFalse;
+  }
+
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);
 
   Element* container = media_values_->ContainerElement();

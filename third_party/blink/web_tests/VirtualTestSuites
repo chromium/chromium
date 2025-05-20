@@ -4395,6 +4395,18 @@
       "--enable-features=JavaScriptSourcePhaseImports"
     ],
     "expires": "Apr 4, 2026"
+  },
+  {
+    "prefix": "container-style-queries-range",
+    "owners": ["moonira@google.com"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-conditional/container-queries/"
+    ],
+    "args": [
+      "--disable-features=CSSContainerStyleQueriesRange"
+    ],
+    "expires": "May 15, 2026"
   }
 
 ]

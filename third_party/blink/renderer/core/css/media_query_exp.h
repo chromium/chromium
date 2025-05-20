@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -290,19 +291,29 @@ class CORE_EXPORT MediaQueryExp {
                               bool supports_element_dependent);
   static MediaQueryExp Create(const AtomicString& media_feature,
                               const MediaQueryExpBounds&);
-  static MediaQueryExp Invalid() {
-    return MediaQueryExp(String(), MediaQueryExpValue());
-  }
+  static MediaQueryExp Create(const MediaQueryExpValue& reference_value,
+                              const MediaQueryExpBounds&);
+  static MediaQueryExp Invalid() { return MediaQueryExp(); }
 
   MediaQueryExp(const MediaQueryExp& other);
   ~MediaQueryExp();
   void Trace(Visitor*) const;
 
-  const AtomicString& MediaFeature() const { return media_feature_; }
+  bool IsValid() const { return type_ != Type::kInvalid; }
+  bool HasMediaFeature() const { return type_ == Type::kMediaFeature; }
+  bool HasStyleRange() const { return type_ == Type::kStyleRange; }
+
+  const AtomicString& MediaFeature() const {
+    DCHECK(HasMediaFeature());
+    return media_feature_;
+  }
+
+  const CSSUnparsedDeclarationValue& ReferenceValue() const {
+    DCHECK(HasStyleRange());
+    return *reference_value_;
+  }
 
   const MediaQueryExpBounds& Bounds() const { return bounds_; }
-
-  bool IsValid() const { return !media_feature_.IsNull(); }
 
   bool operator==(const MediaQueryExp& other) const;
   bool operator!=(const MediaQueryExp& other) const {
@@ -324,10 +335,21 @@ class CORE_EXPORT MediaQueryExp {
   unsigned GetUnitFlags() const;
 
  private:
-  MediaQueryExp(const String&, const MediaQueryExpValue&);
-  MediaQueryExp(const String&, const MediaQueryExpBounds&);
+  enum class Type { kMediaFeature, kStyleRange, kInvalid };
 
+  MediaQueryExp() = default;
+  MediaQueryExp(const String& media_feature, const MediaQueryExpValue&);
+  MediaQueryExp(const String& media_feature, const MediaQueryExpBounds&);
+  MediaQueryExp(const CSSUnparsedDeclarationValue& reference_value,
+                const MediaQueryExpBounds&);
+
+  Type type_ = Type::kInvalid;
+  // The `bounds_` member represents the values that `media_feature_` is
+  // compared to, either of the left side, or right side, or both (see
+  // `MediaQueryExpBounds`). If `reference_value_` is set, the `bounds_` are
+  // compared to that instead.
   AtomicString media_feature_;
+  Member<const CSSUnparsedDeclarationValue> reference_value_;
   MediaQueryExpBounds bounds_;
 };
 
@@ -382,7 +404,14 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   explicit MediaQueryFeatureExpNode(const MediaQueryExp& exp) : exp_(exp) {}
   void Trace(Visitor*) const override;
 
-  const String& Name() const { return exp_.MediaFeature(); }
+  const String& Name() const {
+    DCHECK(HasMediaFeature());
+    return exp_.MediaFeature();
+  }
+
+  bool HasMediaFeature() const { return exp_.HasMediaFeature(); }
+  bool HasStyleRange() const { return exp_.HasStyleRange(); }
+
   const MediaQueryExpBounds& Bounds() const { return exp_.Bounds(); }
 
   unsigned GetUnitFlags() const;

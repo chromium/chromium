@@ -2328,8 +2328,12 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     bool& is_attr_tainted) {
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
-  // Style features do not support the range syntax.
-  DCHECK(!bounds.IsRange());
+  if (feature.HasStyleRange() || bounds.IsRange()) {
+    // TODO(crbug.com/408011559): Add support for container style queries
+    // ranges.
+    return KleeneValue::kFalse;
+  }
+
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);
 
   AtomicString property_name(feature.Name());

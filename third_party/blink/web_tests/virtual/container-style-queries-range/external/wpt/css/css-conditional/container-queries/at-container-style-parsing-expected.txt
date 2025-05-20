@@ -1,0 +1,51 @@
+This is a testharness.js-based test.
+[FAIL] Query condition should be valid: style(--foo >= --bar)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(--foo = --bar)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(--foo <= --bar)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px > 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(--foo >= 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px > --bar)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px = --bar)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(--foo < --bar)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px <= 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px = 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px <= calc(10em + 20em))
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(calc(10em + 20em) < 10px)
+  assert_equals: expected 2 but got 1
+[FAIL] Query condition should be valid: style(--foo < 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px <= --bar)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(--foo < --bar <= --baz)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(--foo >= --bar > --baz)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(--foo > 10px > 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px < --foo < 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px < --foo <= 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px <= --foo < 10em)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px > 10em > --foo)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(10px < 10em < 10)
+  assert_equals: expected "true" but got ""
+[FAIL] Query condition should be valid: style(var(--p) < calc(100 + 200))
+  assert_equals: expected 2 but got 1
+[FAIL] Query condition should be valid: style(attr(data-foo type(<number>)) < var(--p) < var(--q))
+  assert_equals: expected 2 but got 1
+Harness: the test ran to completion.
+
