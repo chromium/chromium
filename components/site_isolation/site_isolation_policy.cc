@@ -186,23 +186,6 @@ bool SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled() {
 }
 
 // static
-bool SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled() {
-  if (content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled() ||
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() ||
-      !content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    // Origin isolation for JavaScript optimizer exceptions isn't needed if
-    // origin isolation is enabled for everything because an origin gets passed
-    // into AreV8OptimizationsDisabledForSite() and the return value will match
-    // the outcome that is specified by the configured rules. If dynamic origin
-    // isolation is not enabled, then this feature won't have any effect so we
-    // just skip it.
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      site_isolation::features::kOriginIsolationForJsOptExceptions);
-}
-
-// static
 bool SiteIsolationPolicy::IsEnterprisePolicyApplicable() {
 #if BUILDFLAG(IS_ANDROID)
   // https://crbug.com/844118: Limiting policy to devices with > 1GB RAM.

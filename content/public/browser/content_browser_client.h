@@ -720,11 +720,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // opted into --isolate-origins mode of Site Isolation.
   virtual std::vector<url::Origin> GetOriginsRequiringDedicatedProcess();
 
-  // Allows the embedder to programmatically take action before the site is
-  // computed. |url| should be the full URL that is being navigated to.
-  virtual void WillComputeSiteForNavigation(BrowserContext* browser_context,
-                                            const GURL& url) {}
-
   // Allows the embedder to programmatically control whether the
   // --site-per-process mode of Site Isolation should be used.  Note that
   // returning true here will only take effect if ShouldDisableSiteIsolation()

@@ -69,24 +69,6 @@ const char kPartialSiteIsolationMemoryThresholdParamName[] =
     "partial_site_isolation_threshold_mb";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// In order to have broader support for JavaScript optimizer exceptions, we'll
-// apply origin isolation on navigation for URLs that match rules in the
-// JAVASCRIPT_OPTIMIZER content setting that don't match the default setting.
-// TODO(crbug.com/413695645): we want this feature to start isolating any origin
-// that was specified in the rules but there currently isn't a way to determine
-// this from the host_content_settings_map API, so we'll improve this in the
-// future.
-//
-// On Android, this implicitly starts isolating origins under partial site
-// isolation. If full site isolation is enabled (examples: through opt-in or an
-// enterprise policy), then this feature behaves the same as on Desktop.
-//
-// On Desktop, this feature starts isolating origins where the custom policy
-// targets an origin that is not already origin-isolated.
-BASE_FEATURE(kOriginIsolationForJsOptExceptions,
-             "OriginIsolationForJsOptExceptions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Desktop-only: kOriginIsolationMemoryThreshold (if enabled) is used to
 // determine if a device has the necessary resources to participate in origin
 // isolation (a stronger model than site isolation, but with potentially higher

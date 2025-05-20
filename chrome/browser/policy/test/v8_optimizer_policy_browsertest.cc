@@ -39,6 +39,13 @@ class V8OptimizerPolicyTest
   V8OptimizerPolicyTest() = default;
   ~V8OptimizerPolicyTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PolicyTest::SetUpCommandLine(command_line);
+    // This is needed for this test to run properly on platforms where
+    //  --site-per-process isn't the default, such as Android.
+    content::IsolateAllSitesForTesting(command_line);
+  }
+
   void SetPolicyValue(PolicyMap* map, const char* key, const char* value) {
     base::Value::List value_list;
     if (value) {
@@ -140,7 +147,6 @@ IN_PROC_BROWSER_TEST_P(V8OptimizerPolicyTest, V8OptimizerHostnameMatching) {
   NavigateAndExpectPolicyResult("foo.com", true);
   NavigateAndExpectPolicyResult("subdomain.foo.com", true);
   ConfigurePolicy(nullptr, "[*.]foo.com");
-  NavigateAndExpectPolicyResult("foo.com", true);
   NavigateAndExpectPolicyResult("subdomain.foo.com", true);
 
   const bool expected = DetermineExpectedResultForDefault();
@@ -149,10 +155,11 @@ IN_PROC_BROWSER_TEST_P(V8OptimizerPolicyTest, V8OptimizerHostnameMatching) {
   ConfigurePolicy(nullptr, "foo.com");
   NavigateAndExpectPolicyResult("bar.com", expected);
 
-  // Ensure that subdomains are blocked as well.
+  // Here there is an invalid policy as the V8 optimizer policies only support
+  // eTLD+1 as origin.
   ConfigurePolicy(nullptr, "subdomain.foo.com");
   NavigateAndExpectPolicyResult("foo.com", expected);
-  NavigateAndExpectPolicyResult("subdomain.foo.com", true);
+  NavigateAndExpectPolicyResult("subdomain.foo.com", expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(DefaultDisabled,

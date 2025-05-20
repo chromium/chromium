@@ -33,7 +33,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search/search.h"
@@ -61,13 +60,11 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/site_isolation/features.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/site_instance.h"
@@ -1664,99 +1661,6 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
             browser_client.ShouldUseSpareRenderProcessHost(
                 &profile_, GURL("chrome-extension://test-extension/")));
 #endif
-}
-
-class WillComputeSiteForNavigationTest : public ChromeContentBrowserClientTest {
- public:
-  // Returns true if the origin is among the origins that are isolated; false
-  // otherwise.
-  bool IsOriginIsolatedByUser(const GURL& url) {
-    content::ChildProcessSecurityPolicy* policy =
-        content::ChildProcessSecurityPolicy::GetInstance();
-    for (const auto& origin :
-         policy->GetIsolatedOrigins(content::ChildProcessSecurityPolicy::
-                                        IsolatedOriginSource::USER_TRIGGERED,
-                                    &profile_)) {
-      if (origin.IsSameOriginWith(url)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
- protected:
-  ChromeContentBrowserClient browser_client_;
-};
-
-TEST_F(WillComputeSiteForNavigationTest,
-       IsolatesSitesThatHaveAJavaScriptOptimizerException) {
-  const GURL url("http://allowed.test");
-
-  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
-  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                ContentSetting::CONTENT_SETTING_BLOCK);
-  map->SetContentSettingDefaultScope(url, url,
-                                     ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                     ContentSetting::CONTENT_SETTING_ALLOW);
-
-  browser_client_.WillComputeSiteForNavigation(&profile_, url);
-  EXPECT_TRUE(IsOriginIsolatedByUser(url));
-}
-
-TEST_F(WillComputeSiteForNavigationTest,
-       IgnoresSitesThatMatchTheJavaScriptOptimizerSetting) {
-  const GURL url("http://blocked.test");
-
-  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
-  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                ContentSetting::CONTENT_SETTING_BLOCK);
-
-  browser_client_.WillComputeSiteForNavigation(&profile_, url);
-
-  EXPECT_FALSE(IsOriginIsolatedByUser(url));
-}
-
-TEST_F(WillComputeSiteForNavigationTest,
-       OriginIsolationForJsOptExceptionsDisabledDoesNotIsolateOrigin) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      site_isolation::features::kOriginIsolationForJsOptExceptions);
-
-  const GURL url("http://allowed-but-wont-be-isolated.test");
-
-  // Create the exception.
-  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
-  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                ContentSetting::CONTENT_SETTING_BLOCK);
-  map->SetContentSettingDefaultScope(url, url,
-                                     ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                     ContentSetting::CONTENT_SETTING_ALLOW);
-
-  browser_client_.WillComputeSiteForNavigation(&profile_, url);
-  // Check that the URL is not isolated.
-  EXPECT_FALSE(IsOriginIsolatedByUser(url));
-}
-
-TEST_F(WillComputeSiteForNavigationTest,
-       WhenStrictOriginIsolationIsEnabledDoesNotIsolateUrl) {
-  // WillComputeSiteForNavigation should not do any work if
-  // StrictOriginIsolation is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kStrictOriginIsolation);
-
-  const GURL url("http://allowed-but-wont-be-isolated-by-feature.test");
-
-  // Create the exception.
-  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
-  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                ContentSetting::CONTENT_SETTING_BLOCK);
-  map->SetContentSettingDefaultScope(url, url,
-                                     ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                     ContentSetting::CONTENT_SETTING_ALLOW);
-
-  browser_client_.WillComputeSiteForNavigation(&profile_, url);
-  // Check that the URL is not isolated.
-  EXPECT_FALSE(IsOriginIsolatedByUser(url));
 }
 
 #if BUILDFLAG(IS_WIN)
