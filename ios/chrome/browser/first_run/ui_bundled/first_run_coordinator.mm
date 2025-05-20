@@ -216,9 +216,8 @@ class FirstRunCoordinatorMetricsHelper final {
 
 #pragma mark - HistorySyncCoordinatorDelegate
 
-- (void)closeHistorySyncCoordinator:
-            (HistorySyncCoordinator*)historySyncCoordinator
-                     declinedByUser:(BOOL)declined {
+- (void)historySyncCoordinator:(HistorySyncCoordinator*)historySyncCoordinator
+                    withResult:(HistorySyncResult)result {
   CHECK_EQ(self.childCoordinator, historySyncCoordinator);
   [self screenWillFinishPresenting];
 }

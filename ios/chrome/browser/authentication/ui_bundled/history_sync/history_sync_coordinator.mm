@@ -26,6 +26,30 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+namespace {
+
+// Converts HistorySyncSkipReason in HistorySyncResult.
+HistorySyncResult HistorySyncSkipReasonToHistorySyncResult(
+    history_sync::HistorySyncSkipReason skip_reason) {
+  switch (skip_reason) {
+    case history_sync::HistorySyncSkipReason::kNone:
+      // History sync should not be skipped if the reason is `kNone`.
+      NOTREACHED(base::NotFatalUntil::M145);
+      // Need to return a value until `NOTREACHED` doesn't return.
+      return HistorySyncResult::kSuccess;
+    case history_sync::HistorySyncSkipReason::kNotSignedIn:
+      return HistorySyncResult::kPrimaryIdentityRemoved;
+    case history_sync::HistorySyncSkipReason::kAlreadyOptedIn:
+      return HistorySyncResult::kSuccess;
+    case history_sync::HistorySyncSkipReason::kSyncForbiddenByPolicies:
+    case history_sync::HistorySyncSkipReason::kDeclinedTooOften:
+      return HistorySyncResult::kSkipped;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 @interface HistorySyncCoordinator () <HistorySyncMediatorDelegate,
                                       PromoStyleViewControllerDelegate>
 @end
@@ -118,9 +142,7 @@
   history_sync::HistorySyncSkipReason skipReason = history_sync::GetSkipReason(
       syncService, authenticationService, _prefService, _isOptional);
   if (skipReason != history_sync::HistorySyncSkipReason::kNone) {
-    [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
-                                            accessPoint:_accessPoint];
-    [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
+    [self skipHistorySyncWithSkipReason:skipReason];
     return;
   }
 
@@ -132,6 +154,9 @@
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
+  // Need to be signed in to open the history sync dialog.
+  CHECK(identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M145);
   _mediator = [[HistorySyncMediator alloc]
       initWithAuthenticationService:authenticationService
         chromeAccountManagerService:chromeAccountManagerService
@@ -187,7 +212,8 @@
 
 - (void)historySyncMediatorPrimaryAccountCleared:
     (HistorySyncMediator*)mediator {
-  [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
+  [_delegate historySyncCoordinator:self
+                         withResult:HistorySyncResult::kPrimaryIdentityRemoved];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
@@ -207,7 +233,8 @@
                                 _accessPoint);
   _recordOptInEndAtStop = NO;
 
-  [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
+  [_delegate historySyncCoordinator:self
+                         withResult:HistorySyncResult::kSuccess];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -223,7 +250,8 @@
                                 _accessPoint);
   _recordOptInEndAtStop = NO;
 
-  [_delegate closeHistorySyncCoordinator:self declinedByUser:YES];
+  [_delegate historySyncCoordinator:self
+                         withResult:HistorySyncResult::kUserCanceled];
 }
 
 #pragma mark - Private
@@ -249,6 +277,15 @@
   }
 
   base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *buttonClicked);
+}
+
+- (void)skipHistorySyncWithSkipReason:
+    (history_sync::HistorySyncSkipReason)skipReason {
+  [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
+                                          accessPoint:_accessPoint];
+  HistorySyncResult result =
+      HistorySyncSkipReasonToHistorySyncResult(skipReason);
+  [_delegate historySyncCoordinator:self withResult:result];
 }
 
 @end

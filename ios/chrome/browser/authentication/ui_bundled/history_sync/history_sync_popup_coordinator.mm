@@ -125,8 +125,8 @@
   _historySyncCoordinator = nil;
 }
 
-- (void)viewWasDismissedWithResult:(SigninCoordinatorResult)result {
-  if (result != SigninCoordinatorResultSuccess && _signOutIfDeclined) {
+- (void)viewWasDismissedWithResult:(HistorySyncResult)result {
+  if (result == HistorySyncResult::kUserCanceled && _signOutIfDeclined) {
     signin::ProfileSignoutRequest(
         signin_metrics::ProfileSignout::
             kUserDeclinedHistorySyncAfterDedicatedSignIn)
@@ -137,13 +137,9 @@
 
 #pragma mark - HistorySyncCoordinatorDelegate
 
-- (void)closeHistorySyncCoordinator:
-            (HistorySyncCoordinator*)historySyncCoordinator
-                     declinedByUser:(BOOL)declined {
+- (void)historySyncCoordinator:(HistorySyncCoordinator*)historySyncCoordinator
+                    withResult:(HistorySyncResult)result {
   [self stopHistorySyncCoordinator];
-  SigninCoordinatorResult result = declined
-                                       ? SigninCoordinatorResultCanceledByUser
-                                       : SigninCoordinatorResultSuccess;
   __weak __typeof(self) weakSelf = self;
   [_navigationController
       dismissViewControllerAnimated:YES
@@ -161,7 +157,7 @@
   [self stopHistorySyncCoordinator];
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
-  [self viewWasDismissedWithResult:SigninCoordinatorResultCanceledByUser];
+  [self viewWasDismissedWithResult:HistorySyncResult::kUserCanceled];
 }
 
 #pragma mark - NSObject

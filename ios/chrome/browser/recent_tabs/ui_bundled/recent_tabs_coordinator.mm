@@ -287,7 +287,7 @@
 #pragma mark - HistorySyncPopupCoordinatorDelegate
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
-                didFinishWithResult:(SigninCoordinatorResult)result {
+                didFinishWithResult:(HistorySyncResult)result {
   [self stopHistorySyncPopupCoordinator];
   [self.mediator refreshSessionsView];
 }

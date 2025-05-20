@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 
 source_set("history_sync") {
   sources = [
+    "history_sync_constants.h",
     "history_sync_coordinator.h",
     "history_sync_coordinator.mm",
     "history_sync_mediator.h",

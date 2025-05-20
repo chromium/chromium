@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 enum class SigninContextStyle;
 namespace signin_metrics {
@@ -21,9 +21,10 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 // Called once `coordinator` wants to be stopped.
 // `result` returns reason why the history sync opt-in dialog was closed.
-// Not called if the coordinator is stopped by its owner choice.
+// Not called if the coordinator's owner calls stop while the dialog is still
+// opened.
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
-                didFinishWithResult:(SigninCoordinatorResult)result;
+                didFinishWithResult:(HistorySyncResult)result;
 
 @end
 

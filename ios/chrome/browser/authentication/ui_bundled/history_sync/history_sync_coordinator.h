@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class HistorySyncCoordinator;
@@ -20,10 +21,12 @@ enum class AccessPoint : int;
 // Delegate for the history sync coordinator.
 @protocol HistorySyncCoordinatorDelegate <NSObject>
 
-// Called once the dialog can be closed.
-- (void)closeHistorySyncCoordinator:
-            (HistorySyncCoordinator*)historySyncCoordinator
-                     declinedByUser:(BOOL)declined;
+// Called once `historySyncCoordinator` wants to be stopped.
+// `result` returns reason why the history sync opt-in dialog was closed.
+// Not called if the coordinator's owner calls stop while the dialog is still
+// opened.
+- (void)historySyncCoordinator:(HistorySyncCoordinator*)historySyncCoordinator
+                    withResult:(HistorySyncResult)result;
 
 @end
 

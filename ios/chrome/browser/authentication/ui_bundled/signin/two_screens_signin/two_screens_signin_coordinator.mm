@@ -237,9 +237,8 @@ using base::UserMetricsAction;
 #pragma mark - HistorySyncCoordinatorDelegate
 
 // Dismisses the current screen.
-- (void)closeHistorySyncCoordinator:
-            (HistorySyncCoordinator*)historySyncCoordinator
-                     declinedByUser:(BOOL)declined {
+- (void)historySyncCoordinator:(HistorySyncCoordinator*)historySyncCoordinator
+                    withResult:(HistorySyncResult)result {
   [self screenWillFinishPresenting];
 }
 

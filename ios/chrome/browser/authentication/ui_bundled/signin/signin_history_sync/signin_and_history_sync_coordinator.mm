@@ -47,6 +47,20 @@ enum class SignInHistorySyncStep {
   kCompleted,
 };
 
+// Converts HistorySyncResult in SigninCoordinatorResult.
+SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
+    HistorySyncResult history_sync_result) {
+  switch (history_sync_result) {
+    case HistorySyncResult::kSuccess:
+    case HistorySyncResult::kUserCanceled:
+    case HistorySyncResult::kSkipped:
+      return SigninCoordinatorResultSuccess;
+    case HistorySyncResult::kPrimaryIdentityRemoved:
+      return SigninCoordinatorResultInterrupted;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 @interface SignInAndHistorySyncCoordinator () <
@@ -126,11 +140,13 @@ enum class SignInHistorySyncStep {
 #pragma mark - HistorySyncPopupCoordinatorDelegate
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
-                didFinishWithResult:(SigninCoordinatorResult)result {
+                didFinishWithResult:(HistorySyncResult)result {
   CHECK_EQ(coordinator, _historySyncPopupCoordinator,
            base::NotFatalUntil::M145);
   [self stopHistorySyncPopupCoordinatorAnimated:YES];
-  [self presentNextStepWithPreviousResult:result];
+  SigninCoordinatorResult signinResult =
+      HistorySyncResultToSigninCoordinatorResult(result);
+  [self presentNextStepWithPreviousResult:signinResult];
 }
 
 #pragma mark - Private
