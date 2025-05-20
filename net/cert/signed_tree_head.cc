@@ -2,35 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/signed_tree_head.h"
 
-#include <string.h>
-
+#include <algorithm>
 #include <ostream>
+#include <string>
+#include <tuple>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 
 namespace net::ct {
 
 SignedTreeHead::SignedTreeHead() = default;
 
-SignedTreeHead::SignedTreeHead(Version version,
-                               const base::Time& timestamp,
-                               uint64_t tree_size,
-                               const char sha256_root_hash[kSthRootHashLength],
-                               const DigitallySigned& signature,
-                               const std::string& log_id)
+SignedTreeHead::SignedTreeHead(
+    Version version,
+    const base::Time& timestamp,
+    uint64_t tree_size,
+    base::span<const uint8_t, kSthRootHashLength> sha256_root_hash,
+    const DigitallySigned& signature,
+    const std::string& log_id)
     : version(version),
       timestamp(timestamp),
       tree_size(tree_size),
       signature(signature),
       log_id(log_id) {
-  memcpy(this->sha256_root_hash, sha256_root_hash, kSthRootHashLength);
+  base::as_writable_byte_span(this->sha256_root_hash)
+      .copy_from(sha256_root_hash);
 }
 
 SignedTreeHead::SignedTreeHead(const SignedTreeHead& other) = default;
@@ -51,15 +51,11 @@ void PrintTo(const SignedTreeHead& sth, std::ostream* os) {
 bool operator==(const SignedTreeHead& lhs, const SignedTreeHead& rhs) {
   return std::tie(lhs.version, lhs.timestamp, lhs.tree_size, lhs.log_id) ==
              std::tie(rhs.version, rhs.timestamp, rhs.tree_size, rhs.log_id) &&
-         memcmp(lhs.sha256_root_hash, rhs.sha256_root_hash,
-                kSthRootHashLength) == 0 &&
+         std::ranges::equal(base::as_byte_span(lhs.sha256_root_hash),
+                            base::as_byte_span(rhs.sha256_root_hash)) &&
          lhs.signature.SignatureParametersMatch(
              rhs.signature.hash_algorithm, rhs.signature.signature_algorithm) &&
          lhs.signature.signature_data == rhs.signature.signature_data;
-}
-
-bool operator!=(const SignedTreeHead& lhs, const SignedTreeHead& rhs) {
-  return !(lhs == rhs);
 }
 
 }  // namespace net::ct

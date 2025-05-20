@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/merkle_tree_leaf.h"
 
-#include <string.h>
-
+#include <algorithm>
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -44,7 +41,8 @@ MATCHER_P(HexEq, hexStr, "") {
 
   // Print hex string (easier to read than default GTest representation)
   *result_listener << "a.k.a. 0x" << base::HexEncode(arg.data(), arg.size());
-  return memcmp(arg.data(), bytes.data(), bytes.size()) == 0;
+  return std::ranges::equal(base::as_byte_span(arg),
+                            base::span<const uint8_t>(bytes));
 }
 
 class MerkleTreeLeafTest : public ::testing::Test {
