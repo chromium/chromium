@@ -30,6 +30,7 @@ class QuickDeletePromoTest : public testing::Test {
       float countOfClearingBrowsingData,
       float countOfClearingBrowsingDataThroughQuickDelete,
       float quickDeletePromoShownCount,
+      float isUserSignedIn,
       EphemeralHomeModuleRank position) {
     pref_service_.SetUserPref(
         kQuickDeletePromoInteractedPref,
@@ -38,7 +39,7 @@ class QuickDeletePromoTest : public testing::Test {
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(), {countOfClearingBrowsingData,
                      countOfClearingBrowsingDataThroughQuickDelete,
-                     quickDeletePromoShownCount});
+                     isUserSignedIn, quickDeletePromoShownCount});
     CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
     CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
     EXPECT_EQ(position, result.position);
@@ -52,7 +53,7 @@ class QuickDeletePromoTest : public testing::Test {
 TEST_F(QuickDeletePromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 3u);
+  EXPECT_EQ(inputs.size(), 4u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kCountOfClearingBrowsingData),
             inputs.end());
@@ -61,6 +62,7 @@ TEST_F(QuickDeletePromoTest, GetInputsReturnsExpectedInputs) {
             inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kQuickDeletePromoShownCount),
             inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kIsUserSignedIn), inputs.end());
 }
 
 // Validates that ComputeCardResult() returns kLast when quick delete promo card
@@ -72,7 +74,8 @@ TEST_F(QuickDeletePromoTest,
       /* hasQuickDeletePromoInteracted */ false,
       /* countOfClearingBrowsingData */ 0,
       /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
-      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kLast);
+      /* quickDeletePromoShownCount */ 0,
+      /* isUserSignedIn */ 1, EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that ComputeCardResult() returns kLast when quick delete promo card
@@ -84,7 +87,8 @@ TEST_F(QuickDeletePromoTest,
       /* hasQuickDeletePromoInteracted */ false,
       /* countOfClearingBrowsingData */ 5,
       /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
-      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kLast);
+      /* quickDeletePromoShownCount */ 0, /* isUserSignedIn */ 1,
+      EphemeralHomeModuleRank::kLast);
 }
 
 // Validates that when the quick delete promo card is disabled because the user
@@ -96,7 +100,8 @@ TEST_F(QuickDeletePromoTest,
       /* hasQuickDeletePromoInteracted */ false,
       /* countOfClearingBrowsingData */ 5,
       /* countOfClearingBrowsingDataThroughQuickDelete */ 3,
-      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kNotShown);
+      /* quickDeletePromoShownCount */ 0, /* isUserSignedIn */ 1,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -108,7 +113,8 @@ TEST_F(QuickDeletePromoTest,
       /* hasQuickDeletePromoInteracted */ false,
       /* countOfClearingBrowsingData */ 5,
       /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
-      /* quickDeletePromoShownCount */ 3, EphemeralHomeModuleRank::kNotShown);
+      /* quickDeletePromoShownCount */ 3, /* isUserSignedIn */ 1,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
@@ -120,7 +126,20 @@ TEST_F(QuickDeletePromoTest,
       /* hasQuickDeletePromoInteracted */ true,
       /* countOfClearingBrowsingData */ 5,
       /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
-      /* quickDeletePromoShownCount */ 0, EphemeralHomeModuleRank::kNotShown);
+      /* quickDeletePromoShownCount */ 0, /* isUserSignedIn */ 1,
+      EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that the ComputeCardResult() function returns kNotShown when the
+// quick delete promo card is disabled because the user is not signed in.
+TEST_F(QuickDeletePromoTest,
+       TestComputeCardResultWithCardDisabledForUserNotSignedIn) {
+  TestComputeCardResultImpl(
+      /* hasQuickDeletePromoInteracted */ false,
+      /* countOfClearingBrowsingData */ 0,
+      /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
+      /* quickDeletePromoShownCount */ 0, /* isUserSignedIn */ 0,
+      EphemeralHomeModuleRank::kNotShown);
 }
 
 }  // namespace segmentation_platform::home_modules

@@ -40,7 +40,12 @@ QuickDeletePromo::QuickDeletePromo(PrefService* profile_prefs)
     : CardSelectionInfo(kQuickDeletePromo), profile_prefs_(profile_prefs) {}
 
 std::map<SignalKey, FeatureQuery> QuickDeletePromo::GetInputs() {
-  std::map<SignalKey, FeatureQuery> map;
+  std::map<SignalKey, FeatureQuery> map = {
+      {kIsUserSignedIn,
+       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+           .tensor_length = 1,
+           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+           .name = kIsUserSignedIn})}};
 
   // Define the number of times user cleared browsing data in the past 30 days.
   DEFINE_UMA_FEATURE_ENUM_COUNT(countOfClearBrowsingData,
@@ -95,6 +100,8 @@ CardSelectionInfo::ShowResult QuickDeletePromo::ComputeCardResult(
     return result;
   }
 
+  std::optional<float> resultForIsUserSignedIn =
+      signals.GetSignal(kIsUserSignedIn);
   std::optional<float> resultForCountOfClearingBrowsingData =
       signals.GetSignal(kCountOfClearingBrowsingData);
   std::optional<float> resultForCountOfClearingBrowsingDataThroughQuickDelete =
@@ -102,7 +109,8 @@ CardSelectionInfo::ShowResult QuickDeletePromo::ComputeCardResult(
   std::optional<float> resultForQuickDeletePromoShownCount =
       signals.GetSignal(kQuickDeletePromoShownCount);
 
-  if (!resultForCountOfClearingBrowsingData.has_value() ||
+  if (!resultForIsUserSignedIn.has_value() ||
+      !resultForCountOfClearingBrowsingData.has_value() ||
       !resultForCountOfClearingBrowsingDataThroughQuickDelete.has_value() ||
       !resultForQuickDeletePromoShownCount.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
@@ -112,7 +120,8 @@ CardSelectionInfo::ShowResult QuickDeletePromo::ComputeCardResult(
   // Show the promo card if the user has never cleared browsing data or has
   // cleared browsing data but never through quick delete in the past 30 days
   // and the promo card has not been shown more than 3 times in 24 hours.
-  if ((resultForCountOfClearingBrowsingData.value() == 0 ||
+  if (*resultForIsUserSignedIn &&
+      (resultForCountOfClearingBrowsingData.value() == 0 ||
        (resultForCountOfClearingBrowsingData.value() > 0 &&
         resultForCountOfClearingBrowsingDataThroughQuickDelete.value() == 0)) &&
       resultForQuickDeletePromoShownCount.value() < kShownCountLimit) {

@@ -38,6 +38,11 @@ TabGroupPromo::TabGroupPromo(PrefService* profile_prefs)
 
 std::map<SignalKey, FeatureQuery> TabGroupPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
+      {kIsUserSignedIn,
+       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+           .tensor_length = 1,
+           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+           .name = kIsUserSignedIn})},
       {kNumberOfTabs,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
@@ -80,20 +85,23 @@ CardSelectionInfo::ShowResult TabGroupPromo::ComputeCardResult(
     return result;
   }
 
+  std::optional<float> resultForIsUserSignedIn =
+      signals.GetSignal(kIsUserSignedIn);
   std::optional<float> resultForTabGroupExists =
       signals.GetSignal(kTabGroupExists);
   std::optional<float> resultForNumberOfTabs = signals.GetSignal(kNumberOfTabs);
   std::optional<float> resultForTabGroupPromoShownCount =
       signals.GetSignal(kTabGroupPromoShownCount);
 
-  if (!resultForTabGroupExists.has_value() ||
+  if (!resultForIsUserSignedIn.has_value() ||
+      !resultForTabGroupExists.has_value() ||
       !resultForNumberOfTabs.has_value() ||
       !resultForTabGroupPromoShownCount.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
-  if (!*resultForTabGroupExists &&
+  if (*resultForIsUserSignedIn && !*resultForTabGroupExists &&
       resultForNumberOfTabs.value() > kTabCountLimit &&
       resultForTabGroupPromoShownCount.value() < kShownCountLimit) {
     result.position = EphemeralHomeModuleRank::kLast;

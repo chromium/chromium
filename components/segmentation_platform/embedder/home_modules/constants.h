@@ -38,6 +38,7 @@ inline constexpr char kSendTabInfobarReceivedInLastSession[] =
     "send_tab_infobar_received_in_last_session";
 
 // Input Context keys for emphemeral android modules.
+const char kIsUserSignedIn[] = "is_user_signed_in";
 const char kShouldShowNonRoleManagerDefaultBrowserPromo[] =
     "should_show_non_role_manager_default_browser_promo";
 const char kHasDefaultBrowserPromoShownInOtherSurface[] =

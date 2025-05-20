@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -43,6 +44,8 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
@@ -66,6 +69,8 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private TabGroupModelFilter mIncognitoFilter;
     @Mock private TabModel mNormalModel;
     @Mock private TabModel mIncognitoModel;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManagerMock;
 
     private EducationalTipModuleBuilder mModuleBuilder;
 
@@ -90,6 +95,10 @@ public class EducationalTipModuleBuilderUnitTest {
         when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
         when(mNormalModel.getCount()).thenReturn(0);
         when(mIncognitoModel.getCount()).thenReturn(0);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
 
         mModuleBuilder =
                 new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
@@ -158,24 +167,26 @@ public class EducationalTipModuleBuilderUnitTest {
                 new EducationalTipModuleBuilder(ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
         InputContext inputContextForTest = moduleBuilderForDefaultBrowserPromo.createInputContext();
         assertNotNull(
-                inputContextForTest.getEntryForTesting(
+                inputContextForTest.getEntryValue(
                         "should_show_non_role_manager_default_browser_promo"));
         assertNotNull(
-                inputContextForTest.getEntryForTesting(
+                inputContextForTest.getEntryValue(
                         "has_default_browser_promo_shown_in_other_surface"));
-        assertNull(inputContextForTest.getEntryForTesting("tab_group_exists"));
-        assertNull(inputContextForTest.getEntryForTesting("number_of_tabs"));
+        assertNotNull(inputContextForTest.getEntryValue("is_user_signed_in"));
+        assertNull(inputContextForTest.getEntryValue("tab_group_exists"));
+        assertNull(inputContextForTest.getEntryValue("number_of_tabs"));
 
         EducationalTipModuleBuilder moduleBuilderForTabGroupPromo =
                 new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_PROMO, mActionDelegate);
         inputContextForTest = moduleBuilderForTabGroupPromo.createInputContext();
         assertNull(
-                inputContextForTest.getEntryForTesting(
+                inputContextForTest.getEntryValue(
                         "should_show_non_role_manager_default_browser_promo"));
         assertNull(
-                inputContextForTest.getEntryForTesting(
+                inputContextForTest.getEntryValue(
                         "has_default_browser_promo_shown_in_other_surface"));
-        assertNotNull(inputContextForTest.getEntryForTesting("tab_group_exists"));
-        assertNotNull(inputContextForTest.getEntryForTesting("number_of_tabs"));
+        assertNotNull(inputContextForTest.getEntryValue("tab_group_exists"));
+        assertNotNull(inputContextForTest.getEntryValue("number_of_tabs"));
+        assertNotNull(inputContextForTest.getEntryValue("is_user_signed_in"));
     }
 }

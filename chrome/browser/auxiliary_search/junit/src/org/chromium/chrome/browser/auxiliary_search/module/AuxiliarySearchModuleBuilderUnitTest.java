@@ -142,8 +142,7 @@ public class AuxiliarySearchModuleBuilderUnitTest {
     @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE})
     public void testCreateInputContext() {
         InputContext inputContext = mBuilder.createInputContext();
-        assertEquals(
-                0f, inputContext.getEntryForTesting("auxiliary_search_available").floatValue, 0.01);
+        assertEquals(0f, inputContext.getEntryValue("auxiliary_search_available").floatValue, 0.01);
     }
 
     @Test
@@ -151,7 +150,6 @@ public class AuxiliarySearchModuleBuilderUnitTest {
     public void testCreateInputContext_Enabled() {
         AuxiliarySearchModuleBuilder.resetShownInThisSessionForTesting();
         InputContext inputContext = mBuilder.createInputContext();
-        assertEquals(
-                1f, inputContext.getEntryForTesting("auxiliary_search_available").floatValue, 0.01);
+        assertEquals(1f, inputContext.getEntryValue("auxiliary_search_available").floatValue, 0.01);
     }
 }

@@ -132,7 +132,7 @@ public class HomeModulesUtilsUnitTest {
         // Verifies the freshness score matches.
         assertEquals(
                 expectedScore,
-                inputContext.getEntryForTesting(
+                inputContext.getEntryValue(
                                 HomeModulesUtils.getFreshnessInputContextString(moduleType))
                         .floatValue,
                 0.01);

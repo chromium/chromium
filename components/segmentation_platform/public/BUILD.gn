@@ -144,6 +144,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/segmentation_platform/InputContextTest.java",
       "android/java/src/org/chromium/components/segmentation_platform/PredictionOptionsTest.java",
+      "android/java/src/org/chromium/components/segmentation_platform/ProcessedValueTest.java",
     ]
 
     deps = [

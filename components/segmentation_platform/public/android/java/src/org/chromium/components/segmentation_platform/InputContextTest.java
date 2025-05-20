@@ -179,17 +179,18 @@ public class InputContextTest {
         another.addEntry("second_int_param", ProcessedValue.fromInt(21));
         another.addEntry("time_param", ProcessedValue.fromTimeMillis(100));
         another.addEntry("third_float_param", ProcessedValue.fromFloat(100));
+        inputContext.addEntry("int_param", ProcessedValue.fromInt(1));
 
         inputContext.mergeFrom(another);
 
         assertEquals(4, another.getSizeForTesting());
 
         assertEquals(7, inputContext.getSizeForTesting());
-        assertEquals(1, inputContext.getEntryForTesting("int_param").intValue);
-        assertEquals(21, inputContext.getEntryForTesting("second_int_param").intValue);
-        assertEquals(-4, inputContext.getEntryForTesting("negative_float_param").floatValue, 0.01);
-        assertEquals(2, inputContext.getEntryForTesting("second_float_param").floatValue, 0.01);
-        assertEquals(100, inputContext.getEntryForTesting("third_float_param").floatValue, 0.01);
-        assertEquals("StringValue", inputContext.getEntryForTesting("string_param").stringValue);
+        assertEquals(1, inputContext.getEntryValue("int_param").intValue);
+        assertEquals(21, inputContext.getEntryValue("second_int_param").intValue);
+        assertEquals(-4, inputContext.getEntryValue("negative_float_param").floatValue, 0.01);
+        assertEquals(2, inputContext.getEntryValue("second_float_param").floatValue, 0.01);
+        assertEquals(100, inputContext.getEntryValue("third_float_param").floatValue, 0.01);
+        assertEquals("StringValue", inputContext.getEntryValue("string_param").stringValue);
     }
 }

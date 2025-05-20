@@ -40,6 +40,8 @@ public class EducationalTipCardProviderSignalHandler {
             Profile profile,
             Tracker tracker) {
         InputContext inputContext = new InputContext();
+        inputContext.addEntry(
+                "is_user_signed_in", ProcessedValue.fromFloat(isUserSignedIn(profile)));
         switch (moduleType) {
             case ModuleType.DEFAULT_BROWSER_PROMO:
                 inputContext.addEntry(
@@ -159,6 +161,16 @@ public class EducationalTipCardProviderSignalHandler {
                 .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             HistorySyncHelper helper = HistorySyncHelper.getForProfile(profile);
             return helper.shouldSuppressHistorySync() || helper.isDeclinedOften() ? 0.0f : 1.0f;
+        }
+
+        return 0.0f;
+    }
+
+    /** Returns a value of 1.0f if the user has signed in. Otherwise, it returns 0.0f. */
+    private static float isUserSignedIn(Profile profile) {
+        if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+            return 1.0f;
         }
 
         return 0.0f;

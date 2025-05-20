@@ -24,6 +24,11 @@ std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kHasDefaultBrowserPromoShownInOtherSurface})},
+      {kIsUserSignedIn,
+       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+           .tensor_length = 1,
+           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+           .name = kIsUserSignedIn})},
       {kShouldShowNonRoleManagerDefaultBrowserPromo,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
@@ -54,18 +59,22 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
     return result;
   }
 
+  std::optional<float> resultForIsUserSignedIn =
+      signals.GetSignal(kIsUserSignedIn);
   std::optional<float> resultForShouldShowNonRoleManagerDefaultBrowserPromo =
       signals.GetSignal(kShouldShowNonRoleManagerDefaultBrowserPromo);
   std::optional<float> resultForHasDefaultBrowserPromoShownInOtherSurface =
       signals.GetSignal(kHasDefaultBrowserPromoShownInOtherSurface);
 
-  if (!resultForShouldShowNonRoleManagerDefaultBrowserPromo.has_value() ||
+  if (!resultForIsUserSignedIn.has_value() ||
+      !resultForShouldShowNonRoleManagerDefaultBrowserPromo.has_value() ||
       !resultForHasDefaultBrowserPromoShownInOtherSurface.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
-  if (*resultForShouldShowNonRoleManagerDefaultBrowserPromo &&
+  if (*resultForIsUserSignedIn &&
+      *resultForShouldShowNonRoleManagerDefaultBrowserPromo &&
       !*resultForHasDefaultBrowserPromoShownInOtherSurface) {
     result.position = EphemeralHomeModuleRank::kLast;
     return result;

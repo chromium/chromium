@@ -29,13 +29,15 @@ class TabGroupPromoTest : public testing::Test {
                                  float numberOfTabs,
                                  float tabGroupExists,
                                  float tabGroupPromoShownCount,
+                                 float isUserSignedIn,
                                  EphemeralHomeModuleRank position) {
     pref_service_.SetUserPref(
         kTabGroupPromoInteractedPref,
         std::make_unique<base::Value>(hasTabGroupPromoInteracted));
     auto card = std::make_unique<TabGroupPromo>(&pref_service_);
     AllCardSignals all_signals = CreateAllCardSignals(
-        card.get(), {numberOfTabs, tabGroupExists, tabGroupPromoShownCount});
+        card.get(), {isUserSignedIn, numberOfTabs, tabGroupExists,
+                     tabGroupPromoShownCount});
     CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
     CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
     EXPECT_EQ(position, result.position);
@@ -49,12 +51,13 @@ class TabGroupPromoTest : public testing::Test {
 TEST_F(TabGroupPromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<TabGroupPromo>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 3u);
+  EXPECT_EQ(inputs.size(), 4u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kTabGroupExists), inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kNumberOfTabs), inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kTabGroupPromoShownCount),
             inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kIsUserSignedIn), inputs.end());
 }
 
 // Validates that ComputeCardResult() returns kLast when tab group promo
@@ -64,6 +67,7 @@ TEST_F(TabGroupPromoTest, TestComputeCardResultWithCardEnabled) {
                             /* numberOfTabs */ 11,
                             /* tabGroupExists */ 0,
                             /* tabGroupPromoShownCount */ 0,
+                            /* isUserSignedIn */ 1,
                             EphemeralHomeModuleRank::kLast);
 }
 
@@ -75,6 +79,7 @@ TEST_F(TabGroupPromoTest,
                             /* numberOfTabs */ 11,
                             /* tabGroupExists */ 1,
                             /* tabGroupPromoShownCount */ 0,
+                            /* isUserSignedIn */ 1,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -86,6 +91,7 @@ TEST_F(TabGroupPromoTest,
                             /* numberOfTabs */ 10,
                             /* tabGroupExists */ 0,
                             /* tabGroupPromoShownCount */ 0,
+                            /* isUserSignedIn */ 1,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -98,6 +104,7 @@ TEST_F(TabGroupPromoTest,
                             /* numberOfTabs */ 11,
                             /* tabGroupExists */ 0,
                             /* tabGroupPromoShownCount */ 3,
+                            /* isUserSignedIn */ 1,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -110,6 +117,19 @@ TEST_F(TabGroupPromoTest,
                             /* numberOfTabs */ 11,
                             /* tabGroupExists */ 0,
                             /* tabGroupPromoShownCount */ 0,
+                            /* isUserSignedIn */ 1,
+                            EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that the ComputeCardResult() function returns kNotShown when the
+// tab group promo card is disabled because the user is not signed in.
+TEST_F(TabGroupPromoTest,
+       TestComputeCardResultWithCardDisabledForUserNotSignedIn) {
+  TestComputeCardResultImpl(/* hasTabGroupPromoInteracted */ false,
+                            /* numberOfTabs */ 11,
+                            /* tabGroupExists */ 0,
+                            /* tabGroupPromoShownCount */ 0,
+                            /* isUserSignedIn */ 0,
                             EphemeralHomeModuleRank::kNotShown);
 }
 

@@ -29,13 +29,14 @@ class DefaultBrowserPromoTest : public testing::Test {
       bool hasDefaultBrowserPromoInteracted,
       float hasDefaultBrowserPromoShownInOtherSurface,
       float shouldShowNonRoleManagerDefaultBrowserPromo,
+      float isUserSignedIn,
       EphemeralHomeModuleRank position) {
     pref_service_.SetUserPref(
         kDefaultBrowserPromoInteractedPref,
         std::make_unique<base::Value>(hasDefaultBrowserPromoInteracted));
     auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
     AllCardSignals all_signals = CreateAllCardSignals(
-        card.get(), {hasDefaultBrowserPromoShownInOtherSurface,
+        card.get(), {hasDefaultBrowserPromoShownInOtherSurface, isUserSignedIn,
                      shouldShowNonRoleManagerDefaultBrowserPromo});
     CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
     CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
@@ -50,7 +51,7 @@ class DefaultBrowserPromoTest : public testing::Test {
 TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 2u);
+  EXPECT_EQ(inputs.size(), 3u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(
       inputs.find(
@@ -60,6 +61,7 @@ TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
       inputs.find(
           segmentation_platform::kHasDefaultBrowserPromoShownInOtherSurface),
       inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kIsUserSignedIn), inputs.end());
 }
 
 // Validates that ComputeCardResult() returns kLast when default browser promo
@@ -68,6 +70,7 @@ TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardEnabled) {
   TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            /* isUserSignedIn */ 1,
                             EphemeralHomeModuleRank::kLast);
 }
 
@@ -79,6 +82,7 @@ TEST_F(DefaultBrowserPromoTest,
   TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 0,
+                            /* isUserSignedIn */ 1,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -90,6 +94,7 @@ TEST_F(DefaultBrowserPromoTest,
   TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 1,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            /* isUserSignedIn */ 1,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -101,6 +106,18 @@ TEST_F(DefaultBrowserPromoTest,
   TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ true,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            /* isUserSignedIn */ 1,
+                            EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that the ComputeCardResult() function returns kNotShown when the
+// default browser promo card is disabled because the user has not signed in.
+TEST_F(DefaultBrowserPromoTest,
+       TestComputeCardResultWithCardDisabledForUserNotSignedIn) {
+  TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
+                            /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
+                            /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            /* isUserSignedIn */ 0,
                             EphemeralHomeModuleRank::kNotShown);
 }
 

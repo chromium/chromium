@@ -148,10 +148,10 @@ public class ModuleRegistryUnitTest {
 
         assertEquals(
                 INVALID_FRESHNESS_SCORE,
-                inputContext.getEntryForTesting(
+                inputContext.getEntryValue(
                                 HomeModulesUtils.getFreshnessInputContextString(moduleType1))
                         .floatValue,
                 0.01);
-        assertEquals(1.0f, inputContext.getEntryForTesting("key").floatValue, 0.01);
+        assertEquals(1.0f, inputContext.getEntryValue("key").floatValue, 0.01);
     }
 }

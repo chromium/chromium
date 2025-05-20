@@ -134,7 +134,7 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kDefaultBrowserPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 2u);
+  EXPECT_GE(registry_->all_cards_input_size(), 3u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -147,6 +147,7 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
               Contains("should_show_non_role_manager_default_browser_promo"));
   EXPECT_THAT(signalKeys,
               Contains("has_default_browser_promo_shown_in_other_surface"));
+  EXPECT_THAT(signalKeys, Contains("is_user_signed_in"));
 }
 
 // Tests that the Registry won't register the DefaultBrowserPromo card when it
@@ -174,6 +175,7 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
   EXPECT_THAT(
       signalKeys,
       Not(Contains("has_default_browser_promo_shown_in_other_surface")));
+  EXPECT_THAT(signalKeys, Not(Contains("is_user_signed_in")));
 }
 
 // Tests that the Registry registers the TabGroupPromo card when its feature is
@@ -183,7 +185,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kTabGroupPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 5u);
+  EXPECT_GE(registry_->all_cards_input_size(), 4u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -195,6 +197,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
   EXPECT_THAT(signalKeys, Contains("tab_group_exists"));
   EXPECT_THAT(signalKeys, Contains("number_of_tabs"));
   EXPECT_THAT(signalKeys, Contains("tab_group_shown_count"));
+  EXPECT_THAT(signalKeys, Contains("is_user_signed_in"));
 }
 
 // Tests that the Registry won't register the TabGroupPromo card when it is
@@ -218,6 +221,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
   EXPECT_THAT(signalKeys, Not(Contains("tab_group_exists")));
   EXPECT_THAT(signalKeys, Not(Contains("number_of_tabs")));
   EXPECT_THAT(signalKeys, Not(Contains("tab_group_shown_count")));
+  EXPECT_THAT(signalKeys, Not(Contains("is_user_signed_in")));
 }
 
 // Tests that for educational tip cards, except for the default browser promo
@@ -241,7 +245,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kTabGroupSyncPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 7u);
+  EXPECT_GE(registry_->all_cards_input_size(), 2u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -284,7 +288,7 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kQuickDeletePromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 10u);
+  EXPECT_GE(registry_->all_cards_input_size(), 4u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -297,6 +301,7 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
   EXPECT_THAT(signalKeys,
               Contains("count_of_clearing_browsing_data_through_quick_delete"));
   EXPECT_THAT(signalKeys, Contains("quick_delete_shown_count"));
+  EXPECT_THAT(signalKeys, Contains("is_user_signed_in"));
 }
 
 // Tests that the Registry won't register the QuickDeletePromo card when it is
@@ -322,6 +327,7 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardDisabled) {
       signalKeys,
       Not(Contains("count_of_clearing_browsing_data_through_quick_delete")));
   EXPECT_THAT(signalKeys, Not(Contains("quick_delete_shown_count")));
+  EXPECT_THAT(signalKeys, Not(Contains("is_user_signed_in")));
 }
 
 // Tests that the Registry registers the AuxiliarySearchPromo card when its
@@ -373,7 +379,7 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kHistorySyncPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 12u);
+  EXPECT_GE(registry_->all_cards_input_size(), 2u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
