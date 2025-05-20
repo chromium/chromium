@@ -39,3 +39,16 @@ source_set("service") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("fake_password_parser_service") {
+  testonly = true
+  sources = [
+    "../fake_password_parser_service.h",
+    "fake_password_parser_service.mm",
+  ]
+
+  deps = [
+    ":csv_passwords_parser_swift",
+    "//components/password_manager/services/csv_password/public/mojom",
+  ]
+}

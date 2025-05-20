@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/password_manager/services/csv_password/fake_password_parser_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,25 +40,6 @@ const char16_t kTestPassword[] = u"test1";
 const char16_t kTestNote[] = u"secret-note";
 const char kTestFileName[] = "test_only.csv";
 }  // namespace
-
-// A wrapper on CSVPasswordSequence that mimics the sandbox behaviour.
-class FakePasswordParserService : public mojom::CSVPasswordParser {
- public:
-  void ParseCSV(const std::string& raw_json,
-                ParseCSVCallback callback) override {
-    mojom::CSVPasswordSequencePtr result = nullptr;
-    CSVPasswordSequence seq(raw_json);
-    if (seq.result() == CSVPassword::Status::kOK) {
-      result = mojom::CSVPasswordSequence::New();
-      if (result) {
-        for (const auto& pwd : seq) {
-          result->csv_passwords.push_back(pwd);
-        }
-      }
-    }
-    std::move(callback).Run(std::move(result));
-  }
-};
 
 class PasswordImporterTest : public testing::Test {
  public:

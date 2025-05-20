@@ -550,6 +550,8 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/generation",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/import:importer_unit_tests",
     "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/password_manager/core/browser/leak_detection:test_support",
     "//components/password_manager/core/common",
@@ -575,13 +577,6 @@ source_set("unit_tests") {
 
   if (!is_android) {
     deps += [ "//components/webauthn/core/browser:test_support" ]
-  }
-
-  if (use_blink) {
-    deps += [
-      "//components/password_manager/core/browser/import:importer",
-      "//components/password_manager/core/browser/import:importer_unit_tests",
-    ]
   }
 
   if (is_ios) {
