@@ -106,3 +106,18 @@ promise_test(async () => {
       [kImagePrompt, {type: 'audio', content: await audio_data.arrayBuffer()}]);
   assert_regexp_match(result, /<audio>/);
 }, 'Prompt with BufferSource - ArrayBuffer');
+
+promise_test(async t => {
+  await ensureLanguageModel();
+
+  const newImage = new Image();
+  newImage.src = kValidImagePath;
+  const session =
+      await LanguageModel.create({expectedInputs: [{type: 'image'}]});
+
+  // TODO(crbug.com/409615288): This should throw a TypeError according to the
+  // spec.
+  promise_rejects_dom(
+      t, 'SyntaxError',
+      session.prompt([kImagePrompt, {type: 'text', content: newImage}]));
+}, 'Prompt with type:"text" and image content should reject');

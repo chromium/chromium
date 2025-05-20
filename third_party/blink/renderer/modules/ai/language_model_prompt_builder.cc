@@ -180,6 +180,13 @@ LanguageModelPromptBuilder::ProcessContent(
     V8LanguageModelPromptContent* content) {
   switch (type.AsEnum()) {
     case V8LanguageModelPromptType::Enum::kText:
+      if (!content->IsString()) {
+        // TODO(crbug.com/409615288): Throw a TypeError to match the explainer.
+        Reject(DOMException::Create(
+            "The value must be a String for type:'text'",
+            DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
+        return nullptr;
+      }
       return ToMojo(content->GetAsString());
     case V8LanguageModelPromptType::Enum::kImage: {
       if (!allowed_types_.Contains(
