@@ -552,6 +552,14 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kAISummarizationAPI);
   }
 
+  if (trial_name == "AIRewriterAPI") {
+    return base::FeatureList::IsEnabled(features::kAIRewriterAPI);
+  }
+
+  if (trial_name == "AIWriterAPI") {
+    return base::FeatureList::IsEnabled(features::kAIRewriterAPI);
+  }
+
   if (trial_name == "LanguageDetectionAPI") {
     return base::FeatureList::IsEnabled(features::kLanguageDetectionAPI);
   }
