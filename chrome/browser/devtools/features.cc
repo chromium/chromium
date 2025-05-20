@@ -177,4 +177,9 @@ BASE_FEATURE(kDevToolsDebuggingRestrictions,
 );
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+// Whether DevTools drawer can be toggled to vertical orientation.
+BASE_FEATURE(kDevToolsVerticalDrawer,
+             "DevToolsVerticalDrawer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

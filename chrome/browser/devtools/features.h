@@ -96,6 +96,8 @@ BASE_DECLARE_FEATURE(kDevToolsNewPermissionDialog);
 BASE_DECLARE_FEATURE(kDevToolsDebuggingRestrictions);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+BASE_DECLARE_FEATURE(kDevToolsVerticalDrawer);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_
