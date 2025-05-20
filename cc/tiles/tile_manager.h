@@ -302,7 +302,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   void TrimPrepaintTiles();
 
   // True if tile resources are present and freed.
-  bool FreeResourcesForTile(Tile* tile);
+  void FreeResourcesForTile(Tile* tile);
   void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
   scoped_refptr<TileTask> CreateRasterTask(
       const PrioritizedTile& prioritized_tile,

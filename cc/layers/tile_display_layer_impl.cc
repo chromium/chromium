@@ -50,9 +50,7 @@ TileDisplayLayerImpl::TileResource::~TileResource() = default;
 
 TileDisplayLayerImpl::Tile::Tile(TileDisplayLayerImpl& layer,
                                  const TileContents& contents)
-    : layer_(layer), contents_(contents) {
-  DCHECK(!std::holds_alternative<NoContents>(contents_));
-}
+    : layer_(layer), contents_(contents) {}
 
 TileDisplayLayerImpl::Tile::Tile(Tile&&) = default;
 
@@ -117,10 +115,12 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
 
   std::unique_ptr<Tile> old_tile;
   if (std::holds_alternative<NoContents>(contents)) {
-    auto it = tiles_.find(key);
-    if (it != tiles_.end()) {
-      old_tile = std::move(it->second);
-      tiles_.erase(it);
+    const auto& no_contents = std::get<NoContents>(contents);
+    if (no_contents.reason == mojom::MissingTileReason::kTileDeleted) {
+      tiles_.erase(key);
+    } else {
+      old_tile =
+          std::exchange(tiles_[key], std::make_unique<Tile>(*layer_, contents));
     }
   } else {
     // If there is a valid TileResource, import it in order to track its usage.
