@@ -36,8 +36,8 @@ static_assert(sizeof(kStopVibration) == kReportLength,
 
 constexpr uint8_t kStartVibration[] = {0x03,  // report ID
                                        0x0f,
-                                       0x7f,  // left trigger
-                                       0xff,  // right trigger
+                                       0xff,  // left trigger
+                                       0x7f,  // right trigger
                                        0xff,  // strong magnitude
                                        0x7f,  // weak magnitude
                                        0xff, 0x00, 0x01};
