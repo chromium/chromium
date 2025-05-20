@@ -13,4 +13,5 @@ module cc.mojom;
 enum MissingTileReason {
   kOutOfMemory,
   kResourceNotReady,
+  kTileDeleted,
 };

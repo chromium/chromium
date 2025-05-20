@@ -15,6 +15,7 @@
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/mojom/missing_tile_reason.mojom.h"
 #include "cc/tiles/tile_index.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiling_coverage_iterator.h"
@@ -31,7 +32,13 @@ namespace cc {
 // layer down to Viz, and this layer uses that information to draw tile quads.
 class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
  public:
-  struct NoContents {};
+  struct NoContents {
+    mojom::MissingTileReason reason =
+        mojom::MissingTileReason::kResourceNotReady;
+
+    NoContents() = default;
+    explicit NoContents(mojom::MissingTileReason r) : reason(r) {}
+  };
 
   struct CC_EXPORT TileResource {
     TileResource(const viz::TransferableResource& resource,
