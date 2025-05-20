@@ -538,7 +538,9 @@ InstallerResult RunApplicationInstaller(
     const bool success = base::GetAppOutputWithExitCodeAndTimeout(
         cmdline, true, nullptr, &exit_code, timeout - timer.Elapsed(), options,
         [&](std::string_view partial_output) {
-          VLOG(1) << "Installer output: " << partial_output;
+          if (!partial_output.empty()) {
+            VLOG(1) << "Installer output: " << partial_output;
+          }
 
           const int progress =
               GetInstallerProgress(app_info.scope, app_info.app_id);
