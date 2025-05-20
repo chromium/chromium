@@ -269,6 +269,9 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   histogram_tester.ExpectBucketCount(
       "CollaborationService.JoinFlow",
       metrics::CollaborationServiceJoinEvent::kOpenedNewGroup, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kAddedUserToGroup, 1);
   histogram_tester.ExpectTimeBucketCount(
       "CollaborationService.Latency.AuthenticationInitToSuccess",
       authentication_time, 1);
@@ -612,6 +615,44 @@ TEST_F(CollaborationControllerTest, AuthenticationCanceledAfterSignIn) {
   histogram_tester.ExpectBucketCount(
       "CollaborationService.JoinFlow",
       metrics::CollaborationServiceJoinEvent::kCanceled, 1);
+}
+
+TEST_F(CollaborationControllerTest, SimulateFailureToAddUserToGroup) {
+  base::HistogramTester histogram_tester;
+
+  RunLoop run_loop;
+
+  // Start Join flow.
+  InitializeJoinController(run_loop.QuitClosure());
+  SetUpJoinRequirements();
+
+  // Simulate getting to the Adding User To Group state.
+  base::OnceCallback<void(Outcome)> join_ui_callback;
+  EXPECT_CALL(*delegate_, ShowJoinDialog(_, _, IsNotNullCallback()))
+      .WillOnce(MoveArg<2>(&join_ui_callback));
+
+  base::OnceCallback<void(Outcome)> error_ui_callback;
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
+  controller_->SetStateForTesting(StateId::kAddingUserToGroup);
+
+  // Show group preview screen.
+  data_sharing::SharedDataPreview preview;
+  preview.shared_tab_group_preview = data_sharing::SharedTabGroupPreview();
+  std::move(preview_callback_).Run(preview);
+  std::move(group_data_callback_).Run(GroupData());
+
+  // Simulate failure on the join flow.
+  EXPECT_CALL(*delegate_, OnFlowFinished);
+  std::move(join_ui_callback).Run(Outcome::kFailure);
+  std::move(error_ui_callback).Run(Outcome::kSuccess);
+
+  run_loop.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kFailedAddingUserToGroup, 1);
 }
 
 TEST_F(CollaborationControllerTest, AuthenticationError) {

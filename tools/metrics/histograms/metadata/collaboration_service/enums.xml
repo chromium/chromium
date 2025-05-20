@@ -76,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Managed account signed in"/>
   <int value="32" label="Account info is not ready upon signin"/>
   <int value="33" label="Read new group result: user is already member"/>
+  <int value="34" label="Failed adding the user to a group"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->

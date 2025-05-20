@@ -696,14 +696,28 @@ class AddingUserToGroupState : public ControllerState {
 
   void ProcessOutcome(Outcome outcome) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    if (Outcome::kCancel == outcome) {
-      CHECK_EQ(controller_->flow().type, FlowType::kJoin)
-          << "Only the join flow can transition into the AddingUserToGroup "
-             "state.";
-      RecordJoinEvent(GetLogger(), CollaborationServiceJoinEvent::kCanceled);
+    CHECK_EQ(controller_->flow().type, FlowType::kJoin)
+        << "Only the join flow can transition into the AddingUserToGroup "
+           "state.";
+
+    switch (outcome) {
+      case Outcome::kSuccess:
+        RecordJoinEvent(GetLogger(),
+                        CollaborationServiceJoinEvent::kAddedUserToGroup);
+        break;
+      case Outcome::kFailure:
+        RecordJoinEvent(
+            GetLogger(),
+            CollaborationServiceJoinEvent::kFailedAddingUserToGroup);
+
+        break;
+      case Outcome::kCancel:
+        RecordJoinEvent(GetLogger(), CollaborationServiceJoinEvent::kCanceled);
+        break;
+      case Outcome::kGroupLeftOrDeleted:
+        NOTREACHED() << "kGroupLeftOrDeleted should not happen in "
+                        "AddingUserToGroupState";
     }
-    RecordJoinEvent(GetLogger(),
-                    CollaborationServiceJoinEvent::kAddedUserToGroup);
 
     ControllerState::ProcessOutcome(outcome);
   }
