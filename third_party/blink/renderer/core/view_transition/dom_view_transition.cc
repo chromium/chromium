@@ -342,4 +342,8 @@ ViewTransitionTypeSet* DOMViewTransition::types() const {
   return view_transition_->Types();
 }
 
+Element* DOMViewTransition::transitionRoot() const {
+  return view_transition_->Scope();
+}
+
 }  // namespace blink

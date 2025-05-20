@@ -51,6 +51,8 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
 
   ViewTransitionTypeSet* types() const;
 
+  Element* transitionRoot() const;
+
   // Called from ViewTransition when the transition is skipped/aborted for any
   // reason.
   void DidSkipTransition(ViewTransition::PromiseResponse);

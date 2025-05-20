@@ -9906,6 +9906,7 @@ interface ViewTransition
     attribute @@toStringTag
     getter finished
     getter ready
+    getter transitionRoot
     getter types
     getter updateCallbackDone
     method constructor
