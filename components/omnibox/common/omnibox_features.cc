@@ -337,6 +337,10 @@ BASE_FEATURE(kIpadZeroSuggestMatches,
              "IpadZeroSuggestMatches",
              enable_if(IS_IOS));
 
+// Updates various NTP/Omnibox assets and descriptions for visual alignment on
+// Android and iOS.
+BASE_FEATURE(kOmniboxMobileParityUpdate, "OmniboxMobileParityUpdate", DISABLED);
+
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control
 // related fieldtrial parameters.
@@ -400,9 +404,6 @@ BASE_FEATURE(kPostDelayedTaskFocusTab, "PostDelayedTaskFocusTab", ENABLED);
 
 // Controls various Omnibox Diagnostics features.
 BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
-
-// Updates various NTP/Omnibox assets and descriptions for visual alignment.
-BASE_FEATURE(kOmniboxMobileParityUpdate, "OmniboxMobileParityUpdate", DISABLED);
 
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
