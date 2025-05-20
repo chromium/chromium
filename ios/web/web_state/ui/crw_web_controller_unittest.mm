@@ -643,7 +643,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
           .andDo(^(NSInvocation* invocation) {
             // Using __unsafe_unretained is required to extract the parameter
             // from the NSInvocation otherwise ARC will over-release.
-            __weak id argument = nil;
+            __unsafe_unretained id argument = nil;
             [invocation getArgument:&argument atIndex:2];
             download_delegate = argument;
             delegate_set = true;
@@ -680,7 +680,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
           .andDo(^(NSInvocation* invocation) {
             // Using __unsafe_unretained is required to extract the parameter
             // from the NSInvocation otherwise ARC will over-release.
-            __weak void (^block)(NSData* data);
+            __unsafe_unretained void (^block)(NSData* data);
             [invocation getArgument:&block atIndex:2];
             block(nil);
           });

@@ -224,7 +224,7 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
                                usingQueue:[OCMArg isNil]
                             launchHandler:OCMOCK_ANY])
         .andDo(^(NSInvocation* invocation) {
-          __weak TaskHandlerBlock handler;
+          __unsafe_unretained TaskHandlerBlock handler;
           [invocation getArgument:&handler atIndex:4];
           task_handler_ = [handler copy];
         });
@@ -239,7 +239,7 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
     // the expiration handler. See the ExpireTask test for an example.
     OCMStub([task_mock_ setExpirationHandler:OCMOCK_ANY])
         .andDo(^(NSInvocation* invocation) {
-          __weak TaskExpirationBlock handler;
+          __unsafe_unretained TaskExpirationBlock handler;
           [invocation getArgument:&handler atIndex:2];
           // This write to a member variable is done on a non-main sequence;
           // see the notes above on correctly ensuring that it completes before
@@ -250,7 +250,7 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
     OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
                                               error:[OCMArg setTo:nil]])
         .andDo(^(NSInvocation* invocation) {
-          __weak BGAppRefreshTaskRequest* request;
+          __unsafe_unretained BGAppRefreshTaskRequest* request;
           [invocation getArgument:&request atIndex:2];
           last_task_request_ = [request copy];
         });

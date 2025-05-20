@@ -198,7 +198,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
                                 webState:web_state_list_.GetActiveWebState()
                 accessoryViewUpdateBlock:OCMOCK_ANY])
       .andDo(^(NSInvocation* invocation) {
-        __weak FormSuggestionsReadyCompletion completion;
+        __unsafe_unretained FormSuggestionsReadyCompletion completion;
         [invocation getArgument:&completion atIndex:4];
         suggestionsQueryCompletion = [completion copy];
       });
@@ -257,7 +257,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WhenStateless) {
                                 webState:web_state_list_.GetActiveWebState()
                 accessoryViewUpdateBlock:OCMOCK_ANY])
       .andDo(^(NSInvocation* invocation) {
-        __weak FormSuggestionsReadyCompletion completion;
+        __unsafe_unretained FormSuggestionsReadyCompletion completion;
         [invocation getArgument:&completion atIndex:4];
         suggestionsQueryCompletion = [completion copy];
       });
@@ -307,7 +307,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
                                 webState:web_state_list_.GetActiveWebState()
                 accessoryViewUpdateBlock:OCMOCK_ANY])
       .andDo(^(NSInvocation* invocation) {
-        __weak FormSuggestionsReadyCompletion completion;
+        __unsafe_unretained FormSuggestionsReadyCompletion completion;
         [invocation getArgument:&completion atIndex:4];
         [suggestionsCompletionsQueue addObject:[completion copy]];
       });

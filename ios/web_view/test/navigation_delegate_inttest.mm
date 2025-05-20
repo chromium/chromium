@@ -66,7 +66,7 @@ TEST_F(NavigationDelegateTest, RequestSucceeds) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -79,7 +79,8 @@ TEST_F(NavigationDelegateTest, RequestSucceeds) {
                                                       GetEchoURL(), YES)
                                   decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationResponsePolicy);
+        __unsafe_unretained void (^decisionHandler)(
+            CWVNavigationResponsePolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationResponsePolicyAllow);
@@ -100,7 +101,7 @@ TEST_F(NavigationDelegateTest, RequestFails) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -130,7 +131,7 @@ TEST_F(NavigationDelegateTest, CancelRequest) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyCancel);
@@ -150,7 +151,7 @@ TEST_F(NavigationDelegateTest, CancelResponse) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -163,7 +164,8 @@ TEST_F(NavigationDelegateTest, CancelResponse) {
                                                       GetEchoURL(), YES)
                                   decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationResponsePolicy);
+        __unsafe_unretained void (^decisionHandler)(
+            CWVNavigationResponsePolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationResponsePolicyCancel);
@@ -183,7 +185,7 @@ TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -196,7 +198,8 @@ TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
                                                       GetEchoURL(), YES)
                                   decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationResponsePolicy);
+        __unsafe_unretained void (^decisionHandler)(
+            CWVNavigationResponsePolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationResponsePolicyAllow);

@@ -460,7 +460,7 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
                                                       animated:YES
                                                     completion:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak id object;
+        __unsafe_unretained id object;
         [invocation getArgument:&object atIndex:2];
         EXPECT_EQ([UIActivityViewController class], [object class]);
         UIActivityViewController* open_in_controller =
