@@ -8,6 +8,7 @@ import("./modules/modules.gni")
 # List of files that don't need to be passed to html_to_wrapper().
 all_ts_files = [
                  "background_manager.ts",
+                 "customize_buttons_proxy.ts",
                  "customize_dialog_types.ts",
                  "i18n_setup.ts",
                  "image_processor.ts",
@@ -49,6 +50,7 @@ if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
     "calendar_data.mojom-webui.js",
+    "customize_buttons.mojom-webui.js",
     "drive_suggestion.mojom-webui.js",
     "file_suggestion.mojom-webui.js",
     "google_calendar.mojom-webui.js",

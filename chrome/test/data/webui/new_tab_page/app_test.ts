@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
+import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeChromeSection, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {CustomizeChromeSection, NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -28,6 +30,8 @@ suite('NewTabPageAppTest', () => {
   let windowProxy: TestMock<WindowProxy>;
   let handler: TestMock<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
+  let customizeButtonsHandler: TestMock<CustomizeButtonsHandlerRemote>;
+  let customizeButtonsCallbackRouterRemote: CustomizeButtonsDocumentRemote;
   let metrics: MetricsTracker;
   let moduleRegistry: TestMock<ModuleRegistry>;
   let backgroundManager: TestMock<BackgroundManager>;
@@ -43,6 +47,10 @@ suite('NewTabPageAppTest', () => {
     handler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+    customizeButtonsHandler = installMock(
+        CustomizeButtonsHandlerRemote,
+        mock => CustomizeButtonsProxy.setInstance(
+            mock, new CustomizeButtonsDocumentCallbackRouter()));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,
@@ -66,6 +74,9 @@ suite('NewTabPageAppTest', () => {
     windowProxy.setResultFor('url', url);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    customizeButtonsCallbackRouterRemote =
+        CustomizeButtonsProxy.getInstance()
+            .callbackRouter.$.bindNewPipeAndPassRemote();
     backgroundManager = installMock(BackgroundManager);
     backgroundManager.setResultFor(
         'getBackgroundImageLoadTime', Promise.resolve(backgroundImageLoadTime));
@@ -187,8 +198,9 @@ suite('NewTabPageAppTest', () => {
       assertFalse(webstoreToast.open);
 
       // Open the side panel.
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
-      await callbackRouterRemote.$.flushForTesting();
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(true);
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
 
       // Try to show webstore toast again.
       callbackRouterRemote.showWebstoreToast();
@@ -828,47 +840,64 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertDeepEquals(
-          [true, CustomizeChromeSection.kUnspecified],
-          handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+          [
+            true,
+            CustomizeChromeSection.kUnspecified,
+            SidePanelOpenTrigger.kNewTabPage,
+          ],
+          customizeButtonsHandler.getArgs(
+              'setCustomizeChromeSidePanelVisible')[0]);
       assertEquals(
           1,
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
       assertEquals(
-          1, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+          1,
+          customizeButtonsHandler.getCallCount(
+              'incrementCustomizeChromeButtonOpenCount'));
     });
 
     test('clicking customize button hides side panel', async () => {
       // Act.
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(true);
       assertEquals(
           0,
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
-      await callbackRouterRemote.$.flushForTesting();
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
       getCustomizeButton().click();
 
       // Assert.
       assertDeepEquals(
-          [false, CustomizeChromeSection.kUnspecified],
-          handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+          [
+            false,
+            CustomizeChromeSection.kUnspecified,
+            SidePanelOpenTrigger.kNewTabPage,
+          ],
+          customizeButtonsHandler.getArgs(
+              'setCustomizeChromeSidePanelVisible')[0]);
       assertEquals(
           0,
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
       assertEquals(
-          0, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+          0,
+          customizeButtonsHandler.getCallCount(
+              'incrementCustomizeChromeButtonOpenCount'));
     });
 
     test('clicking customize button is accessible', async () => {
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
-      await callbackRouterRemote.$.flushForTesting();
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(true);
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
       assertEquals('true', getCustomizeButton().getAttribute('aria-pressed'));
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(false);
-      await callbackRouterRemote.$.flushForTesting();
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(false);
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
       assertEquals('false', getCustomizeButton().getAttribute('aria-pressed'));
     });
 
@@ -885,8 +914,13 @@ suite('NewTabPageAppTest', () => {
 
         // Assert.
         assertDeepEquals(
-            [true, CustomizeChromeSection.kModules],
-            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+            [
+              true,
+              CustomizeChromeSection.kModules,
+              SidePanelOpenTrigger.kNewTabPage,
+            ],
+            customizeButtonsHandler.getArgs(
+                'setCustomizeChromeSidePanelVisible')[0]);
         assertEquals(
             1,
             metrics.count(
@@ -905,8 +939,13 @@ suite('NewTabPageAppTest', () => {
       test('URL opens side panel', () => {
         // Assert.
         assertDeepEquals(
-            [true, CustomizeChromeSection.kAppearance],
-            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+            [
+              true,
+              CustomizeChromeSection.kAppearance,
+              SidePanelOpenTrigger.kNewTabPage,
+            ],
+            customizeButtonsHandler.getArgs(
+                'setCustomizeChromeSidePanelVisible')[0]);
         assertEquals(
             1,
             metrics.count(
@@ -971,7 +1010,8 @@ suite('NewTabPageAppTest', () => {
       test('does not increment button shown count on startup'), () => {
         assertEquals(
             0,
-            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+            customizeButtonsHandler.getCallCount(
+                'incrementWallpaperSearchButtonShownCount'));
       };
 
       test('wallpaper search button is not shown if it is disabled', () => {
@@ -1039,7 +1079,8 @@ suite('NewTabPageAppTest', () => {
       test('increments button shown count on startup'), () => {
         assertEquals(
             1,
-            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+            customizeButtonsHandler.getCallCount(
+                'incrementWallpaperSearchButtonShownCount'));
       };
 
       test('wallpaper search button shows if it is enabled', () => {
@@ -1070,15 +1111,22 @@ suite('NewTabPageAppTest', () => {
       test('clicking wallpaper search button opens side panel', () => {
         getWallpaperSearchButton().click();
         assertDeepEquals(
-            [true, CustomizeChromeSection.kWallpaperSearch],
-            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+            [
+              true,
+              CustomizeChromeSection.kWallpaperSearch,
+              SidePanelOpenTrigger.kNewTabPage,
+            ],
+            customizeButtonsHandler.getArgs(
+                'setCustomizeChromeSidePanelVisible')[0]);
         assertEquals(
             1,
             metrics.count(
                 'NewTabPage.CustomizeChromeOpened',
                 NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
         assertEquals(
-            1, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+            1,
+            customizeButtonsHandler.getCallCount(
+                'incrementCustomizeChromeButtonOpenCount'));
       });
 
       test(
@@ -1086,33 +1134,45 @@ suite('NewTabPageAppTest', () => {
               'and hide side panel',
           async () => {
             // Open side panel to non-wallpaper search page.
-            callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
+            customizeButtonsCallbackRouterRemote
+                .setCustomizeChromeSidePanelVisibility(true);
             assertEquals(
                 0,
                 metrics.count(
                     'NewTabPage.CustomizeChromeOpened',
                     NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
-            await callbackRouterRemote.$.flushForTesting();
+            await customizeButtonsCallbackRouterRemote.$.flushForTesting();
 
             // Clicking the wallpaper search button should navigate the side
             // panel to the wallpaper search page.
             getWallpaperSearchButton().click();
             assertDeepEquals(
-                [true, CustomizeChromeSection.kWallpaperSearch],
-                handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+                [
+                  true,
+                  CustomizeChromeSection.kWallpaperSearch,
+                  SidePanelOpenTrigger.kNewTabPage,
+                ],
+                customizeButtonsHandler.getArgs(
+                    'setCustomizeChromeSidePanelVisible')[0]);
 
             // Clicking the wallpaper search button, when the wallpaper search
             // page is opened, should close the side panel.
             getWallpaperSearchButton().click();
             assertDeepEquals(
-                [false, CustomizeChromeSection.kUnspecified],
-                handler.getArgs('setCustomizeChromeSidePanelVisible')[1]);
+                [
+                  false,
+                  CustomizeChromeSection.kUnspecified,
+                  SidePanelOpenTrigger.kNewTabPage,
+                ],
+                customizeButtonsHandler.getArgs(
+                    'setCustomizeChromeSidePanelVisible')[1]);
           });
 
       test('wallpaper search button is accessible', async () => {
         // Open side panel to non-wallpaper search page.
-        callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
-        await callbackRouterRemote.$.flushForTesting();
+        customizeButtonsCallbackRouterRemote
+            .setCustomizeChromeSidePanelVisibility(true);
+        await customizeButtonsCallbackRouterRemote.$.flushForTesting();
 
         // Only customize chrome button should be labeled as pressed.
         assertEquals(
@@ -1127,8 +1187,9 @@ suite('NewTabPageAppTest', () => {
             'true', getWallpaperSearchButton().getAttribute('aria-pressed'));
         assertEquals('true', getCustomizeButton().getAttribute('aria-pressed'));
         // Close the side panel.
-        callbackRouterRemote.setCustomizeChromeSidePanelVisibility(false);
-        await callbackRouterRemote.$.flushForTesting();
+        customizeButtonsCallbackRouterRemote
+            .setCustomizeChromeSidePanelVisibility(false);
+        await customizeButtonsCallbackRouterRemote.$.flushForTesting();
 
         // Both buttons should not be labeled as pressed.
         assertEquals(

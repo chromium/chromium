@@ -55,12 +55,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -503,10 +499,6 @@ NewTabPageHandler::NewTabPageHandler(
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       interaction_module_id_trigger_dict_(
           MakeModuleInteractionTriggerIdDictionary()),
-      tab_changed_subscription_(webui::RegisterTabInterfaceChanged(
-          web_contents,
-          base::BindRepeating(&NewTabPageHandler::OnTabInterfaceChanged,
-                              base::Unretained(this)))),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
   CHECK(ntp_background_service_);
@@ -561,8 +553,6 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kSeedColorChangeCount,
       base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
                           base::Unretained(this)));
-
-  OnTabInterfaceChanged();
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -906,58 +896,6 @@ void NewTabPageHandler::UpdateModulesLoadable() {
   }
 }
 
-void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
-    bool visible,
-    new_tab_page::mojom::CustomizeChromeSection section_mojo) {
-  CHECK(customize_chrome_side_panel_controller_);
-  if (!visible) {
-    customize_chrome_side_panel_controller_->CloseSidePanel();
-    return;
-  }
-
-  CustomizeChromeSection section_enum;
-  switch (section_mojo) {
-    case new_tab_page::mojom::CustomizeChromeSection::kUnspecified:
-      section_enum = CustomizeChromeSection::kUnspecified;
-      break;
-    case new_tab_page::mojom::CustomizeChromeSection::kAppearance:
-      section_enum = CustomizeChromeSection::kAppearance;
-      break;
-    case new_tab_page::mojom::CustomizeChromeSection::kShortcuts:
-      section_enum = CustomizeChromeSection::kShortcuts;
-      break;
-    case new_tab_page::mojom::CustomizeChromeSection::kModules:
-      section_enum = CustomizeChromeSection::kModules;
-      break;
-    case new_tab_page::mojom::CustomizeChromeSection::kWallpaperSearch:
-      section_enum = CustomizeChromeSection::kWallpaperSearch;
-      break;
-    case new_tab_page::mojom::CustomizeChromeSection::kToolbar:
-      section_enum = CustomizeChromeSection::kToolbar;
-      break;
-  }
-
-  customize_chrome_side_panel_controller_->OpenSidePanel(
-      SidePanelOpenTrigger::kNewTabPage, section_enum);
-
-  // Record usage for customize chrome promo.
-  auto* tab = web_contents_.get();
-  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
-  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab);
-}
-
-void NewTabPageHandler::IncrementCustomizeChromeButtonOpenCount() {
-  CHECK(profile_);
-  CHECK(profile_->GetPrefs());
-  profile_->GetPrefs()->SetInteger(
-      prefs::kNtpCustomizeChromeButtonOpenCount,
-      profile_->GetPrefs()->GetInteger(
-          prefs::kNtpCustomizeChromeButtonOpenCount) +
-          1);
-}
-
 void NewTabPageHandler::MaybeShowFeaturePromo(
     new_tab_page::mojom::IphFeature iph_feature) {
   CHECK(profile_);
@@ -981,13 +919,6 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
     default:
       NOTREACHED();
   }
-}
-
-void NewTabPageHandler::IncrementWallpaperSearchButtonShownCount() {
-  const auto shown_count = profile_->GetPrefs()->GetInteger(
-      prefs::kNtpWallpaperSearchButtonShownCount);
-  profile_->GetPrefs()->SetInteger(prefs::kNtpWallpaperSearchButtonShownCount,
-                                   shown_count + 1);
 }
 
 void NewTabPageHandler::OnAppRendered(double time) {
@@ -1146,11 +1077,6 @@ void NewTabPageHandler::OnDoodleShared(
 
 void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
-}
-
-void NewTabPageHandler::SetCustomizeChromeSidePanelControllerForTesting(
-    customize_chrome::SidePanelController* side_panel_controller) {
-  SetCustomizeChromeSidePanelController(side_panel_controller);
 }
 
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
@@ -1324,25 +1250,6 @@ void NewTabPageHandler::FileSelectionCanceled() {
   }
 }
 
-void NewTabPageHandler::OnTabInterfaceChanged() {
-  tabs::TabInterface* tab_interface =
-      webui::GetTabInterface(web_contents_.get());
-  if (!tab_interface) {
-    // TODO(crbug.com/378475391): NTP should always load into a WebContents
-    // owned by a TabModel. Remove this once NTP loading has been restricted to
-    // browser tabs only.
-    LOG(ERROR) << "NewTabPage loaded into a non-browser-tab context";
-
-    // Reset any composed tab features here.
-    SetCustomizeChromeSidePanelController(nullptr);
-    return;
-  }
-
-  SetCustomizeChromeSidePanelController(
-      tab_interface->GetTabFeatures()
-          ->customize_chrome_side_panel_controller());
-}
-
 void NewTabPageHandler::OnLogoAvailable(
     GetDoodleCallback callback,
     search_provider_logos::LogoCallbackReason type,
@@ -1487,11 +1394,6 @@ bool NewTabPageHandler::IsCustomLinksEnabled() const {
 
 bool NewTabPageHandler::IsShortcutsVisible() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
-}
-
-void NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged(
-    bool is_open) {
-  page_->SetCustomizeChromeSidePanelVisibility(is_open);
 }
 
 void NewTabPageHandler::MaybeLaunchInteractionSurvey(
@@ -1679,23 +1581,6 @@ void NewTabPageHandler::OnUndoDismissMobilePromo() {
                               appearance_count);
   profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
                                    false);
-}
-
-void NewTabPageHandler::SetCustomizeChromeSidePanelController(
-    customize_chrome::SidePanelController* side_panel_controller) {
-  customize_chrome_side_panel_controller_ = side_panel_controller;
-
-  if (customize_chrome_side_panel_controller_) {
-    page_->SetCustomizeChromeSidePanelVisibility(
-        customize_chrome_side_panel_controller_
-            ->IsCustomizeChromeEntryShowing());
-    customize_chrome_side_panel_controller_->SetEntryChangedCallback(
-        base::BindRepeating(
-            &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    page_->SetCustomizeChromeSidePanelVisibility(false);
-  }
 }
 
 void NewTabPageHandler::SetModuleHidden(const std::string& module_id,

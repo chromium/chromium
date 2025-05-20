@@ -154,17 +154,12 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
   void UpdateModulesLoadable() override;
-  void SetCustomizeChromeSidePanelVisible(
-      bool visible,
-      new_tab_page::mojom::CustomizeChromeSection section) override;
-  void IncrementCustomizeChromeButtonOpenCount() override;
   void GetMobilePromoQrCode(GetMobilePromoQrCodeCallback callback) override;
   void OnMobilePromoShown() override;
   void OnDismissMobilePromo() override;
   void OnUndoDismissMobilePromo() override;
   void MaybeShowFeaturePromo(
       new_tab_page::mojom::IphFeature iph_feature) override;
-  void IncrementWallpaperSearchButtonShownCount() override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,
@@ -215,11 +210,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
-  // Called when the embedding TabInterface has changed.
-  // TODO(crbug.com/378475391): This can be removed once the NTP has been
-  // restricted from loading in app windows.
-  void OnTabInterfaceChanged();
-
   void OnLogoAvailable(
       GetDoodleCallback callback,
       search_provider_logos::LogoCallbackReason type,
@@ -240,7 +230,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
 
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
-  void NotifyCustomizeChromeSidePanelVisibilityChanged(bool is_open);
   void MaybeLaunchInteractionSurvey(std::string_view interaction,
                                     const std::string& module_id,
                                     int delay_time_ms = 0);
@@ -267,8 +256,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       base::Time request_start_time,
       const segmentation_platform::ClassificationResult& result);
 
-  void SetCustomizeChromeSidePanelController(
-      customize_chrome::SidePanelController* side_panel_controller);
   void SetModuleHidden(const std::string& module_id, bool hidden);
 
   // Synchronizes Microsoft module enablement with their current authentication
@@ -324,8 +311,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   // to be present during load and fixed for the NTP's lifetime.
   raw_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
-
-  base::CallbackListSubscription tab_changed_subscription_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

@@ -28,13 +28,16 @@ import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mo
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
+import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
+import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
+import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
 import {recordDuration, recordLoadDuration} from './metrics_utils.js';
 import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
-import {CustomizeChromeSection, IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
+import {IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import type {MicrosoftAuthUntrustedDocumentRemote} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {$$} from './utils.js';
@@ -289,6 +292,9 @@ export class AppElement extends AppElementBase {
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
+  private customizeButtonsCallbackRouter_:
+      CustomizeButtonsDocumentCallbackRouter;
+  private customizeButtonsHandler_: CustomizeButtonsHandlerRemote;
   private backgroundManager_: BackgroundManager;
   private connectMicrosoftAuthToParentDocumentListenerId_: number|null = null;
   private setThemeListenerId_: number|null = null;
@@ -305,6 +311,9 @@ export class AppElement extends AppElementBase {
     super();
     this.callbackRouter_ = NewTabPageProxy.getInstance().callbackRouter;
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
+    this.customizeButtonsCallbackRouter_ =
+        CustomizeButtonsProxy.getInstance().callbackRouter;
+    this.customizeButtonsHandler_ = CustomizeButtonsProxy.getInstance().handler;
     this.backgroundManager_ = BackgroundManager.getInstance();
     this.shouldPrintPerformance_ =
         new URLSearchParams(location.search).has('print_perf');
@@ -375,13 +384,14 @@ export class AppElement extends AppElementBase {
           this.theme_ = theme;
         });
     this.setCustomizeChromeSidePanelVisibilityListener_ =
-        this.callbackRouter_.setCustomizeChromeSidePanelVisibility.addListener(
-            (visible: boolean) => {
-              this.showCustomize_ = visible;
-              if (!visible) {
-                this.showWallpaperSearch_ = false;
-              }
-            });
+        this.customizeButtonsCallbackRouter_
+            .setCustomizeChromeSidePanelVisibility.addListener(
+                (visible: boolean) => {
+                  this.showCustomize_ = visible;
+                  if (!visible) {
+                    this.showWallpaperSearch_ = false;
+                  }
+                });
     this.showWebstoreToastListenerId_ =
         this.callbackRouter_.showWebstoreToast.addListener(() => {
           if (this.showCustomize_) {
@@ -456,11 +466,11 @@ export class AppElement extends AppElementBase {
     this.callbackRouter_.removeListener(
         this.connectMicrosoftAuthToParentDocumentListenerId_!);
     this.callbackRouter_.removeListener(this.setThemeListenerId_!);
-    this.callbackRouter_.removeListener(
-        this.setCustomizeChromeSidePanelVisibilityListener_!);
     this.callbackRouter_.removeListener(this.showWebstoreToastListenerId_!);
     this.callbackRouter_.removeListener(
         this.setWallpaperSearchButtonVisibilityListener_!);
+    this.customizeButtonsCallbackRouter_.removeListener(
+        this.setCustomizeChromeSidePanelVisibilityListener_!);
     this.eventTracker_.removeAll();
   }
 
@@ -601,7 +611,7 @@ export class AppElement extends AppElementBase {
         ['ntp-customize-buttons', '#customizeButton'], {fixed: true});
     this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
     if (this.showWallpaperSearchButton_) {
-      this.pageHandler_.incrementWallpaperSearchButtonShownCount();
+      this.customizeButtonsHandler_.incrementWallpaperSearchButtonShownCount();
     }
   }
 
@@ -623,7 +633,7 @@ export class AppElement extends AppElementBase {
     this.selectedCustomizeDialogPage_ = null;
     this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
     if (!this.showCustomize_) {
-      this.pageHandler_.incrementCustomizeChromeButtonOpenCount();
+      this.customizeButtonsHandler_.incrementCustomizeChromeButtonOpenCount();
       recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
     }
   }
@@ -658,7 +668,7 @@ export class AppElement extends AppElementBase {
     this.showWallpaperSearch_ = true;
     this.setCustomizeChromeSidePanelVisible_(this.showWallpaperSearch_);
     if (!this.showCustomize_) {
-      this.pageHandler_.incrementCustomizeChromeButtonOpenCount();
+      this.customizeButtonsHandler_.incrementCustomizeChromeButtonOpenCount();
       recordCustomizeChromeOpen(
           NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON);
     }
@@ -913,7 +923,8 @@ export class AppElement extends AppElementBase {
         section = CustomizeChromeSection.kWallpaperSearch;
         break;
     }
-    this.pageHandler_.setCustomizeChromeSidePanelVisible(visible, section);
+    this.customizeButtonsHandler_.setCustomizeChromeSidePanelVisible(
+        visible, section, SidePanelOpenTrigger.kNewTabPage);
   }
 
   private printPerformanceDatum_(

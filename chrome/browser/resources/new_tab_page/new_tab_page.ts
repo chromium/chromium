@@ -21,6 +21,7 @@ export {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metric
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {AppElement, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, NtpCustomizeChromeEntryPoint, NtpElement} from './app.js';
 export {BackgroundManager} from './background_manager.js';
+export {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
 export {DoodleShareDialogElement} from './doodle_share_dialog.js';
 export {IframeElement} from './iframe.js';

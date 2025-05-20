@@ -165,15 +165,6 @@ enum DoodleShareChannel {
   kLinkCopy,
 };
 
-enum CustomizeChromeSection {
-  kUnspecified,
-  kAppearance,
-  kShortcuts,
-  kModules,
-  kWallpaperSearch,
-  kToolbar,
-};
-
 struct PromoImagePart {
   url.mojom.Url image_url;
   url.mojom.Url target;
@@ -300,17 +291,8 @@ interface PageHandler {
   GetModulesOrder() => (array<string> module_ids);
   // Triggers a call to |SetModulesLoadable|.
   UpdateModulesLoadable();
-  // Shows or hides the customize chrome in unified side panel.
-  SetCustomizeChromeSidePanelVisible(bool visible,
-                                     CustomizeChromeSection section);
-  // Increment the number of times the user has opened the side panel
-  // with the customize chrome button.
-  IncrementCustomizeChromeButtonOpenCount();
   // Attempts to trigger the specified in product help promo.
   MaybeShowFeaturePromo(IphFeature iph_feature);
-  // Increment the number of times the user has seen the wallpaper search
-  // button.
-  IncrementWallpaperSearchButtonShownCount();
   // Returns a base64 webp encoded string representing the image for the QR code
   // on the mobile promo.
   GetMobilePromoQrCode() => (string qrCode);
@@ -357,8 +339,6 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Sets Customize Chrome Side Panel visibility to |visible|.
-  SetCustomizeChromeSidePanelVisibility(bool visible);
   // Sets the current theme.
   SetTheme(Theme theme);
   // Disables the modules in |ids|. If |all|, disables all modules and passes an
