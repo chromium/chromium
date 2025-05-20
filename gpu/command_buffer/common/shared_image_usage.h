@@ -106,15 +106,18 @@ enum SharedImageUsage : uint32_t {
   // to create a MappableSI but that format is non-texturable.
   SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE = 1 << 25,
 
+  // Image will be used as a WebNN shared tensor
+  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR = 1 << 26,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE_ONLY if they need to write pixels to the
   // image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 26,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 27,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };

@@ -197,6 +197,28 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
 }
 
 scoped_refptr<ClientSharedImage>
+ClientSharedImageInterface::CreateSharedImageForMLTensor(
+    std::string debug_label,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    gpu::SharedImageUsageSet usage) {
+  CHECK(gpu::IsValidClientUsage(usage)) << uint32_t(usage);
+  CHECK(usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR));
+
+  const SharedImageInfo si_info = {format, std::move(size), gfx::ColorSpace(),
+                                   usage, std::move(debug_label)};
+
+  auto mailbox = proxy_->CreateSharedImage(si_info, std::nullopt);
+  if (mailbox.IsZero()) {
+    return nullptr;
+  }
+
+  return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
+      AddMailbox(mailbox), si_info.meta, GenUnverifiedSyncToken(), holder_,
+      gfx::EMPTY_BUFFER));
+}
+
+scoped_refptr<ClientSharedImage>
 ClientSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
   base::WritableSharedMemoryMapping mapping;

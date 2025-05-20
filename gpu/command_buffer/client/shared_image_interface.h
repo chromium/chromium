@@ -179,6 +179,18 @@ class GPU_EXPORT SharedImageInterface
       const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
+  // Creates a shared image for an existing MLTensor.
+  // Tensors store numeric values in multiple dimensions.
+  // |size| is calculated from the tensor's shape: the product of all dimensions
+  // except the last determines the height, and the last dimension becomes the
+  // width. |usage| must include gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR.
+  // |format| should be valid and correspond to the equivalent dataType.
+  virtual scoped_refptr<ClientSharedImage> CreateSharedImageForMLTensor(
+      std::string debug_label,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      gpu::SharedImageUsageSet usage) = 0;
+
   // Creates a shared image with the usage of
   // gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY only. A shared memory buffer is
   // created internally and a shared image is created out of this buffer. This

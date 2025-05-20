@@ -128,6 +128,12 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
                scoped_refptr<gpu::ClientSharedImage>(
                    const gpu::SharedImageInfo& si_info,
                    gfx::GpuMemoryBufferHandle buffer_handle));
+  MOCK_METHOD4(
+      CreateSharedImageForMLTensor,
+      scoped_refptr<gpu::ClientSharedImage>(std::string debug_label,
+                                            viz::SharedImageFormat format,
+                                            const gfx::Size& size,
+                                            gpu::SharedImageUsageSet usage));
   MOCK_METHOD1(CreateSharedImageForSoftwareCompositor,
                scoped_refptr<gpu::ClientSharedImage>(
                    const gpu::SharedImageInfo& si_info));

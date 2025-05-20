@@ -66,6 +66,12 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
+  scoped_refptr<ClientSharedImage> CreateSharedImageForMLTensor(
+      std::string debug_label,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      gpu::SharedImageUsageSet usage) override;
+
   // Used by the software compositor only. |usage| must be
   // gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY. Call client_shared_image->Map()
   // later to get the shared memory mapping.

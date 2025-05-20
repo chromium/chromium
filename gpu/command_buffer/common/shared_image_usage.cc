@@ -57,6 +57,7 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY, "RasterOverGLES2Only"},
       {SHARED_IMAGE_USAGE_PROTECTED_VIDEO, "ProtectedVideo"},
       {SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER, "WebgpuSharedBuffer"},
+      {SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR, "WebnnSharedTensor"},
       {SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE, "CpuOnlyReadWrite"},
   };
 

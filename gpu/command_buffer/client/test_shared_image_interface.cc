@@ -307,6 +307,15 @@ TestSharedImageInterface::CreateSharedImageForSoftwareCompositor(
                                                  holder_, std::move(mapping));
 }
 
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateSharedImageForMLTensor(
+    std::string debug_label,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    gpu::SharedImageUsageSet usage) {
+  NOTREACHED();
+}
+
 void TestSharedImageInterface::UpdateSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {

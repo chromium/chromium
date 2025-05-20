@@ -382,6 +382,15 @@ GpuChannelSharedImageInterface::CreateSharedImage(
 }
 
 scoped_refptr<ClientSharedImage>
+GpuChannelSharedImageInterface::CreateSharedImageForMLTensor(
+    std::string debug_label,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    gpu::SharedImageUsageSet usage) {
+  NOTREACHED();
+}
+
+scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
   base::WritableSharedMemoryMapping mapping;
