@@ -6,7 +6,6 @@
 
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -17,6 +16,7 @@ namespace messages {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &kMessagesAccessibilityEventInvestigations,
     &kMessagesForAndroidFullyVisibleCallback, &kMessagesAndroidExtraHistograms,
     &kMessagesCloseButton};
 
@@ -29,6 +29,9 @@ base::android::FeatureMap* GetFeatureMap() {
 
 }  // namespace
 
+BASE_FEATURE(kMessagesAccessibilityEventInvestigations,
+             "MessagesAccessibilityEventInvestigations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
              "MessagesForAndroidFullyVisibleCallback",
