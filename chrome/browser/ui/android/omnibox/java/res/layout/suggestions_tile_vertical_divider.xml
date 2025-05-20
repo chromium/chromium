@@ -15,5 +15,6 @@ found in the LICENSE file.
         android:layout_width="@dimen/tile_view_divider_thickness"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
         android:background="@macro/divider_line_bg_color"/>
 </RelativeLayout>
