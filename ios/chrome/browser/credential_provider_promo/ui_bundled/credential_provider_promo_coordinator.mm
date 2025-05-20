@@ -230,4 +230,16 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
       outcome);
 }
 
+// Opens the iOS credential provider settings. Delegates this task to
+// `settingsOpenerDelegate` when valid.
+- (void)openIOSCredentialProviderSettings {
+  if (self.settingsOpenerDelegate) {
+    [self.settingsOpenerDelegate
+        credentialProviderPromoCoordinatorOpenIOSCredentialProviderSettings:
+            self];
+    return;
+  }
+  OpenIOSCredentialProviderSettings();
+}
+
 @end

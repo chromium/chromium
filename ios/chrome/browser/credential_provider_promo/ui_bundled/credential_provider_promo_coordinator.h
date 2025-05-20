@@ -8,13 +8,31 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 
+@class CredentialProviderPromoCoordinator;
 @protocol PromosManagerUIHandler;
+
+// Protocol for delegating the task of opening some iOS settings page.
+@protocol CredentialProviderPromoCoordinatorSettingsOpenerDelegate
+
+// Called when the user tapped the button that opens the iOS credential provider
+// settings.
+- (void)credentialProviderPromoCoordinatorOpenIOSCredentialProviderSettings:
+    (CredentialProviderPromoCoordinator*)credentialProviderPromoCoordinator;
+
+@end
 
 @interface CredentialProviderPromoCoordinator
     : ChromeCoordinator <CredentialProviderPromoCommands>
 
 // The promos manager ui handler to alert about UI changes.
 @property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
+
+// The delegate that handles opening the relevant iOS settings page. Can be
+// nil, in which case the coordinator will take care of opening the right
+// settings page.
+@property(nonatomic, weak)
+    id<CredentialProviderPromoCoordinatorSettingsOpenerDelegate>
+        settingsOpenerDelegate;
 
 @end
 

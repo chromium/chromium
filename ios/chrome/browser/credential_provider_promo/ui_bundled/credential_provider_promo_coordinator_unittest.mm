@@ -34,6 +34,20 @@ constexpr char kTurnOnCredentialProviderExtensionPromptOutcomeHistogram[] =
 
 }  // namespace
 
+@interface FakeCredentialProviderPromoCoordinatorSettingsOpener
+    : NSObject <CredentialProviderPromoCoordinatorSettingsOpenerDelegate>
+
+@end
+
+@implementation FakeCredentialProviderPromoCoordinatorSettingsOpener
+
+- (void)credentialProviderPromoCoordinatorOpenIOSCredentialProviderSettings:
+    (id)credentialProviderPromoCoordinator {
+  // No-op.
+}
+
+@end
+
 // Test fixture for testing the CredentialProviderPromoCoordinator class.
 class CredentialProviderPromoCoordinatorTest : public PlatformTest {
  public:
@@ -44,6 +58,9 @@ class CredentialProviderPromoCoordinatorTest : public PlatformTest {
     coordinator_ = [[CredentialProviderPromoCoordinator alloc]
         initWithBaseViewController:nil
                            browser:browser_.get()];
+    FakeCredentialProviderPromoCoordinatorSettingsOpener* fakeDelegate =
+        [[FakeCredentialProviderPromoCoordinatorSettingsOpener alloc] init];
+    coordinator_.settingsOpenerDelegate = fakeDelegate;
     [coordinator_ start];
 
     credential_provider_promo_command_handler_ = HandlerForProtocol(
@@ -167,9 +184,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
 // Tests that tapping the primary CTA results in the actions being recorded
 // correctly.
-// TODO(crbug.com/416541115): Re-enable test once it no longer exits the app.
 TEST_F(CredentialProviderPromoCoordinatorTest,
-       DISABLED_CredentialProviderPromoPrimaryActionRecorded) {
+       CredentialProviderPromoPrimaryActionRecorded) {
   // Enable the Passkeys M2 feature.
   base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
 
@@ -300,8 +316,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
 // Tests the flow when the trigger is the SetUpList. It should go directly to
 // LearnMore and the primary CTA should go to settings.
-// TODO(crbug.com/416541115): Re-enable test once it no longer exits the app.
-TEST_F(CredentialProviderPromoCoordinatorTest, DISABLED_SetUpListTrigger) {
+TEST_F(CredentialProviderPromoCoordinatorTest, SetUpListTrigger) {
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoOnSetUpListHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
@@ -330,8 +345,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest, DISABLED_SetUpListTrigger) {
 }
 
 // Tests that the last action taken is recorded in local state.
-// TODO(crbug.com/416541115): Re-enable test once it no longer exits the app.
-TEST_F(CredentialProviderPromoCoordinatorTest, DISABLED_LastActionTaken) {
+TEST_F(CredentialProviderPromoCoordinatorTest, LastActionTaken) {
   // Trigger the promo with SetUpList. The primary CTA of the promo, when
   // triggered from SetUpList, is 'go to settings'.
   [credential_provider_promo_command_handler_
