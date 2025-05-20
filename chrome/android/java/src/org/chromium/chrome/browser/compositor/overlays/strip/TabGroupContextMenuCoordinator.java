@@ -344,7 +344,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             activity.getResources()
                                     .getQuantityString(
-                                            R.plurals.move_tab_to_another_window,
+                                            R.plurals
+                                                    .move_group_to_another_window_context_menu_item,
                                             MultiWindowUtils.getInstanceCount()),
                             R.id.move_to_other_window_menu_id,
                             isIncognito,

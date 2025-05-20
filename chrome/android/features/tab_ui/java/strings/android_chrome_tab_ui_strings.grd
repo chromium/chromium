@@ -767,6 +767,11 @@
       <message name="IDS_PLUS_HIDDEN_TAB_COUNT" desc="A string to show how many other tabs are contained in a tab group who's favicons are not shown. [CHAR_LIMIT=5]">
         +<ph name="HIDDEN_TABS_COUNT">%1$s<ex>3</ex></ph>
       </message>
+      <message name="IDS_MOVE_GROUP_TO_ANOTHER_WINDOW_CONTEXT_MENU_ITEM" desc="Menu item text which will be displayed for tab group context menu on strip to move the group to another window.">
+        {WINDOW_COUNT, plural,
+          =1 {Move group to new window}
+          other {Move group to another window}}
+      </message>
       <message name="IDS_OPEN_NEW_TAB_IN_GROUP_CONTEXT_MENU_ITEM" desc="Menu item text which will be display for tab group context menu on strip to allow opening a new tab in the tab group.">
         New tab in group
       </message>
