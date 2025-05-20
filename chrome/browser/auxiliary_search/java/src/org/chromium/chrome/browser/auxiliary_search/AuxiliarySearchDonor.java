@@ -126,7 +126,9 @@ public class AuxiliarySearchDonor {
     private AuxiliarySearchDonor() {
         mContext = ContextUtils.getApplicationContext();
         mNamespace = mContext.getPackageName();
-        mSkipSchemaCheck = AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue();
+        mSkipSchemaCheck =
+                AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue()
+                        || AuxiliarySearchUtils.MULTI_DATA_SOURCE_SKIP_SCHEMA_CHECK.getValue();
 
         mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
         boolean shouldInit = mSharedTabsWithOsState || !isShareTabsWithOsEnabledKeyExist();

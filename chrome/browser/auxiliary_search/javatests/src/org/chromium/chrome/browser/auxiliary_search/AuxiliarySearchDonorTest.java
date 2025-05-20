@@ -91,6 +91,21 @@ public final class AuxiliarySearchDonorTest {
     })
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
     public void testDonateTabs() {
+        testDonateTabsImpl();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        "AndroidAppIntegrationV2:content_ttl_hours/5",
+        "AndroidAppIntegrationMultiDataSource:multi_data_source_skip_schema_check/true"
+    })
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
+    public void testDonateTabs_MultiDataSource() {
+        testDonateTabsImpl();
+    }
+
+    private void testDonateTabsImpl() {
         ThreadUtils.runOnUiThreadBlocking(() -> mAuxiliarySearchDonor.createSessionAndInit());
         CriteriaHelper.pollUiThread(() -> mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 

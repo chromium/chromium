@@ -2819,12 +2819,28 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck[] = {
         {"multi_data_source_skip_device_check", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationMultiDataSource_SkipSchemaCheck[] = {
+        {"multi_data_source_skip_schema_check", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationMultiDataSource_SkipBothDeviceAndSchemaCheck[] = {
+        {"multi_data_source_skip_device_check", "true"},
+        {"multi_data_source_skip_schema_check", "true"}};
 
 const FeatureEntry::FeatureVariation
     kAndroidAppIntegrationMultiDataSourceVariations[] = {
         {"Skip device check",
          kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck,
          std::size(kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck),
+         nullptr},
+        {"Skip schema check",
+         kAndroidAppIntegrationMultiDataSource_SkipSchemaCheck,
+         std::size(kAndroidAppIntegrationMultiDataSource_SkipSchemaCheck),
+         nullptr},
+        {"Skip both device and schema check",
+         kAndroidAppIntegrationMultiDataSource_SkipBothDeviceAndSchemaCheck,
+         std::size(
+             kAndroidAppIntegrationMultiDataSource_SkipBothDeviceAndSchemaCheck),
          nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidBottomToolbar_DefaultToBottom[] = {

@@ -1151,6 +1151,12 @@ public abstract class ChromeFeatureList {
                     ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_schema_check", false);
 
     public static final BooleanCachedFeatureParam
+            sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck =
+                    newBooleanCachedFeatureParam(
+                            ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE,
+                            "multi_data_source_skip_schema_check",
+                            false);
+    public static final BooleanCachedFeatureParam
             sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck =
                     newBooleanCachedFeatureParam(
                             ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE,
@@ -1457,6 +1463,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationModuleForceCardShow,
                     sAndroidAppIntegrationModuleShowThirdPartyCard,
                     sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours,
+                    sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,
                     sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
                     sAndroidAppIntegrationV2ContentTtlHours,
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
