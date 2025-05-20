@@ -327,7 +327,7 @@ BASE_FEATURE(kPlatformHEVCDecoderSupport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-// Enables HEVC hardware accelerated encoding for Windows, Mac, and Android.
+// Enables HEVC hardware accelerated encoding for Windows, Apple, and Android.
 BASE_FEATURE(kPlatformHEVCEncoderSupport,
              "PlatformHEVCEncoderSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
