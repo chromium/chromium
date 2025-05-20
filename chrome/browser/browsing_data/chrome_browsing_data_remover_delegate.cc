@@ -122,6 +122,8 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
+#include "components/payments/content/browser_binding/browser_bound_keys_deleter.h"
+#include "components/payments/content/browser_binding/browser_bound_keys_deleter_factory.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/permission_actions_history.h"
@@ -753,6 +755,14 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           base::DoNothing());
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    if (payments::BrowserBoundKeyDeleter* browser_bound_key_deleter =
+            payments::BrowserBoundKeyDeleterFactory::GetForBrowserContext(
+                profile_)) {
+      browser_bound_key_deleter->RemoveInvalidBBKs();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   //////////////////////////////////////////////////////////////////////////////

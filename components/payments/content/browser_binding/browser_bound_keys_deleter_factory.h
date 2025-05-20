@@ -18,16 +18,24 @@ class BrowserContext;
 
 namespace payments {
 
+class BrowserBoundKeyDeleter;
+
 // Responsible for creating a service to start the process of finding and
 // deleting invalid browser bound key metadata metadata.
 class BrowserBoundKeyDeleterFactory : public BrowserContextKeyedServiceFactory {
  public:
   static BrowserBoundKeyDeleterFactory* GetInstance();
 
+  static BrowserBoundKeyDeleter* GetForBrowserContext(
+      content::BrowserContext* context);
+
  protected:
-  // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
+
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
   bool ServiceIsCreatedWithBrowserContext() const override;
 
  private:

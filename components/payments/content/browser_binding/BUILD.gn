@@ -57,12 +57,15 @@ source_set("passkey_browser_binder_unittests") {
 if (is_android) {
   source_set("browser_bound_keys_deleter_factory") {
     sources = [
+      "browser_bound_keys_deleter.cc",
+      "browser_bound_keys_deleter.h",
       "browser_bound_keys_deleter_factory.cc",
       "browser_bound_keys_deleter_factory.h",
     ]
     public_deps = [
       "//base",  # base/no_destructor.h
       "//components/keyed_service/content",
+      "//components/payments/content:utils",
     ]
     deps = [
       ":android",
@@ -88,6 +91,18 @@ if (is_android) {
       "//components/payments/content/android:browser_binding_jni",
       "//device/fido",
       "//third_party/jni_zero",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "mock_browser_bound_keys_deleter.cc",
+      "mock_browser_bound_keys_deleter.h",
+    ]
+    public_deps = [
+      ":browser_bound_keys_deleter_factory",
+      "//testing/gmock",
     ]
   }
 }
