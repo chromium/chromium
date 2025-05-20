@@ -98,6 +98,9 @@
   <message name="IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE" desc="The loyalty cards submenu suggestion text." translateable="false">
     Loyalty cards
   </message>
+  <message name="IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE" desc="The loyalty cards submenu containing all loyalty cards suggestion text." translateable="false">
+    All your loyalty cards
+  </message>
   <message name="IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR" desc="The separator character used in the summary of an address." formatter_data="android_java">
     , '''
   </message>
