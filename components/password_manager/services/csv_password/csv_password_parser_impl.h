@@ -24,8 +24,7 @@ class CSVPasswordParserImpl : public mojom::CSVPasswordParser {
   CSVPasswordParserImpl& operator=(const CSVPasswordParserImpl&) = delete;
 
   // password_manager::mojom::CSVPasswordParser:
-  void ParseCSV(const std::string& raw_json,
-                ParseCSVCallback callback) override;
+  void ParseCSV(const std::string& raw_csv, ParseCSVCallback callback) override;
 
  private:
   mojo::Receiver<mojom::CSVPasswordParser> receiver_;
