@@ -407,7 +407,7 @@ crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pi
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # WebGL drawingBufferStorage does not work on Android devices yet.
-crbug.com/1230619 [ android-chromium android-pie android-pixel-2 angle-disabled no-passthrough qualcomm renderer-skia-gl ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-chromium android android-pixel-2 angle-disabled no-passthrough qualcomm renderer-skia-gl ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-6 angle-disabled arm no-clang-coverage no-passthrough target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-4 android-r angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
 
