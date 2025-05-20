@@ -182,7 +182,10 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <message name="IDS_IOS_ADDED_ITEM_SHARE_EXTENSION" desc="Label of the button 'add to' after it has been pressed confirming the action to the user.">
+      <message name="IDS_IOS_ACCESSIBILITY_LABEL_SHARE_EXTENSION" desc="The accessible name for the Chrome logo that appears visually at the top of the Share Chrome extension will be, `Share Chrome, Heading`">
+        Share
+    </message>
+    <message name="IDS_IOS_ADDED_ITEM_SHARE_EXTENSION" desc="Label of the button 'add to' after it has been pressed confirming the action to the user.">
         Added
       </message>
       <message name="IDS_IOS_ADD_BOOKMARKS_SHARE_EXTENSION" desc="Share extension button to add to bookmarks [Length: 30em]" meaning="Button title [Length: 30em]">

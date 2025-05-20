@@ -241,6 +241,13 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 #endif
 
   titleView.titleLogoSpacing = kTitleViewSpacing;
+  titleView.accessibilityLabel = [NSString
+      stringWithFormat:
+          @"%@ %@",
+          NSLocalizedString(
+              @"IDS_IOS_ACCESSIBILITY_LABEL_SHARE_EXTENSION",
+              @"The accessible name for the Chrome logo in the header."),
+          _appName];
 
   return titleView;
 }
