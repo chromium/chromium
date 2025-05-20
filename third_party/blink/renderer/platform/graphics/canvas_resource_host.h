@@ -101,11 +101,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
  protected:
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
 
-  // TODO(399587138): Move this field to be held by HTMLCanvasElement and
-  // eventually by CanvasRenderingContext2D, as it's only instantiated by the
-  // latter.
-  scoped_refptr<cc::TextureLayer> cc_layer_;
-
  private:
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;

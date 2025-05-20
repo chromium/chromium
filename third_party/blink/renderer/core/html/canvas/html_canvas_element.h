@@ -444,6 +444,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool ignore_reset_ = false;
   gfx::Rect dirty_rect_;
 
+  scoped_refptr<cc::TextureLayer> cc_layer_;
+
   bool is_opaque_ = false;
   bool is_displayed_ = false;
   unsigned frames_since_last_commit_ = 0;
