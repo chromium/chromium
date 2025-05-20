@@ -220,7 +220,11 @@ String CookieJar::Cookies() {
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
-  base::UmaHistogramTimes("Blink.CookiesTime", elapsed);
+  if (ipc_needed) {
+    base::UmaHistogramTimes("Blink.CookiesTime.IpcNeeded", elapsed);
+  } else {
+    base::UmaHistogramTimes("Blink.CookiesTime.IpcNotNeeded", elapsed);
+  }
 
   // We should run the ablation study only for scenarios with ipc.
   if (base::FeatureList::IsEnabled(kCookieJarAblation) && ipc_needed) {

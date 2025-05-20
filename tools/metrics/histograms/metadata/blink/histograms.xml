@@ -851,6 +851,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CookiesTime.{IpcNeeded}" units="ms"
+    expires_after="2025-10-26">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Measures the time it takes to perform a Cookies operation with or without
+    IPC call from the CookieJar. IPC call can be skipped in case where the
+    cookie string is taken successfully and has not changed. In such case, the
+    metrics is recorded for the time to check shared memory and other tasks. The
+    metrics should be separated by whether it needs IPC as it extremely affects
+    the time.
+  </summary>
+  <token key="IpcNeeded">
+    <variant name="IpcNeeded"/>
+    <variant name="IpcNotNeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
     expires_after="2025-11-02">
   <owner>gjc@chromium.org</owner>
@@ -5558,7 +5576,6 @@ chromium-metrics-reviews@google.com.
     CookieJar. Logged on every operation from the CookieJar.
   </summary>
   <token key="CookieOperation">
-    <variant name="Cookies"/>
     <variant name="CookiesEnabled"/>
     <variant name="SetCookie"/>
   </token>
