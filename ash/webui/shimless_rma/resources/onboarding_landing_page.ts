@@ -99,6 +99,14 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
         value: false,
       },
 
+      /**
+       * Hide the exit button if user should not exit.
+       */
+      canExit: {
+        type: Boolean,
+        value: true,
+      },
+
       verificationFailedMessage: {
         type: String,
         value: '',
@@ -109,6 +117,7 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   allButtonsDisabled: boolean;
   getStartedButtonClicked: boolean;
   confirmExitButtonClicked: boolean;
+  canExit: boolean;
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
   hwVerificationObserverReceiver: HardwareVerificationStatusObserverReceiver;
   protected componentsList: string;

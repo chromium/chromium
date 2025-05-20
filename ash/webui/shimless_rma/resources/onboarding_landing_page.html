@@ -68,7 +68,8 @@
       </cr-button>
       <cr-button id="landingExit" class="pill"
           on-click="onLandingExitButtonClicked"
-          disabled="[[allButtonsDisabled]]">
+          disabled="[[allButtonsDisabled]]"
+          hidden$="[[!canExit]]">
         <span id="exitButtonLabel">
           [[i18n('exitButtonLabel')]]
         </span>

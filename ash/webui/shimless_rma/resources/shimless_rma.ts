@@ -104,6 +104,7 @@ export type ShimlessCustomElementType = HTMLElement&{
   hidden?: boolean,
   errorCode?: RmadErrorCode,
   getStartedButtonClicked?: boolean,
+  canExit?: boolean,
   allButtonsDisabled?: boolean,
   onNextButtonClick?: () => Promise<{stateResult: StateResult}>,
   onExitButtonClick?: () => Promise<{stateResult: StateResult}>,
@@ -719,6 +720,7 @@ export class ShimlessRma extends ShimlessRmaBase {
       // buttons.
       currentPageComponent.getStartedButtonClicked = false;
       currentPageComponent.confirmExitButtonClicked = false;
+      currentPageComponent.canExit = stateResult.canExit;
     }
 
     this.setAllButtonsState(

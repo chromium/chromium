@@ -29,6 +29,7 @@ suite('onboardingLandingPageTest', function() {
   const verificationIconSelector = '#verificationIcon';
   const unqualifiedComponentsLinkSelector = '#unqualifiedComponentsLink';
   const verificationSkipMessageSelector = '#verificationSkipMessage';
+  const exitButtonSelector = '#landingExit';
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -185,6 +186,17 @@ suite('onboardingLandingPageTest', function() {
         failedComponent,
         strictQuery('#dialogBody', component.shadowRoot, HTMLElement)
             .textContent!.trim());
+  });
+
+  // Hides Exit button when canExit is false.
+  test('ExitButtonHidesWhenCannotExit', async () => {
+    await initializeLandingPage();
+    assert(component);
+    component.canExit = false;
+
+    assertTrue(
+        strictQuery(exitButtonSelector, component.shadowRoot, HTMLElement)
+            .hidden);
   });
 
   // Verify clicking the landing page's exit button sends the correct event.
