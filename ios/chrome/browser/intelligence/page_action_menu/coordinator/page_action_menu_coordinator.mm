@@ -97,6 +97,7 @@
 
 // Shows GLIC consent.
 - (void)showGLICConsent {
+  // TODO(crbug.com/418752929): Call GLICCoordinator to call GLIC consent.
   _glicConsentCoordinator = [[GLICConsentCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
