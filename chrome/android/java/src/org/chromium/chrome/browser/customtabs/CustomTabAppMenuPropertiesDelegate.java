@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapps.WebappsUtils;
@@ -67,7 +66,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mIsStartIconMenu;
 
     private final List<String> mMenuEntries;
-    private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
     private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
     private final Supplier<ContextualPageActionController> mContextualPageActionControllerSupplier;
 
@@ -267,8 +265,22 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             // --- App Specific Items / Divider ---
             for (int i = 0; i < mMenuEntries.size(); i++) {
-                MenuItem item = menu.add(0, i, 1, mMenuEntries.get(i));
-                mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
+                @IdRes
+                int id =
+                        switch (i) {
+                            case 0 -> R.id.custom_tabs_app_menu_item_id_0;
+                            case 1 -> R.id.custom_tabs_app_menu_item_id_1;
+                            case 2 -> R.id.custom_tabs_app_menu_item_id_2;
+                            case 3 -> R.id.custom_tabs_app_menu_item_id_3;
+                            case 4 -> R.id.custom_tabs_app_menu_item_id_4;
+                            case 5 -> R.id.custom_tabs_app_menu_item_id_5;
+                            case 6 -> R.id.custom_tabs_app_menu_item_id_6;
+                            default -> {
+                                assert false : "Only 7 custom menu items are currently allowed.";
+                                yield 0;
+                            }
+                        };
+                MenuItem item = menu.add(0, id, 1, mMenuEntries.get(i));
                 mItemIdToIndexMap.put(item.getItemId(), i);
             }
 
@@ -394,19 +406,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                     view.getResources().getString(R.string.twa_running_in_chrome_template, appName);
             footerTextView.setText(footerText);
         }
-    }
-
-    /**
-     * Get the menu item's id object associated with the given title. If multiple menu items have
-     * the same title, a random one will be returned. If the menu item is not found, return -1. This
-     * method is for testing purpose _only_.
-     */
-    @VisibleForTesting
-    int getItemIdForTitle(String title) {
-        if (mTitleToItemIdMap.containsKey(title)) {
-            return mTitleToItemIdMap.get(title).intValue();
-        }
-        return AppMenuPropertiesDelegate.INVALID_ITEM_ID;
     }
 
     @Override

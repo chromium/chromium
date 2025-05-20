@@ -120,4 +120,12 @@ found in the LICENSE file.
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />
     <item type="id" name="custom_tabs_toolbar_tintable" />
+    <item type="id" name="custom_tabs_app_menu_item_id_0" />
+    <item type="id" name="custom_tabs_app_menu_item_id_1" />
+    <item type="id" name="custom_tabs_app_menu_item_id_2" />
+    <item type="id" name="custom_tabs_app_menu_item_id_3" />
+    <item type="id" name="custom_tabs_app_menu_item_id_4" />
+    <item type="id" name="custom_tabs_app_menu_item_id_5" />
+    <item type="id" name="custom_tabs_app_menu_item_id_6" />
+
 </resources>

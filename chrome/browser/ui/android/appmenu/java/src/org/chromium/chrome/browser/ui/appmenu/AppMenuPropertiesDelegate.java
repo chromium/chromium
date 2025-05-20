@@ -17,8 +17,6 @@ import java.util.List;
 /** App Menu helper that handles hiding and showing menu items based on activity state. */
 @NullMarked
 public interface AppMenuPropertiesDelegate {
-    int INVALID_ITEM_ID = -1;
-
     /** Provides unique custom item view type across all custom binders. */
     public interface CustomItemViewTypeProvider {
         /**

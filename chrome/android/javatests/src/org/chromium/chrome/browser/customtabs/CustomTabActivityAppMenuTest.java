@@ -24,6 +24,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -74,12 +76,12 @@ import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.webapps.WebappsUtils;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -562,13 +564,22 @@ public class CustomTabActivityAppMenuTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    int itemId =
+                    ModelList menuModelList =
                             ((CustomTabAppMenuPropertiesDelegate)
                                             AppMenuTestSupport.getAppMenuPropertiesDelegate(
                                                     mCustomTabActivityTestRule
                                                             .getAppMenuCoordinator()))
-                                    .getItemIdForTitle(TEST_MENU_TITLE);
-                    Assert.assertNotEquals(AppMenuPropertiesDelegate.INVALID_ITEM_ID, itemId);
+                                    .getModelList();
+                    int itemId = View.NO_ID;
+                    for (MVCListAdapter.ListItem menuItem : menuModelList) {
+                        if (menuItem.model.containsKey(AppMenuItemProperties.TITLE)
+                                && TextUtils.equals(
+                                        TEST_MENU_TITLE,
+                                        menuItem.model.get(AppMenuItemProperties.TITLE))) {
+                            itemId = menuItem.model.get(AppMenuItemProperties.MENU_ITEM_ID);
+                        }
+                    }
+                    Assert.assertNotEquals(View.NO_ID, itemId);
                     AppMenuTestSupport.onOptionsItemSelected(
                             mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId);
                 });
