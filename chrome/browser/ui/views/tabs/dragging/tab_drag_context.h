@@ -104,11 +104,6 @@ class TabDragContext : public TabDragContextBase {
   virtual int TabDragAreaEndX() const = 0;
   virtual int TabDragAreaBeginX() const = 0;
 
-  // Returns the horizontal drag threshold - the amount a tab drag must move to
-  // trigger a reorder. This is dependent on the width of tabs. The smaller the
-  // tabs compared to the standard size, the smaller the threshold.
-  virtual int GetHorizontalDragThreshold() const = 0;
-
   // Returns the index where the dragged WebContents should be inserted into
   // this tabstrip given the DraggedTabView's bounds `dragged_bounds` in
   // coordinates relative to `attached_tabstrip_` and has had the mirroring

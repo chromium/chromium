@@ -124,8 +124,6 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
 
   const gfx::Point dragged_view_point = GetAttachedDragPoint(point_in_screen);
 
-  const int threshold = attached_context_->GetHorizontalDragThreshold();
-
   std::vector<TabSlotView*> views(drag_data_.tab_drag_data_.size());
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size(); ++i) {
     views[i] = drag_data_.tab_drag_data_[i].attached_view.get();
@@ -135,6 +133,17 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
 
   const gfx::Point point_in_attached_context =
       views::View::ConvertPointFromScreen(attached_context_, point_in_screen);
+
+  const int to_index = attached_context_->GetInsertionIndexForDraggedBounds(
+      GetDraggedViewTabStripBounds(dragged_view_point),
+      drag_data_.attached_views(), drag_data_.num_dragging_tabs());
+
+  constexpr int kHorizontalMoveThreshold = 16;  // DIPs.
+  const int threshold = base::ClampRound(
+      static_cast<double>(
+          attached_context_->GetTabAt(to_index)->bounds().width()) /
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false) *
+      kHorizontalMoveThreshold);
 
   // Update the model, moving the WebContents from one index to another. Do this
   // only if we have moved a minimum distance since the last reorder (to prevent
@@ -146,9 +155,6 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
        threshold) ||
       (initial_move_ && !AreTabsConsecutive())) {
     TabStripModel* attached_model = attached_context_->GetTabStripModel();
-    const int to_index = attached_context_->GetInsertionIndexForDraggedBounds(
-        GetDraggedViewTabStripBounds(dragged_view_point),
-        drag_data_.attached_views(), drag_data_.num_dragging_tabs());
 
     content::WebContents* last_contents =
         drag_data_.tab_drag_data_.back().contents;

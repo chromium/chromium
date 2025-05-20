@@ -506,14 +506,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return TabDragAreaBeginX() + GetTabDragAreaWidth();
   }
 
-  int GetHorizontalDragThreshold() const override {
-    constexpr int kHorizontalMoveThreshold = 16;  // DIPs.
-
-    double ratio = static_cast<double>(tab_strip_->GetInactiveTabWidth()) /
-                   TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
-    return base::ClampRound(ratio * kHorizontalMoveThreshold);
-  }
-
   int GetInsertionIndexForDraggedBounds(const gfx::Rect& dragged_bounds,
                                         std::vector<TabSlotView*> dragged_views,
                                         int num_dragged_tabs) const override {
