@@ -24,14 +24,12 @@ namespace persistent_cache {
 //
 // Example:
 //  BackendParamsManager params_manager(GetPath());
-//  if (params_manager.GetParamsSyncOrCreateAsync(BackendType::kSqlite, "key",
-//                                                AccessRights::kReadOnly,
-//                                                std::move(callback))) {
-//    // Params returned synchronously. Result can be used right away.
-//    //  ....
-//  } else {
-//    // `callback` will be invoked asynchronously to return result.
-//  }
+//  params_manager.GetParamsSyncOrCreateAsync(BackendType::kSqlite, "key",
+//      AccessRights::kReadOnly,
+//      std::move(callback));
+//  // `callback` called synchronously and result can be used right away.
+//  // ... or
+//  // `callback` will be invoked asynchronously to return result.
 //
 class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
  public:
