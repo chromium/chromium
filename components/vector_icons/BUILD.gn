@@ -309,6 +309,7 @@ if (current_toolchain == default_toolchain) {
         "google_chrome/google_slides.icon",
         "google_chrome/google_super_g.icon",
         "google_chrome/google_wallet.icon",
+        "google_chrome/google_wallet_monochrome.icon",
         "google_chrome/gshield.icon",
         "google_chrome/page_insights.icon",
         "google_chrome/page_insights_color.icon",
