@@ -13,7 +13,7 @@
 
 namespace ui {
 
-int EventFlagsFromAndroidMetaState(int meta_state) {
+EventFlags EventFlagsFromAndroidMetaState(int meta_state) {
   int flags = EF_NONE;
 
   if ((meta_state & AMETA_SHIFT_ON) != 0) {
@@ -35,7 +35,29 @@ int EventFlagsFromAndroidMetaState(int meta_state) {
   return flags;
 }
 
-int EventFlagsFromAndroidButtonState(int button_state) {
+int AndroidMetaStateFromEventFlags(EventFlags event_flags) {
+  int meta_state = AMETA_NONE;
+
+  if (event_flags & EF_SHIFT_DOWN) {
+    meta_state |= AMETA_SHIFT_ON;
+  }
+  if (event_flags & EF_CONTROL_DOWN) {
+    meta_state |= AMETA_CTRL_ON;
+  }
+  if (event_flags & EF_ALT_DOWN) {
+    meta_state |= AMETA_ALT_ON;
+  }
+  if (event_flags & EF_COMMAND_DOWN) {
+    meta_state |= AMETA_META_ON;
+  }
+  if (event_flags & EF_CAPS_LOCK_ON) {
+    meta_state |= AMETA_CAPS_LOCK_ON;
+  }
+
+  return meta_state;
+}
+
+EventFlags EventFlagsFromAndroidButtonState(int button_state) {
   int flags = EF_NONE;
 
   if ((button_state & JNI_MotionEvent::BUTTON_BACK) != 0) {

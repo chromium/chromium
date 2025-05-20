@@ -18,6 +18,8 @@ class EVENTS_EXPORT KeyEventAndroid {
  public:
   KeyEventAndroid(JNIEnv* env, jobject event);
   KeyEventAndroid(JNIEnv* env, jobject event, int key_code);
+  // Synthesize android key event from given android action, key code, etc.
+  KeyEventAndroid(int action, int key_code, int meta_state);
 
   KeyEventAndroid(const KeyEventAndroid& other);
   KeyEventAndroid& operator=(const KeyEventAndroid& other);

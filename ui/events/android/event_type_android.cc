@@ -6,6 +6,8 @@
 
 #include <android/input.h>
 
+#include "base/notreached.h"
+
 namespace ui {
 
 EventType EventTypeFromAndroidKeyEventAction(int key_event_action) {
@@ -16,6 +18,17 @@ EventType EventTypeFromAndroidKeyEventAction(int key_event_action) {
       return EventType::kKeyReleased;
     default:
       return EventType::kUnknown;
+  }
+}
+
+int AndroidKeyEventActionFromEventType(EventType event_type) {
+  switch (event_type) {
+    case EventType::kKeyPressed:
+      return AKEY_EVENT_ACTION_DOWN;
+    case EventType::kKeyReleased:
+      return AKEY_EVENT_ACTION_UP;
+    default:
+      NOTREACHED();
   }
 }
 

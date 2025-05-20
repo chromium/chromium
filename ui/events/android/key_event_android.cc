@@ -26,6 +26,21 @@ KeyEventAndroid::KeyEventAndroid(JNIEnv* env, jobject event, int key_code)
   event_.Reset(env, event);
 }
 
+KeyEventAndroid::KeyEventAndroid(int action, int key_code, int meta_state)
+    : key_code_(key_code) {
+  JNIEnv* env = AttachCurrentThread();
+
+  int down_time = 0;
+  int event_time = 0;
+  int repeat = 0;
+
+  jni_zero::ScopedJavaLocalRef<jobject> event =
+      JNI_KeyEvent::Java_KeyEvent_Constructor(
+          env, down_time, event_time, action, key_code, repeat, meta_state);
+
+  event_.Reset(env, event.obj());
+}
+
 KeyEventAndroid::KeyEventAndroid(const KeyEventAndroid& other) = default;
 KeyEventAndroid& KeyEventAndroid::KeyEventAndroid::operator=(
     const KeyEventAndroid& other) = default;

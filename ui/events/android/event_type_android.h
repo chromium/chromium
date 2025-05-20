@@ -14,6 +14,9 @@ namespace ui {
 EVENTS_EXPORT EventType
 EventTypeFromAndroidKeyEventAction(int key_event_action);
 
+// Converts EventType for a key event to android key event action.
+EVENTS_EXPORT int AndroidKeyEventActionFromEventType(EventType event_type);
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_ANDROID_EVENT_TYPE_ANDROID_H_
