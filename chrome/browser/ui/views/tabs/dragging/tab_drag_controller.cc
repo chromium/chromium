@@ -1170,7 +1170,7 @@ void TabDragController::AttachToNewContext(
     std::unique_ptr<TabDragController> controller,
     std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
                              std::unique_ptr<DetachedTabCollection>>>
-        owned_tabs_and_groups) {
+        owned_tabs_and_collections) {
   // We should already have detached by the time we get here.
   CHECK(!attached_context_);
   attached_context_ = attached_context;
@@ -1204,9 +1204,9 @@ void TabDragController::AttachToNewContext(
       },
       attached_context_->GetTabStripModel());
 
-  for (auto& tab_or_group : owned_tabs_and_groups) {
+  for (auto& tab_or_collection : owned_tabs_and_collections) {
     if (auto* tab =
-            std::get_if<std::unique_ptr<tabs::TabModel>>(&tab_or_group)) {
+            std::get_if<std::unique_ptr<tabs::TabModel>>(&tab_or_collection)) {
       const tabs::TabInterface* tab_ptr = tab->get();
       // If it's a tab - we add it to the tabstrip.
       int add_types = AddTabTypes::ADD_NONE;
@@ -1226,19 +1226,29 @@ void TabDragController::AttachToNewContext(
       update_sad_tab.Run(index);
       index++;
     } else {
-      auto group = std::move(
-          *std::get_if<std::unique_ptr<DetachedTabCollection>>(&tab_or_group));
-      // If it's a group - we add it to the tabstrip. This will add all the
-      // tabs.
-      const gfx::Range group_indices =
-          attached_context_->GetTabStripModel()->InsertDetachedTabGroupAt(
-              std::move(group), index);
+      gfx::Range collection_indices;
+      auto* detached_tab_collection =
+          std::get_if<std::unique_ptr<DetachedTabCollection>>(
+              &tab_or_collection);
 
-      CHECK_EQ(group_indices.start(), index);
-      index += group_indices.length();
+      const bool pinned = detached_tab_collection->get()->pinned_;
 
-      for (size_t sad_index = group_indices.start();
-           sad_index < group_indices.end(); sad_index++) {
+      if (std::holds_alternative<std::unique_ptr<tabs::TabGroupTabCollection>>(
+              detached_tab_collection->get()->collection_)) {
+        collection_indices =
+            attached_context_->GetTabStripModel()->InsertDetachedTabGroupAt(
+                std::move(*detached_tab_collection), index);
+      } else {
+        collection_indices =
+            attached_context_->GetTabStripModel()->InsertDetachedSplitTabAt(
+                std::move(*detached_tab_collection), index, pinned);
+      }
+
+      CHECK_EQ(collection_indices.start(), index);
+      index += collection_indices.length();
+
+      for (size_t sad_index = collection_indices.start();
+           sad_index < collection_indices.end(); sad_index++) {
         update_sad_tab.Run(sad_index);
       }
     }
@@ -1327,7 +1337,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
 
   std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
                            std::unique_ptr<DetachedTabCollection>>>
-      owned_tabs_and_groups;
+      owned_tabs_and_collections;
   for (TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
     const int index =
         attached_model->GetIndexOfWebContents(tab_drag_datum.contents);
@@ -1342,10 +1352,14 @@ TabDragController::Detach(ReleaseCapture release_capture) {
         attached_model->GetTabGroupForTab(index);
     if (std::find(groups_to_move.begin(), groups_to_move.end(), group) !=
         groups_to_move.end()) {
-      owned_tabs_and_groups.emplace_back(
+      owned_tabs_and_collections.emplace_back(
           attached_model->DetachTabGroupForInsertion(group.value()));
+    } else if (attached_model->GetTabAtIndex(index)->IsSplit()) {
+      owned_tabs_and_collections.emplace_back(
+          attached_model->DetachSplitTabForInsertion(
+              attached_model->GetTabAtIndex(index)->GetSplit().value()));
     } else {
-      owned_tabs_and_groups.emplace_back(
+      owned_tabs_and_collections.emplace_back(
           attached_model->DetachTabAtForInsertion(index));
     }
   }
@@ -1368,7 +1382,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   attached_context_->DraggedTabsDetached();
   attached_context_ = nullptr;
 
-  return std::make_tuple(std::move(me), std::move(owned_tabs_and_groups));
+  return std::make_tuple(std::move(me), std::move(owned_tabs_and_collections));
 }
 
 TabDragController::Liveness

@@ -895,6 +895,26 @@ TEST_F(TabStripModelTest, TestTabHandlesAcrossModels) {
   delegate()->SetBrowserWindowInterface(nullptr);
 }
 
+TEST_F(TabStripModelTest, TestDetachSplitInGroupNewSelection) {
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(2), false);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(3), true);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(4), true);
+
+  EXPECT_EQ(tabstrip()->count(), 4);
+
+  tabstrip()->AddToNewGroup(std::vector<int>{1, 2, 3});
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId split_id = tabstrip()->AddToNewSplit(
+      std::vector<int>{3}, split_tabs::SplitTabLayout::kHorizontal);
+  tabstrip()->ForgetAllOpeners();
+
+  tabstrip()->DetachSplitTabForInsertion(split_id);
+  EXPECT_EQ(tabstrip()->active_index(), 1);
+}
+
 TEST_F(TabStripModelTest, TestDetachTabInGroupNewSelection) {
   tabstrip()->AppendWebContents(CreateWebContentsWithID(1), false);
   tabstrip()->AppendWebContents(CreateWebContentsWithID(2), false);
@@ -929,6 +949,45 @@ TEST_F(TabStripModelTest, TestDetachTabInSplitNewSelection) {
 
   tabstrip()->DetachTabAtForInsertion(1);
   EXPECT_EQ(tabstrip()->active_index(), 1);
+}
+
+TEST_F(TabStripModelTest, TestDetachSplitForInsertion) {
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(2), false);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(3), true);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(4), false);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(5), false);
+  tabstrip()->AppendWebContents(CreateWebContentsWithID(6), true);
+
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_id =
+      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabLayout::kVertical);
+
+  tabstrip()->ForgetAllOpeners();
+
+  std::unique_ptr<DetachedTabCollection> detached_split =
+      tabstrip()->DetachSplitTabForInsertion(split_id);
+
+  tabs::SplitTabCollection* split_collection =
+      std::get<std::unique_ptr<tabs::SplitTabCollection>>(
+          detached_split->collection_)
+          .get();
+
+  EXPECT_EQ(split_collection->TabCountRecursive(), 2u);
+  EXPECT_FALSE(tabstrip()->ContainsSplit(split_id));
+  EXPECT_EQ(tabstrip()->count(), 4);
+  EXPECT_EQ(tabstrip()->active_index(), 2);
+  // Reinsert the detached group.
+  tabstrip()->InsertDetachedSplitTabAt(std::move(detached_split), 0, false);
+
+  EXPECT_TRUE(tabstrip()->ContainsSplit(split_id));
+  EXPECT_EQ(tabstrip()->GetSplitData(split_id)->ListTabs().size(), 2u);
+  EXPECT_EQ(tabstrip()->GetTabAtIndex(0)->GetSplit().value(), split_id);
+  EXPECT_EQ(tabstrip()->GetTabAtIndex(1)->GetSplit().value(), split_id);
+  EXPECT_EQ(tabstrip()->count(), 6);
 }
 
 TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {

@@ -79,7 +79,8 @@ struct DetachedTabCollection {
   DetachedTabCollection(
       std::variant<std::unique_ptr<tabs::TabGroupTabCollection>,
                    std::unique_ptr<tabs::SplitTabCollection>> collection,
-      std::optional<int> active_index);
+      std::optional<int> active_index,
+      bool pinned_);
   DetachedTabCollection(const DetachedTabCollection&) = delete;
   DetachedTabCollection& operator=(const DetachedTabCollection&) = delete;
   ~DetachedTabCollection();
@@ -89,6 +90,7 @@ struct DetachedTabCollection {
       collection_;
   // Store the index of tab that was active in the detached group.
   std::optional<int> active_index_ = std::nullopt;
+  bool pinned_ = false;
 };
 
 // Holds state for a tab that has been detached from the tab strip.
@@ -288,6 +290,21 @@ class TabStripModel : public TabGroupController {
   gfx::Range InsertDetachedTabGroupAt(
       std::unique_ptr<DetachedTabCollection> group,
       int index);
+
+  // Removes the split collection from the collection hierarchy and passes it to
+  // the client. The client can re-insert into another tabstrip using
+  // `InsertDetachedSplitTabAt` without destroying the split.
+  std::unique_ptr<DetachedTabCollection> DetachSplitTabForInsertion(
+      const split_tabs::SplitTabId split_id);
+
+  // Inserts a detached split tab into the tabstrip starting at `index`.
+  // `pinned` and `group` information are used to insert it in the right place
+  // in the collection hierarchy.
+  gfx::Range InsertDetachedSplitTabAt(
+      std::unique_ptr<DetachedTabCollection> split,
+      int index,
+      bool pinned,
+      std::optional<tab_groups::TabGroupId> group_id = std::nullopt);
 
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
@@ -861,6 +878,17 @@ class TabStripModel : public TabGroupController {
       split_tabs::SplitTabId split_id,
       const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
       SplitTabChange::SplitTabRemoveReason reason);
+
+  // Notify observers that a split was detached from this tabstrip model.
+  // This also sends any group related notification.
+  void NotifySplitTabDetached(
+      tabs::SplitTabCollection* split_collection,
+      std::vector<std::pair<tabs::TabInterface*, int>> tabs_in_split,
+      std::optional<tab_groups::TabGroupId> previous_group_state);
+
+  // Notify observers that a split was attached to this tabstrip model.
+  // This also sends any group related notification.
+  void NotifySplitTabAttached(tabs::SplitTabCollection* split_collection);
 
   // Detaches the tab at the specified `index` from this strip.
   // `web_contents_remove_reason` is used to indicate to observers what is going

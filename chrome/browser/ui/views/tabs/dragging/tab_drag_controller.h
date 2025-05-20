@@ -353,7 +353,7 @@ class TabDragController : public views::WidgetObserver
       std::unique_ptr<TabDragController> controller,
       std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
                                std::unique_ptr<DetachedTabCollection>>>
-          owned_tabs_and_groups);
+          owned_tabs_and_collections);
 
   // Sets up dragging in `attached_context_`. The dragged tabs must already
   // be present.
