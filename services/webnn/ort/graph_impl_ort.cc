@@ -32,10 +32,10 @@ namespace {
 
 struct Session {
   Session(ScopedOrtEnv env,
-          ScopedOrtSession session,
-          std::vector<base::HeapArray<uint8_t>> external_data)
-      : external_data(std::move(external_data)),
-        env(std::move(env)),
+          std::unique_ptr<OrtModelEditor::WeightsDeleter> weights_deleter,
+          ScopedOrtSession session)
+      : env(std::move(env)),
+        weights_deleter(std::move(weights_deleter)),
         session(std::move(session)) {}
   Session(const Session&) = delete;
   Session& operator=(const Session&) = delete;
@@ -43,12 +43,15 @@ struct Session {
 
   OrtSession* GetSession() { return session.get(); }
 
-  std::vector<base::HeapArray<uint8_t>> external_data;
-
   // `env` should be prior to `session`. That ensures releasing `env` after
   // releasing the session. This avoids unloading the providers DLLs being
   // used during `session` destruction.
   ScopedOrtEnv env;
+
+  // `weights_deleter` should be prior to `session` since `weights_deleter` will
+  // be used for deleting the weights when `session` is destroyed.
+  std::unique_ptr<OrtModelEditor::WeightsDeleter> weights_deleter;
+
   ScopedOrtSession session;
 };
 
@@ -194,9 +197,9 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   }
 
   scoped_trace.AddStep("Create compute resources");
-  auto compute_session =
-      base::WrapUnique(new Session(std::move(env), std::move(session),
-                                   std::move(model_info->external_data)));
+  auto compute_session = base::WrapUnique(
+      new Session(std::move(env), std::move(model_info->weights_deleter),
+                  std::move(session)));
 
   base::flat_map<std::string, std::string>
       operand_input_name_to_onnx_input_name;

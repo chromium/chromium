@@ -41,19 +41,39 @@ constexpr size_t kMinExternalDataSize = 128;
 
 class OrtModelEditor {
  public:
+  // The `WeightsDeleter` is used by ORT to free the weights (external data)
+  // that is no longer in use. It should not be destroyed until all the weights
+  // are freed.
+  struct WeightsDeleter : public OrtAllocator {
+   public:
+    WeightsDeleter();
+    WeightsDeleter(const WeightsDeleter&) = delete;
+    WeightsDeleter& operator=(const WeightsDeleter&) = delete;
+    ~WeightsDeleter();
+
+    // Take the weights and keep it until being freed by ORT.
+    void Take(base::HeapArray<uint8_t> data);
+
+   private:
+    void FreeImpl(void* p);
+
+    // The weights are always created on CPU.
+    ScopedOrtMemoryInfo cpu_memory_info;
+
+    std::vector<base::HeapArray<uint8_t>> weights;
+  };
+
   struct ModelInfo {
     ModelInfo();
     ModelInfo(const ModelInfo&) = delete;
     ModelInfo& operator=(const ModelInfo&) = delete;
     ~ModelInfo();
 
-    ScopedOrtModel model;
+    // `weight_deleter` should be prior to `session` since `weight_deleter` will
+    // be used for deleting the weights when `model` is destroyed.
+    std::unique_ptr<WeightsDeleter> weights_deleter;
 
-    // TODO(https://github.com/shiyi9801/chromium/issues/49): Consider reusing
-    // constant operands instead of copying them to `external_data`.
-    //
-    // Store the external data which should be alive for inference session.
-    std::vector<base::HeapArray<uint8_t>> external_data;
+    ScopedOrtModel model;
   };
 
   OrtModelEditor();
@@ -110,7 +130,6 @@ class OrtModelEditor {
   std::vector<ScopedOrtValueInfo> inputs_;
   std::vector<ScopedOrtValueInfo> outputs_;
 
-  ScopedOrtMemoryInfo memory_info_;
   ScopedOrtGraph graph_;
 
   std::unique_ptr<ModelInfo> model_info_;

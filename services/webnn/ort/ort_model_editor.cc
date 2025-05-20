@@ -6,6 +6,7 @@
 
 #include <ranges>
 
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/utils_ort.h"
@@ -15,7 +16,52 @@ namespace webnn {
 
 namespace ort {
 
-OrtModelEditor::ModelInfo::ModelInfo() = default;
+OrtModelEditor::WeightsDeleter::WeightsDeleter() {
+  const OrtApi* ort_api = GetOrtApi();
+  CHECK(IsSuccess(ort_api->CreateCpuMemoryInfo(
+      OrtDeviceAllocator, OrtMemTypeDefault,
+      ScopedOrtMemoryInfo::Receiver(cpu_memory_info).get())));
+
+  // `OrtAllocator` is a C-style structure (with a pointer to its definition),
+  // `Info` and `Free` are just function pointers that need to be set to lambda
+  // functions.
+  OrtAllocator::version = ORT_API_VERSION;
+  OrtAllocator::Info = [](const OrtAllocator* this_) -> const OrtMemoryInfo* {
+    return static_cast<const WeightsDeleter*>(this_)->cpu_memory_info.get();
+  };
+  OrtAllocator::Free = [](OrtAllocator* this_, void* p) -> void {
+    static_cast<WeightsDeleter*>(this_)->FreeImpl(p);
+  };
+  OrtAllocator::Alloc = [](OrtAllocator* /*this_*/, size_t /*size*/) -> void* {
+    NOTREACHED() << "[WebNN] OrtAllocator::Alloc() should never be called.";
+  };
+  OrtAllocator::Reserve = [](OrtAllocator* /*this_*/,
+                             size_t /*size*/) -> void* {
+    NOTREACHED() << "[WebNN] OrtAllocator::Reserve() should never be called.";
+  };
+}
+
+OrtModelEditor::WeightsDeleter::~WeightsDeleter() {
+  LOG_IF(FATAL, !weights.empty())
+      << "[WebNN] All the weights should be freed by ORT before "
+         "`WeightsDeleter` is destroyed.";
+}
+
+void OrtModelEditor::WeightsDeleter::Take(base::HeapArray<uint8_t> data) {
+  weights.push_back(std::move(data));
+}
+
+void OrtModelEditor::WeightsDeleter::FreeImpl(void* p) {
+  // Exactly one element should be erased.
+  CHECK_EQ(std::erase_if(weights,
+                         [p](const base::HeapArray<uint8_t>& data) {
+                           return data.data() == p;
+                         }),
+           1u);
+}
+
+OrtModelEditor::ModelInfo::ModelInfo()
+    : weights_deleter(std::make_unique<WeightsDeleter>()) {}
 OrtModelEditor::ModelInfo::~ModelInfo() = default;
 
 ScopedOrtValueInfo CreateOrtValueInfo(std::string_view name,
@@ -43,10 +89,6 @@ ScopedOrtValueInfo CreateOrtValueInfo(std::string_view name,
 }
 
 OrtModelEditor::OrtModelEditor() : model_info_(std::make_unique<ModelInfo>()) {
-  // WebNN constants are in CPU memory.
-  CHECK(IsSuccess(GetOrtApi()->CreateCpuMemoryInfo(
-      OrtDeviceAllocator, OrtMemTypeDefault,
-      ScopedOrtMemoryInfo::Receiver(memory_info_).get())));
   CHECK(IsSuccess(GetOrtModelEditorApi()->CreateGraph(
       ScopedOrtGraph::Receiver(graph_).get())));
 }
@@ -118,15 +160,16 @@ void OrtModelEditor::AddOutput(std::string_view name,
     ONNXTensorElementDataType data_type) {
   ScopedOrtValue initializer;
 
+  // TODO(https://github.com/shiyi9801/chromium/issues/49): Consider reusing
+  // constant operands instead of copying them.
   auto weight = base::HeapArray<uint8_t>::CopiedFrom(data);
-  model_info_->external_data.push_back(std::move(weight));
 
-  // TODO(https://github.com/shiyi9801/chromium/issues/45): Use
-  // `CreateTensorWithDataAndDeleterAsOrtValue()`.
-  RETURN_STATUS_IF_FAILED(GetOrtApi()->CreateTensorWithDataAsOrtValue(
-      memory_info_.get(), model_info_->external_data.back().data(),
-      model_info_->external_data.back().size(), shape.data(), shape.size(),
-      data_type, ScopedOrtValue::Receiver(initializer).get()));
+  RETURN_STATUS_IF_FAILED(GetOrtApi()->CreateTensorWithDataAndDeleterAsOrtValue(
+      model_info_->weights_deleter.get(), weight.data(), weight.size(),
+      shape.data(), shape.size(), data_type,
+      ScopedOrtValue::Receiver(initializer).get()));
+
+  model_info_->weights_deleter->Take(std::move(weight));
 
   // Graph will own the initializer.
   RETURN_STATUS_IF_FAILED(GetOrtModelEditorApi()->AddInitializerToGraph(
