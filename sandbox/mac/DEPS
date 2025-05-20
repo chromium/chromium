@@ -19,3 +19,7 @@ specific_include_rules = {
     "+mojo/core",
   ],
 }
+
+include_rules = [
+  "+third_party/fuzztest",
+]

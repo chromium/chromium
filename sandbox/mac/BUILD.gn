@@ -79,3 +79,14 @@ source_set("sandbox_unittests") {
     "//testing/gtest",
   ]
 }
+
+test("sandbox_mac_fuzztests") {
+  sources = [ "sandbox_serializer_fuzztest.cc" ]
+
+  fuzztests = [ "SandboxSerializerFuzzTest.CanDeserializeWithoutCrashing" ]
+
+  deps = [
+    ":seatbelt",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
