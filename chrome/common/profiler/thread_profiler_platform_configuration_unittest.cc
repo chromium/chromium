@@ -4,11 +4,14 @@
 
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 
+#include <tuple>
 #include <utility>
 
+#include "base/containers/enum_set.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/version_info/version_info.h"
@@ -47,6 +50,47 @@ class ThreadProfilerPlatformConfigurationTest : public ::testing::Test {
  private:
   const std::unique_ptr<ThreadProfilerPlatformConfiguration> config_;
 };
+
+class ThreadProfilerPlatformConfigurationThreadTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
+ public:
+  ThreadProfilerPlatformConfigurationThreadTest() {
+    std::tie(enable_worker_threads_, enable_on_dev_channel_) = GetParam();
+    scoped_feature_list_.InitWithFeatureState(kSamplingProfilerOnWorkerThreads,
+                                              enable_worker_threads_);
+    config_ = ThreadProfilerPlatformConfiguration::Create(
+        /*browser_test_mode_enabled=*/false,
+        /*is_enabled_on_dev_callback=*/base::BindLambdaForTesting(
+            [this](double probability) { return enable_on_dev_channel_; }));
+  }
+
+  bool enable_worker_threads() const { return enable_worker_threads_; }
+  bool enable_on_dev_channel() const { return enable_on_dev_channel_; }
+
+  ThreadProfilerPlatformConfiguration* config() const { return config_.get(); }
+
+ private:
+  bool enable_worker_threads_;
+  bool enable_on_dev_channel_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ThreadProfilerPlatformConfiguration> config_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ThreadProfilerPlatformConfigurationThreadTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+#if BUILDFLAG(IS_ANDROID)
+        // AndroidPlatformConfiguration::IsEnabledForThread() checks the
+        // channel, so test with dev channel both enabled and disabled.
+        ::testing::Bool()
+#else
+        // DefaultPlatformConfiguration::IsEnabledForThread() doesn't check the
+        // channel, so no need to test with dev channel disabled.
+        ::testing::Values(true)
+#endif
+            ));
 
 }  // namespace
 
@@ -151,63 +195,38 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 #endif
 }
 
-MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
-                             IsEnabledForThread) {
+TEST_P(ThreadProfilerPlatformConfigurationThreadTest, IsEnabledForThread) {
   // Profiling should be enabled without restriction across all threads,
   // assuming it is enabled for corresponding process. Not all these
   // combinations actually make sense or are implemented in the code, but
   // iterating over all combinations is the simplest way to test.
-  for (int i = 0;
-       i <= static_cast<int>(sampling_profiler::ProfilerProcessType::kMax);
-       ++i) {
-    const auto process = static_cast<sampling_profiler::ProfilerProcessType>(i);
-    for (int j = 0;
-         j <= static_cast<int>(sampling_profiler::ProfilerThreadType::kMax);
-         ++j) {
-      const auto thread = static_cast<sampling_profiler::ProfilerThreadType>(j);
-      // TODO(crbug.com/40226611): Remove exception once ThreadPoolWorker
-      // profile sampling is enabled.
-      if (thread == sampling_profiler::ProfilerThreadType::kThreadPoolWorker) {
-        // Skip checking kThreadPoolWorker threads.
-        continue;
-      }
-
-      EXPECT_TRUE(config()->IsEnabledForThread(process, thread,
-                                               version_info::Channel::CANARY));
-
-#if BUILDFLAG(IS_ANDROID)
-      auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
-          /* browser_test_mode_enabled=*/false,
-          base::BindLambdaForTesting([](double probability) { return true; }));
-      EXPECT_TRUE(android_config1->IsEnabledForThread(
-          process, thread, version_info::Channel::DEV));
-      auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
-          /* browser_test_mode_enabled=*/false,
-          base::BindLambdaForTesting([](double probability) { return false; }));
-      EXPECT_FALSE(android_config2->IsEnabledForThread(
-          process, thread, version_info::Channel::DEV));
-#else
-      EXPECT_TRUE(config()->IsEnabledForThread(process, thread,
-                                               version_info::Channel::DEV));
+  using ProcessTypes =
+      base::EnumSet<sampling_profiler::ProfilerProcessType,
+                    sampling_profiler::ProfilerProcessType::kUnknown,
+                    sampling_profiler::ProfilerProcessType::kMax>;
+  using ThreadTypes =
+      base::EnumSet<sampling_profiler::ProfilerThreadType,
+                    sampling_profiler::ProfilerThreadType::kUnknown,
+                    sampling_profiler::ProfilerThreadType::kMax>;
+  for (const auto process : ProcessTypes::All()) {
+    for (const auto thread : ThreadTypes::All()) {
+      SCOPED_TRACE(::testing::Message()
+                   << "process type " << static_cast<int>(process)
+                   << ", thread type " << static_cast<int>(thread));
+      bool thread_type_enabled =
+          thread == sampling_profiler::ProfilerThreadType::kThreadPoolWorker
+              ? enable_worker_threads()
+              : true;
+      EXPECT_EQ(config()->IsEnabledForThread(process, thread,
+                                             version_info::Channel::CANARY),
+                thread_type_enabled);
+#if !BUILDFLAG(IS_ANDROID)
+      // Dev channel only has special handling on Android.
+      ASSERT_TRUE(enable_on_dev_channel());
 #endif
+      EXPECT_EQ(config()->IsEnabledForThread(process, thread,
+                                             version_info::Channel::DEV),
+                thread_type_enabled && enable_on_dev_channel());
     }
-  }
-}
-
-// TODO(crbug.com/40226611): Remove test once ThreadPoolWorker profile sampling
-// is enabled.
-MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
-                             IsDisabledForThreadPoolWorkerThread) {
-  for (int i = 0;
-       i <= static_cast<int>(sampling_profiler::ProfilerProcessType::kMax);
-       ++i) {
-    const auto process = static_cast<sampling_profiler::ProfilerProcessType>(i);
-    const auto thread =
-        sampling_profiler::ProfilerThreadType::kThreadPoolWorker;
-
-    EXPECT_FALSE(config()->IsEnabledForThread(process, thread,
-                                              version_info::Channel::CANARY));
-    EXPECT_FALSE(config()->IsEnabledForThread(process, thread,
-                                              version_info::Channel::DEV));
   }
 }

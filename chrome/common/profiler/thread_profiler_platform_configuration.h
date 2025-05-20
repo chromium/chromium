@@ -8,9 +8,17 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/version_info/channel.h"
+
+// If enabled, ThreadProfilerPlatformConfiguration::IsEnabledForThread() will
+// return true for ThreadPoolWorker threads. This can use a normal feature
+// config instead of being part of the RelativePopulations experiment group
+// because the feature is only checked after the ThreadPool is created, at which
+// point field trials have been set up.
+BASE_DECLARE_FEATURE(kSamplingProfilerOnWorkerThreads);
 
 // Encapsulates the platform-specific configuration for the ThreadProfiler.
 //

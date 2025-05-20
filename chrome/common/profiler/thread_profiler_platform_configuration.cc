@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/profiler/stack_sampling_profiler.h"
@@ -13,6 +14,10 @@
 #include "build/build_config.h"
 #include "chrome/common/profiler/process_type.h"
 #include "components/sampling_profiler/process_type.h"
+
+BASE_FEATURE(kSamplingProfilerOnWorkerThreads,
+             "SamplingProfilerOnWorkerThreads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -119,10 +124,8 @@ bool DefaultPlatformConfiguration::IsEnabledForThread(
     sampling_profiler::ProfilerProcessType process,
     sampling_profiler::ProfilerThreadType thread,
     std::optional<version_info::Channel> release_channel) const {
-  // TODO(crbug.com/40226611): Remove exception once ThreadPoolWorker profile
-  // sampling is enabled for thread pool worker.
   if (thread == sampling_profiler::ProfilerThreadType::kThreadPoolWorker) {
-    return false;
+    return base::FeatureList::IsEnabled(kSamplingProfilerOnWorkerThreads);
   }
   // Enable for all supported threads.
   return true;
@@ -290,14 +293,13 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     sampling_profiler::ProfilerProcessType process,
     sampling_profiler::ProfilerThreadType thread,
     std::optional<version_info::Channel> release_channel) const {
-  if (!release_channel.has_value() || browser_test_mode_enabled()) {
-    return true;
+  if (!DefaultPlatformConfiguration::IsEnabledForThread(process, thread,
+                                                        release_channel)) {
+    return false;
   }
 
-  // TODO(crbug.com/40226611): Remove exception once ThreadPoolWorker profile
-  // sampling is enabled for thread pool worker.
-  if (thread == sampling_profiler::ProfilerThreadType::kThreadPoolWorker) {
-    return false;
+  if (!release_channel.has_value() || browser_test_mode_enabled()) {
+    return true;
   }
 
   switch (*release_channel) {
