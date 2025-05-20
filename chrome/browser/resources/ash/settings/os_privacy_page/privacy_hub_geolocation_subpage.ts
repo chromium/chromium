@@ -13,6 +13,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_butto
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../controls/controlled_button.js';
+import '../os_settings_icons.html.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
