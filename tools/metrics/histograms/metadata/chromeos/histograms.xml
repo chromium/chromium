@@ -1539,7 +1539,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.FirmwareUpdateUi.InstallFailedWithDurationAfterRequest.RequestId{DeviceRequestId}"
-    units="ms" expires_after="2025-06-28">
+    units="ms" expires_after="2026-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -1564,7 +1564,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.RequestReceived.Kind{Kind}"
-    enum="FirmwareUpdateDeviceRequestID" expires_after="2025-06-28">
+    enum="FirmwareUpdateDeviceRequestID" expires_after="2026-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
