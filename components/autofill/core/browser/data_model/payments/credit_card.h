@@ -83,6 +83,16 @@ class CreditCard : public FormGroup {
     kExternalIssuer = 2,
   };
 
+  // The source of the card benefits. This must stay in sync with the proto
+  // enum in autofill_specifics.proto.
+  enum class BenefitSource {
+    kSourceUnknown = 0,
+    kSourceAmex = 1,
+    kSourceBmo = 2,
+    kSourceCurinos = 3,
+    kMaxValue = kSourceCurinos,
+  };
+
   // Whether the card has been enrolled in the virtual card feature. This must
   // stay in sync with the proto enum in autofill_specifics.proto. A java
   // IntDef@ is generated from this.
@@ -160,6 +170,15 @@ class CreditCard : public FormGroup {
   static std::u16string GetObfuscatedStringForCardDigits(
       int obfuscation_length,
       const std::u16string& digits);
+
+  // Conversion between benefit source enum and benefit source in string.
+  // Benefit source in string can be fully migrated to the enum after
+  // feature flag `AutofillEnableCardBenefitsSourceSync` is default-enabled
+  // and cleaned up.
+  static std::string_view GetBenefitSourceStringFromEnum(
+      BenefitSource benefit_source_enum);
+  static BenefitSource GetEnumFromBenefitSourceString(
+      std::string_view benefit_source);
 
   CreditCard(const std::string& guid, const std::string& origin);
 

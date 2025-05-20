@@ -134,6 +134,11 @@ struct ServerCvc {
 //                      the card is not enrolled and is not eligible for
 //                      enrollment. kRetrievalUnenrolledAndEligible means the
 //                      card is not enrolled but is eligible for enrollment.
+//   card_benefit_source
+//                      The source of the saved benefit for this card. Can be a
+//                      card issuer or a third party platform represented by
+//                      an integer. Converted from CardBenefitSource enum from
+//                      the Chrome Sync response.
 // -----------------------------------------------------------------------------
 // server_card_cloud_token_data
 //                      Stores data related to Cloud Primary Account Number
@@ -596,6 +601,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
   bool MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
   bool MigrateToVersion136AddPaymentInstrumentCreationOptionsTable();
+  bool MigrateToVersion141AddCardBenefitSourceColumn();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.

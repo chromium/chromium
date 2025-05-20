@@ -764,7 +764,8 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     feature.InitWithFeatureStates(
         {{features::kAutofillEnableCvcStorageAndFilling,
           is_cvc_storage_flag_enabled},
-         {features::kAutofillEnableCardInfoRuntimeRetrieval, true}});
+         {features::kAutofillEnableCardInfoRuntimeRetrieval, true},
+         {features::kAutofillEnableCardBenefitsSourceSync, true}});
 
     std::vector<CreditCard> inputs;
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -784,6 +785,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     inputs[0].set_card_info_retrieval_enrollment_state(
         CreditCard::CardInfoRetrievalEnrollmentState::
             kRetrievalUnenrolledAndNotEligible);
+    inputs[0].set_benefit_source("");
 
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
     inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -805,6 +807,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     inputs[1].set_cvc(u"111");
     inputs[1].set_card_info_retrieval_enrollment_state(
         CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+    inputs[1].set_benefit_source(kCurinosCardBenefitSource);
 
     // The CVC modification dates are set to `now` during insertion.
     const time_t now = base::Time::Now().ToTimeT();
@@ -869,6 +872,9 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     EXPECT_EQ(GURL(), outputs[0]->product_terms_url());
     EXPECT_EQ(GURL("https://www.example_term.com"),
               outputs[1]->product_terms_url());
+
+    EXPECT_EQ("", outputs[0]->benefit_source());
+    EXPECT_EQ(kCurinosCardBenefitSource, outputs[1]->benefit_source());
 
     EXPECT_EQ(u"Fake description", outputs[0]->product_description());
 
@@ -1105,8 +1111,10 @@ TEST_F(PaymentsAutofillTableTest, RemoveWrongServerCardMetadata) {
 TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   // Set a card data.
   base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillEnableCardInfoRuntimeRetrieval);
+  feature.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardInfoRuntimeRetrieval,
+                            features::kAutofillEnableCardBenefitsSourceSync},
+      /*disabled_features=*/{});
   std::vector<CreditCard> inputs;
   inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "card1");
   inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -1127,6 +1135,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   inputs[0].set_product_description(u"Fake description");
   inputs[0].set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  inputs[0].set_benefit_source(kAmexCardBenefitSource);
 
   table_->SetServerCardsData(inputs);
 
@@ -1158,6 +1167,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   EXPECT_EQ(u"Fake description", outputs[0]->product_description());
   EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
             outputs[0]->card_info_retrieval_enrollment_state());
+  EXPECT_EQ(kAmexCardBenefitSource, outputs[0]->benefit_source());
 
   // Make sure no metadata was added.
   std::vector<PaymentsMetadata> metadata;
@@ -1174,10 +1184,40 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   EXPECT_EQ("card2", outputs[0]->server_id());
   EXPECT_EQ(CreditCard::Issuer::kIssuerUnknown, outputs[0]->card_issuer());
   EXPECT_EQ("", outputs[0]->issuer_id());
+  EXPECT_EQ("", outputs[0]->benefit_source());
 
   // Make sure no metadata was added.
   ASSERT_TRUE(table_->GetServerCardsMetadata(metadata));
   ASSERT_EQ(0U, metadata.size());
+}
+
+// Tests that benefit source out of enum range will be converted to the default
+// unknown source.
+TEST_F(PaymentsAutofillTableTest,
+       GetServerCreditCards_BenefitSourceOutOfRange) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableCardBenefitsSourceSync);
+
+  std::vector<CreditCard> inputs;
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "server id");
+  table_->SetServerCardsData(inputs);
+
+  // Insert a masked card entry with benefit source out of defined range.
+  sql::Statement update_masked_card(db_->GetSQLConnection()->GetUniqueStatement(
+      "UPDATE masked_credit_cards "
+      "SET card_benefit_source = ? "));
+  ASSERT_TRUE(update_masked_card.is_valid());
+  update_masked_card.BindInt(
+      0, static_cast<int>(CreditCard::BenefitSource::kMaxValue) + 1);
+  ASSERT_TRUE(update_masked_card.Run());
+
+  // Check the converted card has an unknown benefit source.
+  std::vector<std::unique_ptr<CreditCard>> outputs;
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
+  ASSERT_EQ(1U, outputs.size());
+  EXPECT_EQ(
+      CreditCard::BenefitSource::kSourceUnknown,
+      CreditCard::GetEnumFromBenefitSourceString(outputs[0]->benefit_source()));
 }
 
 // Tests that adding server cards data does not delete the existing metadata.

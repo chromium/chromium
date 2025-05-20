@@ -222,6 +222,37 @@ std::u16string CreditCard::GetObfuscatedStringForCardDigits(
   return obfuscated_string;
 }
 
+// static
+std::string_view CreditCard::GetBenefitSourceStringFromEnum(
+    BenefitSource benefit_source_enum) {
+  switch (benefit_source_enum) {
+    case BenefitSource::kSourceUnknown:
+      return "";
+    case BenefitSource::kSourceAmex:
+      return kAmexCardBenefitSource;
+    case BenefitSource::kSourceBmo:
+      return kBmoCardBenefitSource;
+    case BenefitSource::kSourceCurinos:
+      return kCurinosCardBenefitSource;
+  }
+  NOTREACHED();
+}
+
+// static
+CreditCard::BenefitSource CreditCard::GetEnumFromBenefitSourceString(
+    std::string_view benefit_source_string) {
+  if (benefit_source_string == kAmexCardBenefitSource) {
+    return BenefitSource::kSourceAmex;
+  }
+  if (benefit_source_string == kBmoCardBenefitSource) {
+    return BenefitSource::kSourceBmo;
+  }
+  if (benefit_source_string == kCurinosCardBenefitSource) {
+    return BenefitSource::kSourceCurinos;
+  }
+  return BenefitSource::kSourceUnknown;
+}
+
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
     : guid_(guid),
       origin_(origin),
