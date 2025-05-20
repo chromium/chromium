@@ -48,7 +48,7 @@ import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
-import "services/network/public/mojom/reconnect_event_observer.mojom";
+import "services/network/public/mojom/connection_change_observer_client.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
@@ -1487,7 +1487,7 @@ interface NetworkContext {
       NetworkAnonymizationKey network_anonymization_key,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       ConnectionKeepAliveConfig? keepalive_config,
-      pending_remote<ReconnectEventObserver>? reconnect_event_observer);
+      pending_remote<ConnectionChangeObserverClient>? observer_client);
 
   // Creates a P2PSocketManager instance, used for WebRTC.
   // `network_anonymization_key` is the network cache shard to associate with

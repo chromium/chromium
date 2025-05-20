@@ -104,7 +104,8 @@ class NavigationPredictorPreconnectClientBrowserTest
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
       bool success) override {
     // The tests do not care about preresolves to non-test server (e.g., hard
     // coded preconnects to google.com).
@@ -132,7 +133,7 @@ class NavigationPredictorPreconnectClientBrowserTest
  protected:
   int preresolve_done_count_ = 0;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  mojo::Remote<network::mojom::ReconnectEventObserver> observer_;
+  mojo::Remote<network::mojom::ConnectionChangeObserverClient> observer_;
 
  private:
   base::test::ScopedFeatureList feature_list_;

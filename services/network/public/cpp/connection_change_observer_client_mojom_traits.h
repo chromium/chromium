@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_RECONNECT_EVENT_OBSERVER_MOJOM_TRAITS_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_RECONNECT_EVENT_OBSERVER_MOJOM_TRAITS_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_CONNECTION_CHANGE_OBSERVER_CLIENT_MOJOM_TRAITS_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_CONNECTION_CHANGE_OBSERVER_CLIENT_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/reconnect_notifier.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom-shared.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom-shared.h"
 
 namespace mojo {
 
@@ -47,4 +47,4 @@ struct StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
 
 }  // namespace mojo
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_RECONNECT_EVENT_OBSERVER_MOJOM_TRAITS_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_CONNECTION_CHANGE_OBSERVER_CLIENT_MOJOM_TRAITS_H_

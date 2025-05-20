@@ -12,7 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -62,10 +62,11 @@ class WebContentVisibilityManager {
 
 // Class to preconnect to the user's default search engine at regular intervals.
 // Preconnects are made by |this| if the browser app is likely in foreground.
-class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
-                                 public WebContentVisibilityManager,
-                                 public KeyedService,
-                                 public network::mojom::ReconnectEventObserver {
+class SearchEnginePreconnector
+    : public predictors::PreconnectManager::Delegate,
+      public WebContentVisibilityManager,
+      public KeyedService,
+      public network::mojom::ConnectionChangeObserverClient {
  public:
   static bool ShouldBeEnabledAsKeyedService();
   static bool ShouldBeEnabledForOffTheRecord();
@@ -91,7 +92,7 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   void PreconnectFinished(
       std::unique_ptr<predictors::PreconnectStats> stats) override {}
 
-  // network::mojom::ReconnectEventObserver
+  // network::mojom::ConnectionChangeObserverClient
   void OnSessionClosed() override;
   void OnNetworkEvent(net::NetworkChangeEvent event) override;
   void OnConnectionFailed() override;
@@ -193,8 +194,9 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   std::optional<base::TimeTicks> last_preconnect_attempt_time_;
 
   // Receives and dispatches method calls to this implementation of the
-  // `network::mojom::ReconnectEventObserver` interface.
-  mojo::Receiver<network::mojom::ReconnectEventObserver> receiver_{this};
+  // `network::mojom::ConnectionChangeObserverClient` interface.
+  mojo::Receiver<network::mojom::ConnectionChangeObserverClient> receiver_{
+      this};
 
   // How many times the connection has consecutively failed. This is used for
   // exponential backoff the preconnect retries.

@@ -132,9 +132,9 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom-forward.h"
 #include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom-forward.h"
 #include "services/network/public/mojom/reporting_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -2257,8 +2257,8 @@ void NetworkContext::PreconnectSockets(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
-    mojo::PendingRemote<mojom::ReconnectEventObserver>
-        reconnect_event_observer) {
+    mojo::PendingRemote<mojom::ConnectionChangeObserverClient>
+        connection_change_observer_client) {
   DCHECK(!require_network_anonymization_key_ ||
          !network_anonymization_key.IsEmpty());
 
@@ -2289,14 +2289,15 @@ void NetworkContext::PreconnectSockets(
                                        user_agent);
   request_info.traffic_annotation = traffic_annotation;
 
-  if (keepalive_config.has_value() || reconnect_event_observer.is_valid()) {
+  if (keepalive_config.has_value() ||
+      connection_change_observer_client.is_valid()) {
     request_info.connection_management_config =
         net::ConnectionManagementConfig();
     request_info.connection_management_config->keep_alive_config =
         keepalive_config;
-    if (reconnect_event_observer.is_valid()) {
+    if (connection_change_observer_client.is_valid()) {
       auto change_observer = std::make_unique<ConnectionChangeObserver>(
-          std::move(reconnect_event_observer), this);
+          std::move(connection_change_observer_client), this);
 
       request_info.connection_management_config->connection_change_observer =
           change_observer.get();

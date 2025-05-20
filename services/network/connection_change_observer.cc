@@ -6,12 +6,13 @@
 #include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/reconnect_notifier.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 
 namespace network {
 
 ConnectionChangeObserver::ConnectionChangeObserver(
-    mojo::PendingRemote<network::mojom::ReconnectEventObserver> observer,
+    mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+        observer,
     raw_ptr<NetworkContext> network_context)
     : network_context_(std::move(network_context)) {
   observer_.Bind(std::move(observer));

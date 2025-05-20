@@ -20,7 +20,7 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/base/network_anonymization_key.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -89,8 +89,8 @@ struct PreresolveJob {
       net::NetworkTrafficAnnotationTag traffic_annotation_tag,
       std::optional<content::StoragePartitionConfig> storage_partition_config,
       std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-          reconnect_event_observer,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client,
       PreresolveInfo* info);
 
   PreresolveJob(const PreresolveJob&) = delete;
@@ -114,8 +114,8 @@ struct PreresolveJob {
   std::optional<content::StoragePartitionConfig> storage_partition_config;
 
   std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
-  mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-      reconnect_event_observer;
+  mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+      connection_change_observer_client;
   // Raw pointer usage is fine here because even though PreresolveJob can
   // outlive PreresolveInfo. It's only accessed on PreconnectManager class
   // context and PreresolveInfo lifetime is tied to PreconnectManager.
@@ -165,7 +165,8 @@ class PreconnectManager {
     virtual void OnPreresolveFinished(
         const GURL& url,
         const net::NetworkAnonymizationKey& network_anonymization_key,
-        mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
+        mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+            observer,
         bool success) {}
     virtual void OnProxyLookupFinished(
         const GURL& url,
@@ -211,8 +212,8 @@ class PreconnectManager {
       net::NetworkTrafficAnnotationTag traffic_annotation,
       const content::StoragePartitionConfig* storage_partition_config,
       std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-          reconnect_event_observer);
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client);
 
   // No additional jobs associated with the |url| will be queued after this.
   virtual void Stop(const GURL& url);
@@ -241,8 +242,8 @@ class PreconnectManager {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const content::StoragePartitionConfig* storage_partition_config,
       std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-          reconnect_event_observer) const;
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client) const;
   std::unique_ptr<ResolveHostClientImpl> PreresolveUrl(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,

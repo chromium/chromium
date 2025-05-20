@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/reconnect_event_observer_mojom_traits.h"
+#include "services/network/public/cpp/connection_change_observer_client_mojom_traits.h"
 
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/reconnect_notifier.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom-shared.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom-shared.h"
 
 namespace mojo {
 

@@ -97,7 +97,8 @@ class SearchEnginePreconnectorBrowserTest
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
       bool success) override {
     // Take the observer so that we can manually send mojo message.
     if (observer.is_valid() && !remote_.is_bound()) {
@@ -140,7 +141,7 @@ class SearchEnginePreconnectorBrowserTest
   std::map<GURL, int> preresolve_counts_;
   base::test::ScopedFeatureList feature_list_;
 
-  mojo::Remote<network::mojom::ReconnectEventObserver> remote_;
+  mojo::Remote<network::mojom::ConnectionChangeObserverClient> remote_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -654,7 +655,8 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
       bool success) override {
     // Take the observer so that we can manually send mojo message.
     if (observer.is_valid() && !remote_.is_bound()) {

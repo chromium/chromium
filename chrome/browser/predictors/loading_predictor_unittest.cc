@@ -69,8 +69,8 @@ class MockPreconnectManager : public PreconnectManager {
            net::NetworkTrafficAnnotationTag traffic_annotation,
            const content::StoragePartitionConfig*,
            std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
-           mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-               reconnect_event_observer));
+           mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+               observer_client));
   MOCK_METHOD1(Stop, void(const GURL& url));
 
   void Start(const GURL& url,

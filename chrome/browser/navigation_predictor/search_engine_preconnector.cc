@@ -29,7 +29,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/reconnect_notifier.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom-forward.h"
 
 namespace {
 
@@ -181,7 +180,7 @@ void SearchEnginePreconnector::PreconnectDSE() {
       is_browser_app_likely_in_foreground);
 
   std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
-  mojo::PendingRemote<network::mojom::ReconnectEventObserver> observer;
+  mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient> observer;
   if (SearchEnginePreconnect2Enabled()) {
     keepalive_config = net::ConnectionKeepAliveConfig();
     keepalive_config->idle_timeout_in_seconds =

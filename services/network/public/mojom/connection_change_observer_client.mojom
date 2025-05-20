@@ -23,10 +23,7 @@ enum NetworkChangeEvent {
 // An observer to monitor whether a reconnect-emitting event has happened in a
 // connection. It primary use is to notify the browser process of the events
 // from the //net layer.
-//
-// TODO(crbug.com/406022435): Update the interface name to
-// `ConnectionChangeObserverClient`.
-interface ReconnectEventObserver {
+interface ConnectionChangeObserverClient {
     // Notify that the underlying network session has been closed. This means
     // that a connection was established, but was later closed (e.g. because
     // of idle timeout, GoAway from server, etc.).

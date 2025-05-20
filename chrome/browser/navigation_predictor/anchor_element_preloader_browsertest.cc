@@ -118,7 +118,8 @@ class AnchorElementPreloaderBrowserTest
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
       bool success) override {
     if (url != GURL(kOrigin1) && url != GURL(kOrigin2)) {
       return;

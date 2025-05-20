@@ -15,8 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/reconnect_notifier.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom-shared.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -38,15 +37,17 @@ enum NotificationType {
 };
 }  // namespace
 
-class TestReconnectEventObserver : public mojom::ReconnectEventObserver {
+class TestConnectionChangeObserverClient
+    : public mojom::ConnectionChangeObserverClient {
  public:
-  explicit TestReconnectEventObserver() = default;
+  explicit TestConnectionChangeObserverClient() = default;
 
-  TestReconnectEventObserver(const TestReconnectEventObserver&) = delete;
-  TestReconnectEventObserver& operator=(const TestReconnectEventObserver&) =
-      delete;
+  TestConnectionChangeObserverClient(
+      const TestConnectionChangeObserverClient&) = delete;
+  TestConnectionChangeObserverClient& operator=(
+      const TestConnectionChangeObserverClient&) = delete;
 
-  ~TestReconnectEventObserver() override = default;
+  ~TestConnectionChangeObserverClient() override = default;
 
   void OnSessionClosed() override {
     session_closed_++;
@@ -79,11 +80,12 @@ class TestReconnectEventObserver : public mojom::ReconnectEventObserver {
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
-  mojo::PendingRemote<mojom::ReconnectEventObserver> GetPendingRemote() {
+  mojo::PendingRemote<mojom::ConnectionChangeObserverClient>
+  GetPendingRemote() {
     CHECK(!receiver_.is_bound());
     auto remote = receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(
-        base::BindOnce(&TestReconnectEventObserver::OnPipeDisconnected,
+        base::BindOnce(&TestConnectionChangeObserverClient::OnPipeDisconnected,
                        base::Unretained(this)));
     return remote;
   }
@@ -115,15 +117,15 @@ class TestReconnectEventObserver : public mojom::ReconnectEventObserver {
   NotificationType waiting_notification_type_;
   std::optional<net::NetworkChangeEvent> last_network_event_ = std::nullopt;
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-  mojo::Receiver<mojom::ReconnectEventObserver> receiver_{this};
+  mojo::Receiver<mojom::ConnectionChangeObserverClient> receiver_{this};
 };
 
 class ConnectionChangeObserverTest : public testing::Test {
  public:
   ConnectionChangeObserverTest()
-      : reconnect_event_observer_(
-            std::make_unique<TestReconnectEventObserver>()) {
-    auto remote = reconnect_event_observer_->GetPendingRemote();
+      : connection_change_observer_client_(
+            std::make_unique<TestConnectionChangeObserverClient>()) {
+    auto remote = connection_change_observer_client_->GetPendingRemote();
     connection_change_observer_ =
         std::make_unique<ConnectionChangeObserver>(std::move(remote), nullptr);
   }
@@ -139,8 +141,8 @@ class ConnectionChangeObserverTest : public testing::Test {
     connection_change_observer_.reset();
   }
 
-  TestReconnectEventObserver* reconnect_event_observer() {
-    return reconnect_event_observer_.get();
+  TestConnectionChangeObserverClient* connection_change_observer_client() {
+    return connection_change_observer_client_.get();
   }
 
   ConnectionChangeObserver* connection_change_observer() const {
@@ -151,30 +153,31 @@ class ConnectionChangeObserverTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestReconnectEventObserver> reconnect_event_observer_;
+  std::unique_ptr<TestConnectionChangeObserverClient>
+      connection_change_observer_client_;
   std::unique_ptr<ConnectionChangeObserver> connection_change_observer_;
 };
 
 TEST_F(ConnectionChangeObserverTest, OberverNotifiedOnSessionClosed) {
   connection_change_observer()->OnSessionClosed();
-  reconnect_event_observer()->WaitForNotification(
+  connection_change_observer_client()->WaitForNotification(
       NotificationType::kSessionClosed);
-  EXPECT_EQ(1, reconnect_event_observer()->session_closed());
+  EXPECT_EQ(1, connection_change_observer_client()->session_closed());
 }
 
 TEST_F(ConnectionChangeObserverTest, OberverNotifiedOnConnectionFailed) {
   connection_change_observer()->OnConnectionFailed();
-  reconnect_event_observer()->WaitForNotification(
+  connection_change_observer_client()->WaitForNotification(
       NotificationType::kConnectionFailed);
-  EXPECT_EQ(1, reconnect_event_observer()->connection_failed());
+  EXPECT_EQ(1, connection_change_observer_client()->connection_failed());
 }
 
 TEST_F(ConnectionChangeObserverTest, OberverNotifiedOnNetworkEvent) {
   connection_change_observer()->OnNetworkEvent(
       net::NetworkChangeEvent::kConnected);
-  reconnect_event_observer()->WaitForNotification(
+  connection_change_observer_client()->WaitForNotification(
       NotificationType::kNetworkChanged);
-  EXPECT_EQ(1, reconnect_event_observer()->network_event());
+  EXPECT_EQ(1, connection_change_observer_client()->network_event());
 }
 
 TEST_F(ConnectionChangeObserverTest, OberverNotifiedOnNetworkEventTypes) {
@@ -183,9 +186,10 @@ TEST_F(ConnectionChangeObserverTest, OberverNotifiedOnNetworkEventTypes) {
        typeInt++) {
     auto event = static_cast<net::NetworkChangeEvent>(typeInt);
     connection_change_observer()->OnNetworkEvent(event);
-    reconnect_event_observer()->WaitForNotification(
+    connection_change_observer_client()->WaitForNotification(
         NotificationType::kNetworkChanged);
-    auto network_event = reconnect_event_observer()->last_network_event();
+    auto network_event =
+        connection_change_observer_client()->last_network_event();
     ASSERT_TRUE(network_event.has_value());
     EXPECT_EQ(event, network_event.value());
   }
@@ -194,9 +198,9 @@ TEST_F(ConnectionChangeObserverTest, OberverNotifiedOnNetworkEventTypes) {
 TEST_F(ConnectionChangeObserverTest, NotifierDestructed) {
   // Manually remove the observer
   RemoveConnectionChangeObserver();
-  reconnect_event_observer()->WaitForNotification(
+  connection_change_observer_client()->WaitForNotification(
       NotificationType::kPipeDisconnected);
-  EXPECT_TRUE(reconnect_event_observer()->pipe_disconnected());
+  EXPECT_TRUE(connection_change_observer_client()->pipe_disconnected());
 }
 
 class ConnectionChangeObserverWithNotifierTest
@@ -225,25 +229,25 @@ class ConnectionChangeObserverWithNotifierTest
 TEST_F(ConnectionChangeObserverWithNotifierTest,
        OberverNotifiedOnSessionClosed) {
   notifier()->OnSessionClosed();
-  reconnect_event_observer()->WaitForNotification(
+  connection_change_observer_client()->WaitForNotification(
       NotificationType::kSessionClosed);
-  EXPECT_EQ(1, reconnect_event_observer()->session_closed());
+  EXPECT_EQ(1, connection_change_observer_client()->session_closed());
 }
 
 TEST_F(ConnectionChangeObserverWithNotifierTest,
        OberverNotifiedOnConnectionFailed) {
   notifier()->OnConnectionFailed();
-  reconnect_event_observer()->WaitForNotification(
+  connection_change_observer_client()->WaitForNotification(
       NotificationType::kConnectionFailed);
-  EXPECT_EQ(1, reconnect_event_observer()->connection_failed());
+  EXPECT_EQ(1, connection_change_observer_client()->connection_failed());
 }
 
 TEST_F(ConnectionChangeObserverWithNotifierTest,
        OberverNotifiedOnNetworkEvent) {
   notifier()->OnNetworkEvent(net::NetworkChangeEvent::kConnected);
-  reconnect_event_observer()->WaitForNotification(
+  connection_change_observer_client()->WaitForNotification(
       NotificationType::kNetworkChanged);
-  EXPECT_EQ(1, reconnect_event_observer()->network_event());
+  EXPECT_EQ(1, connection_change_observer_client()->network_event());
 }
 
 TEST_F(ConnectionChangeObserverWithNotifierTest,
@@ -253,9 +257,10 @@ TEST_F(ConnectionChangeObserverWithNotifierTest,
        typeInt++) {
     auto event = static_cast<net::NetworkChangeEvent>(typeInt);
     notifier()->OnNetworkEvent(event);
-    reconnect_event_observer()->WaitForNotification(
+    connection_change_observer_client()->WaitForNotification(
         NotificationType::kNetworkChanged);
-    auto network_event = reconnect_event_observer()->last_network_event();
+    auto network_event =
+        connection_change_observer_client()->last_network_event();
     ASSERT_TRUE(network_event.has_value());
     EXPECT_EQ(event, network_event.value());
   }

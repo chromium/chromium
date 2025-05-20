@@ -16,8 +16,8 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 
 AccountCapabilitiesFetcherFactoryGaia::AccountCapabilitiesFetcherFactoryGaia(
     ProfileOAuth2TokenService* token_service,

@@ -23,9 +23,9 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "url/gurl.h"
 
 namespace network_hints {

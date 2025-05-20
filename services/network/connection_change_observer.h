@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/reconnect_notifier.h"
 #include "services/network/network_context.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 
 namespace network {
 
@@ -18,7 +18,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ConnectionChangeObserver
     : public net::ConnectionChangeNotifier::Observer {
  public:
   ConnectionChangeObserver(
-      mojo::PendingRemote<network::mojom::ReconnectEventObserver> observer,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          observer,
       raw_ptr<NetworkContext> network_context);
   ~ConnectionChangeObserver() override;
 
@@ -31,7 +32,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ConnectionChangeObserver
   // called when the underlying mojo pipe has been disconnected.
   void OnDisconnectEvent();
 
-  mojo::Remote<network::mojom::ReconnectEventObserver> observer_;
+  mojo::Remote<network::mojom::ConnectionChangeObserverClient> observer_;
 
   raw_ptr<NetworkContext> network_context_;
 };

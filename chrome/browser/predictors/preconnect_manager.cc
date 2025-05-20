@@ -23,8 +23,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 
 namespace predictors {
 
@@ -59,8 +59,8 @@ PreresolveJob::PreresolveJob(
     net::NetworkTrafficAnnotationTag traffic_annotation_tag,
     std::optional<content::StoragePartitionConfig> storage_partition_config,
     std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
-    mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-        reconnect_event_observer,
+    mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+        connection_change_observer_client,
     PreresolveInfo* info)
     : url(url),
       num_sockets(num_sockets),
@@ -69,7 +69,8 @@ PreresolveJob::PreresolveJob(
       traffic_annotation_tag(std::move(traffic_annotation_tag)),
       storage_partition_config(std::move(storage_partition_config)),
       keepalive_config(std::move(keepalive_config)),
-      reconnect_event_observer(std::move(reconnect_event_observer)),
+      connection_change_observer_client(
+          std::move(connection_change_observer_client)),
       info(info),
       creation_time(base::TimeTicks::Now()) {
   DCHECK_GE(num_sockets, 0);
@@ -190,8 +191,8 @@ void PreconnectManager::StartPreconnectUrl(
     net::NetworkTrafficAnnotationTag traffic_annotation,
     const content::StoragePartitionConfig* storage_partition_config,
     std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
-    mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-        reconnect_event_observer) {
+    mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+        connection_change_observer_client) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled())
     return;
@@ -201,7 +202,7 @@ void PreconnectManager::StartPreconnectUrl(
       url.DeprecatedGetOriginAsURL(), 1, allow_credentials,
       std::move(network_anonymization_key), traffic_annotation,
       base::OptionalFromPtr(storage_partition_config),
-      std::move(keepalive_config), std::move(reconnect_event_observer),
+      std::move(keepalive_config), std::move(connection_change_observer_client),
       nullptr));
   queued_jobs_.push_front(job_id);
 
@@ -226,8 +227,8 @@ void PreconnectManager::PreconnectUrl(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const content::StoragePartitionConfig* storage_partition_config,
     std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
-    mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-        reconnect_event_observer) const {
+    mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+        connection_change_observer_client) const {
   DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
   if (observer_)
@@ -251,7 +252,8 @@ void PreconnectManager::PreconnectUrl(
                         : network::mojom::CredentialsMode::kOmit,
       network_anonymization_key,
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
-      std::move(keepalive_config), std::move(reconnect_event_observer));
+      std::move(keepalive_config),
+      std::move(connection_change_observer_client));
 }
 
 std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(
@@ -341,7 +343,8 @@ void PreconnectManager::OnPreresolveFinished(PreresolveJobId job_id,
 
   if (observer_)
     observer_->OnPreresolveFinished(job->url, job->network_anonymization_key,
-                                    job->reconnect_event_observer, success);
+                                    job->connection_change_observer_client,
+                                    success);
 
   job->resolve_host_client = nullptr;
   FinishPreresolveJob(job_id, success);
@@ -382,7 +385,7 @@ void PreconnectManager::FinishPreresolveJob(PreresolveJobId job_id,
                   job->network_anonymization_key, job->traffic_annotation_tag,
                   base::OptionalToPtr(job->storage_partition_config),
                   std::move(job->keepalive_config),
-                  std::move(job->reconnect_event_observer));
+                  std::move(job->connection_change_observer_client));
   }
 
   PreresolveInfo* info = job->info;

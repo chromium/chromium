@@ -29,7 +29,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,8 +174,8 @@ class MockNetworkContext : public network::TestNetworkContext {
           const net::NetworkAnonymizationKey& network_anonymization_key,
           const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
           const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
-          mojo::PendingRemote<network::mojom::ReconnectEventObserver>
-              reconnect_event_observer));
+          mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+              observer_client));
 
  private:
   bool IsHangingHost(const GURL& url) const {
