@@ -234,7 +234,12 @@ android_library("java") {
   if (enable_extensions_core) {
     sources += [
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonProperties.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonViewBinder.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListCoordinator.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarManagerImpl.java",
     ]
   }
 }
@@ -335,6 +340,7 @@ android_resources("java_resources") {
     "java/res/layout/address_bar_preference.xml",
     "java/res/layout/bottom_control_container.xml",
     "java/res/layout/control_container.xml",
+    "java/res/layout/extension_action_button.xml",
     "java/res/layout/extension_toolbar_container.xml",
     "java/res/layout/home_page_buttons_layout.xml",
     "java/res/layout/menu_button.xml",

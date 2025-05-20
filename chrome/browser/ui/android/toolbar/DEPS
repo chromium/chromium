@@ -9,4 +9,5 @@ include_rules = [
   "+components/omnibox/browser/android",
   "+components/security_state/content/android",
   "+content/public/android",
+  "+extensions/android",
 ]

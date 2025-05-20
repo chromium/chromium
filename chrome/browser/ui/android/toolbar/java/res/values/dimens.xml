@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="toolbar_tab_count_text_size_1_digit">11dp</dimen>
     <dimen name="toolbar_tab_count_text_size_2_digit">9dp</dimen>
 
@@ -75,4 +75,8 @@ found in the LICENSE file.
     <dimen name="optional_toolbar_tablet_button_padding_top">0dp</dimen>
     <dimen name="optional_toolbar_tablet_button_with_error_badge_padding_start">4dp</dimen>
     <dimen name="optional_toolbar_tablet_button_with_error_badge_padding_top">4dp</dimen>
+
+    <!-- Extension Action Button Menu dimensions -->
+    <dimen name="extension_action_button_list_menu_width" tools:ignore="UnusedResources">300dp</dimen>
+
 </resources>
