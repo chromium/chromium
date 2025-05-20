@@ -20,6 +20,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -223,7 +224,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   gfx::Rect original_clip_rect_;
 
   // Removes clipping on `window_` during destruction in the case it was not
-  // removed in `RestoreWindw()`. See destructor for more information.
+  // removed in `RestoreWindow()`. See destructor for more information.
   bool reset_clip_on_shutdown_ = true;
 
   std::unique_ptr<ScopedOverviewHideWindows> hidden_transient_children_;
@@ -233,6 +234,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_;
   std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_during_drag_;
+
+  std::optional<gfx::RRectF> synchronized_bounds_at_origin_;
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

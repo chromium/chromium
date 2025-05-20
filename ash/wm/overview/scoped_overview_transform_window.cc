@@ -573,10 +573,17 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   wm::TranslateRectFromScreen(window_->GetRootWindow(),
                               &contents_bounds_in_root);
 
-  const gfx::RRectF rounded_contents_bounds(
-      contents_bounds_in_root,
+  const gfx::RoundedCornersF contents_rounded_corners =
       window_util::GetMiniWindowRoundedCorners(
-          window(), /*include_header_rounding=*/false));
+          window(), /*include_header_rounding=*/false);
+
+  const gfx::RRectF rounded_contents_bounds(contents_bounds_in_root,
+                                            contents_rounded_corners);
+  const gfx::RRectF rounded_contents_bounds_at_origin(
+      gfx::RectF(contents_bounds_in_root.size()), contents_rounded_corners);
+  if (synchronized_bounds_at_origin_ == rounded_contents_bounds_at_origin) {
+    return;
+  }
 
   auto window_tree_synchronizer([&]() {
     return window_tree_synchronizer_during_drag_
@@ -597,6 +604,8 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
         return window->GetProperty(kHideInOverviewKey) ||
                window->GetProperty(kExcludeFromTransientTreeTransformKey);
       }));
+
+  synchronized_bounds_at_origin_ = rounded_contents_bounds_at_origin;
 }
 
 void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
