@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
@@ -343,6 +344,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         int newTopHeight;
         int controlContainerHeight = mControlContainer.getToolbarHeight();
 
+        assert !((ViewGroup) mToolbarProgressBarContainer.getParent()).isInLayout()
+                : "Cannot change position during CoordinatorLayout layout pass";
         if (newControlsPosition == ControlsPosition.TOP) {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() + controlContainerHeight;
             mLayerVisibility = LayerVisibility.HIDDEN;
@@ -353,6 +356,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             progressBarLayoutParams.setAnchorId(mControlContainer.getView().getId());
             progressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
             progressBarLayoutParams.gravity = Gravity.TOP;
+            mToolbarProgressBarContainer.setLayoutParams(progressBarLayoutParams);
         } else {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
             mLayerVisibility = LayerVisibility.VISIBLE;
@@ -361,6 +365,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             progressBarLayoutParams.setAnchorId(View.NO_ID);
             progressBarLayoutParams.anchorGravity = Gravity.NO_GRAVITY;
             progressBarLayoutParams.gravity = Gravity.BOTTOM;
+            mToolbarProgressBarContainer.setLayoutParams(progressBarLayoutParams);
         }
 
         boolean animatingToTop = stateTransition == StateTransition.ANIMATE_TO_TOP;

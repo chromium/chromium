@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
@@ -234,6 +235,7 @@ public class ToolbarPositionControllerTest {
     @Mock private ControlContainer mControlContainer;
     @Mock private View mControlContainerView;
     @Mock private View mProgressBarContainer;
+    @Mock private ViewGroup mProgressBarParent;
 
     private Context mContext;
     private final ObservableSupplierImpl<Boolean> mIsNtpShowing =
@@ -283,6 +285,7 @@ public class ToolbarPositionControllerTest {
         doReturn(mControlContainerView).when(mControlContainer).getView();
         doReturn(CONTROL_CONTAINER_ID).when(mControlContainerView).getId();
         doReturn(mProgressBarLayoutParams).when(mProgressBarContainer).getLayoutParams();
+        doReturn(mProgressBarParent).when(mProgressBarContainer).getParent();
         mContext = ContextUtils.getApplicationContext();
         doReturn(mContext.getResources()).when(mProgressBarContainer).getResources();
         mWindowAndroid = new WindowAndroid(mContext, false);
@@ -404,9 +407,11 @@ public class ToolbarPositionControllerTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR + ":default_to_top/false")
     public void testDefaultBottom() {
         assertControlsAtBottom();
+        verify(mProgressBarContainer).setLayoutParams(mProgressBarLayoutParams);
 
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
         assertControlsAtTop();
+        verify(mProgressBarContainer, times(2)).setLayoutParams(mProgressBarLayoutParams);
     }
 
     @Test
