@@ -71,9 +71,12 @@ bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
   }
 
   std::vector<std::string> allowed_ro_paths = {
-      // RO access to /data because there may be sub-directories that don't
+      // RO access to /data/app because there may be sub-directories that don't
       // exist yet at policy creation.
-      "/data", "/proc", "/sys", "/var"};
+      "/data/app",
+      // Allow read-only access to /proc/self. This is needed for the process
+      // to introspect its own state.
+      "/proc/self", "/sys", "/var"};
   uint64_t ro_access =
       LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_READ_DIR;
   if (!AddRulesToPolicy(ruleset_fd.get(), allowed_ro_paths, ro_access)) {
