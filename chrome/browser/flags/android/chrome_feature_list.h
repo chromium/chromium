@@ -166,6 +166,7 @@ BASE_DECLARE_FEATURE(kNotificationTrampoline);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
 BASE_DECLARE_FEATURE(kAvoidRelayoutDuringFocusAnimation);
 BASE_DECLARE_FEATURE(kShortCircuitUnfocusAnimation);
+BASE_DECLARE_FEATURE(kShowHomeButtonPolicyAndroid);
 BASE_DECLARE_FEATURE(kShowNewTabAnimations);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);

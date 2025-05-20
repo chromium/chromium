@@ -550,6 +550,7 @@ public abstract class ChromeFeatureList {
             "SensitiveContentWhileSwitchingTabs";
     public static final String SETTINGS_SINGLE_ACTIVITY = "SettingsSingleActivity";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
+    public static final String SHOW_HOME_BUTTON_POLICY_ANDROID = "ShowHomeButtonPolicyAndroid";
     public static final String SHOW_NEW_TAB_ANIMATIONS = "ShowNewTabAnimations";
     public static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS =
             "ShowWarningsForSuspiciousNotifications";
@@ -851,6 +852,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
+    public static final CachedFlag sShowHomeButtonPolicyAndroid =
+            newCachedFlag(SHOW_HOME_BUTTON_POLICY_ANDROID, false);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabletTabStripAnimation =
@@ -993,6 +996,7 @@ public abstract class ChromeFeatureList {
                     sSkipIsolatedSplitPreload,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
+                    sShowHomeButtonPolicyAndroid,
                     sTabClosureMethodRefactor,
                     sTabletTabStripAnimation,
                     sTabStateFlatBuffer,
