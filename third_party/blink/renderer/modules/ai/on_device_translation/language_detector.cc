@@ -456,6 +456,10 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
 
   HeapVector<Member<LanguageDetectionResult>> results;
   for (const auto& prediction : predictions) {
+    if (prediction.language == "unknown") {
+      continue;
+    }
+
     CHECK_GE(prediction.score, 0);
     CHECK_LE(prediction.score, 1 - cumulative_confidence);
     CHECK_LE(prediction.score, last_score);
