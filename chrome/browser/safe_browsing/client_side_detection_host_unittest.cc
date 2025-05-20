@@ -2233,7 +2233,7 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 }
 
 TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
-       AsyncCheckTrackerNotTriggerClassificationRequestAlreadyPhishing) {
+       AsyncCheckTrackerTriggersClassificationRequestOnLocalModelPhishing) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -2269,19 +2269,120 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 
   SetRTResponseInCacheManager(/*is_enforced=*/true);
 
+  // get_valid_cached_result is set to nullptr, because the request type is not
+  // TRIGGER_MODELS. Force request triggers also bypass the CSD allowlist.
+  ExpectPreClassificationChecks(
+      example_url, &kFalse, /*match_csd_allowlist=*/nullptr,
+      /*get_valid_cached_result=*/nullptr, &kFalse, &kFalse);
+  // Calling this should trigger preclassification again, because local model
+  // phishy verdict is not a condition to skip the async check force request
+  // because the force request ping will contain information that the page load
+  // request may have missed.
+  CompleteAsyncCheck();
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb2;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb2));
+  task_environment()->RunUntilIdle();
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb2;
+  // The verdict's is_phishing is false, but we will still send a ping!
+  ClientPhishingRequest verdict2;
+  verdict2.set_url(example_url.spec());
+  verdict2.set_client_score(0.8f);
+  verdict2.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 _, _, "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb2));
+
+  ASSERT_FALSE(token_cb2.is_null());
+  std::move(token_cb2).Run("fake_access_token_for_force_request");
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  task_environment()->RunUntilIdle();
+
+  // Enforce request should be triggered again, because the local model will
+  // think it's phishy, but force request pings can contain other information,
+  // such as the LLM information.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult::kTriggered,
+      1);
+}
+
+TEST_F(
+    ClientSideDetectionRTLookupResponseForceRequestTest,
+    AsyncCheckTrackerNotTriggerClassificationRequestOnTriggerModelPingConvertedToForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  GURL example_url("http://suspiciousurl.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
+  ExpectPreClassificationChecks(
+      /*url=*/example_url, /*is_private=*/&kFalse,
+      /*match_csd_allowlist=*/&kFalse, /*get_valid_cached_result=*/&kFalse,
+      /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.5f);
+  verdict.set_is_phishing(false);
+
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb));
+  // Setup RTResponse in cache prior to calling PhishingDetectionDone.
+  SetRTResponseInCacheManager(/*is_enforced=*/true);
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+  task_environment()->RunUntilIdle();
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_force_request");
+
+  // Check that the page is phishing and triggers a ping.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     true, 1);
+
   CompleteAsyncCheck();
   task_environment()->RunUntilIdle();
 
-  // Enforce request should not be triggered again, because the page is already
-  // phishing and the ping is already sent.
+  // Enforce request should NOT be triggered again, because the page load ping
+  // has been converted to a force request ping.
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.ClientSideDetectionTypeRequest",
-      ClientSideDetectionType::FORCE_REQUEST, 0);
+      ClientSideDetectionType::FORCE_REQUEST, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.ClientSideDetection."
       "AsyncCheckTriggerForceRequestResult",
       ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult::
-          kSkippedTriggerModelsPingNotSkipped,
+          kSkippedTriggerModelsPingSentAsForceRequest,
       1);
 }
 

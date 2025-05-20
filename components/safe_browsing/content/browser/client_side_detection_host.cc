@@ -773,7 +773,7 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  trigger_models_request_skipped_ = false;
+  trigger_model_request_sent_as_force_request_ = false;
   MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
 }
 
@@ -799,19 +799,21 @@ void ClientSideDetectionHost::OnPermissionRequestManagerDestructed() {
 }
 
 void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckCompleted() {
-  // If TRIGGER_MODELS ping is not skipped, do not allow async check to trigger
-  // another request. This is to avoid duplicate pings.
-  if (!trigger_models_request_skipped_) {
-    RecordAsyncCheckTriggerForceRequestResult(
-        AsyncCheckTriggerForceRequestResult::
-            kSkippedTriggerModelsPingNotSkipped);
-    return;
-  }
   if (!HasForceRequestFromRtUrlLookup()) {
     RecordAsyncCheckTriggerForceRequestResult(
         AsyncCheckTriggerForceRequestResult::kSkippedNotForced);
     return;
   }
+
+  // If a TRIGGER_MODELS requested ping is sent as a FORCE_REQUEST, do not allow
+  // async check to trigger another request. This is to avoid duplicate pings.
+  if (trigger_model_request_sent_as_force_request_) {
+    RecordAsyncCheckTriggerForceRequestResult(
+        AsyncCheckTriggerForceRequestResult::
+            kSkippedTriggerModelsPingSentAsForceRequest);
+    return;
+  }
+
   RecordAsyncCheckTriggerForceRequestResult(
       AsyncCheckTriggerForceRequestResult::kTriggered);
   MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
@@ -1160,18 +1162,21 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     debugging_metadata->set_forced_request(force_request_from_rt_url_lookup);
   }
 
+  trigger_model_request_sent_as_force_request_ =
+      force_request_from_rt_url_lookup;
+
   // We only send a phishing verdict if the verdict is phishing, the client
   // side detection type is |TRIGGER_MODELS|, AND the request is not a sample
   // ping. The detection type can be changed to FORCE_REQUEST from a
   // RTLookupResponse for a SBER/ESB user. This can also be changed when the
   // request is made from a notification permission prompt, keyboard & pointer
   // lock API.
-  trigger_models_request_skipped_ =
+  bool trigger_models_request_skipped =
       !verdict->is_phishing() &&
       verdict->client_side_detection_type() ==
           ClientSideDetectionType::TRIGGER_MODELS &&
       verdict->report_type() == ClientPhishingRequest::FULL_REPORT;
-  if (trigger_models_request_skipped_) {
+  if (trigger_models_request_skipped) {
     return;
   }
 

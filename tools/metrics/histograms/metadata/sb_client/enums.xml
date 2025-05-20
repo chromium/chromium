@@ -47,6 +47,9 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="Classification is not triggered because the URL is not forced by
              real-time URL check"/>
+  <int value="3"
+      label="Classification is not triggered because the trigger model ping
+             is converted to force request request type ping"/>
 </enum>
 
 <enum name="BooleanForceRequest">

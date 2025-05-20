@@ -61,9 +61,10 @@ class ClientSideDetectionHost
   // numeric values should never be reused.
   enum class AsyncCheckTriggerForceRequestResult {
     kTriggered = 0,
-    kSkippedTriggerModelsPingNotSkipped = 1,
+    kSkippedTriggerModelsPingNotSkipped = 1,  // DEPRECATED
     kSkippedNotForced = 2,
-    kMaxValue = kSkippedNotForced,
+    kSkippedTriggerModelsPingSentAsForceRequest = 3,
+    kMaxValue = kSkippedTriggerModelsPingSentAsForceRequest,
   };
 
   // A callback via which the client of this component indicates whether the
@@ -407,9 +408,10 @@ class ClientSideDetectionHost
                           permissions::PermissionRequestManager::Observer>
       permission_request_observation_{this};
 
-  // A boolean indicates whether TRIGGER_MODELS request is skipped. This is
-  // used to decide whether async check is allowed to trigger FORCE_REQUEST.
-  bool trigger_models_request_skipped_ = false;
+  // A boolean indicates whether TRIGGER_MODELS request is sent via
+  // FORCE_REQUEST. This is used to decide whether async check is allowed to
+  // trigger FORCE_REQUEST.
+  bool trigger_model_request_sent_as_force_request_ = false;
 
   // Modified through tests only. Initial value is set to the const
   // kProbabilityForAcceptingHCAllowlistTrigger.
