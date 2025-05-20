@@ -8,14 +8,14 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BaseDialogMixin} from './base_dialog_mixin.js';
 import {PrivacySandboxNotice} from './notice.mojom-webui.js';
-import {getHtml} from './three_ads_apis.html.js';
+import {getHtml} from './three_ads_apis_notice.html.js';
 
-const ThreeAdsApisBase =
+const ThreeAdsApisNoticeBase =
     BaseDialogMixin(CrLitElement, PrivacySandboxNotice.kThreeAdsApisNotice);
 
-export class ThreeAdsApis extends ThreeAdsApisBase {
+export class ThreeAdsApisNotice extends ThreeAdsApisNoticeBase {
   static get is() {
-    return 'three-ads-apis';
+    return 'three-ads-apis-notice';
   }
 
   override render() {
@@ -25,8 +25,8 @@ export class ThreeAdsApis extends ThreeAdsApisBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'three-ads-apis': ThreeAdsApis;
+    'three-ads-apis-notice': ThreeAdsApisNotice;
   }
 }
 
-customElements.define(ThreeAdsApis.is, ThreeAdsApis);
+customElements.define(ThreeAdsApisNotice.is, ThreeAdsApisNotice);

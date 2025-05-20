@@ -8,14 +8,14 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BaseDialogMixin} from './base_dialog_mixin.js';
 import {PrivacySandboxNotice} from './notice.mojom-webui.js';
-import {getHtml} from './topics_consent.html.js';
+import {getHtml} from './topics_consent_notice.html.js';
 
-const TopicsConsentBase =
+const TopicsConsentNoticeBase =
     BaseDialogMixin(CrLitElement, PrivacySandboxNotice.kTopicsConsentNotice);
 
-export class TopicsConsent extends TopicsConsentBase {
+export class TopicsConsentNotice extends TopicsConsentNoticeBase {
   static get is() {
-    return 'topics-consent';
+    return 'topics-consent-notice';
   }
 
   override render() {
@@ -25,8 +25,8 @@ export class TopicsConsent extends TopicsConsentBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'topics-consent': TopicsConsent;
+    'topics-consent-notice': TopicsConsentNotice;
   }
 }
 
-customElements.define(TopicsConsent.is, TopicsConsent);
+customElements.define(TopicsConsentNotice.is, TopicsConsentNotice);

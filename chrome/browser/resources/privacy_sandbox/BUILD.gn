@@ -41,13 +41,13 @@ build_webui("build") {
     "base_dialog_app.html.ts",
     "base_dialog_app.ts",
     "base_dialog_browser_proxy.ts",
-    "topics_consent.html.ts",
-    "topics_consent.ts",
+    "topics_consent_notice.html.ts",
+    "topics_consent_notice.ts",
     "base_dialog_mixin.ts",
-    "protected_audience_measurement.html.ts",
-    "protected_audience_measurement.ts",
-    "three_ads_apis.html.ts",
-    "three_ads_apis.ts",
+    "protected_audience_measurement_notice.html.ts",
+    "protected_audience_measurement_notice.ts",
+    "three_ads_apis_notice.html.ts",
+    "three_ads_apis_notice.ts",
   ]
 
   css_files = [

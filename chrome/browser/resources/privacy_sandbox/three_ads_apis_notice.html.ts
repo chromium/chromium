@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ThreeAdsApis} from './three_ads_apis.js';
+import type {ThreeAdsApisNotice} from './three_ads_apis_notice.js';
 
-export function getHtml(this: ThreeAdsApis) {
+export function getHtml(this: ThreeAdsApisNotice) {
   return html`
     <div>Three Ads Apis Notice Placeholder</div>
     <cr-button id="ackButton" @click="${this.onAck}">

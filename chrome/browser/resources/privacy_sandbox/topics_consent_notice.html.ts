@@ -4,11 +4,11 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TopicsConsent} from './topics_consent.js';
+import type {TopicsConsentNotice} from './topics_consent_notice.js';
 
-export function getHtml(this: TopicsConsent) {
+export function getHtml(this: TopicsConsentNotice) {
   return html`
-    <div>Topics Consent Placeholder</div>
+    <div>Topics Consent Notice Placeholder</div>
     <cr-button id="acceptButton" @click="${this.onOptIn}">
       Accept Placeholder
     </cr-button>

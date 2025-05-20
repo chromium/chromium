@@ -47,16 +47,16 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PrivacySandboxBaseDialogMochaTest,
                          testing::Values(WindowSize::kSmall, WindowSize::kBig));
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, TopicsConsent) {
-  RunTestSuite("TopicsConsent");
+IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, TopicsConsentNotice) {
+  RunTestSuite("TopicsConsentNotice");
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest,
-                       ProtectedAudienceMeasurement) {
-  RunTestSuite("ProtectedAudienceMeasurement");
+                       ProtectedAudienceMeasurementNotice) {
+  RunTestSuite("ProtectedAudienceMeasurementNotice");
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, ThreeAdsApis) {
-  RunTestSuite("ThreeAdsApis");
+IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, ThreeAdsApisNotice) {
+  RunTestSuite("ThreeAdsApisNotice");
 }
 }  // namespace

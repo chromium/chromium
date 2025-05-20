@@ -8,15 +8,15 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BaseDialogMixin} from './base_dialog_mixin.js';
 import {PrivacySandboxNotice} from './notice.mojom-webui.js';
-import {getHtml} from './protected_audience_measurement.html.js';
+import {getHtml} from './protected_audience_measurement_notice.html.js';
 
-const ProtectedAudienceMeasurementBase = BaseDialogMixin(
+const ProtectedAudienceMeasurementNoticeBase = BaseDialogMixin(
     CrLitElement, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice);
 
-export class ProtectedAudienceMeasurement extends
-    ProtectedAudienceMeasurementBase {
+export class ProtectedAudienceMeasurementNotice extends
+    ProtectedAudienceMeasurementNoticeBase {
   static get is() {
-    return 'protected-audience-measurement';
+    return 'protected-audience-measurement-notice';
   }
 
   override render() {
@@ -26,9 +26,9 @@ export class ProtectedAudienceMeasurement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'protected-audience-measurement': ProtectedAudienceMeasurement;
+    'protected-audience-measurement-notice': ProtectedAudienceMeasurementNotice;
   }
 }
 
 customElements.define(
-    ProtectedAudienceMeasurement.is, ProtectedAudienceMeasurement);
+    ProtectedAudienceMeasurementNotice.is, ProtectedAudienceMeasurementNotice);

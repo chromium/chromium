@@ -10,21 +10,21 @@ import {PrivacySandboxNotice} from './notice.mojom-webui.js';
 export function getHtml(this: BaseDialogApp) {
   return html`
     <cr-view-manager id="viewManager">
-      <topics-consent id="${
+      <topics-consent-notice id="${
       this.getNoticeId(PrivacySandboxNotice.kTopicsConsentNotice)}"
           slot="view"
           fill-content>
-      </topics-consent>
-      <protected-audience-measurement id="${
+      </topics-consent-notice>
+      <protected-audience-measurement-notice id="${
       this.getNoticeId(
           PrivacySandboxNotice.kProtectedAudienceMeasurementNotice)}"
           slot="view"
           fill-content>
-      </protected-audience-measurement>
-      <three-ads-apis id="${
+      </protected-audience-measurement-notice>
+      <three-ads-apis-notice id="${
       this.getNoticeId(
           PrivacySandboxNotice.kThreeAdsApisNotice)}" slot="view" fill-content>
-      </three-ads-apis
+      </three-ads-apis-notice>
     </cr-view-manager>
   `;
 }

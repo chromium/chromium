@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://privacy-sandbox-base-dialog/base_dialog_app.js';
-import 'chrome://privacy-sandbox-base-dialog/topics_consent.js';
+import 'chrome://privacy-sandbox-base-dialog/topics_consent_notice.js';
+import 'chrome://privacy-sandbox-base-dialog/protected_audience_measurement_notice.js';
+import 'chrome://privacy-sandbox-base-dialog/three_ads_apis_notice.js';
 
 import type {BaseDialogApp} from 'chrome://privacy-sandbox-base-dialog/base_dialog_app.js';
 import {BaseDialogBrowserProxy} from 'chrome://privacy-sandbox-base-dialog/base_dialog_browser_proxy.js';
@@ -42,11 +44,11 @@ async function setupBaseDialogApp():
 function getNoticeComponentSelector(notice: PrivacySandboxNotice) {
   switch (notice) {
     case PrivacySandboxNotice.kTopicsConsentNotice:
-      return 'topics-consent';
+      return 'topics-consent-notice';
     case PrivacySandboxNotice.kProtectedAudienceMeasurementNotice:
-      return 'protected-audience-measurement';
+      return 'protected-audience-measurement-notice';
     case PrivacySandboxNotice.kThreeAdsApisNotice:
-      return 'three-ads-apis';
+      return 'three-ads-apis-notice';
     default:
       return '';
   }
@@ -77,7 +79,7 @@ async function testButtonClick(
   await testHandler.eventOccurred(notice, event);
 }
 
-suite('TopicsConsent', function() {
+suite('TopicsConsentNotice', function() {
   let page: BaseDialogApp;
   let testHandler: TestBaseDialogPageHandler;
 
@@ -106,7 +108,7 @@ suite('TopicsConsent', function() {
   });
 });
 
-suite('ProtectedAudienceMeasurement', function() {
+suite('ProtectedAudienceMeasurementNotice', function() {
   let page: BaseDialogApp;
   let testHandler: TestBaseDialogPageHandler;
 
@@ -132,7 +134,7 @@ suite('ProtectedAudienceMeasurement', function() {
   });
 });
 
-suite('ThreeAdsApis', function() {
+suite('ThreeAdsApisNotice', function() {
   let page: BaseDialogApp;
   let testHandler: TestBaseDialogPageHandler;
 

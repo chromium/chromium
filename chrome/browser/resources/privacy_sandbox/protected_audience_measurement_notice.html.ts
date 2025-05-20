@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ProtectedAudienceMeasurement} from './protected_audience_measurement.js';
+import type {ProtectedAudienceMeasurementNotice} from './protected_audience_measurement_notice.js';
 
-export function getHtml(this: ProtectedAudienceMeasurement) {
+export function getHtml(this: ProtectedAudienceMeasurementNotice) {
   return html`
     <div>Protected Audience Measurement Notice Placeholder</div>
     <cr-button id="ackButton" @click="${this.onAck}">
