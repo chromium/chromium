@@ -78,13 +78,6 @@ constexpr char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
 constexpr char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
 constexpr char kLocaleString[] = "en-US";
 
-AutofillProfile CreateAutofillProfile(
-    const AutofillProfileSpecifics& specifics) {
-  // As more copying does not hurt in tests, we prefer to use AutofillProfile
-  // instead of std::unique_ptr<AutofillProfile> because of code brevity.
-  return *CreateAutofillProfileFromSpecifics(specifics);
-}
-
 AutofillProfileSpecifics CreateAutofillProfileSpecifics(
     const AutofillProfile& entry) {
   // Reuse production code. We do not need EntityData, just take out the
@@ -106,9 +99,14 @@ AutofillProfileSpecifics CreateAutofillProfileSpecifics(
 }
 
 MATCHER_P(HasSpecifics, expected, "") {
-  AutofillProfile arg_profile =
-      CreateAutofillProfile(arg->specifics.autofill_profile());
-  AutofillProfile expected_profile = CreateAutofillProfile(expected);
+  if (!IsAutofillProfileSpecificsValid(arg->specifics.autofill_profile())) {
+    *result_listener << "actual AutofillProfileSpecifics is not valid";
+    return false;
+  }
+  AutofillProfile arg_profile = CreateAutofillProfileFromValidSpecifics(
+      arg->specifics.autofill_profile());
+  AutofillProfile expected_profile =
+      CreateAutofillProfileFromValidSpecifics(expected);
   if (!test_api(arg_profile).EqualsIncludingUsageStats(expected_profile)) {
     *result_listener << "entry\n[" << arg_profile << "]\n"
                      << "did not match expected\n[" << expected_profile << "]";
@@ -132,8 +130,8 @@ void ExtractAutofillProfilesFromDataBatch(
     std::vector<AutofillProfile>* output) {
   while (batch->HasNext()) {
     const KeyAndData& data_pair = batch->Next();
-    output->push_back(
-        CreateAutofillProfile(data_pair.second->specifics.autofill_profile()));
+    output->push_back(CreateAutofillProfileFromValidSpecifics(
+        data_pair.second->specifics.autofill_profile()));
   }
 }
 
@@ -433,7 +431,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 
   StartSyncing({remote});
   EXPECT_THAT(GetAllLocalData(),
-              ElementsAre(WithUsageStats(CreateAutofillProfile(remote))));
+              ElementsAre(WithUsageStats(
+                  CreateAutofillProfileFromValidSpecifics(remote))));
 
   // Update to the usage stats for that profile.
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
@@ -552,9 +551,10 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData) {
   // incorporated into the local profile which is mostly a replace operation.
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(local1, CreateAutofillProfile(remote1_specifics),
-                           CreateAutofillProfile(remote2_specifics),
-                           CreateAutofillProfile(remote3_specifics)));
+      UnorderedElementsAre(
+          local1, CreateAutofillProfileFromValidSpecifics(remote1_specifics),
+          CreateAutofillProfileFromValidSpecifics(remote2_specifics),
+          CreateAutofillProfileFromValidSpecifics(remote3_specifics)));
 }
 
 // Tests the profile migration that is performed after specifics are converted
@@ -670,8 +670,9 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_IdenticalProfiles) {
   StartSyncing({remote1_specifics, remote2_specifics});
 
   EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(CreateAutofillProfile(remote1_specifics),
-                                   CreateAutofillProfile(remote2_specifics)));
+              UnorderedElementsAre(
+                  CreateAutofillProfileFromValidSpecifics(remote1_specifics),
+                  CreateAutofillProfileFromValidSpecifics(remote2_specifics)));
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_NonSimilarProfiles) {
@@ -705,7 +706,8 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_NonSimilarProfiles) {
   StartSyncing({remote});
 
   EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(local, CreateAutofillProfile(remote)));
+              UnorderedElementsAre(
+                  local, CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
@@ -741,9 +743,9 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
 
   StartSyncing({remote_specifics});
 
-  EXPECT_THAT(
-      GetAllLocalData(),
-      UnorderedElementsAre(WithUsageStats(CreateAutofillProfile(merged))));
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(WithUsageStats(
+                  CreateAutofillProfileFromValidSpecifics(merged))));
 }
 
 // Tests that MergeSimilarProfiles keeps the most recent use date of the two
@@ -819,6 +821,22 @@ TEST_F(AutofillProfileSyncBridgeTest,
   StartSyncing({remote});
 }
 
+// Ensure that validation returns true if the specifics is valid.
+TEST_F(AutofillProfileSyncBridgeTest, IsEntityDataValidValidSpecifics) {
+  AutofillProfileSpecifics remote_valid =
+      CreateAutofillProfileSpecifics(kGuidA);
+
+  EXPECT_TRUE(bridge()->IsEntityDataValid(SpecificsToEntity(remote_valid)));
+}
+
+// Ensure that validation returns false if the specifics is invalid.
+TEST_F(AutofillProfileSyncBridgeTest, IsEntityDataValidInvalidSpecifics) {
+  AutofillProfileSpecifics remote_invalid =
+      CreateAutofillProfileSpecifics(kGuidInvalid);
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(SpecificsToEntity(remote_invalid)));
+}
+
 TEST_F(AutofillProfileSyncBridgeTest, ApplyIncrementalSyncChanges) {
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -846,31 +864,8 @@ TEST_F(AutofillProfileSyncBridgeTest, ApplyIncrementalSyncChanges) {
       EntityChange::CreateAdd(kGuidB, SpecificsToEntity(remote)));
   ApplyIncrementalSyncChanges(std::move(entity_change_list));
 
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
-}
-
-// Ensure that entries with invalid specifics are ignored.
-TEST_F(AutofillProfileSyncBridgeTest,
-       ApplyIncrementalSyncChanges_OmitsInvalidSpecifics) {
-  StartSyncing({});
-
-  AutofillProfileSpecifics remote_valid =
-      CreateAutofillProfileSpecifics(kGuidA);
-  AutofillProfileSpecifics remote_invalid =
-      CreateAutofillProfileSpecifics(kGuidInvalid);
-
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-
-  syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(
-      EntityChange::CreateAdd(kGuidA, SpecificsToEntity(remote_valid)));
-  entity_change_list.push_back(
-      EntityChange::CreateAdd(kGuidInvalid, SpecificsToEntity(remote_invalid)));
-  ApplyIncrementalSyncChanges(std::move(entity_change_list));
-
   EXPECT_THAT(GetAllLocalData(),
-              ElementsAre(CreateAutofillProfile(remote_valid)));
+              ElementsAre(CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 // Verifies that setting the street address field also sets the (deprecated)
@@ -1001,7 +996,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
+  EXPECT_THAT(GetAllLocalData(),
+              ElementsAre(CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 // Local language code should be overwritten by remote one.
@@ -1020,7 +1016,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
+  EXPECT_THAT(GetAllLocalData(),
+              ElementsAre(CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 // Sync data without language code should not overwrite existing language code

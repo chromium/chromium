@@ -406,6 +406,13 @@ std::string AutofillWalletMetadataSyncBridge::GetStorageKey(
       entity_data.specifics.wallet_metadata().id());
 }
 
+bool AutofillWalletMetadataSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_wallet_metadata());
+  return entity_data.specifics.wallet_metadata().has_id() &&
+         entity_data.specifics.wallet_metadata().has_type();
+}
+
 void AutofillWalletMetadataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();

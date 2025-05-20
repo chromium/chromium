@@ -109,18 +109,11 @@ std::optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
       GetAutofillTable());
 
   for (const auto& change : entity_data) {
-    DCHECK(change->data().specifics.has_autofill_profile());
-    std::optional<AutofillProfile> remote = CreateAutofillProfileFromSpecifics(
+    CHECK(IsEntityDataValid(change->data()));
+    AutofillProfile remote = CreateAutofillProfileFromValidSpecifics(
         change->data().specifics.autofill_profile());
-    if (!remote) {
-      DVLOG(2)
-          << "[AUTOFILL SYNC] Invalid remote specifics "
-          << change->data().specifics.autofill_profile().SerializeAsString()
-          << " received from the server in an initial sync.";
-      continue;
-    }
     RETURN_IF_ERROR(
-        initial_sync_tracker.IncorporateRemoteProfile(std::move(*remote)));
+        initial_sync_tracker.IncorporateRemoteProfile(std::move(remote)));
   }
 
   RETURN_IF_ERROR(
@@ -152,18 +145,10 @@ AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
       RETURN_IF_ERROR(tracker.IncorporateRemoteDelete(change->storage_key()));
     } else {
-      DCHECK(change->data().specifics.has_autofill_profile());
-      std::optional<AutofillProfile> remote =
-          CreateAutofillProfileFromSpecifics(
-              change->data().specifics.autofill_profile());
-      if (!remote) {
-        DVLOG(2)
-            << "[AUTOFILL SYNC] Invalid remote specifics "
-            << change->data().specifics.autofill_profile().SerializeAsString()
-            << " received from the server in an initial sync.";
-        continue;
-      }
-      RETURN_IF_ERROR(tracker.IncorporateRemoteProfile(std::move(*remote)));
+      CHECK(IsEntityDataValid(change->data()));
+      AutofillProfile remote = CreateAutofillProfileFromValidSpecifics(
+          change->data().specifics.autofill_profile());
+      RETURN_IF_ERROR(tracker.IncorporateRemoteProfile(std::move(remote)));
     }
   }
 
@@ -314,6 +299,13 @@ std::string AutofillProfileSyncBridge::GetStorageKey(
     const EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_profile());
   return GetStorageKeyFromAutofillProfileSpecifics(
+      entity_data.specifics.autofill_profile());
+}
+
+bool AutofillProfileSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_autofill_profile());
+  return IsAutofillProfileSpecificsValid(
       entity_data.specifics.autofill_profile());
 }
 

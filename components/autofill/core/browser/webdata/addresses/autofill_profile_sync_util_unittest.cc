@@ -1076,45 +1076,53 @@ TEST_F(AutofillProfileSyncUtilTest,
             entity_data->specifics.autofill_profile().name_full(0));
 }
 
+// Test that validation returns true if the input guid is valid.
+TEST_F(AutofillProfileSyncUtilTest, IsAutofillProfileSpecificsValid_Valid) {
+  AutofillProfileSpecifics specifics;
+  specifics.set_guid(kGuid);
+
+  EXPECT_TRUE(IsAutofillProfileSpecificsValid(specifics));
+}
+
+// Test that validation returns false if the input guid is invalid.
+TEST_F(AutofillProfileSyncUtilTest, IsAutofillProfileSpecificsValid_Invalid) {
+  AutofillProfileSpecifics specifics;
+  specifics.set_guid(kGuidInvalid);
+
+  EXPECT_FALSE(IsAutofillProfileSpecificsValid(specifics));
+}
+
 // Ensure that all profile fields are able to be synced down from the server to
 // the client (and nothing gets uploaded back).
-TEST_P(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics) {
+TEST_P(AutofillProfileSyncUtilTest, CreateAutofillProfileFromValidSpecifics) {
   // Fix a time for implicitly constructed use_dates in AutofillProfile.
 
   AutofillProfileSpecifics specifics =
       GetAutofillProfileSpecificsForCountry(GetParam());
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
-  std::optional<AutofillProfile> converted_profile =
-      CreateAutofillProfileFromSpecifics(specifics);
-  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
+  AutofillProfile converted_profile =
+      CreateAutofillProfileFromValidSpecifics(specifics);
+  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(converted_profile));
 }
 
 // Test that fields not set for the input are also not set on the output.
-TEST_F(AutofillProfileSyncUtilTest, CreateAutofillProfileFromSpecifics_Empty) {
+TEST_F(AutofillProfileSyncUtilTest,
+       CreateAutofillProfileFromValidSpecifics_Empty) {
   AutofillProfileSpecifics specifics;
   specifics.set_guid(kGuid);
 
   std::optional<AutofillProfile> profile =
-      CreateAutofillProfileFromSpecifics(specifics);
+      CreateAutofillProfileFromValidSpecifics(specifics);
 
   EXPECT_FALSE(profile->HasRawInfo(NAME_FULL));
   EXPECT_FALSE(profile->HasRawInfo(COMPANY_NAME));
 }
 
-// Test that nullopt is produced if the input guid is invalid.
-TEST_F(AutofillProfileSyncUtilTest,
-       CreateAutofillProfileFromSpecifics_Invalid) {
-  AutofillProfileSpecifics specifics;
-  specifics.set_guid(kGuidInvalid);
-
-  EXPECT_FALSE(CreateAutofillProfileFromSpecifics(specifics).has_value());
-}
-
 // Test that if conflicting info is set for address home, the (deprecated) line1
 // & line2 fields get overwritten by the street_address field.
 TEST_F(AutofillProfileSyncUtilTest,
-       CreateAutofillProfileFromSpecifics_HomeAddressWins) {
+       CreateAutofillProfileFromValidSpecifics_HomeAddressWins) {
   AutofillProfileSpecifics specifics;
   specifics.set_guid(kGuid);
 
@@ -1124,12 +1132,10 @@ TEST_F(AutofillProfileSyncUtilTest,
   specifics.set_address_home_line1("456 Old St.");
   specifics.set_address_home_line2("Apt. 43");
 
-  std::optional<AutofillProfile> profile =
-      CreateAutofillProfileFromSpecifics(specifics);
+  AutofillProfile profile = CreateAutofillProfileFromValidSpecifics(specifics);
 
-  EXPECT_EQ("123 New St.",
-            UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_LINE1)));
-  EXPECT_EQ("Apt. 42", UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_LINE2)));
+  EXPECT_EQ("123 New St.", UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE1)));
+  EXPECT_EQ("Apt. 42", UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE2)));
 }
 
 // Test that country names (used in the past for the field) get correctly parsed
@@ -1140,14 +1146,12 @@ TEST_F(AutofillProfileSyncUtilTest,
   specifics.set_guid(kGuid);
 
   specifics.set_address_home_country("Germany");
-  EXPECT_EQ("DE", UTF16ToUTF8(
-                      CreateAutofillProfileFromSpecifics(specifics)->GetRawInfo(
-                          ADDRESS_HOME_COUNTRY)));
+  EXPECT_EQ("DE", UTF16ToUTF8(CreateAutofillProfileFromValidSpecifics(specifics)
+                                  .GetRawInfo(ADDRESS_HOME_COUNTRY)));
 
   specifics.set_address_home_country("united states");
-  EXPECT_EQ("US", UTF16ToUTF8(
-                      CreateAutofillProfileFromSpecifics(specifics)->GetRawInfo(
-                          ADDRESS_HOME_COUNTRY)));
+  EXPECT_EQ("US", UTF16ToUTF8(CreateAutofillProfileFromValidSpecifics(specifics)
+                                  .GetRawInfo(ADDRESS_HOME_COUNTRY)));
 }
 
 // Tests that guid is returned as storage key.

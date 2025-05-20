@@ -310,6 +310,14 @@ std::string AutofillWalletSyncBridge::GetStorageKey(
           entity_data.specifics.autofill_wallet()));
 }
 
+bool AutofillWalletSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_autofill_wallet());
+  return !syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(
+              entity_data.specifics.autofill_wallet())
+              .empty();
+}
+
 bool AutofillWalletSyncBridge::SupportsIncrementalUpdates() const {
   // The payments server always returns the full dataset whenever there's any
   // change to the user's payments data. Therefore, we don't implement full
@@ -488,9 +496,10 @@ void AutofillWalletSyncBridge::SetSyncData(
     transaction->Commit();
   }
 
-  if (web_data_backend_ && wallet_data_changed)
+  if (web_data_backend_ && wallet_data_changed) {
     web_data_backend_->NotifyOnAutofillChangedBySync(
         syncer::AUTOFILL_WALLET_DATA);
+  }
 }
 
 bool AutofillWalletSyncBridge::SetWalletCards(
@@ -574,32 +583,32 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
 
   GetAutofillTable()->SetServerIbansData(wallet_ibans);
   bool found_diff = false;
-    for (const std::unique_ptr<Iban>& existing_iban : existing_ibans) {
-      bool has_orphan_iban = std::ranges::none_of(
-          wallet_ibans,
-          [&](const Iban& iban) { return iban.Compare(*existing_iban) == 0; });
-      if (has_orphan_iban) {
-        found_diff = true;
-        if (notify_webdata_backend) {
-          web_data_backend_->NotifyOfIbanChanged(
-              IbanChange(IbanChange::REMOVE, existing_iban->instrument_id(),
-                         *existing_iban));
-        }
+  for (const std::unique_ptr<Iban>& existing_iban : existing_ibans) {
+    bool has_orphan_iban = std::ranges::none_of(
+        wallet_ibans,
+        [&](const Iban& iban) { return iban.Compare(*existing_iban) == 0; });
+    if (has_orphan_iban) {
+      found_diff = true;
+      if (notify_webdata_backend) {
+        web_data_backend_->NotifyOfIbanChanged(
+            IbanChange(IbanChange::REMOVE, existing_iban->instrument_id(),
+                       *existing_iban));
       }
     }
-    for (const Iban& wallet_iban : wallet_ibans) {
-      bool has_new_iban = std::ranges::none_of(
-          existing_ibans, [&](const std::unique_ptr<Iban>& iban) {
-            return iban->Compare(wallet_iban) == 0;
-          });
-      if (has_new_iban) {
-        found_diff = true;
-        if (notify_webdata_backend) {
-          web_data_backend_->NotifyOfIbanChanged(IbanChange(
-              IbanChange::ADD, wallet_iban.instrument_id(), wallet_iban));
-        }
+  }
+  for (const Iban& wallet_iban : wallet_ibans) {
+    bool has_new_iban = std::ranges::none_of(
+        existing_ibans, [&](const std::unique_ptr<Iban>& iban) {
+          return iban->Compare(wallet_iban) == 0;
+        });
+    if (has_new_iban) {
+      found_diff = true;
+      if (notify_webdata_backend) {
+        web_data_backend_->NotifyOfIbanChanged(IbanChange(
+            IbanChange::ADD, wallet_iban.instrument_id(), wallet_iban));
       }
     }
+  }
   return found_diff;
 }
 
