@@ -4,6 +4,7 @@
 
 import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
+import '../icons.html.js';
 import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 
