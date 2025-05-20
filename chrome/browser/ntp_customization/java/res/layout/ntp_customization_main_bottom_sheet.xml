@@ -12,17 +12,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
 
-    <ImageView
-        android:id="@+id/drag_handle_bar"
-        android:layout_height="@dimen/default_browser_bottom_sheet_drag_handel_bar_height"
-        android:layout_width="@dimen/default_browser_bottom_sheet_drag_handel_bar_width"
-        android:layout_marginVertical="@dimen/default_browser_bottom_sheet_drag_handel_bar_margin_vertical"
-        android:importantForAccessibility="no"
-        android:src="@drawable/drag_handlebar"
-        app:tint="@macro/drag_handlebar_color"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <include layout="@layout/ntp_customization_drag_handle_bar" />
 
     <ImageView
         android:id="@+id/edit_icon"
