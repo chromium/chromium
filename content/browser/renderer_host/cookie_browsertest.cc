@@ -425,11 +425,6 @@ IN_PROC_BROWSER_TEST_P(CookieBrowserTest, PrefixedCookies_Write_Insecure) {
 // embedded_test_server() uses http, which is insecure, but localhost is
 // allowed to set prefixed cookies anyway.
 IN_PROC_BROWSER_TEST_P(CookieBrowserTest, PrefixedCookies_Write_Localhost) {
-  if (GetCookiesOnSetEnabled() && AsyncSetCookieEnabled()) {
-    GTEST_SKIP()
-        << "Skipping known-flaky configuration, see crbug.com/417674996";
-  }
-
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("localhost", "/empty.html")));
