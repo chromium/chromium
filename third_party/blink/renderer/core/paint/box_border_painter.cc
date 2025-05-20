@@ -1484,48 +1484,30 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
           style_, border_rect_, CenterOutsets(), sides_to_include_)
           .GetPath();
 
-  context_.SetStrokeColor(color);
-
-  const StrokeStyle stroke_style =
-      border_style == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke;
-  if (!StyledStrokeData::StrokeIsDashed(border_thickness, stroke_style)) {
-    DrawWideDottedBoxSideFromPath(centerline_path, border_thickness);
-    return;
+  StyledStrokeData styled_stroke;
+  styled_stroke.SetStyle(border_style == EBorderStyle::kDashed ? kDashedStroke
+                                                               : kDottedStroke);
+  if (!StyledStrokeData::StrokeIsDashed(border_thickness,
+                                        styled_stroke.Style())) {
+    styled_stroke.SetThickness(border_thickness);
+  } else {
+    // The stroke is doubled here because the provided path is the outside edge
+    // of the border so half the stroke is clipped off, with the extra
+    // multiplier so that the clipping mask can antialias the edges to prevent
+    // jaggies.
+    static constexpr float kThicknessMultiplier = 2 * 1.1f;
+    styled_stroke.SetThickness(stroke_thickness * kThicknessMultiplier);
   }
 
-  // The stroke is doubled here because the provided path is the
-  // outside edge of the border so half the stroke is clipped off, with
-  // the extra multiplier so that the clipping mask can antialias
-  // the edges to prevent jaggies.
-  const float thickness_multiplier = 2 * 1.1f;
-  StyledStrokeData styled_stroke;
-  styled_stroke.SetThickness(stroke_thickness * thickness_multiplier);
-  styled_stroke.SetStyle(stroke_style);
-
-  // TODO(crbug.com/344234): stroking the border path causes issues with
-  // tight corners.
+  // TODO: Stroking the border path causes issues with tight corners
+  // (crbug.com/41089993).
   const StrokeData stroke_data = styled_stroke.ConvertToStrokeData(
       {static_cast<int>(centerline_path.length()), border_thickness,
        centerline_path.IsClosed()});
   context_.SetStroke(stroke_data);
+  context_.SetStrokeColor(color);
   context_.StrokePath(centerline_path,
                       PaintAutoDarkMode(style_, element_role_));
-}
-
-void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
-    const Path& border_path,
-    int border_thickness) const {
-  StyledStrokeData styled_stroke;
-  styled_stroke.SetThickness(border_thickness);
-  styled_stroke.SetStyle(kDottedStroke);
-
-  // TODO(crbug.com/344234): stroking the border path causes issues with
-  // tight corners.
-  const StrokeData stroke_data = styled_stroke.ConvertToStrokeData(
-      {static_cast<int>(border_path.length()), border_thickness,
-       border_path.IsClosed()});
-  context_.SetStroke(stroke_data);
-  context_.StrokePath(border_path, PaintAutoDarkMode(style_, element_role_));
 }
 
 void BoxBorderPainter::DrawDoubleBoxSideFromPath(Color color) const {

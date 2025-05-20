@@ -102,7 +102,6 @@ class BoxBorderPainter {
                                        int draw_thickness,
                                        Color,
                                        EBorderStyle) const;
-  void DrawWideDottedBoxSideFromPath(const Path&, int thickness) const;
   void DrawDoubleBoxSideFromPath(Color) const;
   void DrawRidgeGrooveBoxSideFromPath(BoxSide, Color, EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
