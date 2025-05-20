@@ -868,22 +868,6 @@ crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2.html [ Failure ]
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2a.html [ Failure ]
 
-# New stretch behaviour in flexboxes. See:
-# https://github.com/w3c/csswg-drafts/issues/11784
-crbug.com/41253915 external/wpt/css/css-sizing/keyword-sizes-on-flex-item-001.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-alias-block-size-001.tentative.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-alias-inline-size-001.tentative.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-alias-max-block-size-001.tentative.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-alias-max-inline-size-001.tentative.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-alias-min-block-size-001.tentative.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-alias-min-inline-size-001.tentative.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-block-size-001.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-inline-size-001.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-max-block-size-001.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-max-inline-size-001.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-min-block-size-001.html [ Failure ]
-crbug.com/41253915 external/wpt/css/css-sizing/stretch/stretch-min-inline-size-001.html [ Failure ]
-
 ##### This one passes only when it includes an iframe. Removing the iframe makes the test fail.
 crbug.com/327723279 external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-033.html [ Failure ]
 
