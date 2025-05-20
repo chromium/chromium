@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.AffiliationRequest.ResponseTime" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.Blocklist.ParsingResult"
-    enum="PlusAddressBlocklistDataParsingResult" expires_after="2025-10-19">
+    enum="PlusAddressBlocklistDataParsingResult" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.OauthError"
-    enum="GoogleServiceAuthError" expires_after="2025-08-31">
+    enum="GoogleServiceAuthError" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.{Type}.Latency" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.{Type}.NetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-30">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>fleimgruber@google.com</owner>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.{Type}.ResponseByteSize"
-    units="bytes" expires_after="2025-06-30">
+    units="bytes" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.{Type}.ResponseCode"
-    enum="HttpResponseCode" expires_after="2025-11-02">
+    enum="HttpResponseCode" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.Submission{Segment}" enum="PlusAddressOrGaia"
-    expires_after="2025-11-02">
+    expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.Suggestion.Events"
-    enum="PlusAddressSuggestionEvent2" expires_after="2025-10-26">
+    enum="PlusAddressSuggestionEvent2" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.{ModalType}.Events"
-    enum="PlusAddressModalEvent2" expires_after="2025-11-02">
+    enum="PlusAddressModalEvent2" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.{ModalType}.{Status}.Refreshes"
-    units="refreshes" expires_after="2025-09-14">
+    units="refreshes" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <summary>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.{ModalType}.{Status}.ShownDuration" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
