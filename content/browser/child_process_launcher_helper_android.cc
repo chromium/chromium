@@ -249,19 +249,11 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
 static jboolean
 JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(JNIEnv* env) {
   // Not this is called on the launcher thread, not UI thread.
-  //
-  // Note that service grouping is mandatory for site isolation on pre-U devices
-  // to avoid cached process limit. By service grouping, cached chrome renderer
-  // processes in a group are counted as one. On pre-U devices the cached
-  // process limit is usually 32 or such. U+ devices has a larger limit 1024 or
-  // such.
   return (SiteIsolationPolicy::AreIsolatedOriginsEnabled() ||
           SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
           SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
           SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled()) &&
-         (base::android::android_info::sdk_int() <
-              base::android::android_info::SDK_VERSION_U ||
-          base::FeatureList::IsEnabled(kServiceGroupImportance));
+         base::FeatureList::IsEnabled(kServiceGroupImportance);
 }
 
 // static
