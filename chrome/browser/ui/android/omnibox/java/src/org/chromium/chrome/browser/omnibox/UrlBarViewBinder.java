@@ -136,7 +136,7 @@ class UrlBarViewBinder {
         } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
             view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
         } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)) {
-            view.setHint(view.getContext().getString(model.get(UrlBarProperties.HINT_TEXT)));
+            view.setHint(model.get(UrlBarProperties.HINT_TEXT));
         }
     }
 

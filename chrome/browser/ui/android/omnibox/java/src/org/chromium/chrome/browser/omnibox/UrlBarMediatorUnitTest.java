@@ -46,11 +46,13 @@ public class UrlBarMediatorUnitTest {
     @Mock Callback<String> mAnotherUrlTextMockListener;
     @Mock Callback<Boolean> mFocusChangeCallback;
 
+    Context mContext;
     PropertyModel mModel;
     UrlBarMediator mMediator;
 
     @Before
     public void setUp() {
+        mContext = ContextUtils.getApplicationContext();
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
         mMediator =
                 new UrlBarMediator(
@@ -323,11 +325,10 @@ public class UrlBarMediatorUnitTest {
 
     @Test
     public void setUrlBarHintText() {
-        mMediator.setUrlBarHintText(R.string.hub_search_empty_hint);
-        Assert.assertEquals(R.string.hub_search_empty_hint, mModel.get(UrlBarProperties.HINT_TEXT));
-        mMediator.setUrlBarHintText(R.string.hub_search_empty_hint_incognito);
-        Assert.assertEquals(
-                R.string.hub_search_empty_hint_incognito, mModel.get(UrlBarProperties.HINT_TEXT));
+        mMediator.setUrlBarHintText("Hint 1");
+        Assert.assertEquals("Hint 1", mModel.get(UrlBarProperties.HINT_TEXT));
+        mMediator.setUrlBarHintText("Incognito Hint");
+        Assert.assertEquals("Incognito Hint", mModel.get(UrlBarProperties.HINT_TEXT));
     }
 
     @Test

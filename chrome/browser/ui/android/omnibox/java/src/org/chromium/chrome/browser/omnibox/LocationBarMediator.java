@@ -1093,6 +1093,9 @@ class LocationBarMediator
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
 
+        mUrlCoordinator.setUrlBarHintText(
+                SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
+
         assumeNonNull(mOmniboxPrerender);
         mOmniboxPrerender.initializeForProfile(profile);
         mSearchEngineUtils = SearchEngineUtils.getForProfile(profile);
@@ -1379,6 +1382,8 @@ class LocationBarMediator
     @Override
     public void onTemplateURLServiceChanged() {
         sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
+        mUrlCoordinator.setUrlBarHintText(
+                SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
     }
 
     // OmniboxStub implementation.
