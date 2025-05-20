@@ -431,9 +431,6 @@ def _package_dmg(paths, dist, config):
     if dist.channel_customize:
         dsstore_file = 'chrome_{}_dmg_dsstore'.format(dist.channel)
         icon_file = 'chrome_{}_dmg_icon.icns'.format(dist.channel)
-    elif dist.use_alternative_dmg_visuals:
-        dsstore_file = 'chrome_dmg_dsstore_alt'
-        icon_file = 'chrome_dmg_icon.icns'
     else:
         dsstore_file = 'chrome_dmg_dsstore'
         icon_file = 'chrome_dmg_icon.icns'
@@ -462,8 +459,7 @@ def _package_dmg(paths, dist, config):
         '--copy', '{}:/'.format(app_path),
     ]
     # yapf: enable
-    if not dist.use_alternative_dmg_visuals:
-        pkg_dmg += ['--symlink', '/Applications:/ ']
+    pkg_dmg += ['--symlink', '/Applications:/ ']
 
     if dist.inflation_kilobytes:
         pkg_dmg += [
@@ -472,12 +468,7 @@ def _package_dmg(paths, dist, config):
         ]
 
     if config.is_chrome_branded():
-        if dist.use_alternative_dmg_visuals:
-            background_image = '{}/chrome_dmg_background_alt.png'.format(
-                packaging_dir)
-        else:
-            background_image = '{}/chrome_dmg_background.png'.format(
-                packaging_dir)
+        background_image = '{}/chrome_dmg_background.png'.format(packaging_dir)
         # yapf: disable
         pkg_dmg += [
             '--icon', os.path.join(packaging_dir, icon_file),

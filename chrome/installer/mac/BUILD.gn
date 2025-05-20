@@ -134,9 +134,7 @@ copy("copies") {
       "internal/chrome_dev_dmg_dsstore",
       "internal/chrome_dev_dmg_icon.icns",
       "internal/chrome_dmg_background.png",
-      "internal/chrome_dmg_background_alt.png",
       "internal/chrome_dmg_dsstore",
-      "internal/chrome_dmg_dsstore_alt",
       "internal/chrome_dmg_icon.icns",
       "keystone_install.sh",
     ]
