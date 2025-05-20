@@ -593,6 +593,33 @@ NavigationControllerImpl::PendingEntryRef::~PendingEntryRef() {
   controller_->PendingEntryRefDeleted(this);
 }
 
+// NavigationControllerImpl::ScopedPendingEntryReentrancyGuard------------------
+
+NavigationControllerImpl::ScopedPendingEntryReentrancyGuard::
+    ScopedPendingEntryReentrancyGuard(
+        base::SafeRef<NavigationControllerImpl> controller)
+    : controller_(controller) {
+  // Navigations that involve pending entries do not support re-entrancy.
+  // Encountering this CHECK failure means the caller is attempting to start
+  // another navigation while a navigation to an existing pending entry is on
+  // the stack. In most cases, the new navigation should be done from a posted
+  // task instead. See http://crbug.com/40353566 for context.
+  CHECK(!controller->in_navigate_to_pending_entry_);
+
+  controller->in_navigate_to_pending_entry_ = true;
+  controller->CheckPotentialNavigationReentrancy();
+
+  // It must not be possible to delete the pending NavigationEntry while
+  // navigating to it. Grab a reference to delay potential deletion until
+  // this scoped object is deleted at the end of the relevant function call.
+  pending_entry_ref_ = controller->ReferencePendingEntry();
+}
+
+NavigationControllerImpl::ScopedPendingEntryReentrancyGuard::
+    ~ScopedPendingEntryReentrancyGuard() {
+  controller_->in_navigate_to_pending_entry_ = false;
+}
+
 // NavigationControllerImpl ----------------------------------------------------
 
 const size_t kMaxEntryCountForTestingNotSet = static_cast<size_t>(-1);
@@ -3344,13 +3371,16 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
       CHECK_EQ(different_document_loads.size(), 1u);
       CHECK(same_document_loads.empty());
       request = different_document_loads.at(0)->GetWeakPtr();
-      // Extend the life time of the pending NavigationEntry since the following
-      // Navigator::Navigate() might clear the pending NavigationEntry, and hit
-      // the CHECK_EQ() in the bottom of Navigator::Navigate().
-      std::unique_ptr<PendingEntryRef> pending_entry_ref =
-          ReferencePendingEntry();
+
+      // Ensure that no re-entrant calls or discards of the pending entry occur
+      // while calling `Navigator::Navigate` for a pending entry.
+      ScopedPendingEntryReentrancyGuard reentrancy_guard(
+          weak_factory_.GetSafeRef());
+
       root->navigator().Navigate(std::move(different_document_loads.at(0)),
                                  ReloadType::NONE);
+
+      // `reentrancy_guard` deleted here.
     } else {
       // The legacy approach creates a new NavigationRequest for the entry and
       // discards any previously created NavigationRequests, even though the new
@@ -3440,21 +3470,16 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
   SCOPED_CRASH_KEY_NUMBER("nav_reentrancy", "pending_reload_type",
                           (int)pending_reload_);
 
-  // This call does not support re-entrancy.  See http://crbug.com/347742.
-  CHECK(!in_navigate_to_pending_entry_);
-  in_navigate_to_pending_entry_ = true;
-  CheckPotentialNavigationReentrancy();
+  // Ensure that no re-entrant calls or discards of the pending entry occur
+  // while calling `Navigator::Navigate` for a pending entry.
+  ScopedPendingEntryReentrancyGuard reentrancy_guard(
+      weak_factory_.GetSafeRef());
 
   // If the navigation-reentrancy is caused by calling
   // NavigateToExistingPendingEntry twice, this will note the previous call's
   // pending entry's ID.
   SCOPED_CRASH_KEY_NUMBER("nav_reentrancy", "prev_pending_entry_id",
                           pending_entry_ ? pending_entry_->GetUniqueID() : -1);
-
-  // It is not possible to delete the pending NavigationEntry while navigating
-  // to it. Grab a reference to delay potential deletion until the end of this
-  // function.
-  std::unique_ptr<PendingEntryRef> pending_entry_ref = ReferencePendingEntry();
 
   // If there is a main-frame same-document history navigation, we may defer
   // the subframe history navigations in order to give JS in the main frame the
@@ -3520,9 +3545,8 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
     }
   }
 
-  in_navigate_to_pending_entry_ = false;
-
   return all_requests;
+  // `reentrancy_guard` deleted here.
 }
 
 NavigationControllerImpl::HistoryNavigationAction
@@ -3853,22 +3877,17 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   ValidateRequestMatchesEntry(request.get(), pending_entry_);
 #endif
 
-  // This call does not support re-entrancy.  See http://crbug.com/347742.
-  CHECK(!in_navigate_to_pending_entry_);
-  in_navigate_to_pending_entry_ = true;
-  CheckPotentialNavigationReentrancy();
-
-  // It is not possible to delete the pending NavigationEntry while navigating
-  // to it. Grab a reference to delay potential deletion until the end of this
-  // function.
-  std::unique_ptr<PendingEntryRef> pending_entry_ref = ReferencePendingEntry();
+  // Ensure that no re-entrant calls or discards of the pending entry occur
+  // while calling `Navigator::Navigate` for a pending entry.
+  ScopedPendingEntryReentrancyGuard reentrancy_guard(
+      weak_factory_.GetSafeRef());
 
   base::WeakPtr<NavigationHandle> created_navigation_handle(
       request->GetWeakPtr());
   node->navigator().Navigate(std::move(request), reload_type);
 
-  in_navigate_to_pending_entry_ = false;
   return created_navigation_handle;
+  // `reentrancy_guard` deleted here.
 }
 
 FrameTreeNode* NavigationControllerImpl::GetTargetFrameTreeNodeForNavigation(

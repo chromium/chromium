@@ -594,6 +594,24 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
     const bool was_disallowed_;
   };
 
+  // Navigations to pending entries do not support re-entrancy due to a risk of
+  // use-after-free, and the pending entry itself should not be deleted during
+  // such a navigation. Create one of these scoped objects around calls to
+  // `Navigator::Navigate` when a pending entry is used, to safely crash rather
+  // than risk memory errors if re-entrancy or an unexpected deletion occurs.
+  // See https://crbug.com/40353566 for details.
+  class ScopedPendingEntryReentrancyGuard {
+   public:
+    explicit ScopedPendingEntryReentrancyGuard(
+        base::SafeRef<NavigationControllerImpl> controller);
+    ~ScopedPendingEntryReentrancyGuard();
+
+   private:
+    base::SafeRef<NavigationControllerImpl> controller_;
+    std::unique_ptr<NavigationControllerImpl::PendingEntryRef>
+        pending_entry_ref_;
+  };
+
   // Records which navigation API keys are associated with live frames.
   // On destruction, does a final pass to filter out any keys that are still
   // present in |entries_|, then sends the removed navigation API keys to the
