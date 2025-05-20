@@ -276,7 +276,7 @@ BASE_FEATURE(kEnterpriseProfileBadgingForAvatar,
 // a badge in the profile menu.
 BASE_FEATURE(kEnterpriseProfileBadgingForMenu,
              "EnterpriseProfileBadgingForMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
 // and in the profile menu when the policies are set. This acts as a kill

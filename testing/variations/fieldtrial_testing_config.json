@@ -7314,8 +7314,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnterpriseProfileBadgingForAvatar",
-                        "EnterpriseProfileBadgingForMenu"
+                        "EnterpriseProfileBadgingForAvatar"
                     ]
                 }
             ]

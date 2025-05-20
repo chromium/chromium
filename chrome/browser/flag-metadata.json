@@ -3191,11 +3191,6 @@
     "expiry_milestone": 139
   },
   {
-    "name": "enable-enterprise-profile-badging-for-menu",
-    "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 139
-  },
-  {
     "name": "enable-enterprise-profile-required-interstitial",
     "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
     "expiry_milestone": 135

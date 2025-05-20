@@ -762,9 +762,6 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnterpriseProfileBadgingForAvatarName[];
 extern const char kEnterpriseProfileBadgingForAvatarDescription[];
 
-extern const char kEnterpriseProfileBadgingForMenuName[];
-extern const char kEnterpriseProfileBadgingForMenuDescription[];
-
 extern const char kEnterpriseBadgingForNtpFooterName[];
 extern const char kEnterpriseBadgingForNtpFooterDescription[];
 
