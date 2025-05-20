@@ -11,7 +11,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <queue>
 #include <set>
 #include <utility>
 #include <vector>

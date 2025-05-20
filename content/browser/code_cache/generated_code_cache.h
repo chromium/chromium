@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_CODE_CACHE_GENERATED_CODE_CACHE_H_
 
 #include <map>
-#include <queue>
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"

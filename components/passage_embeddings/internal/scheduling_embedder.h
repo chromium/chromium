@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_
 #define COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_
 
+#include <deque>
 #include <memory>
 #include <optional>
-#include <queue>
 #include <string>
 #include <vector>
 

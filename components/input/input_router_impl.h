@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <queue>
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"

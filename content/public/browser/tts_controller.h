@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_TTS_CONTROLLER_H_
 
 #include <memory>
-#include <queue>
 #include <set>
 #include <string>
 #include <vector>

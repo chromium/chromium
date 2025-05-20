@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <queue>
 #include <string>
 #include <vector>
 

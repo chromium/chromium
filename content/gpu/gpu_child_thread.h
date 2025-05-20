@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "base/command_line.h"

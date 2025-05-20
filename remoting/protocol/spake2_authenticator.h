@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_SPAKE2_AUTHENTICATOR_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 
 #include "base/compiler_specific.h"

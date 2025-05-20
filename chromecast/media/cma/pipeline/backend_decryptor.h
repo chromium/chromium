@@ -6,7 +6,6 @@
 #define CHROMECAST_MEDIA_CMA_PIPELINE_BACKEND_DECRYPTOR_H_
 
 #include <memory>
-#include <queue>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"

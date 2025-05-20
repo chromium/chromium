@@ -10,7 +10,6 @@
 #include <limits>
 #include <memory>
 #include <optional>
-#include <queue>
 #include <string>
 
 #include "base/atomic_sequence_num.h"

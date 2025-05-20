@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_UI_H_
 
 #include <memory>
-#include <queue>
 #include <utility>
 #include <vector>
 

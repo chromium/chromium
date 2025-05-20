@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_PARTIAL_DECODER_H_
 #define SERVICES_NETWORK_PARTIAL_DECODER_H_
 
-#include <queue>
 #include <string>
 #include <vector>
 

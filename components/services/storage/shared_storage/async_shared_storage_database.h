@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_ASYNC_SHARED_STORAGE_DATABASE_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <vector>
 

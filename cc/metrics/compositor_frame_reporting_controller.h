@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "base/containers/circular_deque.h"

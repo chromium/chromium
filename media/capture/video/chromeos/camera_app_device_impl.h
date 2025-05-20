@@ -6,7 +6,6 @@
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_APP_DEVICE_IMPL_H_
 
 #include <map>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>

@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <optional>
-#include <queue>
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/atomic_flag.h"

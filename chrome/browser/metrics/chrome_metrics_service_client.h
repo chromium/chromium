@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <string_view>
 

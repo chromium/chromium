@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_SHARED_STORAGE_MANAGER_H_
 
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "base/files/file_path.h"

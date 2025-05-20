@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_CRYPTOHOME_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_CRYPTOHOME_MIXIN_H_
 
-#include <queue>
 #include <string>
 #include <utility>
 

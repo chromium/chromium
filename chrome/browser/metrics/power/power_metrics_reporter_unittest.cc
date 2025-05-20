@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <queue>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"

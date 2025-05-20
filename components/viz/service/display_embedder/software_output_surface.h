@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SOFTWARE_OUTPUT_SURFACE_H_
 
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

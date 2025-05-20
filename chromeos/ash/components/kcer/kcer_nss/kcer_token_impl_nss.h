@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <queue>
+#include <deque>
 #include <string>
 #include <vector>
 

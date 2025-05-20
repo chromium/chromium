@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <queue>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
