@@ -52,8 +52,12 @@ try_.builder(
         retry_without_patch = False,
     ),
     gn_args = "ci/Dawn Chromium Presubmit",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
     execution_timeout = 30 * time.minute,
     main_list_view = "try",
+    max_concurrent_builds = 2,
 )
 
 try_.builder(
@@ -64,7 +68,11 @@ try_.builder(
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
     gn_args = "ci/Dawn Android arm DEPS Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
     main_list_view = "try",
+    max_concurrent_builds = 5,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -92,7 +100,11 @@ try_.builder(
         "ci/Dawn Android arm64 DEPS Release (Pixel 6)",
     ],
     gn_args = "ci/Dawn Android arm64 DEPS Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
     main_list_view = "try",
+    max_concurrent_builds = 5,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -123,7 +135,11 @@ try_.builder(
         "ci/Dawn Linux x64 DEPS Release (NVIDIA)",
     ],
     gn_args = "ci/Dawn Linux x64 DEPS Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
     main_list_view = "try",
+    max_concurrent_builds = 5,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -309,6 +325,10 @@ try_.builder(
         "ci/Dawn Android arm Release (Pixel 4)",
     ],
     gn_args = "ci/Dawn Android arm Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    max_concurrent_builds = 3,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -321,6 +341,10 @@ try_.builder(
         "ci/Dawn Android arm64 Release (Pixel 6)",
     ],
     gn_args = "ci/Dawn Android arm64 Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    max_concurrent_builds = 3,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -404,6 +428,10 @@ try_.builder(
         "ci/Dawn Linux x64 Release (NVIDIA)",
     ],
     gn_args = "ci/Dawn Linux x64 Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    max_concurrent_builds = 3,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
