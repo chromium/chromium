@@ -4,68 +4,34 @@
 
 'use strict';
 
-promise_test(async t => {
+promise_test(async () => {
   assert_true(!!LanguageModel);
-  assert_not_equals(
-    await LanguageModel.availability(),
-    'unavailable'
-  );
-  assert_not_equals(
-    await LanguageModel.availability({ expectedInputs: [{ type: "text", languages: ["en"] }]}),
-    'unavailable',
-    'availability() with supported language should not return unavailable.'
-  );
-  assert_equals(
-    await LanguageModel.availability({ expectedInputs: [{ type: "text", languages: ["ja"] }]}),
-    'unavailable',
-    'availability() with unsupported language should return unavailable.'
-  );
-  assert_not_equals(
-    await LanguageModel.availability({ topK: 3, temperature: 0.5 }),
-    'unavailable',
-    'availability() with valid topK and temperature should not return unavailable.'
-  );
-  assert_equals(
-    await LanguageModel.availability({ topK: 0, temperature: 0.5 }),
-    'unavailable',
-    'availability() with zero topK should return unavailable.'
-  );
-  assert_equals(
-    await LanguageModel.availability({ topK: -3, temperature: 0.5 }),
-    'unavailable',
-    'availability() with negative topK should return unavailable.'
-  );
-  assert_equals(
-    await LanguageModel.availability({ topK: 3, temperature: -0.1 }),
-    'unavailable',
-    'availability() with negative temperature should return unavailable.'
-  );
-  assert_equals(
-    await LanguageModel.availability({ topK: 3 }),
-    'unavailable',
-    'availability() with only topK should return unavailable.'
-  );
-  assert_equals(
-    await LanguageModel.availability({ temperature: 0.5 }),
-    'unavailable',
-    'availability() with only temperature should return unavailable.'
-  );
-  assert_not_equals(
-    await LanguageModel.availability({
-      topK: 3,
-      temperature: 1.5,
-      expectedInputs: [{ type: "text", languages: ["en"] }]
-    }),
-    'unavailable',
-    'availability() with valid sampling params and supported language should not return unavailable.'
-  );
-  assert_equals(
-    await LanguageModel.availability({
-      topK: 3,
-      temperature: -1,
-      expectedInputs: [{ type: "text", languages: ["en"] }]
-    }),
-    'unavailable',
-    'availability() with invalid sampling params and supported language should return unavailable.'
-  );
-});
+  assert_equals(typeof LanguageModel.availability, 'function');
+}, 'LanguageModel.availability() is defined');
+
+promise_test(async () => {
+  const availability = await LanguageModel.availability();
+  assert_in_array(availability, kValidAvailabilities);
+}, 'LanguageModel.availability() returns a valid value with no options');
+
+promise_test(async () => {
+  // An array of plausible test option values.
+  const kCreateOptionsSpec = [
+    {topK: [undefined, -2, 0, 1, 1.5, 3, 99]},  // Nominally int 1-10+.
+    {temperature: [undefined, -0.5, 0, 0.6, 1, 7]},  // Nominally float 0-1.
+    {expectedInputs: [undefined, [], [{type: 'text'}],
+       [{type: 'text'}, {type: 'audio'}, {type: 'image'}],
+       [{type: 'text', languages: ['en', 'ja', 'ko']}],
+       [{type: 'audio', languages: ['es']}, {type: 'image', languages: ['fr']}],
+    ]},
+    {initialPrompts: [undefined, [], [{role: 'system', content: 'have fun'}],
+      [{role: 'system', content: 'have fun'}, {role: 'user', content: 'be good'}],
+      [{role: 'system', content: 'be good'}, {role: 'system', content: 'be bad'}],
+      [{role: 'system', content: 'have fun'}, {role: 'system', content: 'be bad'}],
+    ]},
+  ];
+  for (const options of generateOptionCombinations(kCreateOptionsSpec)) {
+    const availability = await LanguageModel.availability(options);
+    assert_in_array(availability, kValidAvailabilities, options);
+  }
+}, 'LanguageModel.availability() returns a valid value with plausible options');

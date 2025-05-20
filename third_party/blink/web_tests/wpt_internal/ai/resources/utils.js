@@ -1,4 +1,46 @@
+const kValidAvailabilities =
+    ['unavailable', 'downloadable', 'downloading', 'available'];
+const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
+
 const kTestPrompt = 'Please write a sentence in English.';
+
+// Takes an array of dictionaries mapping keys to value arrays, e.g.:
+//   [ {Shape: ["Square", "Circle", undefined]}, {Count: [1, 2]} ]
+// Returns an array of dictionaries with all value combinations, i.e.:
+//  [ {Shape: "Square", Count: 1}, {Shape: "Square", Count: 2},
+//    {Shape: "Circle", Count: 1}, {Shape: "Circle", Count: 2},
+//    {Shape: undefined, Count: 1}, {Shape: undefined, Count: 2} ]
+// Omits dictionary members when the value is undefined; supports array values.
+function generateOptionCombinations(optionsSpec) {
+  // 1. Extract keys from the input specification.
+  const keys = optionsSpec.map(o => Object.keys(o)[0]);
+  // 2. Extract the arrays of possible values for each key.
+  const valueArrays = optionsSpec.map(o => Object.values(o)[0]);
+  // 3. Compute the Cartesian product of the value arrays using reduce.
+  const valueCombinations = valueArrays.reduce((accumulator, currentValues) => {
+    // Init the empty accumulator (first iteration), with single-element
+    // arrays.
+    if (accumulator.length === 0) {
+      return currentValues.map(value => [value]);
+    }
+    // Otherwise, expand existing combinations with current values.
+    return accumulator.flatMap(
+        existingCombo => currentValues.map(
+            currentValue => [...existingCombo, currentValue]));
+  }, []);
+
+  // 4. Map each value combination to a result dictionary, skipping
+  // undefined.
+  return valueCombinations.map(combination => {
+    const result = {};
+    keys.forEach((key, index) => {
+      if (combination[index] !== undefined) {
+        result[key] = combination[index];
+      }
+    });
+    return result;
+  });
+}
 
 const testSession = async (session) => {
   if (typeof session.topK !== 'number') {
@@ -158,14 +200,14 @@ const getPromptExceedingAvailableTokens = async session => {
   return getPrompt(left);
 };
 
-const ensureLanguageModel = async () => {
-  // Make sure the prompt api is enabled.
+async function ensureLanguageModel(options = {}) {
   assert_true(!!LanguageModel);
-  // Make sure the session could be created.
-  const availability = await LanguageModel.availability();
-  // TODO(crbug.com/376789810): make it a PRECONDITION_FAILED if the model is
-  // not ready.
-  assert_not_equals(availability, 'unavailable');
+  const availability = await LanguageModel.availability(options);
+  assert_in_array(availability, kValidAvailabilities);
+  // Yield PRECONDITION_FAILED if the API is unavailable on this device.
+  if (availability == 'unavailable') {
+    throw new OptionalFeatureUnsupportedError("API unavailable on this device");
+  }
 };
 
 async function testMonitor(createFunc, options = {}) {
