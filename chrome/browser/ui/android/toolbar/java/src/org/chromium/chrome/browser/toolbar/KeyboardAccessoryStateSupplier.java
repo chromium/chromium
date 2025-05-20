@@ -26,16 +26,28 @@ public class KeyboardAccessoryStateSupplier extends ObservableSupplierImpl<Integ
     private final ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private final Callback<Integer> mInsetChangeCallback = this::set;
     private @Nullable ManualFillingComponent mManualFillingComponent;
+    private final ObservableSupplierImpl<Boolean> mIsSheetShowingSupplier =
+            new ObservableSupplierImpl<>(false);
+    private final View mView;
 
     public KeyboardAccessoryStateSupplier(
-            ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier) {
+            ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier, View view) {
         super(0);
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
+        mView = view;
         ManualFillingComponent manualFillingComponent =
                 mManualFillingComponentSupplier.addObserver(mManualFillingAvailableCallback);
         if (manualFillingComponent != null) {
             onManualFillingComponentAvailable(manualFillingComponent);
         }
+    }
+
+    @Override
+    public void set(Integer object) {
+        super.set(object);
+        mIsSheetShowingSupplier.set(
+                mManualFillingComponent != null
+                        && mManualFillingComponent.isFillingViewShown(mView));
     }
 
     private void onManualFillingComponentAvailable(ManualFillingComponent manualFillingComponent) {
@@ -50,13 +62,7 @@ public class KeyboardAccessoryStateSupplier extends ObservableSupplierImpl<Integ
         }
     }
 
-    /**
-     * {@link ManualFillingComponent#isFillingViewShown(View)}
-     *
-     * @param view A {@link View} that is used to find the window root.
-     */
-    public boolean isSheetShowing(View view) {
-        if (mManualFillingComponent == null) return false;
-        return mManualFillingComponent.isFillingViewShown(view);
+    public ObservableSupplierImpl<Boolean> getIsSheetShowingSupplier() {
+        return mIsSheetShowingSupplier;
     }
 }

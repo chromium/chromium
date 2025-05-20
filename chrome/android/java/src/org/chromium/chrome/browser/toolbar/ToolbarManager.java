@@ -1664,9 +1664,10 @@ public class ToolbarManager
                 mLayoutStateProvider != null
                         ? mLayoutStateProvider.getActiveLayoutType() == LayoutType.TAB_SWITCHER
                         : false);
-        KeyboardAccessoryStateSupplier keyboardAccessoryHeightSupplier =
+        KeyboardAccessoryStateSupplier keyboardAccessoryStateSupplier =
                 new KeyboardAccessoryStateSupplier(
-                        ManualFillingComponentSupplier.from(mWindowAndroid));
+                        ManualFillingComponentSupplier.from(mWindowAndroid),
+                        mControlContainer.getView());
         ObservableSupplierImpl<Integer> controlContainerTranslationSupplier =
                 new ObservableSupplierImpl<>(0);
         new ToolbarPositionController(
@@ -1677,7 +1678,7 @@ public class ToolbarManager
                 mOmniboxFocusStateSupplier,
                 mFormFieldFocusedSupplier,
                 mFindInPageShowingSupplier,
-                keyboardAccessoryHeightSupplier,
+                keyboardAccessoryStateSupplier,
                 mWindowAndroid.getKeyboardDelegate(),
                 mControlContainer,
                 mBottomControlsStacker,
@@ -1697,9 +1698,7 @@ public class ToolbarManager
                             mBrowserControlsSizer,
                             mWindowAndroid.getInsetObserver(),
                             controlContainerTranslationSupplier,
-                            () ->
-                                    keyboardAccessoryHeightSupplier.isSheetShowing(
-                                            mControlContainer.getView()));
+                            keyboardAccessoryStateSupplier.getIsSheetShowingSupplier());
         }
     }
 

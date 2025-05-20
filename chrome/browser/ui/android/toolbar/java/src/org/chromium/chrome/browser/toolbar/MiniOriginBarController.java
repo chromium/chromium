@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
@@ -20,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
@@ -31,6 +33,8 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.ViewUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -42,6 +46,60 @@ import java.util.function.BooleanSupplier;
 @NullMarked
 public class MiniOriginBarController implements Observer {
 
+    @IntDef({
+        MiniOriginState.NOT_READY,
+        MiniOriginState.READY,
+        MiniOriginState.ANIMATING,
+        MiniOriginState.SHOWING,
+        MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET,
+        MiniOriginState.SUPPRESSED_BY_CLICK,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MiniOriginState {
+        // The mini origin bar isn't showing and can't show even if a form field is focused.
+        int NOT_READY = 0;
+        // The mini origin bar isn't showing but can show if the soft keyboard shows.
+        int READY = 1;
+        // The mini origin bar is animating to either show or hide itself.
+        int ANIMATING = 2;
+        // The mini origin bar is showing at its fully minimized size.
+        int SHOWING = 3;
+        // The mini origin bar is showing at its fully minimized size and is stacked on top of a
+        // keyboard accessory sheet.
+        int SHOWING_WITH_ACCESSORY_SHEET = 4;
+        // The mini origin bar has been suppressed by a user click and should not show again until a
+        // new "session" begins.
+        int SUPPRESSED_BY_CLICK = 5;
+    }
+
+    @IntDef({
+        MiniOriginEvent.KEYBOARD_APPEARED,
+        MiniOriginEvent.KEYBOARD_DISAPPEARED,
+        MiniOriginEvent.KEYBOARD_ANIMATION_PREPARED,
+        MiniOriginEvent.KEYBOARD_ANIMATION_ENDED,
+        MiniOriginEvent.FORM_FIELD_GAINED_FOCUS,
+        MiniOriginEvent.FORM_FIELD_LOST_FOCUS,
+        MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP,
+        MiniOriginEvent.CONTROLS_POSITION_BECAME_BOTTOM,
+        MiniOriginEvent.ORIGIN_BAR_CLICKED,
+        MiniOriginEvent.ACCESSORY_SHEET_APPEARED,
+        MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MiniOriginEvent {
+        int KEYBOARD_APPEARED = 0;
+        int KEYBOARD_DISAPPEARED = 1;
+        int KEYBOARD_ANIMATION_PREPARED = 2;
+        int KEYBOARD_ANIMATION_ENDED = 3;
+        int FORM_FIELD_GAINED_FOCUS = 4;
+        int FORM_FIELD_LOST_FOCUS = 5;
+        int CONTROLS_POSITION_BECAME_TOP = 6;
+        int CONTROLS_POSITION_BECAME_BOTTOM = 7;
+        int ORIGIN_BAR_CLICKED = 8;
+        int ACCESSORY_SHEET_APPEARED = 9;
+        int ACCESSORY_SHEET_DISAPPEARED = 10;
+    }
+
     private final LocationBar mLocationBar;
     private final ObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -51,14 +109,12 @@ public class MiniOriginBarController implements Observer {
     private final ControlContainer mControlContainer;
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
     private final BrowserControlsSizer mBrowserControlsSizer;
-    private final BooleanSupplier mIsKeyboardAccessorySheetShowing;
+    private final ObservableSupplier<Boolean> mIsKeyboardAccessorySheetShowing;
     private final MiniOriginWindowInsetsAnimationListener mWindowInsetsAnimationListener;
-    private boolean mShowMiniOriginBar;
+    private @MiniOriginState int mMiniOriginBarState = MiniOriginState.NOT_READY;
     private FrameLayout.LayoutParams mDefaultLocationBarLayoutParams;
-    private boolean mOriginBarClickedInSession;
     private final TouchEventObserver mTouchEventObserver;
     private final int mDefaultLocationBarRightPadding;
-    private boolean mFormFieldFocusChanged;
 
     /**
      * @param locationBar LocationBar instance used to change the presentation of e.g. the UrlBar
@@ -80,7 +136,7 @@ public class MiniOriginBarController implements Observer {
             BrowserControlsSizer browserControlsSizer,
             InsetObserver insetObserver,
             ObservableSupplierImpl<Integer> controlContainerTranslationSupplier,
-            BooleanSupplier isKeyboardAccessorySheetShowing) {
+            ObservableSupplier<Boolean> isKeyboardAccessorySheetShowing) {
         mLocationBar = locationBar;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
@@ -98,79 +154,128 @@ public class MiniOriginBarController implements Observer {
                         keyboardVisibilityDelegate,
                         (ViewGroup) mLocationBar.getContainerView(),
                         controlContainerTranslationSupplier,
-                        () -> mFormFieldFocusChanged = false,
+                        () -> updateMiniOriginBarState(MiniOriginEvent.KEYBOARD_ANIMATION_PREPARED),
+                        () -> updateMiniOriginBarState(MiniOriginEvent.KEYBOARD_ANIMATION_ENDED),
                         this::waitingForImeAnimationToStart);
         insetObserver.addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
 
         mIsFormFieldFocusedObserver =
                 (focused) -> {
-                    mFormFieldFocusChanged = true;
-                    updateMiniOriginBarState();
+                    updateMiniOriginBarState(
+                            focused
+                                    ? MiniOriginEvent.FORM_FIELD_GAINED_FOCUS
+                                    : MiniOriginEvent.FORM_FIELD_LOST_FOCUS);
                 };
-        mKeyboardVisibilityObserver = (showing) -> updateMiniOriginBarState();
+        mKeyboardVisibilityObserver =
+                (showing) ->
+                        updateMiniOriginBarState(
+                                showing
+                                        ? MiniOriginEvent.KEYBOARD_APPEARED
+                                        : MiniOriginEvent.KEYBOARD_DISAPPEARED);
 
         mIsFormFieldFocusedSupplier.addObserver(mIsFormFieldFocusedObserver);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityObserver);
 
         mTouchEventObserver =
                 e -> {
-                    if (!mShowMiniOriginBar) return false;
+                    if (mMiniOriginBarState != MiniOriginState.SHOWING
+                            && mMiniOriginBarState != MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET
+                            && mMiniOriginBarState != MiniOriginState.ANIMATING) return false;
+                    // Suppress all clicks during animation as they are 1) unlikely to be
+                    // intentional and 2) difficult to cleanly handle.
+                    if (mMiniOriginBarState == MiniOriginState.ANIMATING) return true;
                     boolean isDownEvent = e.getActionMasked() == MotionEvent.ACTION_DOWN;
-                    mOriginBarClickedInSession = isDownEvent;
-                    updateMiniOriginBarState();
+                    updateMiniOriginBarState(MiniOriginEvent.ORIGIN_BAR_CLICKED);
                     return isDownEvent;
                 };
         controlContainer.addTouchEventObserver(mTouchEventObserver);
+
+        mIsKeyboardAccessorySheetShowing.addObserver(
+                (showing) ->
+                        updateMiniOriginBarState(
+                                showing
+                                        ? MiniOriginEvent.ACCESSORY_SHEET_APPEARED
+                                        : MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED));
     }
 
-    private void updateMiniOriginBarState() {
-        boolean isFormFieldFocused = mIsFormFieldFocusedSupplier.get();
-        boolean isKeyboardVisible =
-                mKeyboardVisibilityDelegate.isKeyboardShowing(
-                        mContext, mControlContainer.getView());
-        boolean isToolbarBottomAnchored =
-                mBrowserControlsSizer.getControlsPosition() == ControlsPosition.BOTTOM;
-        if (!isFormFieldFocused || !isKeyboardVisible) mOriginBarClickedInSession = false;
+    private void updateMiniOriginBarState(@MiniOriginEvent int event) {
+        @MiniOriginState int newMiniOriginState = getNewMiniOriginState(event);
+        if (newMiniOriginState == mMiniOriginBarState) return;
 
-        boolean showMiniOriginBar =
-                !mOriginBarClickedInSession
-                        && isToolbarBottomAnchored
-                        && isFormFieldFocused
-                        && isKeyboardVisible;
-        if (showMiniOriginBar == mShowMiniOriginBar) return;
+        transitionToNewState(newMiniOriginState);
+    }
 
-        if (showMiniOriginBar) {
+    private void transitionToNewState(@MiniOriginState int newMiniOriginState) {
+        // TODO: Add animation-specific setup code so that the text scales and translates to/from
+        // the correct start/end points.
+        boolean isChangingVisibility =
+                isMiniOriginBarVisibleForState(newMiniOriginState)
+                        != isMiniOriginBarVisibleForState(mMiniOriginBarState);
+        mMiniOriginBarState = newMiniOriginState;
+        if (!isChangingVisibility) return;
+
+        if (isMiniOriginBarVisibleForState(newMiniOriginState)) {
+            // Cache the location bar's layout params now, since we are about to mutate them.
             mDefaultLocationBarLayoutParams =
                     (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
+            showMiniOriginBar();
+        } else {
+            hideMiniOriginBar();
         }
+    }
 
-        mShowMiniOriginBar = showMiniOriginBar;
-        mLocationBar.setShowOriginOnly(mShowMiniOriginBar);
-        mLocationBar.setUrlBarUsesSmallText(mShowMiniOriginBar);
-        mLocationBar.setHideStatusIconForSecureOrigins(mShowMiniOriginBar);
-        mSuppressToolbarSceneLayerSupplier.set(mShowMiniOriginBar);
-        mControlContainer.toggleLocationBarOnlyMode(mShowMiniOriginBar);
+    private boolean isMiniOriginBarVisibleForState(@MiniOriginState int miniOriginBarState) {
+        return switch (miniOriginBarState) {
+            case MiniOriginState.NOT_READY,
+                    MiniOriginState.READY,
+                    MiniOriginState.SUPPRESSED_BY_CLICK -> false;
+            case MiniOriginState.ANIMATING,
+                    MiniOriginState.SHOWING,
+                    MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET -> true;
+            default -> throw new IllegalStateException(
+                    "Unexpected mini origin state: " + miniOriginBarState);
+        };
+    }
+
+    private void showMiniOriginBar() {
+        mLocationBar.setShowOriginOnly(true);
+        mLocationBar.setUrlBarUsesSmallText(true);
+        mLocationBar.setHideStatusIconForSecureOrigins(true);
+        mSuppressToolbarSceneLayerSupplier.set(true);
+        mControlContainer.toggleLocationBarOnlyMode(true);
 
         int newControlContainerHeight =
-                showMiniOriginBar
-                        ? mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.mini_origin_bar_height)
-                        : LayoutParams.WRAP_CONTENT;
+                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height);
         mControlContainer.mutateLayoutParams().height = newControlContainerHeight;
-
         var minifiedLayoutParams =
                 new FrameLayout.LayoutParams(
                         LayoutParams.WRAP_CONTENT, newControlContainerHeight, Gravity.CENTER);
 
         var locationBarView = mLocationBar.getContainerView();
-        var locationBarLayoutParams =
-                mShowMiniOriginBar ? minifiedLayoutParams : mDefaultLocationBarLayoutParams;
-        locationBarView.setLayoutParams(locationBarLayoutParams);
-        int locationBarRightPadding = mShowMiniOriginBar ? 0 : mDefaultLocationBarRightPadding;
+        locationBarView.setLayoutParams(minifiedLayoutParams);
+        int locationBarRightPadding = 0;
         locationBarView.setPadding(
                 locationBarView.getPaddingLeft(),
                 locationBarView.getPaddingTop(),
                 locationBarRightPadding,
+                locationBarView.getPaddingBottom());
+    }
+
+    private void hideMiniOriginBar() {
+        mLocationBar.setShowOriginOnly(false);
+        mLocationBar.setUrlBarUsesSmallText(false);
+        mLocationBar.setHideStatusIconForSecureOrigins(false);
+        mSuppressToolbarSceneLayerSupplier.set(false);
+        mControlContainer.toggleLocationBarOnlyMode(false);
+
+        mControlContainer.mutateLayoutParams().height = LayoutParams.WRAP_CONTENT;
+
+        var locationBarView = mLocationBar.getContainerView();
+        locationBarView.setLayoutParams(mDefaultLocationBarLayoutParams);
+        locationBarView.setPadding(
+                locationBarView.getPaddingLeft(),
+                locationBarView.getPaddingTop(),
+                mDefaultLocationBarRightPadding,
                 locationBarView.getPaddingBottom());
     }
 
@@ -182,12 +287,107 @@ public class MiniOriginBarController implements Observer {
 
     @Override
     public void onControlsPositionChanged(int controlsPosition) {
-        updateMiniOriginBarState();
+        updateMiniOriginBarState(
+                controlsPosition == ControlsPosition.BOTTOM
+                        ? MiniOriginEvent.CONTROLS_POSITION_BECAME_BOTTOM
+                        : MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP);
     }
 
-    @VisibleForTesting
-    boolean waitingForImeAnimationToStart() {
-        return mFormFieldFocusChanged && !mIsKeyboardAccessorySheetShowing.getAsBoolean();
+    private boolean waitingForImeAnimationToStart() {
+        return mMiniOriginBarState == MiniOriginState.READY
+                || mMiniOriginBarState == MiniOriginState.SHOWING;
+    }
+
+    /**
+     * Gets the next state of the mini origin bar considering current state and an event. This logic
+     * assumes that: 1. Form field focus changes precede the associated keyboard visibility change
+     * 2. Keyboard animation prepare events precede the associated keyboard visibility change 3.
+     * Multiple keyboard visibility change events can fire in the course of a single animation
+     */
+    private @MiniOriginState int getNewMiniOriginState(@MiniOriginEvent int miniOriginEvent) {
+        switch (mMiniOriginBarState) {
+            case MiniOriginState.NOT_READY -> {
+                if (mIsFormFieldFocusedSupplier.get()
+                        && mBrowserControlsSizer.getControlsPosition() == ControlsPosition.BOTTOM) {
+                    return isKeyboardShowing() ? MiniOriginState.SHOWING : MiniOriginState.READY;
+                }
+                return MiniOriginState.NOT_READY;
+            }
+            case MiniOriginState.READY -> {
+                return switch (miniOriginEvent) {
+                    case MiniOriginEvent.FORM_FIELD_LOST_FOCUS,
+                            MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP -> MiniOriginState
+                            .NOT_READY;
+                    case MiniOriginEvent.KEYBOARD_ANIMATION_PREPARED -> MiniOriginState.ANIMATING;
+                    case MiniOriginEvent.KEYBOARD_APPEARED ->
+                    // Skip our animation if we get a keyboard appearance event before the animation
+                    // prepare signal.
+                    MiniOriginState.SHOWING;
+                    default -> MiniOriginState.READY;
+                };
+            }
+            case MiniOriginState.ANIMATING -> {
+                return switch (miniOriginEvent) {
+                    case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP -> MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.KEYBOARD_ANIMATION_ENDED -> isKeyboardShowing()
+                            ? MiniOriginState.SHOWING
+                            : MiniOriginState.READY;
+                    case MiniOriginEvent.ACCESSORY_SHEET_APPEARED -> MiniOriginState
+                            .SHOWING_WITH_ACCESSORY_SHEET;
+                    default -> MiniOriginState.ANIMATING;
+                };
+            }
+            case MiniOriginState.SHOWING -> {
+                return switch (miniOriginEvent) {
+                    case MiniOriginEvent.ACCESSORY_SHEET_APPEARED -> MiniOriginState
+                            .SHOWING_WITH_ACCESSORY_SHEET;
+                    case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP -> MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.KEYBOARD_ANIMATION_PREPARED -> MiniOriginState.ANIMATING;
+                    case MiniOriginEvent.KEYBOARD_DISAPPEARED ->
+                    // Skip our animation if we get a keyboard disappearance event before the
+                    // animation prepare signal.
+                    MiniOriginState.READY;
+                    case MiniOriginEvent.ORIGIN_BAR_CLICKED -> MiniOriginState.SUPPRESSED_BY_CLICK;
+                    default -> MiniOriginState.SHOWING;
+                };
+            }
+            case MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET -> {
+                return switch (miniOriginEvent) {
+                    case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP,
+                            MiniOriginEvent.FORM_FIELD_LOST_FOCUS -> MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.ORIGIN_BAR_CLICKED -> MiniOriginState.SUPPRESSED_BY_CLICK;
+                    case MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED -> MiniOriginState.SHOWING;
+                        // We don't animate from this state because the accessory sheet is in the
+                        // way.
+                    default -> MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET;
+                };
+            }
+            case MiniOriginState.SUPPRESSED_BY_CLICK -> {
+                return switch (miniOriginEvent) {
+                    case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP,
+                            MiniOriginEvent.FORM_FIELD_LOST_FOCUS -> MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.KEYBOARD_DISAPPEARED -> MiniOriginState.READY;
+                        // We don't animate from this state because the accessory sheet is in the
+                        // way.
+                    default -> MiniOriginState.SUPPRESSED_BY_CLICK;
+                };
+            }
+        }
+        assert false : "Unrecognized initial mini origin state";
+        return mMiniOriginBarState;
+    }
+
+    @MiniOriginState
+    int getCurrentStateForTesting() {
+        return mMiniOriginBarState;
+    }
+
+    MiniOriginWindowInsetsAnimationListener getAnimationListenerForTesting() {
+        return mWindowInsetsAnimationListener;
+    }
+
+    private boolean isKeyboardShowing() {
+        return mKeyboardVisibilityDelegate.isKeyboardShowing(mContext, mControlContainer.getView());
     }
 
     @VisibleForTesting
@@ -199,34 +399,44 @@ public class MiniOriginBarController implements Observer {
         private final ViewGroup mContainerView;
         private final ObservableSupplierImpl<Integer> mTranslationSupplier;
         private final Context mContext;
-        private final Runnable mAnimationStartedSignal;
+        private final Runnable mOnAnimationPreparedSignal;
+        private final Runnable mAnimationEndedSignal;
         private final BooleanSupplier mWaitingForAnimation;
+        private @Nullable WindowInsetsAnimationCompat mAnimation;
 
         MiniOriginWindowInsetsAnimationListener(
                 KeyboardVisibilityDelegate keyboardVisibilityDelegate,
                 ViewGroup containerView,
                 ObservableSupplierImpl<Integer> translationSupplier,
-                Runnable animationStartedSignal,
+                Runnable animationPreparedSignal,
+                Runnable animationEndedSignal,
                 BooleanSupplier waitingForAnimation) {
             mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
             mContainerView = containerView;
             mTranslationSupplier = translationSupplier;
             mContext = containerView.getContext();
-            mAnimationStartedSignal = animationStartedSignal;
+            mOnAnimationPreparedSignal = animationPreparedSignal;
+            mAnimationEndedSignal = animationEndedSignal;
             mWaitingForAnimation = waitingForAnimation;
         }
 
         @Override
-        public void onPrepare(WindowInsetsAnimationCompat animation) {}
-
-        @Override
-        public void onStart(WindowInsetsAnimationCompat animation, BoundsCompat bounds) {
+        public void onPrepare(WindowInsetsAnimationCompat animation) {
             if (!mWaitingForAnimation.getAsBoolean()
                     || ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0)) {
                 return;
             }
 
-            mAnimationStartedSignal.run();
+            mAnimation = animation;
+            mOnAnimationPreparedSignal.run();
+        }
+
+        @Override
+        public void onStart(WindowInsetsAnimationCompat animation, BoundsCompat bounds) {
+            if (animation != mAnimation) {
+                return;
+            }
+
             // Prevent clipping so that the mini origin bar can draw in bounds allocated for the
             // keyboard; we will prevent overlap by syncing our translation to its movement in
             // onProgress.
@@ -255,6 +465,8 @@ public class MiniOriginBarController implements Observer {
             ViewUtils.setAncestorsShouldClipChildren(mContainerView, true, ViewGroup.NO_ID);
             ViewUtils.setAncestorsShouldClipToPadding(mContainerView, true, ViewGroup.NO_ID);
             mTranslationSupplier.set(0);
+            mAnimationEndedSignal.run();
+            mAnimation = null;
         }
     }
 }
