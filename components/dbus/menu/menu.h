@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusMenu {
     const raw_ptr<ui::MenuModel> menu;
     // |containing_menu| will be null for the root item.  If it's null, then
     // |containing_menu_index| is meaningless.
-    const raw_ptr<ui::MenuModel> containing_menu;
+    const raw_ptr<ui::MenuModel, DanglingUntriaged> containing_menu;
     const size_t containing_menu_index;
   };
 
