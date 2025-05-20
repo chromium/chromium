@@ -147,6 +147,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private boolean mLoadStateCalled;
     private boolean mRestoreTabsCalled;
     private boolean mRescueTabsCalled;
+    private boolean mRescueTabGroupsCalled;
     private CallbackController mCallbackController = new CallbackController();
     private @Nullable HistoricalTabModelObserver mHistoricalTabModelObserver;
     private boolean mTriggerAutodeleteAfterDataCreated;
@@ -293,15 +294,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         }
 
         // If the flag is turned off, clear all {@link SavedTabGroup}s of possible archived status.
-        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                && mTabGroupSyncService != null) {
-            for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
-                SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
-
-                if (savedTabGroup != null && savedTabGroup.archivalTimeMs != null) {
-                    mTabGroupSyncService.updateArchivalStatus(syncGroupId, false);
-                }
-            }
+        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+            rescueArchivedTabGroups();
         }
     }
 
@@ -479,6 +473,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                 mCallbackController.makeCancelable(() -> rescueArchivedTabsImpl(orchestrator)),
                 getTabModelSelector(),
                 orchestrator.getTabModelSelector());
+        rescueArchivedTabGroups();
     }
 
     private void rescueArchivedTabsImpl(TabbedModeTabModelOrchestrator orchestrator) {
@@ -490,6 +485,22 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         .getTabCreatorManager()
                         .getTabCreator(/* incognito= */ false));
         resumeSaveTabList(orchestrator);
+    }
+
+    private void rescueArchivedTabGroups() {
+        if (mTabGroupSyncService == null) return;
+
+        if (mRescueTabGroupsCalled) return;
+        mRescueTabGroupsCalled = true;
+
+        // Clear all {@link SavedTabGroup}s of possible archived status as the rescue operation.
+        for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
+
+            if (savedTabGroup != null && savedTabGroup.archivalTimeMs != null) {
+                mTabGroupSyncService.updateArchivalStatus(syncGroupId, false);
+            }
+        }
     }
 
     public void initializeHistoricalTabModelObserver(Supplier<TabModel> regularTabModelSupplier) {
@@ -583,6 +594,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     public void resetRescueArchivedTabsForTesting() {
         mRescueTabsCalled = false;
+    }
+
+    public void resetRescueArchivedTabGroupsForTesting() {
+        mRescueTabGroupsCalled = false;
     }
 
     public void setTabModelSelectorForTesting(TabModelSelectorBase tabModelSelector) {
