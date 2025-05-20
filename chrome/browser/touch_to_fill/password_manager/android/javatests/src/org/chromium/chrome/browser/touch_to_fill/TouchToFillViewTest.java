@@ -212,7 +212,7 @@ public class TouchToFillViewTest {
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     R.drawable
-                                                                            .touch_to_fill_header_image)
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -254,7 +254,7 @@ public class TouchToFillViewTest {
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     R.drawable
-                                                                            .touch_to_fill_header_image)
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -286,7 +286,7 @@ public class TouchToFillViewTest {
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     R.drawable
-                                                                            .touch_to_fill_header_image)
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -320,7 +320,7 @@ public class TouchToFillViewTest {
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     R.drawable
-                                                                            .touch_to_fill_header_image)
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -354,7 +354,7 @@ public class TouchToFillViewTest {
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     R.drawable
-                                                                            .touch_to_fill_header_image)
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -388,7 +388,7 @@ public class TouchToFillViewTest {
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     R.drawable
-                                                                            .touch_to_fill_header_image)
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -851,7 +851,7 @@ public class TouchToFillViewTest {
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
                                                                     R.drawable
-                                                                            .touch_to_fill_header_image)
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(true)));
                     mModel.set(VISIBLE, true);
