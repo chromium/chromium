@@ -17,7 +17,6 @@
 namespace blink {
 
 class ComputedStyle;
-class Path;
 
 typedef unsigned BorderEdgeFlags;
 
@@ -82,28 +81,32 @@ class BoxBorderPainter {
                  BoxSide,
                  float alpha,
                  BorderEdgeFlags) const;
+
+  enum SideType {
+    kStraight,
+    kCurved,
+  };
   void PaintOneBorderSide(const gfx::Rect& side_rect,
                           BoxSide,
                           BoxSide adjacent_side1,
                           BoxSide adjacent_side2,
-                          const Path*,
+                          SideType side_type,
                           Color,
                           BorderEdgeFlags) const;
   bool PaintBorderFastPath() const;
   void DrawDoubleBorder() const;
 
-  void DrawBoxSideFromPath(const Path&,
-                           int thickness,
-                           int draw_thickness,
-                           BoxSide,
-                           Color,
-                           EBorderStyle) const;
-  void DrawDashedDottedBoxSideFromPath(int thickness,
-                                       int draw_thickness,
-                                       Color,
-                                       EBorderStyle) const;
-  void DrawDoubleBoxSideFromPath(Color) const;
-  void DrawRidgeGrooveBoxSideFromPath(BoxSide, Color, EBorderStyle) const;
+  void DrawCurvedBoxSide(int thickness,
+                         int draw_thickness,
+                         BoxSide,
+                         Color,
+                         EBorderStyle) const;
+  void DrawCurvedDashedDottedBoxSide(int thickness,
+                                     int draw_thickness,
+                                     Color,
+                                     EBorderStyle) const;
+  void DrawCurvedDoubleBoxSide(Color) const;
+  void DrawCurvedRidgeGrooveBoxSide(BoxSide, Color, EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
   gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
 

@@ -862,16 +862,9 @@ struct BoxBorderPainter::ComplexBorderInfo {
 
     // Finally, build the opacity group structures.
     BuildOpacityGroups(border_painter, sorted_sides);
-
-    if (border_painter.is_rounded_) {
-      rounded_border_path = border_painter.outer_.GetPath();
-    }
   }
 
   Vector<OpacityGroup, 4> opacity_groups;
-
-  // Potentially used when drawing rounded borders.
-  Path rounded_border_path;
 
  private:
   void BuildOpacityGroups(const BoxBorderPainter& border_painter,
@@ -1254,73 +1247,70 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       edge.GetColor().Param1(), edge.GetColor().Param2(), alpha);
 
   gfx::Rect side_rect = gfx::ToRoundedRect(outer_.Rect());
-  const Path* path = nullptr;
 
   // TODO(fmalita): find a way to consolidate these without sacrificing
   // readability.
   switch (side) {
     case BoxSide::kTop: {
-      bool use_path =
+      const bool is_curved =
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
                           !inner_.HasRoundCurvature() ||
                           BorderWillArcInnerEdge(inner_.GetRadii().TopLeft(),
                                                  inner_.GetRadii().TopRight()));
-      if (use_path) {
-        path = &border_info.rounded_border_path;
-      } else {
+      if (!is_curved) {
         side_rect.set_height(edge.Width());
       }
 
+      const SideType side_type = is_curved ? kCurved : kStraight;
       PaintOneBorderSide(side_rect, BoxSide::kTop, BoxSide::kLeft,
-                         BoxSide::kRight, path, color, completed_edges);
+                         BoxSide::kRight, side_type, color, completed_edges);
       break;
     }
     case BoxSide::kBottom: {
-      bool use_path = is_rounded_ &&
-                      (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
-                       !inner_.HasRoundCurvature() ||
-                       BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
-                                              inner_.GetRadii().BottomRight()));
-      if (use_path) {
-        path = &border_info.rounded_border_path;
-      } else {
+      const bool is_curved =
+          is_rounded_ &&
+          (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
+           !inner_.HasRoundCurvature() ||
+           BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
+                                  inner_.GetRadii().BottomRight()));
+      if (!is_curved) {
         SetToBottomSideRect(side_rect, edge.Width());
       }
 
+      const SideType side_type = is_curved ? kCurved : kStraight;
       PaintOneBorderSide(side_rect, BoxSide::kBottom, BoxSide::kLeft,
-                         BoxSide::kRight, path, color, completed_edges);
+                         BoxSide::kRight, side_type, color, completed_edges);
       break;
     }
     case BoxSide::kLeft: {
-      bool use_path =
+      const bool is_curved =
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
                           !inner_.HasRoundCurvature() ||
                           BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
                                                  inner_.GetRadii().TopLeft()));
-      if (use_path) {
-        path = &border_info.rounded_border_path;
-      } else {
+      if (!is_curved) {
         side_rect.set_width(edge.Width());
       }
 
+      const SideType side_type = is_curved ? kCurved : kStraight;
       PaintOneBorderSide(side_rect, BoxSide::kLeft, BoxSide::kTop,
-                         BoxSide::kBottom, path, color, completed_edges);
+                         BoxSide::kBottom, side_type, color, completed_edges);
       break;
     }
     case BoxSide::kRight: {
-      bool use_path = is_rounded_ &&
-                      (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
-                       !inner_.HasRoundCurvature() ||
-                       BorderWillArcInnerEdge(inner_.GetRadii().BottomRight(),
-                                              inner_.GetRadii().TopRight()));
-      if (use_path) {
-        path = &border_info.rounded_border_path;
-      } else {
+      const bool is_curved =
+          is_rounded_ &&
+          (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
+           !inner_.HasRoundCurvature() ||
+           BorderWillArcInnerEdge(inner_.GetRadii().BottomRight(),
+                                  inner_.GetRadii().TopRight()));
+      if (!is_curved) {
         SetToRightSideRect(side_rect, edge.Width());
       }
 
+      const SideType side_type = is_curved ? kCurved : kStraight;
       PaintOneBorderSide(side_rect, BoxSide::kRight, BoxSide::kTop,
-                         BoxSide::kBottom, path, color, completed_edges);
+                         BoxSide::kBottom, side_type, color, completed_edges);
       break;
     }
     default:
@@ -1378,7 +1368,7 @@ void BoxBorderPainter::PaintOneBorderSide(
     BoxSide side,
     BoxSide adjacent_side1,
     BoxSide adjacent_side2,
-    const Path* path,
+    SideType side_type,
     Color color,
     BorderEdgeFlags completed_edges) const {
   const BorderEdge& edge_to_render = Edge(side);
@@ -1386,7 +1376,7 @@ void BoxBorderPainter::PaintOneBorderSide(
   const BorderEdge& adjacent_edge1 = Edge(adjacent_side1);
   const BorderEdge& adjacent_edge2 = Edge(adjacent_side2);
 
-  if (path) {
+  if (side_type == kCurved) {
     MiterType miter1 =
         ColorsMatchAtCorner(side, adjacent_side1) ? kHardMiter : kSoftMiter;
     MiterType miter2 =
@@ -1406,8 +1396,8 @@ void BoxBorderPainter::PaintOneBorderSide(
     int stroke_thickness =
         std::max(std::max(edge_to_render.Width(), adjacent_edge1.Width()),
                  adjacent_edge2.Width());
-    DrawBoxSideFromPath(*path, edge_to_render.Width(), stroke_thickness, side,
-                        color, edge_to_render.BorderStyle());
+    DrawCurvedBoxSide(edge_to_render.Width(), stroke_thickness, side, color,
+                      edge_to_render.BorderStyle());
   } else {
     MiterType miter1 = ComputeMiter(side, adjacent_side1, completed_edges);
     MiterType miter2 = ComputeMiter(side, adjacent_side2, completed_edges);
@@ -1430,12 +1420,11 @@ void BoxBorderPainter::PaintOneBorderSide(
   }
 }
 
-void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
-                                           int border_thickness,
-                                           int stroke_thickness,
-                                           BoxSide side,
-                                           Color color,
-                                           EBorderStyle border_style) const {
+void BoxBorderPainter::DrawCurvedBoxSide(int border_thickness,
+                                         int stroke_thickness,
+                                         BoxSide side,
+                                         Color color,
+                                         EBorderStyle border_style) const {
   if (border_thickness <= 0)
     return;
 
@@ -1449,15 +1438,15 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
       return;
     case EBorderStyle::kDotted:
     case EBorderStyle::kDashed:
-      DrawDashedDottedBoxSideFromPath(border_thickness, stroke_thickness, color,
-                                      border_style);
+      DrawCurvedDashedDottedBoxSide(border_thickness, stroke_thickness, color,
+                                    border_style);
       return;
     case EBorderStyle::kDouble:
-      DrawDoubleBoxSideFromPath(color);
+      DrawCurvedDoubleBoxSide(color);
       return;
     case EBorderStyle::kRidge:
     case EBorderStyle::kGroove:
-      DrawRidgeGrooveBoxSideFromPath(side, color, border_style);
+      DrawCurvedRidgeGrooveBoxSide(side, color, border_style);
       return;
     case EBorderStyle::kInset:
     case EBorderStyle::kOutset:
@@ -1473,7 +1462,7 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
                     PaintAutoDarkMode(style_, element_role_));
 }
 
-void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
+void BoxBorderPainter::DrawCurvedDashedDottedBoxSide(
     int border_thickness,
     int stroke_thickness,
     Color color,
@@ -1510,7 +1499,7 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
                       PaintAutoDarkMode(style_, element_role_));
 }
 
-void BoxBorderPainter::DrawDoubleBoxSideFromPath(Color color) const {
+void BoxBorderPainter::DrawCurvedDoubleBoxSide(Color color) const {
   const AutoDarkMode auto_dark_mode = PaintAutoDarkMode(style_, element_role_);
   const gfx::Rect rect = gfx::ToRoundedRect(outer_.Rect());
 
@@ -1548,7 +1537,7 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(Color color) const {
   }
 }
 
-void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
+void BoxBorderPainter::DrawCurvedRidgeGrooveBoxSide(
     BoxSide side,
     Color color,
     EBorderStyle border_style) const {
