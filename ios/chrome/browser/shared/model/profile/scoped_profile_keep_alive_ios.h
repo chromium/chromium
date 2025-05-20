@@ -28,7 +28,7 @@ class ProfileManagerIOS;
 // ProfileManagerIOS is destroyed. A good way to ensure this happen is
 // to implement ProfileManagerObserverIOS API and to reset the objects
 // when `OnProfileManagerWillBeDestroyed(...)` is called.
-class ScopedProfileKeepAliveIOS {
+class [[maybe_unused, nodiscard]] ScopedProfileKeepAliveIOS {
  public:
   using Cleanup = base::OnceClosure;
   using PassKey = base::PassKey<ProfileManagerIOS>;
