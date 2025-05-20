@@ -23432,6 +23432,25 @@
             ]
         }
     ],
+    "TabGroupShortcuts": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupShortcuts"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGroupSuggestionMetricsOnly": [
         {
             "platforms": [
