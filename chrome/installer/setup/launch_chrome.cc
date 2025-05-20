@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/win/elevation_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/util_constants.h"
 
@@ -39,7 +40,7 @@ bool LaunchChromeAndWait(const base::FilePath& application_path,
   base::CommandLine cmd(application_path.Append(kChromeExe));
   cmd.AppendArguments(options, false);
 
-  base::Process chrome_handle = base::LaunchProcess(cmd, base::LaunchOptions());
+  base::Process chrome_handle = base::win::RunDeElevated(cmd);
   if (!chrome_handle.IsValid()) {
     PLOG(ERROR) << "Failed to launch: " << cmd.GetCommandLineString();
     return false;

@@ -952,34 +952,31 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
       &ChromeBrowserMainPartsWin::OnModuleEvent, base::Unretained(this)));
 }
 
+// Check if the browser process is launching elevated, and attempt to
+// automatically de-elevate.
 std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
-  const char* const kNoRestartSwitches[] = {
-      // Automation might want to launch Chrome elevated.
-      switches::kEnableAutomation,
-      // Never attempt to de-elevate a second time.
-      switches::kDoNotDeElevateOnLaunch,
-      // Chrome is launched elevated in system-level installs to prompt the
-      // user, see `DoUninstallTasks`.
-      // TODO(crbug.com/418159641): Investigate whether this stage of uninstall
-      // could be run de-elevated.
-      switches::kUninstall};
-
-  // Check if the browser process is launching elevated, and attempt to
-  // automatically de-elevate. Do not interfere with automation scenarios. Don't
-  // bother trying when UAC is disabled because it won't work anyway.
   if (!base::FeatureList::IsEnabled(features::kAutoDeElevate)) {
     return std::nullopt;
   }
 
+  // Don't bother trying when UAC is disabled because it won't work anyway.
   if (!base::win::UserAccountIsUnnecessarilyElevated()) {
     return std::nullopt;
   }
 
-  for (const auto* do_not_restart_switch : kNoRestartSwitches) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            do_not_restart_switch)) {
-      return std::nullopt;
-    }
+  const char* const kNoRestartSwitches[] = {
+      // Do not interfere with automation scenarios, which might want to launch
+      // Chrome elevated.
+      switches::kEnableAutomation,
+      // Never attempt to de-elevate a second time.
+      switches::kDoNotDeElevateOnLaunch};
+  if (std::ranges::any_of(
+          kNoRestartSwitches,
+          [command_line = base::CommandLine::ForCurrentProcess()](
+              const char* no_restart_switch) {
+            return command_line->HasSwitch(no_restart_switch);
+          })) {
+    return std::nullopt;
   }
 
   base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
