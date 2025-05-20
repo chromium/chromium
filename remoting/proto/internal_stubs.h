@@ -138,12 +138,10 @@ GetReportSessionDisconnectedRequest(
 // RemoteSupportService helpers
 // ============================
 
-using CreateRemoteSupportHostRequest = DoNothingProto;
-extern std::string_view GetCreateRemoteSupportHostRequestPath();
-extern std::unique_ptr<CreateRemoteSupportHostRequest>
-GetCreateRemoteSupportHostRequest(const RemoteSupportHostStruct&);
-
 using RemoteSupportHost = DoNothingProto;
+extern std::string_view GetCreateRemoteSupportHostRequestPath();
+extern std::unique_ptr<RemoteSupportHost> GetRemoteSupportHost(
+    const RemoteSupportHostStruct& request_struct);
 extern std::string_view GetSupportId(const RemoteSupportHost&);
 
 }  // namespace remoting::internal

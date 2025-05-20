@@ -81,7 +81,14 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     std::string ftl_device_id;
 
     // Use corp SessionAuthz auth instead of shared secret auth.
+    // DEPRECATED: use `is_corp_user` instead.
+    // TODO: crbug.com/417567187 - remove once corp IT2ME directory API is
+    // rolled out.
     bool use_corp_session_authz = false;
+
+    // Indicates whether the user is a corp user and corp flows need to be used
+    // instead of the external ones.
+    bool is_corp_user = false;
   };
 
   using CreateDeferredConnectContext =

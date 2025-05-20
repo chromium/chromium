@@ -349,6 +349,8 @@ static_library("common") {
     "corp_heartbeat_service_client.h",
     "corp_host_status_logger.cc",
     "corp_host_status_logger.h",
+    "corp_register_support_host_request.cc",
+    "corp_register_support_host_request.h",
     "crash_process.cc",
     "crash_process.h",
     "create_desktop_interaction_strategy_factory.cc",

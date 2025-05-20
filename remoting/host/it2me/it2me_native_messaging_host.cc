@@ -41,6 +41,7 @@
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/corp_register_support_host_request.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_helpers.h"
@@ -128,12 +129,14 @@ CreateNativeSignalingDeferredConnectContext(
     base::WeakPtr<OAuthTokenGetter> api_token_getter,
     const std::string& ftl_device_id,
     bool use_corp_session_authz,
+    bool is_corp_user,
     ChromotingHostContext* host_context) {
   std::string device_id =
       ftl_device_id.empty() ? base::Uuid::GenerateRandomV4().AsLowercaseString()
                             : ftl_device_id;
   auto connection_context =
       std::make_unique<It2MeHost::DeferredConnectContext>();
+  connection_context->is_corp_user = is_corp_user;
   connection_context->use_corp_session_authz = use_corp_session_authz;
   connection_context->use_ftl_signaling = true;
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
@@ -142,11 +145,19 @@ CreateNativeSignalingDeferredConnectContext(
       host_context->url_loader_factory(),
       std::make_unique<FtlSupportHostDeviceIdProvider>(device_id));
   connection_context->ftl_device_id = std::move(device_id);
-  connection_context->register_request =
-      std::make_unique<RemotingRegisterSupportHostRequest>(
-          std::make_unique<OAuthTokenGetterProxy>(
-              api_token_getter, oauth_token_getter_task_runner),
-          host_context->url_loader_factory());
+  if (is_corp_user) {
+    connection_context->register_request =
+        std::make_unique<CorpRegisterSupportHostRequest>(
+            std::make_unique<OAuthTokenGetterProxy>(
+                api_token_getter, oauth_token_getter_task_runner),
+            host_context->url_loader_factory());
+  } else {
+    connection_context->register_request =
+        std::make_unique<RemotingRegisterSupportHostRequest>(
+            std::make_unique<OAuthTokenGetterProxy>(
+                api_token_getter, oauth_token_getter_task_runner),
+            host_context->url_loader_factory());
+  }
   connection_context->log_to_server = std::make_unique<RemotingLogToServer>(
       ServerLogEntry::IT2ME,
       std::make_unique<OAuthTokenGetterProxy>(api_token_getter,
@@ -386,10 +397,11 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
       }
       bool use_corp_session_authz =
           message.FindBool(kUseCorpSessionAuthz).value_or(false);
+      bool is_corp_user = message.FindBool(kIsCorpUser).value_or(false);
       create_connection_context = base::BindOnce(
           &CreateNativeSignalingDeferredConnectContext, task_runner(),
           signaling_token_getter_.GetWeakPtr(), api_token_getter_.GetWeakPtr(),
-          ftl_device_id, use_corp_session_authz);
+          ftl_device_id, use_corp_session_authz, is_corp_user);
     } else {
       LOG(ERROR) << kUserName << " not found in request.";
     }

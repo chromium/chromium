@@ -204,9 +204,9 @@ std::string_view GetCreateRemoteSupportHostRequestPath() {
   return {};
 }
 
-std::unique_ptr<CreateRemoteSupportHostRequest>
-GetCreateRemoteSupportHostRequest(const RemoteSupportHostStruct&) {
-  return std::make_unique<CreateRemoteSupportHostRequest>();
+std::unique_ptr<RemoteSupportHost> GetRemoteSupportHost(
+    const RemoteSupportHostStruct& request_struct) {
+  return std::make_unique<RemoteSupportHost>();
 }
 
 std::string_view GetSupportId(const RemoteSupportHost&) {
