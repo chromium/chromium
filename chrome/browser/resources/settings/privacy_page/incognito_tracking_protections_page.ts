@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '/shared/settings/prefs/prefs.js';
+import '../icons.html.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
