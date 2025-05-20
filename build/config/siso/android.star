@@ -284,6 +284,7 @@ def __step_config(ctx, step_config):
             "name": "android/partition_action",
             "command_prefix": "python3 ../../build/extract_partition.py",
             "remote": config.get(ctx, "remote-link") or config.get(ctx, "builder"),
+            "platform_ref": "large",
             "timeout": "4m",
         },
     ])
