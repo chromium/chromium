@@ -12,6 +12,7 @@
 
 #include "base/strings/cstring_view.h"
 #include "base/time/time.h"
+#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -154,6 +155,18 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
   std::optional<std::vector<uint8_t>> GetBrowserBoundKey(
       std::vector<uint8_t> credential_id,
       std::string_view relying_party_id);
+
+  // Gets all browser bound key entries.
+  //
+  // Returns the possibly empty vector of entries or an empty vector when a read
+  // error occurs.
+  std::vector<BrowserBoundKeyMetadata> GetAllBrowserBoundKeys();
+
+  // Deletes the given browser bound key entries by relying_party_id and
+  // credential_id.
+  bool DeleteBrowserBoundKeys(
+      std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
+          passkeys);
 };
 
 }  // namespace payments

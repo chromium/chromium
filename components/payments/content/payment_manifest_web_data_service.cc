@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/payments/content/payment_method_manifest_table.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
@@ -209,6 +210,48 @@ PaymentManifestWebDataService::GetBrowserBoundKeyImpl(
       BROWSER_BOUND_KEY,
       PaymentMethodManifestTable::FromWebDatabase(db)->GetBrowserBoundKey(
           std::move(credential_id), std::move(relying_party_id)));
+}
+
+WebDataServiceBase::Handle
+PaymentManifestWebDataService::GetAllBrowserBoundKeys(
+    WebDataServiceRequestCallback callback) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::GetAllBrowserBoundKeysImpl,
+                     this),
+      std::move(callback));
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::GetAllBrowserBoundKeysImpl(WebDatabase* db) {
+  return std::make_unique<WDResult<std::vector<BrowserBoundKeyMetadata>>>(
+      BROWSER_BOUND_KEY_METADATA,
+      PaymentMethodManifestTable::FromWebDatabase(db)
+          ->GetAllBrowserBoundKeys());
+}
+
+void PaymentManifestWebDataService::DeleteBrowserBoundKeys(
+    std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId> passkeys,
+    base::OnceClosure callback) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::DeleteBrowserBoundKeysImpl,
+                     this, std::move(passkeys),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
+}
+
+WebDatabase::State PaymentManifestWebDataService::DeleteBrowserBoundKeysImpl(
+    std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId> passkeys,
+    base::OnceClosure callback,
+    WebDatabase* db) {
+  if (PaymentMethodManifestTable::FromWebDatabase(db)->DeleteBrowserBoundKeys(
+          std::move(passkeys))) {
+    std::move(callback).Run();
+    return WebDatabase::State::COMMIT_NEEDED;
+  }
+
+  std::move(callback).Run();
+  return WebDatabase::State::COMMIT_NOT_NEEDED;
 }
 
 void PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentials(

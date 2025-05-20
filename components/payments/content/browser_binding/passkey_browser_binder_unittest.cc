@@ -7,12 +7,15 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -22,6 +25,37 @@
 
 namespace payments {
 namespace {
+
+testing::Matcher<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
+EqRelyingPartyAndCredentialId(std::string relying_party_id,
+                              std::vector<uint8_t> credential_id) {
+  return testing::AllOf(
+      testing::Field("relying_party_id",
+                     &BrowserBoundKeyMetadata::RelyingPartyAndCredentialId::
+                         relying_party_id,
+                     relying_party_id),
+      testing::Field(
+          "credential_id",
+          &BrowserBoundKeyMetadata::RelyingPartyAndCredentialId::credential_id,
+          credential_id));
+}
+
+BrowserBoundKeyMetadata MakeBrowserBoundKeyMetadata(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party_id,
+    std::vector<uint8_t> bbk_id) {
+  BrowserBoundKeyMetadata meta;
+  meta.passkey = BrowserBoundKeyMetadata::RelyingPartyAndCredentialId(
+      std::move(relying_party_id), std::move(credential_id));
+  meta.browser_bound_key_id = std::move(bbk_id);
+  return meta;
+}
+
+using GetMatchingCredentialIdsCallback = base::RepeatingCallback<void(
+    const std::string& relying_party_id,
+    const std::vector<std::vector<uint8_t>>& credential_ids,
+    bool require_third_party_payment_bit_set,
+    base::OnceCallback<void(std::vector<std::vector<uint8_t>>)>)>;
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -204,6 +238,166 @@ TEST_F(PasskeyBrowserBinderTest,
       web_data_service_handle,
       std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
           WDResultType::BROWSER_BOUND_KEY, std::nullopt));
+}
+
+class PasskeyBrowserBinderDeletionTest : public PasskeyBrowserBinderTest {
+ public:
+  void RespondToGetAllBrowserBoundKeys(
+      std::vector<BrowserBoundKeyMetadata> bbk_metadatas) {
+    std::move(captured_get_all_browser_bound_keys_callback_)
+        .Run(/*handle=*/1234,
+             std::make_unique<WDResult<std::vector<BrowserBoundKeyMetadata>>>(
+                 WDResultType::BROWSER_BOUND_KEY_METADATA,
+                 std::move(bbk_metadatas)));
+  }
+
+  // Implements a fake version of
+  // InternalAuthenticator::GetMatchingCredentialIds() which is passed as a
+  // callback to PasskeyBrowserBinder::DeleteAllUnknownBrowserBoundKeys.
+  void GetMatchingCredentialIds(
+      const std::string& relying_party_id,
+      const std::vector<std::vector<uint8_t>>& credential_ids,
+      bool require_third_party_payment_bit_set,
+      base::OnceCallback<void(std::vector<std::vector<uint8_t>>)> callback) {
+    if (require_third_party_payment_bit_set) {
+      // PasskeyBrowserBinder::DeleteAllUnknownBrowserBoundKeys must call
+      // with `require_third_party_payment_bit_set` set to false, since BBKs
+      // can be created for passkeys in the first party context through the
+      // PaymentRequest API.
+      FAIL();
+    }
+    std::vector<std::vector<uint8_t>> stored_credential_ids =
+        fake_matching_credential_ids_[relying_party_id];
+    std::erase_if(stored_credential_ids,
+                  [&credential_ids](const std::vector<uint8_t>& credential) {
+                    return !base::Contains(credential_ids, credential);
+                  });
+    std::move(callback).Run(std::move(stored_credential_ids));
+  }
+
+ protected:
+  void SetUp() override {
+    PasskeyBrowserBinderTest::SetUp();
+    EXPECT_CALL(*mock_web_data_service_, GetAllBrowserBoundKeys)
+        .WillOnce(MoveArgAndReturn<0>(
+            &captured_get_all_browser_bound_keys_callback_, 1234));
+  }
+
+  WebDataServiceRequestCallback captured_get_all_browser_bound_keys_callback_;
+  base::flat_map</*relying_party*/ std::string,
+                 /*credential_ids*/ std::vector<std::vector<uint8_t>>>
+      fake_matching_credential_ids_;
+};
+
+TEST_F(PasskeyBrowserBinderDeletionTest,
+       DeleteAllUnknownBrowserBoundKeysWhenNoBBKStored) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  base::MockOnceClosure mock_callback;
+
+  binder->DeleteAllUnknownBrowserBoundKeys(
+      base::BindRepeating(
+          &PasskeyBrowserBinderDeletionTest::GetMatchingCredentialIds,
+          base::Unretained(this)),
+      mock_callback.Get());
+  RespondToGetAllBrowserBoundKeys(/*bbk_metadatas=*/{});
+}
+
+TEST_F(PasskeyBrowserBinderDeletionTest,
+       DeleteAllUnknownBrowserBoundKeysWithInvalidBbkMetadata) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  base::MockOnceClosure mock_callback;
+  std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
+  bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+  // This test does not insert any entries into `fake_matching_credential_ids_`
+
+  testing::Sequence sequence;
+  EXPECT_CALL(*mock_web_data_service_,
+              DeleteBrowserBoundKeys(
+                  testing::UnorderedElementsAre(EqRelyingPartyAndCredentialId(
+                      fake_relying_party_, fake_credential_id_)),
+                  _))
+      .InSequence(sequence)
+      .WillOnce(base::test::RunOnceCallbackRepeatedly<1>());
+  EXPECT_CALL(mock_callback, Run()).InSequence(sequence);
+
+  binder->DeleteAllUnknownBrowserBoundKeys(
+      base::BindRepeating(
+          &PasskeyBrowserBinderDeletionTest::GetMatchingCredentialIds,
+          base::Unretained(this)),
+      mock_callback.Get());
+  RespondToGetAllBrowserBoundKeys(std::move(bbk_metadatas));
+}
+
+TEST_F(PasskeyBrowserBinderDeletionTest,
+       DeleteAllUnknownBrowserBoundKeysWithValidBbkMetadata) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  base::MockOnceClosure mock_callback;
+  std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
+  bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+  fake_matching_credential_ids_[fake_relying_party_].push_back(
+      fake_credential_id_);
+
+  EXPECT_CALL(*mock_web_data_service_, DeleteBrowserBoundKeys(_, _)).Times(0);
+
+  binder->DeleteAllUnknownBrowserBoundKeys(
+      base::BindRepeating(
+          &PasskeyBrowserBinderDeletionTest::GetMatchingCredentialIds,
+          base::Unretained(this)),
+      mock_callback.Get());
+  RespondToGetAllBrowserBoundKeys(std::move(bbk_metadatas));
+}
+
+TEST_F(
+    PasskeyBrowserBinderDeletionTest,
+    DeleteAllUnknownBrowserBoundKeysWithInvalidBbkMetadataWhenRelyingPartyIsDifferent) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  base::MockOnceClosure mock_callback;
+  std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
+  bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+  fake_matching_credential_ids_["another." + fake_relying_party_].push_back(
+      fake_credential_id_);
+
+  EXPECT_CALL(*mock_web_data_service_,
+              DeleteBrowserBoundKeys(
+                  testing::UnorderedElementsAre(EqRelyingPartyAndCredentialId(
+                      fake_relying_party_, fake_credential_id_)),
+                  _))
+      .WillOnce(base::test::RunOnceCallbackRepeatedly<1>());
+
+  binder->DeleteAllUnknownBrowserBoundKeys(
+      base::BindRepeating(
+          &PasskeyBrowserBinderDeletionTest::GetMatchingCredentialIds,
+          base::Unretained(this)),
+      mock_callback.Get());
+  RespondToGetAllBrowserBoundKeys(std::move(bbk_metadatas));
+}
+
+TEST_F(PasskeyBrowserBinderDeletionTest,
+       DeleteAllUnknownBrowserBoundKeysWithMultipleRelyingParties) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  base::MockOnceClosure mock_callback;
+  std::vector<BrowserBoundKeyMetadata> bbk_metadatas;
+  bbk_metadatas.push_back(MakeBrowserBoundKeyMetadata(
+      fake_credential_id_, fake_relying_party_, fake_bbk_id_));
+  fake_matching_credential_ids_["another." + fake_relying_party_].push_back(
+      fake_credential_id_);
+
+  EXPECT_CALL(*mock_web_data_service_,
+              DeleteBrowserBoundKeys(
+                  testing::UnorderedElementsAre(EqRelyingPartyAndCredentialId(
+                      fake_relying_party_, fake_credential_id_)),
+                  _))
+      .WillOnce(base::test::RunOnceCallbackRepeatedly<1>());
+
+  binder->DeleteAllUnknownBrowserBoundKeys(
+      base::BindRepeating(
+          &PasskeyBrowserBinderDeletionTest::GetMatchingCredentialIds,
+          base::Unretained(this)),
+      mock_callback.Get());
+  RespondToGetAllBrowserBoundKeys(std::move(bbk_metadatas));
 }
 
 }  // namespace

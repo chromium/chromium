@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/web_app_manifest.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -100,6 +101,19 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
       std::string relying_party_id,
       WebDataServiceConsumer* consumer);
 
+  // Get all browser bound keys. Returns the BrowserBoundKeyMetadata structs in
+  // a vector to the `callback`.
+  virtual WebDataServiceBase::Handle GetAllBrowserBoundKeys(
+      WebDataServiceRequestCallback callback);
+
+  // Deletes the browser bound keys associated to `passkeys` - the list of the
+  // relying party and credential id pairs. `callback` is invoked once the
+  // webdatabase operation has completed.
+  virtual void DeleteBrowserBoundKeys(
+      std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
+          passkeys,
+      base::OnceClosure callback);
+
   // Override WebDataServiceConsumer interface.
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
@@ -145,6 +159,12 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
   std::unique_ptr<WDTypedResult> GetBrowserBoundKeyImpl(
       std::vector<uint8_t> credential_id,
       std::string relying_party_id,
+      WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetAllBrowserBoundKeysImpl(WebDatabase* db);
+  WebDatabase::State DeleteBrowserBoundKeysImpl(
+      std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
+          passkeys,
+      base::OnceClosure callback,
       WebDatabase* db);
 
   std::map<WebDataServiceBase::Handle, base::OnceClosure>

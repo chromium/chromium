@@ -57,10 +57,13 @@ typedef enum {
   // The browser bound key id is retrieved by the payments component
   // during secure payment confirmation requests and payment credential
   // creation.
-  BROWSER_BOUND_KEY,            // WDResult<std::vector<uint8_t>>
-  PAYMENT_WEB_APP_MANIFEST,     // WDResult<std::vector<
-                                //     mojom::WebAppManifestSectionPtr>>
-  PAYMENT_METHOD_MANIFEST,      // WDResult<std::vector<std::string>>
+  BROWSER_BOUND_KEY,  // WDResult<std::vector<uint8_t>>
+  // The browser bound key metadata is retrieved by the payments component
+  // to find stale credentials.
+  BROWSER_BOUND_KEY_METADATA,  // WDResult<std::vector<BrowserBoundKeyMetadata>>
+  PAYMENT_WEB_APP_MANIFEST,    // WDResult<std::vector<
+                               //     mojom::WebAppManifestSectionPtr>>
+  PAYMENT_METHOD_MANIFEST,     // WDResult<std::vector<std::string>>
   SECURE_PAYMENT_CONFIRMATION,  // WDResult<std::vector<std::unique_ptr<
                                 //     SecurePaymentConfirmationInstrument>>>
 #endif                          //

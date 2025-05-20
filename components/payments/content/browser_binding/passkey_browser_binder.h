@@ -22,6 +22,7 @@
 namespace payments {
 
 class BrowserBoundKey;
+struct BrowserBoundKeyMetadata;
 
 // Facilitates binding browser bound keys to passkeys.
 //
@@ -129,6 +130,22 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
                const std::vector<uint8_t>& credential_id,
                const std::string& relying_party);
 
+  // Deletes all unknown browser bound keys, querying using the provided
+  // `get_matching_credential_ids_callback` to find credentials matching each
+  // relying party in the BBK storage. The
+  // `get_matching_credential_ids_callback` must be valid until `callback` is
+  // invoked. `callback` may hold and release the reference to this
+  // PasskeyBrowserBinder object (DeleteAllUnknownBrowserBoundKeys will run
+  // `callback` as its last action).
+  void DeleteAllUnknownBrowserBoundKeys(
+      base::RepeatingCallback<
+          void(const std::string& relying_party_id,
+               const std::vector<std::vector<uint8_t>>& credential_ids,
+               bool require_third_party_payment_bit_set,
+               base::OnceCallback<void(std::vector<std::vector<uint8_t>>)>)>
+          get_matching_credential_ids_callback,
+      base::OnceClosure callback);
+
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
@@ -152,6 +169,12 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
       BrowserBoundKeyStore::CredentialInfoList allowed_credentials,
       base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
       std::vector<uint8_t> existing_browser_bound_key_id);
+
+  // Called after internal authenticator was called to find stale BBKs.
+  // `callback` is Run once the database operation completes.
+  void DeleteBrowserBoundKeys(
+      base::OnceClosure callback,
+      std::vector<BrowserBoundKeyMetadata> stale_bbk_metas);
 
   scoped_refptr<BrowserBoundKeyStore> key_store_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;

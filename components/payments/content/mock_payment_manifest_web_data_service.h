@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CONTENT_MOCK_PAYMENT_MANIFEST_WEB_DATA_SERVICE_H_
 
 #include "base/time/time.h"
+#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
@@ -33,6 +34,16 @@ class MockPaymentManifestWebDataService : public PaymentManifestWebDataService {
               (std::vector<uint8_t> credential_id,
                std::string relying_party_id,
                WebDataServiceConsumer* consumer),
+              (override));
+  MOCK_METHOD(WebDataServiceBase::Handle,
+              GetAllBrowserBoundKeys,
+              (WebDataServiceRequestCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              DeleteBrowserBoundKeys,
+              (std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
+                   passkeys,
+               base::OnceClosure callback),
               (override));
 
  protected:
