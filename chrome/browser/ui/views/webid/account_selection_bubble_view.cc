@@ -57,6 +57,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -228,7 +229,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
     const IdentityRequestAccountPtr& account,
     const std::u16string& title) {
   UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
-               title, webid::GetSubtitle(rp_data_),
+               title, u"",
                /*show_back_button=*/false,
                /*should_circle_crop_header_icon=*/true);
 
@@ -498,6 +499,11 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
       header->AddChildView(std::make_unique<views::View>());
   titles_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+  views::FlexSpecification flex_spec(views::LayoutOrientation::kHorizontal,
+                                     views::MinimumFlexSizeRule::kScaleToZero,
+                                     views::MaximumFlexSizeRule::kUnbounded);
+  titles_container->SetProperty(views::kFlexBehaviorKey, flex_spec);
+
   // Add the title.
   title_label_ = titles_container->AddChildView(std::make_unique<views::Label>(
       title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
