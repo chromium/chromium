@@ -25,6 +25,10 @@ export function getHtml(this: BaseDialogApp) {
       this.getNoticeId(
           PrivacySandboxNotice.kThreeAdsApisNotice)}" slot="view" fill-content>
       </three-ads-apis-notice>
+      <measurement-notice id="${
+      this.getNoticeId(
+          PrivacySandboxNotice.kMeasurementNotice)}" slot="view" fill-content>
+      </measurement-notice>
     </cr-view-manager>
   `;
 }

@@ -48,6 +48,8 @@ build_webui("build") {
     "protected_audience_measurement_notice.ts",
     "three_ads_apis_notice.html.ts",
     "three_ads_apis_notice.ts",
+    "measurement_notice.html.ts",
+    "measurement_notice.ts",
   ]
 
   css_files = [

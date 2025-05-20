@@ -59,4 +59,9 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest,
 IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, ThreeAdsApisNotice) {
   RunTestSuite("ThreeAdsApisNotice");
 }
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxBaseDialogMochaTest, MeasurementNotice) {
+  RunTestSuite("MeasurementNotice");
+}
+
 }  // namespace

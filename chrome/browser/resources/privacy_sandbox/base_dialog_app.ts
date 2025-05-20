@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import './topics_consent_notice.js';
 import './protected_audience_measurement_notice.js';
 import './three_ads_apis_notice.js';
+import './measurement_notice.js';
 import '/strings.m.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

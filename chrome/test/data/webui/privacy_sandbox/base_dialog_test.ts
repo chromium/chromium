@@ -49,6 +49,8 @@ function getNoticeComponentSelector(notice: PrivacySandboxNotice) {
       return 'protected-audience-measurement-notice';
     case PrivacySandboxNotice.kThreeAdsApisNotice:
       return 'three-ads-apis-notice';
+    case PrivacySandboxNotice.kMeasurementNotice:
+      return 'measurement-notice';
     default:
       return '';
   }
@@ -155,6 +157,31 @@ suite('ThreeAdsApisNotice', function() {
   test('Notice', async function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kThreeAdsApisNotice,
+        PrivacySandboxNoticeEvent.kAck, testHandler);
+  });
+});
+
+suite('MeasurementNotice', function() {
+  let page: BaseDialogApp;
+  let testHandler: TestBaseDialogPageHandler;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      noticeIdToShow: PrivacySandboxNotice.kMeasurementNotice,
+    });
+  });
+
+  setup(async function() {
+    ({page, testHandler} = await setupBaseDialogApp());
+  });
+
+  test('CrViewManager', function() {
+    testCrViewManager(page, PrivacySandboxNotice.kMeasurementNotice);
+  });
+
+  test('Notice', async function() {
+    await testButtonClick(
+        page, PrivacySandboxNotice.kMeasurementNotice,
         PrivacySandboxNoticeEvent.kAck, testHandler);
   });
 });
