@@ -243,7 +243,16 @@ void EditContext::updateSelection(uint32_t start,
   TRACE_EVENT2("ime", "EditContext::updateSelection", "start",
                std::to_string(start), "end", std::to_string(end));
 
-  SetSelection(std::min(start, text_.length()), std::min(end, text_.length()));
+  uint32_t bound_start = std::min(start, text_.length());
+  uint32_t bound_end = std::min(end, text_.length());
+  if (has_composition_ &&
+      (bound_start != selection_start_ || bound_end != selection_end_)) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEditContextUpdateSelectionDuringActiveComposition);
+  }
+
+  SetSelection(bound_start, bound_end);
   if (!has_composition_)
     return;
 
@@ -309,6 +318,29 @@ void EditContext::updateText(uint32_t start,
   }
   end = std::min(end, text_.length());
   start = std::min(start, end);
+
+  if (OrderedSelectionEnd() > start) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEditContextUpdateTextRangePrecedesOrOverlapsSelection);
+  }
+
+  if (has_composition_ && composition_range_end_ > start) {
+    if (composition_range_start_ >= end) {
+      // Example:
+      // Composition range: [3, 6], Update range: [1, 2]
+      UseCounter::Count(
+          GetExecutionContext(),
+          WebFeature::kEditContextUpdateTextRangePrecedesCompositionRange);
+    } else {
+      // Example:
+      // Composition range: [3, 6], Update range: [4, 7]
+      UseCounter::Count(
+          GetExecutionContext(),
+          WebFeature::kEditContextUpdateTextRangeOverlapsCompositionRange);
+    }
+  }
+
   text_ = text_.Substring(0, start) + new_text + text_.Substring(end);
 }
 

@@ -6209,6 +6209,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5579" label="PopoverShown"/>
   <int value="5580" label="InputParsedParentOptionOrOptgroup"/>
   <int value="5581" label="NavigatorUAData_toJSON"/>
+  <int value="5582"
+      label="EditContextUpdateTextRangePrecedesOrOverlapsSelection"/>
+  <int value="5583" label="EditContextUpdateTextRangePrecedesCompositionRange"/>
+  <int value="5584" label="EditContextUpdateTextRangeOverlapsCompositionRange"/>
+  <int value="5585" label="EditContextUpdateSelectionDuringActiveComposition"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

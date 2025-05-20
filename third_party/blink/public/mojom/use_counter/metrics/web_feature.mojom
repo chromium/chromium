@@ -4888,6 +4888,10 @@ enum WebFeature {
   kPopoverShown = 5579,
   kInputParsedParentOptionOrOptgroup = 5580,
   kNavigatorUAData_toJSON = 5581,
+  kEditContextUpdateTextRangePrecedesOrOverlapsSelection = 5582,
+  kEditContextUpdateTextRangePrecedesCompositionRange = 5583,
+  kEditContextUpdateTextRangeOverlapsCompositionRange = 5584,
+  kEditContextUpdateSelectionDuringActiveComposition = 5585,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -759,6 +759,83 @@ test(function(){
 
   test.remove();
 }, 'Testing UseCounter for textformatupdate event.');
+
+test(function(){
+  const kEditContextUpdateTextRangePrecedesOrOverlapsSelection = 5582;
+  const kEditContextUpdateTextRangePrecedesCompositionRange = 5583;
+  const kEditContextUpdateTextRangeOverlapsCompositionRange = 5584;
+  internals.clearUseCounter(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection);
+  internals.clearUseCounter(document, kEditContextUpdateTextRangePrecedesCompositionRange);
+  internals.clearUseCounter(document, kEditContextUpdateTextRangeOverlapsCompositionRange);
+
+  const text = "ABCD";
+  const editContext = new EditContext({text: text, selectionStart: 1, selectionEnd: 1});
+  const test = document.createElement("div");
+  test.textContent = text;
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection));
+
+  // UpdateText range is outside the selection range.
+  editContext.updateText(4, 4, "1");
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection));
+
+  // UpdateText range is less than selection range.
+  editContext.updateText(0, 0, "2");
+  assert_true(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection));
+
+  editContext.updateSelection(1, 1);
+  textInputController.setComposition("foo");
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesCompositionRange));
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  // UpdeText range is outside the composition range.
+  editContext.updateText(5, 5, "3");
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesCompositionRange));
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  // UpdateText range is less than composition range but does not overlap.
+  editContext.updateText(0, 0, "4");
+  assert_true(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesCompositionRange));
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  // UpdateText range overlaps with composition range.
+  editContext.updateText(0, 3, "5");
+  assert_true(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  test.remove();
+}, 'Testing UseCounter for updateText based on update range and selection/composition range.');
+
+test(function(){
+  const kEditContextUpdateSelectionDuringActiveComposition = 5585;
+  internals.clearUseCounter(document, kEditContextUpdateSelectionDuringActiveComposition);
+
+  const text = "ABCD";
+  const editContext = new EditContext({text: text, selectionStart: 0, selectionEnd: 0});
+  const test = document.createElement("div");
+  test.textContent = text;
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+
+  // Tracks when selection is updated to new value while a composition is active.
+  assert_false(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+  editContext.updateSelection(1, 1);
+  assert_false(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+
+  textInputController.setComposition("foo");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+  editContext.updateSelection(4, 4);
+  assert_false(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+
+  editContext.updateSelection(2, 2);
+  assert_true(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+
+  test.remove();
+}, 'Testing UseCounter for updateSelection during an active composition.');
 </script>
 </body>
 </html>
