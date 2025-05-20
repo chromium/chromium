@@ -481,18 +481,18 @@ int SwapChainPresenter::PresentationHistory::composed_count() const {
 SwapChainPresenter::SwapChainPresenter(
     DCLayerTree* layer_tree,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device)
+    Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device)
     : layer_tree_(layer_tree),
       swap_chain_buffer_count_(BufferCount(
           layer_tree->force_dcomp_triple_buffer_video_swap_chain())),
       switched_to_BGRA8888_time_tick_(base::TimeTicks::Now()),
       d3d11_device_(d3d11_device),
-      dcomp_device_(dcomp_device),
       is_on_battery_power_(
           base::PowerMonitor::GetInstance()
               ->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
           base::PowerStateObserver::BatteryPowerStatus::kBatteryPower) {
   DVLOG(1) << __func__ << "(" << this << ")";
+  CHECK_EQ(dcomp_device.As(&dcomp_device_), S_OK);
 }
 
 SwapChainPresenter::~SwapChainPresenter() {
@@ -1977,14 +1977,8 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     ReleaseSwapChainResources();
 
     Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface;
-    Microsoft::WRL::ComPtr<IDCompositionDevice> dcomp_device1;
-    HRESULT hr = dcomp_device_.As(&dcomp_device1);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to get DCOMP device. hr=0x" << std::hex << hr;
-      return false;
-    }
-
-    hr = dcomp_device1->CreateSurfaceFromHandle(surface_handle, &dcomp_surface);
+    const HRESULT hr =
+        dcomp_device_->CreateSurfaceFromHandle(surface_handle, &dcomp_surface);
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to create DCOMP surface. hr=0x" << std::hex << hr;
       return false;
