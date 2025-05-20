@@ -329,15 +329,16 @@ public class UndoTabModelUnitTest {
                 undoable);
     }
 
-    private void closeAllTabs(final TabModel model) throws TimeoutException {
+    private void closeAllTabs(final TabModel model, final boolean undoable)
+            throws TimeoutException {
         closeMultipleTabsInternal(
                 model,
                 () ->
                         model.getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeAllTabs().build(),
+                                        TabClosureParams.closeAllTabs().allowUndo(undoable).build(),
                                         /* allowDialog= */ false),
-                /* undoable= */ true);
+                undoable);
     }
 
     private void cancelTabClosure(final TabModel model, final Tab tab) throws TimeoutException {
@@ -468,6 +469,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test undo with a single tab with the following actions/expected states:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0s ]             -                 [ 0s ]
      * 2.  CloseTab(0, allow undo)    -                  [ 0 ]             [ 0s ]
@@ -479,7 +482,7 @@ public class UndoTabModelUnitTest {
      * 8.  CommitAllClose             -                  -                 -
      * 9.  CreateTab(0)               [ 0s ]             -                 [ 0s ]
      * 10. CloseTab(0, disallow undo) -                  -                 -
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -543,6 +546,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test undo with two tabs with the following actions/expected states:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1s ]           -                 [ 0 1s ]
      * 2.  CloseTab(0, allow undo)    [ 1s ]             [ 0 ]             [ 0 1s ]
@@ -569,7 +574,7 @@ public class UndoTabModelUnitTest {
      * 23. CloseTab(0, allow undo)    [ 1s ]             [ 0 ]             [ 1s 0 ]
      * 24. CloseTab(1, allow undo)    -                  [ 1 0 ]           [ 1s 0 ]
      * 25. CommitAllClose             -                  -                 -
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -714,6 +719,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test restoring in the same order of closing with the following actions/expected states:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(0, allow undo)    [ 1 2 3s ]         [ 0 ]             [ 0 1 2 3s ]
@@ -739,7 +746,7 @@ public class UndoTabModelUnitTest {
      * 22. CancelClose(3)             [ 1s 3 ]           [ 0 2 ]           [ 0 1s 2 3 ]
      * 23. CancelClose(0)             [ 0 1s 3 ]         [ 2 ]             [ 0 1s 2 3 ]
      * 24. CancelClose(2)             [ 0 1s 2 3 ]       -                 [ 0 1s 2 3 ]
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -856,6 +863,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test restoring in the reverse of closing with the following actions/expected states:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(0, allow undo)    [ 1 2 3s ]         [ 0 ]             [ 0 1 2 3s ]
@@ -881,7 +890,7 @@ public class UndoTabModelUnitTest {
      * 22. CancelClose(2)             [ 1s 2 ]           [ 3 0 ]           [ 0 1s 2 3 ]
      * 23. CancelClose(0)             [ 0 1s 2 ]         [ 3 ]             [ 0 1s 2 3 ]
      * 24. CancelClose(3)             [ 0 1s 2 3 ]       -                 [ 0 1s 2 3 ]
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -998,6 +1007,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test restoring out of order with the following actions/expected states:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(0, allow undo)    [ 1 2 3s ]         [ 0 ]             [ 0 1 2 3s ]
@@ -1016,7 +1027,7 @@ public class UndoTabModelUnitTest {
      * 15. CommitClose(0)             [ 2s ]             [ 1 ]             [ 1 2s ]
      * 16. CancelClose(1)             [ 1 2s ]           -                 [ 1 2s ]
      * 17. CloseTab(2, disallow undo) [ 1s ]             -                 [ 1s ]
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -1108,6 +1119,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test restoring out of order with the following actions/expected states:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         [ 1 ]             [ 0 1 2 3s ]
@@ -1123,7 +1136,7 @@ public class UndoTabModelUnitTest {
      * 12. CloseTab(3, allow undo)    [ 1s ]             [ 3 ]             [ 1s 3 ]
      * 13. CloseTab(1, allow undo)    -                  [ 1 3 ]           [ 1s 3 ]
      * 14. CommitAll                  -                  -                 -
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -1202,6 +1215,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test undo {@link TabModel#closeAllTabs()} with the following actions/expected states:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0  1 2 3s ]
      * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         [ 1 ]             [ 0  1 2 3s ]
@@ -1212,11 +1227,11 @@ public class UndoTabModelUnitTest {
      * 7.  CommitAllClose             -                  -                 -
      * 8.  CreateTab(0)               [ 0s ]             -                 [ 0s ]
      * 9.  CloseAll                   -                  [ 0 ]             [ 0s ]
-     *
+     * </pre>
      */
     @Test
     @SmallTest
-    public void testCloseAll() throws TimeoutException {
+    public void testCloseAll_UndoSupported() throws TimeoutException {
         final boolean isIncognito = false;
         final TabModel model = createTabModel(isIncognito);
         createTab(model, isIncognito);
@@ -1235,15 +1250,15 @@ public class UndoTabModelUnitTest {
         checkState(model, fullList, tab3, sEmptyList, fullList, tab3);
 
         // 2.
-        closeTab(model, tab1, true);
+        closeTab(model, tab1, /* undoable= */ true);
         checkState(model, new Tab[] {tab0, tab2, tab3}, tab3, new Tab[] {tab1}, fullList, tab3);
 
         // 3.
-        closeTab(model, tab2, true);
+        closeTab(model, tab2, /* undoable= */ true);
         checkState(model, new Tab[] {tab0, tab3}, tab3, new Tab[] {tab1, tab2}, fullList, tab3);
 
         // 4.
-        closeAllTabs(model);
+        closeAllTabs(model, /* undoable= */ true);
         checkState(model, sEmptyList, null, fullList, fullList, tab0);
 
         // 5.
@@ -1251,7 +1266,7 @@ public class UndoTabModelUnitTest {
         checkState(model, fullList, tab0, sEmptyList, fullList, tab0);
 
         // 6.
-        closeAllTabs(model);
+        closeAllTabs(model, /* undoable= */ true);
         checkState(model, sEmptyList, null, fullList, fullList, tab0);
 
         // 7.
@@ -1273,22 +1288,125 @@ public class UndoTabModelUnitTest {
         checkState(model, new Tab[] {tab0}, tab0, sEmptyList, fullList, tab0);
 
         // 9.
-        closeAllTabs(model);
+        closeAllTabs(model, /* undoable= */ true);
         checkState(model, sEmptyList, null, fullList, fullList, tab0);
         assertTrue(tab0.isClosing());
         assertTrue(tab0.isInitialized());
     }
 
     /**
-     * Test {@link TabModel#closeTab(Tab)} when not allowing a close commits all pending
-     * closes:
+     * Test {@link TabModel#closeAllTabs()} when not allowing undo, with the following
+     * actions/expected states:
+     *
+     * <pre>
+     *     Action                     Model List         Close List        Comprehensive List
+     * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0  1 2 3s ]
+     * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         [ 1 ]             [ 0  1 2 3s ]
+     * 3.  CloseTab(2, allow undo)    [ 0 3s ]           [ 2 1 ]           [ 0  1 2 3s ]
+     * 4.  CloseAll(disallow undo)    -                  -                 -
+     * 5.  CreateTab(0)               [ 0s ]             -                 [ 0s ]
+     * 6.  CloseAll(disallow undo)    -                  -                 -
+     * </pre>
+     */
+    @Test
+    @SmallTest
+    public void testCloseAll_UndoNotSupported() throws TimeoutException {
+        final boolean isIncognito = false;
+        final TabModel model = createTabModel(isIncognito);
+        createTab(model, isIncognito);
+        createTab(model, isIncognito);
+        createTab(model, isIncognito);
+        createTab(model, isIncognito);
+
+        Tab tab0 = model.getTabAt(0);
+        Tab tab1 = model.getTabAt(1);
+        Tab tab2 = model.getTabAt(2);
+        Tab tab3 = model.getTabAt(3);
+
+        Tab[] fullList = new Tab[] {tab0, tab1, tab2, tab3};
+
+        // 1.
+        checkState(
+                model,
+                /* tabsList= */ fullList,
+                /* selectedTab= */ tab3,
+                /* closingTabs= */ sEmptyList,
+                /* fullTabsList= */ fullList,
+                /* fullSelectedTab= */ tab3);
+
+        // 2.
+        closeTab(model, tab1, /* undoable= */ true);
+        checkState(
+                model,
+                /* tabsList= */ new Tab[] {tab0, tab2, tab3},
+                /* selectedTab= */ tab3,
+                /* closingTabs= */ new Tab[] {tab1},
+                /* fullTabsList= */ fullList,
+                /* fullSelectedTab= */ tab3);
+
+        // 3.
+        closeTab(model, tab2, /* undoable= */ true);
+        checkState(
+                model,
+                /* tabsList= */ new Tab[] {tab0, tab3},
+                /* selectedTab= */ tab3,
+                /* closingTabs= */ new Tab[] {tab1, tab2},
+                /* fullTabsList= */ fullList,
+                /* fullSelectedTab= */ tab3);
+
+        // 4.
+        closeAllTabs(model, /* undoable= */ false);
+        checkState(
+                model,
+                /* tabsList= */ sEmptyList,
+                /* selectedTab= */ null,
+                /* closingTabs= */ sEmptyList,
+                /* fullTabsList= */ sEmptyList,
+                /* fullSelectedTab= */ null);
+        assertTrue(tab0.isClosing());
+        assertTrue(tab1.isClosing());
+        assertTrue(tab2.isClosing());
+        assertTrue(tab3.isClosing());
+        assertFalse(tab0.isInitialized());
+        assertFalse(tab1.isInitialized());
+        assertFalse(tab2.isInitialized());
+        assertFalse(tab3.isInitialized());
+
+        // 5.
+        createTab(model, isIncognito);
+        tab0 = model.getTabAt(0);
+        fullList = new Tab[] {tab0};
+        checkState(
+                model,
+                /* tabsList= */ new Tab[] {tab0},
+                /* selectedTab= */ tab0,
+                /* closingTabs= */ sEmptyList,
+                /* fullTabsList= */ fullList,
+                /* fullSelectedTab= */ tab0);
+
+        // 6.
+        closeAllTabs(model, /* undoable= */ false);
+        checkState(
+                model,
+                /* tabsList= */ sEmptyList,
+                /* selectedTab= */ null,
+                /* closingTabs= */ sEmptyList,
+                /* fullTabsList= */ sEmptyList,
+                /* fullSelectedTab= */ null);
+        assertTrue(tab0.isClosing());
+        assertFalse(tab0.isInitialized());
+    }
+
+    /**
+     * Test {@link TabModel#closeTab(Tab)} when not allowing a close commits all pending closes:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         [ 1 ]             [ 0 1 2 3s ]
      * 3.  CloseTab(2, allow undo)    [ 0 3s ]           [ 2 1 ]           [ 0 1 2 3s ]
      * 4.  CloseTab(3, disallow undo) [ 0s ]             -                 [ 0s ]
-     *
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -1330,12 +1448,14 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test {@link TabModel#moveTab(int, int)} commits all pending closes:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         [ 1 ]             [ 0 1 2 3s ]
      * 3.  CloseTab(2, allow undo)    [ 0 3s ]           [ 2 1 ]           [ 0 1 2 3s ]
      * 4.  MoveTab(0, 2)              [ 3s 0 ]           -                 [ 3s 0 ]
-     *
+     * </pre>
      */
     @Test
     @SmallTest
@@ -1377,6 +1497,8 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test adding a {@link Tab} to a {@link TabModel} commits all pending closes:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         [ 1 ]             [ 0 1 2 3s ]
@@ -1386,6 +1508,7 @@ public class UndoTabModelUnitTest {
      * 6.  CloseTab(3, allow undo)    [ 4s ]             [ 3 0 ]           [ 0 3 4s ]
      * 7.  CloseTab(4, allow undo)    -                  [ 4 3 0 ]         [ 0s 3 4 ]
      * 8.  CreateTab(5)               [ 5s ]             -                 [ 5s ]
+     * </pre>
      */
     @Test
     @SmallTest
@@ -1452,14 +1575,17 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test a {@link TabModel} where undo is not supported:
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         -                 [ 0 2 3s ]
      * 3.  CloseAll                   -                  -                 -
+     * </pre>
      */
     @Test
     @SmallTest
-    public void testUndoNotSupported() throws TimeoutException {
+    public void testIncognito_UndoAlwaysNotSupported() throws TimeoutException {
         final boolean isIncognito = true;
         final TabModel model = createTabModel(isIncognito);
         createTab(model, isIncognito);
@@ -1479,14 +1605,16 @@ public class UndoTabModelUnitTest {
         assertFalse(model.supportsPendingClosures());
 
         // 2.
-        closeTab(model, tab1, true);
+        // Note: Despite the "undoable=true" setup, incognito tabs won't support undo.
+        closeTab(model, tab1, /* undoable= */ true);
         fullList = new Tab[] {tab0, tab2, tab3};
         checkState(model, new Tab[] {tab0, tab2, tab3}, tab3, sEmptyList, fullList, tab3);
         assertTrue(tab1.isClosing());
         assertFalse(tab1.isInitialized());
 
         // 3.
-        closeAllTabs(model);
+        // Note: Despite the "undoable=true" setup, incognito tabs won't support undo.
+        closeAllTabs(model, /* undoable= */ true);
         checkState(model, sEmptyList, null, sEmptyList, sEmptyList, null);
         assertTrue(tab0.isClosing());
         assertTrue(tab2.isClosing());
@@ -1497,17 +1625,21 @@ public class UndoTabModelUnitTest {
     }
 
     /**
-     * Test a {@link TabModel} where undo is not supported and
-     * {@link TabModelObserver#onFinishingMultipleTabClosure()} is called.
+     * Test a {@link TabModel} where undo is not supported and {@link
+     * TabModelObserver#onFinishingMultipleTabClosure()} is called.
+     *
+     * <pre>
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3 4s ]     -                 [ 0 1 2 3 4s ]
      * 2.  CloseTab(1)                [ 0 2 3 4s ]       -                 [ 0 2 3 4s ]
      * 3.  CloseMultipleTabs(2, 4)    [ 0 3s ]           -                 [ 0 3s ]
      * 4.  CloseAll                   -                  -                 -
+     * </pre>
      */
     @Test
     @SmallTest
-    public void testUndoNotSupportedOnFinishingMultipleTabClosure() throws TimeoutException {
+    public void testIncognito_UndoAlwaysNotSupportedOnFinishingMultipleTabClosure()
+            throws TimeoutException {
         final boolean isIncognito = true;
         final TabModel model = createTabModel(isIncognito);
         createTab(model, isIncognito);
@@ -1539,7 +1671,8 @@ public class UndoTabModelUnitTest {
                 });
 
         // 2.
-        closeTab(model, tab1, true);
+        // Note: Despite the "undoable=true" setup, incognito tabs won't support undo.
+        closeTab(model, tab1, /* undoable= */ true);
         fullList = new Tab[] {tab0, tab2, tab3, tab4};
         checkState(model, fullList, tab4, sEmptyList, fullList, tab4);
         assertTrue(tab1.isClosing());
@@ -1547,7 +1680,8 @@ public class UndoTabModelUnitTest {
         assertArrayEquals(new Tab[] {tab1}, lastClosedTabs.toArray(new Tab[0]));
 
         // 3.
-        closeMultipleTabs(model, Arrays.asList(new Tab[] {tab2, tab4}), true);
+        // Note: Despite the "undoable=true" setup, incognito tabs won't support undo.
+        closeMultipleTabs(model, Arrays.asList(tab2, tab4), /* undoable= */ true);
         fullList = new Tab[] {tab0, tab3};
         checkState(model, fullList, tab0, sEmptyList, fullList, tab0);
         assertTrue(tab2.isClosing());
@@ -1557,7 +1691,8 @@ public class UndoTabModelUnitTest {
         assertArrayEquals(new Tab[] {tab2, tab4}, lastClosedTabs.toArray(new Tab[0]));
 
         // 4.
-        closeAllTabs(model);
+        // Note: Despite the "undoable=true" setup, incognito tabs won't support undo.
+        closeAllTabs(model, /* undoable= */ true);
         checkState(model, sEmptyList, null, sEmptyList, sEmptyList, null);
         assertTrue(tab0.isClosing());
         assertTrue(tab3.isClosing());

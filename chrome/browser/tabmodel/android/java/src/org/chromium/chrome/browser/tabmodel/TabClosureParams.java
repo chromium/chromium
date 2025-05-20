@@ -177,12 +177,10 @@ public class TabClosureParams {
         }
     }
 
-    /**
-     * Builder to configure params for closing all tabs. Closing all tabs always allows for undo if
-     * permitted by the tab model.
-     */
+    /** Builder to configure params for closing all tabs. */
     public static class CloseAllTabsBuilder {
         private boolean mUponExit;
+        private boolean mAllowUndo = true;
         private boolean mHideTabGroups;
         private @Nullable Runnable mUndoRunnable;
 
@@ -191,6 +189,12 @@ public class TabClosureParams {
         /** Sets whether the tab closure completing would exit the app. Default is false. */
         public CloseAllTabsBuilder uponExit(boolean uponExit) {
             mUponExit = uponExit;
+            return this;
+        }
+
+        /** Set whether to allow undo. Default is true. */
+        public CloseAllTabsBuilder allowUndo(boolean allowUndo) {
+            mAllowUndo = allowUndo;
             return this;
         }
 
@@ -213,7 +217,7 @@ public class TabClosureParams {
                     /* isAllTabs= */ true,
                     /* recommendedNextTab= */ null,
                     mUponExit,
-                    /* allowUndo= */ true,
+                    mAllowUndo,
                     mHideTabGroups,
                     /* saveToTabRestoreService= */ true,
                     TabCloseType.ALL,

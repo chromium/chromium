@@ -597,11 +597,15 @@ public class TabModelImpl extends TabModelJniBridge {
         }
     }
 
-    private void closeAllTabs(boolean uponExit, @Nullable Runnable undoRunnable) {
+    private void closeAllTabs(
+            boolean uponExit, boolean allowUndo, @Nullable Runnable undoRunnable) {
         for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
-        // Force close immediately upon exit or if Chrome needs to close with a zero-state.
-        if (uponExit || HomepageManager.getInstance().shouldCloseAppWithZeroTabs()) {
+        // Force close immediately if:
+        // 1. the tabs are to be closed upon app exit,
+        // 2. the operation doesn't allow undo, or
+        // 3. Chrome needs to close with a zero-state.
+        if (uponExit || !allowUndo || HomepageManager.getInstance().shouldCloseAppWithZeroTabs()) {
             commitAllTabClosures();
 
             for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
@@ -690,7 +694,10 @@ public class TabModelImpl extends TabModelJniBridge {
                         tabClosureParams.undoRunnable);
                 return true;
             case TabCloseType.ALL:
-                closeAllTabs(tabClosureParams.uponExit, tabClosureParams.undoRunnable);
+                closeAllTabs(
+                        tabClosureParams.uponExit,
+                        tabClosureParams.allowUndo,
+                        tabClosureParams.undoRunnable);
                 return true;
             default:
                 assert false : "Not reached.";
