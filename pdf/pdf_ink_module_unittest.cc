@@ -464,7 +464,7 @@ class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
   bool UseTextAnnotations() const { return GetParam().use_text_annotations; }
   bool UseTextHighlighting() const { return GetParam().use_text_highlighting; }
 
-  void EnableAnnotationMode() {
+  void EnableDrawAnnotationMode() {
     EXPECT_TRUE(
         ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(true)));
     EXPECT_TRUE(ink_module().enabled());
@@ -490,7 +490,7 @@ TEST_P(PdfInkModuleTest, UnknownMessage) {
 
 // Verify that a get eraser message gets the eraser parameters.
 TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -510,7 +510,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
 
 // Verify that a get pen message gets the pen brush parameters.
 TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessagePen) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -536,7 +536,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessagePen) {
 
 // Verify that a get highlighter message gets the highlighter brush parameters.
 TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageHighlighter) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -563,7 +563,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageHighlighter) {
 // Verify that a get brush message without a parameter gets the default brush
 // parameters.
 TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageDefault) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -590,7 +590,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageDefault) {
 // Verify that a get brush message without a parameter gets the current brush
 // parameters if the brush has changed from the default brush.
 TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   // Set the brush to eraser.
   EXPECT_TRUE(ink_module().OnMessage(
@@ -615,7 +615,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
 // Verify that a set eraser message sets the annotation brush to an eraser. i.e.
 // There is no `PdfInkBrush`.
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("eraser", nullptr);
@@ -628,7 +628,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
 // Verify that a set pen message sets the annotation brush to a pen, with the
 // given params.
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   // Select the "Yellow 1" color.
   TestAnnotationBrushMessageParams message_params{kYellow,
@@ -652,7 +652,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
 // Verify that a set highlighter message sets the annotation brush to a
 // highlighter, with the given params.
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   // Select the "Light Yellow" color.
   TestAnnotationBrushMessageParams message_params{kYellow,
@@ -676,7 +676,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 // Verify that brushes with zero color values can be set as the annotation
 // brush.
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   TestAnnotationBrushMessageParams message_params{
       SkColorSetRGB(0x00, 0x00, 0x00),
@@ -780,7 +780,7 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
         });
   }
 
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   TestAnnotationBrushMessageParams message_params{
       SkColorSetRGB(0x00, 0xFF, 0x00),
@@ -819,7 +819,7 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
         });
   }
 
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   TestAnnotationBrushMessageParams message_params{
       SkColorSetRGB(0x00, 0xFF, 0x00),
@@ -833,7 +833,7 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
 }
 
 TEST_P(PdfInkModuleTest, ContentFocusedWithMouseWillPostMessage) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   blink::WebMouseEvent mouse_down_event =
       MouseEventBuilder().CreateLeftClickAtPosition(gfx::PointF()).Build();
@@ -850,7 +850,7 @@ TEST_P(PdfInkModuleTest, ContentFocusedWithMouseWillPostMessage) {
 }
 
 TEST_P(PdfInkModuleTest, ContentFocusedWithTouchWillPostMessage) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   blink::WebTouchEvent touch_start_event =
       CreateTouchEvent(blink::WebInputEvent::Type::kTouchStart,
@@ -1321,7 +1321,7 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithPenIfEnabled) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, IgnoreTouchEventsAfterPenEvent) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   const std::vector<base::span<const gfx::PointF>> all_move_points{
@@ -1377,7 +1377,7 @@ TEST_P(PdfInkModuleStrokeTest, IgnoreTouchEventsAfterPenEvent) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
@@ -1425,7 +1425,7 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, AnnotationWithPenIgnoresMouseEvents) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebTouchEvent pen_start_event =
@@ -1529,7 +1529,7 @@ TEST_P(PdfInkModuleStrokeTest, TransformedLayoutInvalidationsFromStroke) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokeOutsidePage) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
@@ -1546,7 +1546,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeOutsidePage) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokeInsidePages) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
@@ -1571,7 +1571,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeInsidePages) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokeAcrossPages) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
@@ -1588,7 +1588,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeAcrossPages) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
@@ -1609,7 +1609,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokePageExitAndReentryWithQuickMoves) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
@@ -1676,7 +1676,7 @@ TEST_P(PdfInkModuleStrokeTest, EraseStroke) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Verify there are no visible strokes to start with.
@@ -1784,7 +1784,7 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
@@ -1838,7 +1838,7 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Start out without any strokes.
@@ -2000,7 +2000,7 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseDown) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   blink::WebMouseEvent mouse_down_event =
@@ -2017,7 +2017,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseDown) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringDrawing) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // No need to distinguish between pen or highlighter here.
@@ -2028,7 +2028,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringDrawing) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringErasing) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectEraserTool();
@@ -2037,7 +2037,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringErasing) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Start drawing a stroke with a black pen.  The stroke will not finish
@@ -2088,7 +2088,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Start drawing a stroke with a black pen.  The stroke will not finish
@@ -2192,7 +2192,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Initialize to have two strokes, so there is something to erase.
@@ -2256,7 +2256,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
 }
 
 TEST_P(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Start drawing a stroke with a black pen.  The stroke will not finish
@@ -2333,7 +2333,7 @@ class PdfInkModuleUndoRedoTest : public PdfInkModuleStrokeTest {
 
 TEST_P(PdfInkModuleUndoRedoTest, UndoRedoEmpty) {
   InitializeSimpleSinglePageBasicLayout();
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
 
   EXPECT_TRUE(StrokeInputPositions().empty());
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
@@ -2642,7 +2642,7 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
 }
 
 TEST_P(PdfInkModuleUndoRedoTest, UndoRedoOnTwoPages) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   ApplyStrokeWithMouseAtPoints(
@@ -2728,7 +2728,7 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
   EXPECT_CALL(client(), UpdateShapeActive(_, _, _)).Times(0);
 
   InitializeSimpleSinglePageBasicLayout();
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
   EXPECT_TRUE(updated_pdf_thumbnail_page_indices().empty());
 
@@ -2847,7 +2847,7 @@ TEST_P(PdfInkModuleGetVisibleStrokesTest, NoPageStrokes) {
 }
 
 TEST_P(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   // Multiple strokes on one page, plus a stroke on another page.
@@ -2958,7 +2958,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushColorPen) {
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeBrushColorHighlighter) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Draw a stroke with "Light Red" color.
@@ -3010,7 +3010,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Draw a stroke with medium size.
@@ -3227,7 +3227,7 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
   // Sets up single selection test expectations before text selection strokes
   // have been applied.
   void SetUpSingleSelectionTest(const gfx::Rect& selection_rect) {
-    EnableAnnotationMode();
+    EnableDrawAnnotationMode();
     InitializeSimpleSinglePageBasicLayout();
 
     SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3295,7 +3295,7 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
 };
 
 TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Select the pen tool with a "Light Red" color.
@@ -3427,7 +3427,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedIn) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
   client().set_zoom(2.0f);
 
@@ -3440,7 +3440,7 @@ TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedIn) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedOut) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
   client().set_zoom(0.5f);
 
@@ -3453,7 +3453,7 @@ TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedOut) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3512,7 +3512,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3538,7 +3538,7 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3596,7 +3596,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3663,7 +3663,7 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3720,7 +3720,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3795,7 +3795,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
 
 TEST_P(PdfInkModuleTextHighlightTest,
        StrokeMissedEndEventThenMouseMoveDuringTextSelecting) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3826,7 +3826,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TouchSingleHorizontalSelection) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3859,7 +3859,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, MultiTouchDoesNotSelectText) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3887,7 +3887,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenSingleHorizontalSelection) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -3920,7 +3920,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Select the pen tool with a "Light Red" color. The cursor should be the
@@ -3972,7 +3972,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Select the highlighter tool. The cursor should be the custom highlighter
@@ -4020,7 +4020,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   // Select the highlighter tool. The cursor should be the custom highlighter
@@ -4103,7 +4103,7 @@ class PdfInkModuleTextHighlightMetricsTest
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest,
        StrokeDoesNotAffectTextHighlightMetrics) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -4132,7 +4132,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest,
        TextHighlightUndoRedoDoesNotAffectMetrics) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   RunSingleSelectionWithMouseTest(
@@ -4157,7 +4157,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, Color) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
@@ -4186,7 +4186,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, Color) {
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -4229,7 +4229,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickDelay) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -4263,7 +4263,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickDelay) {
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -4312,7 +4312,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -4353,7 +4353,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickDelay) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
@@ -4395,7 +4395,7 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickDelay) {
 }
 
 TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
-  EnableAnnotationMode();
+  EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
