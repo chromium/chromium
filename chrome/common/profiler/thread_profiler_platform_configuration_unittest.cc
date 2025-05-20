@@ -4,6 +4,7 @@
 
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 
+#include <ostream>
 #include <tuple>
 #include <utility>
 
@@ -22,18 +23,15 @@
     (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)) ||                   \
     (BUILDFLAG(IS_CHROMEOS) &&                                              \
      (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)))
-#define THREAD_PROFILER_SUPPORTED_ON_PLATFORM true
+constexpr bool kThreadProfilerSupportedOnPlatform = true;
 #else
-#define THREAD_PROFILER_SUPPORTED_ON_PLATFORM false
-#endif
-
-#if THREAD_PROFILER_SUPPORTED_ON_PLATFORM
-#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, test)
-#else
-#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, DISABLED_##test)
+constexpr bool kThreadProfilerSupportedOnPlatform = false;
 #endif
 
 namespace {
+
+using RelativePopulations =
+    ThreadProfilerPlatformConfiguration::RelativePopulations;
 
 class ThreadProfilerPlatformConfigurationTest : public ::testing::Test {
  public:
@@ -50,6 +48,9 @@ class ThreadProfilerPlatformConfigurationTest : public ::testing::Test {
  private:
   const std::unique_ptr<ThreadProfilerPlatformConfiguration> config_;
 };
+
+using ThreadProfilerPlatformConfigurationDeathTest =
+    ThreadProfilerPlatformConfigurationTest;
 
 class ThreadProfilerPlatformConfigurationThreadTest
     : public ::testing::TestWithParam<std::tuple<bool, bool>> {
@@ -95,104 +96,96 @@ INSTANTIATE_TEST_SUITE_P(
 }  // namespace
 
 // Glue functions to make RelativePopulations work with googletest.
-std::ostream& operator<<(
-    std::ostream& strm,
-    const ThreadProfilerPlatformConfiguration::RelativePopulations&
-        populations) {
+std::ostream& operator<<(std::ostream& strm,
+                         const RelativePopulations& populations) {
   return strm << "{" << populations.enabled << ", " << populations.experiment
               << "}";
 }
 
-bool operator==(
-    const ThreadProfilerPlatformConfiguration::RelativePopulations& a,
-    const ThreadProfilerPlatformConfiguration::RelativePopulations& b) {
+bool operator==(const RelativePopulations& a, const RelativePopulations& b) {
   return a.enabled == b.enabled && a.experiment == b.experiment;
 }
 
 TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
-#if !THREAD_PROFILER_SUPPORTED_ON_PLATFORM
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::CANARY));
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::DEV));
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
-
-  EXPECT_FALSE(config()->IsSupported(std::nullopt));
+#if BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_ARM64)
+  constexpr bool kIsSupportedOnStable = false;
 #else
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::BETA));
-#if BUILDFLAG(IS_ANDROID)
-#if defined(ARCH_CPU_ARM64)
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::STABLE));
-#else   // defined(ARCH_CPU_ARM64)
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
-#endif  // defined(ARCH_CPU_ARM64)
-#else   // BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::STABLE));
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  EXPECT_TRUE(config()->IsSupported(std::nullopt));
+  constexpr bool kIsSupportedOnStable = true;
 #endif
+  EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
+  EXPECT_EQ(config()->IsSupported(version_info::Channel::CANARY),
+            kThreadProfilerSupportedOnPlatform);
+  EXPECT_EQ(config()->IsSupported(version_info::Channel::DEV),
+            kThreadProfilerSupportedOnPlatform);
+  EXPECT_EQ(config()->IsSupported(version_info::Channel::BETA),
+            kThreadProfilerSupportedOnPlatform);
+  EXPECT_EQ(config()->IsSupported(version_info::Channel::STABLE),
+            kThreadProfilerSupportedOnPlatform && kIsSupportedOnStable);
+  EXPECT_EQ(config()->IsSupported(std::nullopt),
+            kThreadProfilerSupportedOnPlatform);
 }
 
-MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
-                             GetEnableRates) {
-  using RelativePopulations =
-      ThreadProfilerPlatformConfiguration::RelativePopulations;
+TEST_F(ThreadProfilerPlatformConfigurationDeathTest, GetEnableRates) {
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ((RelativePopulations{0.0, 0.0, 100.0}),
-            config()->GetEnableRates(version_info::Channel::CANARY));
-  EXPECT_EQ((RelativePopulations{0.0, 0.0, 100.0}),
-            config()->GetEnableRates(version_info::Channel::DEV));
-  EXPECT_EQ((RelativePopulations{0.0, 0.0, 100.0}),
-            config()->GetEnableRates(version_info::Channel::BETA));
+  constexpr double kCanaryDevExperimentRate = 100.0;
+  constexpr double kBetaExperimentRate = 100.0;
 #if defined(ARCH_CPU_ARM64)
-  EXPECT_EQ((RelativePopulations{100.0 - 0.0001, 0.0, 0.0001}),
-            config()->GetEnableRates(version_info::Channel::STABLE));
+  constexpr double kStableExperimentRate = 0.0001;
 #else
-  EXPECT_EQ((RelativePopulations{100.0, 0.0, 0.0}),
-            config()->GetEnableRates(version_info::Channel::STABLE));
+  constexpr double kStableExperimentRate = 0.0;
 #endif
-  // Note: death tests aren't supported on Android. Otherwise this test would
-  // check that the other inputs result in CHECKs.
-#else
+#else   // !BUILDFLAG(IS_ANDROID)
+  constexpr double kCanaryDevExperimentRate = 20.0;
+  constexpr double kBetaExperimentRate = 10.0;
+  constexpr double kStableExperimentRate = 0.006;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::UNKNOWN));
-  EXPECT_EQ((RelativePopulations{0.0, 80.0, 20.0}),
+
+  // 100% enabled on Canary/Dev, except for experiments.
+  EXPECT_EQ((RelativePopulations{.disabled = 0.0,
+                                 .enabled = 100.0 - kCanaryDevExperimentRate,
+                                 .experiment = kCanaryDevExperimentRate}),
             config()->GetEnableRates(version_info::Channel::CANARY));
-  EXPECT_EQ((RelativePopulations{0.0, 80.0, 20.0}),
+  EXPECT_EQ((RelativePopulations{.disabled = 0.0,
+                                 .enabled = 100.0 - kCanaryDevExperimentRate,
+                                 .experiment = kCanaryDevExperimentRate}),
             config()->GetEnableRates(version_info::Channel::DEV));
-  EXPECT_EQ((RelativePopulations{90.0, 0.0, 10.0}),
+  // 100% disabled on Beta/Stable, except for experiments.
+  EXPECT_EQ((RelativePopulations{.disabled = 100.0 - kBetaExperimentRate,
+                                 .enabled = 0.0,
+                                 .experiment = kBetaExperimentRate}),
             config()->GetEnableRates(version_info::Channel::BETA));
-  EXPECT_EQ((RelativePopulations{100.0 - 0.006, 0.0, 0.006}),
+  EXPECT_EQ((RelativePopulations{.disabled = 100.0 - kStableExperimentRate,
+                                 .enabled = 0.0,
+                                 .experiment = kStableExperimentRate}),
             config()->GetEnableRates(version_info::Channel::STABLE));
 
-  EXPECT_EQ((RelativePopulations{0.0, 100.0, 0.0}),
+  EXPECT_EQ((RelativePopulations{
+                .disabled = 0.0, .enabled = 100.0, .experiment = 0.0}),
             config()->GetEnableRates(std::nullopt));
-#endif
 }
 
-MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
-                             GetChildProcessPerExecutionEnableFraction) {
+TEST_F(ThreadProfilerPlatformConfigurationTest,
+       GetChildProcessPerExecutionEnableFraction) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android child processes that match ChooseEnabledProcess() should be
+  // profiled unconditionally.
+  constexpr bool kAlwaysEnable = true;
+#else
+  constexpr bool kAlwaysEnable = false;
+#endif
+
   EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
                      sampling_profiler::ProfilerProcessType::kGpu));
   EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
                      sampling_profiler::ProfilerProcessType::kNetworkService));
-
-#if BUILDFLAG(IS_ANDROID)
-  // Android child processes that match ChooseEnabledProcess() should be
-  // profiled unconditionally.
-  EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
-                     sampling_profiler::ProfilerProcessType::kRenderer));
-  EXPECT_EQ(1.0, config()->GetChildProcessPerExecutionEnableFraction(
-                     sampling_profiler::ProfilerProcessType::kUnknown));
-#else
-  EXPECT_EQ(0.2, config()->GetChildProcessPerExecutionEnableFraction(
-                     sampling_profiler::ProfilerProcessType::kRenderer));
-  EXPECT_EQ(0.0, config()->GetChildProcessPerExecutionEnableFraction(
-                     sampling_profiler::ProfilerProcessType::kUnknown));
-#endif
+  EXPECT_EQ(kAlwaysEnable ? 1.0 : 0.2,
+            config()->GetChildProcessPerExecutionEnableFraction(
+                sampling_profiler::ProfilerProcessType::kRenderer));
+  EXPECT_EQ(kAlwaysEnable ? 1.0 : 0.0,
+            config()->GetChildProcessPerExecutionEnableFraction(
+                sampling_profiler::ProfilerProcessType::kUnknown));
 }
 
 TEST_P(ThreadProfilerPlatformConfigurationThreadTest, IsEnabledForThread) {
