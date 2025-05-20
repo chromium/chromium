@@ -4,6 +4,7 @@
 
 #include "sandbox/mac/sandbox_serializer.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -80,6 +81,11 @@ SandboxSerializer::SandboxSerializer(Target mode) : mode_(mode) {
 
 SandboxSerializer::~SandboxSerializer() = default;
 
+SandboxSerializer::DeserializedPolicy::DeserializedPolicy() = default;
+SandboxSerializer::DeserializedPolicy::DeserializedPolicy(
+    DeserializedPolicy&& other) = default;
+SandboxSerializer::DeserializedPolicy::~DeserializedPolicy() = default;
+
 void SandboxSerializer::SetProfile(const std::string& profile) {
   profile_ = profile;
 }
@@ -138,68 +144,88 @@ bool SandboxSerializer::SerializePolicy(std::string& serialized_policy,
 }
 
 // static
+std::optional<SandboxSerializer::DeserializedPolicy>
+SandboxSerializer::DeserializePolicy(const std::string& serialized_policy,
+                                     std::string& error) {
+  std::string_view remaining_serialized_policy = serialized_policy;
+  uint64_t mode;
+  if (!DecodeVarInt(&remaining_serialized_policy, &mode)) {
+    error = "unexpected serialized policy mode";
+    return std::nullopt;
+  }
+  if (mode > static_cast<uint64_t>(Target::kMaxValue)) {
+    error = "unexpected policy mode";
+    return std::nullopt;
+  }
+  DeserializedPolicy deserialized_policy;
+  deserialized_policy.mode = static_cast<Target>(mode);
+  switch (deserialized_policy.mode) {
+    case Target::kCompiled:
+      if (!DecodeString(&remaining_serialized_policy,
+                        &(deserialized_policy.profile))) {
+        error = "could not decode compiled policy string";
+        return std::nullopt;
+      }
+      break;
+    case Target::kSource:
+      std::string profile;
+      if (!DecodeString(&remaining_serialized_policy,
+                        &(deserialized_policy.profile))) {
+        error = "could not decode source mode profile string";
+        return std::nullopt;
+      }
+      while (!remaining_serialized_policy.empty()) {
+        std::string key;
+        if (!DecodeString(&remaining_serialized_policy, &key)) {
+          error = "could not decode source mode parameter key";
+          return std::nullopt;
+        }
+        deserialized_policy.params.push_back(key);
+
+        std::string value;
+        if (!DecodeString(&remaining_serialized_policy, &value)) {
+          error = "could not decode source mode parameter value";
+          return std::nullopt;
+        }
+        deserialized_policy.params.push_back(value);
+      }
+      break;
+  }
+  return deserialized_policy;
+}
+
+// static
 bool SandboxSerializer::ApplySerializedPolicy(
     const std::string& serialized_policy) {
-  std::string_view policy = serialized_policy;
-  uint64_t mode;
-  if (!DecodeVarInt(&policy, &mode)) {
-    logging::Error(
-        "SandboxSerializer: unexpected serialized policy mode bytes");
-    return false;
-  }
-  if (mode == static_cast<int>(Target::kCompiled)) {
-    std::string compiled;
-    if (!DecodeString(&policy, &compiled)) {
-      logging::Error(
-          "SandboxSerializer: could not decode compiled policy string");
-      return false;
-    }
-    std::string error;
-    if (!Seatbelt::ApplyCompiledProfile(compiled, &error)) {
-      logging::Error("SandboxSerializer: Failed to apply compiled policy: %s",
-                     error.c_str());
-      return false;
-    }
-    return true;
-  }
-
-  if (mode != static_cast<int>(Target::kSource)) {
-    logging::Error("SandboxSerializer: got unexpected policy mode source");
-    return false;
-  }
-
-  std::string profile;
-  if (!DecodeString(&policy, &profile)) {
-    logging::Error(
-        "SandboxSerializer: could not decode source mode profile string");
-    return false;
-  }
-  std::vector<std::string> params;
-  while (!policy.empty()) {
-    std::string key, value;
-    if (!DecodeString(&policy, &key)) {
-      logging::Error(
-          "SandboxSerializer: could not decode source mode parameter key");
-      return false;
-    }
-    if (!DecodeString(&policy, &value)) {
-      logging::Error(
-          "SandboxSerializer: could not decode source mode parameter value");
-      return false;
-    }
-
-    params.push_back(key);
-    params.push_back(value);
-  }
-
   std::string error;
-  if (!Seatbelt::InitWithParams(profile, 0, params, &error)) {
-    logging::Error(
-        "SandboxSerializer: Failed to initialize sandbox with params: %s",
-        error.c_str());
+  std::optional<DeserializedPolicy> deserialized_policy =
+      DeserializePolicy(serialized_policy, error);
+  if (!deserialized_policy) {
+    logging::Error("SandboxSerializer: Failed to deserialize policy: %s",
+                   error.c_str());
     return false;
   }
 
+  switch (deserialized_policy->mode) {
+    case Target::kCompiled:
+      if (!Seatbelt::ApplyCompiledProfile(deserialized_policy->profile,
+                                          &error)) {
+        logging::Error("SandboxSerializer: Failed to apply compiled policy: %s",
+                       error.c_str());
+        return false;
+      }
+      break;
+    case Target::kSource:
+      if (!Seatbelt::InitWithParams(deserialized_policy->profile, 0,
+                                    deserialized_policy->params, &error)) {
+        logging::Error(
+            "SandboxSerializer: Failed to initialize sandbox with source mode "
+            "policy: %s",
+            error.c_str());
+        return false;
+      }
+      break;
+  }
   return true;
 }
 

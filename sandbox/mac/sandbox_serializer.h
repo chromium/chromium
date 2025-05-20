@@ -6,7 +6,9 @@
 #define SANDBOX_MAC_SANDBOX_SERIALIZER_H_
 
 #include <map>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/seatbelt_export.h"
@@ -26,6 +28,20 @@ class SEATBELT_EXPORT SandboxSerializer {
     // The result of serialization is a string containing a sealed,
     // compiled, binary sandbox policy that can be applied immediately.
     kCompiled,
+    kMaxValue = kCompiled
+  };
+
+  struct DeserializedPolicy {
+    DeserializedPolicy();
+    DeserializedPolicy(DeserializedPolicy&& other);
+    DeserializedPolicy& operator=(DeserializedPolicy&& other) = default;
+    ~DeserializedPolicy();
+    DeserializedPolicy(const DeserializedPolicy& other) = delete;
+    DeserializedPolicy& operator=(const DeserializedPolicy& other) = delete;
+
+    Target mode;
+    std::string profile;
+    std::vector<std::string> params;
   };
 
   // Creates a serializer with the specified target mode.
@@ -54,6 +70,12 @@ class SEATBELT_EXPORT SandboxSerializer {
   // the `error` parameter.
   [[nodiscard]] bool SerializePolicy(std::string& serialized_policy,
                                      std::string& error);
+
+  // Attempts to deserialize `serialized_policy` and returns the policy if
+  // deserialization is successful, or `std::nullopt` if it fails, with a
+  // description of the failure in `error`.
+  [[nodiscard]] static std::optional<SandboxSerializer::DeserializedPolicy>
+  DeserializePolicy(const std::string& serialized_policy, std::string& error);
 
   // Applies the given sandbox policy, and returns whether or not the operation
   // succeeds.
