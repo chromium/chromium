@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -42,11 +44,26 @@ public class AppMenuTestSupport {
     }
 
     /**
-     * Simulates a click on the menu item matching the provided id.
-     * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
-     * @param menuItemId The id of the menu item to click.
+     * Simulates a click on a menu item.
+     *
+     * @see #callOnItemClick(AppMenuCoordinator, int, MotionEvent)
      */
     public static void callOnItemClick(AppMenuCoordinator coordinator, int menuItemId) {
+        callOnItemClick(coordinator, menuItemId, /* triggeringMotionEvent= */ null);
+    }
+
+    /**
+     * Simulates a click on the menu item matching the provided id.
+     *
+     * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
+     * @param menuItemId The id of the menu item to click.
+     * @param triggeringMotionEvent The {@link MotionEvent} that triggered the click. See {@link
+     *     AppMenuClickHandler#onItemClick(PropertyModel, MotionEvent)}.
+     */
+    public static void callOnItemClick(
+            AppMenuCoordinator coordinator,
+            int menuItemId,
+            @Nullable MotionEvent triggeringMotionEvent) {
         PropertyModel model =
                 ((AppMenuCoordinatorImpl) coordinator)
                         .getAppMenuHandlerImplForTesting()
@@ -56,7 +73,7 @@ public class AppMenuTestSupport {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
                 .getAppMenu()
-                .onItemClick(model);
+                .onItemClick(model, triggeringMotionEvent);
     }
 
     /**

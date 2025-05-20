@@ -232,6 +232,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -1708,7 +1709,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private void handleDebugIntent(Intent intent) {
         if (ACTION_CLOSE_TABS.equals(intent.getAction())) {
-            CloseAllTabsHelper.closeAllTabsHidingTabGroups(getTabModelSelectorSupplier().get());
+            CloseAllTabsHelper.closeAllTabsHidingTabGroups(
+                    getTabModelSelectorSupplier().get(), /* allowUndo= */ true);
         } else if (MemoryPressureListener.handleDebugIntent(
                 ChromeTabbedActivity.this, intent.getAction())) {
             // Handled.
@@ -3334,13 +3336,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             TabClosureParams.closeTab(currentTab).build(), /* allowDialog= */ true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
-            // TODO(crbug.com/375468032): use triggeringMotionEvent to decide
-            // TabClosureParams.allowUndo when building closeAllTabsRunnable.
+            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotionEvent);
 
             // Close both incognito and normal tabs.
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                            getTabModelSelectorSupplier().get(), /* isIncognitoOnly= */ false);
+                            getTabModelSelectorSupplier().get(),
+                            /* isIncognitoOnly= */ false,
+                            allowUndo);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),
@@ -3348,13 +3351,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     closeAllTabsRunnable);
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
-            // TODO(crbug.com/375468032): use triggeringMotionEvent to decide
-            // TabClosureParams.allowUndo when building closeAllTabsRunnable.
+            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotionEvent);
 
             // Close only incognito tabs
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                            getTabModelSelectorSupplier().get(), /* isIncognitoOnly= */ true);
+                            getTabModelSelectorSupplier().get(),
+                            /* isIncognitoOnly= */ true,
+                            allowUndo);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),

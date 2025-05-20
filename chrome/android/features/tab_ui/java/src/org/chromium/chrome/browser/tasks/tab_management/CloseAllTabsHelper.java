@@ -26,13 +26,22 @@ import java.util.List;
 /** Helper for closing all tabs via {@link CloseAllTabsDialog}. */
 @NullMarked
 public class CloseAllTabsHelper {
-    /** Closes all tabs hiding tab groups. */
-    public static void closeAllTabsHidingTabGroups(TabModelSelector tabModelSelector) {
+    /**
+     * Closes all tabs hiding tab groups.
+     *
+     * @param tabModelSelector {@link TabModelSelector} for the activity.
+     * @param allowUndo See {@link TabClosureParams#allowUndo}.
+     */
+    public static void closeAllTabsHidingTabGroups(
+            TabModelSelector tabModelSelector, boolean allowUndo) {
         tabModelSelector
                 .getModel(/* incognito= */ true)
                 .getTabRemover()
                 .closeTabs(
-                        TabClosureParams.closeAllTabs().hideTabGroups(true).build(),
+                        TabClosureParams.closeAllTabs()
+                                .allowUndo(allowUndo)
+                                .hideTabGroups(true)
+                                .build(),
                         /* allowDialog= */ false);
 
         // To support CloseAllTabs for archived tabs, the tabs are restored/deleted but remain
@@ -51,6 +60,7 @@ public class CloseAllTabsHelper {
                 .getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeAllTabs()
+                                .allowUndo(allowUndo)
                                 .hideTabGroups(true)
                                 .withUndoRunnable(restoreArchivedTabsRunnable)
                                 .build(),
@@ -60,22 +70,26 @@ public class CloseAllTabsHelper {
     /**
      * Create a runnable to close all tabs using appropriate animations where applicable.
      *
-     * @param tabModelSelector The tab model selector for the activity.
+     * @param tabModelSelector The {@link TabModelSelector} for the activity.
      * @param isIncognitoOnly Whether to only close incognito tabs.
+     * @param allowUndo See {@link TabClosureParams#allowUndo}.
      */
     public static Runnable buildCloseAllTabsRunnable(
-            TabModelSelector tabModelSelector, boolean isIncognitoOnly) {
-        return () -> closeAllTabs(tabModelSelector, isIncognitoOnly);
+            TabModelSelector tabModelSelector, boolean isIncognitoOnly, boolean allowUndo) {
+        return () -> closeAllTabs(tabModelSelector, isIncognitoOnly, allowUndo);
     }
 
-    private static void closeAllTabs(TabModelSelector tabModelSelector, boolean isIncognitoOnly) {
+    private static void closeAllTabs(
+            TabModelSelector tabModelSelector, boolean isIncognitoOnly, boolean allowUndo) {
         if (isIncognitoOnly) {
             tabModelSelector
                     .getModel(/* incognito= */ true)
                     .getTabRemover()
-                    .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
+                    .closeTabs(
+                            TabClosureParams.closeAllTabs().allowUndo(allowUndo).build(),
+                            /* allowDialog= */ false);
         } else {
-            closeAllTabsHidingTabGroups(tabModelSelector);
+            closeAllTabsHidingTabGroups(tabModelSelector, allowUndo);
         }
     }
 
