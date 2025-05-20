@@ -53,36 +53,23 @@ SpotlightCrdManagerImpl::SpotlightCrdManagerImpl(
 
 SpotlightCrdManagerImpl::~SpotlightCrdManagerImpl() = default;
 
-void SpotlightCrdManagerImpl::OnSessionStarted(
-    const std::string& teacher_email) {
-  if (!ash::features::IsBocaSpotlightEnabled()) {
-    return;
-  }
-  teacher_email_ = teacher_email;
-}
-
 void SpotlightCrdManagerImpl::OnSessionEnded() {
   if (!ash::features::IsBocaSpotlightEnabled()) {
     return;
   }
-  teacher_email_ = "";
   crd_session_->TerminateSession();
   persistent_bubble_controller_->OnSessionEnded();
 }
 
 void SpotlightCrdManagerImpl::InitiateSpotlightSession(
-    ConnectionCodeCallback callback) {
+    ConnectionCodeCallback callback,
+    const std::string& requester_email) {
   if (!ash::features::IsBocaSpotlightEnabled()) {
-    return;
-  }
-  if (teacher_email_.empty()) {
-    LOG(WARNING)
-        << "[Boca] Tried to initiate Spotlight without valid teacher email.";
     return;
   }
 
   SessionParameters parameters;
-  parameters.viewer_email = teacher_email_;
+  parameters.viewer_email = requester_email;
   parameters.allow_file_transfer = false;
   parameters.show_confirmation_dialog = false;
   parameters.terminate_upon_input = false;

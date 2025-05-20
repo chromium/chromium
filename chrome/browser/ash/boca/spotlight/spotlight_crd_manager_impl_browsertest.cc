@@ -101,8 +101,7 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
           Invoke([&](auto callback) { std::move(callback).Run("123"); })));
   TestFuture<const std::string&> success_future;
 
-  manager_->OnSessionStarted(kUserEmail);
-  manager_->InitiateSpotlightSession(success_future.GetCallback());
+  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
   EXPECT_EQ(kSpotlightConnectionCode, success_future.Get());
@@ -122,11 +121,11 @@ IN_PROC_BROWSER_TEST_F(
         error_callback_future.SetValue();
       })));
 
-  manager_->OnSessionStarted(kUserEmail);
   manager_->InitiateSpotlightSession(
       base::BindOnce([](const std::string& result) {
         GTEST_FAIL() << "Unexpected call to success callback";
-      }));
+      }),
+      kUserEmail);
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
   EXPECT_TRUE(error_callback_future.Wait());
@@ -138,37 +137,14 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
-                       InitiateSpotlightSessionShouldFailIfNotInActiveSession) {
-  EXPECT_CALL(*crd_session_, StartCrdHost).Times(0);
-
-  manager_->InitiateSpotlightSession(
-      base::BindOnce([](const std::string& result) {
-        GTEST_FAIL() << "Unexpected call to success callback";
-      }));
-  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SpotlightCrdManagerImplTest,
-    OnSessionEndedShouldClearTeacherEmailAndTerminateSession) {
+                       OnSessionEndedShouldTerminateSession) {
   EXPECT_CALL(*crd_session_, StartCrdHost).Times(1);
   EXPECT_CALL(*crd_session_, TerminateSession()).Times(1);
   TestFuture<const std::string&> success_future;
 
-  manager_->OnSessionStarted(kUserEmail);
-  manager_->InitiateSpotlightSession(success_future.GetCallback());
+  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
 
   manager_->OnSessionEnded();
-  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
-
-  // Starting another session should end before calling crd since the
-  // teacher_email_ is now be empty.
-
-  EXPECT_CALL(*crd_session_, StartCrdHost).Times(0);
-  manager_->InitiateSpotlightSession(
-      base::BindOnce([](const std::string& result) {
-        GTEST_FAIL() << "Unexpected call to success callback";
-      }));
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 }
 
@@ -204,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
           [&]() { std::move(session_finished_future.GetCallback()).Run(); }));
 
   TestFuture<const std::string&> success_future;
-  manager_->OnSessionStarted(kUserEmail);
-  manager_->InitiateSpotlightSession(success_future.GetCallback());
+  manager_->InitiateSpotlightSession(success_future.GetCallback(), kUserEmail);
 
   manager_->OnSessionEnded();
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);

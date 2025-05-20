@@ -31,15 +31,13 @@ class SpotlightCrdManagerImpl : public SpotlightCrdManager {
   ~SpotlightCrdManagerImpl() override;
 
   // SpotlightCrdManager:
-  void OnSessionStarted(const std::string& teacher_email) override;
   void OnSessionEnded() override;
-  void InitiateSpotlightSession(ConnectionCodeCallback callback) override;
+  void InitiateSpotlightSession(ConnectionCodeCallback callback,
+                                const std::string& requester_email) override;
   void ShowPersistentNotification(const std::string& teacher_name) override;
   void HidePersistentNotification() override;
 
  private:
-  std::string teacher_email_;
-
   // Owns the `policy::CrdAdminSessionController` which provides a
   // `policy::StartCrdSessionJobDelegate`. The delegate is what actually
   // interacts with the CRD host and the `policy::SharedCrdSession` calls makes

@@ -17,7 +17,6 @@ class SpotlightCrdManager {
   SpotlightCrdManager& operator=(const SpotlightCrdManager&) = delete;
   virtual ~SpotlightCrdManager() = default;
 
-  virtual void OnSessionStarted(const std::string& teacher_email) = 0;
   virtual void OnSessionEnded() = 0;
 
   // TODO: dorianbrandon - Move to more appropriate class.
@@ -28,7 +27,8 @@ class SpotlightCrdManager {
 
   // Starts the CRD session and returns the connection code for the request.
   virtual void InitiateSpotlightSession(
-      base::OnceCallback<void(const std::string&)> callback) = 0;
+      base::OnceCallback<void(const std::string&)> callback,
+      const std::string& requester_email) = 0;
 
  protected:
   SpotlightCrdManager() = default;

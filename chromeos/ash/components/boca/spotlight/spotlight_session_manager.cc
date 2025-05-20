@@ -43,7 +43,7 @@ void SpotlightSessionManager::OnSessionStarted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   in_session_ = true;
-  spotlight_crd_manager_->OnSessionStarted(producer.email());
+  teacher_email_ = producer.email();
   teacher_name_ = producer.full_name();
 }
 
@@ -53,6 +53,7 @@ void SpotlightSessionManager::OnSessionEnded(const std::string& session_id) {
   in_session_ = false;
   request_in_progress_ = false;
   spotlight_crd_manager_->OnSessionEnded();
+  teacher_email_ = "";
   teacher_name_ = "";
   notification_handler_->StopSpotlightCountdown();
 }
@@ -80,15 +81,27 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
 
   if (device->second.has_view_screen_config()) {
     switch (device->second.view_screen_config().view_screen_state()) {
-      case ::boca::ViewScreenConfig::REQUESTED:
+      case ::boca::ViewScreenConfig::REQUESTED: {
         if (request_in_progress_) {
           return;
         }
         request_in_progress_ = true;
+        std::string requester_email = teacher_email_;
+        // ignore the experiment, the correct experiment is not a part of this
+        // chain
+        if (ash::features::IsBocaSpotlightRobotRequesterEnabled() &&
+            device->second.view_screen_config().has_view_screen_requester()) {
+          requester_email = device->second.view_screen_config()
+                                .view_screen_requester()
+                                .service_account()
+                                .email();
+        }
         spotlight_crd_manager_->InitiateSpotlightSession(
             base::BindOnce(&SpotlightSessionManager::OnConnectionCodeReceived,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr()),
+            requester_email);
         break;
+      }
       case ::boca::ViewScreenConfig::INACTIVE:
         request_in_progress_ = false;
         notification_handler_->StopSpotlightCountdown();
