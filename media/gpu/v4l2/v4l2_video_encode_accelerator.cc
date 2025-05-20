@@ -709,51 +709,31 @@ bool V4L2VideoEncodeAccelerator::IsFlushSupported() {
   return is_flush_supported_;
 }
 
+void V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable(
+    scoped_refptr<gpu::SharedImageInterface> sii) {
+  sii_ = std::move(sii);
+}
+
 void V4L2VideoEncodeAccelerator::SetCommandBufferHelperCB(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
         get_command_buffer_helper_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
-  if (get_command_buffer_helper_cb.is_null() || sii_) {
-    return;
-  }
-
-  // Post this task on |encoder_task_runner_| so that it is blocked on the
-  // initialization of SharedImageInterface. This is required since
-  // SharedImageInterface will then be used on same task runner later. Posting a
-  // task on |encoder_task_runner_| will ensure that SharedImageInterface is
-  // initialized before it is used.
-  if (!encoder_task_runner_->RunsTasksInCurrentSequence()) {
-    encoder_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&V4L2VideoEncodeAccelerator::SetCommandBufferHelperCB,
-                       weak_this_, std::move(get_command_buffer_helper_cb),
-                       std::move(gpu_task_runner)));
-  }
-
-  base::WaitableEvent wait;
-  bool success = gpu_task_runner->PostTask(
+  gpu_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
-                 get_command_buffer_helper_cb,
-             scoped_refptr<gpu::SharedImageInterface>* sii,
-             base::WaitableEvent* wait) {
-            auto command_buffer_helper = get_command_buffer_helper_cb.Run();
-            if (command_buffer_helper) {
-              CHECK(command_buffer_helper->GetSharedImageStub());
-              CHECK(sii && !*sii);
-              *sii = command_buffer_helper->GetSharedImageStub()
-                         ->shared_image_interface();
-              CHECK(*sii) << "Unable to get a SharedImageInterface.";
+                 get_command_buffer_helper_cb)
+              -> scoped_refptr<gpu::SharedImageInterface> {
+            auto helper = get_command_buffer_helper_cb.Run();
+            if (helper && helper->GetSharedImageStub()) {
+              return helper->GetSharedImageStub()->shared_image_interface();
             }
-            wait->Signal();
+            return nullptr;
           },
-          std::move(get_command_buffer_helper_cb), &sii_, &wait));
-  if (success) {
-    // Sync wait for retrieval of |sii_|.
-    base::ScopedAllowBaseSyncPrimitives allow_wait;
-    wait.Wait();
-  }
+          get_command_buffer_helper_cb),
+      base::BindOnce(
+          &V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable,
+          weak_this_));
 }
 
 void V4L2VideoEncodeAccelerator::SetSharedImageInterfaceForTesting(

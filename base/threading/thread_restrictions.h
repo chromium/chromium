@@ -338,7 +338,6 @@ class MailboxVideoFrameConverter;
 class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
 class V4L2DevicePoller;  // TODO(crbug.com/41486289): remove this.
-class V4L2VideoEncodeAccelerator;
 }  // namespace media
 namespace memory_instrumentation {
 class OSMetrics;
@@ -780,7 +779,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
             WorkerStatus StatusWork>
   friend class media::CodecWorkerImpl;
   friend class media::MojoVideoEncodeAccelerator;
-  friend class media::V4L2VideoEncodeAccelerator;
   friend class mojo::core::ScopedIPCSupport;
   friend class net::MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
   friend class rlz_lib::FinancialPing;
