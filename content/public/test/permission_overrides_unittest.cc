@@ -16,7 +16,14 @@ namespace content {
 namespace {
 using blink::PermissionType;
 using blink::mojom::PermissionStatus;
+using testing::AllOf;
+using testing::IsSupersetOf;
+using testing::Pair;
+using testing::SizeIs;
+using testing::UnorderedElementsAre;
 using url::Origin;
+
+constexpr size_t kPermissionsCount = 37;
 
 TEST(PermissionOverridesTest, GetOriginNoOverrides) {
   PermissionOverrides overrides;
@@ -30,24 +37,23 @@ TEST(PermissionOverridesTests, SetMidi) {
   Origin url = Origin::Create(GURL("https://google.com/"));
   overrides.Set(url, PermissionType::MIDI_SYSEX, PermissionStatus::GRANTED);
 
-  EXPECT_EQ(*overrides.Get(url, PermissionType::MIDI_SYSEX),
+  EXPECT_EQ(overrides.Get(url, PermissionType::MIDI_SYSEX),
             PermissionStatus::GRANTED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::MIDI),
+  EXPECT_EQ(overrides.Get(url, PermissionType::MIDI),
             PermissionStatus::GRANTED);
 
   overrides.Set(url, PermissionType::MIDI_SYSEX, PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::MIDI_SYSEX),
+  EXPECT_EQ(overrides.Get(url, PermissionType::MIDI_SYSEX),
             PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::MIDI),
+  EXPECT_EQ(overrides.Get(url, PermissionType::MIDI),
             PermissionStatus::GRANTED);
 
   // Reset to all-granted MIDI.
   overrides.Set(url, PermissionType::MIDI_SYSEX, PermissionStatus::GRANTED);
 
   overrides.Set(url, PermissionType::MIDI, PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::MIDI),
-            PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::MIDI_SYSEX),
+  EXPECT_EQ(overrides.Get(url, PermissionType::MIDI), PermissionStatus::DENIED);
+  EXPECT_EQ(overrides.Get(url, PermissionType::MIDI_SYSEX),
             PermissionStatus::DENIED);
 }
 
@@ -56,7 +62,7 @@ TEST(PermissionOverridesTest, GetBasic) {
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
   overrides.Set(url, PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
 
-  EXPECT_EQ(*overrides.Get(url, PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(url, PermissionType::GEOLOCATION),
             PermissionStatus::GRANTED);
 }
 
@@ -70,13 +76,13 @@ TEST(PermissionOverridesTest, GetAllStates) {
   overrides.Set(url, PermissionType::AUDIO_CAPTURE, PermissionStatus::ASK);
 
   // Check that overrides are saved for the given url.
-  EXPECT_EQ(*overrides.Get(url, PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(url, PermissionType::GEOLOCATION),
             PermissionStatus::GRANTED);
 
-  EXPECT_EQ(*overrides.Get(url, PermissionType::NOTIFICATIONS),
+  EXPECT_EQ(overrides.Get(url, PermissionType::NOTIFICATIONS),
             PermissionStatus::DENIED);
 
-  EXPECT_EQ(*overrides.Get(url, PermissionType::AUDIO_CAPTURE),
+  EXPECT_EQ(overrides.Get(url, PermissionType::AUDIO_CAPTURE),
             PermissionStatus::ASK);
 }
 
@@ -133,11 +139,11 @@ TEST(PermissionOverridesTest, SameOriginSameOverrides) {
   overrides.Set(url, PermissionType::NOTIFICATIONS, PermissionStatus::DENIED);
   overrides.Set(url, PermissionType::AUDIO_CAPTURE, PermissionStatus::ASK);
 
-  EXPECT_EQ(*overrides.Get(Origin::Create(GURL("https://google.com")),
-                           PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(Origin::Create(GURL("https://google.com")),
+                          PermissionType::GEOLOCATION),
             PermissionStatus::GRANTED);
-  EXPECT_EQ(*overrides.Get(Origin::Create(GURL("https://google.com/")),
-                           PermissionType::AUDIO_CAPTURE),
+  EXPECT_EQ(overrides.Get(Origin::Create(GURL("https://google.com/")),
+                          PermissionType::AUDIO_CAPTURE),
             PermissionStatus::ASK);
 }
 
@@ -175,7 +181,7 @@ TEST(PermissionOverridesTest, DifferentOriginsDifferentOverrides) {
                 PermissionStatus::ASK);
 
   // Origins do not interfere.
-  EXPECT_EQ(*overrides.Get(first_url, PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(first_url, PermissionType::GEOLOCATION),
             PermissionStatus::GRANTED);
   EXPECT_FALSE(
       overrides.Get(first_url, PermissionType::NOTIFICATIONS).has_value());
@@ -193,14 +199,14 @@ TEST(PermissionOverridesTest, ResetOneOrigin) {
   overrides.Set(url, PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
   overrides.Set(other_url, PermissionType::GEOLOCATION,
                 PermissionStatus::GRANTED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(url, PermissionType::GEOLOCATION),
             PermissionStatus::GRANTED);
-  EXPECT_EQ(*overrides.Get(other_url, PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(other_url, PermissionType::GEOLOCATION),
             PermissionStatus::GRANTED);
 
   overrides.Reset(url);
   EXPECT_FALSE(overrides.Get(url, PermissionType::GEOLOCATION).has_value());
-  EXPECT_EQ(*overrides.Get(other_url, PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(other_url, PermissionType::GEOLOCATION),
             PermissionStatus::GRANTED);
 }
 
@@ -213,24 +219,129 @@ TEST(PermissionOverridesTest, GrantPermissionsSetsSomeBlocksRest) {
             PermissionType::NOTIFICATIONS});
 
   // All other types should be blocked - will test a set of them.
-  EXPECT_EQ(*overrides.Get(url, PermissionType::GEOLOCATION),
+  EXPECT_EQ(overrides.Get(url, PermissionType::GEOLOCATION),
             PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::AUDIO_CAPTURE),
+  EXPECT_EQ(overrides.Get(url, PermissionType::AUDIO_CAPTURE),
             PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::MIDI_SYSEX),
+  EXPECT_EQ(overrides.Get(url, PermissionType::MIDI_SYSEX),
             PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::CLIPBOARD_READ_WRITE),
+  EXPECT_EQ(overrides.Get(url, PermissionType::CLIPBOARD_READ_WRITE),
             PermissionStatus::DENIED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::WAKE_LOCK_SYSTEM),
+  EXPECT_EQ(overrides.Get(url, PermissionType::WAKE_LOCK_SYSTEM),
             PermissionStatus::DENIED);
 
   // Specified types are granted.
-  EXPECT_EQ(*overrides.Get(url, PermissionType::NOTIFICATIONS),
+  EXPECT_EQ(overrides.Get(url, PermissionType::NOTIFICATIONS),
             PermissionStatus::GRANTED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::BACKGROUND_SYNC),
+  EXPECT_EQ(overrides.Get(url, PermissionType::BACKGROUND_SYNC),
             PermissionStatus::GRANTED);
-  EXPECT_EQ(*overrides.Get(url, PermissionType::BACKGROUND_FETCH),
+  EXPECT_EQ(overrides.Get(url, PermissionType::BACKGROUND_FETCH),
             PermissionStatus::GRANTED);
+}
+
+TEST(PermissionOverridesTest, GrantPermissions_AllOriginsShadowing) {
+  using enum blink::PermissionType;
+  using enum PermissionStatus;
+  PermissionOverrides overrides;
+
+  // Override some types for all origins.
+  overrides.GrantPermissions(std::nullopt, {GEOLOCATION, AUDIO_CAPTURE});
+
+  {
+    Origin origin = Origin::Create(GURL("https://google.com/search?q=all"));
+
+    // Override other permissions types for one origin.
+    overrides.GrantPermissions(
+        origin, {BACKGROUND_SYNC, BACKGROUND_FETCH, NOTIFICATIONS});
+
+    // The per-origin overrides are respected.
+    EXPECT_EQ(overrides.Get(origin, NOTIFICATIONS), GRANTED);
+    EXPECT_EQ(overrides.Get(origin, BACKGROUND_SYNC), GRANTED);
+    EXPECT_EQ(overrides.Get(origin, BACKGROUND_FETCH), GRANTED);
+
+    // Global overrides are shadowed by the single origin's `GrantPermissions`
+    // call.
+    EXPECT_EQ(overrides.Get(origin, GEOLOCATION), DENIED);
+    EXPECT_EQ(overrides.Get(origin, AUDIO_CAPTURE), DENIED);
+
+    EXPECT_THAT(overrides.GetAllForTest(origin),
+                AllOf(IsSupersetOf({
+                          std::make_pair(BACKGROUND_SYNC, GRANTED),
+                          std::make_pair(BACKGROUND_FETCH, GRANTED),
+                          std::make_pair(NOTIFICATIONS, GRANTED),
+                          std::make_pair(GEOLOCATION, DENIED),
+                          std::make_pair(AUDIO_CAPTURE, DENIED),
+                      }),
+                      SizeIs(kPermissionsCount)));
+    EXPECT_THAT(overrides.GetAllForTest(std::nullopt),
+                AllOf(IsSupersetOf({
+                          std::make_pair(BACKGROUND_SYNC, DENIED),
+                          std::make_pair(BACKGROUND_FETCH, DENIED),
+                          std::make_pair(NOTIFICATIONS, DENIED),
+                          std::make_pair(GEOLOCATION, GRANTED),
+                          std::make_pair(AUDIO_CAPTURE, GRANTED),
+                      }),
+                      SizeIs(kPermissionsCount)));
+  }
+  {
+    // For a different origin, only the global overrides take effect.
+    Origin origin = Origin::Create(GURL("https://www.google.com/search?q=all"));
+
+    EXPECT_EQ(overrides.Get(origin, NOTIFICATIONS), DENIED);
+    EXPECT_EQ(overrides.Get(origin, BACKGROUND_SYNC), DENIED);
+    EXPECT_EQ(overrides.Get(origin, BACKGROUND_FETCH), DENIED);
+
+    EXPECT_EQ(overrides.Get(origin, GEOLOCATION), GRANTED);
+    EXPECT_EQ(overrides.Get(origin, AUDIO_CAPTURE), GRANTED);
+
+    EXPECT_THAT(overrides.GetAllForTest(origin),
+                AllOf(IsSupersetOf({
+                          std::make_pair(BACKGROUND_SYNC, DENIED),
+                          std::make_pair(BACKGROUND_FETCH, DENIED),
+                          std::make_pair(NOTIFICATIONS, DENIED),
+                          std::make_pair(GEOLOCATION, GRANTED),
+                          std::make_pair(AUDIO_CAPTURE, GRANTED),
+                      }),
+                      SizeIs(kPermissionsCount)));
+  }
+}
+
+TEST(PermissionOverridesTest, SetPermission_AllOriginsNoShadowing) {
+  using enum blink::PermissionType;
+  using enum PermissionStatus;
+  PermissionOverrides overrides;
+
+  // Override a permission type for all origins.
+  overrides.Set(std::nullopt, GEOLOCATION, GRANTED);
+
+  {
+    Origin origin = Origin::Create(GURL("https://google.com/search?q=all"));
+
+    // Override another permission type for one origin.
+    overrides.Set(origin, BACKGROUND_SYNC, GRANTED);
+
+    // The per-origin override is respected.
+    EXPECT_EQ(overrides.Get(origin, BACKGROUND_SYNC), GRANTED);
+
+    // Global overrides are not shadowed by the single origin's `Set` call.
+    EXPECT_EQ(overrides.Get(origin, GEOLOCATION), GRANTED);
+
+    EXPECT_THAT(overrides.GetAllForTest(origin),
+                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED),
+                                     Pair(BACKGROUND_SYNC, GRANTED)));
+    EXPECT_THAT(overrides.GetAllForTest(std::nullopt),
+                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED)));
+  }
+  {
+    // For a different origin, only the global overrides take effect.
+    Origin origin = Origin::Create(GURL("https://www.google.com/search?q=all"));
+
+    EXPECT_EQ(overrides.Get(origin, BACKGROUND_SYNC), std::nullopt);
+
+    EXPECT_EQ(overrides.Get(origin, GEOLOCATION), GRANTED);
+    EXPECT_THAT(overrides.GetAllForTest(origin),
+                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED)));
+  }
 }
 
 }  // namespace
