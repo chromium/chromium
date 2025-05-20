@@ -5472,30 +5472,6 @@
             ]
         }
     ],
-    "ClientSideDetectionShowScamVerdictWarning": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithWarning",
-                    "enable_features": [
-                        "ClientSideDetectionBrandAndIntentForScamDetection",
-                        "ClientSideDetectionShowScamVerdictWarning"
-                    ]
-                },
-                {
-                    "name": "EnabledMetricsCollection",
-                    "enable_features": [
-                        "ClientSideDetectionBrandAndIntentForScamDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClipboardChangeEvent": [
         {
             "platforms": [

@@ -54,7 +54,7 @@ BASE_FEATURE(kClientSideDetectionAcceptHCAllowlist,
 
 BASE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection,
              "ClientSideDetectionBrandAndIntentForScamDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
              "ClientSideDetectionDebuggingMetadataCache",
@@ -98,7 +98,7 @@ BASE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning,
 
 BASE_FEATURE(kClientSideDetectionShowScamVerdictWarning,
              "ClientSideDetectionShowScamVerdictWarning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionVibrationApi,
              "ClientSideDetectionVibrationApi",
