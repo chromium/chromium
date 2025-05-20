@@ -89,7 +89,11 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   // Actual RasterMode used for rendering 2d primitives.
   RasterMode GetRasterMode() const;
-  void ClearLayerTexture();
+
+  // Called when the CC texture layer that this instance is holding (if any)
+  // should be cleared. Subclasses that can hold a CC texture layer should
+  // override this method.
+  virtual void ClearLayerTexture() {}
 
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }

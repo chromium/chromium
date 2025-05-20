@@ -84,12 +84,6 @@ RasterMode CanvasResourceHost::GetRasterMode() const {
   return ShouldTryToUseGpuRaster() ? RasterMode::kGPU : RasterMode::kCPU;
 }
 
-void CanvasResourceHost::ClearLayerTexture() {
-  if (cc_layer_) {
-    cc_layer_->ClearTexture();
-  }
-}
-
 void CanvasResourceHost::FlushRecording(FlushReason reason) {
   if (resource_provider_) {
     resource_provider_->FlushCanvas(reason);

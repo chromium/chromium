@@ -1720,6 +1720,12 @@ cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerIfNeeded() {
   return cc_layer_.get();
 }
 
+void HTMLCanvasElement::ClearLayerTexture() {
+  if (cc_layer_) {
+    cc_layer_->ClearTexture();
+  }
+}
+
 Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   DCHECK(IsRenderingContext2D());
 
