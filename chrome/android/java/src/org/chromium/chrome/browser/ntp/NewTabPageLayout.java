@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
@@ -134,6 +136,7 @@ public class NewTabPageLayout extends LinearLayout {
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
     private View mFakeSearchBoxLayout;
+    private TextView mFakeSearchBoxEditText;
     private Callback<Logo> mOnLogoAvailableCallback;
 
     /** Constructor for inflating from XML. */
@@ -165,6 +168,7 @@ public class NewTabPageLayout extends LinearLayout {
 
         mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
         mFakeSearchBoxLayout = findViewById(R.id.search_box);
+        mFakeSearchBoxEditText = findViewById(R.id.search_box_text);
         insertSiteSectionView();
 
         Log.i(TAG, "NewTabPageLayout.onFinishInflate after insertSiteSectionView");
@@ -1007,5 +1011,11 @@ public class NewTabPageLayout extends LinearLayout {
     public static boolean isInNarrowWindowOnTablet(boolean isTablet, UiConfig uiConfig) {
         return isTablet
                 && uiConfig.getCurrentDisplayStyle().horizontal < HorizontalDisplayStyle.WIDE;
+    }
+
+    /** Update text hint to capture the Search Engine name. */
+    /* package */ void updateSearchBoxHintText() {
+        mFakeSearchBoxEditText.setHint(
+                SearchEngineUtils.getForProfile(mProfile).getSearchBoxHintText());
     }
 }

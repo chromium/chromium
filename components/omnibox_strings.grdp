@@ -67,6 +67,9 @@
     <message name="IDS_OMNIBOX_EMPTY_HINT" desc="The text displayed in the omnibox when it is empty." formatter_data="android_java">
       Search or type URL
     </message>
+    <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
+      Search <ph name="ENGINE_NAME">%1$s<ex>Yahoo</ex></ph> or type URL
+    </message>
   </if>
   <if expr="is_android">
     <message name="IDS_OMNIBOX_ON_CCT_EMPTY_HINT" desc="Hint text shown in the Omnibox on a Custom Tab." formatter_data="android_java">

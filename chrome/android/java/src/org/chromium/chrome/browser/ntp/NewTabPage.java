@@ -657,6 +657,7 @@ public class NewTabPage
                 mIsTablet,
                 mTabStripHeightSupplier);
 
+        mNewTabPageLayout.updateSearchBoxHintText();
         initializeHomeModules();
 
         TraceEvent.end(TAG);
@@ -846,6 +847,7 @@ public class NewTabPage
 
     private void onSearchEngineUpdated() {
         updateSearchProviderHasLogo();
+        mNewTabPageLayout.updateSearchBoxHintText();
         setSearchProviderInfoOnView(
                 mSearchProviderHasLogo, mTemplateUrlService.isDefaultSearchEngineGoogle());
         // TODO(crbug.com/40226731): Remove this call when the Feed position experiment is
@@ -854,8 +856,8 @@ public class NewTabPage
     }
 
     /**
-     * Set the search provider info on the main child view, so that it can change layouts if
-     * needed.
+     * Set the search provider info on the main child view, so that it can change layouts if needed.
+     *
      * @param hasLogo Whether the search provider has a logo.
      * @param isGoogle Whether the search provider is Google.
      */
