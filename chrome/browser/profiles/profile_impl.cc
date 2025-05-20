@@ -435,7 +435,7 @@ void ProfileImpl::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_ANDROID)
   registry->RegisterTimePref(prefs::kProfileCreationTime, base::Time());
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
   registry->RegisterBooleanPref(prefs::kPdfAnnotationsEnabled, true);
 #endif
   registry->RegisterIntegerPref(prefs::kEnterpriseBadgingTemporarySetting, 0);

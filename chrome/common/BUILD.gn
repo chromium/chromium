@@ -573,6 +573,7 @@ static_library("constants") {
     "//components/signin/public/base:signin_buildflags",
     "//content/public/common:buildflags",
     "//content/public/common:result_codes",
+    "//pdf:buildflags",
     "//rlz/buildflags",
     "//third_party/widevine/cdm:buildflags",
   ]

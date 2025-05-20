@@ -33,11 +33,14 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
 
 namespace pdf_extension_util {
 
@@ -240,19 +243,25 @@ bool IsPrintingEnabled(content::BrowserContext* context) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-bool IsPdfInk1AnnotationsEnabled(content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+bool IsPdfAnnotationsEnabledByPolicy(content::BrowserContext* context) {
   PrefService* prefs =
       context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
   return !prefs || !prefs->IsManagedPreference(prefs::kPdfAnnotationsEnabled) ||
          prefs->GetBoolean(prefs::kPdfAnnotationsEnabled);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsPdfInk1AnnotationsEnabled(content::BrowserContext* context) {
+  return IsPdfAnnotationsEnabledByPolicy(context);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-bool IsPdfInk2AnnotationsEnabled() {
-  // TODO(crbug.com/414844437): Support `kPdfAnnotationsEnabled` policy.
-  return base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2);
+bool IsPdfInk2AnnotationsEnabled(content::BrowserContext* context) {
+  return base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2) &&
+         IsPdfAnnotationsEnabledByPolicy(context);
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
@@ -299,7 +308,7 @@ void AddAdditionalData(content::BrowserContext* context,
 #endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  const bool use_ink2 = IsPdfInk2AnnotationsEnabled();
+  const bool use_ink2 = IsPdfInk2AnnotationsEnabled(context);
   dict->Set("pdfInk2Enabled", use_ink2);
   dict->Set("pdfTextAnnotationsEnabled",
             use_ink2 && chrome_pdf::features::kPdfInk2TextAnnotations.Get());

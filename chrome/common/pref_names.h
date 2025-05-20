@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
@@ -3936,11 +3937,13 @@ inline constexpr char kFetchKeepaliveDurationOnShutdown[] =
     "fetch_keepalive_duration_on_shutdown";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
 // Boolean pref to control whether to enable annotation mode in the PDF viewer
 // or not.
 inline constexpr char kPdfAnnotationsEnabled[] = "pdf.enable_annotations";
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Boolean pref to control whether to enable Lens integration with media app
 inline constexpr char kMediaAppLensEnabled[] = "media_app.enable_lens";
 #endif

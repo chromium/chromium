@@ -2176,10 +2176,13 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kSuppressDifferentOriginSubframeJSDialogs,
     base::Value::Type::BOOLEAN },
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
   { key::kPdfAnnotationsEnabled,
     prefs::kPdfAnnotationsEnabled,
     base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(IS_CHROMEOS)
   { key::kLensOnGalleryEnabled,
     prefs::kMediaAppLensEnabled,
     base::Value::Type::BOOLEAN },
