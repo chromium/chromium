@@ -324,9 +324,8 @@ command line, you can use `iossim`. For example, to run a debug build of
 $ out/Debug-iphonesimulator/iossim -i out/Debug-iphonesimulator/Chromium.app
 ```
 
-From Xcode 9 on, `iossim` no longer automatically launches the Simulator. This must now
-be done manually from within Xcode (`Xcode > Open Developer Tool > Simulator`), and
-also must be done *after* running `iossim`.
+Note that `iossim` does not automatically launch the Simulator. This must be
+done manually *after* running `iossim`.
 
 ### Passing arguments
 
@@ -434,10 +433,9 @@ build artifact, generated from the `BUILD.gn` files. Do not use it to add new
 files; instead see the procedures for [working with
 files](working_with_files.md).
 
-If you have problems building, join us in `#chromium` on `irc.freenode.net` and
-ask there. As mentioned above, be sure that the
-[waterfall](https://build.chromium.org/buildbot/waterfall/) is green and the tree
-is open before checking out. This will increase your chances of success.
+If you have problems building, you can join us on
+[Slack](https://www.chromium.org/developers/slack/) or one of our [mailing
+lists](https://www.chromium.org/developers/technical-discussion-groups/).
 
 ### Debugging
 
