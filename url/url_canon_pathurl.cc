@@ -79,8 +79,8 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
 
   // Similar to mailto:, always use the default UTF-8 charset converter for
   // query.
-  CanonicalizeQuery(source.query, parsed.query, nullptr, output,
-                    &new_parsed->query);
+  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query), nullptr,
+                    output, &new_parsed->query);
 
   CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
                   &new_parsed->ref);

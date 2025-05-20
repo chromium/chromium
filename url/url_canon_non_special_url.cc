@@ -164,8 +164,8 @@ bool DoCanonicalizeNonSpecialURL(const URLComponentSource<CHAR>& source,
   }
 
   // Query
-  CanonicalizeQuery(source.query, parsed.query, query_converter, &output,
-                    &new_parsed.query);
+  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query),
+                    query_converter, &output, &new_parsed.query);
 
   // Ref: ignore failure for this, since the page can probably still be loaded.
   CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), &output,

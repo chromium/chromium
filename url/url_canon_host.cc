@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -240,19 +242,18 @@ void ScanHostname(const CHAR* spec,
 //
 // The return value indicates if the output is a potentially valid host name.
 template <CanonMode canon_mode, typename INCHAR, typename OUTCHAR>
-bool DoSimpleHost(const INCHAR* host,
-                  size_t host_len,
+bool DoSimpleHost(std::basic_string_view<INCHAR> host,
                   CanonOutputT<OUTCHAR>* output,
                   bool* has_non_ascii) {
   *has_non_ascii = false;
 
   bool success = true;
-  for (size_t i = 0; i < host_len; ++i) {
+  for (size_t i = 0; i < host.length(); ++i) {
     unsigned int source = host[i];
     if (source == '%') {
       // Unescape first, if possible.
       // Source will be used only if decode operation was successful.
-      if (!DecodeEscaped(host, &i, host_len,
+      if (!DecodeEscaped(host.data(), &i, host.length(),
                          reinterpret_cast<unsigned char*>(&source))) {
         // Invalid escaped character. There is nothing that can make this
         // host valid. We append an escaped percent so the URL looks reasonable
@@ -304,7 +305,8 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   // cannot be escaped after they are created.
   RawCanonOutputW<kTempHostBufferLen> url_escaped_host;
   bool has_non_ascii;
-  DoSimpleHost<canon_mode>(src, src_len, &url_escaped_host, &has_non_ascii);
+  DoSimpleHost<canon_mode>(std::u16string_view(src, src_len), &url_escaped_host,
+                           &has_non_ascii);
   if (url_escaped_host.length() > kMaxHostBufferLength) {
     AppendInvalidNarrowString(src, 0, src_len, output);
     return false;
@@ -321,8 +323,8 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   // Now we check the ASCII output like a normal host. It will also handle
   // unescaping. Although we unescaped everything before this function call, if
   // somebody does %00 as fullwidth, ICU will convert this to ASCII.
-  bool success = DoSimpleHost<canon_mode>(
-      wide_output.data(), wide_output.length(), output, &has_non_ascii);
+  bool success =
+      DoSimpleHost<canon_mode>(wide_output.view(), output, &has_non_ascii);
   if (has_non_ascii) {
     // ICU generated something that DoSimpleHost didn't think looked like
     // ASCII. This is quite rare, but ICU might convert some characters to
@@ -350,8 +352,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
 // UTF-16. The has_escaped flag should be set if the input string requires
 // unescaping.
 template <CanonMode canon_mode>
-bool DoComplexHost(const char* host,
-                   size_t host_len,
+bool DoComplexHost(std::string_view host,
                    bool has_non_ascii,
                    bool has_escaped,
                    CanonOutput* output) {
@@ -361,8 +362,7 @@ bool DoComplexHost(const char* host,
 
   // Points to the UTF-8 data we want to convert. This will either be the
   // input or the unescaped version written to |*output| if necessary.
-  const char* utf8_source;
-  size_t utf8_source_len;
+  std::string_view utf8_source;
   bool are_all_escaped_valid = true;
   if (has_escaped) {
     // Unescape before converting to UTF-16 for IDN. We write this into the
@@ -370,7 +370,7 @@ bool DoComplexHost(const char* host,
     // save another huge stack buffer. It will be replaced below if it requires
     // IDN. This will also update our non-ASCII flag so we know whether the
     // unescaped input requires IDN.
-    if (!DoSimpleHost<canon_mode>(host, host_len, output, &has_non_ascii)) {
+    if (!DoSimpleHost<canon_mode>(host, output, &has_non_ascii)) {
       // Error with some escape sequence. We'll call the current output
       // complete. DoSimpleHost will have written some "reasonable" output
       // for the invalid escapes, but the output could be non-ASCII and
@@ -386,25 +386,24 @@ bool DoComplexHost(const char* host,
 
     // Save the pointer into the data was just converted (it may be appended to
     // other data in the output buffer).
-    utf8_source = &output->data()[begin_length];
-    utf8_source_len = output->length() - begin_length;
+    utf8_source = output->view().substr(begin_length);
   } else {
     // We don't need to unescape, use input for IDNization later. (We know the
     // input has non-ASCII, or the simple version would have been called
     // instead of us.)
     utf8_source = host;
-    utf8_source_len = host_len;
   }
 
   // Non-ASCII input requires IDN, convert to UTF-16 and do the IDN conversion.
   // Above, we may have used the output to write the unescaped values to, so
   // we have to rewind it to where we started after we convert it to UTF-16.
   StackBufferW utf16;
-  if (!ConvertUTF8ToUTF16(utf8_source, utf8_source_len, &utf16)) {
+  if (!ConvertUTF8ToUTF16(utf8_source, &utf16)) {
     // In this error case, the input may or may not be the output.
     StackBuffer utf8;
-    for (size_t i = 0; i < utf8_source_len; i++)
+    for (size_t i = 0; i < utf8_source.length(); i++) {
       utf8.push_back(utf8_source[i]);
+    }
     output->set_length(begin_length);
     AppendInvalidNarrowString(utf8.data(), 0, utf8.length(), output);
     return false;
@@ -421,8 +420,7 @@ bool DoComplexHost(const char* host,
 // the backend, so we just pass through. The has_escaped flag should be set if
 // the input string requires unescaping.
 template <CanonMode canon_mode>
-bool DoComplexHost(const char16_t* host,
-                   size_t host_len,
+bool DoComplexHost(std::u16string_view host,
                    bool has_non_ascii,
                    bool has_escaped,
                    CanonOutput* output) {
@@ -436,22 +434,22 @@ bool DoComplexHost(const char16_t* host,
     // very rare that host names have escaped characters, and it is relatively
     // fast to do the conversion anyway.
     StackBuffer utf8;
-    if (!ConvertUTF16ToUTF8(host, host_len, &utf8)) {
-      AppendInvalidNarrowString(host, 0, host_len, output);
+    if (!ConvertUTF16ToUTF8(host, &utf8)) {
+      AppendInvalidNarrowString(host.data(), 0, host.length(), output);
       return false;
     }
 
     // Once we convert to UTF-8, we can use the 8-bit version of the complex
     // host handling code above.
-    return DoComplexHost<canon_mode>(utf8.data(), utf8.length(), has_non_ascii,
-                                     has_escaped, output);
+    return DoComplexHost<canon_mode>(utf8.view(), has_non_ascii, has_escaped,
+                                     output);
   }
 
   // No unescaping necessary, we can safely pass the input to ICU. This
   // function will only get called if we either have escaped or non-ascii
   // input, so it's safe to just use ICU now. Even if the input is ASCII,
   // this function will do the right thing (just slower than we could).
-  return DoIDNHost<canon_mode>(host, host_len, output);
+  return DoIDNHost<canon_mode>(host.data(), host.length(), output);
 }
 
 template <typename CHAR, typename UCHAR, CanonMode canon_mode>
@@ -464,13 +462,14 @@ bool DoHostSubstring(const CHAR* spec,
   ScanHostname<CHAR, UCHAR>(spec, host, &has_non_ascii, &has_escaped);
 
   if (has_non_ascii || has_escaped) {
-    return DoComplexHost<canon_mode>(&spec[host.begin],
-                                     static_cast<size_t>(host.len),
-                                     has_non_ascii, has_escaped, output);
+    return DoComplexHost<canon_mode>(
+        std::basic_string_view<CHAR>(&spec[host.begin],
+                                     static_cast<size_t>(host.len)),
+        has_non_ascii, has_escaped, output);
   }
 
-  const bool success = DoSimpleHost<canon_mode>(
-      &spec[host.begin], static_cast<size_t>(host.len), output, &has_non_ascii);
+  const bool success = DoSimpleHost<canon_mode>(host.as_string_view_on(spec),
+                                                output, &has_non_ascii);
   DCHECK(!has_non_ascii);
   return success;
 }

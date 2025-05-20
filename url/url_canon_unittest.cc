@@ -16,6 +16,7 @@
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -1638,8 +1639,8 @@ TEST_F(URLCanonTest, Query) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(query_case.input8, in_comp, nullptr, &output,
-                        &out_comp);
+      CanonicalizeQuery(in_comp.as_string_view_on(query_case.input8), nullptr,
+                        &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_case.expected, out_str);
@@ -1653,7 +1654,8 @@ TEST_F(URLCanonTest, Query) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(input16.c_str(), in_comp, nullptr, &output, &out_comp);
+      CanonicalizeQuery(in_comp.as_string_view_on(input16.c_str()), nullptr,
+                        &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_case.expected, out_str);
@@ -1664,8 +1666,8 @@ TEST_F(URLCanonTest, Query) {
   std::string out_str;
   StdStringCanonOutput output(&out_str);
   Component out_comp;
-  CanonicalizeQuery("a \x00z\x01", Component(0, 5), nullptr, &output,
-                    &out_comp);
+  CanonicalizeQuery(base::MakeStringViewWithNulChars("a \x00z\x01"), nullptr,
+                    &output, &out_comp);
   output.Complete();
   EXPECT_EQ("?a%20%00z%01", out_str);
 }

@@ -258,11 +258,10 @@ String CanonicalizeSearch(const String& input,
   url::Component component;
   if (stripped.Is8Bit()) {
     StringUTF8Adaptor utf8(stripped);
-    url::CanonicalizeQuery(utf8.data(), url::Component(0, utf8.size()),
+    url::CanonicalizeQuery(utf8.AsStringView(),
                            /*converter=*/nullptr, &canon_output, &component);
   } else {
-    url::CanonicalizeQuery(stripped.Characters16(),
-                           url::Component(0, stripped.length()),
+    url::CanonicalizeQuery(stripped.View16(),
                            /*converter=*/nullptr, &canon_output, &component);
   }
 

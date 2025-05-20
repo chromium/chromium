@@ -201,9 +201,10 @@ bool DoUserInfo(const CHAR* username_spec,
   out_username->begin = output->length();
   if (username.is_nonempty()) {
     // This will escape characters not valid for the username.
-    AppendStringOfType(&username_spec[username.begin],
-                       static_cast<size_t>(username.len), CHAR_USERINFO,
-                       output);
+    AppendStringOfType(
+        std::basic_string_view<CHAR>(&username_spec[username.begin],
+                                     static_cast<size_t>(username.len)),
+        CHAR_USERINFO, output);
   }
   out_username->len = output->length() - out_username->begin;
 
@@ -212,9 +213,10 @@ bool DoUserInfo(const CHAR* username_spec,
   if (password.is_nonempty()) {
     output->push_back(':');
     out_password->begin = output->length();
-    AppendStringOfType(&password_spec[password.begin],
-                       static_cast<size_t>(password.len), CHAR_USERINFO,
-                       output);
+    AppendStringOfType(
+        std::basic_string_view<CHAR>(&password_spec[password.begin],
+                                     static_cast<size_t>(password.len)),
+        CHAR_USERINFO, output);
     out_password->len = output->length() - out_password->begin;
   } else {
     *out_password = Component();

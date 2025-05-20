@@ -706,14 +706,12 @@ bool FileCanonicalizePath(const char16_t* spec,
 //
 // The converter can be NULL. In this case, the output encoding will be UTF-8.
 COMPONENT_EXPORT(URL)
-void CanonicalizeQuery(const char* spec,
-                       const Component& query,
+void CanonicalizeQuery(std::optional<std::string_view> input,
                        CharsetConverter* converter,
                        CanonOutput* output,
                        Component* out_query);
 COMPONENT_EXPORT(URL)
-void CanonicalizeQuery(const char16_t* spec,
-                       const Component& query,
+void CanonicalizeQuery(std::optional<std::u16string_view> input,
                        CharsetConverter* converter,
                        CanonOutput* output,
                        Component* out_query);

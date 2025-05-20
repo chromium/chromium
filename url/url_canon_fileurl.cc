@@ -170,8 +170,8 @@ bool DoCanonicalizeFileURL(const URLComponentSource<CHAR>& source,
   success &= DoFileCanonicalizePath<CHAR, UCHAR>(source.path, parsed.path,
                                     output, &new_parsed->path);
 
-  CanonicalizeQuery(source.query, parsed.query, query_converter,
-                    output, &new_parsed->query);
+  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query),
+                    query_converter, output, &new_parsed->query);
   CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
                   &new_parsed->ref);
 

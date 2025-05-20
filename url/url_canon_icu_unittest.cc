@@ -13,8 +13,8 @@
 
 #include <array>
 
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "url/url_canon.h"
@@ -115,8 +115,8 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(query_cases[i].input8, in_comp, &converter, &output,
-                        &out_comp);
+      CanonicalizeQuery(in_comp.as_string_view_on(query_cases[i].input8),
+                        &converter, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_cases[i].expected, out_str);
@@ -130,8 +130,8 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(input16.c_str(), in_comp, &converter, &output,
-                        &out_comp);
+      CanonicalizeQuery(in_comp.as_string_view_on(input16.c_str()), &converter,
+                        &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_cases[i].expected, out_str);
@@ -142,7 +142,8 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
   std::string out_str;
   StdStringCanonOutput output(&out_str);
   Component out_comp;
-  CanonicalizeQuery("a \x00z\x01", Component(0, 5), NULL, &output, &out_comp);
+  CanonicalizeQuery(base::MakeStringViewWithNulChars("a \x00z\x01"), nullptr,
+                    &output, &out_comp);
   output.Complete();
   EXPECT_EQ("?a%20%00z%01", out_str);
 }

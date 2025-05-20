@@ -229,9 +229,8 @@ base::expected<std::string, absl::Status> SearchEncodeCallback(
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  url::CanonicalizeQuery(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      /*converter=*/nullptr, &canon_output, &component);
+  url::CanonicalizeQuery(input, /*converter=*/nullptr, &canon_output,
+                         &component);
 
   return StdStringFromCanonOutput(canon_output, component);
 }
