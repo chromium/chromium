@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -73,8 +74,13 @@ void MemorySaverChipView::UpdateImpl() {
     return;
   }
 
+  auto* const tab = tabs::TabInterface::GetFromContents(web_contents);
+  if (!tab) {
+    return;
+  }
   MemorySaverChipTabHelper* const tab_helper =
-      MemorySaverChipTabHelper::FromWebContents(web_contents);
+      tab->GetTabFeatures()->memory_saver_chip_helper();
+  CHECK(tab_helper);
   auto chip_state = tab_helper->chip_state();
 
   if (chip_state != memory_saver::ChipState::HIDDEN) {

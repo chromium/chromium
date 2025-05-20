@@ -19,6 +19,7 @@ class FromGWSNavigationAndKeepAliveRequestObserver;
 class IntentPickerViewPageActionController;
 class LensOverlayController;
 class LensSearchController;
+class MemorySaverChipTabHelper;
 class PinnedTranslateActionListener;
 class Profile;
 class PwaInstallPageActionController;
@@ -237,6 +238,10 @@ class TabFeatures {
     return resource_usage_helper_.get();
   }
 
+  MemorySaverChipTabHelper* memory_saver_chip_helper() {
+    return memory_saver_chip_helper_.get();
+  }
+
   // Note: Temporary until there is a more uniform way to swap out features for
   // testing.
   TabResourceUsageTabHelper* SetResourceUsageHelperForTesting(
@@ -384,6 +389,8 @@ class TabFeatures {
       new_tab_footer_controller_;
 
   std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
+
+  std::unique_ptr<MemorySaverChipTabHelper> memory_saver_chip_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

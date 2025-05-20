@@ -304,10 +304,11 @@ TEST_P(MemorySaverChipViewTest, MoreThan2GbMemorySavings) {
   SetTabDiscardState(0, true);
 
   // Ensure that the expanded-with-savings chip was shown.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  MemorySaverChipTabHelper* const tab_helper =
-      MemorySaverChipTabHelper::FromWebContents(web_contents);
+  MemorySaverChipTabHelper* const tab_helper = browser()
+                                                   ->tab_strip_model()
+                                                   ->GetTabAtIndex(0)
+                                                   ->GetTabFeatures()
+                                                   ->memory_saver_chip_helper();
   EXPECT_EQ(tab_helper->chip_state(),
             memory_saver::ChipState::EXPANDED_WITH_SAVINGS);
   EXPECT_TRUE(GetPageActionView()->GetVisible());

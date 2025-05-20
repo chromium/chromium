@@ -10,7 +10,7 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/url_constants.h"
 
@@ -65,12 +66,11 @@ bool MemorySaverChipTabHelper::ShouldChipAnimate() {
   return should_animate;
 }
 
-MemorySaverChipTabHelper::MemorySaverChipTabHelper(
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      content::WebContentsUserData<MemorySaverChipTabHelper>(*contents) {
+MemorySaverChipTabHelper::MemorySaverChipTabHelper(tabs::TabInterface& tab)
+    : ContentsObservingTabFeature(tab) {
   pref_service_ =
-      Profile::FromBrowserContext(contents->GetBrowserContext())->GetPrefs();
+      Profile::FromBrowserContext(tab.GetBrowserWindowInterface()->GetProfile())
+          ->GetPrefs();
 
   if (UserPerformanceTuningManager::HasInstance()) {
     user_performance_tuning_manager_observation_.Observe(
@@ -85,7 +85,7 @@ MemorySaverChipTabHelper::MemorySaverChipTabHelper(
 
 bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
   bool const savings_over_threshold =
-      memory_saver::GetDiscardedMemorySavingsInBytes(&GetWebContents()) >
+      memory_saver::GetDiscardedMemorySavingsInBytes(web_contents()) >
       kExpandedMemorySaverChipThresholdBytes;
 
   base::Time const last_expanded_timestamp =
@@ -96,7 +96,7 @@ bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
 
   auto* const pre_discard_resource_usage =
       UserPerformanceTuningManager::PreDiscardResourceUsage::FromWebContents(
-          &GetWebContents());
+          web_contents());
   bool const tab_discard_time_over_threshold =
       pre_discard_resource_usage &&
       (base::LiveTicks::Now() -
@@ -154,19 +154,7 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
     return;
   }
 
-  // TODO(crbug.com/401033983): This code should only be running in a tab,
-  // so TabInterface::GetFromContents() should be reliable. However, some tests
-  // appear to end up with this tab helper failing to extract a TabInterface, so
-  // MaybeGetFromContents() is used as a test-only check. See
-  // crbug.com/417176824 for those tests. This should disappear when moving
-  // MemorySaver to run as a TabFeature.
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (tab_interface == nullptr) {
-    CHECK_IS_TEST();
-    return;
-  }
-  tabs::TabFeatures* tab_features = tab_interface->GetTabFeatures();
+  tabs::TabFeatures* tab_features = tab().GetTabFeatures();
   if (!tab_features) {
     // Tab features may not be present at shutdown.
     return;
@@ -187,7 +175,7 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
 
     case memory_saver::ChipState::EXPANDED_WITH_SAVINGS:
       const int64_t bytes_saved =
-          memory_saver::GetDiscardedMemorySavingsInBytes(&GetWebContents());
+          memory_saver::GetDiscardedMemorySavingsInBytes(web_contents());
       controller->ShowMemorySavedChip(bytes_saved);
       break;
   }

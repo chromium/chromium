@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -333,6 +334,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           tab.GetContents());
 
   resource_usage_helper_ = std::make_unique<TabResourceUsageTabHelper>(tab);
+
+  memory_saver_chip_helper_ = std::make_unique<MemorySaverChipTabHelper>(tab);
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 
