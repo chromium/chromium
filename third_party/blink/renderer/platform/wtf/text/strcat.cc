@@ -11,24 +11,14 @@ String StrCat(base::span<const StringView> pieces) {
   bool is_8bit = true;
   for (const auto& view : pieces) {
     size += view.length();
-    if (is_8bit && !view.Is8Bit()) {
-      // Like StringBuilder, we check one-length 16bit strings.
-      is_8bit = view.length() == 1 && view[0] < 0x0100;
-    }
+    is_8bit = is_8bit && view.Is8Bit();
   }
 
   if (is_8bit) {
     base::span<LChar> buffer;
     auto impl = StringImpl::CreateUninitialized(size, buffer);
     for (const auto& view : pieces) {
-      base::span<LChar> sub_buffer = buffer.take_first(view.length());
-      if (view.Is8Bit()) {
-        sub_buffer.copy_from(view.Span8());
-      } else {
-        DCHECK_EQ(sub_buffer.size(), 1u);
-        DCHECK_LT(view[0], 0x0100);
-        sub_buffer[0] = view[0];
-      }
+      buffer.take_first(view.length()).copy_from(view.Span8());
     }
     return impl;
   }
