@@ -33,6 +33,8 @@ std::optional<KioskAppLaunchError::Error> s_last_error = std::nullopt;
 
 }  // namespace
 
+const char kKioskLaunchErrorHistogram[] = "Kiosk.Launch.Error";
+
 // static
 std::string KioskAppLaunchError::GetErrorMessage(Error error) {
   switch (error) {
@@ -132,7 +134,7 @@ void KioskAppLaunchError::RecordMetricAndClear() {
 
   std::optional<int> error = dict_update->FindInt(kKeyLaunchError);
   if (error) {
-    base::UmaHistogramEnumeration("Kiosk.Launch.Error",
+    base::UmaHistogramEnumeration(kKioskLaunchErrorHistogram,
                                   static_cast<Error>(*error));
   }
 

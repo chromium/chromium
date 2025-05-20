@@ -6,12 +6,16 @@ found in the LICENSE file.
 
 <!-- TODO(http://crbug.com/1172980): Delete once oobe-loading-dialog replaces throbber-notice -->
 <style include="cros-color-overrides oobe-common-styles">
-  :host {
+  :host(:not([hidden])) {
     align-items: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     min-height: 0;
+  }
+
+  :host([hidden]) {
+    display: none !important;
   }
 
   paper-spinner-lite {

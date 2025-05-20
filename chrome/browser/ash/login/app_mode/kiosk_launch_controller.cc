@@ -577,6 +577,13 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
       // because that prevents re-launch on the next run.
       std::move(attempt_relaunch_).Run();
       break;
+    case Error::kChromeAppDeprecated:
+      // Keep the splash screen with the error message, do not relaunch or exit.
+      splash_screen_->UpdateAppLaunchState(
+          ash::AppLaunchSplashScreenView::AppLaunchState::kChromeAppDeprecated);
+      splash_screen_->HideThrobber();
+      KioskAppLaunchError::Save(error);
+      return;
     case Error::kHasPendingLaunch:
     case Error::kUnableToMount:
     case Error::kUnableToRemove:
@@ -590,7 +597,6 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
     case Error::kExtensionsLoadTimeout:
     case Error::kExtensionsPolicyInvalid:
     case Error::kUserNotAllowlisted:
-    case Error::kChromeAppDeprecated:
       if (KioskLaunchController::TestOverrides::block_exit_on_failure) {
         // Don't exit on launch failure if a test checks for Kiosk splash screen
         // after launch fails, which happens to MSan browser_tests since this

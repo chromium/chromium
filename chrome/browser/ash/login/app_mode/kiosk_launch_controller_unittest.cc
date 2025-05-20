@@ -311,13 +311,17 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
               KioskLaunchStateToString(state));
   }
 
-  void CancelAppLaunch() { controller().HandleAccelerator(kAppLaunchBailout); }
-
   void CleanUpController() { controller().CleanUp(); }
 
   void LoginFakeUser() {
     fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id);
     fake_user_manager_->LoginUser(kiosk_app_id().account_id);
+  }
+
+  void CheckLaunchError(KioskAppLaunchError::Error error) {
+    const base::Value::Dict& dict =
+        g_browser_process->local_state()->GetDict("kiosk");
+    EXPECT_THAT(dict.FindInt("launch_error"), Eq(static_cast<int>(error)));
   }
 
   auto& app_launched_future() { return app_launched_future_; }
@@ -444,6 +448,7 @@ TEST_F(KioskLaunchControllerTest, AppInstallingShouldUpdateSplashScreen) {
       screen(),
       HasViewState(
           AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication));
+  EXPECT_TRUE(screen().IsThrobberVisible());
 }
 
 TEST_F(KioskLaunchControllerTest, AppPreparedShouldUpdateInternalState) {
@@ -695,10 +700,7 @@ TEST_F(KioskLaunchControllerTest, LoadProfileErrorShouldBeStored) {
   FinishLoadingProfileWithError(KioskAppLaunchError::Error::kUnableToMount);
   VerifyLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
 
-  const base::Value::Dict& dict =
-      g_browser_process->local_state()->GetDict("kiosk");
-  EXPECT_THAT(dict.FindInt("launch_error"),
-              Eq(static_cast<int>(KioskAppLaunchError::Error::kUnableToMount)));
+  CheckLaunchError(KioskAppLaunchError::Error::kUnableToMount);
 }
 
 TEST_F(KioskLaunchControllerTest,
@@ -975,6 +977,26 @@ TEST_F(KioskLaunchControllerTest, TestFullFlow) {
   EXPECT_EQ(launcher().continue_with_network_ready_called(), 1);
   EXPECT_EQ(launcher().launch_app_called(), 1);
   EXPECT_EQ(num_launchers_created(), 1);
+}
+
+TEST_F(KioskLaunchControllerTest,
+       ChromeAppDeprecatedCheckKeepSplashScreenMessage) {
+  controller().Start(kiosk_app(), /*auto_launch=*/false);
+  FinishLoadingProfile();
+
+  launcher().observers().NotifyLaunchFailed(
+      KioskAppLaunchError::Error::kChromeAppDeprecated);
+
+  VerifyLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
+
+  EXPECT_THAT(
+      screen(),
+      HasViewState(
+          AppLaunchSplashScreenView::AppLaunchState::kChromeAppDeprecated));
+  EXPECT_FALSE(screen().IsThrobberVisible());
+
+  task_environment()->FastForwardBy(base::Minutes(2));
+  EXPECT_FALSE(launcher().HasAppLaunched());
 }
 
 }  // namespace ash

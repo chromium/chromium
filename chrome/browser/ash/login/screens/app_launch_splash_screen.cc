@@ -160,6 +160,12 @@ void AppLaunchSplashScreen::ToggleNetworkConfig(bool visible) {
   view_->ToggleNetworkConfig(visible);
 }
 
+void AppLaunchSplashScreen::HideThrobber() {
+  if (view_) {
+    view_->HideThrobber();
+  }
+}
+
 void AppLaunchSplashScreen::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }

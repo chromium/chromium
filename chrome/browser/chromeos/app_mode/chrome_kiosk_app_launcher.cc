@@ -63,6 +63,7 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
   if (apps::chrome_app_deprecation::HandleDeprecation(primary_app->id(),
                                                       profile_) ==
       apps::chrome_app_deprecation::DeprecationStatus::kLaunchBlocked) {
+    SYSLOG(WARNING) << "Kiosk Chrome app is deprecated";
     ReportLaunchFailure(LaunchResult::kChromeAppDeprecated);
     return;
   }

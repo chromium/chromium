@@ -61,6 +61,10 @@ void AppLaunchSplashScreenHandler::UpdateAppLaunchText(AppLaunchState state) {
                   l10n_util::GetStringUTF8(GetProgressMessageFromState(state)));
 }
 
+void AppLaunchSplashScreenHandler::HideThrobber() {
+  CallExternalAPI("hideThrobber");
+}
+
 int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
     AppLaunchState state) {
   switch (state) {
@@ -78,6 +82,8 @@ int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
       return IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE;
     case AppLaunchState::kShowingNetworkConfigureUI:
       return IDS_APP_START_SHOWING_NETWORK_CONFIGURE_UI_MESSAGE;
+    case AppLaunchSplashScreenView::AppLaunchState::kChromeAppDeprecated:
+      return IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH_CHROME_APP;
   }
 }
 

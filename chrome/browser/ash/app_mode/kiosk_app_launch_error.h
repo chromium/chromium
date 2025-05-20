@@ -9,6 +9,8 @@
 
 namespace ash {
 
+extern const char kKioskLaunchErrorHistogram[];
+
 class AuthFailure;
 
 class KioskAppLaunchError {

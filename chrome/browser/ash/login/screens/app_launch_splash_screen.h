@@ -70,6 +70,8 @@ class AppLaunchSplashScreen : public BaseScreen {
   // Sets whether configure network control is visible.
   void ToggleNetworkConfig(bool visible);
 
+  virtual void HideThrobber();
+
   // Continues app launch after error screen is shown.
   virtual void ContinueAppLaunch();
 

@@ -42,6 +42,14 @@ void FakeAppLaunchSplashScreen::ShowErrorMessage(
   launch_error_ = error;
 }
 
+void FakeAppLaunchSplashScreen::HideThrobber() {
+  show_throbber_ = false;
+}
+
+bool FakeAppLaunchSplashScreen::IsThrobberVisible() {
+  return show_throbber_;
+}
+
 KioskAppLaunchError::Error FakeAppLaunchSplashScreen::GetLaunchError() const {
   return launch_error_;
 }

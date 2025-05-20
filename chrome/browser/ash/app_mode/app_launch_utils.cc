@@ -47,6 +47,11 @@ const char* const kPrefsToReset[] = {"settings.accessibility",  // ChromeVox
 // their own list.
 std::vector<std::string>* test_prefs_to_reset = nullptr;
 
+bool ShouldAutoLaunchAfterAppLaunchError(KioskAppLaunchError::Error error) {
+  return error == KioskAppLaunchError::Error::kNone ||
+         error == KioskAppLaunchError::Error::kChromeAppDeprecated;
+}
+
 }  // namespace
 
 void ResetEphemeralKioskPreferences(PrefService* prefs) {
@@ -88,7 +93,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 
   return command_line.HasSwitch(switches::kLoginManager) &&
          KioskController::Get().GetAutoLaunchApp().has_value() &&
-         KioskAppLaunchError::Get() == KioskAppLaunchError::Error::kNone &&
+         ShouldAutoLaunchAfterAppLaunchError(KioskAppLaunchError::Get()) &&
          // IsOobeCompleted() is needed to prevent kiosk session start in case
          // of enterprise rollback, when keeping the enrollment, policy, not
          // clearing TPM, but wiping stateful partition.
