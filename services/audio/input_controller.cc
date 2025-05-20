@@ -220,7 +220,7 @@ void InputController::MaybeSetUpAudioProcessing(
     return;
 
   if (!(processing_config &&
-        processing_config->settings.NeedAudioModification())) {
+        processing_config->settings.NeedWebrtcAudioProcessing())) {
     return;
   }
 

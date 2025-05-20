@@ -123,7 +123,7 @@ bool MediaStreamAudioProcessor::WouldModifyAudio(
   if (properties
           .ToAudioProcessingSettings(
               /*multi_channel_capture_processing - does not matter here*/ false)
-          .NeedAudioModification()) {
+          .NeedWebrtcAudioProcessing()) {
     return true;
   }
 

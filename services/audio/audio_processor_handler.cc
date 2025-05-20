@@ -34,7 +34,7 @@ AudioProcessorHandler::AudioProcessorHandler(
           std::move(deliver_processed_audio_callback)),
       receiver_(this, std::move(controls_receiver)),
       aecdump_recording_manager_(aecdump_recording_manager) {
-  DCHECK(settings.NeedAudioModification());
+  DCHECK(settings.NeedWebrtcAudioProcessing());
   if (aecdump_recording_manager_) {
     aecdump_recording_manager->RegisterAecdumpSource(this);
   }

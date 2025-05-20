@@ -44,8 +44,6 @@ struct MEDIA_EXPORT AudioProcessingSettings {
     return noise_suppression;
   }
 
-  bool NeedAudioModification() const { return NeedWebrtcAudioProcessing(); }
-
   // Stringifies the settings for human-readable logging.
   std::string ToString() const;
 };
