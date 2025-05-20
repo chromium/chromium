@@ -30,7 +30,6 @@ public interface TouchToFillResourceProvider {
      *
      * @return A {@link DrawableRes} that is never 0.
      */
-    default @DrawableRes int getLoyaltyCardHeaderDrawableId() {
-        return 0;
-    }
+    @DrawableRes
+    int getLoyaltyCardHeaderDrawableId();
 }
