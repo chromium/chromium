@@ -281416,7 +281416,7 @@
       ]
      ],
      "offset-path-shape-polygon-003.html": [
-      "caa08082e4e879f93aa249d01c9971788513f2ae",
+      "dfb809d352b2f7eb5caf1807810915bbe3b94a8d",
       [
        null,
        [
@@ -281436,7 +281436,7 @@
            ],
            [
             0,
-            50
+            56
            ]
           ]
          ]
@@ -426445,7 +426445,7 @@
        []
       ],
       "basic-service-worker.js": [
-       "59d7d8bae9ee4d46d8a0bb12bcc3377d041280f4",
+       "749cd5f2194ff54918032e50145078b2bed727e2",
        []
       ],
       "conditional-status.py": [
@@ -426461,7 +426461,7 @@
        []
       ],
       "executor.sub.html": [
-       "975a3e5092ed149b687f34ba6b9c6d5af11432ea",
+       "bb2d58dc9c9cfac6d98380b0b587bc242fbd5e11",
        []
       ],
       "executor.sub.html.headers": [
@@ -426501,7 +426501,7 @@
        []
       ],
       "utils.sub.js": [
-       "adb15d4ea9e76759074e0c7cc1b8a56c0f3a046d",
+       "dd577c00c1d30c6e812080a8088d272b65ca0e12",
        []
       ]
      },
@@ -687675,9 +687675,27 @@
      ]
     ],
     "preload-referrer-policy-subresource-header.tentative.html": [
-     "0e1c9be8be3283f091113ba3baae47bbf3006ff7",
+     "65f5afe2374e93da34546794b8a5bd794d95332f",
      [
-      null,
+      "preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=false&isCrossOriginResource=false",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=false&isCrossOriginResource=true",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=true&isCrossOriginResource=false",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=true&isCrossOriginResource=true",
       {
        "timeout": "long"
       }
@@ -714857,7 +714875,7 @@
      "tentative": {
       "service-worker": {
        "basic.sub.https.html": [
-        "5b2a4d00dba107fcd2e97b46bf632097f4cc6f30",
+        "44937ea376f221105550f39f5d97c60b36fc4aed",
         [
          "speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=cross-site&sw=fetch-handler",
          {
@@ -714943,6 +714961,12 @@
          }
         ],
         [
+         "speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=fetch-handler-navigation-preload",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
          "speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=fetch-handler-to-fallback",
          {
           "timeout": "long"
@@ -714974,6 +714998,24 @@
         ],
         [
          "speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=no-fetch-handler&clientId",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=race-fetch-handler",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=race-fetch-handler-modify-url",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=race-fetch-handler-to-fallback",
          {
           "timeout": "long"
          }
