@@ -474,6 +474,10 @@ constexpr base::FeatureParam<bool>
     kLensOverlayVisualSelectionUpdatesEnableBorderGlow{
         &kLensOverlayVisualSelectionUpdates, "enable-border-glow", true};
 
+constexpr base::FeatureParam<bool>
+    kLensOverlayVisualSelectionUpdatesCsbThumbnail{
+        &kLensOverlayVisualSelectionUpdates, "enable-csb-thumbnail", true};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -997,6 +1001,11 @@ bool IsLensOverlayVisualSelectionUpdatesEnabled() {
 bool GetVisualSelectionUpdatesEnableBorderGlow() {
   return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
          kLensOverlayVisualSelectionUpdatesEnableBorderGlow.Get();
+}
+
+bool GetVisualSelectionUpdatesEnableCsbThumbnail() {
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+         kLensOverlayVisualSelectionUpdatesCsbThumbnail.Get();
 }
 
 bool PageContentUploadRequestIdFixEnabled() {

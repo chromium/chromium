@@ -764,6 +764,10 @@ extern bool GetShouldCopyAsImage();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableBorderGlow();
 
+// Whether to enable the thumbnail in the contextual searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableCsbThumbnail();
+
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content
 // upload request is sent.

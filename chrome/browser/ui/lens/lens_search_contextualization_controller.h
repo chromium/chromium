@@ -37,6 +37,8 @@ using GetIsContextualSearchboxCallback =
 
 namespace lens {
 
+class LensSearchboxController;
+
 // Callback type alias for page content bytes retrieved. Multiple pieces and
 // types of content may be retrieved and returned in `page_contents`.
 // `primary_content_type` is the main type used in the request flow and used to
@@ -246,6 +248,7 @@ class LensSearchContextualizationController {
   float GetUiScaleFactor();
 
   lens::LensOverlayQueryController* GetQueryController();
+  lens::LensSearchboxController* GetSearchboxController();
 
   // The current state of the contextualization flow.
   State state_ = State::kOff;

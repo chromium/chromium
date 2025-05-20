@@ -2086,6 +2086,13 @@ void LensOverlayController::InitializeOverlayUI(
 
   page_->ShouldShowContextualSearchBox(should_show_csb);
 
+  // If should show CSB, and the CSB viewport thumbnail is enabled, send it now.
+  if (should_show_csb &&
+      lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
+    GetLensSearchboxController()->HandleThumbnailCreatedBitmap(
+        init_data.initial_rgb_screenshot_);
+  }
+
   // Send the initial document type to the overlay web UI.
   NotifyPageContentUpdated();
 

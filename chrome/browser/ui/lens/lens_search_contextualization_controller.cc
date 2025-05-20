@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/lens/lens_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -642,6 +643,9 @@ void LensSearchContextualizationController::DidCaptureScreenshot(
       lens::MimeType::kUnknown, pdf_current_page, GetUiScaleFactor(),
       base::TimeTicks::Now());
 
+  // Pass the thumbnail to the searchbox controller.
+  GetSearchboxController()->HandleThumbnailCreatedBitmap(bitmap);
+
   state_ = State::kActive;
   TryUpdatePageContextualization(std::move(callback));
 }
@@ -756,6 +760,14 @@ LensSearchContextualizationController::GetQueryController() {
       lens_search_controller_->lens_overlay_query_controller();
   CHECK(query_controller);
   return query_controller;
+}
+
+lens::LensSearchboxController*
+LensSearchContextualizationController::GetSearchboxController() {
+  auto* searchbox_controller =
+      lens_search_controller_->lens_searchbox_controller();
+  CHECK(searchbox_controller);
+  return searchbox_controller;
 }
 
 }  // namespace lens

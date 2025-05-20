@@ -16,6 +16,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "net/base/url_util.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -80,15 +81,33 @@ void LensSearchboxController::SetSearchboxInputText(const std::string& text) {
 
 void LensSearchboxController::SetSearchboxThumbnail(
     const std::string& thumbnail_uri) {
+  // Init data can be empty if overlay is opened in a normal tab by navigating to the WebUI url in the omnibox.
+  if (!init_data_) {
+    return;
+  }
+
+  // Store the thumbnail.
+  init_data_->thumbnail_uri = thumbnail_uri;
+
   if (side_panel_searchbox_handler_ &&
       side_panel_searchbox_handler_->IsRemoteBound()) {
-    init_data_->thumbnail_uri = thumbnail_uri;
     side_panel_searchbox_handler_->SetThumbnail(thumbnail_uri);
-  } else {
-    // If the side panel was not bound at the time of request, we store the
-    // thumbnail as pending to send it to the searchbox on bind.
-    pending_thumbnail_uri_ = thumbnail_uri;
   }
+
+  if (overlay_searchbox_handler_ &&
+      overlay_searchbox_handler_->IsRemoteBound()) {
+    overlay_searchbox_handler_->SetThumbnail(thumbnail_uri);
+  }
+}
+
+void LensSearchboxController::HandleThumbnailCreatedBitmap(
+    const SkBitmap& thumbnail) {
+  if (thumbnail.drawsNothing()) {
+    return;
+  }
+  std::string image_png = skia::EncodePngAsDataUri(thumbnail.pixmap());
+  init_data_->thumbnail_uri = image_png;
+  SetSearchboxThumbnail(init_data_->thumbnail_uri);
 }
 
 void LensSearchboxController::HandleThumbnailCreated(
@@ -135,7 +154,6 @@ void LensSearchboxController::CloseUI() {
   side_panel_ghost_loader_page_.reset();
   init_data_ = std::make_unique<LensSearchboxInitializationData>();
   pending_text_query_ = std::nullopt;
-  pending_thumbnail_uri_ = std::nullopt;
   pending_suggest_inputs_callbacks_.Notify(std::nullopt);
 }
 
@@ -255,22 +273,15 @@ void LensSearchboxController::OnFocusChanged(bool focused) {
 }
 
 void LensSearchboxController::OnPageBound() {
-  // If the side panel closes before the remote gets bound,
-  // side_panel_searchbox_handler_ could become unset. Verify it is set before
-  // sending to the side panel.
-  if (!side_panel_searchbox_handler_ ||
-      !side_panel_searchbox_handler_->IsRemoteBound()) {
-    return;
-  }
-
   // Send any pending inputs for the searchbox.
-  if (pending_text_query_.has_value()) {
+  if (pending_text_query_.has_value() && side_panel_searchbox_handler_ &&
+      side_panel_searchbox_handler_->IsRemoteBound()) {
     side_panel_searchbox_handler_->SetInputText(*pending_text_query_);
     pending_text_query_.reset();
   }
-  if (pending_thumbnail_uri_.has_value()) {
-    SetSearchboxThumbnail(*pending_thumbnail_uri_);
-    pending_thumbnail_uri_.reset();
+  // If there is a thumbnail, make sure the searchbox receives it.
+  if (init_data_ && !init_data_->thumbnail_uri.empty()) {
+    SetSearchboxThumbnail(init_data_->thumbnail_uri);
   }
 }
 

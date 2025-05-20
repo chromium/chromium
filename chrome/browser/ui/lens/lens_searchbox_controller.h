@@ -82,6 +82,9 @@ class LensSearchboxController : public LensSearchboxClient {
   // `pending_thumbnail_uri_` instead.
   void SetSearchboxThumbnail(const std::string& thumbnail_uri);
 
+  // Handles the create of a new thumbnail from a bitmap.
+  void HandleThumbnailCreatedBitmap(const SkBitmap& thumbnail);
+
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);
 
