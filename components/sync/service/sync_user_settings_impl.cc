@@ -168,10 +168,7 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
 
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn:
-      // TODO(crbug.com/40945692): Convert to NOTREACHED.
-      DUMP_WILL_BE_NOTREACHED()
-          << "Must not set selected types while signed out";
-      break;
+      NOTREACHED();
     case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
       for (UserSelectableType type : registered_types) {
         SetSelectedType(type, types.Has(type) || sync_everything);
@@ -190,12 +187,8 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   CHECK(registered_types.Has(type));
 
   switch (delegate_->GetSyncAccountStateForPrefs()) {
-    case SyncPrefs::SyncAccountState::kNotSignedIn: {
-      // TODO(crbug.com/40945692): Convert to NOTREACHED.
-      DUMP_WILL_BE_NOTREACHED()
-          << "Must not set selected types while signed out";
-      break;
-    }
+    case SyncPrefs::SyncAccountState::kNotSignedIn:
+      NOTREACHED();
     case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
       prefs_->SetSelectedTypeForAccount(
           type, is_type_on, delegate_->GetSyncAccountInfoForPrefs().gaia);
@@ -457,8 +450,9 @@ void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     const std::string& token) {
   const GaiaId& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
-    // TODO(crbug.com/40945692): Convert to NOTREACHED.
-    DUMP_WILL_BE_NOTREACHED() << "Must not set passphrase while signed out";
+    // The user must be signed in, so the only legit scenario where SyncService
+    // uses no Gaia ID is local sync (roaming profiles).
+    CHECK(prefs_->IsLocalSyncEnabled());
     return;
   }
   prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id);

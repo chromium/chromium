@@ -183,6 +183,11 @@
 }
 
 - (void)signinDone {
+  if (![self isSignedIn]) {
+    // TODO(crbug.com/418696054): Convert to NOTREACHED.
+    DUMP_WILL_BE_NOTREACHED();
+    return;
+  }
   _syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory,
                                      _historySyncEnabled);
   _syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs,
