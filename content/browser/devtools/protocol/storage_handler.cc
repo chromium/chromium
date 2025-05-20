@@ -2290,8 +2290,8 @@ void StorageHandler::OnSourceHandled(
           .SetExpiry(registration.expiry.InSeconds())
           .SetTriggerData(
               ToTriggerData(registration.trigger_specs.trigger_data()))
-          .SetEventReportWindows(ToEventReportWindows(
-              registration.trigger_specs.event_report_windows()))
+          .SetEventReportWindows(
+              ToEventReportWindows(registration.event_report_windows))
           .SetAggregatableReportWindow(
               registration.aggregatable_report_window.InSeconds())
           .SetTriggerDataMatching(
@@ -2302,8 +2302,7 @@ void StorageHandler::OnSourceHandled(
               ToAggregatableDebugReportingConfig(
                   aggregatable_debug_reporting_config.budget(),
                   aggregatable_debug_reporting_config.config()))
-          .SetMaxEventLevelReports(
-              registration.trigger_specs.max_event_level_reports())
+          .SetMaxEventLevelReports(registration.max_event_level_reports)
           .SetNamedBudgets(
               ToNamedBudgetDefs(registration.aggregatable_named_budget_defs))
           .SetDebugReporting(registration.debug_reporting)

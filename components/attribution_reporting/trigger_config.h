@@ -10,8 +10,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
-#include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
@@ -31,19 +29,16 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
   ParseTopLevelTriggerData(const base::DictValue&,
                            mojom::SourceType,
-                           EventReportWindows default_report_windows,
                            mojom::TriggerDataMatching);
 
-  static std::optional<TriggerSpecs> Create(TriggerData,
-                                            EventReportWindows,
-                                            MaxEventLevelReports);
+  static std::optional<TriggerSpecs> Create(TriggerData);
 
   // Creates specs matching no trigger data.
   TriggerSpecs();
 
   // Creates specs with the default trigger data cardinality for the given
   // source type.
-  TriggerSpecs(mojom::SourceType, EventReportWindows, MaxEventLevelReports);
+  explicit TriggerSpecs(mojom::SourceType);
 
   ~TriggerSpecs();
 
@@ -72,27 +67,12 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
 
   const TriggerData& trigger_data() const { return trigger_data_; }
 
-  const EventReportWindows& event_report_windows() const {
-    return event_report_windows_;
-  }
-
-  MaxEventLevelReports max_event_level_reports() const {
-    return max_event_level_reports_;
-  }
-
-  void SetMaxEventLevelReportsForTesting(
-      MaxEventLevelReports max_event_level_reports) {
-    max_event_level_reports_ = max_event_level_reports;
-  }
-
   friend bool operator==(const TriggerSpecs&, const TriggerSpecs&) = default;
 
  private:
-  TriggerSpecs(TriggerData, EventReportWindows, MaxEventLevelReports);
+  explicit TriggerSpecs(TriggerData);
 
   TriggerData trigger_data_;
-  EventReportWindows event_report_windows_;
-  MaxEventLevelReports max_event_level_reports_;
 };
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)

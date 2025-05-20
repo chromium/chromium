@@ -74,13 +74,7 @@ struct EventReportWindows {
 
 // https://wicg.github.io/attribution-reporting-api/#trigger-specs-header
 struct TriggerSpecs {
-  EventReportWindows event_report_windows;
-
   array<uint32> trigger_data;
-
-  // Specifies how many event-level reports can be generated across all trigger
-  // specs for the source.
-  int32 max_event_level_reports;
 };
 
 // Aggregatable contribution for aggregatable debug types.
@@ -137,6 +131,12 @@ struct SourceRegistration {
   mojo_base.mojom.TimeDelta expiry;
 
   TriggerSpecs trigger_specs;
+
+  EventReportWindows event_report_windows;
+
+  // Specifies how many event-level reports can be generated across all trigger
+  // specs for the source.
+  int32 max_event_level_reports;
 
   // Specifies how long after source registration an aggregatable
   // report can be generated with this source.

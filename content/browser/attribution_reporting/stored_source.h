@@ -18,7 +18,9 @@
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -61,6 +63,8 @@ class CONTENT_EXPORT StoredSource {
       base::Time source_time,
       base::Time expiry_time,
       attribution_reporting::TriggerSpecs,
+      attribution_reporting::EventReportWindows,
+      attribution_reporting::MaxEventLevelReports,
       base::Time aggregatable_report_window_time,
       int64_t priority,
       attribution_reporting::FilterData,
@@ -104,6 +108,15 @@ class CONTENT_EXPORT StoredSource {
 
   const attribution_reporting::TriggerSpecs& trigger_specs() const {
     return trigger_specs_;
+  }
+
+  const attribution_reporting::EventReportWindows& event_report_windows()
+      const {
+    return event_report_windows_;
+  }
+
+  attribution_reporting::MaxEventLevelReports max_event_level_reports() const {
+    return max_event_level_reports_;
   }
 
   int64_t priority() const { return priority_; }
@@ -175,6 +188,8 @@ class CONTENT_EXPORT StoredSource {
                base::Time source_time,
                base::Time expiry_time,
                attribution_reporting::TriggerSpecs,
+               attribution_reporting::EventReportWindows,
+               attribution_reporting::MaxEventLevelReports,
                base::Time aggregatable_report_window_time,
                int64_t priority,
                attribution_reporting::FilterData,
@@ -199,6 +214,8 @@ class CONTENT_EXPORT StoredSource {
   base::Time source_time_;
   base::Time expiry_time_;
   attribution_reporting::TriggerSpecs trigger_specs_;
+  attribution_reporting::EventReportWindows event_report_windows_;
+  attribution_reporting::MaxEventLevelReports max_event_level_reports_;
   base::Time aggregatable_report_window_time_;
   int64_t priority_;
   attribution_reporting::FilterData filter_data_;

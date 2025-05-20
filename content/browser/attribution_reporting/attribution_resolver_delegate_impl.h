@@ -87,6 +87,8 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
+      const attribution_reporting::EventReportWindows&,
+      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon,
       const std::optional<attribution_reporting::AttributionScopesData>&)
       override;

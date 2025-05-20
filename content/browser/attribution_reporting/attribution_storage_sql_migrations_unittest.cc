@@ -606,6 +606,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion66ToCurrent) {
     // being empty.
     proto::AttributionReadOnlySourceData msg_source;
     msg_source.mutable_trigger_data();
+    msg_source.add_event_level_report_window_end_times(
+        base::Hours(1).InMicroseconds());
     msg_source.set_randomized_response_rate(0);
 
     insert_source.BindBlob(0, msg_source.SerializeAsString());

@@ -189,6 +189,8 @@ void SetReadOnlySourceData(
 
 std::string SerializeReadOnlySourceData(
     const TriggerSpecs& trigger_specs,
+    const EventReportWindows& event_report_windows,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
     TriggerDataMatching trigger_data_matching,
     bool cookie_based_debug_allowed,
@@ -206,15 +208,14 @@ std::string SerializeReadOnlySourceData(
       // being empty.
       auto* mutable_trigger_data = msg.mutable_trigger_data();
       !trigger_specs.trigger_data().empty()) {
-    SetReadOnlySourceData(&trigger_specs.event_report_windows(),
-                          trigger_specs.max_event_level_reports(), msg);
+    SetReadOnlySourceData(&event_report_windows, max_event_level_reports, msg);
 
     for (uint32_t trigger_data : trigger_specs.trigger_data()) {
       mutable_trigger_data->add_trigger_data(trigger_data);
     }
   } else {
     SetReadOnlySourceData(/*event_report_windows=*/nullptr,
-                          trigger_specs.max_event_level_reports(), msg);
+                          max_event_level_reports, msg);
   }
 
   msg.set_randomized_response_rate(randomized_response_rate);
@@ -477,32 +478,32 @@ DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
 
 std::optional<TriggerSpecs> DeserializeTriggerSpecs(
     const proto::AttributionReadOnlySourceData& msg,
-    SourceType source_type,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports) {
+    SourceType source_type) {
+  if (!msg.has_trigger_data()) {
+    return TriggerSpecs(source_type);
+  }
+
+  return TriggerSpecs::Create(
+      TriggerSpecs::TriggerData(msg.trigger_data().trigger_data().begin(),
+                                msg.trigger_data().trigger_data().end()));
+}
+
+std::optional<EventReportWindows> DeserializeEventReportWindows(
+    const proto::AttributionReadOnlySourceData& msg) {
+  // The event report window fields aren't written when trigger_data is empty,
+  // as event-level attribution cannot succeed in that case. We return an
+  // irrelevant default value here.
   if (msg.has_trigger_data() && msg.trigger_data().trigger_data().empty()) {
-    return TriggerSpecs();
+    return EventReportWindows();
   }
 
   std::vector<base::TimeDelta> end_times =
       base::ToVector(msg.event_level_report_window_end_times(),
                      [](int64_t time) { return base::Microseconds(time); });
 
-  auto event_report_windows = EventReportWindows::Create(
+  return EventReportWindows::Create(
       base::Microseconds(msg.event_level_report_window_start_time()),
       std::move(end_times));
-  if (!event_report_windows.has_value()) {
-    return std::nullopt;
-  }
-
-  if (!msg.has_trigger_data()) {
-    return TriggerSpecs(source_type, *std::move(event_report_windows),
-                        max_event_level_reports);
-  }
-
-  return TriggerSpecs::Create(
-      TriggerSpecs::TriggerData(msg.trigger_data().trigger_data().begin(),
-                                msg.trigger_data().trigger_data().end()),
-      *std::move(event_report_windows), max_event_level_reports);
 }
 
 std::string SerializeAttributionScopesData(

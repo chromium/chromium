@@ -27,7 +27,6 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/privacy_math.h"
@@ -54,29 +53,22 @@ FiltersDisjunction FiltersForSourceType(
       lookback_window)};
 }
 
-TriggerSpecs SpecsFromDescription(
-    int num_report_windows,
-    int trigger_data_cardinality,
-    MaxEventLevelReports max_event_level_reports) {
-  if (num_report_windows == 0 || trigger_data_cardinality == 0) {
-    return TriggerSpecs();
-  }
-
+EventReportWindows EventReportWindowsWithCount(int num_report_windows) {
   std::vector<base::TimeDelta> deltas;
   deltas.reserve(num_report_windows);
   for (int i = 0; i < num_report_windows; i++) {
     deltas.emplace_back(base::Days(1) + base::Days(i));
   }
+  return *EventReportWindows::Create(base::Days(0), std::move(deltas));
+}
 
+TriggerSpecs TriggerSpecsWithCardinality(int trigger_data_cardinality) {
   TriggerSpecs::TriggerData trigger_data;
   for (int i = 0; i < trigger_data_cardinality; ++i) {
     trigger_data.insert(i);
   }
 
-  return *TriggerSpecs::Create(
-      std::move(trigger_data),
-      *EventReportWindows::Create(base::Days(0), std::move(deltas)),
-      max_event_level_reports);
+  return *TriggerSpecs::Create(std::move(trigger_data));
 }
 
 std::ostream& operator<<(std::ostream& out,

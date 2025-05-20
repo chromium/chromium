@@ -24,6 +24,7 @@
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -165,15 +166,18 @@ AttributionResolverDelegate::GetRandomizedResponseResult
 AttributionResolverDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const attribution_reporting::TriggerSpecs& trigger_specs,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    const attribution_reporting::MaxEventLevelReports max_event_level_reports,
     attribution_reporting::EventLevelEpsilon epsilon,
     const std::optional<attribution_reporting::AttributionScopesData>&
         scopes_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ASSIGN_OR_RETURN(auto response,
-                   attribution_reporting::DoRandomizedResponse(
-                       trigger_specs, epsilon, source_type, scopes_data,
-                       config_.privacy_math_config));
+  ASSIGN_OR_RETURN(
+      auto response,
+      attribution_reporting::DoRandomizedResponse(
+          trigger_specs, event_report_windows, max_event_level_reports, epsilon,
+          source_type, scopes_data, config_.privacy_math_config));
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:

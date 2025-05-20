@@ -557,11 +557,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Non-whole-day expiry is invalid for `SourceType::kEvent`.
   source_data.expiry = base::Days(1) + base::Microseconds(1);
   source_data.aggregatable_report_window = source_data.expiry;
-  source_data.trigger_specs = attribution_reporting::TriggerSpecs(
-      SourceType::kEvent,
+  source_data.event_report_windows =
       *attribution_reporting::EventReportWindows::FromDefaults(
-          source_data.expiry, SourceType::kEvent),
-      attribution_reporting::MaxEventLevelReports());
+          source_data.expiry, SourceType::kEvent);
 
   {
     mojo::test::BadMessageObserver bad_message_observer;

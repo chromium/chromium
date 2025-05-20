@@ -20,7 +20,9 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
@@ -73,6 +75,8 @@ std::optional<StoredSource> StoredSource::Create(
     base::Time source_time,
     base::Time expiry_time,
     attribution_reporting::TriggerSpecs trigger_specs,
+    attribution_reporting::EventReportWindows event_report_windows,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     base::Time aggregatable_report_window_time,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
@@ -101,6 +105,7 @@ std::optional<StoredSource> StoredSource::Create(
   return StoredSource(
       std::move(common_info), source_event_id, std::move(destination_sites),
       source_time, expiry_time, std::move(trigger_specs),
+      std::move(event_report_windows), max_event_level_reports,
       aggregatable_report_window_time, priority, std::move(filter_data),
       debug_key, std::move(aggregation_keys), attribution_logic, active_state,
       source_id, remaining_aggregatable_attribution_budget,
@@ -117,6 +122,8 @@ StoredSource::StoredSource(
     base::Time source_time,
     base::Time expiry_time,
     attribution_reporting::TriggerSpecs trigger_specs,
+    attribution_reporting::EventReportWindows event_report_windows,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     base::Time aggregatable_report_window_time,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
@@ -140,6 +147,8 @@ StoredSource::StoredSource(
       source_time_(source_time),
       expiry_time_(expiry_time),
       trigger_specs_(std::move(trigger_specs)),
+      event_report_windows_(std::move(event_report_windows)),
+      max_event_level_reports_(max_event_level_reports),
       aggregatable_report_window_time_(aggregatable_report_window_time),
       priority_(priority),
       filter_data_(std::move(filter_data)),

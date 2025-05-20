@@ -178,9 +178,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Corresponding source - invalid filter data"/>
   <int value="21" label="Corresponding source - invalid active state"/>
   <int value="22" label="Corresponding source - invalid read only source data"/>
-  <int value="23"
-      label="(Obsolete): Corresponding source - invalid event report windows.
-             Removed in 2024/02."/>
+  <int value="23" label="Corresponding source - invalid event report windows."/>
   <int value="24"
       label="Corresponding source - invalid max event level reports"/>
   <int value="25" label="Corresponding source - invalid event level epsilon"/>

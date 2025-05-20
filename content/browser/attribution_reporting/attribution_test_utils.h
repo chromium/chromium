@@ -120,6 +120,9 @@ class SourceBuilder {
 
   SourceBuilder& SetTriggerSpecs(attribution_reporting::TriggerSpecs);
 
+  SourceBuilder& SetEventReportWindows(
+      attribution_reporting::EventReportWindows);
+
   SourceBuilder& SetMaxEventLevelReports(int max_event_level_reports);
 
   SourceBuilder& SetTriggerDataMatching(

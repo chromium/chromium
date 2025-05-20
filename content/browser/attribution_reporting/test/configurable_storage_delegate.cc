@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -120,6 +121,8 @@ AttributionResolverDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::TriggerSpecs&,
+    const attribution_reporting::EventReportWindows&,
+    attribution_reporting::MaxEventLevelReports,
     attribution_reporting::EventLevelEpsilon,
     const std::optional<attribution_reporting::AttributionScopesData>&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

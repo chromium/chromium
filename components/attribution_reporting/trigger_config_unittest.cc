@@ -11,11 +11,8 @@
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -32,7 +29,6 @@ using ::attribution_reporting::mojom::TriggerDataMatching;
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::_;
-using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Property;
@@ -109,27 +105,15 @@ TEST(TriggerDataMatchingTest, Serialize) {
 }
 
 TEST(TriggerSpecsTest, Default) {
-  const auto kReportWindows = *EventReportWindows::Create(
-      /*start_time=*/base::Hours(2),
-      /*end_times=*/{base::Hours(9)});
+  EXPECT_THAT(TriggerSpecs(SourceType::kEvent),
+              Property(&TriggerSpecs::trigger_data, ElementsAre(0, 1)));
 
-  EXPECT_THAT(
-      TriggerSpecs(SourceType::kEvent, kReportWindows,
-                   MaxEventLevelReports(SourceType::kEvent)),
-      AllOf(Property(&TriggerSpecs::trigger_data, ElementsAre(0, 1)),
-            Property(&TriggerSpecs::event_report_windows, kReportWindows)));
-
-  EXPECT_THAT(
-      TriggerSpecs(SourceType::kNavigation, kReportWindows,
-                   MaxEventLevelReports(SourceType::kNavigation)),
-      AllOf(Property(&TriggerSpecs::trigger_data,
-                     ElementsAre(0, 1, 2, 3, 4, 5, 6, 7)),
-            Property(&TriggerSpecs::event_report_windows, kReportWindows)));
+  EXPECT_THAT(TriggerSpecs(SourceType::kNavigation),
+              Property(&TriggerSpecs::trigger_data,
+                       ElementsAre(0, 1, 2, 3, 4, 5, 6, 7)));
 }
 
 TEST(TriggerSpecsTest, Parse) {
-  const EventReportWindows kDefaultReportWindows;
-
   const struct {
     const char* desc;
     const char* json;
@@ -143,17 +127,15 @@ TEST(TriggerSpecsTest, Parse) {
           .desc = "missing_navigation",
           .json = R"json({})json",
           .source_type = SourceType::kNavigation,
-          .matches_top_level_trigger_data = ValueIs(
-              TriggerSpecs(SourceType::kNavigation, kDefaultReportWindows,
-                           MaxEventLevelReports(SourceType::kNavigation))),
+          .matches_top_level_trigger_data =
+              ValueIs(TriggerSpecs(SourceType::kNavigation)),
       },
       {
           .desc = "missing_event",
           .json = R"json({})json",
           .source_type = SourceType::kEvent,
           .matches_top_level_trigger_data =
-              ValueIs(TriggerSpecs(SourceType::kEvent, kDefaultReportWindows,
-                                   MaxEventLevelReports(SourceType::kEvent))),
+              ValueIs(TriggerSpecs(SourceType::kEvent)),
       },
       {
           .desc = "trigger_data_wrong_type",
@@ -258,20 +240,6 @@ TEST(TriggerSpecsTest, Parse) {
           .trigger_data_matching = TriggerDataMatching::kModulus,
           .matches_top_level_trigger_data = ValueIs(_),
       },
-      {
-          // Tested more thoroughly in `max_event_level_reports_unittest.cc`
-          .desc = "max_event_level_reports_valid",
-          .json = R"json({"max_event_level_reports":5})json",
-          .matches_top_level_trigger_data =
-              ValueIs(Property(&TriggerSpecs::max_event_level_reports, 5)),
-      },
-      {
-          // Tested more thoroughly in `max_event_level_reports_unittest.cc`
-          .desc = "max_event_level_reports_invalid",
-          .json = R"json({"max_event_level_reports":null})json",
-          .matches_top_level_trigger_data = ErrorIs(
-              SourceRegistrationError::kMaxEventLevelReportsValueInvalid),
-      },
   };
 
   for (const auto& test_case : kTestCases) {
@@ -279,27 +247,21 @@ TEST(TriggerSpecsTest, Parse) {
 
     const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
 
-    EXPECT_THAT(TriggerSpecs::ParseTopLevelTriggerData(
-                    dict, test_case.source_type, kDefaultReportWindows,
-                    test_case.trigger_data_matching),
-                test_case.matches_top_level_trigger_data);
+    EXPECT_THAT(
+        TriggerSpecs::ParseTopLevelTriggerData(dict, test_case.source_type,
+                                               test_case.trigger_data_matching),
+        test_case.matches_top_level_trigger_data);
   }
 }
 
 TEST(TriggerSpecsTest, ToJson) {
   const auto kSpecs = *TriggerSpecs::Create(
-      /*trigger_data=*/{1, 5, 3, 4294967295},
-      *EventReportWindows::Create(
-          /*start_time=*/base::Seconds(5),
-          /*end_times=*/{base::Seconds(3601)}),
-      MaxEventLevelReports(7));
+      /*trigger_data=*/{1, 5, 3, 4294967295});
 
   base::Value::Dict dict;
   kSpecs.Serialize(dict);
 
   EXPECT_THAT(dict, base::test::IsJson(R"json({
-    "max_event_level_reports": 7,
-    "event_report_windows": { "start_time": 5, "end_times": [3601] },
     "trigger_data": [1, 3, 5, 4294967295]
   })json"));
 }
@@ -314,11 +276,7 @@ TEST(TriggerSpecsTest, Find) {
   }
 
   const auto kSpecs = *TriggerSpecs::Create(
-      /*trigger_data=*/{1, 3, 4, 5},
-      *EventReportWindows::Create(
-          /*start_time=*/base::Seconds(0),
-          /*end_times=*/{base::Seconds(3601)}),
-      MaxEventLevelReports());
+      /*trigger_data=*/{1, 3, 4, 5});
 
   const struct {
     TriggerDataMatching trigger_data_matching;
@@ -361,11 +319,7 @@ TEST(TriggerSpecsTest, Find) {
 // `TriggerSpecs()` can return a subset.
 TEST(TriggerSpecsTest, Find_ModulusContiguous) {
   const auto kSpecs = *TriggerSpecs::Create(
-      /*trigger_data=*/{0, 1, 2},
-      *EventReportWindows::Create(
-          /*start_time=*/base::Seconds(0),
-          /*end_times=*/{base::Seconds(3601)}),
-      MaxEventLevelReports());
+      /*trigger_data=*/{0, 1, 2});
 
   const struct {
     uint64_t trigger_data;

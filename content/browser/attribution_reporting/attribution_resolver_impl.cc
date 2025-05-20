@@ -223,8 +223,9 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
   ASSIGN_OR_RETURN(
       const auto randomized_response_data,
       delegate_->GetRandomizedResponse(
-          common_info.source_type(), reg.trigger_specs, reg.event_level_epsilon,
-          reg.attribution_scopes_data),
+          common_info.source_type(), reg.trigger_specs,
+          reg.event_report_windows, reg.max_event_level_reports,
+          reg.event_level_epsilon, reg.attribution_scopes_data),
       [&](auto error) -> StoreSourceResult {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         switch (error) {
@@ -252,8 +253,9 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
                     .attribution_scopes_data->max_event_states()));
         }
       });
-  DCHECK(attribution_reporting::IsValid(randomized_response_data.response(),
-                                        reg.trigger_specs));
+  DCHECK(attribution_reporting::IsValid(
+      randomized_response_data.response(), reg.trigger_specs,
+      reg.event_report_windows, reg.max_event_level_reports));
 
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
@@ -458,7 +460,7 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
     for (const auto& fake_report : *randomized_response_data.response()) {
       const attribution_reporting::EventReportWindows& windows =
-          stored_source->trigger_specs().event_report_windows();
+          stored_source->event_report_windows();
 
       base::Time report_time =
           windows.ReportTimeAtWindow(source_time, fake_report.window_index);
@@ -879,8 +881,8 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
     return CreateReportResult::NoMatchingTriggerData();
   }
 
-  switch (source.trigger_specs().event_report_windows().FallsWithin(
-      attribution_info.time - source.source_time())) {
+  switch (source.event_report_windows().FallsWithin(attribution_info.time -
+                                                    source.source_time())) {
     case EventReportWindows::WindowResult::kFallsWithin:
       break;
     case EventReportWindows::WindowResult::kNotStarted:
@@ -890,7 +892,7 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
   }
 
   const base::Time report_time = delegate_->GetEventLevelReportTime(
-      source.trigger_specs().event_report_windows(), source.source_time(),
+      source.event_report_windows(), source.source_time(),
       attribution_info.time);
 
   dedup_key = event_trigger->dedup_key;
@@ -1316,7 +1318,7 @@ AttributionResolverImpl::MaybeReplaceLowerPriorityEventLevelReport(
   DCHECK(data);
 
   // If there's already capacity for the new report, there's nothing to do.
-  if (num_attributions < source.trigger_specs().max_event_level_reports()) {
+  if (num_attributions < source.max_event_level_reports()) {
     return AddNewReport();
   }
 

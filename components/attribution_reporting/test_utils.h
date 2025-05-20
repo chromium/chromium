@@ -28,7 +28,6 @@ class AttributionScopesData;
 class AttributionScopesSet;
 class DestinationSet;
 class EventReportWindows;
-class MaxEventLevelReports;
 class RandomizedResponseData;
 class SourceAggregatableDebugReportingConfig;
 class SuitableOrigin;
@@ -47,9 +46,9 @@ FiltersDisjunction FiltersForSourceType(
     mojom::SourceType,
     std::optional<base::TimeDelta> lookback_window = std::nullopt);
 
-TriggerSpecs SpecsFromDescription(int num_report_windows,
-                                  int trigger_data_cardinality,
-                                  MaxEventLevelReports);
+TriggerSpecs TriggerSpecsWithCardinality(int trigger_data_cardinality);
+
+EventReportWindows EventReportWindowsWithCount(int num_report_windows);
 
 std::ostream& operator<<(std::ostream&, const AggregationKeys&);
 

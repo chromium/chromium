@@ -2422,7 +2422,11 @@ TEST_F(AttributionStorageSqlTest,
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidAggregatableNamedBudgets,
                                2);
-  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 31);
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
+                               AttributionStorageSql::ReportCorruptionStatus::
+                                   kSourceInvalidEventReportWindows,
+                               1);
+  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 32);
 }
 
 TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {

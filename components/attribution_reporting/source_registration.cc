@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -143,14 +144,15 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
                    EventLevelEpsilon::Parse(registration));
 
   ASSIGN_OR_RETURN(
-      auto default_event_report_windows,
+      result.event_report_windows,
       EventReportWindows::FromJSON(registration, result.expiry, source_type));
 
-  ASSIGN_OR_RETURN(
-      result.trigger_specs,
-      TriggerSpecs::ParseTopLevelTriggerData(
-          registration, source_type, std::move(default_event_report_windows),
-          result.trigger_data_matching));
+  ASSIGN_OR_RETURN(result.max_event_level_reports,
+                   MaxEventLevelReports::Parse(registration, source_type));
+
+  ASSIGN_OR_RETURN(result.trigger_specs, TriggerSpecs::ParseTopLevelTriggerData(
+                                             registration, source_type,
+                                             result.trigger_data_matching));
 
   ASSIGN_OR_RETURN(result.filter_data,
                    FilterData::FromJSON(registration.Find(kFilterData)));
@@ -245,6 +247,9 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
   SerializeTimeDeltaInSeconds(dict, kExpiry, expiry);
 
+  event_report_windows.Serialize(dict);
+  max_event_level_reports.Serialize(dict);
+
   trigger_specs.Serialize(dict);
 
   SerializeTimeDeltaInSeconds(dict, kAggregatableReportWindow,
@@ -275,7 +280,7 @@ bool SourceRegistration::IsValid() const {
     return false;
   }
 
-  if (!trigger_specs.event_report_windows().IsValidForExpiry(expiry)) {
+  if (!event_report_windows.IsValidForExpiry(expiry)) {
     return false;
   }
 

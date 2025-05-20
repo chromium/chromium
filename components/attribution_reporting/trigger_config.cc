@@ -19,7 +19,6 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -155,18 +154,10 @@ base::expected<TriggerSpecs, SourceRegistrationError>
 TriggerSpecs::ParseTopLevelTriggerData(
     const base::Value::Dict& registration,
     SourceType source_type,
-    EventReportWindows default_report_windows,
     TriggerDataMatching trigger_data_matching) {
-  ASSIGN_OR_RETURN(auto max_event_level_reports,
-                   MaxEventLevelReports::Parse(registration, source_type));
-
-  // TODO(apaseltiner): If `max_event_level_reports` is 0, consider validating
-  // but not accumulating the specs below.
-
   const base::Value* trigger_data = registration.Find(kTriggerData);
   if (!trigger_data) {
-    return TriggerSpecs(source_type, std::move(default_report_windows),
-                        max_event_level_reports);
+    return TriggerSpecs(source_type);
   }
 
   ASSIGN_OR_RETURN(TriggerData trigger_data_set,
@@ -175,16 +166,10 @@ TriggerSpecs::ParseTopLevelTriggerData(
   RETURN_IF_ERROR(ValidateTriggerDataForTriggerDataMatching(
       trigger_data_set, trigger_data_matching));
 
-  return TriggerSpecs(std::move(trigger_data_set),
-                      std::move(default_report_windows),
-                      max_event_level_reports);
+  return TriggerSpecs(std::move(trigger_data_set));
 }
 
-TriggerSpecs::TriggerSpecs(SourceType source_type,
-                           EventReportWindows event_report_windows,
-                           MaxEventLevelReports max_event_level_reports)
-    : event_report_windows_(std::move(event_report_windows)),
-      max_event_level_reports_(max_event_level_reports) {
+TriggerSpecs::TriggerSpecs(SourceType source_type) {
   uint32_t cardinality = DefaultTriggerDataCardinality(source_type);
 
   TriggerData::container_type trigger_data;
@@ -198,23 +183,15 @@ TriggerSpecs::TriggerSpecs(SourceType source_type,
 }
 
 // static
-std::optional<TriggerSpecs> TriggerSpecs::Create(
-    TriggerData trigger_data,
-    EventReportWindows event_report_windows,
-    MaxEventLevelReports max_event_level_reports) {
+std::optional<TriggerSpecs> TriggerSpecs::Create(TriggerData trigger_data) {
   if (!IsTriggerDataValid(trigger_data)) {
     return std::nullopt;
   }
-  return TriggerSpecs(std::move(trigger_data), std::move(event_report_windows),
-                      max_event_level_reports);
+  return TriggerSpecs(std::move(trigger_data));
 }
 
-TriggerSpecs::TriggerSpecs(TriggerData trigger_data,
-                           EventReportWindows event_report_windows,
-                           MaxEventLevelReports max_event_level_reports)
-    : trigger_data_(std::move(trigger_data)),
-      event_report_windows_(std::move(event_report_windows)),
-      max_event_level_reports_(max_event_level_reports) {
+TriggerSpecs::TriggerSpecs(TriggerData trigger_data)
+    : trigger_data_(std::move(trigger_data)) {
   CHECK(IsTriggerDataValid(trigger_data_));
 }
 
@@ -245,8 +222,6 @@ void TriggerSpecs::Serialize(base::Value::Dict& dict) const {
   }
 
   dict.Set(kTriggerData, std::move(trigger_data_list));
-  event_report_windows_.Serialize(dict);
-  max_event_level_reports_.Serialize(dict);
 }
 
 }  // namespace attribution_reporting

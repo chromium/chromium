@@ -87,9 +87,10 @@ SourceBuilder::SourceBuilder(base::Time time)
           {net::SchemefulSite::Deserialize(kDefaultDestinationOrigin)})),
       reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)) {
   registration_.source_event_id = 123;
-  registration_.trigger_specs = attribution_reporting::TriggerSpecs(
-      source_type_, attribution_reporting::EventReportWindows(),
-      attribution_reporting::MaxEventLevelReports::Max());
+  registration_.trigger_specs =
+      attribution_reporting::TriggerSpecs(source_type_);
+  registration_.max_event_level_reports =
+      attribution_reporting::MaxEventLevelReports::Max();
 }
 
 SourceBuilder::~SourceBuilder() = default;
@@ -137,9 +138,10 @@ SourceBuilder& SourceBuilder::SetReportingOrigin(SuitableOrigin origin) {
 
 SourceBuilder& SourceBuilder::SetSourceType(SourceType source_type) {
   source_type_ = source_type;
-  registration_.trigger_specs = attribution_reporting::TriggerSpecs(
-      source_type_, attribution_reporting::EventReportWindows(),
-      attribution_reporting::MaxEventLevelReports(source_type));
+  registration_.trigger_specs =
+      attribution_reporting::TriggerSpecs(source_type_);
+  registration_.max_event_level_reports =
+      attribution_reporting::MaxEventLevelReports(source_type);
   return *this;
 }
 
@@ -229,10 +231,16 @@ SourceBuilder& SourceBuilder::SetTriggerSpecs(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetEventReportWindows(
+    attribution_reporting::EventReportWindows event_report_windows) {
+  registration_.event_report_windows = std::move(event_report_windows);
+  return *this;
+}
+
 SourceBuilder& SourceBuilder::SetMaxEventLevelReports(
     int max_event_level_reports) {
-  registration_.trigger_specs.SetMaxEventLevelReportsForTesting(
-      attribution_reporting::MaxEventLevelReports(max_event_level_reports));
+  registration_.max_event_level_reports =
+      attribution_reporting::MaxEventLevelReports(max_event_level_reports);
   return *this;
 }
 
@@ -290,6 +298,7 @@ StoredSource SourceBuilder::BuildStored() const {
                        cookie_based_debug_allowed_),
       registration_.source_event_id, registration_.destination_set,
       source_time_, expiry_time, registration_.trigger_specs,
+      registration_.event_report_windows, registration_.max_event_level_reports,
       source_time_ + registration_.aggregatable_report_window,
       registration_.priority, registration_.filter_data,
       registration_.debug_key, registration_.aggregation_keys,

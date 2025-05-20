@@ -46,6 +46,7 @@
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
@@ -301,6 +302,8 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
   GetRandomizedResponseResult GetRandomizedResponse(
       const attribution_reporting::mojom::SourceType source_type,
       const attribution_reporting::TriggerSpecs& trigger_specs,
+      const attribution_reporting::EventReportWindows& event_report_windows,
+      const attribution_reporting::MaxEventLevelReports max_event_level_reports,
       const attribution_reporting::EventLevelEpsilon epsilon,
       const std::optional<attribution_reporting::AttributionScopesData>&
           scopes_data) override {
@@ -308,7 +311,8 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 
     ASSIGN_OR_RETURN(auto response_data,
                      AttributionResolverDelegateImpl::GetRandomizedResponse(
-                         source_type, trigger_specs, epsilon, scopes_data));
+                         source_type, trigger_specs, event_report_windows,
+                         max_event_level_reports, epsilon, scopes_data));
 
     auto it = randomized_responses_.find(base::Time::Now());
     if (it == randomized_responses_.end()) {
@@ -317,7 +321,9 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 
     // Avoid crashing in `AttributionStorageSql::StoreSource()` by returning an
     // arbitrary error here, which will manifest as unexpected test output.
-    if (!attribution_reporting::IsValid(it->second, trigger_specs)) {
+    if (!attribution_reporting::IsValid(it->second, trigger_specs,
+                                        event_report_windows,
+                                        max_event_level_reports)) {
       LOG(ERROR) << "invalid randomized response with trigger_specs="
                  << trigger_specs;
       return base::unexpected(attribution_reporting::RandomizedResponseError::

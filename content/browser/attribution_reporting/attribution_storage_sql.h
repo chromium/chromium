@@ -164,7 +164,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceInvalidFilterData = 20,
     kSourceInvalidActiveState = 21,
     kSourceInvalidReadOnlySourceData = 22,
-    // Obsolete: kSourceInvalidEventReportWindows = 23,
+    kSourceInvalidEventReportWindows = 23,
     kSourceInvalidMaxEventLevelReports = 24,
     kSourceInvalidEventLevelEpsilon = 25,
     kSourceDestinationSitesQueryFailed = 26,
