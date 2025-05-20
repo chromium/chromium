@@ -12,12 +12,6 @@ buildconfig = "//build/config/BUILDCONFIG.gn"
 # for python3.exe and python3.bat.
 script_executable = "python3"
 
-# TODO: crbug.com/413507213 - Remove this flag after enabling this feature by
-# default.
-# Changes the Ninja build graph to build data_deps and other non-linkable
-# deps asynchronously.
-async_non_linkable_deps = true
-
 # These arguments override the default values for items in a declare_args
 # block. "gn args" in turn can override these.
 #
