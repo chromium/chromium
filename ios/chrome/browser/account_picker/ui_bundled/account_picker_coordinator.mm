@@ -38,6 +38,9 @@
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
+// YES if the an add account operation is in progress.
+@property(nonatomic, assign) BOOL openAddAccountOperationInProgress;
+
 @end
 
 @implementation AccountPickerCoordinator {
@@ -167,9 +170,16 @@
 
 // Opens an AddAccountSigninCoordinator to add an account to the device.
 - (void)openAddAccountCoordinator {
+  if (self.openAddAccountOperationInProgress) {
+    // According to crbug.com/418774148, it is possible for the user to start
+    // twice an open add account operation. Ignore the second call.
+    return;
+  }
+  self.openAddAccountOperationInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   [self.delegate accountPickerCoordinator:self
              openAddAccountWithCompletion:^(id<SystemIdentity> identity) {
+               weakSelf.openAddAccountOperationInProgress = NO;
                [weakSelf addAccountCompletionWithIdentity:identity];
              }];
   [self.logger logAccountPickerAddAccountScreenOpened];
