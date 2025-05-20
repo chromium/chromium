@@ -1186,30 +1186,27 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
       for (NavigationMilestone milestone : all_throttleable_milestones()) {
         content::TestNavigationThrottleInserter throttle_inserter(
             web_contents(),
-            base::BindLambdaForTesting(
-                [&](content::NavigationHandle* handle)
-                    -> std::unique_ptr<content::NavigationThrottle> {
-                  if (handle->GetURL() != url_srp() &&
-                      handle->GetURL() != url_srp_redirect()) {
-                    return nullptr;
-                  }
-                  content::TestNavigationThrottle::ThrottleMethod method =
-                      content::TestNavigationThrottle::WILL_START_REQUEST;
-                  if (milestone == NavigationMilestone::
-                                       kFirstRedirectResponseLoaderCallback) {
-                    method =
-                        content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
-                  } else if (milestone ==
-                             NavigationMilestone::
-                                 kNonRedirectResponseLoaderCallback) {
-                    method =
-                        content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
-                  }
-                  auto throttle =
-                      std::make_unique<content::TestNavigationThrottle>(handle);
-                  throttle->SetResponse(method, synchrony, action);
-                  return throttle;
-                }));
+            base::BindLambdaForTesting([&](content::NavigationThrottleRegistry&
+                                               registry) -> void {
+              auto& handle = registry.GetNavigationHandle();
+              if (handle.GetURL() != url_srp() &&
+                  handle.GetURL() != url_srp_redirect()) {
+                return;
+              }
+              content::TestNavigationThrottle::ThrottleMethod method =
+                  content::TestNavigationThrottle::WILL_START_REQUEST;
+              if (milestone ==
+                  NavigationMilestone::kFirstRedirectResponseLoaderCallback) {
+                method = content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
+              } else if (milestone == NavigationMilestone::
+                                          kNonRedirectResponseLoaderCallback) {
+                method = content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
+              }
+              auto throttle =
+                  std::make_unique<content::TestNavigationThrottle>(registry);
+              throttle->SetResponse(method, synchrony, action);
+              registry.AddThrottle(std::move(throttle));
+            }));
         TestNavigationAbandonment(
             AbandonReason::kInternalCancellation, milestone,
             GetTargetURLForMilestone(milestone),
@@ -1235,32 +1232,32 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   for (NavigationMilestone milestone : all_throttleable_milestones()) {
     content::TestNavigationThrottleInserter throttle_inserter(
         web_contents(),
-        base::BindLambdaForTesting(
-            [&](content::NavigationHandle* handle)
-                -> std::unique_ptr<content::NavigationThrottle> {
-              if (handle->GetURL() != url_srp() &&
-                  handle->GetURL() != url_srp_redirect()) {
-                return nullptr;
-              }
-              content::TestNavigationThrottle::ThrottleMethod method =
-                  content::TestNavigationThrottle::WILL_START_REQUEST;
-              if (milestone ==
-                  NavigationMilestone::kFirstRedirectResponseLoaderCallback) {
-                method = content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
-              } else if (milestone == NavigationMilestone::
-                                          kNonRedirectResponseLoaderCallback) {
-                method = content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
-              }
-              auto throttle =
-                  std::make_unique<content::TestNavigationThrottle>(handle);
-              throttle->SetResponse(
-                  method, content::TestNavigationThrottle::SYNCHRONOUS,
-                  milestone == NavigationMilestone::
-                                   kNonRedirectResponseLoaderCallback
-                      ? content::NavigationThrottle::BLOCK_RESPONSE
-                      : content::NavigationThrottle::BLOCK_REQUEST);
-              return throttle;
-            }));
+        base::BindLambdaForTesting([&](content::NavigationThrottleRegistry&
+                                           registry) -> void {
+          auto& handle = registry.GetNavigationHandle();
+          if (handle.GetURL() != url_srp() &&
+              handle.GetURL() != url_srp_redirect()) {
+            return;
+          }
+          content::TestNavigationThrottle::ThrottleMethod method =
+              content::TestNavigationThrottle::WILL_START_REQUEST;
+          if (milestone ==
+              NavigationMilestone::kFirstRedirectResponseLoaderCallback) {
+            method = content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
+          } else if (milestone ==
+                     NavigationMilestone::kNonRedirectResponseLoaderCallback) {
+            method = content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
+          }
+          auto throttle =
+              std::make_unique<content::TestNavigationThrottle>(registry);
+          throttle->SetResponse(
+              method, content::TestNavigationThrottle::SYNCHRONOUS,
+              milestone ==
+                      NavigationMilestone::kNonRedirectResponseLoaderCallback
+                  ? content::NavigationThrottle::BLOCK_RESPONSE
+                  : content::NavigationThrottle::BLOCK_REQUEST);
+          registry.AddThrottle(std::move(throttle));
+        }));
     TestNavigationAbandonment(
         AbandonReason::kErrorPage, milestone,
         GetTargetURLForMilestone(milestone),

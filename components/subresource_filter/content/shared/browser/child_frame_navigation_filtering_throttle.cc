@@ -30,16 +30,17 @@
 namespace subresource_filter {
 
 ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     AsyncDocumentSubresourceFilter* parent_frame_filter,
     bool alias_check_enabled,
     base::RepeatingCallback<std::string(const GURL& url)>
         disallow_message_callback)
-    : content::NavigationThrottle(handle),
+    : content::NavigationThrottle(registry),
       parent_frame_filter_(parent_frame_filter),
       alias_check_enabled_(alias_check_enabled),
       disallow_message_callback_(std::move(disallow_message_callback)) {
-  CHECK(!IsInSubresourceFilterRoot(handle), base::NotFatalUntil::M129);
+  CHECK(!IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
+        base::NotFatalUntil::M129);
   CHECK(parent_frame_filter_, base::NotFatalUntil::M129);
 }
 

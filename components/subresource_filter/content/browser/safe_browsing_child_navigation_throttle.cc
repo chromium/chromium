@@ -52,14 +52,14 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser,
 namespace subresource_filter {
 
 SafeBrowsingChildNavigationThrottle::SafeBrowsingChildNavigationThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     AsyncDocumentSubresourceFilter* parent_frame_filter,
     base::WeakPtr<ProfileInteractionManager> profile_interaction_manager,
     base::RepeatingCallback<std::string(const GURL& url)>
         disallow_message_callback,
     std::optional<blink::FrameAdEvidence> ad_evidence)
     : ChildFrameNavigationFilteringThrottle(
-          handle,
+          registry,
           parent_frame_filter,
           /*alias_check_enabled=*/
           base::FeatureList::IsEnabled(

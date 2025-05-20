@@ -8720,8 +8720,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   TestNavigationThrottleInserter throttle_inserter(
       shell()->web_contents(),
       base::BindLambdaForTesting(
-          [&](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
-            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+          [&](NavigationThrottleRegistry& registry) -> void {
+            auto throttle = std::make_unique<TestNavigationThrottle>(registry);
             throttle->SetCallback(
                 TestNavigationThrottle::WILL_PROCESS_RESPONSE,
                 base::BindLambdaForTesting([&]() {
@@ -8750,7 +8750,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                         EXPECT_FALSE(root->navigation_request());
                       }));
                 }));
-            return throttle;
+            registry.AddThrottle(std::move(throttle));
           }));
 
   // Navigate to another page, which will be cancelled by the shutdown

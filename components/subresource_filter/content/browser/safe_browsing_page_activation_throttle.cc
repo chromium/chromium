@@ -71,17 +71,18 @@ std::optional<RedirectPosition> GetEnforcementRedirectPosition(
 }  // namespace
 
 SafeBrowsingPageActivationThrottle::SafeBrowsingPageActivationThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     SafeBrowsingPageActivationThrottle::Delegate* delegate,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager)
-    : NavigationThrottle(handle),
+    : NavigationThrottle(registry),
       database_client_(nullptr),
       delegate_(delegate) {
   database_client_.reset(new SubresourceFilterSafeBrowsingClient(
       std::move(database_manager), this,
       base::SingleThreadTaskRunner::GetCurrentDefault()));
 
-  CHECK(IsInSubresourceFilterRoot(handle), base::NotFatalUntil::M129);
+  CHECK(IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
+        base::NotFatalUntil::M129);
   CheckCurrentUrl();
   CHECK(!check_results_.empty(), base::NotFatalUntil::M129);
 }

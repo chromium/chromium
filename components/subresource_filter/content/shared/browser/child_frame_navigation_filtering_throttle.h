@@ -23,10 +23,6 @@ namespace features {
 BASE_DECLARE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser);
 }  // namespace features
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
@@ -44,7 +40,7 @@ class ChildFrameNavigationFilteringThrottle
     : public content::NavigationThrottle {
  public:
   ChildFrameNavigationFilteringThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       AsyncDocumentSubresourceFilter* parent_frame_filter,
       bool alias_check_enabled,
       base::RepeatingCallback<std::string(const GURL& url)>

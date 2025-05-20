@@ -539,15 +539,13 @@ void ContentSubresourceFilterThrottleManager::
 
   if (IsInSubresourceFilterRoot(&navigation_handle) && database_manager_) {
     registry.AddThrottle(std::make_unique<SafeBrowsingPageActivationThrottle>(
-        &navigation_handle, profile_interaction_manager_.get(),
-        database_manager_));
+        registry, profile_interaction_manager_.get(), database_manager_));
   }
 
   if (!dealer_handle_) {
     return;
   }
-  registry.MaybeAddThrottle(
-      MaybeCreateChildNavigationThrottle(&navigation_handle));
+  MaybeCreateAndAddChildNavigationThrottle(registry);
 
   CHECK(!base::Contains(ongoing_activation_throttles_,
                         navigation_handle.GetNavigationId()),
@@ -603,24 +601,25 @@ void ContentSubresourceFilterThrottleManager::LogAction(
   UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.Actions2", action);
 }
 
-std::unique_ptr<SafeBrowsingChildNavigationThrottle>
-ContentSubresourceFilterThrottleManager::MaybeCreateChildNavigationThrottle(
-    content::NavigationHandle* navigation_handle) {
-  if (IsInSubresourceFilterRoot(navigation_handle)) {
-    return nullptr;
+void ContentSubresourceFilterThrottleManager::
+    MaybeCreateAndAddChildNavigationThrottle(
+        content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  if (IsInSubresourceFilterRoot(&navigation_handle)) {
+    return;
   }
   AsyncDocumentSubresourceFilter* parent_filter =
-      GetParentFrameFilter(navigation_handle);
-  return parent_filter ? std::make_unique<SafeBrowsingChildNavigationThrottle>(
-                             navigation_handle, parent_filter,
-                             profile_interaction_manager_->AsWeakPtr(),
-                             base::BindRepeating([](const GURL& url) {
-                               return base::StringPrintf(
-                                   kDisallowChildFrameConsoleMessageFormat,
-                                   url.possibly_invalid_spec().c_str());
-                             }),
-                             EnsureFrameAdEvidence(navigation_handle))
-                       : nullptr;
+      GetParentFrameFilter(&navigation_handle);
+  if (!parent_filter) {
+    return;
+  }
+  registry.AddThrottle(std::make_unique<SafeBrowsingChildNavigationThrottle>(
+      registry, parent_filter, profile_interaction_manager_->AsWeakPtr(),
+      base::BindRepeating([](const GURL& url) {
+        return base::StringPrintf(kDisallowChildFrameConsoleMessageFormat,
+                                  url.possibly_invalid_spec().c_str());
+      }),
+      EnsureFrameAdEvidence(&navigation_handle)));
 }
 
 std::unique_ptr<ActivationStateComputingNavigationThrottle>

@@ -188,7 +188,7 @@ void ThrottleManager::MaybeCreateAndAddNavigationThrottles(
       }
       registry.AddThrottle(
           std::make_unique<FingerprintingProtectionChildNavigationThrottle>(
-              &navigation_handle, parent_filter, is_incognito_,
+              registry, parent_filter, is_incognito_,
               base::BindRepeating([](const GURL& url) {
                 return base::StringPrintf(
                     kDisallowChildFrameConsoleMessageFormat,

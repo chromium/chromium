@@ -268,9 +268,8 @@ class ContentSubresourceFilterThrottleManager
       AdTagCarriesAcrossProcesses);
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
                            FirstDisallowedLoadCalledOutOfOrder);
-  std::unique_ptr<SafeBrowsingChildNavigationThrottle>
-  MaybeCreateChildNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+  void MaybeCreateAndAddChildNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   std::unique_ptr<ActivationStateComputingNavigationThrottle>
   MaybeCreateActivationStateComputingThrottle(
       content::NavigationHandle* navigation_handle);

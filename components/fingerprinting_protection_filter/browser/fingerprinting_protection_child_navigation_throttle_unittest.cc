@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -18,6 +19,7 @@
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -81,29 +83,43 @@ class FingerprintingProtectionChildNavigationThrottleTest
 
   ~FingerprintingProtectionChildNavigationThrottleTest() override = default;
 
+  void SetUp() override {
+    ChildFrameNavigationFilteringThrottleTestHarness::SetUp();
+    throttle_inserter_ =
+        std::make_unique<content::TestNavigationThrottleInserter>(
+            content::RenderViewHostTestHarness::web_contents(),
+            base::BindLambdaForTesting(
+                [&](content::NavigationThrottleRegistry& registry) -> void {
+                  // The |parent_filter_| is the parent frame's filter. Do not
+                  // register a throttle if the parent is not activated with a
+                  // valid filter.
+                  if (parent_filter_) {
+                    auto throttle = std::make_unique<
+                        FingerprintingProtectionChildNavigationThrottle>(
+                        registry, parent_filter_.get(),
+                        /*is_incognito=*/GetParam(),
+                        base::BindRepeating([](const GURL& filtered_url) {
+                          // TODO(https://crbug.com/40280666): Implement new
+                          // console message.
+                          return base::StringPrintf(
+                              kDisallowedConsoleMessageFormat,
+                              filtered_url.possibly_invalid_spec().c_str());
+                        }));
+                    ASSERT_EQ("FingerprintingProtectionChildNavigationThrottle",
+                              std::string(throttle->GetNameForLogging()));
+                    registry.AddThrottle(std::move(throttle));
+                  }
+                }));
+  }
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     ASSERT_FALSE(navigation_handle->IsInMainFrame());
-    // The |parent_filter_| is the parent frame's filter. Do not register a
-    // throttle if the parent is not activated with a valid filter.
-    if (parent_filter_) {
-      auto throttle =
-          std::make_unique<FingerprintingProtectionChildNavigationThrottle>(
-              navigation_handle, parent_filter_.get(),
-              /*is_incognito=*/GetParam(),
-              base::BindRepeating([](const GURL& filtered_url) {
-                // TODO(https://crbug.com/40280666): Implement new console
-                // message.
-                return base::StringPrintf(
-                    kDisallowedConsoleMessageFormat,
-                    filtered_url.possibly_invalid_spec().c_str());
-              }));
-      ASSERT_EQ("FingerprintingProtectionChildNavigationThrottle",
-                std::string(throttle->GetNameForLogging()));
-      navigation_handle->RegisterThrottleForTesting(std::move(throttle));
-    }
   }
+
+ private:
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

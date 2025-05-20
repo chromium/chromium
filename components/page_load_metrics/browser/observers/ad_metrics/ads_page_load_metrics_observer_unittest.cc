@@ -172,14 +172,14 @@ void PopulateRequiredTimingFieldsExceptFEtPAndFCP(
 class ResourceLoadingCancellingThrottle
     : public content::TestNavigationThrottle {
  public:
-  static std::unique_ptr<content::NavigationThrottle> Create(
-      content::NavigationHandle* handle) {
-    return std::make_unique<ResourceLoadingCancellingThrottle>(handle);
+  static void Create(content::NavigationThrottleRegistry& registry) {
+    registry.AddThrottle(
+        std::make_unique<ResourceLoadingCancellingThrottle>(registry));
   }
 
   explicit ResourceLoadingCancellingThrottle(
-      content::NavigationHandle* navigation_handle)
-      : content::TestNavigationThrottle(navigation_handle) {
+      content::NavigationThrottleRegistry& registry)
+      : content::TestNavigationThrottle(registry) {
     SetResponse(TestNavigationThrottle::WILL_PROCESS_RESPONSE,
                 TestNavigationThrottle::ASYNCHRONOUS, CANCEL);
   }

@@ -70,17 +70,18 @@ class CustomErrorPageThrottleInserter {
       : throttle_inserter_(
             web_contents,
             base::BindLambdaForTesting(
-                [error, error_page_contents](content::NavigationHandle* handle)
-                    -> std::unique_ptr<content::NavigationThrottle> {
+                [error, error_page_contents](
+                    content::NavigationThrottleRegistry& registry) -> void {
                   auto throttle =
-                      std::make_unique<content::TestNavigationThrottle>(handle);
+                      std::make_unique<content::TestNavigationThrottle>(
+                          registry);
                   throttle->SetResponse(
                       content::TestNavigationThrottle::WILL_START_REQUEST,
                       content::TestNavigationThrottle::SYNCHRONOUS,
                       content::NavigationThrottle::ThrottleCheckResult(
                           content::NavigationThrottle::CANCEL, error,
                           error_page_contents));
-                  return throttle;
+                  registry.AddThrottle(std::move(throttle));
                 })) {}
   ~CustomErrorPageThrottleInserter() = default;
 
@@ -96,9 +97,9 @@ class DeferNextNavigationThrottleInserter
  public:
   class DeferringThrottle : public content::NavigationThrottle {
    public:
-    explicit DeferringThrottle(content::NavigationHandle* handle,
+    explicit DeferringThrottle(content::NavigationThrottleRegistry& registry,
                                base::OnceClosure callback)
-        : NavigationThrottle(handle), callback_(std::move(callback)) {}
+        : NavigationThrottle(registry), callback_(std::move(callback)) {}
 
     ~DeferringThrottle() override = default;
 
@@ -141,16 +142,15 @@ class DeferNextNavigationThrottleInserter
   }
 
  private:
-  std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottle(
-      content::NavigationHandle* handle) {
+  void MaybeCreateThrottle(content::NavigationThrottleRegistry& registry) {
     if (throttle_) {
-      return nullptr;
+      return;
     }
 
     auto throttle = std::make_unique<DeferringThrottle>(
-        handle, defer_wait_loop_.QuitClosure());
+        registry, defer_wait_loop_.QuitClosure());
     throttle_ = throttle.get();
-    return throttle;
+    registry.AddThrottle(std::move(throttle));
   }
 
   const content::TestNavigationThrottleInserter throttle_inserter_;

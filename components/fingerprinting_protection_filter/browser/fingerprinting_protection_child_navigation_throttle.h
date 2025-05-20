@@ -11,10 +11,6 @@
 
 class GURL;
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace subresource_filter {
 class AsyncDocumentSubresourceFilter;
 }  // namespace subresource_filter
@@ -27,7 +23,7 @@ class FingerprintingProtectionChildNavigationThrottle
     : public subresource_filter::ChildFrameNavigationFilteringThrottle {
  public:
   FingerprintingProtectionChildNavigationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       subresource_filter::AsyncDocumentSubresourceFilter* parent_frame_filter,
       bool is_incognito,
       base::RepeatingCallback<std::string(const GURL& url)>

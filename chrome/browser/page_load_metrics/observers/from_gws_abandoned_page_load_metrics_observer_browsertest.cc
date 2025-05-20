@@ -744,12 +744,12 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
       for (NavigationMilestone milestone : all_throttleable_milestones()) {
         content::TestNavigationThrottleInserter throttle_inserter(
             web_contents(),
-            base::BindLambdaForTesting([&](content::NavigationHandle* handle)
-                                           -> std::unique_ptr<
-                                               content::NavigationThrottle> {
-              if (handle->GetURL() != url_non_srp_2() &&
-                  handle->GetURL() != url_non_srp_redirect()) {
-                return nullptr;
+            base::BindLambdaForTesting([&](content::NavigationThrottleRegistry&
+                                               registry) -> void {
+              auto& handle = registry.GetNavigationHandle();
+              if (handle.GetURL() != url_non_srp_2() &&
+                  handle.GetURL() != url_non_srp_redirect()) {
+                return;
               }
               content::TestNavigationThrottle::ThrottleMethod method =
                   content::TestNavigationThrottle::WILL_START_REQUEST;
@@ -761,9 +761,9 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
                 method = content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
               }
               auto throttle =
-                  std::make_unique<content::TestNavigationThrottle>(handle);
+                  std::make_unique<content::TestNavigationThrottle>(registry);
               throttle->SetResponse(method, synchrony, action);
-              return throttle;
+              registry.AddThrottle(std::move(throttle));
             }));
         TestNavigationAbandonment(
             AbandonReason::kInternalCancellation, milestone,
@@ -790,12 +790,12 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
   for (NavigationMilestone milestone : all_throttleable_milestones()) {
     content::TestNavigationThrottleInserter throttle_inserter(
         web_contents(),
-        base::BindLambdaForTesting([&](content::NavigationHandle* handle)
-                                       -> std::unique_ptr<
-                                           content::NavigationThrottle> {
-          if (handle->GetURL() != url_non_srp_2() &&
-              handle->GetURL() != url_non_srp_redirect()) {
-            return nullptr;
+        base::BindLambdaForTesting([&](content::NavigationThrottleRegistry&
+                                           registry) -> void {
+          auto& handle = registry.GetNavigationHandle();
+          if (handle.GetURL() != url_non_srp_2() &&
+              handle.GetURL() != url_non_srp_redirect()) {
+            return;
           }
           content::TestNavigationThrottle::ThrottleMethod method =
               content::TestNavigationThrottle::WILL_START_REQUEST;
@@ -807,14 +807,14 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
             method = content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
           }
           auto throttle =
-              std::make_unique<content::TestNavigationThrottle>(handle);
+              std::make_unique<content::TestNavigationThrottle>(registry);
           throttle->SetResponse(
               method, content::TestNavigationThrottle::SYNCHRONOUS,
               milestone ==
                       NavigationMilestone::kNonRedirectResponseLoaderCallback
                   ? content::NavigationThrottle::BLOCK_RESPONSE
                   : content::NavigationThrottle::BLOCK_REQUEST);
-          return throttle;
+          registry.AddThrottle(std::move(throttle));
         }));
     TestNavigationAbandonment(
         AbandonReason::kErrorPage, milestone,

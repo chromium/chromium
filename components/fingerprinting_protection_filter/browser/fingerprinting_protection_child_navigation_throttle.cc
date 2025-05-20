@@ -27,13 +27,13 @@ namespace fingerprinting_protection_filter {
 
 FingerprintingProtectionChildNavigationThrottle::
     FingerprintingProtectionChildNavigationThrottle(
-        content::NavigationHandle* handle,
+        content::NavigationThrottleRegistry& registry,
         subresource_filter::AsyncDocumentSubresourceFilter* parent_frame_filter,
         bool is_incognito,
         base::RepeatingCallback<std::string(const GURL& url)>
             disallow_message_callback)
     : subresource_filter::ChildFrameNavigationFilteringThrottle(
-          handle,
+          registry,
           parent_frame_filter,
           /*alias_check_enabled=*/
           base::FeatureList::IsEnabled(

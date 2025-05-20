@@ -134,8 +134,9 @@ class RenderFrameHostDestructionObserver : public WebContentsObserver {
   bool deleted() const { return deleted_; }
 
   void Wait() {
-    if (deleted_)
+    if (deleted_) {
       return;
+    }
 
     message_loop_runner_->Run();
   }
@@ -164,16 +165,18 @@ class RenderFrameHostDestructionObserver : public WebContentsObserver {
 // WebUI URLs in tests.
 class RequestBlockingNavigationThrottle : public NavigationThrottle {
  public:
-  explicit RequestBlockingNavigationThrottle(NavigationHandle* handle)
-      : NavigationThrottle(handle) {}
+  explicit RequestBlockingNavigationThrottle(
+      NavigationThrottleRegistry& registry)
+      : NavigationThrottle(registry) {}
 
   RequestBlockingNavigationThrottle(const RequestBlockingNavigationThrottle&) =
       delete;
   RequestBlockingNavigationThrottle& operator=(
       const RequestBlockingNavigationThrottle&) = delete;
 
-  static std::unique_ptr<NavigationThrottle> Create(NavigationHandle* handle) {
-    return std::make_unique<RequestBlockingNavigationThrottle>(handle);
+  static void Create(NavigationThrottleRegistry& registry) {
+    registry.AddThrottle(
+        std::make_unique<RequestBlockingNavigationThrottle>(registry));
   }
 
  private:
@@ -1297,8 +1300,9 @@ class RenderFrameHostManagerSpoofingTest : public RenderFrameHostManagerTest {
     // object.
     switches.erase(switches::kDomAutomationController);
 
-    for (const auto& it : switches)
+    for (const auto& it : switches) {
       new_command_line.AppendSwitchNative(it.first, it.second);
+    }
 
     *command_line = new_command_line;
   }
@@ -1323,8 +1327,9 @@ class VisibleEntryWaiter : public WebContentsObserver {
 
   void Wait() {
     if (auto* entry = web_contents()->GetController().GetVisibleEntry()) {
-      if (entry && !entry->IsInitialEntry())
+      if (entry && !entry->IsInitialEntry()) {
         return;
+      }
     }
     run_loop_.Run();
   }
@@ -4079,8 +4084,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Sanity-check test setup: 2 frames share a renderer process, but are not in
   // a related browsing instance.
-  if (!AreAllSitesIsolatedForTesting())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(tab1->GetProcess(), tab2->GetProcess());
+  }
   EXPECT_FALSE(
       tab1->GetSiteInstance()->IsRelatedSiteInstance(tab2->GetSiteInstance()));
 
@@ -4379,8 +4385,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationInMainFrame) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -4505,8 +4512,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationInNewWindow) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
   GURL error_url(embedded_test_server()->GetURL("/empty.html"));
@@ -4543,8 +4551,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationInUnrelatedWindows) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
   GURL error_url(embedded_test_server()->GetURL("/empty.html"));
@@ -4597,8 +4606,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // See https://crbug.com/840485.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
@@ -5052,8 +5062,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationAfterError) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -5129,8 +5140,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationReloadWithTerminatedProcess) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -5183,8 +5195,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationHistoryNavigationFailure) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
 
@@ -5230,8 +5243,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationHistoryNavigationSuccess) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   StartEmbeddedServer();
   WebContents* web_contents = shell()->web_contents();
@@ -5284,8 +5298,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationToWebUIResourceWithError) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   GURL webui_url = GetWebUIURL(kChromeUIGpuHost);
   GURL error_url(webui_url.Resolve("/foo"));
@@ -5319,8 +5334,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ReloadWebUIErrorPageToValidWebUI) {
   // This test is only valid if error page isolation is enabled.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
     return;
+  }
 
   GURL webui_url = GetWebUIURL(kChromeUIGpuHost);
 
@@ -5384,8 +5400,9 @@ class PageEffectiveURLContentBrowserClient
  private:
   GURL GetEffectiveURL(BrowserContext* browser_context,
                        const GURL& url) override {
-    if (url.EqualsIgnoringRef(url_to_modify_))
+    if (url.EqualsIgnoringRef(url_to_modify_)) {
       return url_to_return_;
+    }
     return url;
   }
 
@@ -5558,8 +5575,9 @@ class RenderFrameHostManagerUnloadBrowserTest
   // Returns right away if that request was already made.
   void WaitForMonitoredRequest() {
     base::AutoLock lock(lock_);
-    if (saw_request_url_)
+    if (saw_request_url_) {
       return;
+    }
 
     run_loop_ = std::make_unique<base::RunLoop>();
     {
@@ -5578,15 +5596,19 @@ class RenderFrameHostManagerUnloadBrowserTest
 
   blink::mojom::SuddenTerminationDisablerType DisablerTypeForEvent(
       const std::string& event_name) {
-    if (event_name == "unload")
+    if (event_name == "unload") {
       return blink::mojom::SuddenTerminationDisablerType::kUnloadHandler;
-    if (event_name == "beforeunload")
+    }
+    if (event_name == "beforeunload") {
       return blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler;
-    if (event_name == "pagehide")
+    }
+    if (event_name == "pagehide") {
       return blink::mojom::SuddenTerminationDisablerType::kPageHideHandler;
-    if (event_name == "visibilitychange")
+    }
+    if (event_name == "visibilitychange") {
       return blink::mojom::SuddenTerminationDisablerType::
           kVisibilityChangeHandler;
+    }
     NOTREACHED();
   }
 
@@ -5658,15 +5680,17 @@ class RenderFrameHostManagerUnloadBrowserTest
     // includes host+port).
     GURL requested_url = request.GetURL();
     auto it = request.headers.find("Host");
-    if (it != request.headers.end())
+    if (it != request.headers.end()) {
       requested_url = GURL("http://" + it->second + request.relative_url);
+    }
 
     base::AutoLock lock(lock_);
     if (!saw_request_url_ && request_url_ == requested_url) {
       saw_request_url_ = true;
       request_content_ = request.content;
-      if (run_loop_)
+      if (run_loop_) {
         run_loop_->Quit();
+      }
     }
   }
 
@@ -6133,8 +6157,9 @@ IN_PROC_BROWSER_TEST_P(
     RenderFrameHostManagerTest,
     ForegroundNavigationIsNeverBackgroundedWithSpareProcess) {
   // This test applies only when spare RenderProcessHost is enabled and in use.
-  if (!RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes())
+  if (!RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     return;
+  }
 
   StartEmbeddedServer();
   WebContentsImpl* web_contents =
@@ -6250,10 +6275,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   scoped_refptr<SiteInstance> b_site_instance =
       web_contents->GetPrimaryMainFrame()->GetSiteInstance();
 
-  if (CanCrossSiteNavigationsProactivelySwapBrowsingInstances())
+  if (CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
     EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  else
+  } else {
     EXPECT_TRUE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
+  }
 }
 
 // Tests specific to the "default process" mode (which creates strict
@@ -6372,8 +6398,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        CrashFrameReloadAndCheckProxy) {
   // This test explicitly requires multiple processes to be used. It won't mean
   // anything without SiteIsolation.
-  if (!AreAllSitesIsolatedForTesting())
+  if (!AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // 1. Navigate to A1(B2, B3(B4), C5).
   StartEmbeddedServer();
@@ -6662,8 +6689,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest, NestedUnload) {
   // These tests require site isolation to trigger the (formerly problematic)
   // delayed detach of the remote frame when swapping in the new local frame.
-  if (!AreAllSitesIsolatedForTesting())
+  if (!AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   SetupCrossSiteRedirector(embedded_test_server());
   StartEmbeddedServer();

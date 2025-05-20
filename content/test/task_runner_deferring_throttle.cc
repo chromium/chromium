@@ -14,8 +14,8 @@ TaskRunnerDeferringThrottle::TaskRunnerDeferringThrottle(
     bool defer_start,
     bool defer_redirect,
     bool defer_response,
-    NavigationHandle* handle)
-    : NavigationThrottle(handle),
+    NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry),
       defer_start_(defer_start),
       defer_redirect_(defer_redirect),
       defer_response_(defer_response),
@@ -24,15 +24,15 @@ TaskRunnerDeferringThrottle::TaskRunnerDeferringThrottle(
 TaskRunnerDeferringThrottle::~TaskRunnerDeferringThrottle() = default;
 
 // static
-std::unique_ptr<NavigationThrottle> TaskRunnerDeferringThrottle::Create(
+void TaskRunnerDeferringThrottle::Create(
     scoped_refptr<base::TaskRunner> task_runner,
     bool defer_start,
     bool defer_redirect,
     bool defer_response,
-    NavigationHandle* handle) {
-  return base::WrapUnique(
-      new TaskRunnerDeferringThrottle(std::move(task_runner), defer_start,
-                                      defer_redirect, defer_response, handle));
+    NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(base::WrapUnique(new TaskRunnerDeferringThrottle(
+      std::move(task_runner), defer_start, defer_redirect, defer_response,
+      registry)));
 }
 
 NavigationThrottle::ThrottleCheckResult
