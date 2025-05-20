@@ -607,6 +607,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       performAction:grey_tap()];
 
   // Tap the "Done" button to dismiss the view.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:NavigationBarDoneButton()];
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
