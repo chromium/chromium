@@ -26,6 +26,7 @@ class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
 class FederatedAuthRequestPageData;
+class RenderFrameHost;
 
 namespace webid {
 
@@ -105,6 +106,11 @@ FederatedAuthRequestPageData* GetPageData(Page& page);
 FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
                                                   const url::Origin& requester,
                                                   const url::Origin& embedder);
+
+void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
+                                   const char* fetch_description,
+                                   int response_code);
+
 }  // namespace webid
 
 }  // namespace content

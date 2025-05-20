@@ -42,12 +42,14 @@ class FedCmAccountsFetcher {
   struct FedCmFetchingParams {
     FedCmFetchingParams(blink::mojom::RpMode rp_mode,
                         int icon_ideal_size,
-                        int icon_minimum_size);
+                        int icon_minimum_size,
+                        MediationRequirement mediation_requirement);
     ~FedCmFetchingParams();
 
     blink::mojom::RpMode rp_mode;
     int icon_ideal_size;
     int icon_minimum_size;
+    MediationRequirement mediation_requirement;
   };
 
   FedCmAccountsFetcher(
@@ -110,6 +112,17 @@ class FedCmAccountsFetcher {
   // accounts are returning and which are not.
   void ComputeLoginStates(const GURL& idp_config_url,
                           std::vector<IdentityRequestAccountPtr>& accounts);
+
+  // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
+  // failure UI if applicable.
+  void HandleAccountsFetchFailure(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      std::optional<bool> old_idp_signin_status,
+      blink::mojom::FederatedAuthRequestResult result,
+      std::optional<content::FedCmRequestIdTokenStatus> token_status,
+      const IdpNetworkRequestManager::FetchStatus& status);
+
+  void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
 
   std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
 

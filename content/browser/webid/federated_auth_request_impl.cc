@@ -764,8 +764,8 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
   fedcm_accounts_fetcher_ = std::make_unique<FedCmAccountsFetcher>(
       render_frame_host(), network_manager_.get(), api_permission_delegate_,
       permission_delegate_,
-      FedCmAccountsFetcher::FedCmFetchingParams(rp_mode_, icon_ideal_size,
-                                                icon_minimum_size),
+      FedCmAccountsFetcher::FedCmFetchingParams(
+          rp_mode_, icon_ideal_size, icon_minimum_size, mediation_requirement_),
       this);
   fedcm_accounts_fetcher_->FetchEndpointsForIdps(idp_config_urls);
 }
@@ -1254,70 +1254,10 @@ void FederatedAuthRequestImpl::OnAccountsDisplayed() {
   accounts_dialog_display_time_ = base::TimeTicks::Now();
 }
 
-void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
-    std::unique_ptr<IdentityProviderInfo> idp_info,
-    std::optional<bool> old_idp_signin_status,
-    blink::mojom::FederatedAuthRequestResult result,
-    std::optional<TokenStatus> token_status,
-    const IdpNetworkRequestManager::FetchStatus& status) {
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
-    MaybeAddResponseCodeToConsole("accounts endpoint", status.response_code);
-  }
-  if (!old_idp_signin_status.has_value()) {
-    if (rp_mode_ == blink::mojom::RpMode::kActive) {
-      MaybeShowActiveModeModalDialog(idp_info->provider->config->config_url,
-                                     idp_info->metadata.idp_login_url);
-      return;
-    }
-    OnFetchDataForIdpFailed(std::move(idp_info), result, token_status,
-                            /*should_delay_callback=*/true);
-    return;
-  }
-
-  if (!IsFrameActive(render_frame_host().GetMainFrame())) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kRpPageNotVisible,
-                             TokenStatus::kRpPageNotVisible,
-
-                             /*should_delay_callback=*/true);
-    return;
-  }
-
-  if (mediation_requirement_ == MediationRequirement::kSilent) {
-    // By this moment we know that the user has granted permission in the past
-    // for the RP/IdP. Because otherwise we have returned already in
-    // `ShouldFailBeforeFetchingAccounts`. It means that we can do the
-    // following without privacy cost:
-    // 1. Reject the promise immediately without delay
-    // 2. Not to show any UI to respect `mediation: silent`
-    // TODO(crbug.com/40266561): validate the statement above with stakeholders
-    OnFetchDataForIdpFailed(std::move(idp_info),
-                            FederatedAuthRequestResult::kSilentMediationFailure,
-                            TokenStatus::kSilentMediationFailure,
-                            /*should_delay_callback=*/false);
-    return;
-  }
-
-  // We are going to show mismatch UI, so fetch the brand icon URL (needed at
-  // least for passive mode). We currently never need the RP icon for mismatch
-  // UI.
-  network_manager_->FetchIdpBrandIcon(
-      std::move(idp_info),
-      base::BindOnce(&FederatedAuthRequestImpl::OnIdpMismatch,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void FederatedAuthRequestImpl::OnIdpMismatch(
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   const GURL& idp_config_url = idp_info->provider->config->config_url;
 
-  const std::string idp_for_display =
-      webid::FormatUrlForDisplay(idp_config_url);
-  idp_info->data = base::MakeRefCounted<IdentityProviderData>(
-      idp_for_display, idp_info->metadata,
-      ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},
-      idp_info->rp_context, idp_info->format,
-      GetDisclosureFields(idp_info->provider->fields),
-      /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
   fetch_data_.pending_idps.erase(idp_config_url);
@@ -1811,7 +1751,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
   DCHECK(!start_time_.is_null());
   constexpr char kIdAssertionUrl[] = "id assertion endpoint";
   if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
-    MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
+    webid::MaybeAddResponseCodeToConsole(render_frame_host(), kIdAssertionUrl,
+                                         status.response_code);
     std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
         IdAssertionFetchStatusToRequestResultAndTokenStatus(status);
     CompleteRequestWithError(resultAndTokenStatus.first,
@@ -1820,7 +1761,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     return;
   }
   if (token_error_) {
-    MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
+    webid::MaybeAddResponseCodeToConsole(render_frame_host(), kIdAssertionUrl,
+                                         status.response_code);
     if (error_url_type_ && *error_url_type_ == ErrorUrlType::kCrossSite) {
       CompleteRequestWithError(
           FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse,
@@ -2225,18 +2167,6 @@ void FederatedAuthRequestImpl::AddConsoleErrorMessage(
   render_frame_host().AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       webid::GetConsoleErrorMessageFromResult(result));
-}
-
-void FederatedAuthRequestImpl::MaybeAddResponseCodeToConsole(
-    const char* fetch_description,
-    int response_code) {
-  std::optional<std::string> console_message =
-      webid::ComputeConsoleMessageForHttpResponseCode(fetch_description,
-                                                      response_code);
-  if (console_message) {
-    render_frame_host().AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError, *console_message);
-  }
 }
 
 url::Origin FederatedAuthRequestImpl::GetEmbeddingOrigin() const {

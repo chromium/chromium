@@ -20,11 +20,15 @@ using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 
+namespace content {
+
 namespace {
 static constexpr char kVcSdJwt[] = "vc+sd-jwt";
-}  // namespace
 
-namespace content {
+bool IsFrameActive(RenderFrameHost* frame) {
+  return frame && frame->IsActive();
+}
+}  // namespace
 
 FedCmAccountsFetcher::IdentityProviderGetInfo::IdentityProviderGetInfo(
     blink::mojom::IdentityProviderRequestOptionsPtr provider,
@@ -56,10 +60,12 @@ FedCmAccountsFetcher::IdentityProviderGetInfo::operator=(
 FedCmAccountsFetcher::FedCmFetchingParams::FedCmFetchingParams(
     blink::mojom::RpMode rp_mode,
     int icon_ideal_size,
-    int icon_minimum_size)
+    int icon_minimum_size,
+    MediationRequirement mediation_requirement)
     : rp_mode(rp_mode),
       icon_ideal_size(icon_ideal_size),
-      icon_minimum_size(icon_minimum_size) {}
+      icon_minimum_size(icon_minimum_size),
+      mediation_requirement(mediation_requirement) {}
 
 FedCmAccountsFetcher::FedCmFetchingParams::~FedCmFetchingParams() = default;
 
@@ -233,9 +239,9 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
   if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
     std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
         AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
-    federated_auth_request_impl_->HandleAccountsFetchFailure(
-        std::move(idp_info), old_idp_signin_status, resultAndTokenStatus.first,
-        resultAndTokenStatus.second, status);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               resultAndTokenStatus.first,
+                               resultAndTokenStatus.second, status);
     return;
   }
   RecordRawAccountsSize(accounts.size());
@@ -247,10 +253,9 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
     // If there are no accounts after filtering based on the label,
     // treat this exactly the same as if we had received an empty accounts
     // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-    federated_auth_request_impl_->HandleAccountsFetchFailure(
-        std::move(idp_info), old_idp_signin_status,
-        FederatedAuthRequestResult::kAccountsListEmpty,
-        TokenStatus::kAccountsListEmpty, status);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty, status);
     return;
   }
   if (!FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts)) {
@@ -261,10 +266,9 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
     // If there are no accounts after filtering based on the login hint,
     // treat this exactly the same as if we had received an empty accounts
     // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-    federated_auth_request_impl_->HandleAccountsFetchFailure(
-        std::move(idp_info), old_idp_signin_status,
-        FederatedAuthRequestResult::kAccountsListEmpty,
-        TokenStatus::kAccountsListEmpty, status);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty, status);
     return;
   }
   if (!FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
@@ -276,10 +280,9 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
     // If there are no accounts after filtering based on the domain hint,
     // treat this exactly the same as if we had received an empty accounts
     // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-    federated_auth_request_impl_->HandleAccountsFetchFailure(
-        std::move(idp_info), old_idp_signin_status,
-        FederatedAuthRequestResult::kAccountsListEmpty,
-        TokenStatus::kAccountsListEmpty, status);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty, status);
     return;
   }
   auto filter = [](const IdentityRequestAccountPtr& account) {
@@ -315,10 +318,9 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
     // If there are no accounts after filtering,treat this exactly the same
     // as if we had received an empty accounts list, i.e.
     // IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-    federated_auth_request_impl_->HandleAccountsFetchFailure(
-        std::move(idp_info), old_idp_signin_status,
-        FederatedAuthRequestResult::kAccountsListEmpty,
-        TokenStatus::kAccountsListEmpty, status);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty, status);
     return;
   }
   RecordReadyToShowAccountsSize(accounts.size());
@@ -543,6 +545,74 @@ void FedCmAccountsFetcher::ComputeLoginStates(
       account->browser_trusted_login_state = account->login_state.value();
     }
   }
+}
+
+void FedCmAccountsFetcher::HandleAccountsFetchFailure(
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    std::optional<bool> old_idp_signin_status,
+    blink::mojom::FederatedAuthRequestResult result,
+    std::optional<TokenStatus> token_status,
+    const IdpNetworkRequestManager::FetchStatus& status) {
+  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    webid::MaybeAddResponseCodeToConsole(
+        *render_frame_host_, "accounts endpoint", status.response_code);
+  }
+  if (!old_idp_signin_status.has_value()) {
+    if (params_.rp_mode == blink::mojom::RpMode::kActive) {
+      federated_auth_request_impl_->MaybeShowActiveModeModalDialog(
+          idp_info->provider->config->config_url,
+          idp_info->metadata.idp_login_url);
+      return;
+    }
+    federated_auth_request_impl_->OnFetchDataForIdpFailed(
+        std::move(idp_info), result, token_status,
+        /*should_delay_callback=*/true);
+    return;
+  }
+
+  if (!IsFrameActive(render_frame_host_->GetMainFrame())) {
+    federated_auth_request_impl_->CompleteRequestWithError(
+        FederatedAuthRequestResult::kRpPageNotVisible,
+        TokenStatus::kRpPageNotVisible,
+        /*should_delay_callback=*/true);
+    return;
+  }
+
+  if (params_.mediation_requirement == MediationRequirement::kSilent) {
+    // By this moment we know that the user has granted permission in the past
+    // for the RP/IdP. Because otherwise we have returned already in
+    // `ShouldFailBeforeFetchingAccounts`. It means that we can do the
+    // following without privacy cost:
+    // 1. Reject the promise immediately without delay
+    // 2. Not to show any UI to respect `mediation: silent`
+    // TODO(crbug.com/40266561): validate the statement above with stakeholders
+    federated_auth_request_impl_->OnFetchDataForIdpFailed(
+        std::move(idp_info),
+        FederatedAuthRequestResult::kSilentMediationFailure,
+        TokenStatus::kSilentMediationFailure,
+        /*should_delay_callback=*/false);
+    return;
+  }
+
+  // We are going to show mismatch UI, so fetch the brand icon URL (needed at
+  // least for passive mode). We currently never need the RP icon for mismatch
+  // UI.
+  network_manager_->FetchIdpBrandIcon(
+      std::move(idp_info), base::BindOnce(&FedCmAccountsFetcher::OnIdpMismatch,
+                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FedCmAccountsFetcher::OnIdpMismatch(
+    std::unique_ptr<IdentityProviderInfo> idp_info) {
+  const std::string idp_for_display =
+      webid::FormatUrlForDisplay(idp_info->provider->config->config_url);
+  idp_info->data = base::MakeRefCounted<IdentityProviderData>(
+      idp_for_display, idp_info->metadata,
+      ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},
+      idp_info->rp_context, idp_info->format,
+      GetDisclosureFields(idp_info->provider->fields),
+      /*has_login_status_mismatch=*/true);
+  federated_auth_request_impl_->OnIdpMismatch(std::move(idp_info));
 }
 
 }  // namespace content

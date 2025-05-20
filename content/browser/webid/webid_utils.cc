@@ -456,4 +456,16 @@ FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
              : FedCmRequesterFrameType::kCrossSiteIframe;
 }
 
+void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
+                                   const char* fetch_description,
+                                   int response_code) {
+  std::optional<std::string> console_message =
+      webid::ComputeConsoleMessageForHttpResponseCode(fetch_description,
+                                                      response_code);
+  if (console_message) {
+    render_frame_host.AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError, *console_message);
+  }
+}
+
 }  // namespace content::webid
