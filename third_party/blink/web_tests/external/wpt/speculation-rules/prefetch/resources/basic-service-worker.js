@@ -1,5 +1,13 @@
 const swOption = new URL(location.href).searchParams.get('sw');
 
+if (swOption === 'fetch-handler-navigation-preload') {
+  self.addEventListener('activate', event => {
+    if (self.registration.navigationPreload) {
+      event.waitUntil(self.registration.navigationPreload.enable());
+    }
+  });
+}
+
 const interceptedRequests = [];
 
 self.addEventListener('message', event => {
@@ -21,14 +29,15 @@ if (swOption !== 'no-fetch-handler') {
     event.request.headers.forEach((value, key) => {
       headers[key] = value;
     });
-    interceptedRequests.push({
+    const interceptedRequest = {
       request: {
         url: event.request.url,
         headers: headers,
       },
       clientId: event.clientId,
       resultingClientId: event.resultingClientId
-    });
+    };
+    interceptedRequests.push(interceptedRequest);
 
     if (swOption === 'fetch-handler') {
       event.respondWith(fetch(event.request));
@@ -49,6 +58,26 @@ if (swOption !== 'no-fetch-handler') {
     } else if (swOption === 'fetch-handler-modify-referrer') {
       event.respondWith(fetch(event.request,
           {referrer: new URL('/intercepted', location.href).href}));
+    } else if (swOption === 'fetch-handler-navigation-preload') {
+      event.respondWith((async () => {
+        try {
+          if (event.preloadResponse === 'undefined') {
+            interceptedRequest.preloadResponse = 'undefined';
+            return fetch(event.request);
+          }
+          const response = await event.preloadResponse;
+          if (response) {
+            interceptedRequest.preloadResponse = 'resolved';
+            return response;
+          } else {
+            interceptedRequest.preloadResponse = 'resolved to undefined';
+            return fetch(event.request);
+          }
+        } catch(e) {
+          interceptedRequest.preloadResponse = 'rejected';
+          throw e;
+        }
+      })());
     } else {
       // Do nothing to fallback to the network.
     }

@@ -12,6 +12,7 @@
 <meta name="variant" content="?origin=same-site&sw=fetch-handler-to-fallback">
 <meta name="variant" content="?origin=same-site&sw=fetch-handler-modify-url">
 <meta name="variant" content="?origin=same-site&sw=fetch-handler-modify-referrer">
+<meta name="variant" content="?origin=same-site&sw=fetch-handler-navigation-preload">
 <meta name="variant" content="?origin=same-site&sw=no-fetch-handler">
 <meta name="variant" content="?origin=same-site&sw=no-controller">
 
@@ -119,6 +120,25 @@ promise_test(async t => {
       assert_equals(interceptedRequests.length, 1);
       assert_intercept_prefetch(interceptedRequests[0], nextUrl);
     }
+  } else if (originOption === 'same-site' &&
+      swOption === 'fetch-handler-navigation-preload') {
+    // Check the behavior of `FetchEvent.preloadResponse` for prefetching
+    // requests.
+    // Here we allow >1 intercepted requests to check `preloadResponse`
+    // behavior even if e.g. prefetched response isn't served and there is
+    // second intercepted request (=non-prefetch navigation request).
+    assert_greater_than_equal(interceptedRequests.length, 1);
+    // The first intercepted request is a prefetch request.
+    assert_intercept_prefetch(interceptedRequests[0], nextUrl);
+    assert_equals(interceptedRequests[0].preloadResponse, 'resolved',
+        'preloadResponse should be resolved');
+
+    assert_served_by_navigation_preload(headers);
+    assert_prefetched(headers, "Prefetched result should be served.");
+    assert_equals(requestCount.prefetch, 1,
+        'a prefetch request should be sent to the server.');
+    assert_equals(requestCount.nonPrefetch, 0,
+        'non-prefetch requests should not be sent to the server.');
   } else if (originOption === 'same-site' &&
              (swOption === 'fetch-handler-modify-url' ||
               swOption === 'fetch-handler-modify-referrer')) {
