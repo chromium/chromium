@@ -2519,7 +2519,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.OutdatedGMSDialogDismissalReason"
-    enum="OutdatedGMSDialogDismissalReason" expires_after="2025-06-29">
+    enum="OutdatedGMSDialogDismissalReason" expires_after="2025-09-29">
   <owner>ioanap@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -3568,7 +3568,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.RemovedPasswordCount"
-    units="passwords" expires_after="2025-06-29">
+    units="passwords" expires_after="2025-08-29">
   <owner>vsemeniuk@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -4508,7 +4508,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.UPM.AutoExportedCsvStartupDeletionSuccess"
-    enum="BooleanSuccess" expires_after="2025-06-30">
+    enum="BooleanSuccess" expires_after="2025-10-12">
   <owner>ioanap@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -4532,7 +4532,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.UPM.LoginDbDeprecationExport.Progress"
-    enum="LoginDbDeprecationExportProgress" expires_after="2025-06-30">
+    enum="LoginDbDeprecationExportProgress" expires_after="2025-10-12">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -4568,7 +4568,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.UPM.OldGmsNoPasswordsDialogDismissalReason"
-    enum="BooleanAccepted" expires_after="2025-07-01">
+    enum="BooleanAccepted" expires_after="2025-10-12">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>
