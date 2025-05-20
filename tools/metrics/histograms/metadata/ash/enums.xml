@@ -3020,8 +3020,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="Window is snapped when updating a window in snap group"/>
   <int value="16" label="Window is snapped in test"/>
   <int value="17"
-      label="Window is snapped by long pressing lacros window caption button
-             or window layout menu"/>
+      label="(Obsolete) Window is snapped by long pressing lacros window
+             caption button or window layout menu"/>
   <int value="18"
       label="Window is snapped during the windows swapping in a Snap Group"/>
 </enum>

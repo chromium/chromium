@@ -117,7 +117,6 @@ bool SnapGroupController::OnWindowSnapped(
     aura::Window* target_window = nullptr;
     switch (snap_action_source) {
       case WindowSnapActionSource::kSnapByWindowLayoutMenu:
-      case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
       case WindowSnapActionSource::kSnapByClamshellTabletTransition:
         // If the window was snapped via the layout menu, respect its
         // requested snap ratio. We also refresh the bounds for tablet

@@ -200,8 +200,6 @@ const char* GetSnapActionSourceMetricComponent(
       return "SnapGroupWindowUpdate";
     case WindowSnapActionSource::kTest:
       return "Test";
-    case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
-      return "SnapByLacrosSnapButtonOrWindowLayoutMenu";
     case WindowSnapActionSource::kSnapBySwapWindowsInSnapGroup:
       return "SnapBySwapWindowsInSnapGroup";
   }
@@ -877,7 +875,6 @@ bool CanSnapActionSourceStartFasterSplitView(
     case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
     case WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap:
     case WindowSnapActionSource::kTest:
-    case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
       // We only start partial overview for the above snap sources.
       return true;
     default:

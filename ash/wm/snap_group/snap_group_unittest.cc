@@ -495,8 +495,6 @@ TEST_F(FasterSplitScreenTest, SnapActionSourceLimitations) {
        /*should_show_partial_overview=*/true},
       {WindowSnapActionSource::kLongPressCaptionButtonToSnap,
        /*should_show_partial_overview=*/true},
-      {WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu,
-       /*should_show_partial_overview=*/true},
       {WindowSnapActionSource::kKeyboardShortcutToSnap,
        /*should_show_partial_overview=*/false},
       {WindowSnapActionSource::kSnapByWindowStateRestore,
