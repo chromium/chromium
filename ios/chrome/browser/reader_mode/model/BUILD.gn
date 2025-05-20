@@ -85,6 +85,28 @@ source_set("constants") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "reader_mode_test.h",
+    "reader_mode_test.mm",
+  ]
+  deps = [
+    ":constants",
+    ":features",
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/dom_distiller/core",
+    "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/js_messaging:java_script_feature_manager_header",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -99,6 +121,7 @@ source_set("unit_tests") {
     ":constants",
     ":features",
     ":model",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/dom_distiller/core",

@@ -9,29 +9,25 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
-class ReaderModeModelTest : public PlatformTest {
+class ReaderModeModelTest : public ReaderModeTest {
  public:
-  void SetUp() override {
-    PlatformTest::SetUp();
-    profile_ = TestProfileIOS::Builder().Build();
-    web_state_ = std::make_unique<web::FakeWebState>();
-  }
+  ReaderModeModelTest() : web_state_(CreateWebState()) {}
 
-  // Attaches a ReaderModeTabHelper to `web_state_`.
+  // Attaches a ReaderModeTabHelper to `web_state()`.
   void AttachReaderModeTabHelper() {
     ReaderModeTabHelper::CreateForWebState(
-        web_state_.get(),
-        DistillerServiceFactory::GetForProfile(profile_.get()));
+        web_state(), DistillerServiceFactory::GetForProfile(profile()));
   }
 
- protected:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  web::FakeWebState* web_state() { return web_state_.get(); }
+
+ private:
   std::unique_ptr<web::FakeWebState> web_state_;
 };
 
@@ -41,18 +37,18 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForNTP) {
   ReaderModeModel model;
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
-  web_state_->SetContentIsHTML(true);
-  web_state_->SetVisibleURL(GURL(kChromeUIAboutNewTabURL));
+  web_state()->SetContentIsHTML(true);
+  LoadWebpage(web_state(), GURL(kChromeUIAboutNewTabURL));
   model.FetchConfigurationForWebState(
-      web_state_.get(),
+      web_state(),
       base::BindOnce(
           ^(base::OnceClosure quit_closure,
             std::unique_ptr<ContextualPanelItemConfiguration> config) {
             configuration = std::move(config);
             std::move(quit_closure).Run();
           },
-          task_environment_.QuitClosure()));
-  task_environment_.RunUntilQuit();
+          task_environment()->QuitClosure()));
+  task_environment()->RunUntilQuit();
   EXPECT_EQ(configuration, nullptr);
 }
 
@@ -62,18 +58,18 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForNonHTMLContent) {
   ReaderModeModel model;
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
-  web_state_->SetContentIsHTML(false);
-  web_state_->SetVisibleURL(GURL("https://test.org/doc.pdf"));
+  web_state()->SetContentIsHTML(false);
+  LoadWebpage(web_state(), GURL("https://test.org/doc.pdf"));
   model.FetchConfigurationForWebState(
-      web_state_.get(),
+      web_state(),
       base::BindOnce(
           ^(base::OnceClosure quit_closure,
             std::unique_ptr<ContextualPanelItemConfiguration> config) {
             configuration = std::move(config);
             std::move(quit_closure).Run();
           },
-          task_environment_.QuitClosure()));
-  task_environment_.RunUntilQuit();
+          task_environment()->QuitClosure()));
+  task_environment()->RunUntilQuit();
   EXPECT_EQ(configuration, nullptr);
 }
 
@@ -83,18 +79,22 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
   ReaderModeModel model;
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
-  web_state_->SetContentIsHTML(true);
-  web_state_->SetVisibleURL(GURL("https://test.org/doc.html"));
+  GURL test_url("https://test.org/doc.html");
+  SetReaderModeEligibility(web_state(), test_url,
+                           ReaderModeHeuristicResult::kReaderModeEligible);
+  LoadWebpage(web_state(), test_url);
+  WaitForReaderModeContentReady();
+
   model.FetchConfigurationForWebState(
-      web_state_.get(),
+      web_state(),
       base::BindOnce(
           ^(base::OnceClosure quit_closure,
             std::unique_ptr<ContextualPanelItemConfiguration> config) {
             configuration = std::move(config);
             std::move(quit_closure).Run();
           },
-          task_environment_.QuitClosure()));
-  task_environment_.RunUntilQuit();
+          task_environment()->QuitClosure()));
+  task_environment()->RunUntilQuit();
   EXPECT_NE(configuration, nullptr);
 
   EXPECT_EQ(configuration->item_type, ContextualPanelItemType::ReaderModeItem);
@@ -110,14 +110,14 @@ TEST_F(ReaderModeModelTest, FetchConfigurationWithoutReaderModeTabHelper) {
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
   model.FetchConfigurationForWebState(
-      web_state_.get(),
+      web_state(),
       base::BindOnce(
           ^(base::OnceClosure quit_closure,
             std::unique_ptr<ContextualPanelItemConfiguration> config) {
             configuration = std::move(config);
             std::move(quit_closure).Run();
           },
-          task_environment_.QuitClosure()));
-  task_environment_.RunUntilQuit();
+          task_environment()->QuitClosure()));
+  task_environment()->RunUntilQuit();
   EXPECT_EQ(configuration, nullptr);
 }
