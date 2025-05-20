@@ -10,9 +10,7 @@ import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/compose.proto";
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
-import "components/optimization_guide/proto/features/forms_annotations.proto";
 import "components/optimization_guide/proto/features/forms_classifications.proto";
-import "components/optimization_guide/proto/features/forms_predictions.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
 import "components/optimization_guide/proto/features/history_query_intent.proto";
@@ -36,6 +34,8 @@ option java_outer_classname = "ModelQualityServiceProto";
 // A request to send AI data logs to the model quality server. Data logging for
 // an AI feature with metadata specific to the logging.
 message LogAiDataRequest {
+  reserved 10, 11;
+
   // Information about a feature's AiLoggingData, such as training opt-outs.
   LoggingMetadata logging_metadata = 1;
 
@@ -57,10 +57,6 @@ message LogAiDataRequest {
     HistoryQueryIntentLoggingData history_query_intent = 13;
 
     ProductSpecificationsLoggingData product_specifications = 9;
-
-    FormsAnnotationsLoggingData forms_annotations = 10;
-
-    FormsPredictionsLoggingData forms_predictions = 11;
 
     ModelPrototypingLoggingData model_prototyping = 12;
 
