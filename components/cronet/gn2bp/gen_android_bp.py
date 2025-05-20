@@ -30,6 +30,8 @@ import constants as license_constants
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 sys.path.insert(0, REPOSITORY_ROOT)
+
+import components.cronet.tools.utils as cronet_utils
 import build.gn_helpers
 
 CRONET_LICENSE_NAME = "external_cronet_license"
@@ -241,8 +243,6 @@ BLUEPRINTS_MAPPING = {
     # Moving is undergoing, see crbug/40273848
     "buildtools/third_party/libc++abi": "third_party/libc++abi",
 }
-
-_MIN_SDK_VERSION = 30
 
 # Path for the protobuf sources in the standalone build.
 buildtools_protobuf_src = '//buildtools/protobuf/src'
@@ -2247,7 +2247,7 @@ def merge_modules(modules, genrule_type):
 def create_java_module(bp_module_name, target, blueprint):
 
   def add_java_library_properties(module):
-    module.min_sdk_version = _MIN_SDK_VERSION
+    module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
     module.apex_available = [tethering_apex]
     module.defaults.add(java_framework_defaults_module)
     module.build_file_path = target.build_file_path
@@ -2451,7 +2451,7 @@ def create_bindgen_module(blueprint: Blueprint, target,
   # to already be present in AOSP (currently, in Android.extras.bp). See
   # https://r.android.com/3413202.
   module.header_libs = {f"{MODULE_PREFIX}repository_root_include_dirs_anchor"}
-  module.min_sdk_version = _MIN_SDK_VERSION
+  module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
   module.apex_available = [tethering_apex]
   blueprint.add_module(module)
   return module
@@ -2743,7 +2743,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     if module.type in ["rust_proc_macro", "rust_binary", "rust_ffi_static"]:
       module.crate_name = target.crate_name
       module.crate_root = gn_utils.label_to_path(target.crate_root)
-      module.min_sdk_version = _MIN_SDK_VERSION
+      module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
       module.apex_available = [tethering_apex]
       for arch_name, arch in target.get_archs().items():
         _set_rust_flags(module.target[arch_name], arch.rust_flags, arch_name)
@@ -3131,7 +3131,7 @@ def create_cc_defaults_module():
   defaults.target['host'].compile_multilib = '64'
   defaults.stl = 'none'
   defaults.cpp_std = CPP_VERSION
-  defaults.min_sdk_version = _MIN_SDK_VERSION
+  defaults.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
   defaults.apex_available.add(tethering_apex)
   return defaults
 

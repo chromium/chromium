@@ -22,9 +22,11 @@ REPOSITORY_ROOT = os.path.abspath(
 _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
+MIN_SDK_VERSION_FOR_AOSP = 30
 ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
 AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false',
-                   'use_allocator_shim=false')
+                   'use_allocator_shim=false',
+                   f'default_min_sdk_version={MIN_SDK_VERSION_FOR_AOSP}')
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
 
 
@@ -157,9 +159,10 @@ def get_transitive_deps_build_files(repo_path: str, out_dir: str,
 
 
 def get_gn_args_for_aosp(arch: str) -> List[str]:
-  default_args = get_android_gn_args(True, arch)
+  default_args = filter_gn_args(get_android_gn_args(True, arch),
+                                ["use_remoteexec", "default_min_sdk_version"])
   default_args.extend(AOSP_EXTRA_ARGS)
-  return filter_gn_args(default_args, ["use_remoteexec"])
+  return default_args
 
 
 def android_gn_gen(is_release, target_cpu, out_dir):
