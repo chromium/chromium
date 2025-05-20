@@ -9,8 +9,8 @@
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./print_preview_shared.css.js
  * #import=./print_preview_vars.css.js
- * #import=./throbber_lit.css.js
- * #include=print-preview-shared cr-hidden-style-lit throbber-lit
+ * #import=./throbber.css.js
+ * #include=print-preview-shared cr-hidden-style-lit throbber
  * #css_wrapper_metadata_end */
 
 :host-context([dir=rtl]) #manageIcon {

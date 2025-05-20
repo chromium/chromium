@@ -10,7 +10,7 @@ import {getCss as getMdSelectLitCss} from 'chrome://resources/cr_elements/md_sel
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './color_settings.html.js';
-import {getCss as getPrintPreviewSharedLitCss} from './print_preview_shared.css.js';
+import {getCss as getPrintPreviewSharedCss} from './print_preview_shared.css.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -25,7 +25,7 @@ export class PrintPreviewColorSettingsElement extends
 
   static override get styles() {
     return [
-      getPrintPreviewSharedLitCss(),
+      getPrintPreviewSharedCss(),
       getMdSelectLitCss(),
     ];
   }

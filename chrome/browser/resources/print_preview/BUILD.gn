@@ -114,7 +114,6 @@ build_webui("build") {
     "ui/settings_select.css",
     "ui/sidebar.css",
     "ui/throbber.css",
-    "ui/throbber_lit.css",
   ]
 
   icons_html_files = [ "ui/icons.html" ]
