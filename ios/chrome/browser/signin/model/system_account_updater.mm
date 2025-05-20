@@ -189,6 +189,10 @@ void SystemAccountUpdater::UpdateLoadedAccounts() {
 }
 
 void SystemAccountUpdater::HandleMigrationIfNeeded() {
+  // Perform migration only if the flag is enabled.
+  if (!IsWidgetsForMultiprofileEnabled()) {
+    return;
+  }
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
   if (!local_state) {
