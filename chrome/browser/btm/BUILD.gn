@@ -4,13 +4,18 @@
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "btm_browser_signin_detector_unittest.cc" ]
+  sources = [
+    "btm_browser_signin_detector_unittest.cc",
+    "btm_service_unittest.cc",
+  ]
 
   deps = [
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
+    "//components/privacy_sandbox:tracking_protection_prefs",
     "//content/test:test_support",
     "//testing/gtest",
     "//url",

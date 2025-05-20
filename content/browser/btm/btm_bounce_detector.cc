@@ -537,9 +537,11 @@ void Populate3PcExceptions(BrowserContext* browser_context,
                            const GURL& final_url,
                            base::span<BtmRedirectInfoPtr> redirects) {
   const blink::StorageKey initial_url_key =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(
+          initial_url.SchemeIsHTTPOrHTTPS() ? initial_url : GURL()));
   const blink::StorageKey final_url_key =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(final_url));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(
+          final_url.SchemeIsHTTPOrHTTPS() ? final_url : GURL()));
   net::CookieSettingOverrides overrides({
       net::CookieSettingOverride::kStorageAccessGrantEligible,
       net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible,
