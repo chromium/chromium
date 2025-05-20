@@ -983,7 +983,7 @@ Google Chrome is unable to recover your settings.
 
       <!-- Installer Downloader infobar -->
       <message name="IDS_INSTALLER_DOWNLOADER_DISCLAIMER" desc="Installer downloader infobar message prompting users upgrading to Windows 11 to download the Chrome installer to OneDrive.">
-        Upgrading to Windows 11 soon? Download the Chrome Installer to One Drive so you’re ready from day one.
+        Upgrading to Windows 11 soon? Download the Chrome Installer to OneDrive so you’re ready from day one.
       </message>
       <message name="IDS_INSTALLER_DOWNLOADER_LINK_TEXT" desc="Link text for the installer downloader infobar, 'Learn More'.">
         Learn More
