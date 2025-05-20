@@ -733,6 +733,9 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
 }
 
 void NavigationURLLoaderImpl::Restart() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationURLLoaderImpl::Restart",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // Cancel all inflight early hints preloads except for same origin redirects.
   if (!IsSameOriginRedirect(resource_request_->navigation_redirect_chain)) {
     early_hints_manager_.reset();
