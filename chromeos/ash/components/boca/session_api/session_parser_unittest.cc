@@ -53,6 +53,11 @@ constexpr char kFullSessionResponse[] = R"(
                 "viewScreenState": "AVAILABLE",
                 "connectionParam": {
                   "connectionCode": "0123456789"
+                },
+                "viewScreenRequester": {
+                  "serviceAccount" : {
+                    "email": "robot@email.com"
+                  }
                 }
               }
          }
@@ -163,7 +168,12 @@ constexpr char kPartialResponse[] = R"(
                   }
                 },
               "viewScreenConfig": {
-                "viewScreenState": "REQUESTED"
+                "viewScreenState": "REQUESTED",
+                "viewScreenRequester": {
+                  "serviceAccount" : {
+                    "email": "robot@email.com"
+                  }
+                }
               }
           }
           }
@@ -391,6 +401,14 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                               .view_screen_config()
                               .connection_param()
                               .connection_code());
+  EXPECT_EQ("robot@email.com", session_full->student_statuses()
+                                   .at("3")
+                                   .devices()
+                                   .at("kDummyDeviceId")
+                                   .view_screen_config()
+                                   .view_screen_requester()
+                                   .service_account()
+                                   .email());
   EXPECT_EQ(::boca::StudentStatus::ADDED,
             session_full->student_statuses().at("22").state());
   ParseStudentStatusProtoFromJson(session_dict_partial->GetIfDict(),
@@ -417,6 +435,14 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                 .at("kDummyDeviceId")
                 .view_screen_config()
                 .view_screen_state());
+  EXPECT_EQ("robot@email.com", session_full->student_statuses()
+                                   .at("3")
+                                   .devices()
+                                   .at("kDummyDeviceId")
+                                   .view_screen_config()
+                                   .view_screen_requester()
+                                   .service_account()
+                                   .email());
 }
 }  // namespace
 }  // namespace ash::boca

@@ -371,6 +371,17 @@ void ParseIndividualStudentStatusFromJson(
                     ->set_connection_code(*connection_code);
               }
             }
+            if (auto* view_screen_requester_dict =
+                    view_screen_config_dict->FindDict(kViewScreenRequester)) {
+              if (auto* service_account_dict =
+                      view_screen_requester_dict->FindDict(kServiceAccount)) {
+                if (auto* ptr = service_account_dict->FindString(kEmail)) {
+                  view_screen_config.mutable_view_screen_requester()
+                      ->mutable_service_account()
+                      ->set_email(*ptr);
+                }
+              }
+            }
           }
         }
       }
