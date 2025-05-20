@@ -30,6 +30,7 @@
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/layers/tile_display_layer_impl.h"
+#include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -116,6 +117,13 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeHostImpl& host_impl,
 
     case cc::mojom::LayerType::kTexture:
       return cc::TextureLayerImpl::Create(&tree, id);
+
+    case cc::mojom::LayerType::kViewTransitionContent: {
+      auto& extra = wire.layer_extra->get_view_transition_content_layer_extra();
+      return cc::ViewTransitionContentLayerImpl::Create(
+          &tree, id, extra->resource_id, extra->is_live_content_layer,
+          extra->max_extents_rect);
+    }
 
     default:
       // TODO(rockot): Support other layer types.
@@ -554,6 +562,12 @@ void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,
   layer.SetOverrideChildPaintFlags(extra->override_child_paint_flags);
 }
 
+void UpdateViewTransitionContentLayerExtra(
+    const mojom::ViewTransitionContentLayerExtraPtr& extra,
+    cc::ViewTransitionContentLayerImpl& layer) {
+  layer.SetMaxExtentsRect(extra->max_extents_rect);
+}
+
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
                                               cc::LayerImpl& layer) {
   layer.SetBounds(wire.bounds);
@@ -648,6 +662,11 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
     case cc::mojom::LayerType::kTexture:
       UpdateTextureLayerExtra(wire.layer_extra->get_texture_layer_extra(),
                               static_cast<cc::TextureLayerImpl&>(layer));
+      break;
+    case cc::mojom::LayerType::kViewTransitionContent:
+      UpdateViewTransitionContentLayerExtra(
+          wire.layer_extra->get_view_transition_content_layer_extra(),
+          static_cast<cc::ViewTransitionContentLayerImpl&>(layer));
       break;
     default:
       // TODO(zmo): handle other types of LayerImpl.

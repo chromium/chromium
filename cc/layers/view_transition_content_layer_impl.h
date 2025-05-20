@@ -50,6 +50,14 @@ class CC_EXPORT ViewTransitionContentLayerImpl : public LayerImpl {
       const gfx::Rect&
           originating_surface_content_rect_in_layer_coordinate_space);
 
+  const viz::ViewTransitionElementResourceId& resource_id() const {
+    return resource_id_;
+  }
+  bool is_live_content_layer() const { return is_live_content_layer_; }
+  const gfx::RectF& max_extents_rect() const {
+    return max_extents_rect_in_originating_layer_coordinate_space_;
+  }
+
  protected:
   ViewTransitionContentLayerImpl(
       LayerTreeImpl* tree_impl,

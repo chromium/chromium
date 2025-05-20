@@ -30,6 +30,7 @@
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
+#include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
@@ -666,6 +667,14 @@ void SerializeSolidColorScrollbarLayerExtra(
   extra->color = layer.color();
 }
 
+void SerializeViewTransitionContentLayerExtra(
+    ViewTransitionContentLayerImpl& layer,
+    viz::mojom::ViewTransitionContentLayerExtraPtr& extra) {
+  extra->resource_id = layer.resource_id();
+  extra->is_live_content_layer = layer.is_live_content_layer();
+  extra->max_extents_rect = layer.max_extents_rect();
+}
+
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
                                 viz::mojom::SurfaceLayerExtraPtr& extra) {
   extra->surface_range = layer.range();
@@ -786,6 +795,17 @@ void SerializeLayer(LayerImpl& layer,
                                  context_provider);
       wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
           std::move(texture_layer_extra));
+      break;
+    }
+    case mojom::LayerType::kViewTransitionContent: {
+      auto view_transition_content_layer_extra =
+          viz::mojom::ViewTransitionContentLayerExtra::New();
+      SerializeViewTransitionContentLayerExtra(
+          static_cast<ViewTransitionContentLayerImpl&>(layer),
+          view_transition_content_layer_extra);
+      wire.layer_extra =
+          viz::mojom::LayerExtra::NewViewTransitionContentLayerExtra(
+              std::move(view_transition_content_layer_extra));
       break;
     }
     default:
