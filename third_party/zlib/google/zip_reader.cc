@@ -219,6 +219,7 @@ bool ZipReader::OpenEntry() {
     return false;
   }
 
+  DCHECK(path_in_zip[info.size_filename] == '\0');
   entry_.path_in_original_encoding = path_in_zip.data();
 
   // Convert path from original encoding to Unicode.

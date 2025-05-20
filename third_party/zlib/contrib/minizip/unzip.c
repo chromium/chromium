@@ -1043,6 +1043,8 @@ local int unz64local_GetCurrentFileInfoInternal(unzFile file,
                     {
                         uLong uSizeRead;
 
+                        file_info.size_filename = fileNameSize;
+
                         if (fileNameSize < fileNameBufferSize)
                         {
                              *(szFileName + fileNameSize) = '\0';
