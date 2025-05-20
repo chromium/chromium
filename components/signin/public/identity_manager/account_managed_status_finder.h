@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace signin {
@@ -21,6 +22,8 @@ namespace signin {
 // account.
 class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
  public:
+  using Outcome = signin::AccountManagedStatusFinderOutcome;
+
   // Returns whether the given domain *may* be an enterprise (aka managed)
   // domain, i.e. definitely not a consumer domain. Domains such as gmail.com
   // and hotmail.com (and many others) are known to not be managed, even without
@@ -35,38 +38,6 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   // Allows to register a domain that is recognized as non-enterprise for tests.
   // Note that `domain` needs to live until this method is invoked with nullptr.
   static void SetNonEnterpriseDomainForTesting(const char* domain);
-
-  // The outcome of the managed-ness check.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // This enum is also used in Java.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AccountManagedStatusFinderOutcome
-  //
-  // LINT.IfChange(AccountManagedStatusFinderOutcome)
-  enum class Outcome {
-    // Check isn't complete yet.
-    kPending = 0,
-    // An error happened, e.g. the account was removed from IdentityManager.
-    kError = 1,
-    // The account is a consumer (non-enterprise) account, split further into
-    // Gmail accounts, account from other well-known consumer domains (i.e.
-    // determined statically and synchronously), and accounts from other
-    // domains. This distinction is mainly interesting for metrics.
-    kConsumerGmail = 2,
-    kConsumerWellKnown = 3,
-    kConsumerNotWellKnown = 4,
-    // The account is an @google.com enterprise account.
-    kEnterpriseGoogleDotCom = 5,
-    // The account is an enterprise account but *not* an @google.com one.
-    kEnterprise = 6,
-    // The timeout was reached before the management status could be decided.
-    kTimeout = 7,
-
-    kMaxValue = kTimeout
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountManagedStatusFinderOutcome)
 
   // After an AccountManagedStatusFinder is instantiated, the account type may
   // or may not be known immediately. The `async_callback` will only be run if

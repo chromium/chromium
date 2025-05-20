@@ -19,6 +19,7 @@ source_set("identity_manager") {
     "account_info.h",
     "account_managed_status_finder.cc",
     "account_managed_status_finder.h",
+    "account_managed_status_finder_outcome.h",
     "accounts_cookie_mutator.h",
     "accounts_in_cookie_jar_info.cc",
     "accounts_in_cookie_jar_info.h",

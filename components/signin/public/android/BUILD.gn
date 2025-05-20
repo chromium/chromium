@@ -102,7 +102,7 @@ java_cpp_strings("java_constants") {
 
 java_cpp_enum("java_enums") {
   sources = [
-    "//components/signin/public/identity_manager/account_managed_status_finder.h",
+    "//components/signin/public/identity_manager/account_managed_status_finder_outcome.h",
     "//components/signin/public/identity_manager/tribool.h",
   ]
 }

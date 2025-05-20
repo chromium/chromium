@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Timeout"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/signin/public/identity_manager/account_managed_status_finder.h:AccountManagedStatusFinderOutcome) -->
+<!-- LINT.ThenChange(//components/signin/public/identity_manager/account_managed_status_finder_outcome.h:AccountManagedStatusFinderOutcome) -->
 
 <!-- LINT.IfChange(AccountManagementTypesSummary) -->
 
