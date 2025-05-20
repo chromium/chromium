@@ -133,11 +133,6 @@ import org.chromium.content_public.browser.WebContents;
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public boolean handleBackPress() {
         mBackPressCallback.run();
         return true; // Prevent further handling of the back press.

@@ -167,9 +167,4 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
     }
-
-    @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
 }

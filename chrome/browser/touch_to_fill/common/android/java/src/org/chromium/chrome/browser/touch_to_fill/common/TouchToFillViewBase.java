@@ -338,11 +338,6 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         // WRAP_CONTENT would be the right fit but this disables the HALF state.
         return Math.min(getMaximumSheetHeightPx(), mBottomSheetController.getContainerHeight())

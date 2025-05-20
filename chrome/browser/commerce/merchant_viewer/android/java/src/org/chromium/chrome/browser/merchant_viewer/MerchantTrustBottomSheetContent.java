@@ -75,11 +75,6 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         return HALF_HEIGHT_RATIO;
     }

@@ -147,11 +147,6 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public String getSheetContentDescription(Context context) {
         return context.getString(R.string.no_passkeys_sheet_content_description);
     }

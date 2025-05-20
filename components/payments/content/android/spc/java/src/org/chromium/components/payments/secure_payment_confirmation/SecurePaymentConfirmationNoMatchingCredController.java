@@ -96,11 +96,6 @@ public class SecurePaymentConfirmationNoMatchingCredController {
                 }
 
                 @Override
-                public int getPeekHeight() {
-                    return HeightMode.DISABLED;
-                }
-
-                @Override
                 public boolean swipeToDismissEnabled() {
                     return false;
                 }

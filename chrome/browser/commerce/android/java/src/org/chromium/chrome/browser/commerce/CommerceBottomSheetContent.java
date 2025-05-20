@@ -65,11 +65,6 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         float containerHeight = mBottomSheetController.getContainerHeight();
         if (containerHeight == 0 || mIsHalfHeightDisabled) {

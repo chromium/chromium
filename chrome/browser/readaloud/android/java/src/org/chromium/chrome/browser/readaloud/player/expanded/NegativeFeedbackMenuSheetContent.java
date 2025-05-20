@@ -158,7 +158,8 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
 
     private void onOptionsMenuClick(int itemId) {
         // TODO(crbug.com/401256755): Actually send the feedback on click.
-        assumeNonNull(mInteractionHandler).onNegativeFeedback(NegativeFeedbackReason.fromValue(itemId));
+        assumeNonNull(mInteractionHandler)
+                .onNegativeFeedback(NegativeFeedbackReason.fromValue(itemId));
         mBottomSheetController.hideContent(this, true);
     }
 

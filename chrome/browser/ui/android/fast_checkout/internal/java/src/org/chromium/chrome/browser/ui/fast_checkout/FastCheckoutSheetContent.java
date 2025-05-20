@@ -87,11 +87,6 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         if (shouldWrapContent()) {
             return HeightMode.DISABLED;

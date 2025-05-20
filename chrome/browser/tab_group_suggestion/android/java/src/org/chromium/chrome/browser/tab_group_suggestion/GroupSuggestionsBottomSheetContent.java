@@ -74,11 +74,6 @@ public class GroupSuggestionsBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public boolean swipeToDismissEnabled() {
         return true;
     }

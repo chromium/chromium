@@ -77,11 +77,6 @@ class AccountStorageNoticeView implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
     }

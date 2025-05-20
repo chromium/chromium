@@ -321,11 +321,6 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         return HeightMode.DEFAULT;
     }

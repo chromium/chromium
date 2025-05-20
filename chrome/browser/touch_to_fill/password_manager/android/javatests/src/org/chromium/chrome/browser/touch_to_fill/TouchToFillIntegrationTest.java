@@ -378,6 +378,11 @@ public class TouchToFillIntegrationTest {
                                                 getSheetClosedAccessibilityStringId() {
                                             return Resources.ID_NULL;
                                         }
+
+                                        @Override
+                                        public int getPeekHeight() {
+                                            return HeightMode.DEFAULT;
+                                        }
                                     };
                             mBottomSheetController.requestShowContent(
                                     content, /* animate= */ false);

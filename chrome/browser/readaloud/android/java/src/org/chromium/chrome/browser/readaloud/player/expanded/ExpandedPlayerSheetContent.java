@@ -509,12 +509,6 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        // Only full height mode enabled.
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         // Only full height mode enabled.
         return HeightMode.DISABLED;

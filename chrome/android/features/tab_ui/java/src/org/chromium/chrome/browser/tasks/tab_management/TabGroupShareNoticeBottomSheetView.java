@@ -86,11 +86,6 @@ public class TabGroupShareNoticeBottomSheetView extends LinearLayout implements 
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public boolean hideOnScroll() {
         return true;
     }

@@ -95,18 +95,23 @@ public interface BottomSheetContent {
      */
     void destroy();
 
-    /** @return The priority of this content. */
+    /**
+     * @return The priority of this content.
+     */
     @ContentPriority
     int getPriority();
 
-    /** @return Whether swiping the sheet down hard enough will cause the sheet to be dismissed. */
+    /**
+     * @return Whether swiping the sheet down hard enough will cause the sheet to be dismissed.
+     */
     boolean swipeToDismissEnabled();
 
-    /** @return Whether the sheet will always skip the half state once it was fully extended. */
+    /**
+     * @return Whether the sheet will always skip the half state once it was fully extended.
+     */
     default boolean skipHalfStateOnScrollingDown() {
         return true;
     }
-    ;
 
     /**
      * @return Whether this content owns its lifecycle. If false, the content will be dismissed
@@ -135,13 +140,17 @@ public interface BottomSheetContent {
     }
 
     /**
-     * @return The height of the peeking state for the content in px or one of the values in
-     *         {@link HeightMode}. If {@link HeightMode#DEFAULT}, the system expects
-     *         {@link #getToolbarView} to be non-null, where it will then use its height as the
-     *         peeking height. This method cannot return {@link HeightMode#WRAP_CONTENT}.
+     * The height of bottom sheet in PEEK mode. The sheet content that wants to show content as PEEK
+     * can override this method and provide a non-negative height. This interface by default
+     * supplies {@link HeightMode#DISABLED}.
+     *
+     * @return The height of the peeking state for the content in px or one of the values in {@link
+     *     HeightMode}. If {@link HeightMode#DEFAULT}, the system expects {@link #getToolbarView} to
+     *     be non-null, where it will then use its height as the peeking height. This method cannot
+     *     return {@link HeightMode#WRAP_CONTENT}.
      */
     default int getPeekHeight() {
-        return HeightMode.DEFAULT;
+        return HeightMode.DISABLED;
     }
 
     /**

@@ -238,11 +238,6 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         if (mRpMode == RpMode.PASSIVE && !mIsMultipleIdps) {
             computeAndUpdateAccountListHeightForPassiveSingleIdp();
