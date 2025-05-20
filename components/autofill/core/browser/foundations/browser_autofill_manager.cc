@@ -698,6 +698,13 @@ BrowserAutofillManager::MetricsState::MetricsState(
     : address_form_event_logger(owner), credit_card_form_event_logger(owner) {}
 
 BrowserAutofillManager::MetricsState::~MetricsState() {
+  if (has_parsed_forms) {
+    base::UmaHistogramBoolean(
+        "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
+        has_observed_phone_number_field);
+    base::UmaHistogramBoolean("Autofill.WebOTP.OneTimeCode.FromAutocomplete",
+                              has_observed_one_time_code_field);
+  }
   credit_card_form_event_logger.OnDestroyed();
   address_form_event_logger.OnDestroyed();
 }
@@ -706,14 +713,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver) {}
 
 BrowserAutofillManager::~BrowserAutofillManager() {
-  if (metrics_->has_parsed_forms) {
-    base::UmaHistogramBoolean(
-        "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
-        metrics_->has_observed_phone_number_field);
-    base::UmaHistogramBoolean("Autofill.WebOTP.OneTimeCode.FromAutocomplete",
-                              metrics_->has_observed_one_time_code_field);
-  }
-
   // Process log events and record into UKM when the FormStructure is destroyed.
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
