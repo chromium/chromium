@@ -79,6 +79,11 @@ because ultimately we trust the reviewer’s judgement here.
 
 * There is no need to review tests, benchmarks, nor examples.
 
+* To quickly check if a crate uses `unsafe` Rust, one can look at the
+  value of `allow_unsafe` in the crate's `BUILD.gn` file
+  (see [an example here](https://crrev.com/c/6538666/12/third_party/rust/png/v0_18/BUILD.gn#55);
+  TODO(lukasza): once the CL lands, change the link to a code-search-based one).
+
 * Tools that may be helpful during a review:
     - `tools/crates/grep_for_vet_relevant_keywords.sh`
     - Tools for looking at a diff when updating a crate to a new version

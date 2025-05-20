@@ -20,11 +20,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.4.1"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "termcolor"
   cargo_pkg_description =
       "A simple cross platform library for writing colored text to a terminal."
+  cargo_pkg_version = "1.4.1"
+
+  allow_unsafe = false
+
   deps = []
   if (is_win) {
     deps += [ "//third_party/rust/winapi_util/v0_1:lib" ]

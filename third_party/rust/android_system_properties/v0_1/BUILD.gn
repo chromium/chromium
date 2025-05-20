@@ -19,10 +19,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.1.5"
   cargo_pkg_authors = "Nicolas Silva <nical@fastmail.com>"
   cargo_pkg_name = "android_system_properties"
   cargo_pkg_description = "Minimal Android system properties wrapper"
+  cargo_pkg_version = "0.1.5"
+
+  allow_unsafe = true
+
   deps = []
   if (is_android) {
     deps += [ "//third_party/rust/libc/v0_2:lib" ]

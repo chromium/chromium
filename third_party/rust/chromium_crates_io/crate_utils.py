@@ -51,6 +51,7 @@ def GetCurrentCrateIds() -> Set[str]:
 
 
 def ConvertCrateIdToCrateEpoch(crate_id: str) -> str:
+    _AssertIsCrateId(crate_id)
     crate_version = ConvertCrateIdToCrateVersion(crate_id)
     v = crate_version.split('.')
     if v[0] == '0':
@@ -60,11 +61,13 @@ def ConvertCrateIdToCrateEpoch(crate_id: str) -> str:
 
 def ConvertCrateIdToCrateName(crate_id: str) -> str:
     """ Converts a `crate_id` into a `crate_name`."""
+    _AssertIsCrateId(crate_id)
     return crate_id[:crate_id.find("@")]
 
 
 def ConvertCrateIdToCrateVersion(crate_id: str) -> str:
     """ Converts a `crate_id` into a `crate_version`."""
+    _AssertIsCrateId(crate_id)
     crate_version = crate_id[crate_id.find("@") + 1:]
     return crate_version
 
@@ -75,6 +78,7 @@ def ConvertCrateIdToBuildDir(crate_id: str) -> str:
     Example return value:
     `"<path to chromium root>\\third_party\\rust\\foo\\v1"`
     """
+    _AssertIsCrateId(crate_id)
     return os.path.join(
         CHROMIUM_DIR, _ConvertCrateIdToBuildDirRelativeToChromiumRoot(crate_id))
 
@@ -85,6 +89,7 @@ def ConvertCrateIdToVendorDir(crate_id: str) -> str:
     Example return value:
     `"<path to chromium root>\\third_party\\rust\\chromium_crates_io\\vendor\\foo-v1"`
     """
+    _AssertIsCrateId(crate_id)
     crate_name = ConvertCrateIdToCrateName(crate_id)
     crate_epoch = ConvertCrateIdToCrateEpoch(crate_id)
     crate_vendor_dir = os.path.join(VENDOR_DIR, f"{crate_name}-{crate_epoch}")
@@ -99,9 +104,41 @@ def ConvertCrateIdToGnLabel(crate_id: str) -> str:
 
     Example return value: `"//third_party/rust/foo/v1:lib"`
     """
+    _AssertIsCrateId(crate_id)
     dir_name = _ConvertCrateIdToBuildDirRelativeToChromiumRoot(crate_id)
     dir_name = dir_name.replace(os.sep, "/")  # GN uses `/` as a path separator.
     return f"//{dir_name}:lib"
+
+
+def IsPlaceholderCrate(crate_id: str) -> bool:
+    """ Determines if `crate_id` corresponds to a placeholder package.
+
+        See also `//tools/crates/gnrt/removed_crate.md`.
+    """
+    _AssertIsCrateId(crate_id)
+    vendor_dir = ConvertCrateIdToVendorDir(crate_id)
+    crate_cargo_toml_path = os.path.join(vendor_dir, "Cargo.toml")
+    KNOWN_PATTERN = "@generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`"
+    try:
+        with open(crate_cargo_toml_path) as f:
+            return KNOWN_PATTERN in f.read()
+    except:
+        return False
+
+
+def GetPlaceholderCrateIdForTesting() -> str:
+    """ Test helper for getting a placeholder `crate_id` like `"cc-1.2.22"`.
+    """
+    # This test helper assumes that `cc` is listed in
+    # `chromium_crates_io/Cargo.lock` and that
+    # `chromium_crates_io/vendor/cc...` contains a placeholder crate (see
+    # `tools/crates/gnrt/removed_crate.md`).
+    #
+    # Unit tests that depend on external state are a bit icky... But it
+    # seems that this assumption should hold "forever" + this helps write
+    # more tests for other stuff, so let ignore the ickiness...
+    return list(filter(lambda crate_id: "cc@" in crate_id,
+                       GetCurrentCrateIds()))[0]
 
 
 def _ConvertCrateIdToBuildDirRelativeToChromiumRoot(crate_id: str) -> str:
@@ -115,6 +152,11 @@ def _ConvertCrateIdToBuildDirRelativeToChromiumRoot(crate_id: str) -> str:
     epoch = ConvertCrateIdToCrateEpoch(crate_id)
     target = os.path.join("third_party", "rust", crate_name, epoch)
     return target
+
+
+def _AssertIsCrateId(crate_id: str) -> bool:
+    if not isinstance(crate_id, str) or "@" not in crate_id:
+        raise RuntimeError(f"This is not a valid crate id: {crate_id}")
 
 
 assert __name__ != '__main__'

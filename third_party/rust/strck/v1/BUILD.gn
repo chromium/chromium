@@ -26,10 +26,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.0"
   cargo_pkg_authors = "Quinn Okabayashi <quinnokabayashi@gmail.com>"
   cargo_pkg_name = "strck"
   cargo_pkg_description = "Checked owned and borrowed strings"
+  cargo_pkg_version = "1.0.0"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/unicode_ident/v1:lib" ]
   features = [ "ident" ]
 

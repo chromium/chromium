@@ -26,10 +26,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.13.5"
   cargo_pkg_authors = "Dan Burkert <dan@danburkert.com>, Lucio Franco <luciofranco14@gmail.com>, Casper Meijn <casper@meijn.net>, Tokio Contributors <team@tokio.rs>"
   cargo_pkg_name = "prost-derive"
   cargo_pkg_description = "Generate encoding and decoding implementations for Prost annotated types."
+  cargo_pkg_version = "0.13.5"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/itertools/v0_11:lib",

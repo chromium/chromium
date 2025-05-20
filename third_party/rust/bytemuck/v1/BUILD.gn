@@ -34,10 +34,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.23.0"
   cargo_pkg_authors = "Lokathor <zefria@gmail.com>"
   cargo_pkg_name = "bytemuck"
   cargo_pkg_description = "A crate for mucking around with piles of bytes."
+  cargo_pkg_version = "1.23.0"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/bytemuck_derive/v1:lib" ]
   features = [
     "bytemuck_derive",

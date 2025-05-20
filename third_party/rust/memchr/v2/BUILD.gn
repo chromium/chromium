@@ -65,10 +65,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.7.4"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>, bluss"
   cargo_pkg_name = "memchr"
   cargo_pkg_description = "Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) routines for 1, 2 or 3 byte search and single substring search."
+  cargo_pkg_version = "2.7.4"
+
+  allow_unsafe = true
+
   features = [
     "alloc",
     "default",

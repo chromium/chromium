@@ -60,10 +60,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.8.7"
   cargo_pkg_authors = "The Servo Project Developers"
   cargo_pkg_name = "core-foundation-sys"
   cargo_pkg_description = "Bindings to Core Foundation for macOS"
+  cargo_pkg_version = "0.8.7"
+
+  allow_unsafe = true
+
   features = [
     "default",
     "link",

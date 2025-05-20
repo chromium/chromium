@@ -41,10 +41,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.22.1"
   cargo_pkg_authors = "Marshall Pierce <marshall@mpierce.org>"
   cargo_pkg_name = "base64"
   cargo_pkg_description = "encodes and decodes base64 as bytes or utf8"
+  cargo_pkg_version = "0.22.1"
+
+  allow_unsafe = false
+
   features = [
     "alloc",
     "default",

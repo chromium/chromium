@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This file configures how to generate GN rules for third-party Rust crates.
+# This file configures how `gnrt` vendors and generates `BUILD.gn` files for
+# third-party Rust crates.  After modifying this file you probably want to run
+# either `tools/crates/run_gnrt.py vendor` or `tools/crates/run_gnrt.py gen` to
+# regenerate `gnrt`-managed files with the new `gnrt_config.toml` contents.
 #
 # `[crate.foo]` sections below can configure generation of `BUILD.gn` and/or
 # `README.chromium` by specifying the following options:
@@ -69,6 +72,8 @@
 #   `gnrt`).  The following enries are currently supported/used by
 #   `BUILD.gn.hbs`:
 #
+#     allow_unsafe: If true, then the crate is allowed to use `unsafe` Rust.
+#
 #     allow_unstable_features: A list of unstable feature names to allow
 #       in a given crate.  (Using unstable features adds extra risk
 #       to `rustc` rolls - please justify the risk and think about
@@ -97,23 +102,76 @@ config_template = "vet_config.toml.hbs"
 root = "chromium"
 remove_crates = []
 
-[crate.bytes]
-group = 'test'
+[crate.adler2.extra_kv]
+allow_unsafe = false
+
+[crate.android_system_properties.extra_kv]
+allow_unsafe = true
+
+[crate.anstyle.extra_kv]
+allow_unsafe = true
+
+[crate.anyhow.extra_kv]
+allow_unsafe = true
+
+[crate.autocfg.extra_kv]
+allow_unsafe = false
+
+[crate.base64.extra_kv]
+allow_unsafe = false
+
+[crate.bitflags.extra_kv]
+allow_unsafe = false
+
+[crate.bytemuck_derive.extra_kv]
+allow_unsafe = false
 
 [crate.bytemuck.extra_kv]
+allow_unsafe = true
 # This allows using `std::simd` helpers, which are needed by first-party code.
 allow_unstable_features = ["portable_simd"]
+
+[crate.bytes]
+group = 'test'
+extra_kv = { allow_unsafe = true }
+
+[crate.calendrical_calculations.extra_kv]
+allow_unsafe = false
+
+[crate.cfg-if.extra_kv]
+allow_unsafe = false
 
 [crate.clap]
 # These files are included from source files and are thus required as part of
 # building the crate.
 extra_input_roots = ['../README.md']
 extra_src_roots = ['../examples']
+extra_kv = { allow_unsafe = false }
 
 [crate.clap_builder]
 extra_input_roots = ['../README.md']
+extra_kv = { allow_unsafe = false }
+
+[crate.clap_lex.extra_kv]
+allow_unsafe = true
+
+[crate.codespan-reporting]
+extra_kv = { allow_unsafe = false }
+
+[crate.core-foundation-sys.extra_kv]
+allow_unsafe = true
+
+[crate.core_maths.extra_kv]
+allow_unsafe = false
+
+[crate.crc32fast.extra_kv]
+allow_unsafe = true
+
+[crate.crossbeam-utils.extra_kv]
+allow_unsafe = false
 
 [crate.cxx]
+extra_kv = { allow_unsafe = true }
 remove_deps = ['cc', 'link-cplusplus']
 # This removes the use of cc, and disables the `build_with_cargo` cfg which
 # also removes the use of link-cplusplus.
@@ -122,13 +180,48 @@ remove_build_rs = true
 [crate.cxxbridge-cmd]
 shipped = false
 bin_targets = ["cxxbridge"]
+extra_kv = { allow_unsafe = false }
+
+[crate.cxxbridge-flags.extra_kv]
+allow_unsafe = false
+
+[crate.cxxbridge-macro.extra_kv]
+allow_unsafe = false
+
+[crate.derivre.extra_kv]
+allow_unsafe = false
+
+[crate.diplomat.extra_kv]
+allow_unsafe = false
+
+[crate.diplomat_core.extra_kv]
+allow_unsafe = false
+
+[crate.diplomat-runtime.extra_kv]
+allow_unsafe = true
+
+[crate.displaydoc.extra_kv]
+allow_unsafe = false
+
+[crate.either.extra_kv]
+allow_unsafe = true
+
+[crate.equivalent.extra_kv]
+allow_unsafe = false
 
 [crate.fdeflate.extra_kv]
+allow_unsafe = false
 # Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
 # PNG encoding and decoding even in Debug builds.  See
 # https://crbug.com/396419181.
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
+
+[crate.fend-core.extra_kv]
+allow_unsafe = false
+
+[crate.fixed_decimal.extra_kv]
+allow_unsafe = false
 
 [crate.flate2]
 ban_features = [
@@ -143,16 +236,34 @@ ban_features = [
 # https://crbug.com/396419181.
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
+allow_unsafe = false
+
+[crate.font-types.extra_kv]
+allow_unsafe = true
+
+[crate.hashbrown.extra_kv]
+# `hashbrown` crate is implicitly trusted because it comes from
+# https://github.com/rust-lang/ (and we already implicitly trust maintainers of
+# `rustc`).
+allow_unsafe = true
+
+[crate.heck.extra_kv]
+allow_unsafe = false
 
 [crate.hex]
 group = 'test'
+extra_kv = { allow_unsafe = false }
 
-[crate.itertools]
-group = 'test'
+[crate.iana-time-zone.extra_kv]
+allow_unsafe = true
+
+[crate.icu_calendar.extra_kv]
+allow_unsafe = false
 
 [crate.icu_calendar_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
+extra_kv = { allow_unsafe = false }
 
 [crate.icu_casemap_data]
 extra_input_roots = ['../data']
@@ -161,6 +272,9 @@ extra_src_roots = ['../data']
 [crate.icu_collator_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
+
+[crate.icu_collections]
+extra_kv = { allow_unsafe = true }
 
 [crate.icu_datetime_data]
 extra_input_roots = ['../data']
@@ -178,6 +292,12 @@ extra_src_roots = ['../data']
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 
+[crate.icu_locale]
+extra_kv = { allow_unsafe = true }
+
+[crate.icu_locale_core]
+extra_kv = { allow_unsafe = true }
+
 [crate.icu_locale_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
@@ -194,6 +314,12 @@ extra_src_roots = ['../data']
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 
+[crate.icu_provider]
+extra_kv = { allow_unsafe = true }
+
+[crate.icu_provider_baked]
+extra_kv = { allow_unsafe = true }
+
 [crate.icu_segmenter_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
@@ -202,78 +328,336 @@ extra_src_roots = ['../data']
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 
+[crate.icu_capi.extra_kv]
+allow_unsafe = false
+
+[crate.icu_casemap.extra_kv]
+allow_unsafe = false
+
+[crate.icu_casemap_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_decimal.extra_kv]
+allow_unsafe = false
+
+[crate.icu_decimal_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_experimental.extra_kv]
+allow_unsafe = false
+
+[crate.icu_experimental_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_list.extra_kv]
+allow_unsafe = false
+
+[crate.icu_list_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_locale_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_normalizer.extra_kv]
+allow_unsafe = false
+
+[crate.icu_normalizer_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_pattern.extra_kv]
+allow_unsafe = false
+
+[crate.icu_plurals.extra_kv]
+allow_unsafe = false
+
+[crate.icu_plurals_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_properties.extra_kv]
+allow_unsafe = false
+
+[crate.icu_properties_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_provider_adapters.extra_kv]
+allow_unsafe = false
+
+[crate.icu_time.extra_kv]
+allow_unsafe = false
+
+[crate.icu_time_data.extra_kv]
+allow_unsafe = false
+
+[crate.foldhash.extra_kv]
+allow_unsafe = true
+
+[crate.itertools]
+extra_kv = { allow_unsafe = true }
+group = 'test'
+
+[crate.indexmap.extra_kv]
+allow_unsafe = true
+
+[crate.itoa.extra_kv]
+allow_unsafe = true
+
+[crate.ixdtf.extra_kv]
+allow_unsafe = false
+
+[crate.lazy_static.extra_kv]
+allow_unsafe = true
+
 [crate.libc]
 ban_features = [
     # `extra_traits` feature is banned because of
     # https://github.com/rust-lang/libc/issues/3560
     'extra_traits',
 ]
+# `libc` crate is implicitly trusted because it comes from
+# https://github.com/rust-lang/ (and we already implicitly trust maintainers of
+# `rustc`).
+extra_kv = { allow_unsafe = true }
 
 [crate.libm]
 license_files= ["LICENSE.txt"]
 extra_build_script_src_roots = ['../configure.rs']
+# `libm` crate is implicitly trusted because it comes from
+# https://github.com/rust-lang/ (and we already implicitly trust maintainers of
+# `rustc`).
+extra_kv = { allow_unsafe = true }
 
-[crate.log]
+[crate.litemap.extra_kv]
+allow_unsafe = false
+
+[crate.llguidance.extra_kv]
+allow_unsafe = true
+
+[crate.log.extra_kv]
+allow_unsafe = true
+
+[crate.memchr.extra_kv]
+allow_unsafe = true
 
 [crate.miniz_oxide.extra_kv]
 # Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
 # PNG encoding and decoding even in Debug builds.  See
 # https://crbug.com/396419181.
+allow_unsafe = false
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
+
+[crate.num-bigint.extra_kv]
+allow_unsafe = false
+
+[crate.num-integer.extra_kv]
+allow_unsafe = false
+
+[crate.num-rational.extra_kv]
+allow_unsafe = false
 
 [crate.num-traits]
 # Configures the has_total_cmp feature, not necessary
 remove_build_rs = true
+extra_kv = { allow_unsafe = true }
 
 [crate.png.extra_kv]
+allow_unsafe = false
 # Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
 # PNG encoding and decoding even in Debug builds.  See
 # https://crbug.com/396419181.
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
 
+[crate.potential_utf.extra_kv]
+allow_unsafe = true
+
+[crate.proc-macro2.extra_kv]
+allow_unsafe = true
+
 [crate.prost]
 extra_input_roots = ['../README.md']
+extra_kv = { allow_unsafe = true }
 group = 'test'
 
 [crate.prost-derive]
+extra_kv = { allow_unsafe = false }
 group = 'test'
+
+[crate.qr_code.extra_kv]
+allow_unsafe = false
+
+[crate.quote.extra_kv]
+allow_unsafe = false
 
 [crate.read-fonts]
 extra_src_roots = ['../generated']
+extra_kv = { allow_unsafe = false }
+
+[crate.regex-automata.extra_kv]
+allow_unsafe = false
+
+[crate.regex-syntax.extra_kv]
+allow_unsafe = false
 
 [crate.rustversion]
 allow_first_party_usage = false
-extra_build_script_src_roots = ['../build/rustc.rs']
 build_script_outputs = [ "version.expr" ]
+extra_build_script_src_roots = ['../build/rustc.rs']
+extra_kv = { allow_unsafe = false }
+
+[crate.rustc-demangle.extra_kv]
+allow_unsafe = false
 
 [crate.rustc-demangle-capi]
+extra_kv = { allow_unsafe = true }
 shipped = false
+
+[crate.ryu.extra_kv]
+allow_unsafe = true
+
+[crate.serde.extra_kv]
+allow_unsafe = true
+
+[crate.serde_derive.extra_kv]
+allow_unsafe = false
+
+[crate.serde_json.extra_kv]
+allow_unsafe = true
+
+[crate.serde_json_lenient.extra_kv]
+allow_unsafe = true
+
+[crate.simd-adler32.extra_kv]
+allow_unsafe = true
 
 [crate.skrifa]
 extra_src_roots = ['../generated']
+extra_kv = { allow_unsafe = false }
 
 [crate.small_ctor]
 group = 'test'
+extra_kv = { allow_unsafe = false }
 
 [crate.smallvec]
 ban_features = ['malloc_size_of']
+extra_kv = { allow_unsafe = true }
+
+[crate.stable_deref_trait.extra_kv]
+allow_unsafe = true
+
+[crate.static_assertions.extra_kv]
+allow_unsafe = false
+
+[crate.strck.extra_kv]
+allow_unsafe = true
+
+[crate.strsim.extra_kv]
+allow_unsafe = false
+
+[crate.strum.extra_kv]
+allow_unsafe = false
+
+[crate.strum_macros.extra_kv]
+allow_unsafe = false
+
+[crate.subtle.extra_kv]
+allow_unsafe = false
+
+[crate.syn.extra_kv]
+allow_unsafe = true
+
+[crate.synstructure.extra_kv]
+allow_unsafe = false
 
 [crate.temporal_capi]
+extra_kv = { allow_unsafe = false }
 license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
 
 [crate.temporal_rs]
+extra_kv = { allow_unsafe = true }
 license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
 
-[crate.windows-sys]
-extra_kv = { visibility = [ '//build/rust/tests/windows_sys_test' ] }
+[crate.termcolor.extra_kv]
+allow_unsafe = false
+
+[crate.toktrie.extra_kv]
+allow_unsafe = false
+
+[crate.tinystr.extra_kv]
+allow_unsafe = true
+
+[crate.unicode-ident.extra_kv]
+allow_unsafe = true
+
+[crate.unicode-width.extra_kv]
+allow_unsafe = false
+
+[crate.utf8_iter.extra_kv]
+allow_unsafe = true
+
+[crate.winapi-util.extra_kv]
+allow_unsafe = true
+
+[crate.windows-core.extra_kv]
+allow_unsafe = false
+
+[crate.windows-implement.extra_kv]
+allow_unsafe = false
+
+[crate.windows-interface.extra_kv]
+allow_unsafe = false
+
+[crate.windows-link.extra_kv]
+allow_unsafe = false
+
+[crate.windows-result.extra_kv]
+allow_unsafe = false
+
+[crate.windows-strings.extra_kv]
+allow_unsafe = false
+
+[crate.windows-sys.extra_kv]
+allow_unsafe = false
+visibility = [ '//build/rust/tests/windows_sys_test' ]
+
+[crate.windows-targets.extra_kv]
+allow_unsafe = false
 
 [crate.windows_aarch64_msvc]
 native_libs_roots = [ '../lib' ]
+extra_kv = { allow_unsafe = false }
 
 [crate.windows_i686_msvc]
 native_libs_roots = [ '../lib' ]
+extra_kv = { allow_unsafe = false }
 
 [crate.windows_x86_64_msvc]
 native_libs_roots = [ '../lib' ]
+extra_kv = { allow_unsafe = false }
+
+[crate.writeable.extra_kv]
+allow_unsafe = true
+
+[crate.yoke.extra_kv]
+allow_unsafe = true
+
+[crate.yoke-derive.extra_kv]
+allow_unsafe = false
+
+[crate.zerofrom.extra_kv]
+allow_unsafe = false
+
+[crate.zerofrom-derive.extra_kv]
+allow_unsafe = false
+
+[crate.zerotrie.extra_kv]
+allow_unsafe = true
+
+[crate.zerovec.extra_kv]
+allow_unsafe = true
+
+[crate.zerovec-derive.extra_kv]
+allow_unsafe = false
+
+[crate.zip.extra_kv]
+allow_unsafe = false

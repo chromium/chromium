@@ -5,7 +5,7 @@
 use crate::paths::ChromiumPaths;
 
 use anyhow::{ensure, format_err, Context, Result};
-use handlebars::handlebars_helper;
+use handlebars::{handlebars_helper, Renderable};
 use serde::Serialize;
 use std::{
     borrow::Cow,
@@ -50,6 +50,7 @@ pub fn check_exit_ok(output: &process::Output, cmd_msg: &str) -> Result<()> {
             Some(code) => write!(msg, "{code}.").unwrap(),
             None => write!(msg, "no code.").unwrap(),
         };
+        write!(msg, " stdout:\n\n{}", String::from_utf8_lossy(&output.stdout)).unwrap();
         write!(msg, " stderr:\n\n{}", String::from_utf8_lossy(&output.stderr)).unwrap();
 
         Err(format_err!(msg))
@@ -159,6 +160,29 @@ pub fn remove_checksums_from_lock(cargo_root: &Path) -> Result<()> {
     Ok(())
 }
 
+struct IfKeyPresentHelper();
+
+impl handlebars::HelperDef for IfKeyPresentHelper {
+    fn call<'reg: 'rc, 'rc>(
+        &self,
+        h: &handlebars::Helper<'rc>,
+        r: &'reg handlebars::Handlebars<'reg>,
+        ctx: &'rc handlebars::Context,
+        rc: &mut handlebars::RenderContext<'reg, 'rc>,
+        out: &mut dyn handlebars::Output,
+    ) -> handlebars::HelperResult {
+        let param_not_found =
+            |idx| handlebars::RenderErrorReason::ParamNotFoundForIndex("is_key_present", idx);
+        let key = h.param(0).and_then(|v| v.value().as_str()).ok_or(param_not_found(0))?;
+        let dict = h.param(1).and_then(|v| v.value().as_object()).ok_or(param_not_found(1))?;
+        let template = if dict.contains_key(key) { h.template() } else { h.inverse() };
+        match template {
+            None => Ok(()),
+            Some(t) => t.render(r, ctx, rc, out),
+        }
+    }
+}
+
 pub fn init_handlebars<'reg>() -> handlebars::Handlebars<'reg> {
     let mut handlebars = handlebars::Handlebars::new();
     handlebars.set_strict_mode(true);
@@ -170,6 +194,11 @@ pub fn init_handlebars<'reg>() -> handlebars::Handlebars<'reg> {
     // Install helper to escape inputs pasted in GN `".."` strings.
     handlebars_helper!(gn_escape: |x: String| escape_for_handlebars(&x));
     handlebars.register_helper("gn_escape", Box::new(gn_escape));
+
+    // Install helper to detect presence of dictionary keys (which works even if
+    // the corresponding value is "false-y / non-truth-y" - i.e. the helper
+    // distinguishes "missing" / "none" VS `false` / `0` / empty-string, etc.).
+    handlebars.register_helper("if_key_present", Box::new(IfKeyPresentHelper()));
 
     handlebars
 }
@@ -259,10 +288,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn string_excaping() {
+    fn test_string_excaping() {
         assert_eq!("foo bar", format!("{}", escape_for_handlebars("foo bar")));
         assert_eq!("foo bar ", format!("{}", escape_for_handlebars("foo\nbar\n")));
         assert_eq!(r#"foo \"bar\""#, format!("{}", escape_for_handlebars(r#"foo "bar""#)));
         assert_eq!("foo 'bar'", format!("{}", escape_for_handlebars("foo 'bar'")));
+    }
+
+    #[test]
+    fn test_handlebars_helper_is_key_present() {
+        fn render(data: serde_json::Value) -> String {
+            let mut h = init_handlebars();
+            h.register_template_string(
+                "template",
+                r#"
+                    {{#if_key_present "foo" dict}}
+                        true
+                    {{else}}
+                        false
+                    {{/if_key_present}}
+                "#,
+            )
+            .unwrap();
+            h.render("template", &data).unwrap().trim().to_string()
+        }
+
+        assert_eq!("true", render(serde_json::json!({ "dict": { "foo": 456 }})));
+        assert_eq!("false", render(serde_json::json!({ "dict": { "bar": 456 }})));
     }
 }

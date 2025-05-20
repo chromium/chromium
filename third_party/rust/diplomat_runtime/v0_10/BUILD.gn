@@ -25,10 +25,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.10.0"
   cargo_pkg_authors = "Shadaj Laddad <shadaj@users.noreply.github.com>, Manish Goregaokar <manishsmail@gmail.com>, Quinn Okabayashi <QnnOkabayashi@users.noreply.github.com>"
   cargo_pkg_name = "diplomat-runtime"
   cargo_pkg_description = "Common runtime utilities used by diplomat codegen"
+  cargo_pkg_version = "0.10.0"
+
+  allow_unsafe = true
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

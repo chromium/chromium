@@ -20,11 +20,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "0.11.1"
   cargo_pkg_authors =
       "Danny Guo <danny@dannyguo.com>, maxbachmann <oss@maxbachmann.de>"
   cargo_pkg_name = "strsim"
   cargo_pkg_description = "Implementations of string similarity metrics. Includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro, Jaro-Winkler, and Sørensen-Dice."
+  cargo_pkg_version = "0.11.1"
+
+  allow_unsafe = false
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

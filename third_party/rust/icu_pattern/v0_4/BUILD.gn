@@ -34,10 +34,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.4.0"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_pattern"
   cargo_pkg_description = "ICU pattern utilities"
+  cargo_pkg_version = "0.4.0"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/either/v1:lib",

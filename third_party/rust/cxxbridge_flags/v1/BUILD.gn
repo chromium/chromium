@@ -21,11 +21,14 @@ cargo_crate("buildrs_support") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.158"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-flags"
   cargo_pkg_description =
       "Compiler configuration of the `cxx` crate (implementation detail)"
+  cargo_pkg_version = "1.0.158"
+
+  allow_unsafe = false
+
   features = [ "default" ]
 
   # Only for usage from third-party crates. Add the crate to

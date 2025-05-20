@@ -52,11 +52,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.5"
   cargo_pkg_authors =
       "The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "regex-syntax"
   cargo_pkg_description = "A regular expression parser."
+  cargo_pkg_version = "0.8.5"
+
+  allow_unsafe = false
+
   features = [
     "default",
     "std",

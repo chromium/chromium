@@ -68,11 +68,14 @@ cargo_crate("cxxbridge") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.158"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-cmd"
   cargo_pkg_description =
       "C++ code generator for integrating `cxx` crate into a non-Cargo build."
+  cargo_pkg_version = "1.0.158"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/clap/v4:lib",
     "//third_party/rust/codespan_reporting/v0_12:lib",

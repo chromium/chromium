@@ -4,13 +4,48 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import unittest
 
+import crate_utils
+
 from check_gnrt_config import (
+    # Functions under test:
     _GetExtraKvForCrateName,
+    CheckExplicitAllowUnsafeForAllCrates,
     CheckMultiversionCrates,
 )
+
+
+class CheckExplicitAllowUnsafeForAllCratesTests(unittest.TestCase):
+
+    def testAllowUnsafeMissing(self):
+        crate_ids = set(["foo@1.2.3"])
+        gnrt_config = {}
+        msg = CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config)
+        self.assertTrue("explicitly specifies `allow_unsafe = ...`" in msg)
+        self.assertTrue(
+            "all crates that `chromium_crates_io` depends on" in msg)
+        self.assertTrue("gnrt_config.toml" in msg)
+        self.assertTrue("[crate.foo.extra_kv]" in msg)
+        self.assertTrue("allow_unsafe = " in msg)
+
+    def testAllowUnsafePresent(self):
+        crate_ids = set(["foo@1.2.3"])
+        gnrt_config = {"crate": {"foo": {"extra_kv": {"allow_unsafe": True}}}}
+        self.assertEqual(
+            "", CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config))
+
+    def testFakeRootCrateIsIgnored(self):
+        crate_ids = set(["chromium@1.2.3"])
+        gnrt_config = {}
+        self.assertEqual(
+            "", CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config))
+
+    def testPlaceholderCratesAreIgnored(self):
+        crate_ids = set([crate_utils.GetPlaceholderCrateIdForTesting()])
+        gnrt_config = {}
+        self.assertEqual(
+            "", CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config))
 
 
 class CheckMultiversionCratesTests(unittest.TestCase):
@@ -38,6 +73,7 @@ class CheckMultiversionCratesTests(unittest.TestCase):
         gnrt_config = {}
         msg = CheckMultiversionCrates(crate_ids, gnrt_config)
         self.assertTrue("multiple versions of the same crate" in msg)
+        self.assertTrue("gnrt_config.toml" in msg)
         self.assertTrue("foo@1.2.3, foo@4.5.6" in msg)
         self.assertTrue("[crate.foo.extra_kv]" in msg)
         self.assertTrue("multiversion_cleanup_bug = " in msg)

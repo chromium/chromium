@@ -20,10 +20,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "2.6.1"
   cargo_pkg_authors = "Isis Lovecruft <isis@patternsinthevoid.net>, Henry de Valence <hdevalence@hdevalence.ca>"
   cargo_pkg_name = "subtle"
   cargo_pkg_description = "Pure-Rust traits and utilities for constant-time cryptographic implementations."
+  cargo_pkg_version = "2.6.1"
+
+  allow_unsafe = false
+
   features = [
     "core_hint_black_box",
     "default",

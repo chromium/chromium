@@ -46,6 +46,41 @@ def _GetExtraKvForCrateName(crate_name, gnrt_config):
     return dict()
 
 
+def CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config):
+    """Checks that `gnrt_config.toml` has `allow_unsafe = ...` for each crate.
+
+       Returns an error message if a problem is detected.
+       Returns an empty string if there are no problems.
+    """
+    result = []
+    for crate_id in sorted(crate_ids):
+        crate_name = crate_utils.ConvertCrateIdToCrateName(crate_id)
+
+        # Ignore the root package and placeholder crates.
+        if crate_name == "chromium": continue
+        if crate_utils.IsPlaceholderCrate(crate_id): continue
+
+        # Ignore crates that specify `allow_unsafe`.
+        extra_kv = _GetExtraKvForCrateName(crate_name, gnrt_config)
+        if "allow_unsafe" in extra_kv:
+            continue
+
+        # Report a problem for all other crates.
+        if not result:  # Is is the **first** problematic `crate_name`?
+            result.append("ERROR: Please ensure that `gnrt_config.toml` "
+                          "explicitly specifies `allow_unsafe = ...` for all "
+                          "crates that `chromium_crates_io` depends on.  "
+                          "This helps `//third_party/rust/OWNERS` to check at "
+                          "a glance if a given crate contains `unsafe` Rust "
+                          "code.")
+            result.append("")
+        result += [
+            f"    [crate.{crate_name}.extra_kv]",
+            f"    allow_unsafe = false (or true if needed)",
+        ]
+
+    return "\n".join(result)
+
 def CheckMultiversionCrates(crate_ids, gnrt_config):
     """Checks that a bug tracks each crate with multiple versions.
 
@@ -81,10 +116,10 @@ def CheckMultiversionCrates(crate_ids, gnrt_config):
 
         # Report a problem for other multiversion crates.
         if not result:  # Is is the **first** problematic `crate_name`?
-            result.append("ERROR: Transitive dependency graph includes " + \
-                          "multiple versions of the same crate.  Please " + \
-                          "open a bug to track removing one of the " + \
-                          "versions and put a link to the bug into " + \
+            result.append("ERROR: Transitive dependency graph includes "
+                          "multiple versions of the same crate.  Please "
+                          "open a bug to track removing one of the "
+                          "versions and put a link to the bug into "
                           "`gnrt_config.toml` like this:")
             result.append("")
 
@@ -105,6 +140,9 @@ def main():
     success = True
 
     def RunChecks(check_impl):
+        nonlocal success
+        nonlocal crate_ids
+        nonlocal gnrt_config
         result = check_impl(crate_ids, gnrt_config)
         if result:
             if not success:
@@ -116,8 +154,7 @@ def main():
             print(result)
 
     RunChecks(CheckMultiversionCrates)
-
-    # TODO(https://crbug.com/399931417): RunChecks(CheckExplicitAllowUnsafeForAllCrates).
+    RunChecks(CheckExplicitAllowUnsafeForAllCrates)
 
     # TODO(https://crbug.com/399935219): RunChecks(CheckNonapplicableGnrtConfigEntries).
     # Move the useless-entry-in-gnrt_config check from `gnrt` into this script.

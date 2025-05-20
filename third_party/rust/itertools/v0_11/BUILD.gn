@@ -68,11 +68,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.11.0"
   cargo_pkg_authors = "bluss"
   cargo_pkg_name = "itertools"
   cargo_pkg_description =
       "Extra iterator adaptors, iterator methods, free functions, and macros."
+  cargo_pkg_version = "0.11.0"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/either/v1:lib" ]
   features = [
     "default",

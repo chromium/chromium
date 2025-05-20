@@ -166,9 +166,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.27.5"
   cargo_pkg_name = "read-fonts"
   cargo_pkg_description = "Reading OpenType font files."
+  cargo_pkg_version = "0.27.5"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/bytemuck/v1:lib",
     "//third_party/rust/font_types/v0_8:lib",

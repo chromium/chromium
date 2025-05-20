@@ -190,10 +190,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.2.13"
   cargo_pkg_authors = "Jorge Aparicio <jorge@japaric.io>"
   cargo_pkg_name = "libm"
   cargo_pkg_description = "libm in pure Rust"
+  cargo_pkg_version = "0.2.13"
+
+  allow_unsafe = true
+
   features = [
     "arch",
     "default",

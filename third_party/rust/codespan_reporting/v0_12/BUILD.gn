@@ -26,11 +26,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.12.0"
   cargo_pkg_authors = "Brendan Zabarauskas <bjzaba@yahoo.com.au>"
   cargo_pkg_name = "codespan-reporting"
   cargo_pkg_description =
       "Beautiful diagnostic reporting for text-based programming languages"
+  cargo_pkg_version = "0.12.0"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/termcolor/v1:lib",
     "//third_party/rust/unicode_width/v0_1:lib",

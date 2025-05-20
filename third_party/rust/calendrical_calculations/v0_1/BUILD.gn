@@ -33,10 +33,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.3"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "calendrical_calculations"
   cargo_pkg_description = "Calendrical calculations in Rust"
+  cargo_pkg_version = "0.1.3"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/core_maths/v0_1:lib",
     "//third_party/rust/displaydoc/v0_2:lib",

@@ -23,10 +23,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "potential_utf"
   cargo_pkg_description = "Unvalidated string and character types"
+  cargo_pkg_version = "0.1.2"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",

@@ -255,10 +255,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.52.0"
   cargo_pkg_authors = "Microsoft"
   cargo_pkg_name = "windows-sys"
   cargo_pkg_description = "Rust for Windows"
+  cargo_pkg_version = "0.52.0"
+
+  allow_unsafe = false
+
   deps = []
   if (is_win) {
     deps += [ "//third_party/rust/windows_targets/v0_52:lib" ]

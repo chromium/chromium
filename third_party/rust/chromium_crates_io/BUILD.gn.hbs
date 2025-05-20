@@ -35,7 +35,6 @@ cargo_crate("{{this.name}}") {
 
   build_native_rust_unit_tests = false
   edition = "{{edition}}"
-  cargo_pkg_version = "{{cargo_pkg_version}}"
   {{#if cargo_pkg_authors}}
     {{#with cargo_pkg_authors}}
       cargo_pkg_authors = "{{gn_escape this}}"
@@ -47,6 +46,16 @@ cargo_crate("{{this.name}}") {
       cargo_pkg_description = "{{gn_escape this}}"
     {{/with}}
   {{/if}}
+  cargo_pkg_version = "{{cargo_pkg_version}}"
+
+  {{! `cargo_pkg_version` changes during minor version updates, so (to help
+      reviewers see important crate properties at a glance) we try to include
+      review-relevant information (e.g. `allow_unsafe`) right below
+      `cargo_pkg_version`.  }}
+  {{#if_key_present "allow_unsafe" extra_kv}}
+    allow_unsafe = {{#if extra_kv.allow_unsafe}} true {{else}} false {{/if}}
+  {{/if_key_present}}
+
   {{#each deps}}
   {{#if @first}}
   deps = [

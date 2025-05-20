@@ -39,10 +39,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.2.19"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "num-traits"
   cargo_pkg_description = "Numeric traits for generic mathematics"
+  cargo_pkg_version = "0.2.19"
+
+  allow_unsafe = true
+
   build_deps = [ "//third_party/rust/autocfg/v1:buildrs_support" ]
   features = [
     "default",

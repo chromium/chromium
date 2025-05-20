@@ -23,11 +23,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.4"
   cargo_pkg_authors = "Henri Sivonen <hsivonen@hsivonen.fi>"
   cargo_pkg_name = "utf8_iter"
   cargo_pkg_description =
       "Iterator by char over potentially-invalid UTF-8 in &[u8]"
+  cargo_pkg_version = "1.0.4"
+
+  allow_unsafe = true
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

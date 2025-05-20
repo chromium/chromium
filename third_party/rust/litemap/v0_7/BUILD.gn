@@ -29,11 +29,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.7.5"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "litemap"
   cargo_pkg_description =
       "A key-value Map implementation based on a flat, sorted Vec."
+  cargo_pkg_version = "0.7.5"
+
+  allow_unsafe = false
+
   features = [ "alloc" ]
 
   # Only for usage from third-party crates. Add the crate to

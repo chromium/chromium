@@ -41,11 +41,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "3.0.0"
   cargo_pkg_authors = "Mathijs van de Nes <git@mathijs.vd-nes.nl>, Marli Frost <marli@frost.red>, Ryan Levick <ryan.levick@gmail.com>, Chris Hennick <hennickc@amazon.com>"
   cargo_pkg_name = "zip"
   cargo_pkg_description =
       "Library to support the reading and writing of zip files."
+  cargo_pkg_version = "3.0.0"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/crc32fast/v1:lib",
     "//third_party/rust/flate2/v1:lib",

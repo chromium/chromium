@@ -69,10 +69,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.11.1"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "zerovec"
   cargo_pkg_description = "Zero-copy vector backed by a byte array"
+  cargo_pkg_version = "0.11.1"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/yoke/v0_8:lib",
     "//third_party/rust/zerofrom/v0_1:lib",

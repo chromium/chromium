@@ -29,11 +29,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.0-beta2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_provider_adapters"
   cargo_pkg_description =
       "Adapters for composing and manipulating data providers."
+  cargo_pkg_version = "2.0.0-beta2"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",

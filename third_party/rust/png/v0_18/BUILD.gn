@@ -39,10 +39,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.18.0-rc"
   cargo_pkg_authors = "The image-rs Developers"
   cargo_pkg_name = "png"
   cargo_pkg_description = "PNG decoding and encoding library in pure Rust"
+  cargo_pkg_version = "0.18.0-rc"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/bitflags/v2:lib",
     "//third_party/rust/crc32fast/v1:lib",

@@ -23,10 +23,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.1.46"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "num-integer"
   cargo_pkg_description = "Integer traits and functions"
+  cargo_pkg_version = "0.1.46"
+
+  allow_unsafe = false
+
   deps = [ "//third_party/rust/num_traits/v0_2:lib" ]
   features = [ "i128" ]
 

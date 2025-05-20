@@ -29,10 +29,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.0"
   cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "yoke"
   cargo_pkg_description = "Abstraction allowing borrowed data to be carried along with the backing data it borrows from"
+  cargo_pkg_version = "0.8.0"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/stable_deref_trait/v1:lib",
     "//third_party/rust/yoke_derive/v0_8:lib",

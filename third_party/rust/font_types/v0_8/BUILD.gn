@@ -35,9 +35,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.4"
   cargo_pkg_name = "font-types"
   cargo_pkg_description = "Scalar types used in fonts."
+  cargo_pkg_version = "0.8.4"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/bytemuck/v1:lib" ]
   features = [
     "bytemuck",

@@ -42,11 +42,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.2.1"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "zerotrie"
   cargo_pkg_description =
       "A data structure that efficiently maps strings to integers"
+  cargo_pkg_version = "0.2.1"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/yoke/v0_8:lib",

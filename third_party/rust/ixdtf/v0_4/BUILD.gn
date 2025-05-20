@@ -31,10 +31,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.4.0"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "ixdtf"
   cargo_pkg_description = "Parser for Internet eXtended DateTime Format"
+  cargo_pkg_version = "0.4.0"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/utf8_iter/v1:lib",

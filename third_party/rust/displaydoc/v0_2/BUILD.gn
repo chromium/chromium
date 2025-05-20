@@ -24,10 +24,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.2.5"
   cargo_pkg_authors = "Jane Lusby <jlusby@yaah.dev>"
   cargo_pkg_name = "displaydoc"
   cargo_pkg_description = "A derive macro for implementing the display Trait via a doc comment and string interpolation"
+  cargo_pkg_version = "0.2.5"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",

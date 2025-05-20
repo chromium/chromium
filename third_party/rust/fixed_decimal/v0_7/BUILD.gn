@@ -29,11 +29,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.7.0"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "fixed_decimal"
   cargo_pkg_description =
       "An API for representing numbers in a human-readable form"
+  cargo_pkg_version = "0.7.0"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/smallvec/v1:lib",

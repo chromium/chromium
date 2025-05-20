@@ -39,10 +39,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.219"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde"
   cargo_pkg_description = "A generic serialization/deserialization framework"
+  cargo_pkg_version = "1.0.219"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/serde_derive/v1:lib" ]
   features = [
     "alloc",

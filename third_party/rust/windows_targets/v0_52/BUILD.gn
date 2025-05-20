@@ -19,10 +19,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.52.6"
   cargo_pkg_authors = "Microsoft"
   cargo_pkg_name = "windows-targets"
   cargo_pkg_description = "Import libs for Windows"
+  cargo_pkg_version = "0.52.6"
+
+  allow_unsafe = false
+
   deps = []
   if (is_win && current_cpu == "arm64") {
     deps += [ "//third_party/rust/windows_aarch64_msvc/v0_52:lib" ]

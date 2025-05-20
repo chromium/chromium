@@ -19,10 +19,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.59.1"
   cargo_pkg_authors = "Microsoft"
   cargo_pkg_name = "windows-interface"
   cargo_pkg_description = "The interface macro for the windows crate"
+  cargo_pkg_version = "0.59.1"
+
+  allow_unsafe = false
+
   deps = []
   if (is_win) {
     deps += [

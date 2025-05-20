@@ -34,10 +34,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.8"
   cargo_pkg_authors = "Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>, Rich Geldreich richgel99@gmail.com"
   cargo_pkg_name = "miniz_oxide"
   cargo_pkg_description = "DEFLATE compression and decompression library rewritten in Rust based on miniz"
+  cargo_pkg_version = "0.8.8"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/adler2/v2:lib",
     "//third_party/rust/simd_adler32/v0_3:lib",

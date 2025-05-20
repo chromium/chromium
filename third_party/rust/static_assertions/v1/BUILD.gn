@@ -29,11 +29,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "1.1.0"
   cargo_pkg_authors = "Nikolai Vazquez"
   cargo_pkg_name = "static_assertions"
   cargo_pkg_description =
       "Compile-time assertions to ensure that invariants are met."
+  cargo_pkg_version = "1.1.0"
+
+  allow_unsafe = false
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

@@ -22,10 +22,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.0"
   cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "yoke-derive"
   cargo_pkg_description = "Custom derive for the yoke crate"
+  cargo_pkg_version = "0.8.0"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",

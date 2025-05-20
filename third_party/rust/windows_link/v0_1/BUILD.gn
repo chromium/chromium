@@ -21,10 +21,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.1"
   cargo_pkg_authors = "Microsoft"
   cargo_pkg_name = "windows-link"
   cargo_pkg_description = "Linking for Windows"
+  cargo_pkg_version = "0.1.1"
+
+  allow_unsafe = false
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

@@ -25,11 +25,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.5"
   cargo_pkg_authors = "Orson Peters <orsonpeters@gmail.com>"
   cargo_pkg_name = "foldhash"
   cargo_pkg_description =
       "A fast, non-cryptographic, minimally DoS-resistant hashing algorithm."
+  cargo_pkg_version = "0.1.5"
+
+  allow_unsafe = true
+
   features = [ "std" ]
 
   # Only for usage from third-party crates. Add the crate to

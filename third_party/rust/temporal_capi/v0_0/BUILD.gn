@@ -31,10 +31,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.0.6"
   cargo_pkg_authors = "boa-dev"
   cargo_pkg_name = "temporal_capi"
   cargo_pkg_description = "C interface to temporal_rs"
+  cargo_pkg_version = "0.0.6"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/diplomat/v0_10:lib",
     "//third_party/rust/diplomat_runtime/v0_10:lib",

@@ -56,10 +56,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.2.4"
   cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>, Michael Bolin <bolinfest@gmail.com>, Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde_json_lenient"
   cargo_pkg_description = "A lenient JSON serialization file format"
+  cargo_pkg_version = "0.2.4"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/itoa/v1:lib",
     "//third_party/rust/memchr/v2:lib",

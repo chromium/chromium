@@ -317,13 +317,15 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
 /// Runs `gn format` command to format a `BUILD.gn` file at the given path.
 fn format_build_file(path_to_build_gn_file: &Path) -> Result<()> {
     let cmd_name = "gn format";
-    let child = check_spawn(
+    check_spawn(
         Command::new(if cfg!(windows) { "gn.bat" } else { "gn" })
             .arg("format")
             .arg(path_to_build_gn_file)
             // Discard `Wrote formatted to '//.../BUILD>gn'` messages.
             .stdout(Stdio::null()),
         cmd_name,
-    )?;
-    check_exit_ok(&check_wait_with_output(child, cmd_name)?, cmd_name)
+    )
+    .and_then(|child| check_wait_with_output(child, cmd_name))
+    .and_then(|output| check_exit_ok(&output, cmd_name))
+    .with_context(|| format!("Error formatting `{}`", path_to_build_gn_file.display()))
 }

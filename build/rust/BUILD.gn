@@ -83,9 +83,15 @@ config("proc_macro_extern") {
   ]
 }
 
-# Forbids unsafe code in crates with this config.
+# Forbids unsafe code in crates with this config.  See also `allow_unsafe` which
+# may be set in 1) `rust_static_library`, `rust_executable` and other targets,
+# 2) `gnrt_config.toml` entries for individual third-party crates.
 config("forbid_unsafe") {
-  rustflags = [ "-Funsafe_code" ]
+  rustflags = [
+    # `-F` = "forbid".  Documentation of the warning can be found in
+    # https://doc.rust-lang.org/rustc/lints/listing/allowed-by-default.html#unsafe-code
+    "-Funsafe_code",
+  ]
 }
 
 config("panic_immediate_abort") {

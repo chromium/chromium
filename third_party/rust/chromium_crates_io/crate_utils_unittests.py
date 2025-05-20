@@ -16,6 +16,8 @@ from crate_utils import (
     ConvertCrateIdToGnLabel,
     ConvertCrateIdToVendorDir,
     GetCurrentCrateIds,
+    GetPlaceholderCrateIdForTesting,
+    IsPlaceholderCrate,
 )
 
 
@@ -67,6 +69,26 @@ class CrateUtilsTests(unittest.TestCase):
 
     def testConvertCrateIdToCrateVersion(self):
         self.assertEqual(ConvertCrateIdToCrateVersion("foo-bar@1.2.3"), "1.2.3")
+
+
+class IsPlaceholderCrateTests(unittest.TestCase):
+
+    def testCc(self):
+        crate_id = GetPlaceholderCrateIdForTesting()
+        self.assertTrue(IsPlaceholderCrate(crate_id))
+
+    def testSerde(self):
+        # This test assumes that `serde` is listed in
+        # `chromium_crates_io/Cargo.lock` and that
+        # `chromium_crates_io/vendor/serde...` does *not* contains a placeholder
+        # crate (see `tools/crates/gnrt/removed_crate.md`).
+        #
+        # Unit tests that depend on external state are a bit icky... But it
+        # seems that this assumption should hold "forever", so...
+        crate_id = list(
+            filter(lambda crate_id: "serde@" in crate_id,
+                   GetCurrentCrateIds()))[0]
+        self.assertFalse(IsPlaceholderCrate(crate_id))
 
 
 if __name__ == '__main__':

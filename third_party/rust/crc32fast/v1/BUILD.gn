@@ -27,12 +27,15 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "1.4.2"
   cargo_pkg_authors =
       "Sam Rijs <srijs@airpost.net>, Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "crc32fast"
   cargo_pkg_description =
       "Fast, SIMD-accelerated CRC32 (IEEE) checksum computation"
+  cargo_pkg_version = "1.4.2"
+
+  allow_unsafe = true
+
   deps = [ "//third_party/rust/cfg_if/v1:lib" ]
   features = [
     "default",

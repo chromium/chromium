@@ -34,10 +34,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "2.0.0"
   cargo_pkg_authors = "kennytm <kennytm@gmail.com>, Riccardo Casatta <riccardo.casatta@gmail.com>"
   cargo_pkg_name = "qr_code"
   cargo_pkg_description = "QR code encoder in Rust, support structured append (data in multiple qrcodes)"
+  cargo_pkg_version = "2.0.0"
+
+  allow_unsafe = false
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

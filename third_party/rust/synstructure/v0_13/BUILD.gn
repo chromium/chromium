@@ -21,10 +21,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.13.1"
   cargo_pkg_authors = "Nika Layzell <nika@thelayzells.com>"
   cargo_pkg_name = "synstructure"
   cargo_pkg_description = "Helper methods and macros for custom derives"
+  cargo_pkg_version = "0.13.1"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",

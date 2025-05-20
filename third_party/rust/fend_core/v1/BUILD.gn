@@ -58,9 +58,11 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2024"
-  cargo_pkg_version = "1.5.6"
   cargo_pkg_name = "fend-core"
   cargo_pkg_description = "Arbitrary-precision unit-aware calculator"
+  cargo_pkg_version = "1.5.6"
+
+  allow_unsafe = false
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

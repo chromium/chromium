@@ -100,9 +100,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.29.2"
   cargo_pkg_name = "skrifa"
   cargo_pkg_description = "Metadata reader and glyph scaler for OpenType fonts."
+  cargo_pkg_version = "0.29.2"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/bytemuck/v1:lib",
     "//third_party/rust/read_fonts/v0_27:lib",

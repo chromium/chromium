@@ -60,11 +60,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.9.0"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "bitflags"
   cargo_pkg_description =
       "A macro to generate structures which behave like bitflags."
+  cargo_pkg_version = "2.9.0"
+
+  allow_unsafe = false
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

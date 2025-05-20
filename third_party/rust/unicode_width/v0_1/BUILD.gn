@@ -21,11 +21,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.14"
   cargo_pkg_authors =
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
   cargo_pkg_description = "Determine displayed width of `char` and `str` types according to Unicode Standard Annex #11 rules."
+  cargo_pkg_version = "0.1.14"
+
+  allow_unsafe = false
+
   features = [
     "cjk",
     "default",

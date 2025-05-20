@@ -62,10 +62,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.0.6"
   cargo_pkg_authors = "boa-dev"
   cargo_pkg_name = "temporal_rs"
   cargo_pkg_description = "Temporal in Rust is an implementation of the TC39 Temporal Builtin Proposal in Rust."
+  cargo_pkg_version = "0.0.6"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/iana_time_zone/v0_1:lib",
     "//third_party/rust/icu_calendar/v2:lib",

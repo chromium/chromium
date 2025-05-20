@@ -34,10 +34,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.63"
   cargo_pkg_authors = "Andrew Straw <strawman@astraw.com>, René Kijewski <rene.kijewski@fu-berlin.de>, Ryan Lopopolo <rjl@hyperbo.la>"
   cargo_pkg_name = "iana-time-zone"
   cargo_pkg_description = "get the IANA time zone for the current system"
+  cargo_pkg_version = "0.1.63"
+
+  allow_unsafe = true
+
   deps = []
   if (is_android) {
     deps += [ "//third_party/rust/android_system_properties/v0_1:lib" ]

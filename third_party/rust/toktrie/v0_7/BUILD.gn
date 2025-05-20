@@ -27,9 +27,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.7.19"
   cargo_pkg_name = "toktrie"
   cargo_pkg_description = "LLM Token Trie library"
+  cargo_pkg_version = "0.7.19"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/bytemuck/v1:lib",

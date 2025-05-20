@@ -23,11 +23,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "1.5.0"
   cargo_pkg_authors = "Marvin Löbel <loebel.marvin@gmail.com>"
   cargo_pkg_name = "lazy_static"
   cargo_pkg_description =
       "A macro for declaring lazily evaluated statics in Rust."
+  cargo_pkg_version = "1.5.0"
+
+  allow_unsafe = true
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

@@ -21,10 +21,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.4.2"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "num-rational"
   cargo_pkg_description = "Rational numbers implementation for Rust"
+  cargo_pkg_version = "0.4.2"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/num_bigint/v0_4:lib",
     "//third_party/rust/num_integer/v0_1:lib",

@@ -32,11 +32,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.98"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "anyhow"
   cargo_pkg_description =
       "Flexible concrete Error type built on std::error::Error"
+  cargo_pkg_version = "1.0.98"
+
+  allow_unsafe = true
+
   features = [
     "default",
     "std",

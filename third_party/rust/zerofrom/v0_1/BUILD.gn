@@ -23,10 +23,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.6"
   cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "zerofrom"
   cargo_pkg_description = "ZeroFrom trait for constructing"
+  cargo_pkg_version = "0.1.6"
+
+  allow_unsafe = false
+
   deps = [ "//third_party/rust/zerofrom_derive/v0_1:lib" ]
   features = [
     "alloc",

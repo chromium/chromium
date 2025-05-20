@@ -65,9 +65,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.7.19"
   cargo_pkg_name = "llguidance"
   cargo_pkg_description = "Super-fast Structured Outputs"
+  cargo_pkg_version = "0.7.19"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/derivre/v0_3:lib",

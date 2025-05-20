@@ -108,10 +108,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.3.0-beta2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_experimental_data"
   cargo_pkg_description = "Data for the icu_experimental crate"
+  cargo_pkg_version = "0.3.0-beta2"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_provider_baked/v2:lib",

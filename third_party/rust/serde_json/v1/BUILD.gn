@@ -57,10 +57,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.140"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde_json"
   cargo_pkg_description = "A JSON serialization file format"
+  cargo_pkg_version = "1.0.140"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/indexmap/v2:lib",
     "//third_party/rust/itoa/v1:lib",

@@ -26,11 +26,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.9"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "winapi-util"
   cargo_pkg_description =
       "A dumping ground for high level safe wrappers over windows-sys."
+  cargo_pkg_version = "0.1.9"
+
+  allow_unsafe = true
+
   deps = []
   if (is_win) {
     deps += [ "//third_party/rust/windows_sys/v0_52:lib" ]

@@ -26,9 +26,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.10"
   cargo_pkg_name = "anstyle"
   cargo_pkg_description = "ANSI text styling"
+  cargo_pkg_version = "1.0.10"
+
+  allow_unsafe = true
+
   features = [
     "default",
     "std",

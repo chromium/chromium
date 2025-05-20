@@ -30,11 +30,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.1"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "tinystr"
   cargo_pkg_description =
       "A small ASCII-only bounded length string representation."
+  cargo_pkg_version = "0.8.1"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/zerovec/v0_11:lib",

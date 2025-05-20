@@ -19,10 +19,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.52.6"
   cargo_pkg_authors = "Microsoft"
   cargo_pkg_name = "windows_x86_64_msvc"
   cargo_pkg_description = "Import lib for Windows"
+  cargo_pkg_version = "0.52.6"
+
+  allow_unsafe = false
+
   build_root = "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/build.rs"
   build_sources = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/build.rs" ]
   native_libs = [ "//third_party/rust/chromium_crates_io/vendor/windows_x86_64_msvc-v0_52/src/../lib/windows.0.52.0.lib" ]

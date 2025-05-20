@@ -31,11 +31,14 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.13.5"
   cargo_pkg_authors = "Dan Burkert <dan@danburkert.com>, Lucio Franco <luciofranco14@gmail.com>, Casper Meijn <casper@meijn.net>, Tokio Contributors <team@tokio.rs>"
   cargo_pkg_name = "prost"
   cargo_pkg_description =
       "A Protocol Buffers implementation for the Rust Language."
+  cargo_pkg_version = "0.13.5"
+
+  allow_unsafe = true
+
   deps = [
     "//third_party/rust/bytes/v1:lib",
     "//third_party/rust/prost_derive/v0_13:lib",

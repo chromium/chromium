@@ -58,10 +58,13 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.158"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-macro"
   cargo_pkg_description = "Implementation detail of the `cxx` crate."
+  cargo_pkg_version = "1.0.158"
+
+  allow_unsafe = false
+
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",

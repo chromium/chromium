@@ -47,10 +47,12 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.15.3"
   cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"
+  cargo_pkg_version = "0.15.3"
+
+  allow_unsafe = true
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
