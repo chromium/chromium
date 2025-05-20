@@ -32,6 +32,7 @@
 <translation id="1186712907912748007">Vedä ja pudota ‑toiminto käynnissä. Lopeta tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
 <translation id="1188858454923323853">täydentävä</translation>
 <translation id="1189258430971676908">Harjoittelualue: avattavat listat</translation>
+<translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{nested level {$$COUNT}}}</translation>
 <translation id="1195238899008218998">Jälkipuhe</translation>
 <translation id="1197088940767939838">Oranssi</translation>
 <translation id="1198865190323699001">Kosketuseleet</translation>
@@ -100,6 +101,7 @@
 <translation id="1506187449813838456">Lisää äänenkorkeutta</translation>
 <translation id="151784044608172266">Seuraava lause</translation>
 <translation id="1524531499102321782">Pistekirjoituksen seuraava rivi</translation>
+<translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{tilde}} *{{{$$COUNT} tildes}}</translation>
 <translation id="1542513807034338907">Vieritä edelliselle sivulle</translation>
 <translation id="1546370775711804143">Vierityspalkki</translation>
 <translation id="1551572888042734032">Kesä</translation>
@@ -135,7 +137,9 @@
 <translation id="1756785467854861272">Tumma purppura</translation>
 <translation id="1758693804775271377">Selaa aiheen harjoituksia pyyhkäisemällä sormella vasemmalle tai oikealle</translation>
 <translation id="1765245556747822181">Pyyhkäise ylös yhdellä sormella</translation>
+<translation id="1766900865718394987">.input {$$COUNT :number} .match $$COUNT 1{{pound}} *{{{$$COUNT} pound signs}}</translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>
+<translation id="1776454891300234201">.input {$$COUNT :number} .match $$COUNT 1{{square bullet}} *{{{$$COUNT} square bullets}}</translation>
 <translation id="1781173782405573156">Ohitusnäppäin</translation>
 <translation id="1787176709638001873">Salasanan muokkausteksti</translation>
 <translation id="1795438342141780114">Palauta kohdistin keskelle</translation>
@@ -152,6 +156,7 @@
 <translation id="1902396333223336119">Matkapuhelin</translation>
 <translation id="1903683160884433981">Keskitumma keväänvihreä</translation>
 <translation id="1905379170753160525">Näytä otsikoiden luettelo</translation>
+<translation id="1909599030163690992">.input {$$COUNT :number} .match $$COUNT 1{{ampersand}} *{{{$$COUNT} ampersands}}</translation>
 <translation id="1913761808037590218">#ed</translation>
 <translation id="1914424852593176649">Koko <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> sointu</translation>
@@ -159,6 +164,7 @@
 <translation id="1926147969119007125">Keskeytä kasvo-ohjaus</translation>
 <translation id="1928932365747995741">Ei edellisiä muokattavia tekstikenttiä</translation>
 <translation id="1964135212174907577">Seuraava objekti</translation>
+<translation id="1969502304370936079">.input {$$COUNT :number} .match $$COUNT 1{{equal}} *{{{$$COUNT} equal signs}}</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Näytä pistekirjoituskomennot ChromeVox-valikoissa</translation>
 <translation id="2009187674653301682">Ei yläindeksiä</translation>
@@ -166,12 +172,14 @@
 <translation id="203030071582665758">Ei edellisiä tason 4 otsikoita</translation>
 <translation id="2045055672832940894">Ei edellisiä säätimiä</translation>
 <translation id="2045606329038304310">Lomakekentän säädin</translation>
+<translation id="2061553293808239752">.input {$$COUNT :number} .match $$COUNT 1{{minute}} *{{minutes}}</translation>
 <translation id="2063539687800151747">Epigrafi</translation>
 <translation id="2086961585857038472">Seuraava sana</translation>
 <translation id="2087981446621639008">kuvluett tied</translation>
 <translation id="2089387485033699258">fi</translation>
 <translation id="2091933974477985526">Edellinen muokattava tekstialue</translation>
 <translation id="2100350898815792233">Kaikki välimerkit</translation>
+<translation id="2109693710509473741">.input {$$COUNT :number} .match $$COUNT 1{{comma}} *{{{$$COUNT} commas}}</translation>
 <translation id="2110480898214777136">Rivitä teksti alusta loppuun tai lopusta alkuun sivun, valintaikkunan tai muun säiliön sisällä.</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">pääsyavain: <ph name="KEY" /></translation>
@@ -211,6 +219,7 @@
 <translation id="2371402123699727805">Sanelu aktiivinen. Lopeta tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
 <translation id="2381733276052567791">Vaihtaa puheen päälle tai pois päältä.</translation>
 <translation id="2390264819538553347">Siirry eteenpäin painamalla Enter ja taaksepäin painamalla askelpalautinta.</translation>
+<translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">Hae sivulta kirjoittamalla. Siirry tulokseen painamalla Enter, selaa tuloksia ylä- ja alanuolella, muuta hakua jatkamalla kirjoittamista tai peru painamalla Esc.</translation>
 <translation id="240709722712693803">Sinivioletti</translation>
 <translation id="2416512023405990736">Valitsematon valintaruutu</translation>
@@ -267,6 +276,7 @@
 <translation id="2708078563826046398">Persikka</translation>
 <translation id="2713444072780614174">Valkoinen</translation>
 <translation id="2717271541250958000">tabpnl</translation>
+<translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{backslash}} *{{{$$COUNT} backslashes}}</translation>
 <translation id="2723001399770238859">ääni</translation>
 <translation id="2737898226590637227">Ei seuraavia ARIA-merkkejä</translation>
 <translation id="2749275490991666823">Valittu</translation>
@@ -329,6 +339,7 @@
 <translation id="3090227230165225418">Ilmoita latausilmoituksista</translation>
 <translation id="3090532668523289635">ryhmä</translation>
 <translation id="3093176084511590672">Seuraava maamerkki</translation>
+<translation id="3096276106587041702">.input {$$COUNT :number} .match $$COUNT 1{{second}} *{{seconds}}</translation>
 <translation id="3096671415663099226">cbo</translation>
 <translation id="309749186376891736">Siirrä kohdistinta</translation>
 <translation id="3103579948980282461">Keskitumma punavioletti</translation>
@@ -367,6 +378,7 @@
 <translation id="3270069636408109001">Ei seuraavia taulukoita</translation>
 <translation id="3273791280096244679">Tallenna tunniste</translation>
 <translation id="3283583562490372694">ei valittu</translation>
+<translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{with {$$COUNT} item}} * {{with {$$COUNT} items}}</translation>
 <translation id="3286372614333682499">pystysuunta</translation>
 <translation id="3286390186030710347">Liukusäädin</translation>
 <translation id="3300733168898541351">kumoa</translation>
@@ -403,6 +415,7 @@
 <translation id="3473744269398144689">Aloita sanelu</translation>
 <translation id="3490765818161916458">Luetteloruudukko</translation>
 <translation id="3494946239022273294">mnuitm</translation>
+<translation id="3501911317648720697">.input {$$COUNT :number} .match $$COUNT 1{{colon}} *{{{$$COUNT} colons}}</translation>
 <translation id="3505359110822747654">Sulje ChromeVox-valikot</translation>
 <translation id="352577523970648069">Muokattava tekstikenttä</translation>
 <translation id="3538907380453898475">kuvluett</translation>
@@ -439,6 +452,7 @@
 <translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Näytä loki</translation>
 <translation id="3801735343383419236">Ennakoivan tekstinsyötön luettelo</translation>
+<translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{percent}} *{{{$$COUNT} percent signs}}</translation>
 <translation id="3806327402890551732">Seuraavaan tai edelliseen kohteeseen siirtyminen</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Vaalea koralli</translation>
@@ -449,6 +463,7 @@
 <translation id="3856075812838139784">Vain luku</translation>
 <translation id="3857141338659865495">Keskiturkoosi</translation>
 <translation id="3870295413168340326">Ei edellisiä tason 3 otsikoita</translation>
+<translation id="3882892620695970398">.input {$$COUNT :number} .match $$COUNT 1{{at}} *{{{$$COUNT} at signs}}</translation>
 <translation id="3887399638190992181">Tärkeät näppäimet</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3896762831164962772">Kasvo-ohjaus keskeytetty. Jatka tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
@@ -479,10 +494,13 @@
 <translation id="4054936709456751127">tila</translation>
 <translation id="4058278702844053247">Sivun lataus käynnissä</translation>
 <translation id="4065205963140826639">Kokeile Seuraava-painikkeeseen siirtymistä painamalla haku + oikea nuoli ja klikkaa sitä sitten painamalla haku + välilyönti.</translation>
+<translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{caret}} *{{{$$COUNT} carets}}</translation>
 <translation id="409334809956508737">Edellinen objekti</translation>
+<translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{plus}} *{{{$$COUNT} plus signs}}</translation>
 <translation id="4099274309791143834">alavalikolla</translation>
 <translation id="4101527861445851766">Valittu valintaruutu</translation>
 <translation id="410225014223200513">Muodosta huulillasi ympyrä</translation>
+<translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{dot}} 3{{ellipsis}} *{{{$$COUNT} dots}}</translation>
 <translation id="4115378294792113321">Purppura</translation>
 <translation id="4116415223832267137">Ilmoitus</translation>
 <translation id="4159784952369912983">Violetti</translation>
@@ -516,6 +534,7 @@
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4294967782363273192">Nouseva lajittelu</translation>
 <translation id="4300318234632215983">Ilmoita linkin takana oleva URL-osoite</translation>
+<translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{greater than}} *{{{$$COUNT} greater than signs}}</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4352022650330571548">kirjoita <ph name="PHRASE" /></translation>
@@ -550,12 +569,14 @@
 <translation id="4547556996012970016">Seuraava tason 5 otsikko</translation>
 <translation id="4562381607973973258">Otsikko</translation>
 <translation id="4597532268155981612">lomake</translation>
+<translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{less than}} *{{{$$COUNT} less than signs}}</translation>
 <translation id="4601367666219428522">taul <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">Oma näppäinyhdistelmä: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Seuraava näppäimen painallus ohitetaan</translation>
 <translation id="4617384941327705512">Älykäs kiinnitetty tila pois päältä</translation>
 <translation id="4623097797855662355">Kolofoni</translation>
 <translation id="4624970070706497034">TalkBack ei enää tarjoa personointia Chromebookeilla. Voit edelleen käyttää TalkBackia, mutta vain oletuspikanäppäimillä. Paina Haku + A ja sitten K, niin näet käytettävissä olevat pikanäppäimet. Jos haluat edelleen käyttää TalkBackia, paina komentoa uudelleen.</translation>
+<translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}</translation>
 <translation id="4649220074413114917">Voit pysäyttää käynnissä olevan puheen napauttamalla näyttöä kahdella sormella. Tämä on kätevää, jos et halua ChromeVoxin lukevan tiettyä sisältöä. Jatka napauttamalla näyttöä kahdella sormella.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
@@ -590,6 +611,7 @@
 <translation id="4854380505292502090">Ei edellisiä mediawidgetejä</translation>
 <translation id="4855927945655956315">Tärkeät näppäimet: Control</translation>
 <translation id="485806788160414322">Toista mediaa tai keskeytä se</translation>
+<translation id="4861593489403902434">.input {$$COUNT :number} .match $$COUNT 1{{close paren}} *{{{$$COUNT} close parens}}</translation>
 <translation id="4862744964787595316">Ei lihavointia</translation>
 <translation id="4865995900839719272">siirry edelliselle riville</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -615,6 +637,7 @@
 <translation id="4993152509206108683">Nopeus <ph name="PERCENT" /> prosenttia.</translation>
 <translation id="4994420463726586413">Sano akun nykyinen tila</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, valintanappi valittu</translation>
+<translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{question mark}} *{{{$$COUNT} question marks}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, valikkokohteen painike valittu</translation>
 <translation id="5014131807708055994"><ph name="COMMAND" /> ei onnistu, syy: <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Ota puheen kirjaaminen käyttöön</translation>
@@ -715,6 +738,7 @@
 <translation id="5669637233317991674">Siirry tässä harjoituksessa painamalla Haku + Oikea nuoli tai Haku + Vasen nuoli</translation>
 <translation id="5677240841070992068">Nykyinen sijainti</translation>
 <translation id="5678161956734658133">mled</translation>
+<translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{right brace}} *{{{$$COUNT} right braces}}</translation>
 <translation id="5681643281275621376">kuv.</translation>
 <translation id="5682113568322255809">Maamerkki</translation>
 <translation id="5683155931978483559">Edellinen valintaruutu</translation>
@@ -755,6 +779,7 @@
 <translation id="5899860758576822363">Vähennä äänenvoimakkuutta, kun ChromeVox puhuu.</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5906974869830879618">Syötä PIN-koodi</translation>
+<translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{semicolon}} *{{{$$COUNT} semicolons}}</translation>
 <translation id="5921587111466148855">Luku</translation>
 <translation id="5923780477617566089">Nykyinen päivämäärä</translation>
 <translation id="5926889058434275234">Löydät kaikki eleet ohjekeskuksesta.</translation>
@@ -795,6 +820,7 @@
 <translation id="6197361807490522975">Tummansininen</translation>
 <translation id="6218813441317556731">korvaa <ph name="DELETE_PHRASE" /> tällä: <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Seuraava otsikko</translation>
+<translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{pipe}} *{{{$$COUNT} vertical pipes}}</translation>
 <translation id="6254901459154107917">Seuraava muokattava tekstialue</translation>
 <translation id="6259464875943891919">Poistuttu kohteesta <ph name="TYPE" />.</translation>
 <translation id="6280088282605782512">Kaksoisnapauta</translation>
@@ -827,6 +853,7 @@
 <translation id="6493991254603208962">Vähennä kirkkautta.</translation>
 <translation id="6501595918865591267">Turkoosi</translation>
 <translation id="6508059270146105198">Siirrä pistenäyttö sivun alareunaan</translation>
+<translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{open paren}} *{{{$$COUNT} open parens}}</translation>
 <translation id="6521550811716689390">Tummanvioletti</translation>
 <translation id="6536157907112457272">Pellava</translation>
 <translation id="6540201937398578274">Hakunäppäin toimii ChromeVoxissa myös muokkausnäppäimenä. Haku aloittaa useimmat ChromeVoxin pikanäppäinyhdistelmät. Voit käyttää siirtymiseen myös nuolia.</translation>
@@ -867,6 +894,7 @@
 <translation id="6859876496651143278">Pyyhkäise vasemmalle yhdellä sormella</translation>
 <translation id="6865519907510167493">Kirjoitusvirhe</translation>
 <translation id="6873188295213080042">Vinkki: Siirry pitämällä hakunäppäintä painettuna ja painamalla nuolinäppäimiä.</translation>
+<translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">Lue nykyinen aika ja päivämäärä ääneen</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6897341342232909480">Siirrä vasemmalle</translation>
@@ -880,6 +908,7 @@
 <translation id="6951482098621102657">Ei seuraavia tason 5 otsikoita</translation>
 <translation id="6955705049214951590">Vaalea ruusu</translation>
 <translation id="696356426651109308">Siirry alkuun</translation>
+<translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{hour}} *{{hours}}</translation>
 <translation id="6994042831499278539">Sanastoviittaus</translation>
 <translation id="6996566555547746822">Seuraava yhdistelmäruutu</translation>
 <translation id="6997224546856374593">Isojen kirjainten lukeminen:</translation>
@@ -888,6 +917,7 @@
 <translation id="7005146664810010831">URL-osoitteita ei löydetty.</translation>
 <translation id="7026338066939101231">Vähennä</translation>
 <translation id="7031651751836475482">luett.kohd.</translation>
+<translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}</translation>
 <translation id="7037042857287298941">Edellinen luettelo</translation>
 <translation id="7039555289296502784">Armeijanvihreä</translation>
 <translation id="7041173719775863268">Lopeta valinta</translation>
@@ -897,6 +927,7 @@
 <translation id="7086377898680121060">Lisää kirkkautta.</translation>
 <translation id="7088743565397416204">Aktivoi korostettu kohde kaksoisnapauttamalla</translation>
 <translation id="7088960765736518739">Kytkimen käyttö</translation>
+<translation id="7089749381037113497">.input {$$COUNT :number} .match $$COUNT 1{{underscore}} *{{{$$COUNT} underscores}}</translation>
 <translation id="7090715360595433170">Tämä voi olla näppärämpää kuin pyyhkäiseminen vasemmalle ja oikealle yhdellä sormella.</translation>
 <translation id="7091296112653361280">Navajo-valkoinen</translation>
 <translation id="7095834689119144465">Muokkaa tekstiä vain numeraaleja</translation>
@@ -907,6 +938,7 @@
 <translation id="712735679809149106">sanojen puhuminen</translation>
 <translation id="7137397390322864165">Lohenpunainen</translation>
 <translation id="7140168702531682811">Yläindeksi</translation>
+<translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{tab}} *{{{$$COUNT} tabs}}</translation>
 <translation id="7143034430156387447">Vaihda 6 ja 8 pisteen pistekirjoituksen välillä</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7153618581592392745">Laventeli</translation>
@@ -936,6 +968,7 @@
 <translation id="7289186959554153431">Otsikko 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7297440685387139507">Lopeta vetäminen ja pudottaminen</translation>
+<translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{space}} *{{{$$COUNT} spaces}}</translation>
 <translation id="7308519659008003150">Ei edellisiä lomakkeen kenttiä</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">ohje</translation>
@@ -966,6 +999,7 @@
 <translation id="7543255924852002459">Hylkää tunniste</translation>
 <translation id="7552432549459840808">Hyödyllisiä Chrome-pikanäppäimiä</translation>
 <translation id="7553679324939294712">lisää <ph name="INSERT_PHRASE" /> tämän eteen: <ph name="BEFORE_PHRASE" /></translation>
+<translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{apostrophe}} *{{{$$COUNT} apostrophes}}</translation>
 <translation id="7569983096843329377">Musta</translation>
 <translation id="7579911500627256166">piste <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Osa</translation>
@@ -982,6 +1016,7 @@
 <translation id="7637342083105831460">Etsi harjoittelualue tai Seuraava harjoitus ‑painike painamalla Haku + Oikea nuoli. Aktivoi se sitten painamalla Haku + Välilyönti.</translation>
 <translation id="7639968568612851608">Tummanharmaa</translation>
 <translation id="7663318257180412551">Otsikko 2</translation>
+<translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{dollar}} *{{{$$COUNT} dollar signs}}</translation>
 <translation id="7674576868851035240">Seuraava linkki</translation>
 <translation id="7674768236845044097">merkintä</translation>
 <translation id="7676847077928500578">Palauta Tekstistä puheeksi ‑asetukset</translation>
@@ -991,9 +1026,11 @@
 <translation id="7696631298608145306">siirry seuraavaan sanaan</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{dash}} *{{{$$COUNT} dashes}}</translation>
 <translation id="7714340021005120797">Ei seuraavia yhdistelmäruutuja</translation>
 <translation id="7715455358521357192">Siristä oikeaa silmää</translation>
 <translation id="7724603315864178912">Leikkaa</translation>
+<translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}</translation>
 <translation id="7731785449856576010">Ei seuraavia mediawidgetejä</translation>
 <translation id="7735498529470878067">Kosketuksella tutkimalla voit saada nopeasti käsityksen näytön sisällöstä.</translation>
 <translation id="773906353055481349">Siirry solusta toiseen painamalla Haku+Ctrl+Alt ja nuolinäppäintä</translation>
@@ -1010,9 +1047,11 @@
 <translation id="7839679365527550018">Edellinen sana</translation>
 <translation id="7846634333498149051">Näppäimistö</translation>
 <translation id="7851816175263618915">Osa välimerkeistä</translation>
+<translation id="7861676488745595432">.input {$$COUNT :number} .match $$COUNT 1{{left bracket}} *{{{$$COUNT} left brackets}}</translation>
 <translation id="7871691770940645922">Virtuaalinen pistekirjoitusnäyttö</translation>
 <translation id="7882421473871500483">Ruskea</translation>
 <translation id="78826985582142166">liukusäädin</translation>
+<translation id="7889376040363236522">.input {$$COUNT :number} .match $$COUNT 1{{quote}} *{{{$$COUNT} quotes}}</translation>
 <translation id="7913106023953875143">Ei seuraavia tason 2 otsikoita</translation>
 <translation id="7927711904086083099">Ei valittu</translation>
 <translation id="7935627501098484003">Ajanhallinta</translation>
@@ -1052,6 +1091,7 @@
 <translation id="8132248161074464367">Edellinen virheellinen tuote</translation>
 <translation id="8138880386467279117">Kosketus</translation>
 <translation id="8146613869421949343">Seuraavaksi saat tietoja hakunäppäimestä. Hakunäppäintä käytetään yhdessä muiden näppäinten kanssa ChromeVox-komentoina. Hakunäppäin on heti vasemman vaihtonäppäimen yläpuolella. Jatka painamalla hakunäppäintä.</translation>
+<translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{right bracket}} *{{{$$COUNT} right brackets}}</translation>
 <translation id="8158033275290782295">valitse kaikki</translation>
 <translation id="816818801578874684">Tämä on ensimmäinen otsikko. Siirry seuraavaan otsikkoon painamalla Haku + H.</translation>
 <translation id="8173092779156526980">Pyyhkäise vasemmalle neljällä sormella</translation>
@@ -1144,6 +1184,7 @@
 <translation id="8897030325301866860">Fontti <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Ota välimerkkien puhuminen käyttöön tai pois käytöstä</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{left brace}} *{{{$$COUNT} left braces}}</translation>
 <translation id="8910180774920883033">Toimintoja on saatavilla. Katso painamalla Haku+Ctrl+A</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Muokkausavaimet</translation>
@@ -1173,12 +1214,14 @@
 <translation id="9108370397979208512">matematiikka</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="9128414153595658330">ikk.</translation>
+<translation id="9132815018758550541">.input {$$COUNT :number} .match $$COUNT 1{{exclamation}} *{{{$$COUNT} exclamations}}</translation>
 <translation id="9133928141873682933">Khaki</translation>
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">Välilehti</translation>
 <translation id="9151249085738989067">Vaihda ChromeVox-ääni automaattisesti kielen perusteella</translation>
 <translation id="9153606228985488238">Äänenkorkeus <ph name="PERCENT" /> prosenttia</translation>
 <translation id="9160096769946561184">Siirry nykyisen sarakkeen loppuun</translation>
+<translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{slash}} *{{{$$COUNT} slashes}}</translation>
 <translation id="9173115498289768110">Äänenvoimakkuus <ph name="PERCENT" /> prosenttia.</translation>
 <translation id="9185200690645120087">ChromeVoxin kosketuskäytön ohje</translation>
 <translation id="9192904702577636854">Vierivä kuva</translation>

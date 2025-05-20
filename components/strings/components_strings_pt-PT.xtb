@@ -139,6 +139,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1240347957665416060">O nome do dispositivo</translation>
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
+<translation id="1246424317317450637">Negrito</translation>
 <translation id="1247030632403369975">Alumínio</translation>
 <translation id="1252209483516427155">Vestuário para exterior</translation>
 <translation id="1253846494229886276">A guardar captura de ecrã</translation>
@@ -490,6 +491,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1821930232296380041">Pedido ou parâmetros do pedido inválidos</translation>
 <translation id="1822540298136254167">Os Websites que visita e o tempo despendido nos mesmos.</translation>
 <translation id="1822995137827688764">Empreendimentos</translation>
+<translation id="1823768272150895732">Tipo de letra</translation>
 <translation id="1824402189105105503">Oitavo rolo</translation>
 <translation id="1826516787628120939">A verificar</translation>
 <translation id="1832730227369924598">Sincronização do espaço de trabalho</translation>
@@ -654,6 +656,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2122719317867821810">Esta política está a funcionar conforme esperado, mas um valor em conflito está definido noutro local e foi substituído por esta política.</translation>
 <translation id="2126374524350484896">Criador do PDF:</translation>
 <translation id="2127090458081644412">Palavra-passe guardada neste dispositivo</translation>
+<translation id="2127747486437921899">Itálico</translation>
 <translation id="2130448033692577677">Os modelos que especificou podem não ser aplicados porque a política DnsOverHttpsMode não está definida.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Estes são apresentados por ordem aleatória. Pode alterar a predefinição em qualquer altura.</translation>
@@ -935,6 +938,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> adicionou um separador</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2587841377698384444">ID da API de diretório:</translation>
+<translation id="2593272815202181319">Monoespaço</translation>
 <translation id="2594318783181750337">Visualização na Web rápida:</translation>
 <translation id="2595719060046994702">Este dispositivo e esta conta não são geridos por uma empresa ou por outra organização.</translation>
 <translation id="2596415276201385844">Para estabelecer uma ligação segura, o relógio tem de ser definido corretamente. Isto deve-se ao facto de os certificados que os Sites utilizam para se identificarem serem apenas válidos para períodos de tempo específicos. Uma vez que o relógio do seu dispositivo está incorreto, o Chrome não consegue validar estes certificados.</translation>
@@ -1699,6 +1703,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> o Chrome elimina automaticamente os sites com mais de 30 dias. Um site que visita novamente pode voltar a aparecer na lista. Também pode impedir que um site lhe sugira anúncios e desativar os anúncios sugeridos por sites em qualquer altura nas definições do Chrome.</translation>
 <translation id="3921869355029467742">Introduzir o código de segurança</translation>
 <translation id="3927538228901078312">Sem tabelas de comparação</translation>
+<translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Recusar</translation>
 <translation id="3930260846839546333">Bolsas de mão e carteiras</translation>
 <translation id="3937834511546249636">Indústria de defesa</translation>
@@ -1928,7 +1933,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4281998142035485137">{0,plural, =1{Abrir ficheiro confidencial?}other{Abrir ficheiros confidenciais?}}</translation>
 <translation id="4282280603030594840">Compra de veículos</translation>
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o marcador foi removido</translation>
-<translation id="4285498937028063278">Soltar</translation>
+<translation id="4285498937028063278">Desafixar</translation>
 <translation id="4287495839370498922">Privacidade de anúncios melhorada no Chrome</translation>
 <translation id="4288101205645068104">Elimine o veículo</translation>
 <translation id="4290920330097335010">Nunca permitir</translation>
@@ -2290,6 +2295,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4936134414789135531">Não foi possível encontrar o <ph name="VALUE_NAME" /> inserido.</translation>
 <translation id="4936573216809994970">O carregamento dos ficheiros para o <ph name="CLOUD_PROVIDER" /> vai começar dentro de 1 hora</translation>
 <translation id="4936675324097895694">Finanças</translation>
+<translation id="4941627891654116707">Tamanho da letra</translation>
 <translation id="4943620199112228840">Usar os seus microfones</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4950898438188848926">Botão de mudança de separador: prima Enter para mudar para o separador aberto, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2327,6 +2333,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5010599530303458903">Pague mensalmente ou em 4 prestações sem juros (sujeito a elegibilidade)</translation>
 <translation id="5011561501798487822">Idioma detetado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5017554619425969104">Texto que copiou</translation>
 <translation id="5017828934289857214">Lembrar-me mais tarde</translation>
 <translation id="5018422839182700155">Não é possível abrir esta página</translation>
@@ -3385,6 +3392,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Monitorização das mãos permitida desta vez</translation>
 <translation id="6849023911358004088">Botão Gerir definições de segurança; ative para gerir a Navegação segura e muito mais nas definições do Chrome</translation>
+<translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6852204201400771460">Quer atualizar a aplicação?</translation>
 <translation id="6857776781123259569">Faça a gestão das palavras-passe…</translation>
 <translation id="6858034839887287663">A2x4</translation>

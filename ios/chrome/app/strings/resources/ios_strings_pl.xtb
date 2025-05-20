@@ -1249,6 +1249,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6223816392543092032">Korzystaj z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
 <translation id="6225572914528673855">Pasek adresu</translation>
 <translation id="6227126502342367214">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
+<translation id="6227958838185907047">Zaloguj się jako <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">Sugerowane</translation>
 <translation id="6232329973559504466">Wyszukiwanie incognito</translation>
 <translation id="6234310016144827337">Sprawdź połączenie i spróbuj ponownie</translation>
@@ -1901,6 +1902,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8786100550345425552">Edytuj uprawnienia</translation>
 <translation id="878871978861915380">Ukryj „Śledzenie cen”</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8796634520835503150">Tryb czytania jest dostępny</translation>
 <translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
 <translation id="8803639129939845298">Bezpieczne</translation>
 <translation id="8806823403540278281">Twoja organizacja wymaga przeglądania prywatnego. W trybie incognito karty nie są zapisywane.

@@ -5778,27 +5778,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="5252995168844634755">การตั้งค่านโยบายเป็น "จริง" จะเปิดเดสก์ท็อปแบบรวมหลายหน้าจอซึ่งอนุญาตให้แอปพลิเคชันต่างๆ ขยายไปยังหลายหน้าจอได้ ผู้ใช้จะปิดใช้เดสก์ท็อปแบบรวมหลายหน้าจอสำหรับหน้าจอบางหน้าได้
 
       การตั้งค่านโยบายเป็น "เท็จ" หรือไม่ได้ตั้งค่าจะปิดเดสก์ท็อปแบบรวมหลายหน้าจอ และผู้ใช้จะเปิดไม่ได้</translation>
-<translation id="5253480766680494187">ฟีเจอร์นี้อยู่ในเวอร์ชันเบต้า เนื่องจากฟีเจอร์นี้อยู่ระหว่างการพัฒนา จึงพร้อมให้บริการแก่ผู้ทดสอบที่เชื่อถือได้ โปรดทราบว่าฟีเจอร์นี้อาจมีการเปลี่ยนแปลงและอัปเดต
-
-นโยบายนี้อนุญาตให้ผู้ดูแลระบบตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กรที่กำหนดซึ่งจะแสดงคำแนะนำและผลการค้นหาในแถบที่อยู่เมื่อถูกเรียกให้แสดงโดยคีย์เวิร์ดเฉพาะ ผู้ใช้เริ่มการค้นหาได้โดยการพิมพ์คีย์เวิร์ดที่ระบุในช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> โดยใส่หรือไม่ใส่คำนำหน้า @ (เช่น <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) ตามด้วยการกด Space หรือ Tab ในแถบที่อยู่
-
-ต้องใส่ข้อมูลในช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
-
-ช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับชื่อเครื่องมือค้นหาที่แสดงให้ผู้ใช้เห็นในแถบที่อยู่
-
-ช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับคีย์เวิร์ดที่ผู้ใช้ป้อนเพื่อเรียกใช้การค้นหา ทางลัดมีคำและอักขระธรรมดาได้ แต่ต้องไม่มีการเว้นวรรคหรือเริ่มต้นด้วยสัญลักษณ์ @ และทางลัดต้องไม่ซ้ำกัน
-
-ช่อง <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่จะค้นหา ป้อนที่อยู่เว็บสำหรับหน้าผลการค้นหาของเครื่องมือค้นหา แล้วใช้ <ph name="SEARCH_TERM_MARKER" /> แทนตำแหน่งที่เป็นคำค้นหา
-
-ช่อง <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่ให้การแนะนำการค้นหา ระบบจะสร้างคำขอ POST และส่งคำค้นหาของผู้ใช้ในพารามิเตอร์ POST ภายใต้คีย์ <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />
-
-ฟิลด์ <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ไปยังรูปภาพที่จะใช้ในการแนะนำการค้นหา ระบบจะใช้ไอคอนเริ่มต้นเมื่อไม่ได้ตั้งค่าช่องนี้ ขอแนะนำให้ใช้ไอคอน Fav (ตัวอย่าง <ph name="ICON_URL_EXAMPLE" />) รูปแบบไฟล์ภาพที่รองรับ ได้แก่ JPEG, PNG และ ICO
-
-ฟิลด์ <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุว่าต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> เพื่อดูการแนะนำการค้นหาหรือไม่ หากไม่ได้ตั้งค่าฟิลด์นี้ ก็ไม่จำเป็นต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
-
-ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
-
-ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
 <translation id="5255030951930491102">กำหนดค่า<ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="5255162913209987122">สามารถรับคำแนะนำได้</translation>
 <translation id="525543707238275321">ปิดใช้การรายงานข้อมูล CPU ของอุปกรณ์</translation>
@@ -5934,7 +5913,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="5334404204520035180">ควบคุมการใช้ WebPrinting API</translation>
 <translation id="5334501839642146593">ไม่ส่งเมตริกไปยัง Google</translation>
 <translation id="5335910979215357815">เปิดใช้ Save and Share API สำหรับการควบคุม <ph name="PRODUCT_OS_NAME" /> ของบุคคลที่สาม</translation>
-<translation id="5336553997833306150">การตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กร (เบต้า)</translation>
 <translation id="5339096331970464266">เปิดใช้แป้นพิมพ์เสมือนสำหรับการช่วยเหลือพิเศษ</translation>
 <translation id="5340008866815063393">เปิดใช้การรายงานข้อมูลนโยบาย</translation>
 <translation id="5345892164332459671">ปิดใช้ SSO แบบย้ายระหว่างอุปกรณ์ และไม่ย้ายการตรวจสอบสิทธิ์การใช้เว็บเซอร์วิสของผู้ใช้ไปยังอุปกรณ์ใหม่</translation>
@@ -11049,6 +11027,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="8908294717014659003">อนุญาตให้คุณตั้งค่าว่าจะอนุญาตให้เว็บไซต์เข้าถึงอุปกรณ์จับสื่อภาพ/เสียงหรือไม่ การเข้าถึงอุปกรณ์จับสื่อภาพ/เสียงอาจได้รับอนุญาตโดยค่าเริ่มต้น หรือผู้ใช้สามารถรับข้อความสอบถามทุกๆ ครั้งที่เว็บไซต์ต้องการเข้าถึงอุปกรณ์จับสื่อภาพ/เสียง
 
           หากไม่ตั้งค่านโยบายนี้ "PromptOnAccess" จะถูกใช้และผู้ใช้จะสามารถเปลี่ยนแปลงได้</translation>
+<translation id="8909400095164640684">การตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กร</translation>
 <translation id="8911348623012274122">ตั้งขีดจำกัดหน่วยความจำสำหรับอินสแตนซ์ของ Chrome</translation>
 <translation id="8911736066340032670">รายงานข้อมูลเกี่ยวกับการแสดงผล เช่น อัตราการรีเฟรช และข้อมูลเกี่ยวกับกราฟิก เช่น เวอร์ชันของไดรเวอร์
 

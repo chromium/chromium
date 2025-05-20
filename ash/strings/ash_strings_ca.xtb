@@ -462,6 +462,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2530896289327917474">Activa o desactiva la navegació amb cursor de text</translation>
 <translation id="2531025035050312891">dispositiu lent</translation>
 <translation id="2531107890083353124">Mentre arrossegues la pestanya, prem <ph name="KEY_ONE" /></translation>
+<translation id="2532199152994248594">Arrossega o prem la barra espaiadora per seleccionar l'àrea que vols capturar</translation>
 <translation id="2545334090614121435">Estàs provant d'utilitzar Inici? Utilitza:</translation>
 <translation id="254900897760075745">Copia el contingut seleccionat al porta-retalls</translation>
 <translation id="2549711466868162843">Millora la il·luminació</translation>
@@ -1770,6 +1771,7 @@ Instal·lació nova</translation>
 <translation id="6700713906295497288">Botó del menú d'IME</translation>
 <translation id="6704073473590541209">Ansa de l'extrem dret seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="6706742084323792866">Fixa el teclat</translation>
+<translation id="6709719156428404245">Arrossega o prem la barra espaiadora per seleccionar l'àrea que vols gravar</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="672609503628871915">Novetats</translation>

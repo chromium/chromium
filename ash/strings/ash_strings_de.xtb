@@ -462,6 +462,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2530896289327917474">Tastaturnavigation aktivieren oder deaktivieren</translation>
 <translation id="2531025035050312891">Gerät ist langsam</translation>
 <translation id="2531107890083353124">Beim Ziehen des Tabs <ph name="KEY_ONE" /> drücken</translation>
+<translation id="2532199152994248594">Durch Ziehen oder Drücken der Leertaste Bereich zum Aufnehmen auswählen</translation>
 <translation id="2545334090614121435">Möchtest du Google Home verwenden? Verwenden</translation>
 <translation id="254900897760075745">Ausgewählte Inhalte in Zwischenablage kopieren</translation>
 <translation id="2549711466868162843">Verbesserte Belichtung</translation>
@@ -1642,7 +1643,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6291221004442998378">Wird nicht geladen</translation>
 <translation id="6298183524022479114">Dieses Gerät in der App anpassen</translation>
 <translation id="6309219492973062892">Auf die Symbole 1 bis 8 in der Ablage klicken oder tippen</translation>
-<translation id="6315170314923504164">Sprache</translation>
+<translation id="6315170314923504164">Stimme</translation>
 <translation id="6319058840130157106">Zwischen der unteren rechten Ecke, dem Launcher, der Adressleiste, der Lesezeichenleiste, der geöffneten Website und den Downloads rückwärtsgehen</translation>
 <translation id="6319503618073410818">Details im Browser ansehen</translation>
 <translation id="6324916366299863871">Verknüpfung bearbeiten</translation>
@@ -1769,6 +1770,7 @@ Neuinstallation</translation>
 <translation id="6700713906295497288">IME-Menüschaltfläche</translation>
 <translation id="6704073473590541209">Ziehpunkt am rechten Rand ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="6706742084323792866">Tastatur anpinnen</translation>
+<translation id="6709719156428404245">Durch Ziehen oder Drücken der Leertaste Bereich zum Aufzeichnen auswählen</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>

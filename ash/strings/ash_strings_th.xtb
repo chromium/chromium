@@ -462,6 +462,7 @@
 <translation id="2530896289327917474">เปิดหรือปิดการเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="2531025035050312891">อุปกรณ์ทำงานช้า</translation>
 <translation id="2531107890083353124">กด <ph name="KEY_ONE" /> ขณะที่ลากแท็บ</translation>
+<translation id="2532199152994248594">ลากหรือกด Space เพื่อเลือกพื้นที่ที่จะจับภาพ</translation>
 <translation id="2545334090614121435">หากต้องการใช้ฟังก์ชัน Home ให้ใช้แป้น</translation>
 <translation id="254900897760075745">คัดลอกเนื้อหาที่เลือกไปยังคลิปบอร์ด</translation>
 <translation id="2549711466868162843">ปรับแสง</translation>
@@ -1480,6 +1481,7 @@
 <translation id="5788127256798019331">ไฟล์ Play</translation>
 <translation id="5788535737706478207">เปิดแท็บหรือหน้าต่างที่ปิดล่าสุดขึ้นมาอีกครั้ง</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
+<translation id="5791926618942305301">ในการจับภาพหน้าจอ ให้ตั้งค่าเป็น <ph name="SOURCE" /> <ph name="TYPE" /> กด Tab เพื่อเลือกประเภทการจับภาพ กด Enter เพื่อจับภาพ หากต้องการเลือกพื้นที่จับภาพ ให้ตั้งค่าเป็นภาพหน้าจอบางส่วน หากไม่ได้เปิดใช้งานอยู่ ให้กด Space เพื่อเลือกขอบเขต</translation>
 <translation id="579415080077680903">ปิดเสียง</translation>
 <translation id="5802516411616338943">เปิดการตั้งค่าด่วน</translation>
 <translation id="5804651031882187592">ปิดการตั้งค่า "ล็อกซิม"</translation>
@@ -1764,6 +1766,7 @@
 <translation id="6700713906295497288">ปุ่มเมนู IME</translation>
 <translation id="6704073473590541209">เลือกแฮนเดิลขอบด้านขวาแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="6706742084323792866">ปักหมุดแป้นพิมพ์</translation>
+<translation id="6709719156428404245">ลากหรือกด Space เพื่อเลือกพื้นที่ที่จะบันทึก</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>

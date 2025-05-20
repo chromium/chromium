@@ -120,6 +120,7 @@
 <translation id="3833326979834193417">Chromium 每天都會自動執行安全檢查，防範資料侵害或不安全網站等等。你可以前往「設定」進一步瞭解安全檢查功能。</translation>
 <translation id="3855938650519180865">Chromium 新功能</translation>
 <translation id="3886689467633467988">登入這個網站和 Chromium，即可在所有裝置上存取書籤及其他設定。</translation>
+<translation id="3949514465204582407">Chromium 提示：在任何應用程式中使用儲存的密碼</translation>
 <translation id="3983291422281996849">將 Chromium 設為預設瀏覽器，即可輕鬆追蹤價格，並取得欲購商品的價格分析。</translation>
 <translation id="4005283307739974863">在 Chromium 中開啟並執行安全檢查。</translation>
 <translation id="4043291146360695975">密碼只會儲存至這部裝置上的密碼管理工具。</translation>
@@ -275,6 +276,7 @@
 <translation id="7763454117143368771">使用 Chromium 做為預設瀏覽器可保護你免於危險網站的威脅，同時確保你的密碼安全無虞</translation>
 <translation id="7784950022329154821">關閉 Chromium 時鎖定無痕分頁</translation>
 <translation id="78025249032851484">Chromium 版本過舊。</translation>
+<translation id="7811371919871579588">如要在其他應用程式中輕鬆使用儲存的密碼，請選擇 Chromium 做為自動填寫來源。</translation>
 <translation id="7859018312476869945">在網址列或搜尋框中輸入時，Chromium 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="7890287942691234100">開始使用 Chromium 掃描器</translation>
 <translation id="7905064834449738336">如果你使用的密碼已被他人公布在網路上，Chromium 就會發出警告。在進行這項檢查時，系統會加密你的密碼和使用者名稱，因此任何人 (包括 Google) 都無法讀取。</translation>

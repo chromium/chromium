@@ -139,6 +139,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1240347957665416060">Tu nombre de dispositivo</translation>
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
+<translation id="1246424317317450637">Negrita</translation>
 <translation id="1247030632403369975">Aluminio</translation>
 <translation id="1252209483516427155">Ropa de abrigo</translation>
 <translation id="1253846494229886276">Guardando captura de pantalla</translation>
@@ -490,6 +491,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1821930232296380041">Solicitud o parámetros de solicitud no válidos</translation>
 <translation id="1822540298136254167">Los sitios web que visitas y el tiempo que pasas en ellos</translation>
 <translation id="1822995137827688764">Desarrollo de propiedades</translation>
+<translation id="1823768272150895732">Fuente</translation>
 <translation id="1824402189105105503">Octavo rollo</translation>
 <translation id="1826516787628120939">Comprobando</translation>
 <translation id="1832730227369924598">Sincronización de escritorio</translation>
@@ -654,6 +656,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2122719317867821810">Esta política se comporta según lo esperado, pero anuló un valor en conflicto que se configuró en otro lugar.</translation>
 <translation id="2126374524350484896">Generador de PDF:</translation>
 <translation id="2127090458081644412">Se guardó la contraseña en este dispositivo</translation>
+<translation id="2127747486437921899">Cursiva</translation>
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Las opciones se muestran en orden aleatorio. Puedes cambiar la opción predeterminada en cualquier momento.</translation>
@@ -935,6 +938,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> agregó una pestaña</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2587841377698384444">ID de API de directorio:</translation>
+<translation id="2593272815202181319">Monoespaciada</translation>
 <translation id="2594318783181750337">Vista rápida en Web:</translation>
 <translation id="2595719060046994702">Este dispositivo y esta cuenta no están administrados por una empresa ni otra organización.</translation>
 <translation id="2596415276201385844">Para establecer una conexión segura, el reloj debe estar configurado correctamente. Esto se debe a que los certificados que usan los sitios web para su identificación solo son válidos por períodos de tiempo específicos. Debido a que la configuración del reloj del dispositivo es incorrecta, Chrome no puede verificar estos certificados.</translation>
@@ -1700,6 +1704,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Cómo puedes administrar tu información:<ph name="END_BOLD" /> Chrome borra los sitios que tienen más de 30 días de forma automática. Es posible que, si vuelves a visitar un sitio, aparezca en la lista otra vez. También puedes bloquear un sitio para que no te sugiera anuncios y desactivar los anuncios sugeridos por sitios en cualquier momento en la configuración de Chrome.</translation>
 <translation id="3921869355029467742">Ingresar el código de seguridad</translation>
 <translation id="3927538228901078312">No hay tablas de comparación</translation>
+<translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Rechazar</translation>
 <translation id="3930260846839546333">Bolsos y carteras</translation>
 <translation id="3937834511546249636">Industria de defensa</translation>
@@ -2290,6 +2295,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4936134414789135531">No se pudo encontrar el <ph name="VALUE_NAME" /> insertado.</translation>
 <translation id="4936573216809994970">La carga de tu archivo a <ph name="CLOUD_PROVIDER" /> comenzará dentro de 1 hora</translation>
 <translation id="4936675324097895694">Finanzas</translation>
+<translation id="4941627891654116707">Tamaño de fuente</translation>
 <translation id="4943620199112228840">Usar los micrófonos</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
 <translation id="4950898438188848926">Botón para cambiar de pestaña; presiona Intro para cambiar a la pestaña abierta <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2327,6 +2333,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5010599530303458903">Paga de forma mensual o en 4 cuotas sin intereses (sujeto a elegibilidad)</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nombre de la máquina:</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5017554619425969104">Texto que copiaste</translation>
 <translation id="5017828934289857214">Recordarme más tarde</translation>
 <translation id="5018422839182700155">No se puede abrir esta página</translation>
@@ -3385,6 +3392,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6842196666980060516">184 × 260 mm</translation>
 <translation id="6844998850832008753">Se permitió el seguimiento de manos esta vez</translation>
 <translation id="6849023911358004088">Botón Administrar la configuración de seguridad: actívalo para administrar tu Navegación segura y más en la configuración de Chrome</translation>
+<translation id="6850286078059909152">Color del texto</translation>
 <translation id="6852204201400771460">¿Deseas volver a cargar la app?</translation>
 <translation id="6857776781123259569">Administrar contraseñas…</translation>
 <translation id="6858034839887287663">A2x4</translation>

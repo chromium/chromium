@@ -47,6 +47,7 @@
 <translation id="1917964099031477364">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chrome และแอปอื่นๆ ของ Google ในอุปกรณ์นี้</translation>
 <translation id="1919130412786645364">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1965935827552890526">ทำสิ่งที่กำลังทำในหน้าต่าง Chrome ที่เปิดอยู่อีกอันให้เสร็จ</translation>
+<translation id="1966638102563776885">เคล็ดลับสำหรับ Chrome: เรียกดูรหัสผ่านในแอปใดก็ได้</translation>
 <translation id="1973910962341002002">เปิด "Chrome" จากการตั้งค่า "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"</translation>
 <translation id="1984705450038014246">ซิงค์ข้อมูล Chrome</translation>
 <translation id="1987779152850321833">โปรดดำเนินการตามที่แนะนําด้านล่างเพื่อให้ใช้ Chrome ได้เกิดประโยชน์สูงสุด</translation>
@@ -137,6 +138,7 @@
 <translation id="4724297637870447613">ใช้ Chrome ได้ทุกที่</translation>
 <translation id="4738647308035481133">หน้า Google Chrome</translation>
 <translation id="4742795653798179840">ลบข้อมูลใน Chrome แล้ว</translation>
+<translation id="4749294594657945639">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้อย่างง่ายดาย ให้เลือก Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="4761869838909035636">เรียกใช้การตรวจสอบความปลอดภัยของ Chrome</translation>
 <translation id="4798859546468762093">รวม Chrome ไว้ใน <ph name="FEATURE_NAME_1" /> และ <ph name="FEATURE_NAME_2" /> เพื่อรับการปรับเปลี่ยนในแบบของคุณและฟีเจอร์อื่นๆ</translation>
 <translation id="4819268619367838612">Chrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>

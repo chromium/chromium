@@ -32,6 +32,7 @@
 <translation id="1186712907912748007">L'acció d'arrossegar i deixar anar està en curs. <ph name="GESTURE" /> per finalitzar-la. La resta de gestos no estan disponibles temporalment.</translation>
 <translation id="1188858454923323853">complementari</translation>
 <translation id="1189258430971676908">Zona de pràctiques: llistes desplegables</translation>
+<translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{nivell imbricat {$$COUNT}}}</translation>
 <translation id="1195238899008218998">Cloenda</translation>
 <translation id="1197088940767939838">Taronja</translation>
 <translation id="1198865190323699001">Gestos tàctils</translation>
@@ -100,6 +101,7 @@
 <translation id="1506187449813838456">Augmenta la presentació</translation>
 <translation id="151784044608172266">Frase següent</translation>
 <translation id="1524531499102321782">Va a la línia següent de Braille.</translation>
+<translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{titlla}} *{{{$$COUNT} titlles}}</translation>
 <translation id="1542513807034338907">Es desplaça a la pàgina anterior</translation>
 <translation id="1546370775711804143">Barra de desplaçament</translation>
 <translation id="1551572888042734032">Estiu</translation>
@@ -135,7 +137,9 @@
 <translation id="1756785467854861272">Magenta fosc</translation>
 <translation id="1758693804775271377">Fes lliscar un dit cap a l'esquerra o la dreta per navegar per les lliçons d'aquest tema</translation>
 <translation id="1765245556747822181">Fes lliscar un dit cap amunt</translation>
+<translation id="1766900865718394987">.input {$$COUNT :number} .match $$COUNT 1{{lliura}} *{{{$$COUNT} símbols de lliura}}</translation>
 <translation id="1771761307086386028">Desplaça't cap a la dreta</translation>
+<translation id="1776454891300234201">.input {$$COUNT :number} .match $$COUNT 1{{pic quadrat}} *{{{$$COUNT} pics quadrats}}</translation>
 <translation id="1781173782405573156">Tecla de traspàs</translation>
 <translation id="1787176709638001873">Text d'edició de la contrasenya</translation>
 <translation id="1795438342141780114">Restableix el cursor al centre</translation>
@@ -152,6 +156,7 @@
 <translation id="1902396333223336119">Cel·la</translation>
 <translation id="1903683160884433981">Verd primavera mitjà</translation>
 <translation id="1905379170753160525">Mostra la llista de capçaleres.</translation>
+<translation id="1909599030163690992">.input {$$COUNT :number} .match $$COUNT 1{{signe et}} *{{{$$COUNT} signes et}}</translation>
 <translation id="1913761808037590218">#ed</translation>
 <translation id="1914424852593176649">Mida <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Acord <ph name="DOT" /></translation>
@@ -159,6 +164,7 @@
 <translation id="1926147969119007125">Posa en pausa el control amb gestos facials</translation>
 <translation id="1928932365747995741">No hi ha cap camp de text anterior que es pugui editar</translation>
 <translation id="1964135212174907577">Objecte següent</translation>
+<translation id="1969502304370936079">.input {$$COUNT :number} .match $$COUNT 1{{igual}} *{{{$$COUNT} signes igual}}</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostra ordres de braille als menús de ChromeVox</translation>
 <translation id="2009187674653301682">No és un superíndex</translation>
@@ -166,12 +172,14 @@
 <translation id="203030071582665758">No hi ha cap encapçalament anterior de nivell 4</translation>
 <translation id="2045055672832940894">No hi ha cap control anterior</translation>
 <translation id="2045606329038304310">Control del camp de formulari</translation>
+<translation id="2061553293808239752">.input {$$COUNT :number} .match $$COUNT 1{{minut}} *{{minuts}}</translation>
 <translation id="2063539687800151747">Epígraf</translation>
 <translation id="2086961585857038472">Paraula següent</translation>
 <translation id="2087981446621639008">dtll llistdscrip</translation>
 <translation id="2089387485033699258">ca</translation>
 <translation id="2091933974477985526">Àrea de text editable anterior</translation>
 <translation id="2100350898815792233">Tots els signes de puntuació</translation>
+<translation id="2109693710509473741">.input {$$COUNT :number} .match $$COUNT 1{{coma}} *{{{$$COUNT} comes}}</translation>
 <translation id="2110480898214777136">Ves del principi al final o viceversa dins d'una pàgina, d'un quadre de diàleg o d'un altre espai delimitat</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">clau d'accés: <ph name="KEY" /></translation>
@@ -211,6 +219,7 @@
 <translation id="2371402123699727805">El dictat està actiu. <ph name="GESTURE" /> per aturar-lo. La resta de gestos no estan disponibles temporalment.</translation>
 <translation id="2381733276052567791">Activa o desactiva la veu</translation>
 <translation id="2390264819538553347">Prem Retorn per avançar i Retrocés per tornar enrere.</translation>
+<translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisc}} *{{{$$COUNT} asteriscs}}</translation>
 <translation id="2398579267367951220">Escriu per cercar a la pàgina. Prem Retorn per anar directament al resultat, prem les fletxes amunt i avall per moure't pels resultats, continua escrivint per modificar la cerca o prem Esc per cancel·lar.</translation>
 <translation id="240709722712693803">Violeta blavós</translation>
 <translation id="2416512023405990736">Una casella de selecció desmarcada</translation>
@@ -267,6 +276,7 @@
 <translation id="2708078563826046398">Préssec clar</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717271541250958000">tabpnl</translation>
+<translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{barra inversa}} *{{{$$COUNT} barres inverses}}</translation>
 <translation id="2723001399770238859">àudio</translation>
 <translation id="2737898226590637227">No hi ha cap punt de referència ARIA més</translation>
 <translation id="2749275490991666823">Comprovat</translation>
@@ -329,6 +339,7 @@
 <translation id="3090227230165225418">Anuncia les notificacions de baixada</translation>
 <translation id="3090532668523289635">grup</translation>
 <translation id="3093176084511590672">Punt de referència següent</translation>
+<translation id="3096276106587041702">.input {$$COUNT :number} .match $$COUNT 1{{segon}} *{{segons}}</translation>
 <translation id="3096671415663099226">cbo</translation>
 <translation id="309749186376891736">Mou el cursor</translation>
 <translation id="3103579948980282461">Vermell violaci mitjà</translation>
@@ -367,6 +378,7 @@
 <translation id="3270069636408109001">No hi ha cap taula més</translation>
 <translation id="3273791280096244679">Desa l'etiqueta</translation>
 <translation id="3283583562490372694">desmarcada</translation>
+<translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{amb {$$COUNT} element}} * {{amb {$$COUNT} elements}}</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3286390186030710347">Control lliscant</translation>
 <translation id="3300733168898541351">desfés</translation>
@@ -403,6 +415,7 @@
 <translation id="3473744269398144689">Inicia el dictat</translation>
 <translation id="3490765818161916458">Quadrícula de llista</translation>
 <translation id="3494946239022273294">mnuitm</translation>
+<translation id="3501911317648720697">.input {$$COUNT :number} .match $$COUNT 1{{dos punts}} *{{{$$COUNT} dos punts}}</translation>
 <translation id="3505359110822747654">Replega els menús de ChromeVox</translation>
 <translation id="352577523970648069">Un camp de text que es pot editar</translation>
 <translation id="3538907380453898475">llistdscrip</translation>
@@ -439,6 +452,7 @@
 <translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Mostra el registre</translation>
 <translation id="3801735343383419236">Llista de compleció automàtica</translation>
+<translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{percentatge}} *{{{$$COUNT} símbols de percentatge}}</translation>
 <translation id="3806327402890551732">Ves a l'element següent o anterior</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3813387282697781382">Corall clar</translation>
@@ -449,6 +463,7 @@
 <translation id="3856075812838139784">Només de lectura</translation>
 <translation id="3857141338659865495">Turquesa mitjà</translation>
 <translation id="3870295413168340326">No hi ha cap encapçalament anterior de nivell 3</translation>
+<translation id="3882892620695970398">.input {$$COUNT :number} .match $$COUNT 1{{arrova}} *{{{$$COUNT} símbols d'arrova}}</translation>
 <translation id="3887399638190992181">Tecles essencials</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3896762831164962772">El control amb gestos facials s'ha posat en pausa. <ph name="GESTURE" /> per reprendre'l. La resta de gestos no estan disponibles temporalment.</translation>
@@ -479,10 +494,13 @@
 <translation id="4054936709456751127">estat</translation>
 <translation id="4058278702844053247">Una pàgina en procés de càrrega</translation>
 <translation id="4065205963140826639">Fes servir Cerca+fletxa dreta per cercar el botó Següent i, a continuació, prem Cerca+espai per fer-hi clic.</translation>
+<translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{accent circumflex}} *{{{$$COUNT} accents circumflexos}}</translation>
 <translation id="409334809956508737">Objecte anterior</translation>
+<translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{més}} *{{{$$COUNT} signes més}}</translation>
 <translation id="4099274309791143834">amb submenú</translation>
 <translation id="4101527861445851766">Una casella de selecció marcada</translation>
 <translation id="410225014223200513">Fer una O amb els llavis</translation>
+<translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{punt}} 3{{punts suspensius}} *{{{$$COUNT} punts}}</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Alerta</translation>
 <translation id="4159784952369912983">Porpra</translation>
@@ -516,6 +534,7 @@
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="4294967782363273192">Ordre ascendent</translation>
 <translation id="4300318234632215983">Presenta l'URL darrere d'un enllaç.</translation>
+<translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{major que}} *{{{$$COUNT} símbols major que}}</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4352022650330571548">escriu "<ph name="PHRASE" />"</translation>
@@ -550,12 +569,14 @@
 <translation id="4547556996012970016">Capçalera del nivell 5 següent</translation>
 <translation id="4562381607973973258">Capçalera</translation>
 <translation id="4597532268155981612">formulari</translation>
+<translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{menor que}} *{{{$$COUNT} símbols menor que}}</translation>
 <translation id="4601367666219428522">taula <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">Combinació de tecles personalitzada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">S'ignorarà la propera tecla que premeu.</translation>
 <translation id="4617384941327705512">El mode permanent intel·ligent està desactivat</translation>
 <translation id="4623097797855662355">Colofó</translation>
 <translation id="4624970070706497034">TalkBack ja no ofereix la personalització per als Chromebooks. Podràs continuar fent-la servir, però utilitza les tecles de drecera predeterminades de TalkBack. Prem Cerca+A i després K per veure les dreceres disponibles. Si vols continuar fent servir TalkBack, torna a prémer l'ordre.</translation>
+<translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{pic}} *{{{$$COUNT} pics}}</translation>
 <translation id="4649220074413114917">Pots tocar la pantalla amb dos dits per aturar qualsevol entrada de veu en curs. Aquesta acció serveix si no vols que ChromeVox llegeixi contingut. Per continuar, toca la pantalla amb dos dits.</translation>
 <translation id="4661075872484491155">arbre</translation>
 <translation id="4668929960204016307">,</translation>
@@ -590,6 +611,7 @@
 <translation id="4854380505292502090">No hi ha cap widget multimèdia anterior</translation>
 <translation id="4855927945655956315">Tecles essencials: control</translation>
 <translation id="485806788160414322">Reprodueix o posa en pausa el contingut multimèdia</translation>
+<translation id="4861593489403902434">.input {$$COUNT :number} .match $$COUNT 1{{parèntesi de tancament}} *{{{$$COUNT} parèntesis de tancament}}</translation>
 <translation id="4862744964787595316">Sense negreta</translation>
 <translation id="4865995900839719272">ves a la línia anterior</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -615,6 +637,7 @@
 <translation id="4993152509206108683">Taxa d'un <ph name="PERCENT" /> per cent</translation>
 <translation id="4994420463726586413">Anuncia l'estat actual de la bateria</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botó d'opció seleccionat</translation>
+<translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{signe d'interrogació}} *{{{$$COUNT} signes d'interrogació}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botó d'opció seleccionat de l'element de menú</translation>
 <translation id="5014131807708055994">No es pot <ph name="COMMAND" />; <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Activa el registre de veu</translation>
@@ -715,6 +738,7 @@
 <translation id="5669637233317991674">Prem Cerca+fletxa dreta o esquerra per navegar per aquesta lliçó</translation>
 <translation id="5677240841070992068">Ubicació actual</translation>
 <translation id="5678161956734658133">mled</translation>
+<translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{clau de tancament}} *{{{$$COUNT} claus de tancament}}</translation>
 <translation id="5681643281275621376">definició</translation>
 <translation id="5682113568322255809">Punt de referència</translation>
 <translation id="5683155931978483559">Casella de selecció anterior</translation>
@@ -755,6 +779,7 @@
 <translation id="5899860758576822363">Reprodueix a un volum més baix quan ChromeVox parli</translation>
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5906974869830879618">Introdueix un PIN</translation>
+<translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{punt i coma}} *{{{$$COUNT} punts i coma}}</translation>
 <translation id="5921587111466148855">Capítol</translation>
 <translation id="5923780477617566089">Data actual</translation>
 <translation id="5926889058434275234">Per veure una llista completa de gestos, visita el Centre d'ajuda.</translation>
@@ -795,6 +820,7 @@
 <translation id="6197361807490522975">Blau fosc</translation>
 <translation id="6218813441317556731">substitueix <ph name="DELETE_PHRASE" /> per <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Capçalera següent</translation>
+<translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{barra}} *{{{$$COUNT} barres verticals}}</translation>
 <translation id="6254901459154107917">Àrea de text editable següent</translation>
 <translation id="6259464875943891919">S'ha sortit de <ph name="TYPE" />.</translation>
 <translation id="6280088282605782512">Doble toc</translation>
@@ -827,6 +853,7 @@
 <translation id="6493991254603208962">disminueix la brillantor</translation>
 <translation id="6501595918865591267">Turquesa</translation>
 <translation id="6508059270146105198">Mou la pantalla Braille a la part inferior de la pàgina.</translation>
+<translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{parèntesi d'obertura}} *{{{$$COUNT} parèntesis d'obertura}}</translation>
 <translation id="6521550811716689390">Lila fosc</translation>
 <translation id="6536157907112457272">Lli</translation>
 <translation id="6540201937398578274">A ChromeVox, Cerca és la tecla modificadora amb què comencen la majoria de dreceres. També faràs servir les tecles de fletxa per desplaçar-te.</translation>
@@ -867,6 +894,7 @@
 <translation id="6859876496651143278">Fes lliscar un dit cap a l'esquerra</translation>
 <translation id="6865519907510167493">Conté errors ortogràfics</translation>
 <translation id="6873188295213080042">Suggeriment: per navegar, mantén premuda la tecla de cerca i prem les tecles de fletxa.</translation>
+<translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">Diu en veu alta la data i l'hora actuals</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897341342232909480">Desplaça a l'esquerra</translation>
@@ -880,6 +908,7 @@
 <translation id="6951482098621102657">No hi ha cap encapçalament més de nivell 5</translation>
 <translation id="6955705049214951590">Rosa difuminat</translation>
 <translation id="696356426651109308">Ves al principi</translation>
+<translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{hora}} *{{hores}}</translation>
 <translation id="6994042831499278539">Referència del glossari</translation>
 <translation id="6996566555547746822">Quadre combinat següent</translation>
 <translation id="6997224546856374593">Quan llegeixis majúscules:</translation>
@@ -888,6 +917,7 @@
 <translation id="7005146664810010831">No s'ha trobat cap URL.</translation>
 <translation id="7026338066939101231">Disminueix</translation>
 <translation id="7031651751836475482">element llista</translation>
+<translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{pic blanc}} *{{{$$COUNT} pics blancs}}</translation>
 <translation id="7037042857287298941">Llista anterior</translation>
 <translation id="7039555289296502784">Verd oliva apagat</translation>
 <translation id="7041173719775863268">Final de la selecció</translation>
@@ -897,6 +927,7 @@
 <translation id="7086377898680121060">augmenta la brillantor</translation>
 <translation id="7088743565397416204">Fes doble toc per activar l'element destacat</translation>
 <translation id="7088960765736518739">Accés amb interruptors</translation>
+<translation id="7089749381037113497">.input {$$COUNT :number} .match $$COUNT 1{{ratlla baixa}} *{{{$$COUNT} ratlles baixes}}</translation>
 <translation id="7090715360595433170">També pot ser més eficaç que fer lliscar un dit cap a l'esquerra i la dreta.</translation>
 <translation id="7091296112653361280">Blanc navajo</translation>
 <translation id="7095834689119144465">Edita només text numèric</translation>
@@ -907,6 +938,7 @@
 <translation id="712735679809149106">retorn de paraules</translation>
 <translation id="7137397390322864165">Salmó</translation>
 <translation id="7140168702531682811">Superíndex</translation>
+<translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{pestanya}} *{{{$$COUNT} pestanyes}}</translation>
 <translation id="7143034430156387447">Alterna entre braille de sis i vuit punts</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7153618581592392745">Lavanda</translation>
@@ -936,6 +968,7 @@
 <translation id="7289186959554153431">Capçalera 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7297440685387139507">Finalitza l'acció d'arrossegar i deixar anar</translation>
+<translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{espai}} *{{{$$COUNT} espais}}</translation>
 <translation id="7308519659008003150">No hi ha cap camp de formulari anterior</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">ajuda</translation>
@@ -966,6 +999,7 @@
 <translation id="7543255924852002459">Etiqueta Descarta</translation>
 <translation id="7552432549459840808">Dreceres útils de Chrome</translation>
 <translation id="7553679324939294712">insereix <ph name="INSERT_PHRASE" /> abans de <ph name="BEFORE_PHRASE" /></translation>
+<translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{apòstrof}} *{{{$$COUNT} apòstrofs}}</translation>
 <translation id="7569983096843329377">Negre</translation>
 <translation id="7579911500627256166">punt <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Parcial</translation>
@@ -982,6 +1016,7 @@
 <translation id="7637342083105831460">Prem la tecla Cerca+fletxa dreta per cercar la zona de pràctiques o el botó Lliçó següent. A continuació, prem la tecla Cerca+barra espaiadora per activar la selecció.</translation>
 <translation id="7639968568612851608">Gris fosc</translation>
 <translation id="7663318257180412551">Capçalera 2</translation>
+<translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{dòlar}} *{{{$$COUNT} símbols de dòlar}}</translation>
 <translation id="7674576868851035240">Enllaç següent</translation>
 <translation id="7674768236845044097">marca</translation>
 <translation id="7676847077928500578">Restableix la configuració de text a parla</translation>
@@ -991,9 +1026,11 @@
 <translation id="7696631298608145306">mou a la paraula següent</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{guió}} *{{{$$COUNT} guions}}</translation>
 <translation id="7714340021005120797">No hi ha cap quadre combinat més</translation>
 <translation id="7715455358521357192">Entretanca l'ull dret</translation>
 <translation id="7724603315864178912">Retalla</translation>
+<translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{accent greu}} *{{{$$COUNT} accents greus}}</translation>
 <translation id="7731785449856576010">No hi ha cap widget multimèdia més</translation>
 <translation id="7735498529470878067">L'exploració tàctil et pot ajudar a fer-te una idea ràpida del que hi ha a la pantalla.</translation>
 <translation id="773906353055481349">Prem Cerca+Ctrl+Alt i les fletxes per navegar de cel·la en cel·la</translation>
@@ -1010,9 +1047,11 @@
 <translation id="7839679365527550018">Paraula anterior</translation>
 <translation id="7846634333498149051">Teclat</translation>
 <translation id="7851816175263618915">Alguns signes de puntuació</translation>
+<translation id="7861676488745595432">.input {$$COUNT :number} .match $$COUNT 1{{claudàtor d'obertura}} *{{{$$COUNT} claudàtors d'obertura}}</translation>
 <translation id="7871691770940645922">Pantalla Braille virtual</translation>
 <translation id="7882421473871500483">Marró</translation>
 <translation id="78826985582142166">control lliscant</translation>
+<translation id="7889376040363236522">.input {$$COUNT :number} .match $$COUNT 1{{cometa}} *{{{$$COUNT} cometes}}</translation>
 <translation id="7913106023953875143">No hi ha cap encapçalament més de nivell 2</translation>
 <translation id="7927711904086083099">Sense seleccionar</translation>
 <translation id="7935627501098484003">Control de temps</translation>
@@ -1052,6 +1091,7 @@
 <translation id="8132248161074464367">Element no vàlid anterior</translation>
 <translation id="8138880386467279117">Tàctil</translation>
 <translation id="8146613869421949343">A continuació, obtindràs informació sobre la tecla de cerca. La tecla de cerca s'utilitza en combinació amb altres tecles per a les ordres de ChromeVox. Es troba just a sobre de la tecla de majúscules de l'esquerra. Per continuar, prem la tecla de cerca.</translation>
+<translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{claudàtor de tancament}} *{{{$$COUNT} claudàtors de tancament}}</translation>
 <translation id="8158033275290782295">selecciona-ho tot</translation>
 <translation id="816818801578874684">Aquest és el primer encapçalament. Prem la tecla Cerca+H per anar a l'encapçalament següent.</translation>
 <translation id="8173092779156526980">Fes lliscar quatre dits cap a l'esquerra</translation>
@@ -1144,6 +1184,7 @@
 <translation id="8897030325301866860">Tipus de lletra <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Retorn de la puntuació del cicle.</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{clau d'obertura}} *{{{$$COUNT} claus d'obertura}}</translation>
 <translation id="8910180774920883033">Hi ha accions disponibles. Prem Cerca+Ctrl+A per veure-les.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Tecles modificadores</translation>
@@ -1173,12 +1214,14 @@
 <translation id="9108370397979208512">matemàtiques</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="9128414153595658330">diàleg</translation>
+<translation id="9132815018758550541">.input {$$COUNT :number} .match $$COUNT 1{{exclamació}} *{{{$$COUNT} exclamacions}}</translation>
 <translation id="9133928141873682933">Caqui</translation>
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">Pestanya</translation>
 <translation id="9151249085738989067">Canvia la veu de ChromeVox automàticament en funció de l'idioma</translation>
 <translation id="9153606228985488238">Presenta un <ph name="PERCENT" /> per cent</translation>
 <translation id="9160096769946561184">Ves al final de la columna actual.</translation>
+<translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{barra inclinada}} *{{{$$COUNT} barres inclinades}}</translation>
 <translation id="9173115498289768110">Volum del <ph name="PERCENT" /> per cent</translation>
 <translation id="9185200690645120087">Tutorial sobre els tocs a ChromeVox</translation>
 <translation id="9192904702577636854">Marquesina</translation>

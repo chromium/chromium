@@ -139,6 +139,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1240347957665416060">Your device name</translation>
 <translation id="124116460088058876">More languages</translation>
 <translation id="1243027604378859286">Author:</translation>
+<translation id="1246424317317450637">Bold</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Outerwear</translation>
 <translation id="1253846494229886276">Saving screenshot</translation>
@@ -490,6 +491,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1821930232296380041">Invalid request or request parameters</translation>
 <translation id="1822540298136254167">Websites that you visit and time spent on them</translation>
 <translation id="1822995137827688764">Property Development</translation>
+<translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">Eighth roll</translation>
 <translation id="1826516787628120939">Checking</translation>
 <translation id="1832730227369924598">Desk sync</translation>
@@ -654,6 +656,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2127090458081644412">Password saved to this device</translation>
+<translation id="2127747486437921899">Italic</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2132825047782982803">These are shown in random order. You can change your default at any time.</translation>
@@ -935,6 +938,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> added a tab</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2587841377698384444">Directory API ID:</translation>
+<translation id="2593272815202181319">Monospace</translation>
 <translation id="2594318783181750337">Fast web view:</translation>
 <translation id="2595719060046994702">This device and account are not managed by a company or other organisation.</translation>
 <translation id="2596415276201385844">To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Chrome cannot verify these certificates.</translation>
@@ -1699,6 +1703,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. You can also block a site from suggesting ads for you and turn site-suggested ads off at any time in Chrome settings.</translation>
 <translation id="3921869355029467742">Enter your security code</translation>
 <translation id="3927538228901078312">No comparison tables</translation>
+<translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3927932062596804919">Deny</translation>
 <translation id="3930260846839546333">Handbags</translation>
 <translation id="3937834511546249636">Defence industry</translation>
@@ -1842,6 +1847,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4165422751765527461">Opens a Help Centre article in a new tab</translation>
 <translation id="4165986682804962316">Site settings</translation>
+<translation id="4169189393773057143">Manage loyalty cards or turn these suggestions off in Google Wallet</translation>
 <translation id="4169535189173047238">Don't allow</translation>
 <translation id="4171400957073367226">Bad verification signature</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -2289,6 +2295,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4936134414789135531">The inserted <ph name="VALUE_NAME" /> couldn't be found.</translation>
 <translation id="4936573216809994970">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one hour</translation>
 <translation id="4936675324097895694">Finance</translation>
+<translation id="4941627891654116707">Font size</translation>
 <translation id="4943620199112228840">Use your microphones</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4950898438188848926">Tab switch button, press Enter to switch to the open tab, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2326,6 +2333,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5010599530303458903">Pay monthly or in 4 interest-free instalments (subject to eligibility)</translation>
 <translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5017554619425969104">Text that you copied</translation>
 <translation id="5017828934289857214">Remind me later</translation>
 <translation id="5018422839182700155">Can't open this page</translation>
@@ -3384,6 +3392,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6842196666980060516">184 mm x 260 mm</translation>
 <translation id="6844998850832008753">Hand tracking allowed this time</translation>
 <translation id="6849023911358004088">Manage security settings button, activate to manage your Safe Browsing and more in Chrome settings</translation>
+<translation id="6850286078059909152">Text colour</translation>
 <translation id="6852204201400771460">Reload app?</translation>
 <translation id="6857776781123259569">Manage Passwords…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
@@ -3429,6 +3438,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="692638818576287323">Commercial Vehicles</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Your default search engine lets you search the web and powers Chrome features<ph name="END_BOLD" /> like searching from the address bar and from images on web pages. A feature might not be available if your search engine doesn’t support it.</translation>
 <translation id="6934672428414710184">This name is from your Google Account</translation>
+<translation id="6935077351544118151">Now you can autofill loyalty cards from Google Wallet</translation>
 <translation id="6935082727755903526">Accounting and Finance Jobs</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="6936976777388162184">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>

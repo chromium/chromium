@@ -719,6 +719,7 @@
 <translation id="1494349716233667318">網站可以要求使用裝置上安裝的字型</translation>
 <translation id="1494429729245089920">虛擬機器「<ph name="VM_NAME" />」已存在，但似乎不是有效的「<ph name="APP_NAME" />」虛擬機器。請聯絡您的管理員。</translation>
 <translation id="1495677929897281669">返回分頁</translation>
+<translation id="1496514951988037011">使用者名稱</translation>
 <translation id="1498498210836053409">編輯文字時停用相黏模式 (智能相黏模式)</translation>
 <translation id="1499041187027566160">調高音量</translation>
 <translation id="1500297251995790841">不明裝置 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1447,6 +1448,7 @@
 <translation id="1981434377190976112">讀取您在所有網站上的所有資料</translation>
 <translation id="1982851102516626421">你已登出</translation>
 <translation id="1983612835086592681">你上星期開啟過</translation>
+<translation id="1984087999855033707">電話號碼</translation>
 <translation id="1984417487208496350">無保護功能 (不建議)</translation>
 <translation id="1984683754853869253">要建立新的學校設定檔嗎？</translation>
 <translation id="198507684520034826">說明</translation>

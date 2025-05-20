@@ -172,7 +172,7 @@
 <translation id="7853202427316060426">Tegevus</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_ONE" /> arvustus}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_MANY" /> arvustust}}</translation>
 <translation id="7885132941432959125">Teisalda vaheleht paremale</translation>
-<translation id="788914896430720926">Kas soovite mitteaktiivset jaotist puhastada?</translation>
+<translation id="788914896430720926">Kas soovite hoida mitteaktiivsete vahelehtede jaotise korras?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> pole valitud</translation>
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>

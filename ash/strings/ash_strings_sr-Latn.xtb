@@ -1487,6 +1487,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5788127256798019331">Play datoteke</translation>
 <translation id="5788535737706478207">Ponovo otvori karticu ili prozor koji je poslednji zatvoren</translation>
 <translation id="5790085346892983794">Uspešno</translation>
+<translation id="5791926618942305301">U snimanju ekrana podesite na <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite Tab da biste izabrali tip snimanja. Pritisnite Enter da biste snimili. Da biste izabrali oblast za snimanje, podesite snimak ekrana na delimičan. Ako nije već aktivan, pritisnite taster za razmak da biste izabrali region.</translation>
 <translation id="579415080077680903">Tišina</translation>
 <translation id="5802516411616338943">Otvori Brza podešavanja</translation>
 <translation id="5804651031882187592">Isključite podešavanje Zaključaj SIM</translation>
@@ -1643,6 +1644,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> može ponovo da se doda kasnije uz dozvolu roditelja.</translation>
 <translation id="6291221004442998378">Ne puni se</translation>
 <translation id="6298183524022479114">Prilagodite ovaj uređaj u aplikaciji</translation>
+<translation id="6304076460080088478">Zatvorite ili umanjite prozore bez arhiviranja da biste pretraživali ekran pomoću Google objektiva</translation>
 <translation id="6309219492973062892">Kliknite na ikone police od 1 do 8 ili ih dodirnite</translation>
 <translation id="6315170314923504164">Glas</translation>
 <translation id="6319058840130157106">Krećite se unazad iz donjeg desnog ugla na pokretač, traku za adresu, traku sa obeleživačima, veb-sajt koji je otvoren i preuzimanja</translation>

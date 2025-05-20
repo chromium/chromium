@@ -47,6 +47,7 @@
 <translation id="1917964099031477364">Энэ бүртгэл болон хадгалаагүй аливаа өгөгдлийг Chrome болон энэ төхөөрөмж дээрх Google-н бусад аппаас хасна.</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="1965935827552890526">Chrome-н нээлттэй нөгөө цонхон дээрээ хийж байсан зүйлээ дуусгах.</translation>
+<translation id="1966638102563776885">Chrome-н зөвлөгөө: Дурын аппад нууц үгээ аваарай</translation>
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" тохиргооноос "Chrome"-г асаагаарай</translation>
 <translation id="1984705450038014246">Chrome-н өгөгдлөө синк хийх</translation>
 <translation id="1987779152850321833">Chrome-г бүрэн ашиглахын тулд доорх санал болгосон үйлдлүүдийг гүйцэтгэнэ үү.</translation>
@@ -137,6 +138,7 @@
 <translation id="4724297637870447613">Chrome-г хүссэн газраасаа ашиглаарай</translation>
 <translation id="4738647308035481133">Google Chrome-н хуудас</translation>
 <translation id="4742795653798179840">Chrome-н өгөгдлийг устгалаа</translation>
+<translation id="4749294594657945639">Бусад аппад хадгалсан нууц үгээ хялбархан авахын тулд Автоматаар бөглөхөд Chrome-г ашиглахыг сонгоорой.</translation>
 <translation id="4761869838909035636">Chrome-н Аюулгүй байдлын шалгалтыг ажиллуулах</translation>
 <translation id="4798859546468762093">Хувийн болгох болон бусад онцлогийг авахын тулд Chrome-г <ph name="FEATURE_NAME_1" /> болон <ph name="FEATURE_NAME_2" />-д оруулна уу</translation>
 <translation id="4819268619367838612">Аппыг сайжруулахад туслахын тулд Chrome нь ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээдэг. <ph name="BEGIN_LINK" />Удирдах<ph name="END_LINK" /></translation>

@@ -720,6 +720,7 @@
 <translation id="1494349716233667318">Сајтови могу да траже да користе фонтове инсталиране на уређају</translation>
 <translation id="1494429729245089920">Виртуелна машина „<ph name="VM_NAME" />“ постоји, али изгледа да није важећа <ph name="APP_NAME" /> виртуелна машина. Обратите се администратору.</translation>
 <translation id="1495677929897281669">Назад на картицу</translation>
+<translation id="1496514951988037011">корисничко име</translation>
 <translation id="1498498210836053409">Искључи лепљиви режим током мењања текста (паметан лепљиви режим)</translation>
 <translation id="1499041187027566160">појачај звук</translation>
 <translation id="1500297251995790841">Непознат уређај [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1436,6 +1437,7 @@
 <translation id="1981434377190976112">да чита све ваше податке на свим веб-сајтовима</translation>
 <translation id="1982851102516626421">Одјављени сте</translation>
 <translation id="1983612835086592681">Отворили сте претходне недеље</translation>
+<translation id="1984087999855033707">број телефона</translation>
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
 <translation id="1984683754853869253">Желите ли да направите нов профил за школу?</translation>
 <translation id="198507684520034826">Помоћ</translation>

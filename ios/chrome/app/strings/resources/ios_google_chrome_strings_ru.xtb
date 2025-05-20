@@ -47,6 +47,7 @@
 <translation id="1917964099031477364">Этот аккаунт и все несохраненные данные будут удалены из Chrome и других приложений Google на устройстве.</translation>
 <translation id="1919130412786645364">Разрешить вход в Chrome</translation>
 <translation id="1965935827552890526">Завершите то, что вы делали в другом открытом окне Chrome.</translation>
+<translation id="1966638102563776885">Совет от Chrome: легко вводите пароли в любом приложении</translation>
 <translation id="1973910962341002002">Откройте раздел "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" и выберите Chrome.</translation>
 <translation id="1984705450038014246">Синхронизировать данные Chrome</translation>
 <translation id="1987779152850321833">Ознакомьтесь со всеми возможностями Chrome.</translation>
@@ -137,6 +138,7 @@
 <translation id="4724297637870447613">Используйте Chrome где угодно</translation>
 <translation id="4738647308035481133">Страница Google Chrome</translation>
 <translation id="4742795653798179840">Данные из Chrome удалены</translation>
+<translation id="4749294594657945639">Чтобы быстро вводить сохраненные пароли в других приложениях, выберите Chrome в настройках автозаполнения.</translation>
 <translation id="4761869838909035636">Запустить проверку безопасности</translation>
 <translation id="4798859546468762093">Чтобы настроить персонализацию и другие функции, Chrome нужно добавить в определенные разделы (<ph name="FEATURE_NAME_1" /> и <ph name="FEATURE_NAME_2" />).</translation>
 <translation id="4819268619367838612">Chrome отправляет в Google информацию об использовании и сбоях, которая помогает улучшать приложение. <ph name="BEGIN_LINK" />Настроить отправку данных<ph name="END_LINK" /></translation>

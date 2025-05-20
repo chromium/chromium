@@ -463,6 +463,7 @@
 <translation id="2530896289327917474">تفعيل ميزة "التصفُّح النصي بالمؤشر" أو إيقافها</translation>
 <translation id="2531025035050312891">الجهاز بطيء</translation>
 <translation id="2531107890083353124">أثناء سحب علامة التبويب، اضغط على <ph name="KEY_ONE" />.</translation>
+<translation id="2532199152994248594">لتحديد موضع لالتقاط صورة له، عليك السحب أو الضغط على مفتاح المسافة</translation>
 <translation id="2545334090614121435">‏هل تحاول استخدام زر Home؟ استخدِم</translation>
 <translation id="254900897760075745">نسخ المحتوى الذي تم اختياره إلى الحافظة</translation>
 <translation id="2549711466868162843">تحسين الإضاءة</translation>
@@ -1498,7 +1499,7 @@
 <translation id="5842553299352339114">نقطة اتصال <ph name="DEVICE_NAME" /> مفعَّلة، وما مِن أجهزة متصلة بها.</translation>
 <translation id="584525477304726060">انقر مع الاستمرار على النافذة لتكبيرها.</translation>
 <translation id="5856638668464565213">الشبكة <ph name="NETWORK_NAME" /> غير مفعّلة.</translation>
-<translation id="5860033963881614850">غير مفعّلة</translation>
+<translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="5864691701242730005">‏يعرض هذا المربّع إعدادات ميزة Quick Share. تم اختيار إذن الوصول إلى "<ph name="VISIBILITY" />"</translation>
 <translation id="5864748620896638071">مستوى شحن البطارية: %<ph name="BATTERY_PERCENTAGE" /></translation>
@@ -1767,6 +1768,7 @@
 <translation id="6700713906295497288">‏زر قائمة أداة تحرير أسلوب الإدخال (IME)</translation>
 <translation id="6704073473590541209">مقبض الحافة اليسرى المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="6706742084323792866">تثبيت لوحة المفاتيح</translation>
+<translation id="6709719156428404245">لتحديد موضع لتسجيل فيديو له، عليك السحب أو الضغط على مفتاح المسافة</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6723839937902243910">الطاقة</translation>
 <translation id="672609503628871915">تعرف على الجديد</translation>

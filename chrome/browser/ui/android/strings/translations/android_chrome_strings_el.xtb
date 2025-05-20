@@ -122,6 +122,7 @@
 <translation id="1480287803138246127">Ένα μέρος του ιστορικού μπορεί να μην εμφανίζεται εδώ. Για να δείτε όλο το ιστορικό σας στο Chrome, ανοίξτε το πλήρες Ιστορικό Chrome.</translation>
 <translation id="1492417797159476138">Έχετε αποθηκεύσει ήδη αυτό το όνομα χρήστη για αυτόν τον ιστότοπο.</translation>
 <translation id="1493287004536771723">Ακολουθείτε τον ιστότοπο <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">όνομα χρήστη</translation>
 <translation id="1501480321619201731">Διαγραφή ομάδας</translation>
 <translation id="1502010315804028179">Για να διαχειριστείτε τους κωδικούς πρόσβασης, ενημερώστε τις υπηρεσίες Google Play</translation>
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
@@ -221,6 +222,7 @@
 <translation id="197288927597451399">Διατήρηση</translation>
 <translation id="1973912524893600642">Διατήρηση δεδομένων</translation>
 <translation id="1974060860693918893">Σύνθετες</translation>
+<translation id="1984087999855033707">αριθμός τηλεφώνου</translation>
 <translation id="1984417487208496350">Χωρίς προστασία (δεν συνιστάται)</translation>
 <translation id="1986685561493779662">Το όνομα υπάρχει ήδη</translation>
 <translation id="200114059308480249">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google;</translation>
@@ -1874,6 +1876,7 @@
 <translation id="939598580284253335">Εισαγωγή φράσης πρόσβασης</translation>
 <translation id="95817756606698420">Το Chrome μπορεί να χρησιμοποιήσει το <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> για την αναζήτηση στην Κίνα. Μπορείτε να αλλάξετε αυτή την επιλογή στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>
+<translation id="963246339335003378">Άνοιγμα Διαχείρισης Εργασιών</translation>
 <translation id="966131775676567255">Διαγραφή δεδομένων λογαριασμού</translation>
 <translation id="96681097142096641">Προβολή απλοποιημένης σελίδας;</translation>
 <translation id="970715775301869095">Απομένουν <ph name="MINUTES" /> λεπτά</translation>

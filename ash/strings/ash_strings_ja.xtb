@@ -1486,6 +1486,7 @@
 <translation id="5788127256798019331">Play ファイル</translation>
 <translation id="5788535737706478207">最後に閉じたタブまたはウィンドウを開く</translation>
 <translation id="5790085346892983794">完了</translation>
+<translation id="5791926618942305301">スクリーン キャプチャで <ph name="SOURCE" /> <ph name="TYPE" /> に設定します。キャプチャの種類を選択するには Tab キーを押します。キャプチャするには Enter キーを押します。画面の一部のスクリーンショットに設定すると、キャプチャする範囲を選択できます。アクティブになっていない場合は、Space キーを押して範囲を選択します。</translation>
 <translation id="579415080077680903">サイレント</translation>
 <translation id="5802516411616338943">クイック設定を開く</translation>
 <translation id="5804651031882187592">[SIM をロックする] 設定をオフにする</translation>

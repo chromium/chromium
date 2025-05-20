@@ -6,7 +6,7 @@
 <translation id="1246424317317450637">Fett</translation>
 <translation id="1370273601702151510">Mag ich</translation>
 <translation id="1483137792530497944">Fluss</translation>
-<translation id="1586836055630070874">Beruhigend</translation>
+<translation id="1586836055630070874">Besänftigend</translation>
 <translation id="1666704368140506043">Anstößige Inhalte</translation>
 <translation id="1741047078107369903">Warm</translation>
 <translation id="1807863182207623884">Rubin</translation>
@@ -22,11 +22,11 @@
 <translation id="3778044272390020426">Menü mit Optionen für negatives Feedback</translation>
 <translation id="3807208219231826020">Scrubbing-Wiedergabe</translation>
 <translation id="385051799172605136">Zurück</translation>
-<translation id="3936324432406465283">Wiedergabegeschwindigkeit</translation>
+<translation id="3936324432406465283">Vorlesegeschwindigkeit</translation>
 <translation id="4020327272915390518">Menü für Optionen</translation>
 <translation id="4324337030608534091">See</translation>
-<translation id="4431240646217225907">Text hervorheben und automatisches Scrollen</translation>
-<translation id="4494605076346185630">Mittlere Tonhöhe</translation>
+<translation id="4431240646217225907">Text hervorheben &amp; automatisch scrollen</translation>
+<translation id="4494605076346185630">Mittlere Stimmlage</translation>
 <translation id="4525525184005340968">Tal</translation>
 <translation id="4710974520964166851">Entspannt</translation>
 <translation id="4773921449011281499">Friedlich</translation>
@@ -41,7 +41,7 @@
 <translation id="5694491020339060116">Menü für Wiedergabegeschwindigkeit</translation>
 <translation id="5965409657393819302">Technisches Problem</translation>
 <translation id="6218961554829577610">Stimme gefällt mir nicht</translation>
-<translation id="6315170314923504164">Sprache</translation>
+<translation id="6315170314923504164">Stimme</translation>
 <translation id="6330455646577575965">KI-Audiowiedergabe</translation>
 <translation id="6343633247422081848">Moos</translation>
 <translation id="6550675742724504774">Optionen</translation>
@@ -66,5 +66,5 @@
 <translation id="8756370108715456837">Faktisch nicht korrekt</translation>
 <translation id="881960277396325853">Audio wird mithilfe von KI erstellt…</translation>
 <translation id="8953618380150219653">Der Player „Diese Seite anhören“ ist vollständig geöffnet.</translation>
-<translation id="978117257931832348">Niedrige Tonhöhe</translation>
+<translation id="978117257931832348">Tiefe Stimmlage</translation>
 </translationbundle>

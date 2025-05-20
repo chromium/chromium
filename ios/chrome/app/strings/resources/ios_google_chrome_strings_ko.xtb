@@ -47,6 +47,7 @@
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
+<translation id="1966638102563776885">Chrome 도움말: 모든 앱에서 비밀번호 사용하기</translation>
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" 설정에서 'Chrome'을 사용 설정하세요</translation>
 <translation id="1984705450038014246">Chrome 데이터 동기화</translation>
 <translation id="1987779152850321833">아래의 추천 작업을 완료하여 Chrome을 최대한 활용하세요.</translation>
@@ -137,6 +138,7 @@
 <translation id="4724297637870447613">어디서나 Chrome 사용</translation>
 <translation id="4738647308035481133">Chrome 페이지</translation>
 <translation id="4742795653798179840">Chrome 데이터 삭제됨</translation>
+<translation id="4749294594657945639">저장된 비밀번호를 다른 앱에서 쉽게 사용하려면 Chrome 자동 완성을 선택하세요.</translation>
 <translation id="4761869838909035636">Chrome 안전 확인 실행</translation>
 <translation id="4798859546468762093">맞춤설정 및 기타 기능을 사용하려면 <ph name="FEATURE_NAME_1" /> 그리고 <ph name="FEATURE_NAME_2" />에 Chrome을 포함하세요.</translation>
 <translation id="4819268619367838612">앱 개선을 위해 Chrome에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>

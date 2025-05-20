@@ -47,6 +47,7 @@ Kontuan hartu beharrekoak:
 <translation id="1917964099031477364">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik eta gailuko Google-ren beste aplikazio batzuetatik.</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
 <translation id="1965935827552890526">Amaitu egiten ari zarena irekita daukazun Chrome-ko beste leihoan.</translation>
+<translation id="1966638102563776885">Chrome-ri buruzko aholkua: lortu gordetako pasahitzak edozein aplikaziotan</translation>
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ezarpenetan, aktibatu "Chrome"</translation>
 <translation id="1984705450038014246">Sinkronizatu Chrome-ko datuak</translation>
 <translation id="1987779152850321833">Gauzatu behean iradokitako ekintzak Chrome-ri etekinik handiena ateratzeko.</translation>
@@ -137,6 +138,7 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="4724297637870447613">Erabili Chrome edonon</translation>
 <translation id="4738647308035481133">Google Chrome-ko orri bat</translation>
 <translation id="4742795653798179840">Ezabatu Chrome-ko datuak</translation>
+<translation id="4749294594657945639">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, aukeratu Chrome betetze automatikorako.</translation>
 <translation id="4761869838909035636">Egin Chrome-ren segurtasun-egiaztapena</translation>
 <translation id="4798859546468762093">Pertsonalizazioa eta beste eginbide batzuk eskuratzeko, sartu Chrome hauen barruan: <ph name="FEATURE_NAME_1" /> eta <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Aplikazioa hobetzeko, erabilera-datuak eta hutsegite-txostenak bidaltzen dizkio Chrome-k Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
