@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
@@ -135,6 +136,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     static class ContextMenuUma {
         // Note: these values must match the ContextMenuOptionAndroid enum in enums.xml.
         // Only add values to the end, right before NUM_ENTRIES!
+        // LINT.IfChange(Action)
         @IntDef({
             Action.OPEN_IN_NEW_TAB,
             Action.OPEN_IN_INCOGNITO_TAB,
@@ -234,6 +236,43 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int RELOAD = 46;
             int INSPECT_ELEMENT = 47;
             int NUM_ENTRIES = 48;
+        }
+
+        // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
+
+        /**
+         * Records a histogram entry when the user selects an item from a context menu.
+         *
+         * @param params The ContextMenuParams describing the current context menu.
+         * @param action The action that the user selected (e.g. ACTION_SAVE_IMAGE).
+         */
+        static void record(ContextMenuParams params, @Action int action) {
+            String histogramName =
+                    String.format(
+                            "ContextMenu.SelectedOptionAndroid.%s",
+                            ContextMenuUtils.getContextMenuTypeForHistogram(params));
+
+            // Record SharedHighlightingInteraction only for Shared Highlighting V2 menu options
+            // (share highlight, remove highlight and learn more).
+            if (params.getOpenedFromHighlight() && !params.isVideo() && !params.isImage()) {
+                assert histogramName.equals(
+                        "ContextMenu.SelectedOptionAndroid.SharedHighlightingInteraction");
+                if (action != Action.SHARE_HIGHLIGHT
+                        || action != Action.REMOVE_HIGHLIGHT
+                        || action != Action.LEARN_MORE) {
+                    histogramName = "ContextMenu.SelectedOptionAndroid.Link";
+                }
+            }
+
+            RecordHistogram.recordEnumeratedHistogram(histogramName, action, Action.NUM_ENTRIES);
+
+            if (params.isAnchor() && !params.isVideo() && !params.getOpenedFromHighlight()) {
+                if (params.isImage()) {
+                    assert histogramName.equals("ContextMenu.SelectedOptionAndroid.ImageLink");
+                } else {
+                    assert histogramName.equals("ContextMenu.SelectedOptionAndroid.Link");
+                }
+            }
         }
     }
 
@@ -979,6 +1018,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     /** Record a UMA ping and a UKM ping if enabled. */
     private void recordContextMenuSelection(int actionId) {
+        ContextMenuUma.record(mParams, actionId);
         if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
             maybeRecordActionUkm("ContextMenuAndroid.Selected", actionId);
         }
