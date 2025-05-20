@@ -137,35 +137,20 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         if (currentTab != null) {
             GURL url = currentTab.getUrl();
 
-            MenuItem forwardMenuItem = menu.findItem(R.id.forward_menu_id);
-            forwardMenuItem.setEnabled(currentTab.canGoForward());
-
-            Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
-            DrawableCompat.setTintList(
-                    icon,
-                    AppCompatResources.getColorStateList(
-                            mContext, R.color.default_icon_color_tint_list));
-            menu.findItem(R.id.reload_menu_id).setIcon(icon);
-            loadingStateChanged(currentTab.isLoading());
-
-            MenuItem shareItem = menu.findItem(R.id.share_row_menu_id);
-            shareItem.setVisible(mShowShare);
-            shareItem.setEnabled(mShowShare);
-            if (mShowShare) {
-                updateDirectShareMenuItem(menu.findItem(R.id.direct_share_menu_id));
-            }
-
+            boolean iconRowVisible = true;
+            boolean findInPageVisible = true;
             boolean openInChromeItemVisible = true;
             boolean bookmarkItemVisible = mShowStar;
             boolean downloadItemVisible = mShowDownload;
             boolean addToHomeScreenVisible = true;
             boolean requestDesktopSiteVisible = true;
             boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCct();
+            boolean readerModePrefsVisible = false;
 
             if (mUiType == CustomTabsUiType.MEDIA_VIEWER) {
                 // Most of the menu items don't make sense when viewing media.
-                menu.findItem(R.id.icon_row_menu_id).setVisible(false);
-                menu.findItem(R.id.find_in_page_id).setVisible(false);
+                iconRowVisible = false;
+                findInPageVisible = false;
                 bookmarkItemVisible = false; // Set to skip initialization.
                 downloadItemVisible = false; // Set to skip initialization.
                 openInChromeItemVisible = false;
@@ -174,14 +159,14 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 tryAddingReadAloud = false;
             } else if (mUiType == CustomTabsUiType.READER_MODE) {
                 // Only 'find in page' and the reader mode preference are shown for Reader Mode UI.
-                menu.findItem(R.id.icon_row_menu_id).setVisible(false);
+                iconRowVisible = false;
                 bookmarkItemVisible = false; // Set to skip initialization.
                 downloadItemVisible = false; // Set to skip initialization.
                 openInChromeItemVisible = false;
                 requestDesktopSiteVisible = false;
                 addToHomeScreenVisible = false;
                 tryAddingReadAloud = false;
-                menu.findItem(R.id.reader_mode_prefs_id).setVisible(true);
+                readerModePrefsVisible = true;
             } else if (mUiType == CustomTabsUiType.MINIMAL_UI_WEBAPP) {
                 requestDesktopSiteVisible = false;
                 // For Webapps & WebAPKs Verifier#wasPreviouslyVerified() performs verification
@@ -252,9 +237,17 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 addToHomeScreenVisible = false;
             }
 
-            if (!CustomTabAppMenuHelper.showHistoryItem(mHasClientPackage, mUiType)) {
-                menu.findItem(R.id.open_history_menu_id).setVisible(false);
-            }
+            // --- Icon Row ---
+            MenuItem forwardMenuItem = menu.findItem(R.id.forward_menu_id);
+            forwardMenuItem.setEnabled(currentTab.canGoForward());
+
+            Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
+            DrawableCompat.setTintList(
+                    icon,
+                    AppCompatResources.getColorStateList(
+                            mContext, R.color.default_icon_color_tint_list));
+            menu.findItem(R.id.reload_menu_id).setIcon(icon);
+            loadingStateChanged(currentTab.isLoading());
 
             MenuItem downloadItem = menu.findItem(R.id.offline_page_id);
             if (downloadItemVisible) {
@@ -270,8 +263,20 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 bookmarkItem.setVisible(false);
             }
 
-            prepareTranslateMenuItem(menu, currentTab);
+            menu.findItem(R.id.icon_row_menu_id).setVisible(iconRowVisible);
 
+            // --- App Specific Items / Divider ---
+            for (int i = 0; i < mMenuEntries.size(); i++) {
+                MenuItem item = menu.add(0, i, 1, mMenuEntries.get(i));
+                mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
+                mItemIdToIndexMap.put(item.getItemId(), i);
+            }
+
+            if (mMenuEntries.size() == 0) {
+                menu.removeItem(R.id.divider_line_id);
+            }
+
+            // --- Read Aloud ---
             if (tryAddingReadAloud) {
                 // Set visibility of Read Aloud menu item. The entrypoint will be
                 // visible iff the tab can be synthesized.
@@ -280,6 +285,26 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 menu.findItem(R.id.readaloud_menu_id).setVisible(false);
             }
 
+            // --- Share ---
+            MenuItem shareItem = menu.findItem(R.id.share_row_menu_id);
+            shareItem.setVisible(mShowShare);
+            shareItem.setEnabled(mShowShare);
+            if (mShowShare) {
+                updateDirectShareMenuItem(menu.findItem(R.id.direct_share_menu_id));
+            }
+
+            // --- History ---
+            if (!CustomTabAppMenuHelper.showHistoryItem(mHasClientPackage, mUiType)) {
+                menu.findItem(R.id.open_history_menu_id).setVisible(false);
+            }
+
+            // --- Find in Page ---
+            menu.findItem(R.id.find_in_page_id).setVisible(findInPageVisible);
+
+            // --- Reader Mode Prefs ---
+            menu.findItem(R.id.reader_mode_prefs_id).setVisible(readerModePrefsVisible);
+
+            // --- Price Tracking / Price Insights ---
             MenuItem startPriceTrackingMenuItem = menu.findItem(R.id.enable_price_tracking_menu_id);
             MenuItem stopPriceTrackingMenuItem = menu.findItem(R.id.disable_price_tracking_menu_id);
             startPriceTrackingMenuItem.setVisible(false);
@@ -295,9 +320,21 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 }
             }
 
+            // --- Add to Homescreen / Open WebAPK ---
+            prepareAddToHomescreenMenuItem(menu, currentTab, addToHomeScreenVisible);
+
+            // --- Request Desktop Site ---
+            updateRequestDesktopSiteMenuItem(
+                    menu, currentTab, requestDesktopSiteVisible, isNativePage);
+
+            // --- Translate ---
+            prepareTranslateMenuItem(menu, currentTab);
+
+            // --- Open with ---
             boolean showOpenWith = currentTab.isNativePage() && currentTab.getNativePage().isPdf();
             menu.findItem(R.id.open_with_id).setVisible(showOpenWith);
 
+            // --- Open in browser ---
             MenuItem openInChromeItem = menu.findItem(R.id.open_in_browser_id);
             if (openInChromeItemVisible) {
                 String title =
@@ -311,21 +348,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             } else {
                 openInChromeItem.setVisible(false);
             }
-
-            // Add custom menu items.
-            for (int i = 0; i < mMenuEntries.size(); i++) {
-                MenuItem item = menu.add(0, i, 1, mMenuEntries.get(i));
-                mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
-                mItemIdToIndexMap.put(item.getItemId(), i);
-            }
-
-            if (mMenuEntries.size() == 0) {
-                menu.removeItem(R.id.divider_line_id);
-            }
-
-            updateRequestDesktopSiteMenuItem(
-                    menu, currentTab, requestDesktopSiteVisible, isNativePage);
-            prepareAddToHomescreenMenuItem(menu, currentTab, addToHomeScreenVisible);
         }
     }
 
