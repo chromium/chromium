@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_entry.h"
 
 namespace new_tab_footer {
@@ -19,6 +21,14 @@ NewTabFooterController::NewTabFooterController(tabs::TabInterface* tab)
   if (features::IsNtpFooterEnabledWithoutSideBySide()) {
     footer_web_view_ = tab_->GetBrowserWindowInterface()->NewTabFooterWebView();
   }
+
+  profile_ = tab_->GetBrowserWindowInterface()->GetProfile();
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kNtpFooterVisible,
+      base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
+                          weak_factory_.GetWeakPtr()));
+
   content::WebContentsObserver::Observe(tab_->GetContents());
   tab_did_activate_callback_subscription_ = tab_->RegisterDidActivate(
       base::BindRepeating(&NewTabFooterController::TabForegrounded,
@@ -45,8 +55,11 @@ void NewTabFooterController::UpdateFooterVisibility() {
     url = tab_->GetContents()->GetController().GetVisibleEntry()->GetURL();
   }
 
-  if (ntp_footer::IsExtensionNtp(
-          url, tab_->GetBrowserWindowInterface()->GetProfile())) {
+  bool is_footer_visible_pref =
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible);
+  bool can_show_footer =
+      is_footer_visible_pref && ntp_footer::IsExtensionNtp(url, profile_);
+  if (can_show_footer) {
     ShowUI();
   } else {
     CloseUI();

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_NEW_TAB_FOOTER_FOOTER_CONTROLLER_H_
 
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -33,6 +34,8 @@ class NewTabFooterController : public content::WebContentsObserver {
   const raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<new_tab_footer::NewTabFooterWebView> footer_web_view_;
   base::CallbackListSubscription tab_did_activate_callback_subscription_;
+  PrefChangeRegistrar pref_change_registrar_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<NewTabFooterController> weak_factory_{this};
 };

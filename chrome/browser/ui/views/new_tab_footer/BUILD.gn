@@ -28,3 +28,14 @@ source_set("new_tab_footer") {
     "//ui/views/controls/webview",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "footer_controller_unittest.cc" ]
+  deps = [
+    ":new_tab_footer",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+  ]
+}
