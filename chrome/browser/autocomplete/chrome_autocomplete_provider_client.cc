@@ -550,12 +550,14 @@ bool ChromeAutocompleteProviderClient::IsLensEnabled() const {
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* lens_search_controller =
           GetLensSearchController(GetWebContents(web_contents_getter_))) {
-    // Guaranteed to exist if lens_search_controller is not null.
+    // Only allow Lens entrypoints if the Lens overlay is enabled and Lens is
+    // not currently active. Guaranteed to exist if lens_search_controller is
+    // not null.
     return lens_search_controller->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->GetFeatures()
         .lens_overlay_entry_point_controller()
-        ->IsEnabled();
+        ->AreVisible();
   }
 #endif
   return false;
