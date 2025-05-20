@@ -10,17 +10,9 @@
 :host {
   --gradient-blue: #3186ff;
   --gradient-green: #34a853;
+  --gradient-mask-opacity-middle-val: 0;
   --gradient-red: #ff4641;
-  --gradient-rotation-angle: 0deg;
   --gradient-yellow: #ffd314;
-  height: 100%;
-  width: 100%;
-}
-
-@property --gradient-rotation-angle {
-  inherits: false;
-  initial-value: 0deg;
-  syntax: '<angle>';
 }
 
 @property --gradient-blue {
@@ -47,12 +39,39 @@
   syntax: '<color>';
 }
 
+@property --gradient-mask-opacity-middle-val {
+  inherits: false;
+  initial-value: 0;
+  syntax: '<number>';
+}
+
 @keyframes rotateGradient {
   0% {
-    --gradient-rotation-angle: 0deg;
+    /* Preserve the scale applied to blur the gradient. */
+    transform: scale(1.4) rotate(0deg);
+  }
+
+  100% {
+    /* Preserve the scale applied to blur the gradient. */
+    transform: scale(1.4) rotate(360deg);
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 0.3;
   }
   100% {
-    --gradient-rotation-angle: 360deg;
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.3;
   }
 }
 
@@ -61,37 +80,68 @@
     opacity: 0;
   }
   100% {
-    opacity: 0.6;
+    opacity: 1;
   }
 }
 
 @keyframes shaderOpacityToResting {
   0% {
-    opacity: 0.5;
+    --gradient-mask-opacity-middle-val: 0;
+    opacity: 1;
   }
   100% {
+    --gradient-mask-opacity-middle-val: 0.4;
     opacity: 0.3;
   }
 }
 
 #borderGlowContainer {
-  animation: 117ms cubic-bezier(0, 0, 0, 1) 0s 1 normal forwards running shaderOpacityIn,
-      1016ms cubic-bezier(0.2, 0, 0, 1) 117ms 1 normal forwards running shaderOpacityToResting,
-      20s linear 0s infinite normal forwards running rotateGradient;
-  background: conic-gradient(from var(--gradient-rotation-angle, 0deg) at center,
-      var(--gradient-blue) 0deg, var(--gradient-blue) 10deg,
-      var(--gradient-red) 80deg, var(--gradient-yellow) 120deg,
-      var(--gradient-green) 160deg, var(--gradient-blue) 200deg,
-      var(--gradient-blue) 360deg);
-  content: '';
-  filter: blur(20px);
+  animation: 117ms cubic-bezier(0.2, 0, 0, 1) 0ms 1 normal forwards running shaderOpacityIn,
+                1016ms cubic-bezier(0.2, 0, 0, 1) 117ms 1 normal forwards running shaderOpacityToResting;
+  /* height and width must be larger than the diagonal of the viewport,
+  in order to prevent gaps at the corners while rotating. */
+  height: calc(max(100vw, 100vh) * 1.5);
+  left: 50%;
+  mask-image: radial-gradient(
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, var(--gradient-mask-opacity-middle-val)) 40%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  mask-mode: alpha;
+  opacity: 0;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(0deg) scale(0.7);
+  transform-origin: center center;
+  width: calc(max(100vw, 100vh) * 1.5);
+}
+
+#gradientColorLayer {
+  animation: rotateGradient 20s linear 0s infinite normal forwards running;
+  background: conic-gradient(
+      from 0deg at center,
+      var(--gradient-blue) 0deg,
+      var(--gradient-blue) 10deg,
+      var(--gradient-red) 80deg,
+      var(--gradient-yellow) 120deg,
+      var(--gradient-green) 160deg,
+      var(--gradient-blue) 200deg,
+      var(--gradient-blue) 360deg
+  );
   height: 100%;
   left: 0;
-  -webkit-mask: url(#roundedFrameMask);
-  mask: url(#roundedFrameMask);
-  opacity: 0;
   position: absolute;
+  /* Scale effect as a replacement for a less performant filter: blur(20px). */
+  transform: scale(1.4);
+  transform-origin: center center;
   top: 0;
-  transform: scale(140%);
   width: 100%;
+}
+
+:host([is-fading-in]) #borderGlowContainer {
+  animation: fade-in 166ms forwards cubic-bezier(0.3, 0, 1, 1);
+}
+
+:host([is-fading-out]) #borderGlowContainer {
+  animation: fade-out 166ms forwards cubic-bezier(0.3, 0, 1, 1);
 }

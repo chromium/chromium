@@ -17,16 +17,39 @@ export class OverlayBorderGlowElement extends CrLitElement {
   }
 
   static override get properties() {
-    return {};
+    return {
+      isFadingOut: {
+        type: Boolean,
+        reflect: true,
+      },
+      isFadingIn: {
+        type: Boolean,
+        reflect: true,
+      },
+    };
   }
 
   static override get styles() {
     return getCss();
   }
 
+  handleGestureStart() {
+    this.isFadingOut = true;
+  }
+
+  /* TODO(crbug.com/419035304): Trigger this when the CSB thumbnail is removed.
+   */
+  handleRemoveSearchboxThumbnail() {
+    this.isFadingOut = false;
+    this.isFadingIn = true;
+  }
+
   override render() {
     return getHtml.bind(this)();
   }
+
+  protected accessor isFadingOut: boolean = false;
+  protected accessor isFadingIn: boolean = false;
 }
 
 declare global {

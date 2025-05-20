@@ -29,6 +29,7 @@ import type {OverlayTheme} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {ContextMenuOption, recordContextMenuOptionShown, recordLensOverlayInteraction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
+import type {OverlayBorderGlowElement} from './overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
@@ -301,6 +302,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   declare private simplifiedSelectionEnabled: boolean;
   // The text selection layer rendered on the selection overlay if it exists.
   private textSelectionLayer: TextLayerBase;
+  // The border glow layer rendered on the selection overlay if it exists.
+  private overlayBorderGlow: OverlayBorderGlowElement;
 
   private eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -791,6 +794,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
 
     this.getTextSelectionLayer().onSelectionStart();
+    if (this.enableBorderGlow) {
+      this.getOverlayBorderGlow().handleGestureStart();
+    }
 
     if (this.$.postSelectionRenderer.handleGestureStart(this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
@@ -1287,6 +1293,15 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.textSelectionLayer =
         this.shadowRoot!.querySelector('lens-text-layer')!;
     return this.textSelectionLayer;
+  }
+
+  private getOverlayBorderGlow(): OverlayBorderGlowElement {
+    if (this.overlayBorderGlow) {
+      return this.overlayBorderGlow;
+    }
+    this.overlayBorderGlow =
+        this.shadowRoot!.querySelector('overlay-border-glow')!;
+    return this.overlayBorderGlow;
   }
 
   private onCopyCommand() {

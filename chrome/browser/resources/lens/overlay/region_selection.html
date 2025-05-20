@@ -8,11 +8,28 @@
     left: 0;
     position: absolute;
   }
+
+  :host([scrim-enabled]) #regionSelectionCanvas {
+    background: #000000;
+    opacity: 0;
+    transition: opacity 166ms cubic-bezier(0.3, 0, 1, 1);
+  }
+
+  :host([scrim-enabled][is-selecting]) #regionSelectionCanvas {
+    opacity: 0.3;
+  }
+
+  :host([scrim-enabled][has-selected]) #regionSelectionCanvas {
+    opacity: 0.2;
+  }
 </style>
-<canvas id="regionSelectionCanvas" height="[[canvasPhysicalHeight]]"
+<canvas
+  id="regionSelectionCanvas"
+  height="[[canvasPhysicalHeight]]"
   width="[[canvasPhysicalWidth]]"
-  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
+  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
+></canvas>
 <!-- Provides image source for canvas; element is not displayed. -->
 <div id="highlightImgContainer">
-  <canvas id="highlightImgCanvas">
+  <canvas id="highlightImgCanvas"></canvas>
 </div>

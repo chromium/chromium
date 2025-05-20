@@ -56,7 +56,22 @@ export class RegionSelectionElement extends PolymerElement {
       canvasWidth: Number,
       canvasPhysicalHeight: Number,
       canvasPhysicalWidth: Number,
+      hasSelected: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false,
+      },
+      isSelecting: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false,
+      },
       screenshotDataUri: String,
+      scrimEnabled: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false,
+      },
       shaderLayerColorHexes: {
         type: Array,
         computed: 'computeShaderLayerColorHexes_(theme)',
@@ -73,16 +88,23 @@ export class RegionSelectionElement extends PolymerElement {
   declare private canvasWidth: number;
   declare private canvasPhysicalHeight: number;
   declare private canvasPhysicalWidth: number;
+  // Whether the user has selected a region.
+  declare private hasSelected: boolean;
+  // Whether the user is currently selecting a region.
+  declare private isSelecting: boolean;
   private context: CanvasRenderingContext2D;
   // The data URI of the current overlay screenshot.
   declare private screenshotDataUri: string;
+  // Whether the scrim is enabled.
+  declare private scrimEnabled: boolean;
+  // Shader hex colors.
+  declare private shaderLayerColorHexes: string[];
   // The overlay theme.
   declare private theme: OverlayTheme;
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect()
   declare private selectionOverlayRect: DOMRect;
-  // Shader hex colors.
-  declare private shaderLayerColorHexes: string[];
+
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
   // The tap region dimensions are the height and width that the region should
@@ -114,10 +136,14 @@ export class RegionSelectionElement extends PolymerElement {
   // Handles a drag gesture by drawing a bounded box on the canvas.
   handleGestureDrag(event: GestureEvent) {
     this.clearCanvas();
+    this.isSelecting = true;
     this.renderBoundingBox(event);
   }
 
   handleGestureEnd(event: GestureEvent): boolean {
+    this.isSelecting = false;
+    this.hasSelected = true;
+
     // Issue the Lens request.
     const isClick = event.state === GestureState.STARTING;
     this.browserProxy.handler.issueLensRegionRequest(
@@ -145,6 +171,7 @@ export class RegionSelectionElement extends PolymerElement {
   }
 
   cancelGesture() {
+    this.isSelecting = false;
     this.clearCanvas();
   }
 
