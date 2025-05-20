@@ -2782,7 +2782,8 @@ void Browser::RegisterProtocolHandler(
 
     permission_request_manager->AddRequest(
         requesting_frame,
-        new custom_handlers::RegisterProtocolHandlerPermissionRequest(
+        std::make_unique<
+            custom_handlers::RegisterProtocolHandlerPermissionRequest>(
             registry, handler, url, std::move(fullscreen_block)));
   }
 }

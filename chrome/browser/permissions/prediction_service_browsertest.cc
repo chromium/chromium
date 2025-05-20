@@ -256,9 +256,10 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     auto* manager = GetPermissionRequestManager();
     GURL url = embedded_test_server()->GetURL(test_url, "/title1.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    MockPermissionRequest req(RequestType::kNotifications);
-    manager->AddRequest(GetActiveMainFrame(), &req);
 
+    auto req =
+        std::make_unique<MockPermissionRequest>(RequestType::kNotifications);
+    manager->AddRequest(GetActiveMainFrame(), std::move(req));
     bubble_factory()->WaitForPermissionBubble();
 
     if (notification_model_handler_) {

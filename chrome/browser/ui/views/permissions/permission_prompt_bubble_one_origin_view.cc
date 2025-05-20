@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -67,7 +68,7 @@ namespace {
 
 std::u16string GetAccessibleWindowTitleInternal(
     const std::u16string display_name,
-    std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+    std::vector<base::WeakPtr<permissions::PermissionRequest>>
         visible_requests) {
   // Generate one of:
   //   $origin wants to: $permission
@@ -110,13 +111,12 @@ bool ShouldShowRequest(permissions::PermissionPrompt::Delegate& delegate,
   return true;
 }
 
-std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-GetVisibleRequests(permissions::PermissionPrompt::Delegate& delegate) {
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      visible_requests;
-  for (permissions::PermissionRequest* request : delegate.Requests()) {
+std::vector<base::WeakPtr<permissions::PermissionRequest>> GetVisibleRequests(
+    permissions::PermissionPrompt::Delegate& delegate) {
+  std::vector<base::WeakPtr<permissions::PermissionRequest>> visible_requests;
+  for (const auto& request : delegate.Requests()) {
     if (ShouldShowRequest(delegate, request->request_type())) {
-      visible_requests.push_back(request);
+      visible_requests.push_back(request->GetWeakPtr());
     }
   }
   return visible_requests;
@@ -153,8 +153,8 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
                                      prompt_style) {
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      visible_requests = GetVisibleRequests(*delegate.get());
+  std::vector<base::WeakPtr<permissions::PermissionRequest>> visible_requests =
+      GetVisibleRequests(*delegate.get());
 
   SetAccessibleTitle(GetAccessibleWindowTitleInternal(
       GetUrlIdentityObject().name, visible_requests));
@@ -213,7 +213,7 @@ void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
 }
 
 void PermissionPromptBubbleOneOriginView::AddRequestLine(
-    permissions::PermissionRequest* request,
+    const base::WeakPtr<permissions::PermissionRequest>& request,
     std::size_t index) {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 

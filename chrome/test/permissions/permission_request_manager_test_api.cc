@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
@@ -18,41 +19,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace test {
-namespace {
-
-// Wraps a PermissionRequest so that it can pass a closure to itself to the
-// PermissionRequest constructor. Without this wrapper, there's no way to
-// handle all destruction paths.
-class TestPermissionRequestOwner {
- public:
-  explicit TestPermissionRequestOwner(permissions::RequestType type,
-                                      GURL& origin) {
-    const bool user_gesture = true;
-    auto decided = [](ContentSetting, bool, bool,
-                      const permissions::PermissionRequestData&) {};
-    request_ = std::make_unique<permissions::PermissionRequest>(
-        std::make_unique<permissions::PermissionRequestData>(
-            std::make_unique<permissions::ContentSettingPermissionResolver>(
-                permissions::RequestTypeToContentSettingsType(type).value()),
-            /*user_gesture=*/user_gesture, origin),
-        base::BindRepeating(decided),
-        base::BindOnce(&TestPermissionRequestOwner::DeleteThis,
-                       base::Unretained(this)));
-  }
-
-  TestPermissionRequestOwner(const TestPermissionRequestOwner&) = delete;
-  TestPermissionRequestOwner& operator=(const TestPermissionRequestOwner&) =
-      delete;
-
-  permissions::PermissionRequest* request() { return request_.get(); }
-
- private:
-  void DeleteThis() { delete this; }
-
-  std::unique_ptr<permissions::PermissionRequest> request_;
-};
-
-}  // namespace
 
 PermissionRequestManagerTestApi::PermissionRequestManagerTestApi(
     permissions::PermissionRequestManager* manager)
@@ -67,9 +33,15 @@ PermissionRequestManagerTestApi::PermissionRequestManagerTestApi(
 void PermissionRequestManagerTestApi::AddSimpleRequest(
     content::RenderFrameHost* source_frame,
     permissions::RequestType type) {
-  TestPermissionRequestOwner* request_owner =
-      new TestPermissionRequestOwner(type, permission_request_origin_);
-  manager_->AddRequest(source_frame, request_owner->request());
+  const bool user_gesture = true;
+  manager_->AddRequest(
+      source_frame,
+      std::make_unique<permissions::PermissionRequest>(
+          std::make_unique<permissions::PermissionRequestData>(
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  permissions::RequestTypeToContentSettingsType(type).value()),
+              /*user_gesture=*/user_gesture, permission_request_origin_),
+          base::DoNothing()));
 }
 
 void PermissionRequestManagerTestApi::SetOrigin(

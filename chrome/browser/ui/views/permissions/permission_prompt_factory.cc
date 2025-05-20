@@ -106,10 +106,9 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
     return false;
   }
 
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
+  const auto& requests = delegate->Requests();
   return std::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
+      requests, [](const auto& request) {
         return request
             ->GetRequestChipText(
                 permissions::PermissionRequest::ChipTextType::LOUD_REQUEST)
@@ -125,10 +124,9 @@ bool IsLocationBarDisplayed(Browser* browser) {
 
 bool ShouldCurrentRequestUseQuietChip(
     permissions::PermissionPrompt::Delegate* delegate) {
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
+  const auto& requests = delegate->Requests();
   return std::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
+      requests, [](const auto& request) {
         return request->request_type() ==
                    permissions::RequestType::kNotifications ||
                request->request_type() ==
@@ -138,11 +136,10 @@ bool ShouldCurrentRequestUseQuietChip(
 
 bool ShouldCurrentRequestUseExclusiveAccessUI(
     permissions::PermissionPrompt::Delegate* delegate) {
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
+  const auto& requests = delegate->Requests();
   return permissions::feature_params::kKeyboardLockPromptUIStyle.Get() &&
          std::ranges::all_of(
-             requests, [](permissions::PermissionRequest* request) {
+             requests, [](const auto& request) {
                return request->request_type() ==
                           permissions::RequestType::kPointerLock ||
                       request->request_type() ==

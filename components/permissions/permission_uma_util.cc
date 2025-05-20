@@ -210,7 +210,7 @@ PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
 }
 
 void RecordEngagementMetric(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     content::WebContents* web_contents,
     const std::string& action) {
   CHECK(!requests.empty());
@@ -900,7 +900,7 @@ void PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
 }
 
 void PermissionUmaUtil::RecordPermissionPromptAttempt(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     bool can_display_prompt) {
   DCHECK(!requests.empty());
 
@@ -938,8 +938,7 @@ void PermissionUmaUtil::RecordPermissionPromptAttempt(
 }
 
 void PermissionUmaUtil::PermissionPromptShown(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-        requests) {
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests) {
   DCHECK(!requests.empty());
 
   RequestTypeForUma request_type =
@@ -955,7 +954,7 @@ void PermissionUmaUtil::PermissionPromptShown(
 }
 
 void PermissionUmaUtil::PermissionPromptResolved(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     content::WebContents* web_contents,
     PermissionAction permission_action,
     base::TimeDelta time_to_action,
@@ -995,7 +994,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           web_contents->GetBrowserContext());
 
-  for (PermissionRequest* request : requests) {
+  for (const auto& request : requests) {
     ContentSettingsType permission = request->GetContentSettingsType();
     // TODO(timloh): We only record these metrics for permissions which have a
     // ContentSettingsType, as otherwise they don't support GetGestureType.
@@ -1331,7 +1330,7 @@ void PermissionUmaUtil::RecordPermissionAction(
 
 // static
 void PermissionUmaUtil::RecordPromptDecided(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     bool accepted,
     bool is_one_time) {
   DCHECK(!requests.empty());
@@ -1736,7 +1735,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
 
 // static
 void PermissionUmaUtil::RecordIgnoreReason(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     PermissionPromptDisposition prompt_disposition,
     PermissionIgnoredReason reason) {
   RequestTypeForUma request_type =
@@ -1772,7 +1771,7 @@ void PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
 
 // static
 void PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     DismissedReason reason) {
   CHECK(!requests.empty());
 
@@ -1786,7 +1785,7 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
 
 // static
 void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     OsScreen screen,
     OsScreenAction action,
     base::TimeDelta time_to_action) {
@@ -1842,7 +1841,7 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
 }
 
 void PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     ElementAnchoredBubbleVariant variant) {
   CHECK(!requests.empty());
 
@@ -1974,8 +1973,8 @@ PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
 
 // static
 void PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
+    const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
         screen_requests,
     ElementAnchoredBubbleAction action,
     ElementAnchoredBubbleVariant variant,

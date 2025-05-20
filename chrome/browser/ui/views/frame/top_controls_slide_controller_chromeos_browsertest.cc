@@ -1408,17 +1408,17 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   // request bubble resulting in top chrome unhiding.
   auto decided = [](ContentSetting, bool, bool,
                     const permissions::PermissionRequestData&) {};
-  permissions::PermissionRequest permission_request(
+  auto permission_request = std::make_unique<permissions::PermissionRequest>(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::GEOLOCATION),
           /*user_gesture*/ true, url),
-      base::BindRepeating(decided), base::DoNothing() /* delete_callback */);
+      base::BindRepeating(decided));
   auto* permission_manager =
       permissions::PermissionRequestManager::FromWebContents(active_contents);
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
   permission_manager->AddRequest(active_contents->GetPrimaryMainFrame(),
-                                 &permission_request);
+                                 std::move(permission_request));
   waiter.WaitForRatio(1.f);
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
   CheckBrowserLayout(browser_view(), TopChromeShownState::kFullyShown);

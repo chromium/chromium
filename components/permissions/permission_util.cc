@@ -4,16 +4,20 @@
 
 #include "components/permissions/permission_util.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_result.h"
@@ -69,6 +73,25 @@ PermissionDelegationMode GetPermissionDelegationMode(
 constexpr const char* kIsFileURLHistogram =
     "Permissions.GetLastCommittedOriginAsURL.IsFileURL";
 #endif
+
+RequestTypeForUma GetUmaValueForRequests(const RequestType first_request) {
+  if (
+#if !BUILDFLAG(IS_ANDROID)
+      first_request == RequestType::kCameraPanTiltZoom ||
+#endif
+      first_request == RequestType::kCameraStream ||
+      first_request == RequestType::kMicStream) {
+    return RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  if (first_request == RequestType::kKeyboardLock ||
+      first_request == RequestType::kPointerLock) {
+    return RequestTypeForUma::MULTIPLE_KEYBOARD_AND_POINTER_LOCK;
+  }
+#endif
+  return RequestTypeForUma::UNKNOWN;
+}
+
 }  // namespace
 
 // The returned strings must match any Field Trial configs for the Permissions
@@ -83,28 +106,23 @@ std::string PermissionUtil::GetPermissionString(
 }
 
 RequestTypeForUma PermissionUtil::GetUmaValueForRequests(
-    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-        requests) {
+    const std::vector<std::unique_ptr<PermissionRequest>>& requests) {
   CHECK(!requests.empty());
   const RequestType request_type = requests[0]->request_type();
   if (requests.size() == 1) {
     return GetUmaValueForRequestType(request_type);
   }
-  if (
-#if !BUILDFLAG(IS_ANDROID)
-      request_type == RequestType::kCameraPanTiltZoom ||
-#endif
-      request_type == RequestType::kCameraStream ||
-      request_type == RequestType::kMicStream) {
-    return RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE;
+  return permissions::GetUmaValueForRequests(request_type);
+}
+
+RequestTypeForUma PermissionUtil::GetUmaValueForRequests(
+    const std::vector<base::WeakPtr<PermissionRequest>>& requests) {
+  CHECK(!requests.empty());
+  const RequestType request_type = requests[0]->request_type();
+  if (requests.size() == 1) {
+    return GetUmaValueForRequestType(request_type);
   }
-#if !BUILDFLAG(IS_ANDROID)
-  if (request_type == RequestType::kKeyboardLock ||
-      request_type == RequestType::kPointerLock) {
-    return RequestTypeForUma::MULTIPLE_KEYBOARD_AND_POINTER_LOCK;
-  }
-#endif
-  return RequestTypeForUma::UNKNOWN;
+  return permissions::GetUmaValueForRequests(request_type);
 }
 
 RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
@@ -351,10 +369,10 @@ bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
     return false;
   }
 
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
+  const std::vector<std::unique_ptr<PermissionRequest>>& requests =
+      delegate->Requests();
   return std::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
+      requests, [](const std::unique_ptr<PermissionRequest>& request) {
         return (request->request_type() ==
                     permissions::RequestType::kCameraStream ||
                 request->request_type() ==
@@ -603,15 +621,12 @@ GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
 }
 
 bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
-  const std::vector<
-      raw_ptr<permissions::PermissionRequest, VectorExperimental>>& requests =
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& requests =
       delegate->Requests();
-  return std::any_of(
-      requests.begin(), requests.end(),
-      [](permissions::PermissionRequest* request) {
-        return request->GetGestureType() ==
-               permissions::PermissionRequestGestureType::GESTURE;
-      });
+  return std::any_of(requests.begin(), requests.end(), [](const auto& request) {
+    return request->GetGestureType() ==
+           permissions::PermissionRequestGestureType::GESTURE;
+  });
 }
 
 bool PermissionUtil::CanPermissionRequestIgnoreStatus(

@@ -298,11 +298,10 @@ void IdentityDialogController::RequestIdPRegistrationPermision(
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(rp_web_contents_);
 
-  auto* request =
-      new IdentityProviderPermissionRequest(origin, std::move(callback));
-
   permission_request_manager->AddRequest(
-      rp_web_contents_->GetPrimaryMainFrame(), request);
+      rp_web_contents_->GetPrimaryMainFrame(),
+      std::make_unique<IdentityProviderPermissionRequest>(origin,
+                                                          std::move(callback)));
 }
 
 void IdentityDialogController::SetAccountSelectionViewForTesting(

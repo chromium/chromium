@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -701,8 +702,7 @@ class PermissionUmaUtil {
   // This gets recorded during the creation process of a prompt, but only for
   // prompts that aren't labeled as abusive or disruptive.
   static void RecordPermissionPromptAttempt(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       bool can_display_prompt);
 
   // UMA specifically for when permission prompts are shown. This should be
@@ -715,12 +715,10 @@ class PermissionUmaUtil {
   //   granted+denied+dismissed+ignored is not equal to requested), so it is
   //   unclear from those metrics alone how many prompts are seen by users.
   static void PermissionPromptShown(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests);
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests);
 
   static void PermissionPromptResolved(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       content::WebContents* web_contents,
       PermissionAction permission_action,
       base::TimeDelta time_to_action,
@@ -741,20 +739,17 @@ class PermissionUmaUtil {
       const std::optional<base::Version>& version);
 
   static void RecordElementAnchoredBubbleDismiss(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       DismissedReason reason);
 
   static void RecordElementAnchoredBubbleOsMetrics(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       OsScreen screen,
       OsScreenAction action,
       base::TimeDelta time_to_action);
 
   static void RecordElementAnchoredBubbleVariantUMA(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       ElementAnchoredBubbleVariant variant);
 
   // Record UMAs related to the Android "Missing permissions" infobar.
@@ -841,8 +836,7 @@ class PermissionUmaUtil {
       PermissionPromptDisposition prompt_disposition);
 
   static void RecordIgnoreReason(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       PermissionPromptDisposition prompt_disposition,
       PermissionIgnoredReason reason);
 
@@ -879,9 +873,8 @@ class PermissionUmaUtil {
   // Permission Element. The passed in `permission` must be such that
   // PermissionUtil::IsPermission(permission) returns true.
   static void RecordElementAnchoredPermissionPromptAction(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
+      const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
           screen_requests,
       ElementAnchoredBubbleAction action,
       ElementAnchoredBubbleVariant variant,
@@ -985,8 +978,7 @@ class PermissionUmaUtil {
                                                int count);
 
   static void RecordPromptDecided(
-      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
-          requests,
+      const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       bool accepted,
       bool is_one_time);
 };

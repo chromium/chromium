@@ -63,10 +63,9 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
         });
   }
 
-  const std::vector<
-      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
-  Requests() override {
-    return raw_requests_;
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
+      override {
+    return requests_;
   }
 
   GURL GetRequestingOrigin() const override {

@@ -28,7 +28,6 @@ class IdentityProviderPermissionRequest
       bool is_one_time,
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data);
-  void DeleteRequest();
 
   base::OnceCallback<void(bool accepted)> callback_;
 };

@@ -25,15 +25,15 @@ namespace permissions {
 PermissionRequest::PermissionRequest(
     std::unique_ptr<PermissionRequestData> request_data,
     PermissionDecidedCallback permission_decided_callback,
-    base::OnceClosure delete_callback,
+    base::OnceClosure request_finished_callback,
     bool uses_automatic_embargo)
     : data_(std::move(request_data)),
       permission_decided_callback_(std::move(permission_decided_callback)),
-      delete_callback_(std::move(delete_callback)),
+      request_finished_callback_(std::move(request_finished_callback)),
       uses_automatic_embargo_(uses_automatic_embargo) {}
 
 PermissionRequest::~PermissionRequest() {
-  DCHECK(delete_callback_.is_null());
+  std::move(request_finished_callback_).Run();
 }
 
 RequestType PermissionRequest::request_type() const {
@@ -430,10 +430,6 @@ void PermissionRequest::Cancelled(bool is_final_decision) {
                                      /*is_one_time=*/false, is_final_decision,
                                      /*request_data=*/*data_);
   }
-}
-
-void PermissionRequest::RequestFinished() {
-  std::move(delete_callback_).Run();
 }
 
 PermissionRequestGestureType PermissionRequest::GetGestureType() const {

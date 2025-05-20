@@ -269,7 +269,7 @@ EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
   return delegate_->GetWeakPtr();
 }
 
-const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
 EmbeddedPermissionPrompt::Requests() const {
   return prompt_model_->requests();
 }

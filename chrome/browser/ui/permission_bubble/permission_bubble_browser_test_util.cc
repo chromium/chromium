@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/permission_bubble/permission_bubble_browser_test_util.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -24,14 +26,12 @@ PermissionBubbleBrowserTest::~PermissionBubbleBrowserTest() = default;
 void PermissionBubbleBrowserTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
 
-  // Add a single permission request.
-  requests_.push_back(std::make_unique<permissions::MockPermissionRequest>(
-      permissions::RequestType::kNotifications));
+  // // Add a single permission request.
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kNotifications, /*request_state=*/nullptr));
 
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      raw_requests;
-  raw_requests.push_back(requests_[0].get());
-  test_delegate_.set_requests(raw_requests);
+  test_delegate_.set_requests(std::move(requests));
 }
 
 content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {

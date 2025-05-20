@@ -20,8 +20,8 @@
 namespace {
 
 bool ContainsAllRequestTypes(
-    const std::vector<
-        raw_ptr<permissions::PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+        requests,
     const std::vector<permissions::RequestType>& request_types) {
   if (requests.size() != request_types.size()) {
     return false;
@@ -39,8 +39,8 @@ bool ContainsAllRequestTypes(
 }
 
 bool IsMicAndCameraRequest(
-    const std::vector<raw_ptr<permissions::PermissionRequest,
-                              VectorExperimental>>& requests) {
+    const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+        requests) {
   return ContainsAllRequestTypes(requests,
                                  {permissions::RequestType::kCameraStream,
                                   permissions::RequestType::kMicStream});
@@ -49,7 +49,7 @@ bool IsMicAndCameraRequest(
 const gfx::VectorIcon& GetBlockedPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
-  auto requests = delegate->Requests();
+  const auto& requests = delegate->Requests();
 
   // We need to use the icon from the camera request when it's an request for
   // Microphone and Camera.
@@ -64,7 +64,7 @@ const gfx::VectorIcon& GetBlockedPermissionIconId(
 const gfx::VectorIcon& GetPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
-  auto requests = delegate->Requests();
+  const auto& requests = delegate->Requests();
 
   // We need to use the icon from the camera request when it's an request for
   // Microphone and Camera.
@@ -99,7 +99,7 @@ std::u16string GetLoudPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
 
-  auto requests = delegate->Requests();
+  const auto& requests = delegate->Requests();
   if (IsMicAndCameraRequest(requests)) {
     return l10n_util::GetStringUTF16(
         IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
@@ -236,7 +236,7 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
       NOTREACHED();
   }
 
-  auto requests = delegate_->Requests();
+  const auto& requests = delegate_->Requests();
   chip_text_ = requests[0]->GetRequestChipText(chip_text_type).value_or(u"");
   if (IsMicAndCameraRequest(requests)) {
     accessibility_chip_text_ =

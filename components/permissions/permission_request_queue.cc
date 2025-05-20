@@ -20,54 +20,62 @@ bool PermissionRequestQueue::IsEmpty() const {
   return !size_;
 }
 
-size_t PermissionRequestQueue::Count(PermissionRequest* request) const {
-  size_t count = 0;
+bool PermissionRequestQueue::Contains(PermissionRequest* request) const {
   for (const auto& request_list : queued_requests_) {
-    count += std::ranges::count(request_list, request);
+    if (std::ranges::any_of(request_list,
+                            [=](const auto& request_list_element) {
+                              return request_list_element.get() == request;
+                            })) {
+      return true;
+    }
   }
-  return count;
+  return false;
 }
 
-void PermissionRequestQueue::Push(PermissionRequest* request) {
-  Priority priority = DetermineRequestPriority(request);
+void PermissionRequestQueue::Push(
+    std::unique_ptr<permissions::PermissionRequest> request) {
+  Priority priority = DetermineRequestPriority(request.get());
 
   // High priority requests are always pushed to the back since they don't use
   // the chip.
   if (priority == Priority::kHigh) {
-    PushBackInternal(request, priority);
+    PushBackInternal(std::move(request), priority);
     return;
   }
 
   // If the platform does not support the chip, push to the back.
   if (!PermissionUtil::DoesPlatformSupportChip()) {
-    PushBackInternal(request, priority);
+    PushBackInternal(std::move(request), priority);
     return;
   }
 
   // Otherwise push to the front since chip requests use FILO ordering.
-  PushFrontInternal(request, priority);
+  PushFrontInternal(std::move(request), priority);
 }
 
 void PermissionRequestQueue::PushFront(
-    permissions::PermissionRequest* request) {
-  Priority priority = DetermineRequestPriority(request);
-  PushFrontInternal(request, priority);
+    std::unique_ptr<permissions::PermissionRequest> request) {
+  Priority priority = DetermineRequestPriority(request.get());
+  PushFrontInternal(std::move(request), priority);
 }
 
-void PermissionRequestQueue::PushBack(permissions::PermissionRequest* request) {
-  Priority priority = DetermineRequestPriority(request);
-  PushBackInternal(request, priority);
+void PermissionRequestQueue::PushBack(
+    std::unique_ptr<permissions::PermissionRequest> request) {
+  Priority priority = DetermineRequestPriority(request.get());
+  PushBackInternal(std::move(request), priority);
 }
 
-PermissionRequest* PermissionRequestQueue::Pop() {
-  std::vector<base::circular_deque<PermissionRequest*>>::reverse_iterator it;
+std::unique_ptr<permissions::PermissionRequest> PermissionRequestQueue::Pop() {
+  std::vector<base::circular_deque<
+      std::unique_ptr<permissions::PermissionRequest>>>::reverse_iterator it;
   CHECK(!IsEmpty());
   // Skip entries that contain empty queues.
   for (it = queued_requests_.rbegin();
        it != queued_requests_.rend() && it->empty(); ++it) {
   }
   CHECK(it != queued_requests_.rend());
-  PermissionRequest* front = it->front();
+  std::unique_ptr<permissions::PermissionRequest> front =
+      std::move(it->front());
   it->pop_front();
   --size_;
   return front;
@@ -75,14 +83,15 @@ PermissionRequest* PermissionRequestQueue::Pop() {
 
 PermissionRequest* PermissionRequestQueue::Peek() const {
   CHECK(!IsEmpty());
-  std::vector<base::circular_deque<PermissionRequest*>>::const_reverse_iterator
+  std::vector<base::circular_deque<
+      std::unique_ptr<permissions::PermissionRequest>>>::const_reverse_iterator
       it;
   // Skip entries that contain empty queues.
   for (it = queued_requests_.rbegin();
        it != queued_requests_.rend() && it->empty(); ++it) {
   }
   CHECK(it != queued_requests_.rend());
-  return it->front();
+  return it->front().get();
 }
 
 PermissionRequest* PermissionRequestQueue::FindDuplicate(
@@ -90,9 +99,9 @@ PermissionRequest* PermissionRequestQueue::FindDuplicate(
   auto priority = DetermineRequestPriority(request);
   const auto& queued_request_list =
       queued_requests_[static_cast<size_t>(priority)];
-  for (PermissionRequest* queued_request : queued_request_list) {
-    if (request->IsDuplicateOf(queued_request)) {
-      return queued_request;
+  for (const auto& queued_request : queued_request_list) {
+    if (request->IsDuplicateOf(queued_request.get())) {
+      return queued_request.get();
     }
   }
   return nullptr;
@@ -123,16 +132,17 @@ PermissionRequestQueue::DetermineRequestPriority(
 }
 
 void PermissionRequestQueue::PushFrontInternal(
-    permissions::PermissionRequest* request,
+    std::unique_ptr<permissions::PermissionRequest> request,
     Priority priority) {
-  queued_requests_[static_cast<size_t>(priority)].push_front(request);
+  queued_requests_[static_cast<size_t>(priority)].push_front(
+      std::move(request));
   ++size_;
 }
 
 void PermissionRequestQueue::PushBackInternal(
-    permissions::PermissionRequest* request,
+    std::unique_ptr<permissions::PermissionRequest> request,
     Priority priority) {
-  queued_requests_[static_cast<size_t>(priority)].push_back(request);
+  queued_requests_[static_cast<size_t>(priority)].push_back(std::move(request));
   ++size_;
 }
 

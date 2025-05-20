@@ -97,7 +97,7 @@ class EmbeddedPermissionPromptFlowModel {
     return prompt_types_;
   }
 
-  const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests()
+  const std::vector<base::WeakPtr<permissions::PermissionRequest>>& requests()
       const {
     return requests_;
   }
@@ -130,7 +130,7 @@ class EmbeddedPermissionPromptFlowModel {
   raw_ptr<PermissionPrompt::Delegate> delegate_;
 
   std::set<ContentSettingsType> prompt_types_;
-  std::vector<raw_ptr<PermissionRequest, VectorExperimental>> requests_;
+  std::vector<base::WeakPtr<permissions::PermissionRequest>> requests_;
 
   raw_ptr<content::WebContents> web_contents_;
 

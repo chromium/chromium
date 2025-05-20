@@ -234,7 +234,7 @@ class PermissionContextBase : public content_settings::Observer {
       content::WebContents* web_contents,
       std::unique_ptr<PermissionRequestData> request_data,
       PermissionRequest::PermissionDecidedCallback permission_decided_callback,
-      base::OnceClosure delete_callback) const;
+      base::OnceClosure request_finished_callback) const;
 
   // Implementors can override this method to avoid using automatic embargo.
   virtual bool UsesAutomaticEmbargo() const;
@@ -281,7 +281,7 @@ class PermissionContextBase : public content_settings::Observer {
   const network::mojom::PermissionsPolicyFeature permissions_policy_feature_;
   std::unordered_map<
       std::string,
-      std::pair<std::unique_ptr<PermissionRequest>, BrowserPermissionCallback>>
+      std::pair<base::WeakPtr<PermissionRequest>, BrowserPermissionCallback>>
       pending_requests_;
 
   mutable std::optional<bool> last_has_device_permission_result_ = std::nullopt;

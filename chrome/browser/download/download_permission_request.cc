@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -32,9 +33,7 @@ DownloadPermissionRequest::DownloadPermissionRequest(
               /*user_gesture=*/false,
               requesting_origin.GetURL()),
           base::BindRepeating(&DownloadPermissionRequest::PermissionDecided,
-                              base::Unretained(this)),
-          base::BindOnce(&DownloadPermissionRequest::DeleteRequest,
-                         base::Unretained(this))),
+                              base::Unretained(this))),
       host_(host),
       requesting_origin_(requesting_origin) {}
 
@@ -59,8 +58,4 @@ void DownloadPermissionRequest::PermissionDecided(
     DCHECK_EQ(CONTENT_SETTING_DEFAULT, result);
     host_->CancelOnce(requesting_origin_);
   }
-}
-
-void DownloadPermissionRequest::DeleteRequest() {
-  delete this;
 }

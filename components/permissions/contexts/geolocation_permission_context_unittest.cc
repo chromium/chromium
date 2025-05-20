@@ -532,7 +532,7 @@ void GeolocationPermissionContextTests::ClosePrompt() {
 std::u16string GeolocationPermissionContextTests::GetPromptText() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
-  PermissionRequest* request = manager->Requests().front();
+  auto& request = manager->Requests().front();
 #if BUILDFLAG(IS_ANDROID)
   return request
       ->GetDialogAnnotatedMessageText(

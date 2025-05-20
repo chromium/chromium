@@ -113,8 +113,6 @@ class ContentSettingBubbleDialogTest
   base::AutoReset<ChromeContentBrowserClient::PopupNavigationDelegateFactory>
       resetter_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::optional<permissions::MockPermissionRequest>
-      notification_permission_request_;
 };
 
 void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
@@ -209,11 +207,12 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
   permission_request_manager->set_permission_ui_selector_for_testing(
       std::make_unique<MockPermissionUiSelector>(
           Decision(simulated_reason_for_quiet_ui, std::nullopt)));
-  DCHECK(!notification_permission_request_);
-  notification_permission_request_.emplace(
-      GURL("https://example.com"), permissions::RequestType::kNotifications);
-  permission_request_manager->AddRequest(web_contents->GetPrimaryMainFrame(),
-                                         &*notification_permission_request_);
+
+  permission_request_manager->AddRequest(
+      web_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          GURL("https://example.com"),
+          permissions::RequestType::kNotifications));
   base::RunLoop().RunUntilIdle();
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/smart_card/smart_card_permission_request.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_data.h"
@@ -24,10 +25,7 @@ SmartCardPermissionRequest::SmartCardPermissionRequest(
               /*user_gesture=*/false,
               requesting_origin.GetURL()),
           base::BindRepeating(&SmartCardPermissionRequest::OnPermissionDecided,
-                              base::Unretained(this)),
-          base::BindOnce(&SmartCardPermissionRequest::DeleteRequest,
-                         base::Unretained(this)),
-          /*uses_automatic_embargo=*/true),
+                              base::Unretained(this))),
       reader_name_(reader_name),
       result_callback_(std::move(result_callback)) {}
 
@@ -76,8 +74,4 @@ void SmartCardPermissionRequest::OnPermissionDecided(
   }
 
   std::move(result_callback_).Run(result);
-}
-
-void SmartCardPermissionRequest::DeleteRequest() {
-  delete this;
 }

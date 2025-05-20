@@ -49,7 +49,7 @@ std::unique_ptr<PermissionPrompt> MockPermissionPromptFactory::Create(
   prompts_.push_back(prompt);
   show_count_++;
   requests_count_ = delegate->Requests().size();
-  for (const PermissionRequest* request : delegate->Requests()) {
+  for (const auto& request : delegate->Requests()) {
     request_types_seen_.push_back(request->request_type());
     request_origins_seen_.push_back(request->requesting_origin());
   }

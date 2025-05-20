@@ -6,6 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/memory/weak_ptr.h"
 #include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
@@ -300,7 +301,7 @@ bool EmbeddedPermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {
   return false;
 }
 
-const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
 EmbeddedPermissionPromptAndroid::Requests() const {
   return prompt_model_->requests();
 }

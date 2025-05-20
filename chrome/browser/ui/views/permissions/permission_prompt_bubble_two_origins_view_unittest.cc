@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_two_origins_view.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
@@ -50,10 +51,9 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
         });
   }
 
-  const std::vector<
-      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
-  Requests() override {
-    return raw_requests_;
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
+      override {
+    return requests_;
   }
 
   GURL GetRequestingOrigin() const override {

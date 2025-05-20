@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 
+#include "base/functional/callback_helpers.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
@@ -18,9 +19,7 @@ IdentityProviderPermissionRequest::IdentityProviderPermissionRequest(
               origin.GetURL()),
           base::BindRepeating(
               &IdentityProviderPermissionRequest::PermissionDecided,
-              base::Unretained(this)),
-          base::BindOnce(&IdentityProviderPermissionRequest::DeleteRequest,
-                         base::Unretained(this))),
+              base::Unretained(this))),
       callback_(std::move(callback)) {}
 
 IdentityProviderPermissionRequest::~IdentityProviderPermissionRequest() =
@@ -42,8 +41,4 @@ void IdentityProviderPermissionRequest::PermissionDecided(
     DCHECK_EQ(CONTENT_SETTING_DEFAULT, result);
     std::move(callback_).Run(false);
   }
-}
-
-void IdentityProviderPermissionRequest::DeleteRequest() {
-  delete this;
 }

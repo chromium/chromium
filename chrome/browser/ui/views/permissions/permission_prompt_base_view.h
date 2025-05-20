@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_
 
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -62,11 +65,20 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
       permissions::PermissionPrompt::Delegate& delegate);
 
   static std::u16string GetAllowAlwaysText(
-      const std::vector<raw_ptr<permissions::PermissionRequest,
-                                VectorExperimental>>& visible_requests);
+      const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+          visible_requests);
+
+  static std::u16string GetAllowAlwaysText(
+      const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
+          visible_requests);
+
   static std::u16string GetBlockText(
-      const std::vector<raw_ptr<permissions::PermissionRequest,
-                                VectorExperimental>>& visible_requests);
+      const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+          visible_requests);
+
+  static std::u16string GetBlockText(
+      const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
+          visible_requests);
 
   // Starts observing our widget for occlusion by a picture-in-picture window.
   // Subclasses must manually call this if they override `AddedToWidget()`

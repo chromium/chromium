@@ -343,8 +343,7 @@ TEST_F(StorageAccessGrantPermissionContextTest, PermissionDecided) {
   auto future = DecidePermission(/*user_gesture=*/true);
   WaitUntilPrompt();
 
-  permissions::PermissionRequest* request =
-      request_manager()->Requests().front();
+  const auto& request = request_manager()->Requests().front();
   ASSERT_TRUE(request);
   ASSERT_EQ(1u, request_manager()->Requests().size());
   // Prompt should have both origins.

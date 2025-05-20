@@ -14,7 +14,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
@@ -246,10 +248,10 @@ PermissionContextBase::CreatePermissionRequest(
     content::WebContents* web_contents,
     std::unique_ptr<PermissionRequestData> request_data,
     PermissionRequest::PermissionDecidedCallback permission_decided_callback,
-    base::OnceClosure delete_callback) const {
+    base::OnceClosure request_finished_callback) const {
   return std::make_unique<PermissionRequest>(
       std::move(request_data), std::move(permission_decided_callback),
-      std::move(delete_callback), UsesAutomaticEmbargo());
+      std::move(request_finished_callback), UsesAutomaticEmbargo());
 }
 
 bool PermissionContextBase::UsesAutomaticEmbargo() const {
@@ -519,16 +521,15 @@ void PermissionContextBase::DecidePermission(
                      request_data->embedded_permission_element_initiated);
   PermissionRequestID permission_request_id = request_data->id;
 
-  std::unique_ptr<PermissionRequest> request_ptr =
+  std::unique_ptr<PermissionRequest> request =
       CreatePermissionRequest(web_contents, std::move(request_data),
                               std::move(decided_cb), std::move(cleanup_cb));
-  PermissionRequest* request = request_ptr.get();
 
   bool inserted =
       pending_requests_
           .insert(std::make_pair(
               permission_request_id.ToString(),
-              std::make_pair(std::move(request_ptr), std::move(callback))))
+              std::make_pair(request->GetWeakPtr(), std::move(callback))))
           .second;
 
   DCHECK(inserted) << "Duplicate id " << permission_request_id.ToString();
@@ -550,6 +551,7 @@ void PermissionContextBase::PermissionDecided(
   bool persist = content_setting != CONTENT_SETTING_DEFAULT;
 
   auto request = pending_requests_.find(request_data.id.ToString());
+  CHECK(request->second.first);
   CHECK(request != pending_requests_.end(), base::NotFatalUntil::M130);
   // Check if `request` has `BrowserPermissionCallback`. The call back might be
   // missing if a permission prompt was preignored and we already notified an

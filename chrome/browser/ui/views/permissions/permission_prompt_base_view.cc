@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 
+#include <cstddef>
+#include <memory>
+
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -33,6 +37,46 @@ constexpr UrlIdentity::FormatOptions options = {
     .default_options = {
         UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
 
+std::u16string GetAllowAlwaysTextInternal(
+    size_t num_requests,
+    permissions::PermissionRequest* first_request) {
+  CHECK_GT(num_requests, 0u);
+  CHECK(first_request);
+
+  if (num_requests == 1 && first_request->GetAllowAlwaysText().has_value()) {
+    // A prompt for a single request can use an "allow always" text that is
+    // customized for it.
+    return first_request->GetAllowAlwaysText().value();
+  }
+
+  // Use the generic text.
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_WHILE_VISITING);
+}
+
+std::u16string GetBlockTextInternal(
+    size_t num_requests,
+    permissions::PermissionRequest* first_request) {
+  CHECK_GT(num_requests, 0u);
+  if (auto text = first_request->GetBlockText();
+      num_requests == 1u && text.has_value()) {
+    // A prompt for a single request can use a "block" text that is customized
+    // for it.
+    return text.value();
+  }
+
+  // Use the generic text.
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW);
+}
+
+int CountValidRequests(
+    const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
+        requests) {
+  return std::ranges::count_if(
+      requests.begin(), requests.end(),
+      [](base::WeakPtr<permissions::PermissionRequest> request_ptr) {
+        return request_ptr.get() != nullptr;
+      });
+}
 }  // namespace
 
 PermissionPromptBaseView::PermissionPromptBaseView(
@@ -157,34 +201,39 @@ UrlIdentity PermissionPromptBaseView::GetUrlIdentity(
 }
 
 std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
-    const std::vector<raw_ptr<permissions::PermissionRequest,
-                              VectorExperimental>>& visible_requests) {
+    const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+        visible_requests) {
   CHECK_GT(visible_requests.size(), 0u);
+  return GetAllowAlwaysTextInternal(visible_requests.size(),
+                                    visible_requests[0].get());
+}
 
-  if (visible_requests.size() == 1 &&
-      visible_requests[0]->GetAllowAlwaysText().has_value()) {
-    // A prompt for a single request can use an "allow always" text that is
-    // customized for it.
-    return visible_requests[0]->GetAllowAlwaysText().value();
-  }
-
-  // Use the generic text.
-  return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_WHILE_VISITING);
+std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
+    const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
+        visible_requests) {
+  size_t num_valid_visible_requests = CountValidRequests(visible_requests);
+  CHECK_EQ(visible_requests.size(), num_valid_visible_requests);
+  CHECK_GT(num_valid_visible_requests, 0u);
+  return GetAllowAlwaysTextInternal(num_valid_visible_requests,
+                                    visible_requests[0].get());
 }
 
 std::u16string PermissionPromptBaseView::GetBlockText(
-    const std::vector<raw_ptr<permissions::PermissionRequest,
-                              VectorExperimental>>& visible_requests) {
+    const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+        visible_requests) {
   CHECK_GT(visible_requests.size(), 0u);
-  if (auto text = visible_requests[0]->GetBlockText();
-      visible_requests.size() == 1u && text.has_value()) {
-    // A prompt for a single request can use a "block" text that is customized
-    // for it.
-    return text.value();
-  }
+  return GetBlockTextInternal(visible_requests.size(),
+                              visible_requests[0].get());
+}
 
-  // Use the generic text.
-  return l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW);
+std::u16string PermissionPromptBaseView::GetBlockText(
+    const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
+        visible_requests) {
+  size_t num_valid_visible_requests = CountValidRequests(visible_requests);
+  CHECK_EQ(visible_requests.size(), num_valid_visible_requests);
+  CHECK_GT(num_valid_visible_requests, 0u);
+  return GetBlockTextInternal(num_valid_visible_requests,
+                              visible_requests[0].get());
 }
 
 void PermissionPromptBaseView::StartTrackingPictureInPictureOcclusion() {

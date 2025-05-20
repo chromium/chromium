@@ -89,7 +89,7 @@ class PerDeviceProvisioningPermissionRequest final
                 &PerDeviceProvisioningPermissionRequest::PermissionDecided,
                 base::Unretained(this)),
             base::BindOnce(
-                &PerDeviceProvisioningPermissionRequest::DeleteRequest,
+                &PerDeviceProvisioningPermissionRequest::RequestFinished,
                 base::Unretained(this))),
         origin_(origin),
         callback_(std::move(callback)) {}
@@ -111,20 +111,15 @@ class PerDeviceProvisioningPermissionRequest final
     std::move(callback_).Run(granted);
   }
 
-  void DeleteRequest() {
+  void RequestFinished() {
     // The |callback_| may not have run if the prompt was ignored, e.g. the tab
     // was closed while the prompt was displayed. Don't save this result as the
     // last response since it wasn't really a user action.
     if (callback_)
       std::move(callback_).Run(false);
-
-    delete this;
   }
 
  private:
-  // Can only be self-destructed. See DeleteRequest().
-  ~PerDeviceProvisioningPermissionRequest() override = default;
-
   void UpdateLastResponse(bool allowed) {
     GetLastResponse().Update(origin_, allowed);
   }
@@ -167,6 +162,6 @@ void RequestPerDeviceProvisioningPermission(
   // complete. See PerDeviceProvisioningPermissionRequest::DeleteRequest().
   permission_request_manager->AddRequest(
       render_frame_host,
-      new PerDeviceProvisioningPermissionRequest(
+      std::make_unique<PerDeviceProvisioningPermissionRequest>(
           render_frame_host->GetLastCommittedOrigin(), std::move(callback)));
 }

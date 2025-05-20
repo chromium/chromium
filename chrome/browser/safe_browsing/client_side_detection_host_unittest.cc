@@ -1891,18 +1891,20 @@ TEST_F(ClientSideDetectionHostNotificationTest,
   // Set up mock call to token fetcher.
   SafeBrowsingTokenFetcher::Callback cb;
   EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
-
-  permissions::MockPermissionRequest request1(
+  permissions::MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request1 = std::make_unique<permissions::MockPermissionRequest>(
       url, permissions::RequestType::kNotifications,
-      permissions::PermissionRequestGestureType::GESTURE);
+      permissions::PermissionRequestGestureType::GESTURE,
+      request_state.GetWeakPtr());
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
-  manager->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1);
+  manager->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                      std::move(request1));
 
   WaitForBubbleToBeShown();
 
   EXPECT_TRUE(prompt_factory_->is_visible());
-  EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request1.request_type()));
+  EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request_state.request_type));
   ASSERT_EQ(prompt_factory_->request_count(), 1);
 
   // Wait for token fetcher to be called.
@@ -1914,7 +1916,7 @@ TEST_F(ClientSideDetectionHostNotificationTest,
   manager->Accept();
   task_environment()->RunUntilIdle();
 
-  EXPECT_TRUE(request1.granted());
+  EXPECT_TRUE(request_state.granted);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectorResult.NotificationPermissionPrompt",

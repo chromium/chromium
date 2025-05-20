@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -48,17 +49,17 @@ class PermissionRequest {
 
   // `permission_decided_callback` is called when the permission request is
   // resolved by the user (see comment on PermissionDecidedCallback above).
-  // `delete_callback` is called when the permission request is no longer needed
-  // by the permission system. Therefore, it is safe to delete `this` inside
-  // `delete_callback`. It will always be called eventually by the permission
-  // system.
-  // `delete_callback` may be called before `permission_decided_callback`, for
-  // example if the tab is closed without user interaction. In this case, the
-  // javascript promise from the requesting origin will not be resolved.
-  PermissionRequest(std::unique_ptr<PermissionRequestData> request_data,
-                    PermissionDecidedCallback permission_decided_callback,
-                    base::OnceClosure delete_callback,
-                    bool uses_automatic_embargo = true);
+  // `request_finished_callback` is called when the permission request is being
+  // destructed after being handled by the permission system. It will always be
+  // called eventually by the permission system. `request_finished_callback` may
+  // be called before `permission_decided_callback`, for example if the tab is
+  // closed without user interaction. In this case, the javascript promise from
+  // the requesting origin will not be resolved.
+  PermissionRequest(
+      std::unique_ptr<PermissionRequestData> request_data,
+      PermissionDecidedCallback permission_decided_callback,
+      base::OnceClosure request_finished_callback = base::DoNothing(),
+      bool uses_automatic_embargo = true);
 
   PermissionRequest(const PermissionRequest&) = delete;
   PermissionRequest& operator=(const PermissionRequest&) = delete;
@@ -176,15 +177,6 @@ class PermissionRequest {
   // be able to distinguish between an active refusal or an implicit refusal.
   void Cancelled(bool is_final_decision = true);
 
-  // The UI this request was associated with was answered by the user.
-  // It is safe for the request to be deleted at this point -- it will receive
-  // no further message from the permission request system. This method will
-  // eventually be called on every request which is not unregistered.
-  // It is ok to call this method without actually resolving the request via
-  // PermissionGranted(), PermissionDenied() or Canceled(). However, it will not
-  // resolve the javascript promise from the requesting origin.
-  void RequestFinished();
-
   // Used to record UMA for whether requests are associated with a user gesture.
   // To keep things simple this metric is only recorded for the most popular
   // request types.
@@ -232,9 +224,8 @@ class PermissionRequest {
   // Called once a decision is made about the permission.
   PermissionDecidedCallback permission_decided_callback_;
 
-  // Called when the request is no longer in use so it can be deleted by the
-  // caller.
-  base::OnceClosure delete_callback_;
+  // Called when the request is finished to perform bookkeeping tasks.
+  base::OnceClosure request_finished_callback_;
 
   const bool uses_automatic_embargo_ = true;
 

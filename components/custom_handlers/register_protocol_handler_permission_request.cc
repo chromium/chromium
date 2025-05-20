@@ -5,6 +5,7 @@
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -31,9 +32,6 @@ RegisterProtocolHandlerPermissionRequest::
               url.DeprecatedGetOriginAsURL()),
           base::BindRepeating(
               &RegisterProtocolHandlerPermissionRequest::PermissionDecided,
-              base::Unretained(this)),
-          base::BindOnce(
-              &RegisterProtocolHandlerPermissionRequest::DeleteRequest,
               base::Unretained(this))),
       registry_(registry),
       handler_(handler),
@@ -84,10 +82,6 @@ void RegisterProtocolHandlerPermissionRequest::PermissionDecided(
         base::UserMetricsAction("RegisterProtocolHandler.InfoBar_Deny"));
     registry_->OnIgnoreRegisterProtocolHandler(handler_);
   }
-}
-
-void RegisterProtocolHandlerPermissionRequest::DeleteRequest() {
-  delete this;
 }
 
 }  // namespace custom_handlers

@@ -120,7 +120,7 @@ void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
 
   // If at least one RFH is not subscribed to the PermissionChange event, we
   // should not preemptively resolve a prompt.
-  for (permissions::PermissionRequest* request : delegate->Requests()) {
+  for (const auto& request : delegate->Requests()) {
     content::RenderFrameHost* rfh =
         content::RenderFrameHost::FromID(request->get_requesting_frame_id());
     if (rfh == nullptr) {

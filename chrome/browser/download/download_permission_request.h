@@ -33,7 +33,6 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
       bool is_one_time,
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data);
-  void DeleteRequest();
 
   base::WeakPtr<DownloadRequestLimiter::TabDownloadState> host_;
   url::Origin requesting_origin_;

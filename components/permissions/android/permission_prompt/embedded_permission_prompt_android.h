@@ -72,9 +72,8 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
   bool ShouldUseRequestingOriginFavicon() const override;
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;
-  const std::vector<
-      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
-  Requests() const override;
+  const std::vector<base::WeakPtr<permissions::PermissionRequest>>& Requests()
+      const override;
   int GetIconId() const override;
 
  private:

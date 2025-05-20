@@ -42,8 +42,6 @@ class SmartCardPermissionRequest : public permissions::PermissionRequest {
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data);
 
-  void DeleteRequest();
-
   std::string reader_name_;
   ResultCallback result_callback_;
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_request_limiter.h"
 
 #include <iterator>
+#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -217,7 +218,8 @@ void DownloadRequestLimiter::TabDownloadState::PromptUserForDownload(
     // request in the case that the initiator RFH is already gone.
     permission_request_manager->AddRequest(
         web_contents_->GetPrimaryMainFrame(),
-        new DownloadPermissionRequest(factory_.GetWeakPtr(), request_origin));
+        std::make_unique<DownloadPermissionRequest>(factory_.GetWeakPtr(),
+                                                    request_origin));
   } else {
     // Call CancelOnce() so we don't set the content settings.
     CancelOnce(request_origin);

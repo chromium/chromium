@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_ONE_ORIGIN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_ONE_ORIGIN_VIEW_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 
@@ -65,8 +66,9 @@ class PermissionPromptBubbleOneOriginView :
 
  private:
   // Add a line for the |request| at |index| of the view.
-  void AddRequestLine(permissions::PermissionRequest* request,
-                      std::size_t index);
+  void AddRequestLine(
+      const base::WeakPtr<permissions::PermissionRequest>& request,
+      std::size_t index);
 
   // Adds Media (Camera / Mic) live preview feeds.
   void MaybeAddMediaPreview(

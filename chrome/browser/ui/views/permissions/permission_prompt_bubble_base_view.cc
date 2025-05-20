@@ -321,7 +321,7 @@ std::u16string PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting()
 bool PermissionPromptBubbleBaseView::IsOneTimePermission(
     permissions::PermissionPrompt::Delegate& delegate) {
   CHECK_GT(delegate.Requests().size(), 0u);
-  for (permissions::PermissionRequest* request : delegate.Requests()) {
+  for (const auto& request : delegate.Requests()) {
     auto content_setting_type =
         permissions::RequestTypeToContentSettingsType(request->request_type());
     if (!content_setting_type.has_value() ||

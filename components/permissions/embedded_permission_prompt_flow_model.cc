@@ -167,9 +167,9 @@ void EmbeddedPermissionPromptFlowModel::CalculateCurrentVariant() {
   }
 
   const auto& requests = delegate_->Requests();
-  for (PermissionRequest* request : requests) {
+  for (const auto& request : requests) {
     if (prompt_types_.contains(request->GetContentSettingsType())) {
-      requests_.push_back(request);
+      requests_.push_back(request->GetWeakPtr());
     }
   }
 }

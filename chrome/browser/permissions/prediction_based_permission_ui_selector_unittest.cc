@@ -288,7 +288,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseCpssV1) {
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::GEOLOCATION),
           /*user_gesture=*/true, GURL("http://example.com/")),
-      base::BindRepeating(decided), /*delete_callback=*/base::NullCallback());
+      base::BindRepeating(decided));
 
   permissions::PredictionRequestFeatures features =
       prediction_selector.BuildPredictionRequestFeatures(&permission_request);

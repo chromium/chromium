@@ -195,7 +195,7 @@ void ExclusiveAccessPermissionPromptView::Init() {
                      base::Unretained(this)));
 
   int index = 0;
-  for (permissions::PermissionRequest* request : delegate_->Requests()) {
+  for (const auto& request : delegate_->Requests()) {
     AddRequestLine(&permissions::GetIconId(request->request_type()),
                    request->GetMessageTextFragment(), index++);
   }

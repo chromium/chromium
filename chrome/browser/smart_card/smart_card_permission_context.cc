@@ -263,16 +263,14 @@ void SmartCardPermissionContext::RequestReaderPermisssion(
     return;
   }
 
-  // Regarding ownership: The request will delete itself once the request
-  // manager notifies that it can do so.
-  auto* permission_request = new SmartCardPermissionRequest(
+  auto permission_request = std::make_unique<SmartCardPermissionRequest>(
       origin, reader_name,
       base::BindOnce(&SmartCardPermissionContext::OnPermissionRequestDecided,
                      weak_ptr_factory_.GetWeakPtr(), origin, reader_name,
                      std::move(callback)));
 
   permission_request_manager->AddRequest(&render_frame_host,
-                                         permission_request);
+                                         std::move(permission_request));
 }
 
 void SmartCardPermissionContext::GrantEphemeralReaderPermission(
