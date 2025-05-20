@@ -511,6 +511,30 @@
             ]
         }
     ],
+    "AndroidAppIntegrationMultiDataSource": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SkipSchemaCheck",
+                    "params": {
+                        "multi_data_source_skip_schema_check": "true"
+                    },
+                    "enable_features": [
+                        "AndroidAppIntegrationMultiDataSource"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAppIntegrationMultiDataSource"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBookmarkBar": [
         {
             "platforms": [
