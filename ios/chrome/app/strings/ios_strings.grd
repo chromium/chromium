@@ -2455,6 +2455,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_PROMPT_BUTTON_TITLE" desc="Title of the button for the user to start the First Run Guided Tour." meaning="Title-cased">
       Show me around
     </message>
+      <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TEXT" desc="Text of the Guided Tour IPH for the step focusing on the tab grid's incognito page control item." meaning="Title-cased">
+          Keep your browsing private by switching to Incognito mode
+    </message>
+      <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TITLE" desc="Title of the Guided Tour IPH for the step focusing on the tab grid's incognito page control item." meaning="Title-cased">
+          Browse in Incognito
+    </message>
       <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
         More
       </message>

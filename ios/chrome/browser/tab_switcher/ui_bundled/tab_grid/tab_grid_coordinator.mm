@@ -24,6 +24,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/app/profile/first_run_profile_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
@@ -486,6 +487,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   __weak __typeof(self) weakSelf = self;
 
   ProceduralBlock transitionCompletionBlock = ^{
+    TabGridCoordinator* strongSelf = weakSelf;
+    if (strongSelf && IsBestOfAppGuidedTourEnabled()) {
+      Browser* browser = strongSelf.regularBrowser;
+      FirstRunProfileAgent* profileAgent = [FirstRunProfileAgent
+          agentFromProfile:browser->GetSceneState().profileState];
+      [profileAgent tabGridWasPresented];
+    }
     [weakSelf transitionToGridCompleteForAndroidTabsPrompt:
                   shouldDisplayBringAndroidTabsPrompt];
   };

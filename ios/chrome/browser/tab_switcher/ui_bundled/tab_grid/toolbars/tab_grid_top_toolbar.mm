@@ -15,8 +15,11 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_page_control.h"
@@ -210,8 +213,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
 }
 
-- (void)highlightLastPageControl {
-  [self.pageControl highlightLastPageControl];
+- (void)highlightPageControlItem:(TabGridPage)page {
+  [self.pageControl highlightPageControlItem:TabGridPageIncognitoTabs];
 }
 
 - (void)resetLastPageControlHighlight {
@@ -449,6 +452,9 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   // The segmented control has an intrinsic size.
   _pageControl = [[TabGridPageControl alloc] init];
   _pageControl.translatesAutoresizingMaskIntoConstraints = NO;
+
+  LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
+  [center referenceView:_pageControl underName:kTabGridPageControlGuide];
   [_pageControl setScrollViewScrolledToEdge:_scrolledToEdge];
   _pageControlItem = [[UIBarButtonItem alloc] initWithCustomView:_pageControl];
 

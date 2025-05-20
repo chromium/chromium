@@ -2,6 +2,7 @@ include_rules = [
   "+components/collaboration/public",
   "+components/saved_tab_groups/public",
   "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h",
 ]
 
 specific_include_rules = {

@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
@@ -53,8 +54,28 @@
   // Coordinator for the first step of the guided tour.
   GuidedTourCoordinator* _guidedTourCoordinator;
 
+  // The current step in the guided tour.
+  GuidedTourStep _currentGuidedTourStep;
+
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
+}
+
+#pragma mark - Public
+
+- (void)tabGridWasPresented {
+  if (_currentGuidedTourStep == GuidedTourStepTabGridIncognito) {
+    id<BrowserProvider> presentingInterface =
+        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+    Browser* browser = presentingInterface.browser;
+    __weak FirstRunProfileAgent* weakSelf = self;
+    ProceduralBlock completion = ^{
+      [weakSelf showLongPressStep];
+    };
+    id<TabGridToolbarCommands> handler = HandlerForProtocol(
+        browser->GetCommandDispatcher(), TabGridToolbarCommands);
+    [handler showGuidedTourIncognitoStepWithDismissalCompletion:completion];
+  }
 }
 
 #pragma mark - SceneStateObserver
@@ -183,6 +204,7 @@
 }
 
 - (void)showNTPStep {
+  _currentGuidedTourStep = GuidedTourStepNTP;
   // Command Dispatcher to show NTP IPH
   id<BrowserProvider> presentingInterface =
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
@@ -199,17 +221,22 @@
   [_guidedTourCoordinator start];
 }
 
+- (void)showLongPressStep {
+  // TODO(crbug.com/413461470): Implement
+}
+
 #pragma mark - GuidedTourCoordinatorDelegate
 
 - (void)stepCompleted:(GuidedTourStep)step {
+  CHECK_EQ(step, _currentGuidedTourStep);
   if (step == GuidedTourStepNTP) {
+    _currentGuidedTourStep = GuidedTourStepTabGridIncognito;
     id<BrowserProvider> presentingInterface =
         _presentingSceneState.browserProviderInterface.currentBrowserProvider;
     Browser* browser = presentingInterface.browser;
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
-    // TODO(crbug.com/413461470): Trigger next step.
   }
 }
 

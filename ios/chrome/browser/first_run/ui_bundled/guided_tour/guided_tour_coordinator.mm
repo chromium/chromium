@@ -15,8 +15,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-// Corner radius of the Tab Grid button spotlight cutout for the NTP step.
+// Corner radius of the spotlight cutouts.
 const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
+const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 }  // namespace
 
 @implementation GuidedTourCoordinator {
@@ -41,14 +42,14 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
 
 - (void)start {
   __weak GuidedTourCoordinator* weakSelf = self;
-  BubbleArrowDirection direction = IsSplitToolbarMode(self.baseViewController)
+  BubbleArrowDirection direction = [self shouldPointArrowDown]
                                        ? BubbleArrowDirectionDown
                                        : BubbleArrowDirectionUp;
   _presenter = [[GuidedTourBubbleViewControllerPresenter alloc]
       initWithText:[self bodyString]
       title:[self titleString]
       arrowDirection:direction
-      alignment:BubbleAlignmentBottomOrTrailing
+      alignment:[self bubbleAlignment]
       bubbleType:BubbleViewTypeRichWithNext
       backgroundCutoutCornerRadius:[self backgroundCutoutCornerRadius]
       dismissalCallback:^(IPHDismissalReasonType reason) {
@@ -60,15 +61,10 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
 
   UIView* anchorView = [self anchorView];
   CGPoint anchorPoint = [self anchorPointForAnchorView:anchorView];
-  CGPoint anchorViewOrigin =
-      [anchorView.superview convertPoint:anchorView.frame.origin toView:nil];
-  CGRect anchorViewFrame =
-      CGRectMake(anchorViewOrigin.x, anchorViewOrigin.y,
-                 anchorView.frame.size.width, anchorView.frame.size.height);
 
   [_presenter presentInViewController:self.baseViewController
                           anchorPoint:anchorPoint
-                      anchorViewFrame:anchorViewFrame];
+                      anchorViewFrame:[self cutoutView]];
 }
 
 - (void)stop {
@@ -85,6 +81,9 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
         static_cast<ToolbarButton*>([LayoutGuideCenterForBrowser(self.browser)
             referencedViewUnderName:kTabSwitcherGuide]);
     return tabSwitcherButton.spotlightView;
+  } else if (_step == GuidedTourStepTabGridIncognito) {
+    return [LayoutGuideCenterForBrowser(nil)
+        referencedViewUnderName:kTabGridPageControlIncognitoGuide];
   }
   NOTREACHED() << "A layout guide view needs to be fetched for each step";
 }
@@ -93,7 +92,7 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
 // anchored.
 - (CGPoint)anchorPointForAnchorView:(UIView*)anchorView {
   CGPoint anchorPoint;
-  if (IsSplitToolbarMode(self.baseViewController)) {
+  if ([self shouldPointArrowDown]) {
     anchorPoint = CGPointMake(CGRectGetMidX(anchorView.frame),
                               CGRectGetMinY(anchorView.frame));
   } else {
@@ -117,6 +116,9 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
 - (NSString*)titleString {
   if (_step == GuidedTourStepNTP) {
     return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_GUIDED_TOUR_NTP_IPH_TITLE);
+  } else if (_step == GuidedTourStepTabGridIncognito) {
+    return l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TITLE);
   }
   return @"";
 }
@@ -125,6 +127,9 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
 - (NSString*)bodyString {
   if (_step == GuidedTourStepNTP) {
     return l10n_util::GetNSString(IDS_IOS_FIRST_RUN_GUIDED_TOUR_NTP_IPH_TEXT);
+  } else if (_step == GuidedTourStepTabGridIncognito) {
+    return l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TEXT);
   }
   return @"";
 }
@@ -132,7 +137,42 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
 // The corner radius of the spotlight cutout for this Bubble View.
 - (CGFloat)backgroundCutoutCornerRadius {
   return _step == GuidedTourStepNTP ? kNTPTabGridButtonSpotlightCornerRadius
-                                    : 0;
+                                    : kNTPTabGridPageControlCornerRadius;
+}
+
+// YES if the bubble arrow should point down (e.g. the NTP step is pointing down
+// to the bottom toolbar).
+- (BOOL)shouldPointArrowDown {
+  return IsSplitToolbarMode(self.baseViewController) &&
+         _step == GuidedTourStepNTP;
+}
+
+// Returns the bubble alignment for each step.
+- (BubbleAlignment)bubbleAlignment {
+  if (_step == GuidedTourStepNTP) {
+    return BubbleAlignmentBottomOrTrailing;
+  } else if (_step == GuidedTourStepTabGridIncognito) {
+    return BubbleAlignmentTopOrLeading;
+  }
+  NOTREACHED()
+      << "Need to define the bubble alignment for each guided tour step";
+}
+
+// Returns the frame that needs to be cut out of the blur background.
+- (CGRect)cutoutView {
+  UIView* cutoutView;
+  if (_step == GuidedTourStepNTP) {
+    cutoutView = [self anchorView];
+  } else {
+    // The TabGrid Page Control steps should cut out the entire page control,
+    // not just the anchor view.
+    cutoutView = [LayoutGuideCenterForBrowser(nil)
+        referencedViewUnderName:kTabGridPageControlGuide];
+  }
+  CGPoint cutoutViewOrigin =
+      [cutoutView.superview convertPoint:cutoutView.frame.origin toView:nil];
+  return CGRectMake(cutoutViewOrigin.x, cutoutViewOrigin.y,
+                    cutoutView.frame.size.width, cutoutView.frame.size.height);
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -23,12 +24,16 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface TabGridToolbarsCoordinator () <TabGridToolbarCommands>
+@interface TabGridToolbarsCoordinator () <GuidedTourCoordinatorDelegate,
+                                          TabGridToolbarCommands>
 @end
 
 @implementation TabGridToolbarsCoordinator {
   // Mediator of all tab grid toolbars.
   TabGridToolbarsMediator* _mediator;
+  // Coordinator for the first step of the guided tour.
+  GuidedTourCoordinator* _guidedTourCoordinator;
+  ProceduralBlock _guidedTourCompletionBlock;
 }
 
 - (void)start {
@@ -99,9 +104,34 @@
     return;
   }
 
-  [self.topToolbar highlightLastPageControl];
+  [self.topToolbar highlightPageControlItem:TabGridPageTabGroups];
   [presenter presentInViewController:self.baseViewController
                          anchorPoint:anchorPoint];
+}
+
+- (void)showGuidedTourIncognitoStepWithDismissalCompletion:
+    (ProceduralBlock)completion {
+  [self.topToolbar highlightPageControlItem:TabGridPageIncognitoTabs];
+  _guidedTourCoordinator =
+      [[GuidedTourCoordinator alloc] initWithStep:GuidedTourStepTabGridIncognito
+                               baseViewController:self.baseViewController
+                                          browser:self.browser
+                                         delegate:self];
+  [_guidedTourCoordinator start];
+  _guidedTourCompletionBlock = completion;
+}
+
+#pragma mark - GuidedTourCoordinatorDelegate
+
+- (void)nextTappedForStep:(GuidedTourStep)step {
+  [self.topToolbar resetLastPageControlHighlight];
+}
+
+// Indicates to the delegate that the `step` was dismissed.
+- (void)stepCompleted:(GuidedTourStep)step {
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+  _guidedTourCompletionBlock();
 }
 
 #pragma mark - Private

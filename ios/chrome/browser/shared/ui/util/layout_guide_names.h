@@ -51,6 +51,11 @@ extern GuideName* const kFeedIPHNamedGuide;
 // A guide that is constrained to match the frame of the bottom toolbar in the
 // tab grid.
 extern GuideName* const kTabGridBottomToolbarGuide;
+// A guide that is constrained to match the frame of the Tab Grid page control.
+extern GuideName* const kTabGridPageControlGuide;
+// A guide that is constrained to match the frame of the incognito page of the
+// Tab Grid page control.
+extern GuideName* const kTabGridPageControlIncognitoGuide;
 // A guide that is constrained to match the frame of the first Autofill result.
 extern GuideName* const kAutofillFirstSuggestionGuide;
 // A guide that is constrained to match the frame of the Lens button in the

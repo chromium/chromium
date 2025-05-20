@@ -69,9 +69,10 @@ extern UIControlEvents TabGridPageChangeByDragEvent;
 // is `scrolledToEdge` or not.
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
 
-// Highlights (put a blue background) the last element of the page control.
-- (void)highlightLastPageControl;
-// Removes the highlight on the last page control, if there is one.
+// Highlights (put a blue background) the `page`.
+- (void)highlightPageControlItem:(TabGridPage)page;
+
+// Removes the last highlighted page of the page control, if there is one.
 - (void)resetLastPageControlHighlight;
 
 // Returns the frame of the last segment, in window coordinates.
