@@ -5,6 +5,7 @@
 assert(is_fuchsia)
 
 import("//gpu/vulkan/features.gni")
+import("//ui/gl/features.gni")
 
 assert(enable_vulkan)
 
@@ -84,10 +85,13 @@ source_set("flatland") {
     "//ui/platform_window",
   ]
 
-  data_deps = [
-    "//third_party/angle:libEGL",
-    "//third_party/angle:libGLESv2",
-  ]
+  data_deps = []
+  if (!use_static_angle) {
+    data_deps += [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
+  }
 }
 
 source_set("flatland_unittests") {

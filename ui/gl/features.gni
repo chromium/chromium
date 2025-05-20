@@ -7,7 +7,7 @@ import("//build/config/chrome_build.gni")
 
 declare_args() {
   # Should ANGLE be linked statically?
-  use_static_angle = is_android || is_ios
+  use_static_angle = !is_mac
 
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
