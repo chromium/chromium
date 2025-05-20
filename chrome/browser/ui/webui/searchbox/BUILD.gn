@@ -41,6 +41,7 @@ source_set("searchbox") {
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/search",
     "//components/bookmarks/browser",
     "//components/navigation_metrics",
     "//components/omnibox/browser",

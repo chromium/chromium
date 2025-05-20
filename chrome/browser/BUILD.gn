@@ -4368,6 +4368,15 @@ static_library("browser") {
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/search",
+
+      # TODO(crbug.com/418180294): Remove this circular dependency when:
+      # - bookmark_model_factory.h,
+      # - after_startup_task_utils.h,
+      # - history_service_factory.h,
+      # - identity_manager_factory.h
+      # ... get componentized.
+      "//chrome/browser/ui/search:impl",
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/views/zoom:impl",
       "//chrome/browser/ui/webui/access_code_cast",
@@ -4553,6 +4562,14 @@ static_library("browser") {
       # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
       # gets modularized.
       "//chrome/browser/ui/privacy_sandbox:impl",
+
+      # TODO(crbug.com/418180294): Remove this circular dependency when:
+      # - bookmark_model_factory.h,
+      # - after_startup_task_utils.h,
+      # - history_service_factory.h,
+      # - identity_manager_factory.h
+      # ... get componentized.
+      "//chrome/browser/ui/search:impl",
 
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/exclusive_access",
