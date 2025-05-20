@@ -252,10 +252,7 @@ void SavedTabGroupModel::RemovedFromSync(const LocalTabGroupID tab_group_id) {
   }
 
   const std::optional<int> index = GetIndexOf(tab_group_id);
-  SavedTabGroup removed_group = RemoveImpl(index.value());
-  for (auto& observer : observers_) {
-    observer.SavedTabGroupRemovedFromSync(removed_group);
-  }
+  HandleTabGroupRemovedFromSync(index.value());
 }
 
 void SavedTabGroupModel::RemovedFromSync(const base::Uuid& id) {
@@ -264,10 +261,7 @@ void SavedTabGroupModel::RemovedFromSync(const base::Uuid& id) {
   }
 
   const std::optional<int> index = GetIndexOf(id);
-  SavedTabGroup removed_group = RemoveImpl(index.value());
-  for (auto& observer : observers_) {
-    observer.SavedTabGroupRemovedFromSync(removed_group);
-  }
+  HandleTabGroupRemovedFromSync(index.value());
 }
 
 void SavedTabGroupModel::UpdatedVisualDataFromSync(
@@ -1013,4 +1007,20 @@ void SavedTabGroupModel::UpdateArchivalStatus(const base::Uuid& id,
   }
 }
 
+void SavedTabGroupModel::HandleTabGroupRemovedFromSync(int index) {
+  // If this is a shared group that is transitioning to saved, make the
+  // transition complete and that will delete the shared group during the
+  // process.
+  SavedTabGroup* group = &saved_tab_groups_[index];
+  if (group->is_shared_tab_group() && group->is_transitioning_to_saved()) {
+    for (auto& observer : observers_) {
+      observer.TabGroupTransitioningToSavedRemovedFromSync(group->saved_guid());
+    }
+    return;
+  }
+  SavedTabGroup removed_group = RemoveImpl(index);
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupRemovedFromSync(removed_group);
+  }
+}
 }  // namespace tab_groups

@@ -755,8 +755,9 @@ void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
     bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const SavedTabGroup* saved_group = model_->Get(local_group_id);
-  CHECK(saved_group);
-  CHECK(saved_group->is_transitioning_to_saved());
+  if (!saved_group) {
+    return;
+  }
 
   {
     std::string prefix = "OnTabGroupUnShareComplete ";
@@ -766,6 +767,9 @@ void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
   if (!success) {
     return;
   }
+
+  // Make a deep copy of shared tab group.
+  SavedTabGroup cloned_group = saved_group->CloneAsSavedTabGroup();
 
   // The originating saved group for this shared tab group might still be alive.
   // Remove it.
@@ -778,16 +782,9 @@ void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
       DCHECK(!originating_group->local_group_id());
       LogTabGroupEvent(logger_, "Cleanup Saved Group", originating_group);
       RemoveGroup(originating_tab_group_guid.value());
-      // Retrieve `saved_group` again as the array index in model might have
-      // changed, and the previous pointer is pointing to another group.
-      // TODO(crbug.com/399198634): fix the dangerous pointer issue in
-      // SavedTabGroupModel.
-      saved_group = model_->Get(local_group_id);
     }
   }
 
-  // Make a deep copy of shared tab group.
-  SavedTabGroup cloned_group = saved_group->CloneAsSavedTabGroup();
   cloned_group.SetCreatedBeforeSyncingTabGroups(
       !sync_bridge_mediator_->IsSavedBridgeSyncing());
   cloned_group.SetCreatorCacheGuid(
@@ -1676,6 +1673,21 @@ void TabGroupSyncServiceImpl::OnSyncBridgeUpdateTypeChanged(
       base::BindOnce(
           &TabGroupSyncServiceImpl::NotifyOnSyncBridgeUpdateTypeChanged,
           weak_ptr_factory_.GetWeakPtr(), sync_bridge_update_type));
+}
+
+void TabGroupSyncServiceImpl::TabGroupTransitioningToSavedRemovedFromSync(
+    const base::Uuid& saved_group_id) {
+  const SavedTabGroup* saved_tab_group = model_->Get(saved_group_id);
+  if (!saved_tab_group) {
+    return;
+  }
+  CHECK(saved_tab_group->is_shared_tab_group());
+  CHECK(saved_tab_group->is_transitioning_to_saved());
+
+  if (saved_tab_group->local_group_id().has_value()) {
+    OnTabGroupUnShareComplete(saved_tab_group->local_group_id().value(),
+                              /*success=*/true);
+  }
 }
 
 void TabGroupSyncServiceImpl::NotifyOnSyncBridgeUpdateTypeChanged(

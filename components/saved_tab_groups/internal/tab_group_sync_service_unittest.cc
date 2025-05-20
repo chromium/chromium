@@ -2381,6 +2381,96 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
   }
 }
 
+TEST_F(TabGroupSyncServiceTest,
+       UnShareTabGroupWhenTransitioningGroupRemovedFromSync) {
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  MakeTabGroupShared(local_group_id_1_, "collaboration");
+
+  // Unshare the tab group.
+  tab_group_sync_service_->AboutToUnShareTabGroup(local_group_id_1_,
+                                                  base::DoNothing());
+  std::optional<SavedTabGroup> shared_group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(shared_group->is_shared_tab_group());
+  ASSERT_TRUE(shared_group->is_transitioning_to_saved());
+
+  // Transition the shared tab group to a saved tab group.
+  Sequence s;
+  EXPECT_CALL(*coordinator_, DisconnectLocalTabGroup(local_group_id_1_))
+      .InSequence(s);
+  EXPECT_CALL(*coordinator_, ConnectLocalTabGroup(_, local_group_id_1_))
+      .InSequence(s);
+  EXPECT_CALL(*observer_, OnTabGroupMigrated(_, shared_group->saved_guid(),
+                                             TriggerSource::LOCAL));
+
+  // Advance the clock to ensure that the new saved group has a different
+  // creation time than the shared group.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  model_->RemovedFromSync(local_group_id_1_);
+  ASSERT_TRUE(shared_group->is_shared_tab_group());
+  ASSERT_TRUE(shared_group->is_transitioning_to_saved());
+
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
+
+  // The originating group should have empty local group id now.
+  std::optional<SavedTabGroup> originating_group =
+      tab_group_sync_service_->GetGroup(shared_group->saved_guid());
+  ASSERT_TRUE(originating_group.has_value());
+  EXPECT_TRUE(originating_group->is_shared_tab_group());
+  EXPECT_EQ(originating_group->local_group_id(), std::nullopt);
+
+  std::optional<SavedTabGroup> saved_group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  // Verify that both groups have the same fields.
+  EXPECT_EQ(shared_group->title(), saved_group->title());
+  EXPECT_EQ(shared_group->color(), saved_group->color());
+
+  // Verify that the shared group has updated fields.
+  ASSERT_FALSE(saved_group->is_shared_tab_group());
+  EXPECT_GT(saved_group->creation_time(), shared_group->creation_time());
+  EXPECT_GT(saved_group->update_time(), shared_group->update_time());
+  EXPECT_EQ(saved_group->creator_cache_guid(), kTestCacheGuid);
+  EXPECT_EQ(saved_group->last_updater_cache_guid(), std::nullopt);
+  EXPECT_EQ(saved_group->position(), std::nullopt);
+  EXPECT_TRUE(saved_group->last_user_interaction_time().is_null());
+
+  // Verify shared tab group fields.
+  EXPECT_NE(saved_group->saved_guid(), shared_group->saved_guid());
+  EXPECT_TRUE(saved_group->saved_guid().is_valid());
+
+  EXPECT_EQ(saved_group->GetOriginatingTabGroupGuid(),
+            shared_group->saved_guid());
+  EXPECT_EQ(saved_group->local_group_id(), local_group_id_1_);
+
+  // Verify group tabs.
+  ASSERT_EQ(shared_group->saved_tabs().size(), group_1_.saved_tabs().size());
+  EXPECT_FALSE(shared_group->saved_tabs().empty());
+  for (size_t i = 0; i < shared_group->saved_tabs().size(); ++i) {
+    const SavedTabGroupTab& saved_tab = saved_group->saved_tabs()[i];
+    const SavedTabGroupTab& shared_tab = originating_group->saved_tabs()[i];
+
+    // Verify the same fields.
+    EXPECT_EQ(saved_tab.url(), shared_tab.url());
+    EXPECT_EQ(saved_tab.title(), shared_tab.title());
+    EXPECT_EQ(saved_tab.favicon(), shared_tab.favicon());
+    EXPECT_EQ(saved_tab.saved_group_guid(), saved_group->saved_guid());
+
+    // Verify updated fields.
+    EXPECT_NE(saved_tab.saved_tab_guid(), shared_tab.saved_tab_guid());
+    EXPECT_GT(saved_group->creation_time(), shared_tab.creation_time());
+    EXPECT_GT(saved_tab.update_time(), shared_tab.update_time());
+    EXPECT_NE(saved_tab.local_tab_id(), std::nullopt);
+    EXPECT_EQ(shared_tab.local_tab_id(), std::nullopt);
+
+    // Do not verify the position of the original tab because its meaning
+    // differs for shared tab groups: it's the index of the tab in the shared
+    // group.
+    EXPECT_EQ(saved_tab.position(), i);
+  }
+}
+
 TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
   // Simulate remote transition to shared tab group from `group_1_`.
   SavedTabGroup shared_group = test::CreateTestSavedTabGroupWithNoTabs();

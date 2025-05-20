@@ -299,6 +299,8 @@ class SavedTabGroupModel {
                                            const base::Uuid& tab_id);
   SavedTabGroupTab* FindPendingNtpInGroup(SavedTabGroup& group);
 
+  void HandleTabGroupRemovedFromSync(int index);
+
   // Obsevers of the model.
   base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
 

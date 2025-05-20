@@ -87,6 +87,11 @@ class SavedTabGroupModelObserver {
   virtual void OnSyncBridgeUpdateTypeChanged(
       SyncBridgeUpdateType sync_bridge_update_type) {}
 
+  // Called notify that a shared tab group that is transitioning to saved group
+  // is removed.
+  virtual void TabGroupTransitioningToSavedRemovedFromSync(
+      const base::Uuid& group_guid) {}
+
  protected:
   SavedTabGroupModelObserver() = default;
   virtual ~SavedTabGroupModelObserver() = default;

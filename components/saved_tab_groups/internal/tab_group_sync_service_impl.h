@@ -240,6 +240,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void SavedTabGroupModelLoaded() override;
   void OnSyncBridgeUpdateTypeChanged(
       SyncBridgeUpdateType sync_bridge_update_type) override;
+  void TabGroupTransitioningToSavedRemovedFromSync(
+      const base::Uuid& saved_group_id) override;
 
   // Called to notify the observers that service initialization is complete.
   void NotifyServiceInitialized();
