@@ -2317,6 +2317,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE_WITH_UNO" desc="Message displayed in a prompt when the user is signed out due to browser sign-in becoming disabled by policy. Related with IDS_IOS_ENTERPRISE_SIGNED_OUT.">
         Your organization turned off sign-in. New bookmarks, passwords, and more will be saved only to this device.
       </message>
+      <message name="IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_ACCOUNT_WIDE_SCREEN" desc="The snackbar message subtitle to confirm the signed-in account after a successful account switch. For enterprise users, we remind them that their Google Account is managed by their company, school, or organization. This string does not have line break, so terminal punctuation is required for sentence fragments. [iOS only]">
+        <ph name="EMAIL">$1<ex>johndoe@acme.com</ex></ph>. This account is managed.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN" desc="The snackbar message subtitle to confirm the signed-in account after a successful account switch. For enterprise users, we remind them that their Google Account is managed by their company, school, or organization. This string does not have line break, so terminal punctuation is required for sentence fragments. [iOS only]">
         <ph name="EMAIL">$1<ex>johndoe@acme.com</ex></ph>. Managed by your organization.
       </message>

@@ -293,14 +293,21 @@ bool CanShowManagementMessaging(const ManagementState& management_state) {
       UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
       UIDeviceOrientationIsPortrait(UIDevice.currentDevice.orientation);
   NSString* email = _snackbarMessage.email;
-  _emailView.text =
-      useShortLabels
-          ? email
-          : l10n_util::GetNSStringF(
-                _snackbarMessage.managementState.is_browser_managed()
-                    ? IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_BROWSER_WIDE_SCREEN
-                    : IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN,
-                base::SysNSStringToUTF16(email));
+  if (useShortLabels) {
+    _emailView.text = email;
+  } else if (_snackbarMessage.managementState.is_browser_managed()) {
+    _emailView.text = l10n_util::GetNSStringF(
+        IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_BROWSER_WIDE_SCREEN,
+        base::SysNSStringToUTF16(email));
+  } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    _emailView.text = l10n_util::GetNSStringF(
+        IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_ACCOUNT_WIDE_SCREEN,
+        base::SysNSStringToUTF16(email));
+  } else {
+    _emailView.text = l10n_util::GetNSStringF(
+        IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN,
+        base::SysNSStringToUTF16(email));
+  }
 
   if (!useShortLabels) {
     _managementView.text = nil;
@@ -308,7 +315,7 @@ bool CanShowManagementMessaging(const ManagementState& management_state) {
     _managementView.text = l10n_util::GetNSString(
         _snackbarMessage.managementState.is_browser_managed()
             ? IDS_IOS_ENTERPRISE_BROWSER_MANAGED
-            : IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
+            : IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED);
   } else {
     _managementView.text =
         l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
