@@ -40,11 +40,6 @@ import org.chromium.url.GURL;
  * PropertyModel} to the suitable method in {@link AllPasswordsBottomSheetView}.
  */
 class AllPasswordsBottomSheetViewBinder {
-    /** Generic UI Configurations that help to transform specific model data. */
-    static class UiConfiguration {
-        /** Supports loading favicons for accessory data. */
-        public FaviconHelper faviconHelper;
-    }
 
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
@@ -87,18 +82,17 @@ class AllPasswordsBottomSheetViewBinder {
      *
      * @param parent The parent {@link ViewGroup} of the new item.
      * @param itemType The type of View to create.
-     * @param uiConfiguration Supports additional generic UI Configuration.
+     * @param faviconHelper Supports loading favicons for accessory data.
      */
     static AllPasswordsBottomSheetViewHolder createViewHolder(
-            ViewGroup parent, @ItemType int itemType, UiConfiguration uiConfiguration) {
+            ViewGroup parent, @ItemType int itemType, FaviconHelper faviconHelper) {
         switch (itemType) {
             case ItemType.CREDENTIAL:
                 return new AllPasswordsBottomSheetViewHolder(
                         parent,
                         R.layout.keyboard_accessory_sheet_tab_password_info,
                         (model, view, propertyKey) ->
-                                bindCredentialView(
-                                        model, view, propertyKey, uiConfiguration.faviconHelper));
+                                bindCredentialView(model, view, propertyKey, faviconHelper));
         }
         assert false : "Cannot create view for ItemType: " + itemType;
         return null;

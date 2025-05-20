@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
-import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetViewBinder.UiConfiguration;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.ListModel;
@@ -66,13 +65,11 @@ class AllPasswordsBottomSheetCoordinator {
         ListModel<ListItem> listModel = new ListModel<>();
         mMediator.initialize(delegate, model, listModel);
 
-        UiConfiguration uiConfiguration = new UiConfiguration();
-        uiConfiguration.faviconHelper = FaviconHelper.create(context, profile);
         setUpView(
                 model,
                 listModel,
                 new AllPasswordsBottomSheetView(context, sheetController),
-                uiConfiguration);
+                FaviconHelper.create(context, profile));
     }
 
     /**
@@ -91,7 +88,7 @@ class AllPasswordsBottomSheetCoordinator {
             PropertyModel model,
             ListModel<ListItem> listModel,
             AllPasswordsBottomSheetView view,
-            UiConfiguration uiConfiguration) {
+            FaviconHelper faviconHelper) {
         view.setSheetItemListAdapter(
                 new RecyclerViewAdapter<>(
                         new SimpleRecyclerViewMcp<>(
@@ -100,7 +97,7 @@ class AllPasswordsBottomSheetCoordinator {
                                 AllPasswordsBottomSheetViewBinder::connectPropertyModel),
                         (parent, itemType) ->
                                 AllPasswordsBottomSheetViewBinder.createViewHolder(
-                                        parent, itemType, uiConfiguration)));
+                                        parent, itemType, faviconHelper)));
         PropertyModelChangeProcessor.create(
                 model, view, AllPasswordsBottomSheetViewBinder::bindAllPasswordsBottomSheet);
     }
