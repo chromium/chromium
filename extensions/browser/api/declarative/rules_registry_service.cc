@@ -49,18 +49,8 @@ void RulesRegistryService::Shutdown() {
     registry->OnShutdown();
   }
 
-  // Release the references to all registries, and remove the default registry
-  // from ExtensionWebRequestEventRouter.
+  // Release the references to all registries.
   rule_registries_.clear();
-  // TODO(crbug.com/40264286): This could be moved to
-  // WebRequestEventRouter::Shutdown when the new per-BrowserContext event
-  // router is the only implementation. Or we might just remove it completely,
-  // since that instance will be destroyed when this RulesRegistryService
-  // instance is.
-  WebRequestEventRouter::Get(browser_context_)
-      ->RegisterRulesRegistry(browser_context_,
-                              rules_registry_ids::kDefaultRulesRegistryID,
-                              nullptr);
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<RulesRegistryService>>::
