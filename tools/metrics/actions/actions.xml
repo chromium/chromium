@@ -27708,11 +27708,72 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarTabGroupMenu.DeleteSharedGroup">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User deleted a shared tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.LeaveSharedGroup">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User left a shared tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.ManageSharing">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User managed a shared tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.MoveGroupToAnotherWindow">
+  <owner>nemco@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved the tab group to a another existing window via tab group menu on
+    tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.MoveGroupToNewWindow">
+  <owner>nemco@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved the tab group to a new window via tab group menu on tab strip on
+    Android.
+  </description>
+</action>
+
 <action name="MobileToolbarTabGroupMenu.NewTabInGroup">
   <owner>zheliooo@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <description>
     User opened new tab in tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.RecentActivity">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User viewed recent shared tab group activity via tab group menu on tab strip
+    on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.ShareGroup">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User shared a tab group via tab group menu on tab strip on Android.
   </description>
 </action>
 
