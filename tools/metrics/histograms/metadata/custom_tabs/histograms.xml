@@ -904,6 +904,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.WebAppHeader.BackButtonEvent"
+    enum="WebAppBackButtonEvent" expires_after="2026-05-31">
+  <owner>vkorotkevich@google.com</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the usage of back button when running a web app. This is recorded
+    only for minimal ui display mode in Trusted Web Activities and WebAPKs.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.WebAppHeader.ReloadButtonEvent"
+    enum="WebAppReloadButtonEvent" expires_after="2026-05-31">
+  <owner>vkorotkevich@google.com</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the usage of reload button when running a web app. This is recorded
+    only for minimal ui display mode in Trusted Web Activities and WebAPKs.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.WebContentsStateOnLaunch" enum="WebContentsState"
     expires_after="2026-04-13">
   <owner>lizeb@chromium.org</owner>

@@ -17,6 +17,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.BackEvent;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.ReloadType;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -209,6 +211,38 @@ class WebAppHeaderLayoutMediator
         final var tab = mTabSupplier.get();
         if (tab != null && tab.canGoBack()) {
             tab.goBack();
+            WebAppHeaderUtils.recordBackButtonEvent(BackEvent.BACK);
+        } else {
+            WebAppHeaderUtils.recordBackButtonEvent(BackEvent.INVALID);
+        }
+    }
+
+    /** Records histograms when navigation pop up is shown by long pressing back button */
+    public void onNavigationPopupShown() {
+        WebAppHeaderUtils.recordBackButtonEvent(BackEvent.NAVIGATION_MENU);
+    }
+
+    /**
+     * Reloads current visible tab or stops reloading.
+     *
+     * @param ignoreCache whether to force reload current tab.
+     */
+    public void refreshTab(boolean ignoreCache) {
+        final var tab = mTabSupplier.get();
+        if (tab == null) {
+            WebAppHeaderUtils.recordReloadButtonEvent(ReloadType.INVALID);
+            return;
+        }
+
+        if (tab.isLoading()) {
+            tab.stopLoading();
+            WebAppHeaderUtils.recordReloadButtonEvent(ReloadType.STOP_RELOAD);
+        } else if (ignoreCache) {
+            tab.reloadIgnoringCache();
+            WebAppHeaderUtils.recordReloadButtonEvent(ReloadType.RELOAD_IGNORE_CACHE);
+        } else {
+            tab.reload();
+            WebAppHeaderUtils.recordReloadButtonEvent(ReloadType.RELOAD_FROM_CACHE);
         }
     }
 

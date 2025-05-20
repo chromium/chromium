@@ -303,6 +303,24 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Session, Warmup"/>
 </enum>
 
+<enum name="WebAppBackButtonEvent">
+  <int value="0"
+      label="Invalid back event due to tab switching, e.g. re-parenting."/>
+  <int value="1"
+      label="Back event triggered by click or touch without meta keys."/>
+  <int value="2"
+      label="Open a history navigation popup after long pressing button."/>
+</enum>
+
+<enum name="WebAppReloadButtonEvent">
+  <int value="0"
+      label="Invalid reload type due to tab switching, e.g. re-parenting."/>
+  <int value="1" label="Stop reloading currently active tab."/>
+  <int value="2"
+      label="Reload currently active tab including checking the cache."/>
+  <int value="3" label="Reload currently active tab ignoring the cache."/>
+</enum>
+
 <enum name="WebContentsState">
   <int value="0" label="No WebContents"/>
   <int value="1" label="Prerendered WebContents"/>

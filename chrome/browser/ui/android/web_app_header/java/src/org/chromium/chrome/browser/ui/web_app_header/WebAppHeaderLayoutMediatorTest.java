@@ -30,9 +30,12 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.BackEvent;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.ReloadType;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -294,26 +297,78 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testGoBackWithHistory_shouldGoBack() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.WebAppHeader.BackButtonEvent", BackEvent.BACK);
         mTabSupplier.set(mTab);
         when(mTab.canGoBack()).thenReturn(true);
 
         mMediator.goBack();
         verify(mTab).goBack();
+        watcher.assertExpected("Back event should be recorded.");
     }
 
     @Test
     public void testGoBackNoHistory_shouldNotGoBack() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.WebAppHeader.BackButtonEvent", BackEvent.INVALID);
         mTabSupplier.set(mTab);
         when(mTab.canGoBack()).thenReturn(false);
 
         mMediator.goBack();
         verify(mTab, never()).goBack();
+        watcher.assertExpected("Invalid event should be recorded.");
     }
 
     @Test
     public void testGoBackNoTab_shouldNotGoBack() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.WebAppHeader.BackButtonEvent", BackEvent.INVALID);
         mMediator.goBack();
         verify(mTab, never()).goBack();
+        watcher.assertExpected("Invalid event should be recorded.");
+    }
+
+    @Test
+    public void testReload_shouldReloadTab() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.WebAppHeader.ReloadButtonEvent", ReloadType.RELOAD_FROM_CACHE);
+        when(mTab.isLoading()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        mMediator.refreshTab(false);
+        verify(mTab).reload();
+        watcher.assertExpected("Reload from cache should be recorded.");
+    }
+
+    @Test
+    public void testReloadWhileReloading_shouldStopReloading() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.WebAppHeader.ReloadButtonEvent", ReloadType.STOP_RELOAD);
+        when(mTab.isLoading()).thenReturn(true);
+        mTabSupplier.set(mTab);
+
+        mMediator.refreshTab(false);
+        verify(mTab).stopLoading();
+        watcher.assertExpected("Stop reloading should be recorded.");
+    }
+
+    @Test
+    public void testReloadTabIgnoringCache_shouldReloadIgnoringCache() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.WebAppHeader.ReloadButtonEvent",
+                        ReloadType.RELOAD_IGNORE_CACHE);
+        when(mTab.isLoading()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        mMediator.refreshTab(true);
+        verify(mTab).reloadIgnoringCache();
+        watcher.assertExpected("Reload ignoring cache should be recorded.");
     }
 
     @Test

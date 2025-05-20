@@ -32,6 +32,7 @@ public class BackButtonCoordinator {
     private final BackButtonMediator mMediator;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
     private final Supplier<@Nullable Tab> mTabSupplier;
+    private final Runnable mOnNavigationPopupShown;
     private final View mView;
 
     /**
@@ -52,10 +53,12 @@ public class BackButtonCoordinator {
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
+            Runnable onNavigationPopupShown,
             NavigationPopup.HistoryDelegate historyDelegate) {
         mView = view;
         mTabSupplier = tabSupplier;
         mHistoryDelegate = historyDelegate;
+        mOnNavigationPopupShown = onNavigationPopupShown;
 
         final ColorStateList iconColorList =
                 themeColorProvider.getActivityFocusTint() == null
@@ -92,6 +95,7 @@ public class BackButtonCoordinator {
                         mTabSupplier,
                         mHistoryDelegate);
         popup.show(mView);
+        mOnNavigationPopupShown.run();
     }
 
     /**

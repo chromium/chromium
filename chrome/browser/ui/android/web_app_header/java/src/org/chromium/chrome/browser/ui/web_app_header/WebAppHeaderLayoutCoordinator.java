@@ -156,7 +156,9 @@ public class WebAppHeaderLayoutCoordinator
         mReloadButtonCoordinator =
                 new ReloadButtonCoordinator(
                         reloadButton,
-                        this::refreshTab,
+                        (ignoreCache) -> {
+                            if (mMediator != null) mMediator.refreshTab(ignoreCache);
+                        },
                         mTabSupplier,
                         new ObservableSupplierImpl<>(),
                         mControlsEnabledSupplier,
@@ -172,6 +174,9 @@ public class WebAppHeaderLayoutCoordinator
                         mThemeColorProvider,
                         mTabSupplier,
                         mControlsEnabledSupplier,
+                        () -> {
+                            if (mMediator != null) mMediator.onNavigationPopupShown();
+                        },
                         mHistoryDelegate);
 
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
@@ -217,21 +222,6 @@ public class WebAppHeaderLayoutCoordinator
 
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.setBackgroundInsets(Insets.of(0, 0, 0, bottomInset));
-        }
-    }
-
-    // TODO(vkorotkevich): Move to the Mediator
-    @VisibleForTesting
-    void refreshTab(boolean ignoreCache) {
-        final var tab = mTabSupplier.get();
-        if (tab == null) return;
-
-        if (tab.isLoading()) {
-            tab.stopLoading();
-        } else if (ignoreCache) {
-            tab.reloadIgnoringCache();
-        } else {
-            tab.reload();
         }
     }
 

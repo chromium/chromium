@@ -343,39 +343,6 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     @Test
-    public void testReload_shouldReloadTab() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupDisplayMode(DisplayMode.MINIMAL_UI);
-        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
-        createCoordinator();
-
-        mCoordinator.refreshTab(false);
-        verify(mTab).reload();
-    }
-
-    @Test
-    public void testReloadWhileReloading_shouldStopReloading() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupDisplayMode(DisplayMode.MINIMAL_UI);
-        setupTab(/* isLoading= */ true, /* canGoBack= */ false);
-        createCoordinator();
-
-        mCoordinator.refreshTab(false);
-        verify(mTab).stopLoading();
-    }
-
-    @Test
-    public void testReloadTabIgnoringCache_shouldReloadIgnoringCache() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        setupDisplayMode(DisplayMode.MINIMAL_UI);
-        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
-        createCoordinator();
-
-        mCoordinator.refreshTab(true);
-        verify(mTab).reloadIgnoringCache();
-    }
-
-    @Test
     public void testDisableControls() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupDisplayMode(DisplayMode.MINIMAL_UI);

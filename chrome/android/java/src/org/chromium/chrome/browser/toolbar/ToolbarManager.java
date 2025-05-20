@@ -1017,6 +1017,7 @@ public class ToolbarManager
                             browsingModeThemeColorProvider,
                             mActivityTabProvider,
                             mToolbarNavControlsEnabledSupplier,
+                            /* onNavigationPopupShown= */ () -> {},
                             historyDelegate);
         }
 
