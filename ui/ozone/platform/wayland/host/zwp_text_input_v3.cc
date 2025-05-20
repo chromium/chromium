@@ -98,6 +98,17 @@ uint32_t InputFlagsToContentHint(int input_flags) {
 
 }  // namespace
 
+ZwpTextInputV3Impl::ImeData::ImeData() = default;
+ZwpTextInputV3Impl::ImeData::~ImeData() = default;
+void ZwpTextInputV3Impl::ImeData::Reset() {
+  surrounding_text.reset();
+  cursor_rect.reset();
+  content_type.reset();
+}
+
+ZwpTextInputV3Impl::InputEvents::InputEvents() = default;
+ZwpTextInputV3Impl::InputEvents::~InputEvents() = default;
+
 ZwpTextInputV3Impl::ZwpTextInputV3Impl(
     WaylandConnection* connection,
     zwp_text_input_manager_v3* text_input_manager)
@@ -122,8 +133,8 @@ ZwpTextInputV3Impl::ZwpTextInputV3Impl(
 ZwpTextInputV3Impl::~ZwpTextInputV3Impl() = default;
 
 void ZwpTextInputV3Impl::Reset() {
-  // Clear last sent values.
-  ResetLastSentValues();
+  // Clear last committed values.
+  ResetCommittedImeData();
   // There is no explicit reset API in v3. See [1].
   // So use disable+enable to force a reset.
   //
@@ -146,8 +157,8 @@ void ZwpTextInputV3Impl::Reset() {
   // internally. So we shouldn't keep old surrounding text anyway. See related
   // crbug.com/353915732 where surrounding text update is not sent after reset
   // when composition is canceled.
-  ResetPendingSetRequests();
-  ResetPendingInputEvents();
+  ResetPendingImeData();
+  ResetInputEventsState();
   zwp_text_input_v3_enable(obj_.get());
   Commit();
 }
@@ -165,40 +176,46 @@ void ZwpTextInputV3Impl::OnClientDestroyed(ZwpTextInputV3Client* context) {
 
 void ZwpTextInputV3Impl::Enable() {
   // Pending state is reset on enable.
-  ResetPendingSetRequests();
-  ResetPendingInputEvents();
+  ResetPendingImeData();
+  ResetInputEventsState();
   zwp_text_input_v3_enable(obj_.get());
   Commit();
 }
 
 void ZwpTextInputV3Impl::Disable() {
   // Avoid sending pending requests if done is received after disabling.
-  ResetPendingSetRequests();
+  ResetPendingImeData();
   // Do not process pending input events after deactivating.
-  ResetPendingInputEvents();
+  ResetInputEventsState();
   zwp_text_input_v3_disable(obj_.get());
   Commit();
 }
 
+bool ZwpTextInputV3Impl::DoneSerialEqualsCommitCount() {
+  return committed_ime_data_.commit_count ==
+         pending_input_events_.last_done_serial;
+}
+
 void ZwpTextInputV3Impl::SetCursorRect(const gfx::Rect& rect) {
-  if (last_sent_cursor_rect_ == rect) {
+  if (committed_ime_data_.cursor_rect &&
+      *committed_ime_data_.cursor_rect == rect) {
     // This is to avoid a loop in sending cursor rect and receiving pre-edit
     // string.
     return;
   }
-  if (commit_count_ != last_done_serial_) {
-    pending_set_cursor_rect_ = rect;
-    return;
-  }
-  SendCursorRect(rect);
-  Commit();
+  pending_ime_data_.cursor_rect = std::make_unique<gfx::Rect>(rect);
+  SendPendingImeData();
 }
 
-void ZwpTextInputV3Impl::SendCursorRect(const gfx::Rect& rect) {
-  CHECK_EQ(commit_count_, last_done_serial_);
-  zwp_text_input_v3_set_cursor_rectangle(obj_.get(), rect.x(), rect.y(),
-                                         rect.width(), rect.height());
-  last_sent_cursor_rect_ = rect;
+bool ZwpTextInputV3Impl::SendCursorRect() {
+  CHECK(DoneSerialEqualsCommitCount());
+  if (const auto& rect = pending_ime_data_.cursor_rect; rect) {
+    zwp_text_input_v3_set_cursor_rectangle(obj_.get(), rect->x(), rect->y(),
+                                           rect->width(), rect->height());
+    committed_ime_data_.cursor_rect = std::move(pending_ime_data_.cursor_rect);
+    return true;
+  }
+  return false;
 }
 
 void ZwpTextInputV3Impl::SetSurroundingText(
@@ -237,24 +254,26 @@ void ZwpTextInputV3Impl::SetSurroundingText(
     cursor = base::checked_cast<int32_t>(
         selection_range.IsValid() ? selection_range.end() : text.length());
   }
-  SetSurroundingTextData data{std::move(text), cursor, anchor};
-  if (last_sent_surrounding_text_data_ == data) {
+  auto data =
+      std::make_unique<SetSurroundingTextData>(std::move(text), cursor, anchor);
+  if (committed_ime_data_.surrounding_text &&
+      *committed_ime_data_.surrounding_text == *data) {
     return;
   }
-  if (commit_count_ != last_done_serial_) {
-    pending_set_surrounding_text_ = std::move(data);
-    return;
-  }
-  SendSurroundingText(data);
-  Commit();
+  pending_ime_data_.surrounding_text = std::move(data);
+  SendPendingImeData();
 }
 
-void ZwpTextInputV3Impl::SendSurroundingText(
-    const SetSurroundingTextData& data) {
-  CHECK_EQ(commit_count_, last_done_serial_);
-  zwp_text_input_v3_set_surrounding_text(obj_.get(), data.text.c_str(),
-                                         data.cursor, data.anchor);
-  last_sent_surrounding_text_data_ = data;
+bool ZwpTextInputV3Impl::SendSurroundingText() {
+  CHECK(DoneSerialEqualsCommitCount());
+  if (const auto& data = pending_ime_data_.surrounding_text) {
+    zwp_text_input_v3_set_surrounding_text(obj_.get(), data->text.c_str(),
+                                           data->cursor, data->anchor);
+    committed_ime_data_.surrounding_text =
+        std::move(pending_ime_data_.surrounding_text);
+    return true;
+  }
+  return false;
 }
 
 void ZwpTextInputV3Impl::SetContentType(ui::TextInputType type,
@@ -268,67 +287,65 @@ void ZwpTextInputV3Impl::SetContentType(ui::TextInputType type,
   if (!should_do_learning) {
     content_hint |= ZWP_TEXT_INPUT_V3_CONTENT_HINT_SENSITIVE_DATA;
   }
-  ContentType content_type{content_hint, content_purpose};
-  if (last_sent_content_type_ == content_type) {
+  auto content_type =
+      std::make_unique<ContentType>(content_hint, content_purpose);
+  if (committed_ime_data_.content_type &&
+      *committed_ime_data_.content_type == *content_type) {
     return;
   }
-  if (commit_count_ != last_done_serial_) {
-    pending_set_content_type_ = content_type;
+  pending_ime_data_.content_type = std::move(content_type);
+  SendPendingImeData();
+}
+
+bool ZwpTextInputV3Impl::SendContentType() {
+  CHECK(DoneSerialEqualsCommitCount());
+  if (const auto& content_type = pending_ime_data_.content_type) {
+    zwp_text_input_v3_set_content_type(obj_.get(), content_type->content_hint,
+                                       content_type->content_purpose);
+    committed_ime_data_.content_type =
+        std::move(pending_ime_data_.content_type);
+    return true;
+  }
+  return false;
+}
+
+void ZwpTextInputV3Impl::SendPendingImeData() {
+  if (!DoneSerialEqualsCommitCount()) {
     return;
   }
-  SendContentType(content_type);
-  Commit();
-}
-
-void ZwpTextInputV3Impl::SendContentType(const ContentType& content_type) {
-  CHECK_EQ(commit_count_, last_done_serial_);
-  zwp_text_input_v3_set_content_type(obj_.get(), content_type.content_hint,
-                                     content_type.content_purpose);
-  last_sent_content_type_ = content_type;
-}
-
-void ZwpTextInputV3Impl::ApplyPendingSetRequests() {
   bool commit = false;
-  if (auto content_type = pending_set_content_type_) {
-    SendContentType(*content_type);
+  if (SendContentType()) {
     commit = true;
   }
-  if (auto cursor_rect = pending_set_cursor_rect_) {
-    SendCursorRect(*cursor_rect);
-  }
-  if (auto surrounding_text = pending_set_surrounding_text_) {
-    SendSurroundingText(*surrounding_text);
+  if (SendCursorRect()) {
     commit = true;
   }
-  // clear pending set requests
-  ResetPendingSetRequests();
+  if (SendSurroundingText()) {
+    commit = true;
+  }
   if (commit) {
     Commit();
   }
 }
 
-void ZwpTextInputV3Impl::ResetPendingSetRequests() {
-  pending_set_cursor_rect_.reset();
-  pending_set_content_type_.reset();
-  pending_set_surrounding_text_.reset();
+void ZwpTextInputV3Impl::ResetPendingImeData() {
+  pending_ime_data_.Reset();
 }
 
-void ZwpTextInputV3Impl::ResetLastSentValues() {
-  last_sent_cursor_rect_.reset();
-  last_sent_content_type_.reset();
-  last_sent_surrounding_text_data_.reset();
+void ZwpTextInputV3Impl::ResetCommittedImeData() {
+  committed_ime_data_.Reset();
 }
 
-void ZwpTextInputV3Impl::ResetPendingInputEvents() {
-  pending_preedit_.reset();
-  pending_commit_.reset();
+void ZwpTextInputV3Impl::ResetInputEventsState() {
+  pending_input_events_.preedit = std::nullopt;
+  pending_input_events_.commit = std::nullopt;
 }
 
 void ZwpTextInputV3Impl::Commit() {
   zwp_text_input_v3_commit(obj_.get());
   // It will wrap around to 0 once it reaches uint32_t max value. It is
   // expected that this will occur on the compositor side as well.
-  ++commit_count_;
+  ++committed_ime_data_.commit_count;
 }
 
 void ZwpTextInputV3Impl::OnEnter(void* data,
@@ -353,15 +370,15 @@ void ZwpTextInputV3Impl::OnPreeditString(void* data,
                                          int32_t cursor_begin,
                                          int32_t cursor_end) {
   auto* self = static_cast<ZwpTextInputV3Impl*>(data);
-  self->pending_preedit_ = {text ? text : std::string(), cursor_begin,
-                            cursor_end};
+  self->pending_input_events_.preedit = {text ? text : std::string(),
+                                         cursor_begin, cursor_end};
 }
 
 void ZwpTextInputV3Impl::OnCommitString(void* data,
                                         struct zwp_text_input_v3* text_input,
                                         const char* text) {
   auto* self = static_cast<ZwpTextInputV3Impl*>(data);
-  self->pending_commit_ = text ? text : std::string();
+  self->pending_input_events_.commit = text ? text : std::string();
 }
 
 void ZwpTextInputV3Impl::OnDeleteSurroundingText(
@@ -377,17 +394,18 @@ void ZwpTextInputV3Impl::OnDone(void* data,
                                 uint32_t serial) {
   // TODO(crbug.com/40113488) apply delete surrounding
   auto* self = static_cast<ZwpTextInputV3Impl*>(data);
+  self->pending_input_events_.last_done_serial = serial;
 
   if (!self->client_) {
-    self->last_done_serial_ = serial;
     return;
   }
 
-  if (const auto& commit_string = self->pending_commit_) {
+  if (const auto& commit_string = self->pending_input_events_.commit) {
     // Replace the existing preedit with the commit string.
     self->client_->OnCommitString(commit_string->c_str());
   }
-  if (const auto& preedit_data = self->pending_preedit_) {
+  if (const auto preedit_data = self->pending_input_events_.preedit) {
+    // Finally process any new preedit string.
     gfx::Range preedit_cursor =
         (preedit_data->cursor_begin < 0 || preedit_data->cursor_end < 0)
             ? gfx::Range::InvalidRange()
@@ -396,12 +414,8 @@ void ZwpTextInputV3Impl::OnDone(void* data,
                                    preedit_cursor);
   }
 
-  // reset the input event state.
-  self->ResetPendingInputEvents();
-  self->last_done_serial_ = serial;
-  if (self->last_done_serial_ == self->commit_count_) {
-    self->ApplyPendingSetRequests();
-  }
+  self->ResetInputEventsState();
+  self->SendPendingImeData();
 }
 
 }  // namespace ui

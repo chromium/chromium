@@ -8,6 +8,7 @@
 #include <text-input-unstable-v3-client-protocol.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -115,13 +116,39 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     int32_t cursor_end = 0;
   };
 
-  void SendCursorRect(const gfx::Rect& rect);
-  void SendContentType(const ContentType& content_type);
-  void SendSurroundingText(const SetSurroundingTextData& data);
-  void ApplyPendingSetRequests();
-  void ResetPendingSetRequests();
-  void ResetLastSentValues();
-  void ResetPendingInputEvents();
+  // Text input state received from IME, to be applied on done event.
+  struct InputEvents {
+    InputEvents();
+    ~InputEvents();
+    std::optional<PreeditData> preedit;
+    std::optional<std::string> commit;
+    uint32_t last_done_serial = 0;
+  };
+
+  // Data sent to IME.
+  struct ImeData {
+    ImeData();
+    ~ImeData();
+    void Reset();
+    std::unique_ptr<gfx::Rect> cursor_rect;
+    std::unique_ptr<ContentType> content_type;
+    std::unique_ptr<SetSurroundingTextData> surrounding_text;
+    // Only used when committed.
+    uint32_t commit_count = 0;
+  };
+
+  bool DoneSerialEqualsCommitCount();
+
+  bool SendCursorRect();
+  bool SendContentType();
+  bool SendSurroundingText();
+
+  void SendPendingImeData();
+
+  void ResetPendingImeData();
+  void ResetCommittedImeData();
+  void ResetInputEventsState();
+
   void Commit();
 
   // zwp_text_input_v3_listener
@@ -150,22 +177,15 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v3> obj_;
   raw_ptr<ZwpTextInputV3Client> client_;
-  uint32_t commit_count_ = 0;
-  uint32_t last_done_serial_ = 0;
 
-  // Pending input events that will be applied in done event.
-  std::optional<PreeditData> pending_preedit_;
-  std::optional<std::string> pending_commit_;
+  // Input events state that will be applied in done event.
+  InputEvents pending_input_events_;
 
-  // Pending set requests to be sent to compositor
-  std::optional<gfx::Rect> pending_set_cursor_rect_;
-  std::optional<ContentType> pending_set_content_type_;
-  std::optional<SetSurroundingTextData> pending_set_surrounding_text_;
+  // Pending data to be sent to IME.
+  ImeData pending_ime_data_;
 
-  // last sent values
-  std::optional<gfx::Rect> last_sent_cursor_rect_;
-  std::optional<ContentType> last_sent_content_type_;
-  std::optional<SetSurroundingTextData> last_sent_surrounding_text_data_;
+  // Data that was last sent to IME and committed.
+  ImeData committed_ime_data_;
 };
 
 }  // namespace ui
