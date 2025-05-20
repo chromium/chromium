@@ -1336,6 +1336,24 @@ const ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
   LogicalSize available_size = ChildAvailableSize();
   LogicalSize percentage_size = child_percentage_size_;
 
+  // If we are balancing with a minimum line-count, divide the cross-axis
+  // available-space if definite.
+  if (balance_min_line_count_) {
+    const LayoutUnit gap_size =
+        (*balance_min_line_count_ - 1) * gap_between_lines_;
+    if (is_column_) {
+      if (available_size.inline_size != kIndefiniteSize) {
+        available_size.inline_size =
+            (available_size.inline_size - gap_size) / *balance_min_line_count_;
+      }
+    } else {
+      if (available_size.block_size != kIndefiniteSize) {
+        available_size.block_size =
+            (available_size.block_size - gap_size) / *balance_min_line_count_;
+      }
+    }
+  }
+
   if (is_column_) {
     if (override_inline_size) {
       DCHECK(!line_cross_size)
