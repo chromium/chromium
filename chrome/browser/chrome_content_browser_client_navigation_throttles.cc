@@ -16,7 +16,6 @@
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 #include "chrome/browser/policy/policy_util.h"
-#include "chrome/browser/preloading/navigation_ablation_throttle.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -514,8 +513,6 @@ void CreateAndAddChromeThrottlesForNavigation(
         registry, std::make_unique<ChromeSecurityBlockingPageFactory>(),
         profile);
   }
-
-  MaybeCreateAndAddNavigationAblationThrottle(registry);
 
 #if !BUILDFLAG(IS_ANDROID)
   MaybeCreateAndAddWebViewSidePanelThrottle(registry);

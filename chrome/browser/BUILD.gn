@@ -1214,8 +1214,6 @@ static_library("browser") {
     "predictors/resource_prefetch_predictor_tables.h",
     "preloading/chrome_preloading.cc",
     "preloading/chrome_preloading.h",
-    "preloading/navigation_ablation_throttle.cc",
-    "preloading/navigation_ablation_throttle.h",
     "preloading/prefetch/chrome_prefetch_manager.cc",
     "preloading/prefetch/chrome_prefetch_manager.h",
     "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.cc",
