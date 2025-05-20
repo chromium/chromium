@@ -21,6 +21,10 @@ namespace metrics {
 class DwaWebContentsObserver;
 }  // namespace metrics
 
+namespace privacy_sandbox {
+class PrivacySandboxIncognitoTabObserver;
+}  // namespace privacy_sandbox
+
 namespace tabs {
 
 // This class holds state that is scoped to a tab in Android. It is constructed
@@ -34,6 +38,8 @@ class TabFeatures {
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
   std::unique_ptr<metrics::DwaWebContentsObserver> dwa_web_contents_observer_;
+  std::unique_ptr<privacy_sandbox::PrivacySandboxIncognitoTabObserver>
+      privacy_sandbox_incognito_tab_observer_;
 };
 
 }  // namespace tabs

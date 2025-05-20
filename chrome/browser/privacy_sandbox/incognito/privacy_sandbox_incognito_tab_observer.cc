@@ -37,6 +37,13 @@ void PrivacySandboxIncognitoTabObserver::DidFinishLoad(
 }
 
 bool PrivacySandboxIncognitoTabObserver::IsNewTabPage(const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the new tab page has a different URL.
+  if (url == chrome::kChromeUINativeNewTabURL) {
+    return true;
+  }
+#endif
+
   return url == chrome::kChromeUINewTabPageURL ||
          url == chrome::kChromeUINewTabURL;
 }

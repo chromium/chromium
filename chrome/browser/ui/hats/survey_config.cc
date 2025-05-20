@@ -233,7 +233,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*log_responses_to_uma=*/true,
       /*log_responses_to_ukm=*/true);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Privacy sandbox ACT survey
   survey_configs.emplace_back(  //
       &privacy_sandbox::kPrivacySandboxActSurvey,
@@ -248,6 +247,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*requested_browser_type=*/
       hats::SurveyConfig::RequestedBrowserType::kIncognito);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Dev tools surveys.
   survey_configs.emplace_back(&features::kHaTSDesktopDevToolsIssuesCOEP,
                               "devtools-issues-coep",
