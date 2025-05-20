@@ -841,8 +841,12 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
 // Tests that performing session restoration to a Safe Browsing warning page
 // preserves navigation history.
-// TODO(crbug.com/41489568):  Test is flaky on device. Re-enable the test.
 - (void)testRestoreToWarningPagePreservesHistory {
+  // TODO(crbug.com/41489568): Test fails on iOS 18.4. Re-enable the test.
+  if (@available(iOS 18.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 18.4.");
+  }
+
   // Build up navigation history that consists of a safe URL, a warning page,
   // and another safe URL.
   [ChromeEarlGrey loadURL:_safeURL1];
