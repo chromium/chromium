@@ -23,9 +23,7 @@ bool CanUseGPU() {
 
 CanvasResourceHost::CanvasResourceHost(gfx::Size size) : size_(size) {}
 
-CanvasResourceHost::~CanvasResourceHost() {
-  ResetLayer();
-}
+CanvasResourceHost::~CanvasResourceHost() = default;
 
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceHost::ReplaceResourceProvider(
