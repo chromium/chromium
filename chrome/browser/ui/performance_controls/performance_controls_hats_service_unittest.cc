@@ -54,11 +54,8 @@ auto MatchesAnyChannel() {
 
 }  // namespace
 
-// TODO(agale): Remove base class and consolidate with PPM class.
-class PerformanceControlsHatsServiceTest : public testing::Test {
- public:
-  PerformanceControlsHatsServiceTest() = default;
-
+class PerformanceControlsHatsServicePPMTest : public testing::Test {
+ protected:
   void SetUp() override {
     testing::Test::SetUp();
 
@@ -73,13 +70,24 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
     EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey(_))
         .WillRepeatedly(testing::Return(true));
 
-    feature_list_.InitWithFeaturesAndParameters(GetFeatures(), {});
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {performance_manager::features::kPerformanceControlsPPMSurvey,
+             GetFieldTrialParams()},
+        },
+        {});
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());
     environment_.SetUp(&local_state_);
 
     performance_controls_hats_service_ =
         std::make_unique<PerformanceControlsHatsService>(profile);
+
+    // Override the random delay.
+    performance_controls_hats_service()->SetDelayBeforePPMSurveyForTesting(
+        (kPerformanceControlsPPMSurveyMinDelay.Get() +
+         kPerformanceControlsPPMSurveyMaxDelay.Get()) /
+        2);
   }
 
   void TearDown() override {
@@ -90,6 +98,8 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
     performance_controls_hats_service_.reset();
     environment_.TearDown();
   }
+
+  virtual base::FieldTrialParams GetFieldTrialParams() const { return {}; }
 
   void SetBatterySaverMode(
       const performance_manager::user_tuning::prefs::BatterySaverModeState
@@ -113,15 +123,9 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment& task_env() { return task_environment_; }
 
- protected:
+ private:
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;
-
-  virtual const std::vector<base::test::FeatureRefAndParams> GetFeatures() {
-    return {};
-  }
-
- private:
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
@@ -130,28 +134,6 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
   std::unique_ptr<PerformanceControlsHatsService>
       performance_controls_hats_service_;
   raw_ptr<MockHatsService> mock_hats_service_;
-};
-
-class PerformanceControlsHatsServicePPMTest
-    : public PerformanceControlsHatsServiceTest {
- protected:
-  void SetUp() override {
-    PerformanceControlsHatsServiceTest::SetUp();
-    // Override the random delay.
-    performance_controls_hats_service()->SetDelayBeforePPMSurveyForTesting(
-        (kPerformanceControlsPPMSurveyMinDelay.Get() +
-         kPerformanceControlsPPMSurveyMaxDelay.Get()) /
-        2);
-  }
-
-  const std::vector<base::test::FeatureRefAndParams> GetFeatures() override {
-    return {
-        {performance_manager::features::kPerformanceControlsPPMSurvey,
-         GetFieldTrialParams()},
-    };
-  }
-
-  virtual base::FieldTrialParams GetFieldTrialParams() const { return {}; }
 };
 
 TEST_F(PerformanceControlsHatsServicePPMTest, NoPPMSurveyBeforeDelay) {
