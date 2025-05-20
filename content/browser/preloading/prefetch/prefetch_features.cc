@@ -100,4 +100,8 @@ const base::FeatureParam<size_t>
         &kPrefetchSchedulerTesting,
         "kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", 1};
 
+BASE_FEATURE(kPrefetchQueueingPartialFixWithoutScheduler,
+             "PrefetchQueueingPartialFixWithoutScheduler",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

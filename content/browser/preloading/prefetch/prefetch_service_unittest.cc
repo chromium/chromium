@@ -6177,35 +6177,25 @@ TEST_P(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
   VerifyCommonRequestState(url_2);
 }
 
-// Tests that the prefetch queue is stuck when resetting the running prefetch
-// during waiting its response.
-// Regression test for crbug.com/400233773, which is currently not fixed.
-//
-// This is fixed by `kPrefetchScheduler` and the behavior is tested in
-// `PrefetchScheduler_SchedulingDoesntStuckEvenIfActiveOneIsReset`.
-//
-// TODO(crbug.com/406754449): Remove it.
-TEST_P(PrefetchServiceNewLimitsTest,
-       PrefetchQueueStuckWhenResettingRunningPrefetch) {
-  if (UsePrefetchScheduler()) {
-    GTEST_SKIP() << "This case is fixed by kPrefetchScheduler";
-  }
-
+// Tests that the prefetch queue is not stuck when resetting the running
+// prefetch during waiting its response. Regression test for
+// crbug.com/400233773.
+TEST_P(PrefetchServiceTest, PrefetchQueueNotStuckWhenResettingRunningPrefetch) {
   NavigateAndCommit(GURL("https://example.com"));
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/0));
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
 
   const auto url_1 = GURL("https://example.com/one");
   const auto url_2 = GURL("https://example.com/two");
-  const auto url_3 = GURL("https://example.com/three");
   auto handle_1 =
       MakePrefetchFromBrowserContext(url_1, std::nullopt, {}, nullptr);
   auto handle_2 =
       MakePrefetchFromBrowserContext(url_2, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
 
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
   base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
   std::tie(std::ignore, prefetch_container1) =
       prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
@@ -6223,13 +6213,9 @@ TEST_P(PrefetchServiceNewLimitsTest,
   // eventually destruct the loader.
   handle_1.reset();
   task_environment()->RunUntilIdle();
+
   EXPECT_FALSE(prefetch_container1);
-  // The second prefetch will not be started until next `Prefetch()` call.
-  // TODO(crbug.com/400233773): Fix this behavior to proceed the queue.git
-  EXPECT_EQ(prefetch_container2->GetLoadState(),
-            PrefetchContainer::LoadState::kEligible);
-  auto handle_3 =
-      MakePrefetchFromBrowserContext(url_3, std::nullopt, {}, nullptr);
+  // https://crbug.com/400233773 is fixed.
   EXPECT_EQ(prefetch_container2->GetLoadState(),
             PrefetchContainer::LoadState::kStarted);
 }
@@ -7618,60 +7604,6 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
 
     ASSERT_EQ(attempt1.get(), prefetch_container->preloading_attempt().get());
   }
-}
-
-// Regression test for crbug.com/400233773, which is fixed with
-// `kPrefetchScheduler`.
-TEST_P(PrefetchServiceTest,
-       PrefetchScheduler_SchedulingDoesntStuckEvenIfActiveOneIsReset) {
-  if (!UsePrefetchScheduler()) {
-    GTEST_SKIP() << "This case is fixed by kPrefetchScheduler";
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kPrefetchSchedulerTesting,
-        {{"kPrefetchSchedulerTestingActiveSetSizeLimitForBase", "1"},
-         {"kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", "1"}}}},
-      {});
-
-  NavigateAndCommit(GURL("https://example.com"));
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
-          /*num_on_prefetch_likely_calls=*/0));
-  PrefetchService* prefetch_service =
-      BrowserContextImpl::From(browser_context())->GetPrefetchService();
-
-  const auto url_1 = GURL("https://example.com/one");
-  const auto url_2 = GURL("https://example.com/two");
-  auto handle_1 =
-      MakePrefetchFromBrowserContext(url_1, std::nullopt, {}, nullptr);
-  auto handle_2 =
-      MakePrefetchFromBrowserContext(url_2, std::nullopt, {}, nullptr);
-  task_environment()->RunUntilIdle();
-
-  base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2;
-  std::tie(std::ignore, prefetch_container1) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_1))[0];
-  std::tie(std::ignore, prefetch_container2) =
-      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
-          PrefetchContainer::Key(std::nullopt, url_2))[0];
-
-  ASSERT_EQ(prefetch_container1->GetLoadState(),
-            PrefetchContainer::LoadState::kStarted);
-  ASSERT_EQ(prefetch_container2->GetLoadState(),
-            PrefetchContainer::LoadState::kEligible);
-
-  // Reset the first prefetch during waiting its response. Note that it will
-  // eventually destruct the loader.
-  handle_1.reset();
-  task_environment()->RunUntilIdle();
-
-  EXPECT_FALSE(prefetch_container1);
-  // https://crbug.com/400233773 is fixed.
-  EXPECT_EQ(prefetch_container2->GetLoadState(),
-            PrefetchContainer::LoadState::kStarted);
 }
 
 // Tests behavior of concurrent prefetches.

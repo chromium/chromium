@@ -114,6 +114,11 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kPrefetchSchedulerTestingActiveSetSizeLimitForBurst;
 
+// Provide a partial fix for prefetch queueing problem (crbug.com/400233773),
+// without `PrefetchScheduler` feature.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrefetchQueueingPartialFixWithoutScheduler);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
