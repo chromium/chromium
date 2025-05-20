@@ -1165,8 +1165,6 @@ void TabStrip::AddTabsAt(
         base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());
     new_tab_button_pressed_start_time_.reset();
   }
-
-  LogTabWidthsForTabScrolling();
 }
 
 void TabStrip::MoveTab(int from_model_index,
@@ -2443,19 +2441,6 @@ void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
 
   const int target_index = start_index + offset * num_skipped_tabs;
   controller_->MoveGroup(group, target_index);
-}
-
-void TabStrip::LogTabWidthsForTabScrolling() {
-  int active_tab_width = GetActiveTabWidth();
-  int inactive_tab_width = GetInactiveTabWidth();
-
-  if (active_tab_width > 1) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Tabs.ActiveTabWidth", active_tab_width, 257);
-  }
-  if (inactive_tab_width > 1) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Tabs.InactiveTabWidth", inactive_tab_width,
-                               257);
-  }
 }
 
 // TabStrip:TabContextMenuController:

@@ -501,7 +501,8 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
 
   // Create a lot of tabs in order to make inactive tabs tiny.
   const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  while (GetInactiveTabWidth() != min_inactive_width) {
+  while (tab_strip_->GetTabCount() == 0 ||
+         tab_strip_->tab_at(0)->width() != min_inactive_width) {
     controller_->CreateNewTab();
     CompleteAnimationAndLayout();
   }
@@ -536,7 +537,9 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
   const int min_active_width =
       TabStyle::Get()->GetMinimumActiveWidth(/*is_split*/ false);
-  while (GetInactiveTabWidth() >= (min_inactive_width + min_active_width) / 2) {
+  while (tab_strip_->GetTabCount() == 0 ||
+         tab_strip_->tab_at(0)->width() >=
+             (min_inactive_width + min_active_width) / 2) {
     controller_->CreateNewTab();
     CompleteAnimationAndLayout();
   }
@@ -548,12 +551,12 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   // remaining one will be active and there will be no inactive tabs,
   // so we stop at 2.
   while (tab_strip_->GetTabCount() > 2) {
-    const int last_inactive_width = GetInactiveTabWidth();
+    const int last_inactive_width = tab_strip_->tab_at(0)->width();
     tab_strip_->CloseTab(
         tab_strip_->tab_at(tab_strip_->GetActiveIndex().value()),
         CloseTabSource::kFromMouse);
     CompleteAnimationAndLayout();
-    EXPECT_GE(GetInactiveTabWidth(), last_inactive_width);
+    EXPECT_GE(tab_strip_->tab_at(0)->width(), last_inactive_width);
   }
 }
 
@@ -564,7 +567,8 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
 
   // Create a lot of tabs in order to make inactive tabs tiny.
   const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  while (GetInactiveTabWidth() != min_inactive_width) {
+  while (tab_strip_->GetTabCount() == 0 ||
+         tab_strip_->tab_at(0)->width() != min_inactive_width) {
     controller_->CreateNewTab();
     CompleteAnimationAndLayout();
   }
