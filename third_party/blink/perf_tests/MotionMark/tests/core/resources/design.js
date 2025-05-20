@@ -54,7 +54,11 @@ var TextStage = Utilities.createSubclass(Stage,
         Stage.prototype.initialize.call(this, benchmark);
 
         this._template = document.getElementById("template");
-        this._offset = this.size.subtract(Point.elementClientSize(this._template)).multiply(.5);
+        
+        const templateSize = Point.elementClientSize(this._template);
+        this._offset = this.size.subtract(templateSize).multiply(.5);
+        this._maxOffset = templateSize.height / 4;
+
         this._template.style.left = this._offset.width + "px";
         this._template.style.top = this._offset.height + "px";
 
@@ -68,7 +72,7 @@ var TextStage = Utilities.createSubclass(Stage,
 
         if (count < 0) {
             this._offsetIndex = Math.max(this._offsetIndex + count, 0);
-            for (var i = this._offsetIndex; i < this.testElements.length; ++i)
+            for (let i = this._offsetIndex; i < this.testElements.length; ++i)
                 this.testElements[i].style.visibility = "hidden";
 
             this._stepProgress = 1 / this._offsetIndex;
@@ -78,44 +82,43 @@ var TextStage = Utilities.createSubclass(Stage,
         this._offsetIndex = this._offsetIndex + count;
         this._stepProgress = 1 / this._offsetIndex;
 
-        var index = Math.min(this._offsetIndex, this.testElements.length);
-        for (var i = 0; i < index; ++i)
+        const index = Math.min(this._offsetIndex, this.testElements.length);
+        for (let i = 0; i < index; ++i)
             this.testElements[i].style.visibility = "visible";
 
         if (this._offsetIndex <= this.testElements.length)
             return;
 
-        for (var i = this.testElements.length; i < this._offsetIndex; ++i) {
-            var clone = this._template.cloneNode(true);
+        for (let i = this.testElements.length; i < this._offsetIndex; ++i) {
+            const clone = this._template.cloneNode(true);
             this.testElements.push(clone);
             this.element.insertBefore(clone, this.element.firstChild);
         }
     },
 
-    animate: function(timeDelta) {
-        var angle = Stage.dateCounterValue(this.millisecondsPerRotation);
+    animate: function(timeDelta) 
+    {
+        const angle = Stage.dateCounterValue(this.millisecondsPerRotation);
 
-        var progress = 0;
-        var stepX = Math.sin(angle) * this.particleDistanceX;
-        var stepY = Math.cos(angle) * this.particleDistanceY;
-        var x = -stepX * 3;
-        var y = -stepY * 3;
-        var gradient = this.gradients[Math.floor(angle/(Math.PI * 2)) % this.gradients.length];
-        var offset = Stage.dateCounterValue(200);
-        this._template.style.transform = "translate(" + Math.floor(x) + "px," + Math.floor(y) + "px)";
-        for (var i = 0; i < this._offsetIndex; ++i) {
-            var element = this.testElements[i];
+        const gradient = this.gradients[Math.floor(angle / (Math.PI * 2)) % this.gradients.length];
+        const offset = Stage.dateCounterValue(200);
+        const maxX = Math.sin(angle) * this._maxOffset;
+        const maxY = Math.cos(angle) * this._maxOffset;
 
-            var colorProgress = this.shadowFalloff.solve(progress);
-            var shimmer = Math.sin(offset - colorProgress);
+        let progress = 0;
+        for (let i = 0; i < this._offsetIndex; ++i) {
+            const element = this.testElements[i];
+
+            let colorProgress = this.shadowFalloff.solve(progress);
+            const shimmer = Math.sin(offset - colorProgress);
             colorProgress = Math.max(Math.min(colorProgress + Utilities.lerp(shimmer, this.shimmerAverage, this.shimmerMax), 1), 0);
-            var r = Math.round(Utilities.lerp(colorProgress, gradient[0], gradient[3]));
-            var g = Math.round(Utilities.lerp(colorProgress, gradient[1], gradient[4]));
-            var b = Math.round(Utilities.lerp(colorProgress, gradient[2], gradient[5]));
+            const r = Math.round(Utilities.lerp(colorProgress, gradient[0], gradient[3]));
+            const g = Math.round(Utilities.lerp(colorProgress, gradient[1], gradient[4]));
+            const b = Math.round(Utilities.lerp(colorProgress, gradient[2], gradient[5]));
             element.style.color = "rgb(" + r + "," + g + "," + b + ")";
 
-            x += stepX;
-            y += stepY;
+            const x = Utilities.lerp(i / this._offsetIndex, 0, maxX);
+            const y = Utilities.lerp(i / this._offsetIndex, 0, maxY);
             element.style.transform = "translate(" + Math.floor(x) + "px," + Math.floor(y) + "px)";
 
             progress += this._stepProgress;

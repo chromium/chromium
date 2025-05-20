@@ -40,7 +40,7 @@
     <script src="resources/runner/tests.js" charset="utf-8"></script>
     <script src="resources/debug-runner/tests.js" charset="utf-8"></script>
     <script src="resources/runner/motionmark.js"></script>
-    <script src="resources/debug-runner/motionmark.js" charset="utf-8"></script>
+    <script src="resources/debug-runner/debug-runner.js" charset="utf-8"></script>
 
     <script src="resources/runner/benchmark-runner.js"></script>
     <script src="resources/debug-runner/d3.min.js"></script>
@@ -100,8 +100,7 @@
                                 </li>
                                 <li>
                                     <label>System frame rate: <input type="number" id="system-frame-rate" value="60"> FPS</label><br>
-                                    <label>Target frame rate: <input type="number" id="frame-rate" value="50"> FPS</label><br>
-                                    (Guide: should be about 5/6th of the system frame rate)
+                                    <label>Target frame rate: <input type="number" id="frame-rate" value="60"> FPS</label>
                                 </li>
                                 <li>
                                     <h3>Time measurement method:</h3>
@@ -124,8 +123,8 @@
                     Attempting to detect system frame rate: <span>0</span> FPS (in progress).
                 </p>
                 <div class="start-benchmark">
-                    <p class="hidden">Please rotate the device to orientation before starting.</p>
-                    <button id="run-benchmark" onclick="benchmarkController.startBenchmark()">Run benchmark</button>
+                    <p class="portrait-orientation-check hidden">Please rotate the device to orientation before starting.</p>
+                    <button id="start-button" onclick="benchmarkController.startBenchmark()">Run benchmark</button>
                 </div>
             </div>
         </section>
@@ -167,8 +166,8 @@
                 <header>
                     <button onclick="benchmarkController.showResults()">&lt; Results</button>
                     <h1>Graph:</h1>
-                    <p class="score"></p>
-                    <p class="confidence"></p>
+                    <p class="score">&nbsp;</p>
+                    <p class="confidence">&nbsp;</p>
                 </header>
                 <nav>
                     <form name="graph-type">

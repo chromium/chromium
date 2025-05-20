@@ -112,7 +112,7 @@ Utilities.extendObject(ParticlesStage.prototype, {
         var lastPromise;
         var images = this.images;
         this.imageSrcs.forEach(function(imageSrc) {
-            var promise = this._loadImage("../master/resources/" + imageSrc + "100.png"); // nocheck
+            var promise = this._loadImage("../core/resources/" + imageSrc + "100.png");
             if (!lastPromise)
                 lastPromise = promise;
             else {

@@ -110,7 +110,7 @@ CanvasLinePoint = Utilities.createClass(
         var colors = ["#101010", "#808080", "#c0c0c0", "#101010", "#808080", "#c0c0c0", "#e01040"];
         this.color = Stage.randomElementInArray(colors);
         this.width = Math.pow(Pseudo.random(), 5) * 20 + 1;
-        this.isSplit = Pseudo.random() > 0.95;
+        this.isSplit = Pseudo.random() > 0.5;
 
         var nextPoint;
         if (stage.objects.length)

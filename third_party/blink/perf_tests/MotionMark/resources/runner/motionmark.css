@@ -78,6 +78,10 @@ body.images-loaded {
     }
 }
 
+#frame-rate-label {
+    font-size: 75%;
+}
+
 ::selection {
     background-color: black;
     color: white;
