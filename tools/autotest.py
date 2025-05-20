@@ -67,7 +67,7 @@ _TEST_TARGET_ALLOWLIST = [
 ]
 
 _TEST_TARGET_REGEX = re.compile(
-    r'(_browsertests|_perftests|_wpr_tests|_unittests)$')
+    r'(_browsertests|_perftests|_wpr_tests|_unittests|_tests?)$')
 
 _PREF_MAPPING_FILE_PATTERN = re.escape(
     str(Path('components') / 'policy' / 'test' / 'data' / 'pref_mapping') +
