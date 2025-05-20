@@ -445,8 +445,11 @@ class CONTENT_EXPORT PrefetchService {
   void RecordExistingPrefetchWithMatchingURL(
       base::WeakPtr<PrefetchContainer> prefetch_container) const;
 
+  // If `should_progress` is true, calls `PrefetchScheduler::ProgressAsync()`
+  // (implicitly). This argument is meaningful only if `UsePrefetchScheduler()`.
   void ResetPrefetchContainer(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      bool should_progress = true);
 
   // Methods for scheduling
   void ScheduleAndProgress(base::WeakPtr<PrefetchContainer> prefetch_container);

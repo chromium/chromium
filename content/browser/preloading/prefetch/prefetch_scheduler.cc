@@ -210,7 +210,8 @@ void PrefetchScheduler::PushAndProgressAsync(
 }
 
 void PrefetchScheduler::RemoveAndProgressAsync(
-    PrefetchContainer& prefetch_container) {
+    PrefetchContainer& prefetch_container,
+    bool should_progress) {
   [&]() {
     for (auto it = active_set_.cbegin(); it != active_set_.cend(); ++it) {
       if (it->get() == &prefetch_container) {
@@ -222,6 +223,10 @@ void PrefetchScheduler::RemoveAndProgressAsync(
     queue_.Remove(prefetch_container.GetWeakPtr());
   }();
 
+  if (!should_progress) {
+    return;
+  }
+
   // This method can be called in `PrefetechService::EvictPrefetch()` called in
   // `ProcessOne()`. Don't call `ProcessAsync()` to prevent infinite loop in
   // that case.
@@ -231,7 +236,12 @@ void PrefetchScheduler::RemoveAndProgressAsync(
 }
 
 void PrefetchScheduler::NotifyAttributeMightChangedAndProgressAsync(
-    PrefetchContainer& prefetch_container) {
+    PrefetchContainer& prefetch_container,
+    bool should_progress) {
+  if (!should_progress) {
+    return;
+  }
+
   const bool is_changed = queue_.MaybeUpdatePriority(
       prefetch_container, CalculatePriority(prefetch_container));
   if (is_changed) {

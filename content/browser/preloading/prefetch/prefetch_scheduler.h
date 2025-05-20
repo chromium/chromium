@@ -169,11 +169,15 @@ class CONTENT_EXPORT PrefetchScheduler {
   // can't detect changes of `PrefetchDocumentManager` and
   // `PrefetchDocumentManager::CanPrefetchNow()`. So, `PrefetchService` must
   // explicitly call `Progress()`.
+  //
+  // If `should_progress` is false, doesn't call `ProgressAsync()`.
   void PushAndProgressAsync(PrefetchContainer& prefetch_container);
   // Note that this doesn't call `PrefetchService::ResetPrefetchContainer()`.
-  void RemoveAndProgressAsync(PrefetchContainer& prefetch_container);
+  void RemoveAndProgressAsync(PrefetchContainer& prefetch_container,
+                              bool should_progress = true);
   void NotifyAttributeMightChangedAndProgressAsync(
-      PrefetchContainer& prefetch_container);
+      PrefetchContainer& prefetch_container,
+      bool should_proggress = true);
 
   // Progress scheduling
   //
