@@ -26,18 +26,34 @@ PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
 // the name.
 // See https://perfetto.dev/docs/instrumentation/track-events.
 //
-// Since spaces aren't allowed, use '_' to separate words in category names
-// (e.g., "content_capture").
+// Naming Convention: Follow the `component.category(.sub_category)(.debug)`
+// naming convention for new categories.
+// Example: `base.scheduling`, `base.scheduling.debug`
 //
-// To ensure a category is not traced by default, use:
-//   perfetto::Category(TRACE_DISABLED_BY_DEFAULT("my_category"))
-// This introduces a category called "disabled-by-default-my_category".
-// Internally, Perfetto treats the "disabled-by-default-" prefix specially and
-// automatically slaps a "slow" tag on it (see kLegacySlowPrefix in Perfetto
-// internals), which is excluded from the default trace config (see
-// `TrackEventConfig.disabled_tags`). Note that since this is a prefix on the
-// category name, you'll need to use TRACE_DISABLED_BY_DEFAULT when logging
-// events as well.
+// Be specific, avoid generic categories. Categories such as `toplevel` become
+// junk drawers for many trace events, eventually making them too heavy and
+// noisy for specific purposes.
+//
+// Prefer using ".debug" suffix along with "debug" tag over the legacy
+// `DISABLED_BY_DEFAULT()` when creating new debug categories.
+// Example: perfetto::Category("cc.debug").SetTags("debug")
+// `TRACE_DISABLED_BY_DEFAULT("my_category")` adds
+// `disabled-by-default-my_category` prefix and “slow” tag to the category,
+// but it doesn’t align with the naming convention, and makes the call sites
+// more cluttered compared to the ".debug" suffix.
+// Both "slow" and "debug" tags are disabled by default.
+//
+// Document Categories: Document new categories using `.SetDescription()` and
+// optionally identify a suitable owner in comments.
+// Use generic tags such as "navigation" to document and group categories.
+// Add the "debug" tag for debug categories.
+//
+// Avoid emitting events to multiple categories (category groups): Category
+// groups need to be defined for each combination that’s used in chrome, which
+// can lead to combinatorial explosion. They often indicate an issue with how
+// existing categories are organized, or are used to group a list of
+// categories into another one, such as “devtools.timeline”. Prefer leveraging
+// tags to group a set of categories under a common tag instead.
 //
 // clang-format off
 PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
