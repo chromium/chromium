@@ -18,6 +18,7 @@
 #include <optional>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
@@ -72,6 +73,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1330,6 +1332,45 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   EXPECT_EQ("1 2 0 3", IDString(model));
   EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(3, 4));
+}
+
+// TODO(crbug.com/333085989): Re-enable flaky tests
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RevertDragSplitTab DISABLED_RevertDragSplitTab
+#else
+#define MAYBE_RevertDragSplitTab RevertDragSplitTab
+#endif
+
+// Drag a split tab within a tabstrip and cancel the drag.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_RevertDragSplitTab) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabStripModel* model = browser()->tab_strip_model();
+  AddTabsAndResetBrowser(browser(), 3);
+  model->ActivateTabAt(0);
+  split_tabs::SplitTabId split_id =
+      model->AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+  StopAnimating(tab_strip);
+
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(3)));
+
+  EXPECT_EQ("2 3 0 1", IDString(model));
+  EXPECT_EQ(model->GetSplitData(split_id)->ListTabs(),
+            std::vector<tabs::TabInterface*>(
+                {model->GetTabAtIndex(2), model->GetTabAtIndex(3)}));
+
+  ASSERT_TRUE(TabDragController::IsActive());
+
+  // Pressing escape will revert the tabs to original state before the drag.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
+  EXPECT_EQ("0 1 2 3", IDString(model));
+  EXPECT_EQ(model->GetSplitData(split_id)->ListTabs(),
+            std::vector<tabs::TabInterface*>(
+                {model->GetTabAtIndex(0), model->GetTabAtIndex(1)}));
 }
 
 // Creates a browser with four tabs. The first two tabs are in Tab Group 1.
@@ -2756,8 +2797,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #define MAYBE_DragSplitTabToSeparateWindow DragSplitTabToSeparateWindow
 #endif
 
-// Creates two browsers, then drags a combination of pinned and unpinned tabs
-// from one to the other.
+// Creates two browsers, then drags a split tab from one to the other.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragSplitTabToSeparateWindow) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());

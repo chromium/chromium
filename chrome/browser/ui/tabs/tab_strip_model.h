@@ -397,9 +397,17 @@ class TabStripModel {
   void MoveSelectedTabsTo(int index,
                           std::optional<tab_groups::TabGroupId> group);
 
-  // Moves all tabs in |group| to |to_index|. This has no checks to make sure
+  // Moves all tabs in `group` to `to_index`. This has no checks to make sure
   // the position is valid for a group to move to.
   void MoveGroupTo(const tab_groups::TabGroupId& group, int to_index);
+
+  // Moves all tabs in split with `split_id` to `to_index` with  properties
+  // `pinned` and `group_id`. This has no checks to make sure the position is
+  // valid for a split to move to.
+  void MoveSplitTo(const split_tabs::SplitTabId& split_id,
+                   int to_index,
+                   bool pinned,
+                   std::optional<tab_groups::TabGroupId> group_id);
 
   // Returns the currently active WebContents, or NULL if there is none.
   content::WebContents* GetActiveWebContents() const;

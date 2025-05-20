@@ -1699,14 +1699,11 @@ void TabDragController::RevertDrag() {
     }
   }
 
-  // Revert each tab and group. N.B. we manually increment `i` because each
-  // group has multiple entries in `tab_drag_data_`.
+  // Revert each tab, split and group. We manually increment `i` because
+  // each group or split has multiple entries in `tab_drag_data_`.
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size();) {
     const TabDragData tab_data = drag_data_.tab_drag_data_[i];
-    if (tab_data.view_type == TabSlotView::ViewType::kTab) {
-      RevertTabAt(i);
-      i++;
-    } else {
+    if (tab_data.view_type == TabSlotView::ViewType::kTabGroupHeader) {
       RevertGroupAt(i);
       // Skip all the tabs in the group too.
       i += source_context_->GetTabStripModel()
@@ -1714,6 +1711,23 @@ void TabDragController::RevertDrag() {
                ->GetTabGroup(tab_data.tab_group_data->group_id)
                ->tab_count() +
            1;
+    } else {
+      CHECK(tab_data.contents);
+
+      const tabs::TabInterface* tab =
+          tabs::TabInterface::GetFromContents(tab_data.contents);
+
+      if (tab->IsSplit()) {
+        split_tabs::SplitTabId split_id = tab->GetSplit().value();
+        RevertSplitAt(i);
+        i += source_context_->GetTabStripModel()
+                 ->GetSplitData(split_id)
+                 ->ListTabs()
+                 .size();
+      } else {
+        RevertTabAt(i);
+        i++;
+      }
     }
   }
 
@@ -1857,6 +1871,74 @@ void TabDragController::RevertGroupAt(size_t drag_index) {
 
   source_context_->GetTabStripModel()->MoveGroupTo(
       first_tab_in_group.tab_group_data->group_id, target_index);
+}
+
+void TabDragController::RevertSplitAt(size_t drag_index) {
+  CHECK_NE(current_state_, DragState::kNotStarted);
+  CHECK(attached_context_);
+  CHECK(source_context_);
+  // We can't revert if `contents` was destroyed during the drag, or if this is
+  // a group header.
+  CHECK(drag_data_.tab_drag_data_[drag_index].contents);
+
+  const TabDragData tab_data = drag_data_.tab_drag_data_[drag_index];
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(tab_data.contents);
+  split_tabs::SplitTabId split_id = tab->GetSplit().value();
+
+  // The split can be reverted into its original group if it still exists.
+  const std::optional<tab_groups::TabGroupId> existing_group =
+      tab_data.tab_group_data.has_value() &&
+              source_context_->GetTabStripModel()
+                  ->group_model()
+                  ->ContainsTabGroup(tab_data.tab_group_data->group_id)
+          ? std::make_optional(tab_data.tab_group_data->group_id)
+          : std::nullopt;
+
+  const int from_index =
+      attached_context_->GetTabStripModel()->GetIndexOfWebContents(
+          tab_data.contents);
+  CHECK_NE(from_index, TabStripModel::kNoTab);
+  int target_index = tab_data.source_model_index.value();
+
+  if (attached_context_ != source_context_) {
+    // The Split was inserted into another TabDragContext. We need to
+    // put it back into the original one.
+    std::unique_ptr<DetachedTabCollection> detached_split =
+        attached_context_->GetTabStripModel()->DetachSplitTabForInsertion(
+            split_id);
+    source_context_->GetTabStripModel()->InsertDetachedSplitTabAt(
+        std::move(detached_split), target_index, tab_data.pinned,
+        existing_group);
+  } else {
+    if (target_index > from_index) {
+      for (size_t i = drag_index + 1; i < drag_data_.tab_drag_data_.size();
+           ++i) {
+        const TabDragData other_tab = drag_data_.tab_drag_data_[i];
+
+        // Ignore group headers, they don't have model indices to skip over.
+        if (other_tab.view_type != TabSlotView::ViewType::kTab) {
+          continue;
+        }
+
+        tabs::TabInterface* other_tab_interface =
+            tabs::TabInterface::GetFromContents(other_tab.contents);
+
+        CHECK(other_tab_interface);
+
+        // Ignore other tabs in this split, they will get moved along with us
+        // so we won't skip over them.
+        if (other_tab_interface->GetSplit() == split_id) {
+          continue;
+        }
+
+        ++target_index;
+      }
+    }
+
+    source_context_->GetTabStripModel()->MoveSplitTo(
+        split_id, target_index, tab_data.pinned, existing_group);
+  }
 }
 
 void TabDragController::RevertTabAt(size_t drag_index) {

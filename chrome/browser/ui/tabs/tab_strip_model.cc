@@ -1005,6 +1005,42 @@ void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
   MoveGroupToImpl(group, to_index);
 }
 
+void TabStripModel::MoveSplitTo(
+    const split_tabs::SplitTabId& split_id,
+    int to_index,
+    bool pinned,
+    std::optional<tab_groups::TabGroupId> group_id) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  CHECK_NE(to_index, kNoTab);
+
+  if (!group_model_ && group_id.has_value()) {
+    return;
+  }
+
+  to_index = ConstrainMoveIndex(to_index, pinned);
+
+  std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices =
+      GetTabsAndIndicesInSplit(split_id);
+
+  // Invalid to move an to an index that breaks another split.
+  std::optional<split_tabs::SplitTabId> destination_split =
+      MoveBreaksSplitContiguity(tabs_with_indices[0].second,
+                                tabs_with_indices.size(), to_index);
+  CHECK(!destination_split.has_value());
+
+  std::vector<int> tab_indices;
+  for (const auto& tab_pair : tabs_with_indices) {
+    tab_indices.push_back(tab_pair.second);
+  }
+
+  MoveTabsWithNotifications(
+      tab_indices, to_index,
+      base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
+                     base::Unretained(contents_data_.get()), tab_indices,
+                     to_index, group_id, pinned));
+}
+
 void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
                                     int to_index) {
   const gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
@@ -4288,9 +4324,9 @@ void TabStripModel::SetSplitPinnedImpl(tabs::SplitTabCollection* split,
 
   MoveTabsWithNotifications(
       tab_indices, destination_index,
-      base::BindOnce(&tabs::TabStripCollection::MoveSplit,
-                     base::Unretained(contents_data_.get()),
-                     split->GetSplitTabId(), pinned));
+      base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
+                     base::Unretained(contents_data_.get()), tab_indices,
+                     destination_index, std::nullopt, pinned));
 }
 
 void TabStripModel::MoveTabsWithNotifications(

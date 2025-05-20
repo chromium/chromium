@@ -375,19 +375,6 @@ void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
   parent_collection->MaybeRemoveCollection(split).reset();
 }
 
-void TabStripCollection::MoveSplit(split_tabs::SplitTabId split_id,
-                                   bool pinned) {
-  SplitTabCollection* split = GetSplitTabCollection(split_id);
-  std::unique_ptr<TabCollection> removed_collection =
-      split->GetParentCollection()->MaybeRemoveCollection(split);
-  if (pinned) {
-    pinned_collection()->AddCollection(std::move(removed_collection),
-                                       pinned_collection()->ChildCount());
-  } else {
-    unpinned_collection()->AddCollection(std::move(removed_collection), 0);
-  }
-}
-
 void TabStripCollection::InsertSplitTabAt(
     std::unique_ptr<SplitTabCollection> split_collection,
     int index,
