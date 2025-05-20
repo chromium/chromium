@@ -10,7 +10,7 @@
 
 namespace media {
 
-VP9Picture::VP9Picture() : frame_hdr(new Vp9FrameHeader()) {}
+VP9Picture::VP9Picture() : frame_hdr(std::make_unique<Vp9FrameHeader>()) {}
 VP9Picture::~VP9Picture() = default;
 
 V4L2VP9Picture* VP9Picture::AsV4L2VP9Picture() {

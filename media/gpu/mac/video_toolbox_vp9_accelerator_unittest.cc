@@ -52,6 +52,8 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
   pic->frame_hdr = std::make_unique<Vp9FrameHeader>();
   pic->frame_hdr->show_frame = true;
   pic->frame_hdr->data = base::span(frame_data);
+  pic->frame_hdr->frame_width = 640;
+  pic->frame_hdr->frame_height = 480;
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
@@ -77,11 +79,11 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
   constexpr uint8_t frame_data2[] = {0x02};
 
   scoped_refptr<VP9Picture> pic1 = accelerator_->CreateVP9Picture();
-  pic1->frame_hdr = std::make_unique<Vp9FrameHeader>();
   pic1->frame_hdr->data = base::span(frame_data1);
+  pic1->frame_hdr->frame_width = 640;
+  pic1->frame_hdr->frame_height = 480;
 
-  scoped_refptr<VP9Picture> pic2 = accelerator_->CreateVP9Picture();
-  pic2->frame_hdr = std::make_unique<Vp9FrameHeader>();
+  scoped_refptr<VP9Picture> pic2 = pic1->Duplicate();
   pic2->frame_hdr->show_existing_frame = true;
   pic2->frame_hdr->data = base::span(frame_data2);
 
@@ -90,7 +92,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
   accelerator_->SubmitDecode(pic1, segm_params, lf_params, reference_frames);
-  accelerator_->OutputPicture(pic2);
+  EXPECT_TRUE(accelerator_->OutputPicture(pic2));
 
   // Verify `sample`.
   CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());

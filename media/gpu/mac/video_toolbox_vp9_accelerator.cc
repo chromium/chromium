@@ -125,6 +125,11 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (pic->frame_hdr->show_existing_frame) {
+    *format_changed = false;
+    return true;
+  }
+
   // TODO(crbug.com/40227557): Consider merging with CreateFormatExtensions() to
   // avoid converting back and forth.
   VideoColorSpace color_space = pic->get_colorspace();
@@ -155,6 +160,10 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
 
   gfx::Size coded_size(static_cast<int>(pic->frame_hdr->frame_width),
                        static_cast<int>(pic->frame_hdr->frame_height));
+  if (coded_size.IsEmpty()) {
+    DLOG(ERROR) << "Invalid frame size";
+    return false;
+  }
 
   // If the parameters have changed, generate a new format.
   if (color_space != active_color_space_ || profile != active_profile_ ||
