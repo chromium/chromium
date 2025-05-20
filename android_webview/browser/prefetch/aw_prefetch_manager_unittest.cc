@@ -78,14 +78,14 @@ TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {
   }
 
   // Check the number of prefetches after exceeding the limit.
-  EXPECT_EQ(prefetch_manager.GetAllPrefetchesForTesting().size(), 3u);
+  EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(), 3u);
 
   // Add one more to trigger a removal
   prefetch_manager.StartPrefetchRequest(
       base::android::AttachCurrentThread(), "https://example.com/last",
       /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
-  EXPECT_EQ(prefetch_manager.GetAllPrefetchesForTesting().size(),
+  EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(),
             3u);  // Should still be at the limit
 }
 
@@ -110,8 +110,8 @@ TEST_F(AwPrefetchManagerTest, RemoveOldestPrefetchHandle) {
       /*callback_executor=*/nullptr);
 
   // 2. Capture the initial prefetches.
-  std::vector<content::PrefetchHandle*> initial_prefetches =
-      prefetch_manager.GetAllPrefetchesForTesting();
+  std::vector<int32_t> initial_prefetches =
+      prefetch_manager.GetAllPrefetchKeysForTesting();
   EXPECT_EQ(initial_prefetches.size(), 2u);
 
   // 3. Do the third request.
@@ -120,8 +120,8 @@ TEST_F(AwPrefetchManagerTest, RemoveOldestPrefetchHandle) {
       /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
 
-  std::vector<content::PrefetchHandle*> current_prefetches =
-      prefetch_manager.GetAllPrefetchesForTesting();
+  std::vector<int32_t> current_prefetches =
+      prefetch_manager.GetAllPrefetchKeysForTesting();
   EXPECT_EQ(current_prefetches.size(), 2u);
 
   // Verify that the oldest prefetch is removed.
@@ -155,7 +155,7 @@ TEST_F(AwPrefetchManagerTest, UpdateMaxPrefetchesIsRespected) {
         /*prefetch_params=*/nullptr, /*callback=*/nullptr,
         /*callback_executor=*/nullptr);
   }
-  EXPECT_EQ(prefetch_manager.GetAllPrefetchesForTesting().size(), 5u);
+  EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(), 5u);
 
   // Now, let's lower that number with more than 1. Let's say 2.
   prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
@@ -168,7 +168,7 @@ TEST_F(AwPrefetchManagerTest, UpdateMaxPrefetchesIsRespected) {
       /*callback_executor=*/nullptr);
 
   // Should be on the latest setting, 2.
-  EXPECT_EQ(prefetch_manager.GetAllPrefetchesForTesting().size(), 2u);
+  EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(), 2u);
 }
 
 TEST_F(AwPrefetchManagerTest, PrefetchHandleKeysAlwaysIncrement) {

@@ -105,6 +105,21 @@ int AwPrefetchManager::StartPrefetchRequest(
   // TODO(crbug.com/393344309): Apply deduping to all prefetch requests (not
   // just WebView).
   if (!browser_context_->IsPrefetchDuplicate(pf_url, expected_no_vary_search)) {
+    // Make room for the new prefetch request by evicting the older ones.
+    if (all_prefetches_map_.size() >= max_prefetches_) {
+      int num_prefetches_to_evict =
+          all_prefetches_map_.size() - max_prefetches_ + 1;
+      auto it = all_prefetches_map_.begin();
+
+      while (num_prefetches_to_evict > 0 && it != all_prefetches_map_.end()) {
+        // Because the keys should be sequential based on when the prefetch
+        // associated with it was added, a standard iteration should always
+        // prioritize removing the oldest entry.
+        it = all_prefetches_map_.erase(it);
+        num_prefetches_to_evict--;
+      }
+    }
+
     std::unique_ptr<content::PrefetchHandle> prefetch_handle =
         browser_context_->StartBrowserPrefetchRequest(
             pf_url, AW_PREFETCH_METRICS_SUFFIX,
