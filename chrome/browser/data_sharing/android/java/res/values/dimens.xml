@@ -31,4 +31,6 @@ found in the LICENSE file.
     <dimen name="recent_activity_favicon_bg_size">40dp</dimen>
     <dimen name="recent_activity_menu_width">258dp</dimen>
 
+    <!-- Maximum favicon size for DataSharingUiDelegate -->
+    <dimen name="shared_tab_group_favicon_bitmap_size">34dp</dimen>
 </resources>

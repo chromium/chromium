@@ -399,8 +399,8 @@ public class DataSharingTabManager {
                 activity,
                 assumeNonNull(mProfile),
                 urls,
-                // TODO(haileywang): add this to resources when using it in service.
-                /* size= */ 72,
+                activity.getResources()
+                        .getDimensionPixelSize(R.dimen.shared_tab_group_favicon_bitmap_size),
                 (favicons) -> {
                     updateFavicons(sessionId, displayUrls, favicons);
                     doneCallback.run();
