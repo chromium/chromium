@@ -477,7 +477,7 @@ viz::mojom::TilePtr SerializeTile(
   switch (tile.draw_info().mode()) {
     case TileDrawInfo::OOM_MODE:
       wire->contents = viz::mojom::TileContents::NewMissingReason(
-          viz::mojom::MissingTileReason::kOutOfMemory);
+          mojom::MissingTileReason::kOutOfMemory);
       break;
 
     case TileDrawInfo::SOLID_COLOR_MODE:
@@ -492,7 +492,7 @@ viz::mojom::TilePtr SerializeTile(
             SerializeTileResource(tile, resource_provider, context_provider));
       } else {
         wire->contents = viz::mojom::TileContents::NewMissingReason(
-            viz::mojom::MissingTileReason::kResourceNotReady);
+            mojom::MissingTileReason::kResourceNotReady);
       }
       break;
   }

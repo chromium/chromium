@@ -119,6 +119,11 @@ mojom("layer_type") {
   sources = [ "layer_type.mojom" ]
 }
 
+mojom("missing_tile_reason") {
+  generate_java = true
+  sources = [ "missing_tile_reason.mojom" ]
+}
+
 mojom("ui_resource_id") {
   generate_java = true
   sources = [ "ui_resource_id.mojom" ]
