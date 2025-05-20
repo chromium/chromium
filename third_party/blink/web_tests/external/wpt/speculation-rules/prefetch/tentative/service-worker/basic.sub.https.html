@@ -15,6 +15,9 @@
 <meta name="variant" content="?origin=same-site&sw=fetch-handler-navigation-preload">
 <meta name="variant" content="?origin=same-site&sw=no-fetch-handler">
 <meta name="variant" content="?origin=same-site&sw=no-controller">
+<meta name="variant" content="?origin=same-site&sw=race-fetch-handler">
+<meta name="variant" content="?origin=same-site&sw=race-fetch-handler-to-fallback">
+<meta name="variant" content="?origin=same-site&sw=race-fetch-handler-modify-url">
 
 <meta name="variant" content="?origin=same-site&sw=fetch-handler&clientId">
 <meta name="variant" content="?origin=same-site&sw=fetch-handler-to-fallback&clientId">
@@ -39,7 +42,19 @@ setup(() => assertSpeculationRulesIsSupported());
 // TODO(https://crbug.com/404573972): Rename "same-site" tests to
 // "same-origin", and add same-site cross-origin tests.
 const originOption = new URL(location.href).searchParams.get('origin');
-const swOption = new URL(location.href).searchParams.get('sw');
+const originalSwOption = new URL(location.href).searchParams.get('sw');
+
+// Used when checking the resulting behavior.
+// In the following race-network cases, race network requests work in parallel
+// with fetch handlers and the checked observed behavior are the same with
+// non-race-network cases.
+let swOption = originalSwOption;
+if (originalSwOption === 'race-fetch-handler') {
+  swOption = 'fetch-handler';
+}
+if (originalSwOption === 'race-fetch-handler-to-fallback') {
+  swOption = 'fetch-handler-to-fallback';
+}
 
 promise_test(async t => {
   const hostname = originOption === 'cross-site' ? '{{hosts[alt][www]}}'
@@ -47,7 +62,7 @@ promise_test(async t => {
   const win = await spawnWindow(t, { protocol: 'https', hostname: hostname });
   const nextUrl = win.getExecutorURL({ executor: 'counting-executor.py', protocol: 'https', page: 2 });
 
-  const swUrl = new URL('../../resources/basic-service-worker.js?sw=' + swOption, location.href).href;
+  const swUrl = new URL('../../resources/basic-service-worker.js?sw=' + originalSwOption, location.href).href;
 
   // Register a SW not controlling any pages below, just to confirm such
   // unrelated SWs in the same-origin doesn't affect the behavior.
@@ -141,7 +156,8 @@ promise_test(async t => {
         'non-prefetch requests should not be sent to the server.');
   } else if (originOption === 'same-site' &&
              (swOption === 'fetch-handler-modify-url' ||
-              swOption === 'fetch-handler-modify-referrer')) {
+              swOption === 'fetch-handler-modify-referrer' ||
+              swOption === 'race-fetch-handler-modify-url')) {
     // When the ServiceWorker modifies the prefetch request
     // (`fetch-handler-modify-*` cases below), still prefetch can work and be
     // served, but Sec-Purpose header is dropped
@@ -149,11 +165,17 @@ promise_test(async t => {
     assert_prefetched_without_sec_purpose(headers,
         "Prefetched result should be served without Sec-Purpose.");
     // `requestCount` checks the Sec-Purpose header so the prefetch request
-    // without Sec-Prefetch is counted as nonPrefetch here.
+    // without Sec-Purpose is counted as nonPrefetch here.
     assert_equals(requestCount.nonPrefetch, 1,
         'a prefetch request without Sec-Purpose should be sent to the server.');
-    assert_equals(requestCount.prefetch, 0,
-        'Other requests with Sec-Prefetch should not be sent to the server.');
+    if (swOption === 'race-fetch-handler-modify-url') {
+      // This racing network request is not used.
+      assert_equals(requestCount.prefetch, 1,
+        'Race network request should be sent to the server with Sec-Purpose.');
+    } else {
+      assert_equals(requestCount.prefetch, 0,
+        'Other requests with Sec-Purpose should not be sent to the server.');
+    }
 
     // Check the modified URL/referrer to check if the prefetched and
     // ServiceWorker-modified response is actually served.
@@ -187,5 +209,5 @@ promise_test(async t => {
     }
   }
 
-}, "Prefetch with ServiceWorker (" + swOption + ")");
+}, "Prefetch with ServiceWorker (" + originalSwOption + ")");
 </script>

@@ -1,10 +1,22 @@
-const swOption = new URL(location.href).searchParams.get('sw');
+let swOption = new URL(location.href).searchParams.get('sw');
 
 if (swOption === 'fetch-handler-navigation-preload') {
   self.addEventListener('activate', event => {
     if (self.registration.navigationPreload) {
       event.waitUntil(self.registration.navigationPreload.enable());
     }
+  });
+}
+
+if (swOption === 'race-fetch-handler' ||
+  swOption === 'race-fetch-handler-to-fallback' ||
+  swOption === 'race-fetch-handler-modify-url') {
+  swOption = swOption.substring('race-'.length);
+  self.addEventListener('install', event => {
+    event.addRoutes([{
+      condition: { urlPattern: { pathname: '/**/counting-executor.py' } },
+      source: 'race-network-and-fetch-handler'
+    }]);
   });
 }
 
