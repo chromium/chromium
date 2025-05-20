@@ -13,6 +13,9 @@ import static org.mockito.Mockito.verify;
 import android.animation.Animator;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -372,5 +375,26 @@ public class ToolbarProgressBarTest {
                 "Background color does not match expected color.",
                 SemanticColorUtils.getProgressBarTrackColor(mActivity),
                 mProgressBar.getBackgroundColor());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_PROGRESS_BAR_VISUAL_UPDATE)
+    @Feature({"Android-Progress-Bar"})
+    public void testProgressBar_staticBackground() {
+        assertFalse(mProgressBar.useGradientDrawable());
+        assertTrue(mProgressBar.getDrawable() instanceof ClipDrawable);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_PROGRESS_BAR_VISUAL_UPDATE)
+    @Feature({"Android-Progress-Bar"})
+    public void testProgressBar_movableBackground() {
+        assertTrue(mProgressBar.useGradientDrawable());
+        Drawable drawable = mProgressBar.getDrawable();
+        assertTrue(drawable instanceof LayerDrawable);
+        LayerDrawable layerDrawable = (LayerDrawable) drawable;
+        assertEquals(2, layerDrawable.getNumberOfLayers());
+        assertTrue(layerDrawable.getDrawable(0) instanceof ClipDrawable);
+        assertTrue(layerDrawable.getDrawable(1) instanceof ClipDrawable);
     }
 }

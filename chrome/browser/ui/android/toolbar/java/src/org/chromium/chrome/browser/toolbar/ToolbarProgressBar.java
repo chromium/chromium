@@ -178,6 +178,11 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         setProgressBarColors();
     }
 
+    @Override
+    protected boolean useGradientDrawable() {
+        return ChromeFeatureList.sAndroidProgressBarVisualUpdate.isEnabled();
+    }
+
     public void setAnimatingView(ToolbarProgressBarAnimatingView animatingView) {
         mAnimatingView = animatingView;
         setProgressBarColors();
