@@ -82,6 +82,10 @@
 #include "mediapipe/gpu/graph_support.h"
 #include "mediapipe/util/cpu_util.h"
 
+#if !MEDIAPIPE_DISABLE_GPU
+#include "mediapipe/gpu/gpu_shared_data_internal.h"
+#endif  // !MEDIAPIPE_DISABLE_GPU
+
 namespace mediapipe {
 
 namespace {
@@ -138,7 +142,6 @@ CalculatorGraph::CalculatorGraph() : CalculatorGraph(/*cc=*/nullptr) {}
 // Adopt all services from the CalculatorContext / parent graph.
 CalculatorGraph::CalculatorGraph(CalculatorContext* cc)
     : counter_factory_(std::make_unique<BasicCounterFactory>()),
-      service_manager_(cc != nullptr ? cc->GetGraphServiceManager() : nullptr),
       profiler_(std::make_shared<ProfilingContext>()),
       scheduler_(this) {
   if (cc != nullptr) {
@@ -146,6 +149,29 @@ CalculatorGraph::CalculatorGraph(CalculatorContext* cc)
     // collisions between newly created and inherited graphs.
     // TODO b/368015341- Use factory method to avoid CHECK in constructor.
     ABSL_CHECK_OK(DisallowServiceDefaultInitialization());
+
+    // Adopt all services from the parent graph except for GpuResources.
+    const auto parent_service_manager = cc->GetGraphServiceManager();
+    const auto parent_service_packets =
+        parent_service_manager->ServicePackets();
+    GraphServiceManager::ServiceMap service_packets;
+    for (const auto& [key, packet] : parent_service_packets) {
+#if !MEDIAPIPE_DISABLE_GPU
+      if (key == kGpuService.key) {
+        // To avoid deadlocks when sharing the same GPU thread between
+        // multiple graphs, we create a new GpuResources instance for each
+        // sub-graph with a dedicated GL context / thread.
+        auto resources = mediapipe::GpuResources::Create(
+            *packet.Get<std::shared_ptr<mediapipe::GpuResources>>());
+        ABSL_CHECK_OK(resources);
+        service_packets[key] =
+            MakePacket<std::shared_ptr<mediapipe::GpuResources>>(*resources);
+        continue;
+      }
+#endif  // !MEDIAPIPE_DISABLE_GPU
+      service_packets[key] = packet;
+    }
+    service_manager_.SetServicePackets(service_packets);
   }
   SetVLogOverrides();
 }

@@ -91,7 +91,7 @@ done
 echo "Downloading mediapipe third party dependencies..."
 for dep in "${THIRD_PARTY_DEPS[@]}" ; do
   echo "Downloading ${dep}..."
-  ARCHIVE=$(grep -Pzo "(?s)name = \"${dep}\".*?\)" WORKSPACE | grep -Eao "https://github.com.*?.zip" | sed "s/zip/tar\.gz/")
+  ARCHIVE=$(grep -Pzo "(?s)name = \"${dep}\".*?\)" WORKSPACE | grep -Eao 'https://github.com[^"]*' | sed "s/zip/tar\.gz/")
   if [ -z "${ARCHIVE}" ]; then
     echo "Failed to find ${dep} archive in WORKSPACE"
     exit 1

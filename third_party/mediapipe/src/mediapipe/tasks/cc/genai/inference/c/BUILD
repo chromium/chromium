@@ -15,6 +15,8 @@
 package(default_visibility = [
     "//mediapipe/tasks/ios:__subpackages__",
     "//mediapipe/tasks/java/com/google/mediapipe/tasks:__subpackages__",
+    "//mediapipe/tasks/web/genai:__subpackages__",
+    "//third_party/odml/litert:__subpackages__",
 ])
 
 cc_library(
@@ -24,8 +26,14 @@ cc_library(
 
 cc_library(
     name = "libllm_inference_engine_cpu",
-    srcs = ["llm_inference_engine_cpu.cc"],
-    hdrs = ["llm_inference_engine.h"],
+    srcs = ["llm_inference_engine_cpu.cc"] + select({
+        "@org_tensorflow//tensorflow:ios": ["llm_inference_engine_ios.cc"],
+        "//conditions:default": [],
+    }),
+    hdrs = ["llm_inference_engine.h"] + select({
+        "@org_tensorflow//tensorflow:ios": ["llm_inference_engine_ios.h"],
+        "//conditions:default": [],
+    }),
     tags = ["swift_module=MediaPipeTasksGenAIC"],
     deps = [
         "//mediapipe/framework/deps:file_path",
@@ -56,7 +64,13 @@ cc_library(
         "@org_tensorflow//tensorflow/lite/delegates/xnnpack:xnnpack_delegate_hdrs_only",
         "@org_tensorflow//tensorflow/lite/experimental/genai:genai_ops",
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
-    ],
+    ] + select({
+        "@org_tensorflow//tensorflow:ios": [
+            "//third_party/apple_frameworks:CoreGraphics",
+            "@skia//:mac_utils",
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 cc_binary(

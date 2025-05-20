@@ -40,13 +40,14 @@ bool Spectrogram::ResetSampleBuffer() {
 }
 
 bool Spectrogram::Initialize(int window_length, int step_length,
-                             std::optional<int> fft_length) {
+  std::optional<int> fft_length) {
   std::vector<double> window;
   HannWindow().GetPeriodicSamples(window_length, &window);
   return Initialize(window, step_length, fft_length);
 }
 
-bool Spectrogram::Initialize(const std::vector<double>& window, int step_length,
+bool Spectrogram::Initialize(const std::vector<double>& window,
+                             int step_length,
                              std::optional<int> fft_length) {
   window_length_ = window.size();
   window_ = window;  // Copy window.

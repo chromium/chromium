@@ -85,6 +85,7 @@ struct LlmParams {
     NO_NORM = 1,
     RMS_NORM = 2,
     LAYER_NORM = 3,
+    RMS_NORM_NO_SCALE = 4,
   };
 
   enum class AttentionScaleType {
@@ -110,6 +111,10 @@ struct LlmParams {
     // If greater than 0, CapTanh will be applied. Otherwise, no cap will be
     // applied.
     float soft_cap_value = 0.0f;
+
+    // If `true`, apply a scaled RMS normalization to the projected queries and
+    // keys.
+    bool qk_norm = false;
 
     // Attention scale type to be applied within the transformer.
     AttentionScaleType attention_scale_type;
@@ -172,6 +177,9 @@ struct LlmWeights {
     std::shared_ptr<Tensor> per_dim_scale;
     std::shared_ptr<Tensor> post_proj_weight;
     std::shared_ptr<Tensor> post_proj_bias;
+
+    std::optional<NormWeights> q_norm_weight;
+    std::optional<NormWeights> k_norm_weight;
 
     std::optional<NormWeights> post_norm_weight;
   };
@@ -261,7 +269,8 @@ class DefaultLlmWeightsLoader : public LlmWeightsLoader {
       : LlmWeightsLoader(std::move(weight_accessor), params) {}
   DefaultLlmWeightsLoader(
       absl::string_view weight_path, const LlmParams& params,
-      std::shared_ptr<tflite::FlatBufferModel> flat_buffer_model = nullptr);
+      std::shared_ptr<tflite::FlatBufferModel> flat_buffer_model = nullptr,
+      std::shared_ptr<ScopedFile> scoped_cache_file = nullptr);
 
  private:
   std::shared_ptr<PackWeightsCache> xnn_weights_cache_;

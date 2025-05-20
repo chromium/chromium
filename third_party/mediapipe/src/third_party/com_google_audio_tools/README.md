@@ -36,6 +36,6 @@ command below regarding running tests and building with the proper flags.
 bazel test -c opt --cxxopt="-fext-numeric-literals" \
                   --cxxopt="-Wno-sign-compare" \
                   --cxxopt="-fpermissive" \
-                  --cxxopt="-std=c++11" \
+                  --cxxopt="-std=c++17" \
                   audio/... \
 ```

@@ -114,6 +114,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/calculators/audio/time_series_framer_calculator.proto",
     "src/mediapipe/calculators/audio/two_tap_fir_filter_calculator.proto",
     "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
+    "src/mediapipe/calculators/core/immediate_mux_calculator.proto",
     "src/mediapipe/calculators/core/split_vector_calculator.proto",
     "src/mediapipe/calculators/internal/callback_packet_calculator.proto",
     "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.proto",

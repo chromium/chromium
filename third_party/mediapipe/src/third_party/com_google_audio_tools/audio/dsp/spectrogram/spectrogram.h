@@ -36,8 +36,8 @@
 #define AUDIO_DSP_SPECTROGRAM_SPECTROGRAM_H_
 
 #include <complex>
-#include <optional>
 #include <deque>
+#include <optional>
 #include <vector>
 
 #include "glog/logging.h"

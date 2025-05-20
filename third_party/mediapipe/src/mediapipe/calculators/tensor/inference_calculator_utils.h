@@ -17,6 +17,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -79,6 +80,10 @@ absl::Status SetTfLiteCustomAllocation(tflite::Interpreter& interpreter,
 absl::StatusOr<Tensor> CreateTensorWithTfLiteTensorSpecs(
     const TfLiteTensor& reference_tflite_tensor,
     MemoryManager* memory_manager = nullptr, int alignment = 0);
+
+// Checks that MP and TfLite tensor size and type matches.
+absl::Status TensorDimsAndTypeEqual(const Tensor& mp_tensor,
+                                    const TfLiteTensor& tflite_tensor);
 
 }  // namespace mediapipe
 

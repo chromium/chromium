@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load("//mediapipe/framework:mediapipe_cc_test.bzl", "mediapipe_cc_test")
+load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
 
 licenses(["notice"])
 
@@ -129,8 +130,16 @@ cc_library(
         "//mediapipe/framework/port:status",
         "//mediapipe/web:jspi_check",
         "//third_party/dawn:webgpu_headers",
+        "@com_google_absl//absl/base:no_destructor",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
-    ],
+        "@com_google_absl//absl/time",
+    ] + select({
+        "//mediapipe:emscripten": [
+            "//third_party/emdawnwebgpu:webgpu",
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 cc_library(
@@ -140,8 +149,40 @@ cc_library(
     deps = [
         ":webgpu_service",
         ":webgpu_texture_view",
+        ":webgpu_utils",
         "//mediapipe/calculators/tensor:image_to_tensor_converter",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/formats:tensor",
+    ],
+)
+
+cc_library(
+    name = "webgpu_shader_calculator",
+    srcs = ["webgpu_shader_calculator.cc"],
+    deps = [
+        ":webgpu_shader_calculator_cc_proto",
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:calculator_options_cc_proto",
+        "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/deps:re2",
+        "//mediapipe/framework/port:status",
+        "//mediapipe/gpu:gpu_buffer",
+        "//mediapipe/gpu:gpu_buffer_format",
+        "//mediapipe/gpu/webgpu:webgpu_service",
+        "//mediapipe/gpu/webgpu:webgpu_texture_buffer",
+        "//mediapipe/gpu/webgpu:webgpu_texture_buffer_3d",
+        "//mediapipe/gpu/webgpu:webgpu_texture_view",
+        "//mediapipe/gpu/webgpu:webgpu_utils",
+        "//mediapipe/util:resource_util",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+    alwayslink = 1,
+)
+
+mediapipe_proto_library(
+    name = "webgpu_shader_calculator_proto",
+    srcs = ["webgpu_shader_calculator.proto"],
+    deps = [
+        "//mediapipe/framework:calculator_proto",
     ],
 )

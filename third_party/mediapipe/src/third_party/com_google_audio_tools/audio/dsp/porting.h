@@ -17,7 +17,6 @@
 #ifndef AUDIO_DSP_OPEN_SOURCE_PORTING_H_
 #define AUDIO_DSP_OPEN_SOURCE_PORTING_H_
 
-#include <cstdint>
 #include <iostream>
 #include <cmath>
 #include <limits>

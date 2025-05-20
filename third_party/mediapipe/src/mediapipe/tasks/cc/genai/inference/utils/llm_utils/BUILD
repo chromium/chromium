@@ -17,9 +17,13 @@
 package(default_visibility = [
     "//mediapipe/tasks/cc:__subpackages__",
     "//third_party/odml/infra/genai/inference:__subpackages__",
+    # TODO: Remove this once the litert code is moved to litert_lm.
     "//third_party/odml/litert:__subpackages__",
+    "//third_party/odml/litert_lm:__subpackages__",
 ])
 
+# TODO: Remove this once the litert_lm code is OSS and supported in mediapipe.
+# Deprecated. Use //third_party/odml/litert_lm/runtime/util:memory_mapped_file instead.
 cc_library(
     name = "memory_mapped_file",
     srcs = select({
@@ -35,11 +39,14 @@ cc_library(
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/cleanup",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
 )
 
+# TODO: Remove this once the litert_lm code is OSS and supported in mediapipe.
+# Deprecated. Use //third_party/odml/litert_lm/runtime/util:scoped_file instead.
 cc_library(
     name = "scoped_file",
     srcs = select({
@@ -54,10 +61,16 @@ cc_library(
     ],
 )
 
+# TODO: Remove this once the litert_lm code is OSS and supported in mediapipe.
+
 cc_library(
     name = "metadata_utils",
     srcs = ["metadata_utils.cc"],
     hdrs = ["metadata_utils.h"],
+    defines = select({
+        "//mediapipe/tasks:build_for_3p": ["BUILD_FOR_3P"],
+        "//conditions:default": [],
+    }),
     deps = [
         "//mediapipe/tasks/cc/genai/inference/proto:llm_params_cc_proto",
         "@com_google_absl//absl/algorithm:container",
@@ -67,6 +80,23 @@ cc_library(
         "@com_google_absl//absl/strings:string_view",
         "@org_tensorflow//tensorflow/lite:framework_stable",
         "@org_tensorflow//tensorflow/lite/schema:schema_fbs",
+    ],
+)
+
+# Utility library for constrained decoding.
+
+cc_library(
+    name = "bitmap",
+    hdrs = ["bitmap.h"],
+)
+
+cc_library(
+    name = "constraint_utils",
+    hdrs = ["constraint_utils.h"],
+    deps = [
+        ":bitmap",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
     ],
 )
 
@@ -100,8 +130,23 @@ cc_library(
     name = "well_known_models",
     srcs = ["well_known_models.cc"],
     hdrs = ["well_known_models.h"],
+    defines = select({
+        "//mediapipe/tasks:build_for_3p": ["BUILD_FOR_3P"],
+        "//conditions:default": [],
+    }),
     deps = [
         "//mediapipe/tasks/cc/genai/inference/proto:llm_params_cc_proto",
         "//mediapipe/tasks/cc/genai/inference/proto:transformer_params_cc_proto",
+    ],
+)
+
+cc_library(
+    name = "prompt_utils",
+    srcs = ["prompt_utils.cc"],
+    hdrs = ["prompt_utils.h"],
+    deps = [
+        "//mediapipe/tasks/cc/genai/inference/proto:prompt_template_cc_proto",
+        "@com_google_absl//absl/base:core_headers",
+        "@com_google_absl//absl/status:statusor",
     ],
 )

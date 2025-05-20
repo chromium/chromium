@@ -16,7 +16,6 @@
 
 #include "audio/dsp/porting.h"
 
-#include <algorithm>
 #include <cfloat>
 #include <cstdarg>
 
