@@ -4,15 +4,11 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_context_factory.h"
 
-#include "base/notimplemented.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_webgpu.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_event.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_webgpu.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -32,11 +28,7 @@ WebGLContextFactory::WebGLContextFactory(bool is_webgl2)
 CanvasRenderingContext* WebGLContextFactory::Create(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs) {
-  if (RuntimeEnabledFeatures::WebGLOnWebGPUEnabled()) {
-    return CreateInternalWebGPU(host, attrs);
-  } else {
-    return CreateInternal(host, attrs);
-  }
+  return CreateInternal(host, attrs);
 }
 
 CanvasRenderingContext* WebGLContextFactory::CreateInternal(
@@ -103,16 +95,6 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternal(
   } else {
     return Initialize(MakeGarbageCollected<WebGLRenderingContext>(
         host, std::move(context_provider), graphics_info, attribs));
-  }
-}
-
-CanvasRenderingContext* WebGLContextFactory::CreateInternalWebGPU(
-    CanvasRenderingContextHost* host,
-    const CanvasContextCreationAttributesCore& attrs) {
-  if (is_webgl2_) {
-    return MakeGarbageCollected<WebGL2RenderingContextWebGPU>(host, attrs);
-  } else {
-    return MakeGarbageCollected<WebGLRenderingContextWebGPU>(host, attrs);
   }
 }
 

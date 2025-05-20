@@ -8,6 +8,6 @@
 // This is just a forwarding header to avoid including an enormous filename in
 // each file that needs the declaration of the union that is used for
 // OffscreenRenderingContext.
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webgl2renderingcontextwebgpu_webglrenderingcontext_webglrenderingcontextwebgpu.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS_V8_OFFSCREEN_RENDERING_CONTEXT_H_
