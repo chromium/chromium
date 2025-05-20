@@ -62,8 +62,8 @@ struct ScoreData {
 };
 
 struct ScoreContext {
-  const ScoreUnit line_break_size;
   const ScoreUnit gap_between_items;
+  ScoreUnit line_break_size;
   Vector<ScoreUnit> sums;
   Vector<ScoreData> scores;
 };
@@ -138,6 +138,126 @@ ScoreUnit Score(wtf_size_t end, ScoreUnit limit, ScoreContext& ctx) {
   return data.best_score;
 }
 
+// Using the prefix-sums array returns how many flex-lines would result with
+// greedy packing given `line_break_size`.
+wtf_size_t GreedyLineCount(const ScoreContext& ctx, ScoreUnit line_break_size) {
+  const auto begin = ctx.sums.begin();
+  const auto end = ctx.sums.end();
+  auto it = begin;
+  ScoreUnit previous_sum = kZero;
+  wtf_size_t line_count = 1u;
+  for (;;) {
+    // Get the first value that has a size *greater* than the breakpoint.
+    auto next = std::upper_bound(
+        it, end, previous_sum + line_break_size + ctx.gap_between_items);
+
+    // Check if we are at the end, there is no additional line.
+    if (next == end) {
+      break;
+    }
+
+    // `next` is past our breakpoint. There are two scenarios:
+    //  - We are a single item which exceeds the line-break size, don't
+    //    backtrack for this case.
+    //  - There is more than one item, backtrack one item so the content fits
+    //    on the line.
+    const bool is_single_item =
+        ((line_count == 1 ? 1 : 0) + std::distance(it, next)) <= 1;
+    it = is_single_item ? next : std::prev(next);
+    previous_sum = *it;
+
+    // Only increment our line-count if we have content following `it`.
+    if (std::next(it) != end) {
+      ++line_count;
+    }
+  }
+  return line_count;
+}
+
+// Applies the `min_line_count` by:
+//  - Bisecting the `ctx.line_break_size` to try and achieve the minimum.
+//  - Then (if above fails) infinitesimally increasing the size of certain
+//    items so they create additional lines.
+// Returns the new line-break size.
+wtf_size_t ApplyMinLineCount(const wtf_size_t min_line_count,
+                             ScoreContext& ctx) {
+  // Bisect our `ctx.line_break_size` to try and achieve `min_line_count`.
+  {
+    // We can clamp `line_break_size` to the maximum size of the items. This is
+    // important when we pass `LayoutUnit::Max()` into the line-break for
+    // column flexboxes.
+    ScoreUnit low = kZero;
+    ScoreUnit high =
+        std::min(ctx.line_break_size, ctx.sums.back() - ctx.gap_between_items);
+
+    while (low < high) {
+      const ScoreUnit midpoint = low + (high - low) / 2;
+      if (GreedyLineCount(ctx, midpoint) > min_line_count) {
+        low = midpoint + 1u;
+      } else {
+        high = midpoint;
+      }
+    }
+    ctx.line_break_size = high;
+  }
+
+  // Update our line-count based on our new line-break size, and return if
+  // we've reached the minimum.
+  wtf_size_t line_count = GreedyLineCount(ctx, ctx.line_break_size);
+  if (line_count >= min_line_count) {
+    return line_count;
+  }
+
+  // After running the bisection, we can still be under the minimum. For
+  // example: if we have 4 identical items in a 2x2 grid, there is no
+  // line-break size which will achieve exactly 3 lines.
+  //
+  // In order to solve this we "fudge" the sizes of "perfectly fitting" items,
+  // e.g. items which are exactly are on the end of a line, so that they shift
+  // down one line.
+  Vector<wtf_size_t> perfect_fit_indices;
+  {
+    ScoreUnit previous = kZero;
+    bool line_has_content = false;
+    for (wtf_size_t i = 0; i < ctx.sums.size(); ++i) {
+      const ScoreUnit line_size =
+          ctx.sums[i] - previous - ctx.gap_between_items;
+
+      // Check if the current item fits exactly.
+      if (line_size == ctx.line_break_size) {
+        perfect_fit_indices.push_back(i);
+      }
+
+      if (line_size > ctx.line_break_size) {
+        previous = line_has_content ? ctx.sums[i - 1] : ctx.sums[i];
+        line_has_content = false;
+        continue;
+      }
+
+      line_has_content = true;
+    }
+  }
+
+  // Next increase the size of each of our "perfect-fit" items so they get
+  // pushed to the next line.
+  //
+  // Each time we do this we need to check how many lines we have and
+  // potentially break (so as we don't create *too many* lines).
+  for (wtf_size_t index : base::Reversed(perfect_fit_indices)) {
+    for (wtf_size_t i = index; i < ctx.sums.size(); ++i) {
+      ++ctx.sums[i];
+    }
+
+    // Break if we've reached our desired line-count.
+    line_count = GreedyLineCount(ctx, ctx.line_break_size);
+    if (line_count >= min_line_count) {
+      break;
+    }
+  }
+
+  return line_count;
+}
+
 template <typename ShouldBreakFunc>
 FlexLineBreakerResult BreakIntoLines(base::span<FlexItem> all_items,
                                      const LayoutUnit gap_between_items,
@@ -185,9 +305,14 @@ FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
     const LayoutUnit line_break_size,
     const LayoutUnit gap_between_items,
     wtf_size_t min_line_count) {
+  // We can't have more lines than items.
+  min_line_count =
+      std::min(min_line_count, ClampTo<wtf_size_t>(all_items.size()));
+  DCHECK_GE(min_line_count, 1u);
+
   ScoreContext ctx = {
-      .line_break_size = static_cast<uint64_t>(line_break_size.RawValue()),
       .gap_between_items = static_cast<uint64_t>(gap_between_items.RawValue()),
+      .line_break_size = static_cast<uint64_t>(line_break_size.RawValue()),
       .sums = Vector<ScoreUnit>(all_items.size(), 0u),
       .scores = Vector(all_items.size(), ScoreData())};
 
@@ -220,47 +345,12 @@ FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
     }
   }
 
-  // Using the prefix-sums array returns how many flex-lines would result with
-  // greedy packing given `line_break_size`.
-  auto greedy_line_count = [&ctx](ScoreUnit line_break_size) -> wtf_size_t {
-    const auto begin = ctx.sums.begin();
-    const auto end = ctx.sums.end();
-    auto it = begin;
-    ScoreUnit previous_sum = kZero;
-    wtf_size_t line_count = 1u;
-    for (;;) {
-      // Get the first value that has a size *greater* than the breakpoint.
-      auto next = std::upper_bound(
-          it, end, previous_sum + line_break_size + ctx.gap_between_items);
-
-      // Check if we are at the end, there is no additional line.
-      if (next == end) {
-        break;
-      }
-
-      // `next` is past our breakpoint. There are two scenarios:
-      //  - We are a single item which exceeds the line-break size, don't
-      //    backtrack for this case.
-      //  - There is more than one item, backtrack one item so the content fits
-      //    on the line.
-      const bool is_single_item =
-          ((line_count == 1 ? 1 : 0) + std::distance(it, next)) <= 1;
-      it = is_single_item ? next : std::prev(next);
-      previous_sum = *it;
-
-      // Only increment our line-count if we have content following `it`.
-      if (std::next(it) != end) {
-        ++line_count;
-      }
-    }
-    return line_count;
-  };
-
-  const wtf_size_t line_count = greedy_line_count(ctx.line_break_size);
-
-  // TODO(ikilpatrick): Bisect `line_break_size` to a smaller value with the
-  // same number of lines. We also need this for the "min-lines" feature.
-  // NOTE: This is close to being balanced, but not quite.
+  // Check if We are below the minimum line-count, bisect our line-break size
+  // to achieve the minimum number of lines.
+  wtf_size_t line_count = GreedyLineCount(ctx, ctx.line_break_size);
+  if (line_count < min_line_count) {
+    line_count = ApplyMinLineCount(min_line_count, ctx);
+  }
 
   // Next we can calculate for a given end index, what is the earliest start
   // index which will fit on the line.

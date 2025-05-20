@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/3070">
+<link rel="match" href="balance-min-line-count-005-ref.html">
+<meta name="assert" content="Tests balancing with a minimum number of lines.">
+<style>
+#flex {
+  display: flex;
+  flex-wrap: balance 6;
+  gap: 20px;
+}
+div > div {
+  background: green;
+  width: 20px;
+  height: 20px;
+}
+</style>
+<p>There should be a minimum of 6 lines.</p>
+<div id="flex">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
