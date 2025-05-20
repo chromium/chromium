@@ -80,6 +80,59 @@ class UploadTestScriptRecordsTest(unittest.TestCase):
     self.mm_recorder.clear.assert_called_once()
 
 
+class TestRunnerHelperTest(unittest.TestCase):
+
+  def testCreateStructuredTestDict(self):
+    # pylint: disable=protected-access
+    t_instance_mock = mock.MagicMock()
+    t_result_mock = mock.MagicMock()
+    test_id = 'foo.bar.class#test1[28]'
+    t_result_mock.GetNameForResultSink.return_value = test_id
+    t_instance_mock.suite = 'foo_suite'
+
+    # junit tests
+    t_instance_mock.TestType.return_value = 'junit'
+    test_dict = test_runner._CreateStructuredTestDict(t_instance_mock,
+                                                      t_result_mock)
+    self.assertEqual(test_dict['coarseName'], 'foo.bar')
+    self.assertEqual(test_dict['fineName'], 'class')
+    self.assertTrue('test1[28]' in test_dict['caseNameComponents'])
+
+    # instrumentation tests
+    t_instance_mock.TestType.return_value = 'instrumentation'
+    test_dict = test_runner._CreateStructuredTestDict(t_instance_mock,
+                                                      t_result_mock)
+    self.assertEqual(test_dict['coarseName'], 'foo.bar')
+    self.assertEqual(test_dict['fineName'], 'class')
+    self.assertTrue('test1[28]' in test_dict['caseNameComponents'])
+
+    # Can't be parsed as an instrumentation test as it's missing the #.
+    test_id = 'foo.bar.class.test1[28]'
+    t_result_mock.GetNameForResultSink.return_value = test_id
+    test_dict = test_runner._CreateStructuredTestDict(t_instance_mock,
+                                                      t_result_mock)
+    self.assertIsNone(test_dict)
+
+    test_id = 'foo.bar.class$parameter#test1[28]'
+    t_result_mock.GetNameForResultSink.return_value = test_id
+    test_dict = test_runner._CreateStructuredTestDict(t_instance_mock,
+                                                      t_result_mock)
+    self.assertEqual(test_dict['coarseName'], 'foo.bar')
+    self.assertEqual(test_dict['fineName'], 'class$parameter')
+    self.assertTrue('test1[28]' in test_dict['caseNameComponents'])
+
+    # gtest
+    t_instance_mock.TestType.return_value = 'gtest'
+    test_id = 'foo.bar.class.test1[28]'
+    t_result_mock.GetNameForResultSink.return_value = test_id
+    test_dict = test_runner._CreateStructuredTestDict(t_instance_mock,
+                                                      t_result_mock)
+    self.assertIsNone(test_dict['coarseName'])
+    self.assertEqual(test_dict['fineName'], 'foo_suite')
+    self.assertTrue(test_id in test_dict['caseNameComponents'])
+    # pylint: disable=protected-access
+
+
 if __name__ == '__main__':
   # Suppress logging messages.
   unittest.main(buffer=True)

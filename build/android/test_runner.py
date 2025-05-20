@@ -1004,12 +1004,14 @@ def RunTestsCommand(args, result_sink_client=None):
   raise Exception('Unknown test type.')
 
 
-def _SinkTestResult(test_result, test_file_name, result_sink_client):
+def _SinkTestResult(test_result, test_file_name, test_instance,
+                    result_sink_client):
   """Upload test result to result_sink.
 
   Args:
     test_result: A BaseTestResult object
     test_file_name: A string representing the file location of the test
+    test_instance: A TestInstance object.
     result_sink_client: A ResultSinkClient object
 
   Returns:
@@ -1031,14 +1033,58 @@ def _SinkTestResult(test_result, test_file_name, result_sink_client):
                    link_url, test_result.GetName())
   if https_artifacts:
     html_artifact += '<ul>%s</ul>' % '\n'.join(https_artifacts)
+
   result_sink_client.Post(test_result.GetNameForResultSink(),
                           test_result.GetType(),
                           test_result.GetDuration(),
                           log_decoded,
                           test_file_name,
+                          test_id_structured=_CreateStructuredTestDict(
+                              test_instance, test_result),
                           variant=test_result.GetVariantForResultSink(),
                           failure_reason=test_result.GetFailureReason(),
                           html_artifact=html_artifact)
+
+
+def _CreateStructuredTestDict(test_instance, test_result):
+  """Fills in fields for the structured_test_dict.
+
+  Args:
+    test_instance: A test instance object.
+    test_result: A test result object.
+
+  Returns:
+    A dictionary containing strucuted test id fields.
+  """
+  # Source comes from:
+  # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
+  struct_test_dict = {
+      'coarseName': '',
+      'fineName': '',
+      'caseNameComponents': [''],
+  }
+
+  test_id = test_result.GetNameForResultSink()
+
+  if test_instance.TestType() in ['instrumentation', 'junit']:
+    re_match = re.search(r'(.*)\.(\w+\$?\w+)#(.*)', test_id)
+    if not re_match:
+      logging.error(
+          'Test id did not match known format, so could not be parsed.')
+      return None
+    struct_test_dict['coarseName'] = re_match.group(1)
+    struct_test_dict['fineName'] = re_match.group(2)
+    # The proto requires a list.
+    struct_test_dict['caseNameComponents'] = [re_match.group(3)]
+  elif test_instance.TestType() == 'gtest':
+    struct_test_dict['coarseName'] = None  # Not used.
+    struct_test_dict['fineName'] = test_instance.suite
+    # The proto requires a list.
+    struct_test_dict['caseNameComponents'] = [test_id]
+  else:
+    return None
+
+  return struct_test_dict
 
 
 _SUPPORTED_IN_PLATFORM_MODE = [
@@ -1198,7 +1244,8 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
               match = re.search(r'^(.+\..+)#', r.GetName())
               test_file_name = test_class_to_file_name_dict.get(
                   match.group(1)) if match else None
-              _SinkTestResult(r, test_file_name, result_sink_client)
+              _SinkTestResult(r, test_file_name, test_instance,
+                              result_sink_client)
 
   @contextlib.contextmanager
   def upload_logcats_file():

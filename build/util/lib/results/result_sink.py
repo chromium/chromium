@@ -81,6 +81,7 @@ class ResultSinkClient(object):
            duration,
            test_log,
            test_file,
+           test_id_structured=None,
            variant=None,
            artifacts=None,
            failure_reason=None,
@@ -97,6 +98,7 @@ class ResultSinkClient(object):
       duration: An int representing time in ms.
       test_log: A string representing the test's output.
       test_file: A string representing the file location of the test.
+      test_id_structured: A dictionary containing structured test id fields.
       variant: An optional dict of variant key value pairs as the
           additional variant sent from test runners, which can override
           or add to the variants passed to `rdb stream` command.
@@ -138,6 +140,9 @@ class ResultSinkClient(object):
             'name': test_id,
         }
     }
+
+    if test_id_structured:
+      tr['testIdStructured'] = test_id_structured
 
     if tags:
       tr['tags'].extend({
