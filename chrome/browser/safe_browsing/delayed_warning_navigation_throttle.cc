@@ -25,23 +25,6 @@ DelayedWarningNavigationThrottle::DelayedWarningNavigationThrottle(
 
 DelayedWarningNavigationThrottle::~DelayedWarningNavigationThrottle() = default;
 
-// static
-void DelayedWarningNavigationThrottle::MaybeCreateAndAdd(
-    content::NavigationThrottleRegistry& registry) {
-  // If the tab is being no-state prefetched, stop here before it breaks
-  // metrics.
-  content::WebContents* web_contents =
-      registry.GetNavigationHandle().GetWebContents();
-  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents)) {
-    return;
-  }
-
-  // Otherwise, always insert the throttle for metrics recording.
-  registry.AddThrottle(
-      std::make_unique<DelayedWarningNavigationThrottle>(registry));
-}
-
 const char* DelayedWarningNavigationThrottle::GetNameForLogging() {
   return "DelayedWarningNavigationThrottle";
 }

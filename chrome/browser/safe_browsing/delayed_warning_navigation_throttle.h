@@ -15,8 +15,6 @@ namespace safe_browsing {
 // security moment such as a download or permission request occurs.
 class DelayedWarningNavigationThrottle : public content::NavigationThrottle {
  public:
-  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
-
   explicit DelayedWarningNavigationThrottle(
       content::NavigationThrottleRegistry& registry);
   ~DelayedWarningNavigationThrottle() override;
