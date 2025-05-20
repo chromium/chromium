@@ -93,6 +93,17 @@ base::expected<std::string, ImportResults::Status> ReadFileToString(
   return std::move(contents);
 }
 
+base::expected<std::string, ImportResults::Status> ValidateString(
+    std::string string) {
+  int64_t file_size = string.size();
+  base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
+  if (file_size > kMaxFileSizeBytes) {
+    return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
+  }
+
+  return std::move(string);
+}
+
 ImportEntry::Status GetConflictType(
     password_manager::PasswordForm::Store target_store) {
   switch (target_store) {
@@ -446,6 +457,19 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
     state_ = kNotStarted;
     std::move(results_callback).Run(std::move(results));
   }
+}
+
+void PasswordImporter::Import(std::string csv_data,
+                              password_manager::PasswordForm::Store to_store,
+                              ImportResultsCallback results_callback) {
+  // Posting with USER_VISIBLE priority, because the result of the import is
+  // visible to the user in the password settings page.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&ValidateString, std::move(csv_data)),
+      base::BindOnce(&PasswordImporter::ParseCSVPasswordsInSandbox,
+                     weak_ptr_factory_.GetWeakPtr(), to_store,
+                     std::move(results_callback)));
 }
 
 void PasswordImporter::Import(const base::FilePath& path,
