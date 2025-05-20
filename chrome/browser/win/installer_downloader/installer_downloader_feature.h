@@ -5,12 +5,19 @@
 #ifndef CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_FEATURE_H_
 #define CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_FEATURE_H_
 
+#include <string>
+
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace installer_downloader {
 
 // When enabled, user may see the installer download UI flow.
 BASE_DECLARE_FEATURE(kInstallerDownloader);
+
+// Intentionally defaulted to empty string. It will be set by experiment.
+inline constexpr base::FeatureParam<std::string>
+    kLearnMoreUrl(&kInstallerDownloader, "LearnMoreUrl", "");
 
 }  // namespace installer_downloader
 

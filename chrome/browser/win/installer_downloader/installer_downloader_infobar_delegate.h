@@ -42,7 +42,7 @@ class InstallerDownloaderInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetLinkText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
-  bool LinkClicked(WindowOpenDisposition disposition) override;
+  GURL GetLinkURL() const override;
 
  private:
   base::OnceClosure accept_cb_;

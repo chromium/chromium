@@ -5,11 +5,14 @@
 #include "chrome/browser/win/installer_downloader/installer_downloader_infobar_delegate.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -19,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "url/gurl.h"
 
 namespace installer_downloader {
 
@@ -88,11 +92,12 @@ std::u16string InstallerDownloaderInfoBarDelegate::GetButtonLabel(
   return l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_BUTTON_LABEL);
 }
 
-bool InstallerDownloaderInfoBarDelegate::LinkClicked(
-    WindowOpenDisposition disposition) {
-  // TODO(crbug.com/412697757): Add implementation of what will happen once link
-  // is clicked.
-  return true;
+GURL InstallerDownloaderInfoBarDelegate::GetLinkURL() const {
+  const std::string learn_more_url_str = kLearnMoreUrl.Get();
+  GURL learn_more_url(learn_more_url_str);
+  CHECK(learn_more_url.is_valid());
+
+  return learn_more_url;
 }
 
 }  // namespace installer_downloader

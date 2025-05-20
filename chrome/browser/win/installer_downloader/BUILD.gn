@@ -49,6 +49,7 @@ source_set("infobar") {
   sources = [ "installer_downloader_infobar_delegate.cc" ]
 
   deps = [
+    ":controller",
     "//base",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:generated_resources_grit",
