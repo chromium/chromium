@@ -101,6 +101,8 @@ void OnDeviceModelAccessController::OnResponseCompleted() {
 
 base::Time OnDeviceModelAccessController::OnDisconnectedFromRemote() {
   int crash_count = pref_service_->GetInteger(kOnDeviceModelCrashCount) + 1;
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCrashCount", crash_count);
   pref_service_->SetInteger(kOnDeviceModelCrashCount, crash_count);
   // If the model will be disabled because of crash count, use exponential
   // backoff to re-enable.

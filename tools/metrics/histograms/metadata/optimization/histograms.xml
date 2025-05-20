@@ -1019,6 +1019,17 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
+<histogram name="OptimizationGuide.ModelExecution.OnDeviceModelCrashCount"
+    enum="OnDeviceModelValidationResult" expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of consecutive crashes of the on-device model service
+    without a successful response. Recorded each time the on-device model
+    service crashes.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.{ModelExecutionFeature}"
     enum="OptimizationGuideOnDeviceModelEligibilityReason"
