@@ -58,6 +58,9 @@ BASE_FEATURE(kExtensionsCollapseMainMenu,
 BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
              "OfferPinToTaskbarWhenSettingDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOfferPinToTaskbarInFirstRunExperience,
+             "OfferPinToTaskbarInFirstRunExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

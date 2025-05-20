@@ -43,6 +43,7 @@ BASE_DECLARE_FEATURE(kExtensionsCollapseMainMenu);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault);
+BASE_DECLARE_FEATURE(kOfferPinToTaskbarInFirstRunExperience);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
