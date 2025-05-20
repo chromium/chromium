@@ -771,7 +771,7 @@ TEST_F(AddressTest, TestSynthesizedNodesGeneration) {
   EXPECT_EQ(address2.GetRawInfo(ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY),
             u"12/110, Flat no. 504, Raja Apartments, Kondapur");
   EXPECT_EQ(address2.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-            u"12/110, Flat no. 504, Raja Apartments, Kondapur, Opp to Ayyappa "
+            u"12/110, Flat no. 504, Raja Apartments, Kondapur\nOpp to Ayyappa "
             u"Swamy temple");
 }
 
