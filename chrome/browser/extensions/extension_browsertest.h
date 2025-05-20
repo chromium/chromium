@@ -165,6 +165,12 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
       const base::FilePath& path,
       std::optional<int> expected_change);
 
+  // Same as InstallExtensionFromWebstore(), but sets the install as triggered
+  // by user download.
+  const Extension* InstallExtensionFromWebstoreTriggeredByUserDownload(
+      const base::FilePath& path,
+      std::optional<int> expected_change);
+
   const Extension* InstallExtensionWithUIAutoConfirm(
       const base::FilePath& path,
       std::optional<int> expected_change);
@@ -392,7 +398,8 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
       content::WebContents* active_web_contents,
       Extension::InitFromValueFlags creation_flags,
       bool wait_for_idle,
-      bool grant_permissions);
+      bool grant_permissions,
+      bool was_triggered_by_user_download);
 
   ExtensionBrowserTestPlatformDelegate platform_delegate_;
 

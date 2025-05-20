@@ -4,6 +4,8 @@
 
 #include "extensions/browser/extension_util.h"
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
@@ -26,11 +28,13 @@
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -62,6 +66,13 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
   return true;
 }
 #endif
+
+// Returns `true` if `extension` was installed from the webstore, otherwise
+// false.
+bool ExtensionIsFromWebstore(const Extension& extension) {
+  return extension.from_webstore() && !extension.was_installed_by_default() &&
+         extension.location() == mojom::ManifestLocation::kInternal;
+}
 
 }  // namespace
 
@@ -529,6 +540,16 @@ bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context) {
   return ExtensionRegistry::Get(context)->enabled_extensions().Contains(
       extension_id);
+}
+
+bool AnyCurrentlyInstalledExtensionIsFromWebstore(
+    content::BrowserContext* context) {
+  const ExtensionSet previously_installed_extensions =
+      ExtensionRegistry::Get(context)->GenerateInstalledExtensionsSet();
+  return std::ranges::any_of(previously_installed_extensions,
+                             [](const auto& extension_ptr) {
+                               return ExtensionIsFromWebstore(*extension_ptr);
+                             });
 }
 
 }  // namespace util

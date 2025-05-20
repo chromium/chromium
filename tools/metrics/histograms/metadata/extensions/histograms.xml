@@ -2015,6 +2015,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ExtensionInstalled.NewFromWebstore" units="count"
+    expires_after="2026-05-20">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Counts when an extension is downloaded by the user from the webstore and no
+    currently installed extensions (if any) were installed from the webstore.
+    Emitted after an extension has successfully finished installing.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ExtensionLocation" enum="ExtensionLocation"
     expires_after="2023-07-07">
   <owner>rdevlin.cronin@chromium.org</owner>

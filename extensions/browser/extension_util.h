@@ -184,6 +184,11 @@ bool IsAppLaunchable(const ExtensionId& extension_id,
 bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context);
 
+// Returns `true` if any currently installed extension was installed from the
+// webstore, otherwise false.
+bool AnyCurrentlyInstalledExtensionIsFromWebstore(
+    content::BrowserContext* context);
+
 }  // namespace util
 }  // namespace extensions
 

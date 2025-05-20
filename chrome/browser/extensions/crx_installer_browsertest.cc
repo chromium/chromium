@@ -20,8 +20,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -61,6 +63,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/management_policy.h"
@@ -1159,6 +1162,51 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallDuringShutdown) {
   // Exit the test while the installer is still running. No crash.
 }
 #endif  // !defined(LEAK_SANITIZER)
+
+// Tests that the Extensions.ExtensionInstalled.NewFromWebstore histogram is
+// only emitted when a new extension from the webstore is installed. If any
+// installed extensions are already from the webstore the histogram will not
+// emit.
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, NewInstallFromWebStore) {
+  {
+    SCOPED_TRACE("waiting for all extensions to load");
+    ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
+    ASSERT_TRUE(extension_system);
+    base::RunLoop run_loop;
+    extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Confirm that no previous extensions are installed from the webstore.
+  ASSERT_FALSE(util::AnyCurrentlyInstalledExtensionIsFromWebstore(profile()));
+
+  base::HistogramTester histogram_tester;
+  // Install extension and confirm histogram is emitted.
+  const Extension* extension =
+      InstallExtensionFromWebstoreTriggeredByUserDownload(
+          test_data_dir_.AppendASCII("good.crx"), 1);
+
+  ASSERT_TRUE(extension);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ExtensionInstalled.NewFromWebstore",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.ExtensionInstalled.NewFromWebstore", true,
+      /*expected_count=*/1);
+
+  // Install another webstore extension and confirm the histogram is not emitted
+  // again.
+  const Extension* extension2 =
+      InstallExtensionFromWebstoreTriggeredByUserDownload(
+          test_data_dir_.AppendASCII("simple_with_icon.crx"), 1);
+  ASSERT_TRUE(extension2);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ExtensionInstalled.NewFromWebstore",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.ExtensionInstalled.NewFromWebstore", true,
+      /*expected_count=*/1);
+}
 
 class ExtensionCrxInstallerTestWithWithholdingUI
     : public ExtensionCrxInstallerTest,

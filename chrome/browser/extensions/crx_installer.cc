@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,6 +54,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_stage.h"
@@ -1040,6 +1042,12 @@ void CrxInstaller::ReportSuccessFromUIThread() {
       perms_updater.InitializePermissions(extension());
       perms_updater.GrantActivePermissions(extension());
     }
+  }
+
+  if (!util::AnyCurrentlyInstalledExtensionIsFromWebstore(profile()) &&
+      was_triggered_by_user_download()) {
+    base::UmaHistogramBoolean("Extensions.ExtensionInstalled.NewFromWebstore",
+                              true);
   }
 
   registrar_->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
