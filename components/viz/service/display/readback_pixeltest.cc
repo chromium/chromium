@@ -1017,7 +1017,9 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
   // Create and wait on shared image interface sync token to wait for shared
   // image creation.
-  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(ri, shared_image->creation_sync_token(),
+                                      /*readonly=*/false);
 
   SkYUVAInfo info =
       SkYUVAInfo({source_size.width(), source_size.height()},
@@ -1028,9 +1030,9 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   ri->WritePixelsYUV(shared_image->mailbox(), yuv_pixmap);
 
   gpu::Mailbox mailbox = shared_image->mailbox();
-  gpu::SyncToken sync_token;
   // Create and wait on raster interface sync token for write pixels YUV.
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
       RequestFormat(), RequestDestination(),
