@@ -1157,6 +1157,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     for (LayerImpl* layer : tree) {
       update->layer_order->push_back(layer->id());
     }
+    tree.set_needs_full_tree_sync(false);
   }
 
   if (needs_full_sync_) {
