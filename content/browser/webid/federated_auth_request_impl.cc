@@ -1862,7 +1862,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {
-    DCHECK(selected_idp_config_url);
+    CHECK(selected_idp_config_url);
+    CHECK(fedcm_accounts_fetcher_);
     if (IsFedCmMetricsEndpointEnabled()) {
       fedcm_accounts_fetcher_->SendSuccessfulTokenRequestMetrics(
           *selected_idp_config_url,
@@ -1880,7 +1881,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
     AddDevToolsIssue(result);
     AddConsoleErrorMessage(result);
 
-    if (IsFedCmMetricsEndpointEnabled()) {
+    // fedcm_accounts_fetcher_ could be null if configs were not fetched, e.g.
+    // because of cooldown.
+    if (IsFedCmMetricsEndpointEnabled() && fedcm_accounts_fetcher_) {
       fedcm_accounts_fetcher_->SendAllFailedTokenRequestMetrics(result,
                                                                 did_show_ui_);
     }

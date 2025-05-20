@@ -5316,6 +5316,33 @@ class IdpNetworkRequestMetricsRecorder : public TestIdpNetworkRequestManager {
   std::vector<GURL> metrics_endpoints_notified_failure_;
 };
 
+// Test that the metrics endpoint is not notified when the FedCM API is in
+// cooldown.
+TEST_F(FederatedAuthRequestImplTest, MetricsEndpointDuringCooldown) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
+
+  test_api_permission_delegate_->RecordDismissAndEmbargo(
+      OriginFromString(kRpUrl));
+  std::unique_ptr<IdpNetworkRequestMetricsRecorder> unique_metrics_recorder =
+      std::make_unique<IdpNetworkRequestMetricsRecorder>();
+  IdpNetworkRequestMetricsRecorder* metrics_recorder =
+      unique_metrics_recorder.get();
+  SetNetworkRequestManager(std::move(unique_metrics_recorder));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kDisabledInSettings,
+      /*standalone_console_message=*/std::nullopt,
+      /* selected_idp_config_url=*/std::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+  EXPECT_TRUE(
+      metrics_recorder->get_metrics_endpoints_notified_success().empty());
+  EXPECT_TRUE(
+      metrics_recorder->get_metrics_endpoints_notified_failure().empty());
+}
+
 // Test that the metrics endpoint is notified as a result of a successful
 // multi-IDP FederatedAuthRequestImpl::RequestToken() call.
 TEST_F(FederatedAuthRequestImplTest, MetricsEndpointMultiIdp) {
