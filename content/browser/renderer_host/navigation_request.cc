@@ -1839,10 +1839,29 @@ NavigationRequest::NavigationRequest(
   }
 
   if (from_begin_navigation_) {
-    // This is needed to have data URLs commit in the same SiteInstance as the
-    // initiating renderer.
+    // This is needed to commit data: and about: URLs in the same SiteInstance
+    // as the initiator frame. Note that this may not necessarily match the
+    // SiteInstance of the RenderFrameHost that sent the BeginNavigation IPC
+    // (i.e., `frame_tree_node_->current_frame_host()->GetSiteInstance()`) with
+    // SiteInstanceGroups, because some other frame in a different SiteInstance
+    // but same SiteInstanceGroup could've initiated this navigation.
     source_site_instance_ =
-        frame_tree_node->current_frame_host()->GetSiteInstance();
+        RenderFrameHostImpl::GetSourceSiteInstanceFromFrameToken(
+            base::OptionalToPtr(GetInitiatorFrameToken()),
+            GetInitiatorProcessId(),
+            frame_tree_node_->current_frame_host()->GetStoragePartition());
+
+    // If the lookup above failed (e.g., when no initiator frame token was
+    // provided), fall back to the navigating frame's current SiteInstance. This
+    // ensures that this renderer-initiated navigation still has a valid source
+    // SiteInstance corresponding to the renderer process that initiated the
+    // navigation, which is needed for certain security checks based on
+    // `source_site_instance_`, such as the CanRequestURL() check in
+    // `OnRequestRedirected()`.
+    if (!source_site_instance_) {
+      source_site_instance_ =
+          frame_tree_node_->current_frame_host()->GetSiteInstance();
+    }
 
     DCHECK(navigation_client.is_valid());
     SetNavigationClient(std::move(navigation_client));
