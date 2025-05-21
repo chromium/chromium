@@ -139,13 +139,6 @@ let kLRUCacheAdditionalCapacityForTabGroupEnabled = 7
     lruCache.setObject(value: image, forKey: snapshotID)
     fileManager.write(image: image, snapshotID: snapshotID)
 
-    if let cgImage = image.cgImage {
-      // TODO(crbug.com/40910912): Fix the miscalculation of IOS.Snapshots.CacheSize.
-      // Each image in the cache has the same resolution and hence the same size.
-      let imageSizes = cgImage.bytesPerRow * cgImage.height * Int(lruCache.getCount())
-      HistogramUtils.recordHistogram("IOS.Snapshots.CacheSize", withMemoryKB: imageSizes / 1024)
-    }
-
     for observer in observers {
       observer.value?.didUpdateSnapshotStorage?(snapshotID: snapshotID)
     }

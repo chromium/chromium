@@ -5306,14 +5306,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Snapshots.CacheSize" units="KB" expires_after="2025-10-05">
-  <owner>asamidoi@chromium.org</owner>
-  <owner>edchin@chromium.org</owner>
-  <summary>
-    The overall size of snapshots cache. Recorded when new snapshot is cached.
-  </summary>
-</histogram>
-
 <histogram name="IOS.Snapshots.RetrieveColorSnapshotTime" units="ms"
     expires_after="2025-09-28">
   <owner>asamidoi@chromium.org</owner>

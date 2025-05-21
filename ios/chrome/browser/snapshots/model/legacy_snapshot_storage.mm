@@ -178,11 +178,6 @@ const NSUInteger kLRUCacheAdditionalCapacityForTabGroupEnabled = 7;
 
   [_lruCache setObject:image forKey:snapshotID];
 
-  // Each image in the cache has the same resolution and hence the same size.
-  size_t imageSizes = CGImageGetBytesPerRow(image.CGImage) *
-                      CGImageGetHeight(image.CGImage) * [_lruCache count];
-  base::UmaHistogramMemoryKB("IOS.Snapshots.CacheSize", imageSizes / 1024);
-
   [self.observers
       didUpdateSnapshotStorageWithSnapshotID:
           [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshotID]];
