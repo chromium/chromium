@@ -484,6 +484,7 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
         << trigger_field.global_id()
         << " because history was dropped upon reaching history limit of "
         << kMaxStorableFieldFillHistory;
+    return;
   }
 
   const auto fill_operation_it =
