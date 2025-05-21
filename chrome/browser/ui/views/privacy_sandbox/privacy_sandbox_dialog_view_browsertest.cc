@@ -176,7 +176,7 @@ PrivacySandboxNotice GetNoticeName(const std::string& name) {
 class PrivacySandboxPSNoticeDialogViewBrowserTest : public DialogBrowserTest {
  public:
   PrivacySandboxPSNoticeDialogViewBrowserTest() {
-    set_baseline("crrev.com/c/6546899");
+    set_baseline("crrev.com/c/6575203");
     scoped_feature_list_.InitWithFeatures(
         // Enabled Features
         {privacy_sandbox::kPrivacySandboxNoticeFramework},
