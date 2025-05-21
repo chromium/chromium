@@ -211,12 +211,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kCacheStorageCodeCacheHintHeaderName);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCacheCodeOnIdle);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kCacheCodeOnIdleDelayParam);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kCacheCodeOnIdleDelayServiceWorkerOnlyParam);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables camera preview in permission bubble and site settings.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCameraMicPreview);

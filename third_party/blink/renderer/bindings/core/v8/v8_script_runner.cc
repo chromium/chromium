@@ -651,12 +651,9 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       }
       if (produce_cache_options ==
               V8CodeCache::ProduceCacheOptions::kProduceCodeCache &&
-          base::FeatureList::IsEnabled(features::kCacheCodeOnIdle) &&
-          (features::kCacheCodeOnIdleDelayServiceWorkerOnlyParam.Get()
-               ? execution_context->IsServiceWorkerGlobalScope()
-               : true)) {
-        auto delay =
-            base::Milliseconds(features::kCacheCodeOnIdleDelayParam.Get());
+          execution_context->IsServiceWorkerGlobalScope()) {
+        static constexpr base::TimeDelta kCacheCodeOnIdleDelay =
+            base::Milliseconds(1);
         // TODO(crbug.com/40202028): Consider scheduling idle tasks via
         // ThreadScheduler::PostDelayedIdleTask().
         execution_context->GetTaskRunner(TaskType::kInternalDefault)
@@ -671,7 +668,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
                               classic_script->SourceText().length(),
                               classic_script->SourceUrl(),
                               classic_script->StartPosition()),
-                delay);
+                kCacheCodeOnIdleDelay);
       } else {
         V8CodeCache::ProduceCache(
             isolate,

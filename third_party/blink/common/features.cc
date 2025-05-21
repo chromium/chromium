@@ -383,23 +383,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "first_timeout_retry_delay",
                    base::Minutes(1));
 
-// When enabled, code cache is produced asynchronously from the script execution
-// (https://crbug.com/1260908).
-BASE_FEATURE(kCacheCodeOnIdle,
-             "CacheCodeOnIdle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kCacheCodeOnIdleDelayParam,
-                   &kCacheCodeOnIdle,
-                   "delay-in-ms",
-                   1);
-// Apply CacheCodeOnIdle only for service workers (https://crbug.com/1410082).
-BASE_FEATURE_PARAM(bool,
-                   kCacheCodeOnIdleDelayServiceWorkerOnlyParam,
-                   &kCacheCodeOnIdle,
-                   "service-worker-only",
-                   true);
-
 // When enabled allows the header name used in the blink
 // CacheStorageCodeCacheHint runtime feature to be modified.  This runtime
 // feature disables generating full code cache for responses stored in
