@@ -45,6 +45,14 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
+<variants name="StartupSuffix">
+  <variant name="Cold" summary=""/>
+  <variant name="Speculated"
+      summary="When the mayLaunchUrl speculation is used"/>
+  <variant name="Warm" summary="When CustomTabsConnection#warmUp is not used"/>
+  <variant name="WarmedUp" summary="When CustomTabsConnection#warmUp is used"/>
+</variants>
+
 <histogram name="CustomTab.SessionDuration{CustomTabOpenSource}" units="ms"
     expires_after="2020-10-18">
   <owner>ranj@chromium.org</owner>
@@ -773,19 +781,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix">
-    <variant name="Cold"
-        summary="Measures from process creation to first commit"/>
-    <variant name="Speculated"
-        summary="Measures from intent received to first commit when the
-                 mayLaunchUrl speculation is used"/>
-    <variant name="Warm"
-        summary="Measures from intent received to first commit when
-                 CustomTabsConnection#warmUp is not used"/>
-    <variant name="WarmedUp"
-        summary="Measures from intent received to first commit when
-                 CustomTabsConnection#warmUp is used"/>
-  </token>
+  <token key="suffix" variants="StartupSuffix"/>
 </histogram>
 
 <histogram name="CustomTabs.Startup.TimeToFirstContentfulPaint.{suffix}"
@@ -806,18 +802,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix">
-    <variant name="Cold" summary="Measures from process creation to LCP"/>
-    <variant name="Speculated"
-        summary="Measures from intent received to LCP when the mayLaunchUrl
-                 speculation is used"/>
-    <variant name="Warm"
-        summary="Measures from intent received to LCP when
-                 CustomTabsConnection#warmUp is not used"/>
-    <variant name="WarmedUp"
-        summary="Measures from intent received to LCP when
-                 CustomTabsConnection#warmUp is used"/>
-  </token>
+  <token key="suffix" variants="StartupSuffix"/>
 </histogram>
 
 <histogram name="CustomTabs.Startup.TimeToLargestContentfulPaint2.{suffix}"
@@ -838,18 +823,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix">
-    <variant name="Cold" summary="Measures from process creation to LCP"/>
-    <variant name="Speculated"
-        summary="Measures from intent received to LCP when the mayLaunchUrl
-                 speculation is used"/>
-    <variant name="Warm"
-        summary="Measures from intent received to LCP when
-                 CustomTabsConnection#warmUp is not used"/>
-    <variant name="WarmedUp"
-        summary="Measures from intent received to LCP when
-                 CustomTabsConnection#warmUp is used"/>
-  </token>
+  <token key="suffix" variants="StartupSuffix"/>
 </histogram>
 
 <histogram name="CustomTabs.TimeElapsedSinceMinimized.Destroyed" units="s"
@@ -1031,6 +1005,54 @@ chromium-metrics-reviews@google.com.
     NotificationPermissionUpdater receives the result from the
     TrustedWebActivityClient.
   </summary>
+</histogram>
+
+<histogram
+    name="TrustedWebActivity.Startup.TimeToFirstCommitNavigation2.{suffix}"
+    units="ms" expires_after="2026-05-13">
+  <owner>hattorij@google.com</owner>
+  <owner>ishitatsuyuki@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
+  <summary>
+    Duration for a TWA from the launch of the TWA to the first navigation
+    commit. Split by varying degrees of warmness, from cold to fully pre-loaded
+    through mayLaunchUrl.
+
+    {suffix}.
+  </summary>
+  <token key="suffix" variants="StartupSuffix"/>
+</histogram>
+
+<histogram
+    name="TrustedWebActivity.Startup.TimeToFirstContentfulPaint.{suffix}"
+    units="ms" expires_after="2026-05-13">
+  <owner>hattorij@google.com</owner>
+  <owner>ishitatsuyuki@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
+  <summary>
+    Duration for a TWA from the launch to the First Contentful Paint on the
+    first navigation. Split by varying degrees of warmness, from cold to fully
+    pre-loaded through mayLaunchUrl.
+
+    {suffix}.
+  </summary>
+  <token key="suffix" variants="StartupSuffix"/>
+</histogram>
+
+<histogram
+    name="TrustedWebActivity.Startup.TimeToLargestContentfulPaint2.{suffix}"
+    units="ms" expires_after="2026-05-13">
+  <owner>hattorij@google.com</owner>
+  <owner>ishitatsuyuki@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
+  <summary>
+    Duration for a TWA from the launch to the Largest Contentful Paint on the
+    first navigation. Split by varying degrees of warmness, from cold to fully
+    pre-loaded through mayLaunchUrl.
+
+    {suffix}.
+  </summary>
+  <token key="suffix" variants="StartupSuffix"/>
 </histogram>
 
 </histograms>

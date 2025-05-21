@@ -230,7 +230,8 @@ public class HiddenTabHolder {
 
         TabObserverRegistrar registrar = new TabObserverRegistrar();
         CustomTabObserver customTabObserver =
-                new CustomTabObserver(/* openedByChrome= */ false, session);
+                new CustomTabObserver(
+                        /* openedByChrome= */ false, session, /* twaStartupUptimeMillis= */ null);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(session, /* forPrerender= */ true);
         CustomTabActivityTabController.addTabNavigationObservers(
@@ -395,7 +396,8 @@ public class HiddenTabHolder {
         TabObserverRegistrar registrar = new TabObserverRegistrar();
         SessionHolder<?> token = SessionHolder.getSessionHolderFromIntent(intent);
         CustomTabObserver customTabObserver =
-                new CustomTabObserver(/* openedByChrome= */ false, token);
+                new CustomTabObserver(
+                        /* openedByChrome= */ false, token, /* twaStartupUptimeMillis= */ null);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(token, /* forPrerender= */ false);
         CustomTabActivityTabController.addTabNavigationObservers(

@@ -244,6 +244,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
 
     /**
+     * Extra that, if set, corresponds to the timestamp (in SystemClock.uptimeMillis()) when the TWA
+     * launcher Activity was created. Used to measure the full startup duration.
+     */
+    public static final String EXTRA_TWA_STARTUP_UPTIME_MS =
+            "org.chromium.chrome.browser.customtabs.trusted.STARTUP_UPTIME_MILLIS";
+
+    /**
      * Extra that, if set, allows you to interact with the background app when a PCCT is launched.
      * Note: Deprecated. Use {@link CustomTabsIntent#isBackgroundInteractionEnabled(Intent)}.
      */
@@ -1717,5 +1724,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
 
         return DisplayMode.STANDALONE;
+    }
+
+    @Override
+    public @Nullable Long getTwaStartupUptimeMillis() {
+        if (!isTrustedWebActivity()) return null;
+        long value = IntentUtils.safeGetLongExtra(getIntent(), EXTRA_TWA_STARTUP_UPTIME_MS, 0);
+        return value != 0 ? Long.valueOf(value) : null;
     }
 }

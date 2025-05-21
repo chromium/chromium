@@ -767,4 +767,12 @@ public abstract class BrowserServicesIntentDataProvider {
     public @OpenInBrowserState int getOpenInBrowserButtonState() {
         return OPEN_IN_BROWSER_STATE_OFF;
     }
+
+    /**
+     * @return the TWA startup timestamp associated with an intent in the uptimeMillis timebase, or
+     *     null.
+     */
+    public @Nullable Long getTwaStartupUptimeMillis() {
+        return null;
+    }
 }
