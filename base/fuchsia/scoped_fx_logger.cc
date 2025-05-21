@@ -119,8 +119,8 @@ void ScopedFxLogger::LogMessage(std::string_view file,
 
   fuchsia_syslog::LogBuffer buffer;
   buffer.BeginRecord(fuchsia_severity,
-                     cpp17::string_view(file.data(), file.size()), line_number,
-                     cpp17::string_view(msg.data(), msg.size()),
+                     std::string_view(file.data(), file.size()), line_number,
+                     std::string_view(msg.data(), msg.size()),
                      socket_.borrow(), 0, base::Process::Current().Pid(),
                      base::PlatformThread::CurrentId().raw());
   for (const auto& tag : tags_) {
