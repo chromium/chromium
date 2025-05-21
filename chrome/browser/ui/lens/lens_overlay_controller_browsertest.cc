@@ -1516,7 +1516,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(controller->get_selected_region_for_testing().is_null());
   EXPECT_TRUE(base::StartsWith(controller->GetThumbnailForTesting(), "data:"));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
-            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+            metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX);
 
   // Verify that after text selection, the controller has a copy of the text,
   // the thumbnail is no longer shown and the controller's copy of the
@@ -1534,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->get_selected_region_for_testing().is_null());
   EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
-            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+            metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
 
   // Verify that after a signal from the searchbox that the text was modified,
   // no text selection is present.
@@ -3503,6 +3503,188 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       PopAndLoadTranslateQueryFromHistory) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlayWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
+            lens::INJECTED_IMAGE);
+
+  const GURL first_search_url(
+      "https://www.google.com/"
+      "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
+      "&gsc=2&hl=en-US&cs=0");
+
+  // The search query history stack should be empty and the currently loaded
+  // query should be set.
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  const auto first_search_query = GetLoadedSearchQuery();
+  EXPECT_TRUE(first_search_query);
+  EXPECT_TRUE(first_search_query->search_query_text_.empty());
+  VerifySearchQueryParameters(first_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(first_search_query->search_query_url_,
+                            first_search_url);
+  EXPECT_FALSE(first_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_EQ(first_search_query->selected_region_, kTestRegion);
+  EXPECT_FALSE(first_search_query->selected_region_bitmap_.drawsNothing());
+  EXPECT_EQ(first_search_query->selected_region_bitmap_.width(), 100);
+  EXPECT_EQ(first_search_query->selected_region_bitmap_.height(), 100);
+  EXPECT_FALSE(first_search_query->selected_text_);
+  EXPECT_EQ(first_search_query->lens_selection_type_, lens::INJECTED_IMAGE);
+
+  // Loading a url in the side panel should show the results page.
+  const GURL second_search_url(
+      "https://www.google.com/"
+      "search?source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
+      "&gsc=2&hl=en-US&cs=0");
+  // Do the full image translate query first so it gets attached to the query.
+  const std::string source_lang = "auto";
+  const std::string target_lang = "fi";
+  content::TestNavigationObserver second_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueTranslateFullPageRequestForTesting(source_lang, target_lang);
+  controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
+  second_observer.Wait();
+
+  // The search query history stack should be size 1.
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
+  const auto second_search_query = GetLoadedSearchQuery();
+  EXPECT_TRUE(second_search_query);
+  EXPECT_EQ(second_search_query->search_query_text_, "oranges");
+  VerifySearchQueryParameters(second_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(second_search_query->search_query_url_,
+                            second_search_url);
+  EXPECT_TRUE(second_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(second_search_query->selected_region_bitmap_.drawsNothing());
+  EXPECT_FALSE(second_search_query->selected_region_);
+  EXPECT_TRUE(second_search_query->selected_text_);
+  EXPECT_EQ(second_search_query->selected_text_->first, 20);
+  EXPECT_EQ(second_search_query->selected_text_->second, 200);
+  EXPECT_TRUE(second_search_query->translate_options_);
+  EXPECT_EQ(second_search_query->translate_options_->source_language,
+            source_lang);
+  EXPECT_EQ(second_search_query->translate_options_->target_language,
+            target_lang);
+  EXPECT_EQ(second_search_query->lens_selection_type_,
+            lens::SELECT_TEXT_HIGHLIGHT);
+  VerifySearchQueryParameters(second_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(second_observer.last_navigation_url(),
+                            second_search_url);
+
+  // Loading a second url in the side panel should show the results page.
+  const GURL third_search_url(
+      "https://www.google.com/"
+      "search?source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=2"
+      "&hl=en-US&cs=0");
+  // We can't use content::WaitForLoadStop here since the last navigation is
+  // successful.
+  content::TestNavigationObserver third_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueEndTranslateModeRequestForTesting();
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      third_search_url);
+  third_observer.Wait();
+
+  // The search query history stack should have 2 entries and the currently
+  // loaded query should be set to the new query
+  EXPECT_EQ(GetSearchQueryHistory().size(), 2UL);
+  const auto third_search_query = GetLoadedSearchQuery();
+  EXPECT_TRUE(third_search_query);
+  EXPECT_EQ(third_search_query->search_query_text_, "kiwi");
+  VerifySearchQueryParameters(third_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(third_search_query->search_query_url_,
+                            third_search_url);
+  EXPECT_TRUE(third_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(third_search_query->selected_region_);
+  EXPECT_FALSE(third_search_query->selected_text_);
+  EXPECT_FALSE(third_search_query->translate_options_);
+  EXPECT_EQ(third_search_query->lens_selection_type_,
+            lens::UNKNOWN_SELECTION_TYPE);
+  VerifySearchQueryParameters(third_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(third_observer.last_navigation_url(),
+                            third_search_url);
+
+  // Popping the query should load the previous query into the results frame.
+  content::TestNavigationObserver fourth_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
+  fourth_observer.Wait();
+
+  // The search query history stack should have 1 entry and the currently loaded
+  // query should be set to the previous query.
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
+  const auto first_popped_query = GetLoadedSearchQuery();
+  EXPECT_TRUE(first_popped_query);
+  EXPECT_EQ(first_popped_query->search_query_text_, "oranges");
+  VerifySearchQueryParameters(first_popped_query->search_query_url_);
+  VerifyTextQueriesAreEqual(first_popped_query->search_query_url_,
+                            second_search_url);
+  EXPECT_TRUE(first_popped_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(first_popped_query->selected_region_);
+  EXPECT_TRUE(first_popped_query->selected_text_);
+  EXPECT_EQ(first_popped_query->selected_text_->first, 20);
+  EXPECT_EQ(first_popped_query->selected_text_->second, 200);
+  EXPECT_TRUE(first_popped_query->translate_options_);
+  EXPECT_EQ(first_popped_query->translate_options_->source_language,
+            source_lang);
+  EXPECT_EQ(first_popped_query->translate_options_->target_language,
+            target_lang);
+  EXPECT_EQ(first_popped_query->lens_selection_type_,
+            lens::SELECT_TEXT_HIGHLIGHT);
+  VerifySearchQueryParameters(fourth_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(fourth_observer.last_navigation_url(),
+                            second_search_url);
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  fake_controller->FlushForTesting();
+  EXPECT_EQ(fake_controller->fake_overlay_page_.source_language_, source_lang);
+  EXPECT_EQ(fake_controller->fake_overlay_page_.target_language_, target_lang);
+
+  // Popping the query should load the previous query into the results frame.
+  content::TestNavigationObserver fifth_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
+  fifth_observer.Wait();
+
+  // The search query history stack should be empty and the currently loaded
+  // query should be set.
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  const auto second_popped_query = GetLoadedSearchQuery();
+  EXPECT_TRUE(second_popped_query);
+  EXPECT_TRUE(second_popped_query->search_query_text_.empty());
+  VerifySearchQueryParameters(second_popped_query->search_query_url_);
+  VerifyTextQueriesAreEqual(second_popped_query->search_query_url_,
+                            first_search_url);
+  EXPECT_FALSE(second_popped_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_EQ(second_popped_query->selected_region_, kTestRegion);
+  EXPECT_FALSE(second_popped_query->selected_region_bitmap_.drawsNothing());
+  EXPECT_EQ(second_popped_query->selected_region_bitmap_.width(), 100);
+  EXPECT_EQ(second_popped_query->selected_region_bitmap_.height(), 100);
+  EXPECT_FALSE(second_popped_query->selected_text_);
+  EXPECT_EQ(second_popped_query->lens_selection_type_, lens::INJECTED_IMAGE);
+  EXPECT_FALSE(second_popped_query->translate_options_);
+  fake_controller->FlushForTesting();
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.source_language_.empty());
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.target_language_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        PopAndLoadQueryFromHistoryWithRegionAndTextSelection) {
   WaitForPaint();
 
@@ -3554,7 +3736,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
                                                /*is_click=*/false);
-  second_search_observer.WaitForNavigationFinished();
+  second_search_observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
   // region should be set.
@@ -3576,7 +3758,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver third_search_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
-  third_search_observer.WaitForNavigationFinished();
+  third_search_observer.Wait();
 
   // The search query history stack should have 2 entries and the currently
   // loaded query should be set to the new query
@@ -3616,7 +3798,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
             lens::REGION_SEARCH);
 
-  first_pop_observer.WaitForNavigationFinished();
+  first_pop_observer.Wait();
 
   // The search query history stack should have 1 entry and the previously
   // loaded region should be present.
@@ -3635,7 +3817,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver second_pop_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
-  second_pop_observer.WaitForNavigationFinished();
+  second_pop_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the original query.
@@ -3646,9 +3828,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
-  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
-  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
-                            first_search_url);
+  EXPECT_EQ(url_without_start_time_or_size, first_search_url);
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_TRUE(loaded_search_query->selected_text_);
@@ -3656,9 +3836,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             lens::SELECT_TEXT_HIGHLIGHT);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
-  VerifySearchQueryParameters(second_pop_observer.last_navigation_url());
-  VerifyTextQueriesAreEqual(second_pop_observer.last_navigation_url(),
-                            first_search_url);
+  url_without_start_time_or_size =
+      RemoveStartTimeAndSizeParams(second_pop_observer.last_navigation_url());
+  EXPECT_EQ(url_without_start_time_or_size, first_search_url);
+
   // Verify the text selection was sent back to mojo and any old selections
   // were cleared.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
@@ -6519,9 +6700,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
   ASSERT_EQ(lens::MimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type());
 
@@ -6778,9 +6958,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
 
   // Simulate the searchbox being focused.
   controller->OnFocusChangedForTesting(true);
@@ -6840,9 +7019,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
 
   // Close the overlay and assert that the histogram was recorded once and
   // that the searchbox was not focused in the session.
@@ -6899,10 +7077,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  // Verify bytes was updated.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
 
   controller->OnZeroSuggestShownForTesting();
 
@@ -7038,9 +7214,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
 
   controller->OnZeroSuggestShownForTesting();
 
@@ -7146,9 +7321,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
 
   // Close the overlay and assert that the histogram was recorded once and
   // that zps was not shown in the session.
@@ -7820,9 +7994,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
   ASSERT_EQ(lens::MimeType::kHtml,
             fake_query_controller->last_sent_underlying_content_type());
 

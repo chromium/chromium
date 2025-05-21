@@ -128,10 +128,6 @@ void LensSearchContextualizationController::GetPageContextualization(
 void LensSearchContextualizationController::TryUpdatePageContextualization(
     OnPageContextUpdatedCallback callback) {
   if (state_ == State::kOff) {
-    // TODO(crbug.com/418825720): The viewport screenshot should be only be set
-    // in this controller in the future.
-    viewport_screenshot_ = lens_search_controller_->lens_overlay_controller()
-                               ->initial_screenshot();
     state_ = State::kActive;
   }
   CHECK(state_ == State::kActive);
@@ -230,13 +226,6 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart2(
     lens::MimeType primary_content_type,
     std::optional<uint32_t> page_count,
     const SkBitmap& bitmap) {
-  // It's possible the Lens session could have been closed while updating the
-  // page context. Return early and do not run the callback as it should have
-  // been cleared.
-  if (state_ == State::kOff || !on_page_context_updated_callback_) {
-    return;
-  }
-
 #if BUILDFLAG(ENABLE_PDF)
   if (lens::features::SendPdfCurrentPageEnabled()) {
     pdf::PDFDocumentHelper* pdf_helper =
@@ -264,13 +253,6 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
     std::optional<uint32_t> page_count,
     const SkBitmap& bitmap,
     std::optional<uint32_t> most_visible_page) {
-  // It's possible the Lens session could have been closed while updating the
-  // page context. Return early and do not run the callback as it should have
-  // been cleared.
-  if (state_ == State::kOff || !on_page_context_updated_callback_) {
-    return;
-  }
-
   bool sending_bitmap = false;
   if (!bitmap.drawsNothing() &&
       (viewport_screenshot_.drawsNothing() ||
@@ -363,12 +345,7 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
       lens_search_controller_->GetPageURL(),
       lens_search_controller_->GetPageTitle(),
       last_retrieved_most_visible_page_, sending_bitmap ? bitmap : SkBitmap());
-  // TODO(crbug.com/417812533): Record document metrics in metrics helper or in
-  // this controller instead.
-  if (lens_search_controller_->lens_overlay_controller()->IsOverlayActive()) {
-    lens_search_controller_->lens_overlay_controller()->RecordDocumentMetrics(
-        page_count.value_or(0));
-  }
+  // TODO(crbug.com/417812533): Record document metrics.
   lens_search_controller_->lens_session_metrics_logger()
       ->OnFollowUpPageContentRetrieved(primary_content_type);
 
