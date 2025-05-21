@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
@@ -91,6 +92,9 @@ class TouchToFillPaymentMethodController
       JNIEnv* env,
       base::android::JavaParamRef<jstring> guid) override;
   void ServerIbanSuggestionSelected(JNIEnv* env, long instrument_id) override;
+  void LoyaltyCardSuggestionSelected(
+      JNIEnv* env,
+      const std::string& loyalty_card_number) override;
   int GetJavaResourceId(int native_resource_id) override;
 
   TouchToFillKeyboardSuppressor& keyboard_suppressor_for_test() {

@@ -51,6 +51,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
@@ -1005,6 +1006,7 @@ public class TouchToFillPaymentMethodViewTest {
     @Test
     @MediumTest
     public void testLoyaltyCardTouchToFillItem() {
+        Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -1012,7 +1014,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             LOYALTY_CARD,
-                                            createLoyaltyCardModel(CVS_LOYALTY_CARD)));
+                                            createLoyaltyCardModel(
+                                                    CVS_LOYALTY_CARD, actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -1027,6 +1030,10 @@ public class TouchToFillPaymentMethodViewTest {
         TextView merchantName =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.merchant_name);
         assertThat(merchantName.getText().toString(), is(CVS_LOYALTY_CARD.getMerchantName()));
+
+        onView(withText(CVS_LOYALTY_CARD.getLoyaltyCardNumber()))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(actionCallback).run();
     }
 
     private RecyclerView getCreditCardSuggestions() {
@@ -1103,11 +1110,13 @@ public class TouchToFillPaymentMethodViewTest {
         return ibanModelBuilder.build();
     }
 
-    private static PropertyModel createLoyaltyCardModel(LoyaltyCard loyaltyCard) {
+    private static PropertyModel createLoyaltyCardModel(
+            LoyaltyCard loyaltyCard, Runnable runnable) {
         PropertyModel.Builder loyaltyCardModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_LOYALTY_CARD_KEYS)
                         .with(LOYALTY_CARD_NUMBER, loyaltyCard.getLoyaltyCardNumber())
-                        .with(MERCHANT_NAME, loyaltyCard.getMerchantName());
+                        .with(MERCHANT_NAME, loyaltyCard.getMerchantName())
+                        .with(ON_LOYALTY_CARD_CLICK_ACTION, runnable);
         return loyaltyCardModelBuilder.build();
     }
 

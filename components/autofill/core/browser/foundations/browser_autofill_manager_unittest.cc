@@ -883,6 +883,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               IbanSuggestionSelected,
               ((std::variant<Iban::Guid, Iban::InstrumentId>)),
               (override));
+  MOCK_METHOD(void,
+              LoyaltyCardSuggestionSelected,
+              (const std::string& loyalty_card_number),
+              (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
   MOCK_METHOD(void,
               LogMetricsAfterSubmission,

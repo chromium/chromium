@@ -5,6 +5,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -211,6 +212,14 @@ void TouchToFillPaymentMethodController::ServerIbanSuggestionSelected(
     long instrument_id) {
   if (delegate_) {
     delegate_->IbanSuggestionSelected(Iban::InstrumentId(instrument_id));
+  }
+}
+
+void TouchToFillPaymentMethodController::LoyaltyCardSuggestionSelected(
+    JNIEnv* env,
+    const std::string& loyalty_card_number) {
+  if (delegate_) {
+    delegate_->LoyaltyCardSuggestionSelected(loyalty_card_number);
   }
 }
 

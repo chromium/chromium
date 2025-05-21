@@ -54,6 +54,13 @@ interface TouchToFillPaymentMethodComponent {
          * @param InstrumentId of the selected server IBAN.
          */
         void serverIbanSuggestionSelected(long instrumentId);
+
+        /**
+         * Called when the user selects a loyalty card.
+         *
+         * @param loyaltyCardNumber of the selected loyalty card.
+         */
+        void loyaltyCardSuggestionSelected(String loyaltyCardNumber);
     }
 
     /**

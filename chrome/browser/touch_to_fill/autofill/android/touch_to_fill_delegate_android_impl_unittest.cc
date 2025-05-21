@@ -48,6 +48,7 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Ref;
@@ -168,6 +169,16 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FieldGlobalId& field_id,
                const FillingPayload& filling_payload,
                AutofillTriggerSource trigger_source),
+              (override));
+  MOCK_METHOD(void,
+              FillOrPreviewField,
+              (mojom::ActionPersistence action_persistence,
+               mojom::FieldActionType action_type,
+               const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& value,
+               SuggestionType type,
+               std::optional<FieldType> field_type),
               (override));
   MOCK_METHOD(void,
               DidShowSuggestions,
@@ -1155,6 +1166,21 @@ TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 
   browser_autofill_manager_.reset();
+}
+
+TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
+       LoyaltyCardSelectionFillsFormAndHidesSheet) {
+  const std::string kLoyaltyCardNumber = "1234";
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod);
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll, _, _,
+                                 base::UTF8ToUTF16(kLoyaltyCardNumber),
+                                 SuggestionType::kLoyaltyCardEntry,
+                                 Optional(LOYALTY_MEMBERSHIP_ID)));
+  touch_to_fill_delegate_->LoyaltyCardSuggestionSelected(kLoyaltyCardNumber);
 }
 
 class TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest

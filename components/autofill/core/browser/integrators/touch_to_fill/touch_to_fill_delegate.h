@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <variant>
 
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -56,6 +57,10 @@ class TouchToFillDelegate {
   // Iban::InstrumentId for server IBANs.
   virtual void IbanSuggestionSelected(
       std::variant<Iban::Guid, Iban::InstrumentId> backend_id) = 0;
+  // Called when the user taps on a loyalty card in the payments TTF bottom
+  // sheet.
+  virtual void LoyaltyCardSuggestionSelected(
+      const std::string& loyalty_card_number) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
 
   virtual void LogMetricsAfterSubmission(

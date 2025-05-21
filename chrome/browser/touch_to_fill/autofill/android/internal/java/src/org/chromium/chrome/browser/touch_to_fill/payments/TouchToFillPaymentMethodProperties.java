@@ -131,9 +131,13 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("loyalty_card_number");
         static final PropertyModel.ReadableObjectPropertyKey<String> MERCHANT_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("merchant_name");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable>
+                ON_LOYALTY_CARD_CLICK_ACTION =
+                        new PropertyModel.ReadableObjectPropertyKey<>(
+                                "on_loyalty_card_click_action");
 
         static final PropertyKey[] NON_TRANSFORMING_LOYALTY_CARD_KEYS = {
-            LOYALTY_CARD_NUMBER, MERCHANT_NAME
+            LOYALTY_CARD_NUMBER, MERCHANT_NAME, ON_LOYALTY_CARD_CLICK_ACTION
         };
 
         private LoyaltyCardProperties() {}

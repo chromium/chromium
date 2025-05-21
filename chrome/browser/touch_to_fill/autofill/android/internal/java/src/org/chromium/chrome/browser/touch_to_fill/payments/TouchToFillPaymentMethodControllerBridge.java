@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /**
@@ -85,6 +86,15 @@ class TouchToFillPaymentMethodControllerBridge
         }
     }
 
+    @Override
+    public void loyaltyCardSuggestionSelected(String loyaltyCard) {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .loyaltyCardSuggestionSelected(
+                            mNativeTouchToFillPaymentMethodViewController, loyaltyCard);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(
@@ -104,5 +114,9 @@ class TouchToFillPaymentMethodControllerBridge
 
         void serverIbanSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController, long instrumentId);
+
+        void loyaltyCardSuggestionSelected(
+                long nativeTouchToFillPaymentMethodViewController,
+                @JniType("std::string") String loyaltyCardNumber);
     }
 }

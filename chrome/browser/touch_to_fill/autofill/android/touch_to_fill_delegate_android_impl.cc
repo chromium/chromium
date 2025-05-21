@@ -9,6 +9,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
@@ -384,6 +385,16 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
                 }
               },
               GetWeakPtr()));
+}
+
+void TouchToFillDelegateAndroidImpl::LoyaltyCardSuggestionSelected(
+    const std::string& loyalty_card_number) {
+  HideTouchToFill();
+
+  manager_->FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      query_form_, query_field_, base::UTF8ToUTF16(loyalty_card_number),
+      SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
 }
 
 void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
