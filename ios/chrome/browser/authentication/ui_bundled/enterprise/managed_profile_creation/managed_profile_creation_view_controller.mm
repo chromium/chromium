@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   if (self.canShowBrowsingDataMigration && mergeBrowsingDataByDefault) {
     self.subtitleText = [NSString
         stringWithFormat:
-            @"%@\n\n%@",
+            @"%@.\n\n%@",
             l10n_util::GetNSString(
                 IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
             l10n_util::GetNSString(
@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   } else if (self.browsingDataMigrationDisabledByPolicy) {
     self.subtitleText = [NSString
         stringWithFormat:
-            @"%@\n\n%@",
+            @"%@.\n\n%@",
             l10n_util::GetNSString(
                 IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
             l10n_util::GetNSString(

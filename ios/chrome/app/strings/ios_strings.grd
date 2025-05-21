@@ -2288,7 +2288,7 @@ See your search engine’s instructions for deleting your search history, if app
         Device Information
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_HEADER" desc="Header of the learn more screen telling the user that their account is managed by an organization that can view some information.">
-       The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information, including
+       The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which may be able to view some information, including
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_TITLE" desc="Title of the screen where the user learns more about their managed account.">
         Managed Account
