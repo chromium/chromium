@@ -3,6 +3,12 @@
 This directory provides instructions and prompts for integrating GitHub Copilot
 with the chromium codebase.
 
+This directory is currently in a prototyping state and may be removed in the
+future. As we add support for multiple coding IDE/agents, we will likely pull
+common prompts and instructions into a central directory with stubs for bespoke
+IDE/agent integration. Please check with your organization before using GitHub
+Copilot.
+
 ## Where is copilot-instructions.md?
 [`copilot-intructions.md`](../copilot-instructions.md) is typically a single
 instruction file that contains default instructions for a workspace. These
