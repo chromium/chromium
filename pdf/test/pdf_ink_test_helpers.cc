@@ -43,6 +43,18 @@ constexpr auto kInkTestVariationsWithTextHighlighting =
 
 base::test::TaskEnvironment* g_task_environment = nullptr;
 
+std::string GetAnnotationModeMessageString(InkAnnotationMode mode) {
+  switch (mode) {
+    case InkAnnotationMode::kOff:
+      return "off";
+    case InkAnnotationMode::kDraw:
+      return "draw";
+    case InkAnnotationMode::kText:
+      return "text";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
@@ -77,10 +89,11 @@ base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
       .Set("data", std::move(data));
 }
 
-base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable) {
+base::Value::Dict CreateSetAnnotationModeMessageForTesting(
+    InkAnnotationMode mode) {
   return base::Value::Dict()
       .Set("type", "setAnnotationMode")
-      .Set("mode", enable ? "draw" : "off");
+      .Set("mode", GetAnnotationModeMessageString(mode));
 }
 
 base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(

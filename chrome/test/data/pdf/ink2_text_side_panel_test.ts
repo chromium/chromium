@@ -5,7 +5,6 @@
 import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextTypeface, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {Color} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {setupMockMetricsPrivate} from './test_util.js';
@@ -17,11 +16,6 @@ chrome.test.runTests([
   // as other tests expect to already be in annotation mode.
   async function testOpenSidePanel() {
     const mockMetricsPrivate = setupMockMetricsPrivate();
-
-    // Enable text annotations.
-    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
-    viewer.$.toolbar.strings = Object.assign({}, viewer.$.toolbar.strings);
-    await microtasksFinished();
 
     viewer.$.toolbar.setAnnotationMode(AnnotationMode.TEXT);
     await Ink2Manager.getInstance().initializeTextAnnotations();

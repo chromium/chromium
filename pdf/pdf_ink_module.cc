@@ -170,7 +170,7 @@ bool PdfInkModule::ShouldBlockTextSelectionChanged() {
 }
 
 bool PdfInkModule::HasInputsToDraw() const {
-  if (!enabled_ || is_erasing_stroke()) {
+  if (mode_ != InkAnnotationMode::kDraw || is_erasing_stroke()) {
     return false;
   }
 
@@ -313,7 +313,7 @@ PdfInkModule::PageInkStrokeIterator PdfInkModule::GetVisibleStrokesIterator() {
 }
 
 bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
-  if (!enabled()) {
+  if (mode_ != InkAnnotationMode::kDraw) {
     return false;
   }
 
@@ -435,7 +435,7 @@ int PdfInkModule::GetInputOfTypeCountForPageForTesting(
 }
 
 bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
-  CHECK(enabled());
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   blink::WebMouseEvent normalized_event = NormalizeMouseEvent(event);
   if (normalized_event.button != blink::WebPointerProperties::Button::kLeft) {
@@ -467,7 +467,7 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
 }
 
 bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
-  CHECK(enabled());
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   if (event.button != blink::WebPointerProperties::Button::kLeft) {
     return false;
@@ -486,7 +486,7 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
 }
 
 bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
-  CHECK(enabled());
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   // Before the multi-click text selection timer fired, the mouse moved to a new
   // position, so the click count can no longer increment. Fire the timer
@@ -551,7 +551,7 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
 }
 
 bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
-  CHECK(enabled());
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   if (event.touches_length != 1) {
     return false;
@@ -577,7 +577,7 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
 }
 
 bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
-  CHECK(enabled());
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   if (event.touches_length != 1) {
     return false;
@@ -600,7 +600,7 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
 }
 
 bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
-  CHECK(enabled());
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   if (event.touches_length != 1) {
     return false;
@@ -1242,7 +1242,7 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
 
 void PdfInkModule::HandleGetAnnotationBrushMessage(
     const base::Value::Dict& message) {
-  CHECK(enabled_);
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   base::Value::Dict reply = PrepareReplyMessage(message);
 
@@ -1287,7 +1287,7 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
 
 void PdfInkModule::HandleSetAnnotationBrushMessage(
     const base::Value::Dict& message) {
-  CHECK(enabled_);
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
   const base::Value::Dict* data = message.FindDict("data");
   CHECK(data);
@@ -1370,9 +1370,18 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
     const base::Value::Dict& message) {
   const std::string* mode = message.FindString("mode");
   CHECK(mode);
-  enabled_ = *mode == "draw";
-  client_->OnAnnotationModeToggled(enabled_);
-  if (enabled_ && !loaded_data_from_pdf_) {
+  if (*mode == "off") {
+    mode_ = InkAnnotationMode::kOff;
+  } else if (*mode == "draw") {
+    mode_ = InkAnnotationMode::kDraw;
+  } else if (*mode == "text") {
+    CHECK(features::kPdfInk2TextAnnotations.Get());
+    mode_ = InkAnnotationMode::kText;
+  } else {
+    NOTREACHED();
+  }
+  client_->OnAnnotationModeToggled(enabled());
+  if (enabled() && !loaded_data_from_pdf_) {
     loaded_data_from_pdf_ = true;
     PdfInkModuleClient::DocumentV2InkPathShapesMap loaded_v2_shapes =
         client_->LoadV2InkPathsFromPdf();
@@ -1696,34 +1705,45 @@ bool PdfInkModule::MaybeSetDrawingBrush() {
 }
 
 void PdfInkModule::MaybeSetCursor() {
-  if (!enabled()) {
-    // Do nothing when disabled. The code outside of PdfInkModule will select a
-    // normal mouse cursor and switch to that.
-    return;
-  }
+  switch (mode_) {
+    case InkAnnotationMode::kOff:
+      // Do nothing when disabled. The code outside of PdfInkModule will select
+      // a normal mouse cursor and switch to that.
+      return;
 
-  if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
-    return;
-  }
+    case InkAnnotationMode::kDraw: {
+      if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
+        return;
+      }
 
-  SkColor color;
-  float brush_size;
-  if (is_drawing_stroke()) {
-    const auto& ink_brush = GetDrawingBrush().ink_brush();
-    color = GetSkColorFromInkBrush(ink_brush);
-    brush_size = ink_brush.GetSize();
-  } else {
-    CHECK(is_erasing_stroke());
-    color = kEraserColor;
-    brush_size = kEraserSize;
-  }
+      SkColor color;
+      float brush_size;
+      if (is_drawing_stroke()) {
+        const auto& ink_brush = GetDrawingBrush().ink_brush();
+        color = GetSkColorFromInkBrush(ink_brush);
+        brush_size = ink_brush.GetSize();
+      } else {
+        CHECK(is_erasing_stroke());
+        color = kEraserColor;
+        brush_size = kEraserSize;
+      }
 
-  SkBitmap bitmap = GenerateToolCursor(
-      color,
-      CursorDiameterFromBrushSizeAndZoom(brush_size, client_->GetZoom()));
-  gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-  client_->UpdateInkCursor(
-      ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot)));
+      SkBitmap bitmap = GenerateToolCursor(
+          color,
+          CursorDiameterFromBrushSizeAndZoom(brush_size, client_->GetZoom()));
+      gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
+      client_->UpdateInkCursor(
+          ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot)));
+      return;
+    }
+
+    case InkAnnotationMode::kText:
+      // TODO(crbug.com/402546153): Update cursor for text annotation, once
+      // UX determines if it should always use I-beam.
+      client_->UpdateInkCursor(ui::mojom::CursorType::kIBeam);
+      return;
+  }
+  NOTREACHED();
 }
 
 void PdfInkModule::MaybeSetCursorOnMouseMove(const gfx::PointF& position) {

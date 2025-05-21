@@ -465,9 +465,13 @@ class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
   bool UseTextHighlighting() const { return GetParam().use_text_highlighting; }
 
   void EnableDrawAnnotationMode() {
-    EXPECT_TRUE(
-        ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(true)));
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw)));
     EXPECT_TRUE(ink_module().enabled());
+  }
+
+  void VerifyAndClearExpectations() {
+    testing::Mock::VerifyAndClearExpectations(this);
   }
 
   FakeClient& client() { return client_; }
@@ -720,7 +724,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
   EXPECT_FALSE(ink_module().enabled());
 
   base::Value::Dict message =
-      CreateSetAnnotationModeMessageForTesting(/*enable=*/false);
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kOff);
 
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
@@ -735,9 +739,22 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
   EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
+
+  if (UseTextAnnotations()) {
+    message.Set("mode", "text");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+    EXPECT_TRUE(ink_module().enabled());
+    EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
+
+    message.Set("mode", "off");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+    EXPECT_FALSE(ink_module().enabled());
+    EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
+  }
 }
 
 TEST_P(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
+  // Toggle between annotations off vs. drawing.
   EXPECT_FALSE(ink_module().enabled());
 
   EXPECT_CALL(client(), UpdateInkCursor(_)).WillOnce([this]() {
@@ -745,13 +762,43 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
   });
 
   base::Value::Dict message =
-      CreateSetAnnotationModeMessageForTesting(/*enable=*/true);
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw);
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_TRUE(ink_module().enabled());
 
   message.Set("mode", "off");
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
+  VerifyAndClearExpectations();
+
+  if (UseTextAnnotations()) {
+    // Toggle between annotations off vs. text markup.
+    EXPECT_CALL(client(), UpdateInkCursor(_));
+
+    message.Set("mode", "text");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+    EXPECT_TRUE(ink_module().enabled());
+
+    message.Set("mode", "off");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+    EXPECT_FALSE(ink_module().enabled());
+    VerifyAndClearExpectations();
+
+    // Toggle between annotations drawing vs. text markup.
+    EXPECT_CALL(client(), UpdateInkCursor(_)).Times(3);
+
+    message.Set("mode", "draw");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+    EXPECT_TRUE(ink_module().enabled());
+
+    message.Set("mode", "text");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+    EXPECT_TRUE(ink_module().enabled());
+
+    message.Set("mode", "draw");
+    EXPECT_TRUE(ink_module().OnMessage(message));
+    EXPECT_TRUE(ink_module().enabled());
+  }
 }
 
 TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
@@ -939,8 +986,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   }
 
   void RunStrokeCheckTest(bool annotation_mode_enabled) {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(
+        annotation_mode_enabled ? InkAnnotationMode::kDraw
+                                : InkAnnotationMode::kOff)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
     ApplyStrokeWithMouseAtPointsMaybeHandled(
@@ -977,8 +1025,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   // TODO(crbug.com/377733396): Consider refactoring to combine with
   // RunStrokeCheckTest().
   void RunStrokeTouchCheckTest(bool annotation_mode_enabled) {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(
+        annotation_mode_enabled ? InkAnnotationMode::kDraw
+                                : InkAnnotationMode::kOff)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
     const std::vector<base::span<const gfx::PointF>> all_touch_move_points{
@@ -999,8 +1048,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   // Note that currently multi-touch is not handled, so the test expectations
   // are different from the ones in RunStrokeTouchCheckTest().
   void RunStrokeMultiTouchCheckTest(bool annotation_mode_enabled) {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(
+        annotation_mode_enabled ? InkAnnotationMode::kDraw
+                                : InkAnnotationMode::kOff)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
     const std::vector<gfx::PointF> touch_start_points{kMouseDownPoint,
@@ -1031,8 +1081,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   // TODO(crbug.com/377733396): Consider refactoring to combine with
   // RunStrokeCheckTest().
   void RunStrokePenCheckTest(bool annotation_mode_enabled) {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(
+        annotation_mode_enabled ? InkAnnotationMode::kDraw
+                                : InkAnnotationMode::kOff)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
     const std::vector<base::span<const gfx::PointF>> all_pen_move_points{
@@ -1135,10 +1186,6 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 
   void ExpectNoUpdateStrokeActive() {
     EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
-  }
-
-  void VerifyAndClearExpectations() {
-    testing::Mock::VerifyAndClearExpectations(this);
   }
 
   const std::vector<int>& updated_ink_thumbnail_page_indices() const {
@@ -2503,8 +2550,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Disable annotation mode. Undo/redo should still work.
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(false)));
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kOff)));
   EXPECT_EQ(false, ink_module().enabled());
 
   PerformUndo();

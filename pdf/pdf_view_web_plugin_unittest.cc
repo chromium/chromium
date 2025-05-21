@@ -40,6 +40,7 @@
 #include "pdf/pdf_accessibility_data_handler.h"
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
+#include "pdf/pdf_ink_annotation_mode.h"
 #include "pdf/test/mock_web_associated_url_loader.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_helpers.h"
@@ -2800,7 +2801,7 @@ class PdfViewWebPluginInkTest
 
     // Draw some trivial strokes.
     plugin_->OnMessage(
-        CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+        CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
     TestSendInputEvent(
         MouseEventBuilder().CreateLeftClickAtPosition({10, 10}).Build(),
         blink::WebInputEventResult::kHandledApplication);
@@ -3048,13 +3049,14 @@ TEST_P(PdfViewWebPluginInkTest, UpdateCursor) {
       TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
 
-  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
   cursor =
       TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
 
   plugin_->OnMessage(
-      CreateSetAnnotationModeMessageForTesting(/*enable=*/false));
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kOff));
   cursor =
       TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
@@ -3257,18 +3259,20 @@ TEST_P(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
   EXPECT_CALL(*engine_ptr_, SetFormHighlight(false));
   EXPECT_CALL(*engine_ptr_, ClearTextSelection());
 
-  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
   EXPECT_TRUE(plugin_->IsInAnnotationMode());
 
   EXPECT_CALL(*engine_ptr_, SetFormHighlight(true));
 
   plugin_->OnMessage(
-      CreateSetAnnotationModeMessageForTesting(/*enable=*/false));
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kOff));
   EXPECT_FALSE(plugin_->IsInAnnotationMode());
 }
 
 TEST_P(PdfViewWebPluginInkTest, DrawInProgressStroke) {
-  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
   TestInProgressDraw(
       /*expected_filename=*/FILE_PATH_LITERAL("diagonal_stroke.png"),
       /*start_position=*/gfx::PointF(95, 85),
@@ -3307,7 +3311,8 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
   UpdatePluginGeometry(/*device_scale=*/1.0f, kScreenRect);
 
   // Enter annotation mode and select the highlighter.
-  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
   plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
       "highlighter", &kLightGreenBrushParams));
 
@@ -3334,7 +3339,8 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
 
 TEST_P(PdfViewWebPluginInkTextHighlightTest, DrawInProgressTextHighlight) {
   // Enter annotation mode and select the highlighter.
-  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
   plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
       "highlighter", &kLightGreenBrushParams));
 

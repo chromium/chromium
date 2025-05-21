@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "pdf/pdf_ink_annotation_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
@@ -56,7 +57,8 @@ struct PdfInkInputData {
 std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
     base::span<const PdfInkInputData> inputs);
 
-base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable);
+base::Value::Dict CreateSetAnnotationModeMessageForTesting(
+    InkAnnotationMode mode);
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
     std::string_view type,

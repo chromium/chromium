@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_ink_annotation_mode.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
@@ -138,7 +139,7 @@ class PdfInkModule {
   PdfInkModule& operator=(const PdfInkModule&) = delete;
   ~PdfInkModule();
 
-  bool enabled() const { return enabled_; }
+  bool enabled() const { return mode_ != InkAnnotationMode::kOff; }
 
   // Returns whether the text selection change event should be blocked to
   // prevent modifying the clipboard content.
@@ -174,7 +175,8 @@ class PdfInkModule {
   void OnGeometryChanged();
 
   // For testing only. Returns the current `PdfInkBrush` used to draw strokes,
-  // or nullptr if there is no brush because `PdfInkModule` is erasing.
+  // or nullptr if there is no brush because `PdfInkModule` is not in the
+  // drawing state.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
 
   // For testing only. Returns the (visible) input positions used for all
@@ -531,7 +533,7 @@ class PdfInkModule {
 
   const raw_ref<PdfInkModuleClient> client_;
 
-  bool enabled_ = false;
+  InkAnnotationMode mode_ = InkAnnotationMode::kOff;
 
   bool using_stylus_instead_of_touch_ = false;
 

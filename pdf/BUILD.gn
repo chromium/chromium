@@ -225,6 +225,7 @@ if (enable_pdf) {
       sources += [
         "draw_utils/page_boundary_intersect.cc",
         "draw_utils/page_boundary_intersect.h",
+        "pdf_ink_annotation_mode.h",
         "pdf_ink_brush.cc",
         "pdf_ink_brush.h",
         "pdf_ink_constants.h",

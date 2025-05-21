@@ -564,10 +564,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2AnnotationBrushMixin) {
   RunTestsInJsModule("ink2_annotation_brush_mixin_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2AnnotationTextMixin) {
-  RunTestsInJsModule("ink2_annotation_text_mixin_test.js", "test.pdf");
-}
-
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BottomToolbar) {
   // The window must be smaller than 960px to show the bottom toolbar.
   GetActiveWebContents()->Resize({0, 0, 959, 100});
@@ -588,30 +584,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, SelectableIconButton) {
   RunTestsInJsModule("selectable_icon_button_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextAlignmentSelector) {
-  RunTestsInJsModule("ink2_text_alignment_selector_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextBottomToolbar) {
-  // The window must be smaller than 960px to show the bottom toolbar.
-  GetActiveWebContents()->Resize({0, 0, 959, 100});
-  RunTestsInJsModule("ink2_text_bottom_toolbar_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextBoxTest) {
-  RunTestsInJsModule("ink2_text_box_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextSidePanel) {
-  // The window must be at least 960px to show the text side panel.
-  GetActiveWebContents()->Resize({0, 0, 960, 100});
-  RunTestsInJsModule("ink2_text_side_panel_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextStylesSelector) {
-  RunTestsInJsModule("ink2_text_styles_selector_test.js", "test.pdf");
-}
-
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BrushSelector) {
   RunTestsInJsModule("ink2_brush_selector_test.js", "test.pdf");
 }
@@ -626,6 +598,46 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SizeSelector) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {
   RunTestsInJsModule("ink2_viewer_toolbar_test.js", "test.pdf");
+}
+
+class PDFExtensionJSInk2TextTest : public PDFExtensionJSTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
+    enabled.push_back(
+        {chrome_pdf::features::kPdfInk2,
+         {{chrome_pdf::features::kPdfInk2TextAnnotations.name, "true"}}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2AnnotationTextMixin) {
+  RunTestsInJsModule("ink2_annotation_text_mixin_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextBottomToolbar) {
+  // The window must be smaller than 960px to show the bottom toolbar.
+  GetActiveWebContents()->Resize({0, 0, 959, 100});
+  RunTestsInJsModule("ink2_text_bottom_toolbar_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextAlignmentSelector) {
+  RunTestsInJsModule("ink2_text_alignment_selector_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextBoxTest) {
+  RunTestsInJsModule("ink2_text_box_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextSidePanel) {
+  // The window must be at least 960px to show the text side panel.
+  GetActiveWebContents()->Resize({0, 0, 960, 100});
+  RunTestsInJsModule("ink2_text_side_panel_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextStylesSelector) {
+  RunTestsInJsModule("ink2_text_styles_selector_test.js", "test.pdf");
 }
 
 class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
@@ -663,3 +675,4 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSNoInk2Test);
 #endif
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSInk2Test);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSInk2TextTest);
