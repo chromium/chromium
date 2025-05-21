@@ -11,6 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor.mojom.h"
@@ -76,17 +78,21 @@ void GlicActorController::Act(
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
-  if (!actor_coordinator_) {
-    actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(profile_);
+  if (!actor_task_ ||
+      actor_task_->GetState() == actor::ActorTask::State::kFinished) {
+    auto task = std::make_unique<actor::ActorTask>(
+        std::make_unique<actor::ActorCoordinator>(profile_));
+    actor_task_ = task.get();
+    actor::ActorKeyedService::Get(profile_.get())->AddTask(std::move(task));
   }
 
-  if (!actor_coordinator_->HasTask()) {
+  if (!GetActorCoordinator() || !GetActorCoordinator()->HasTask()) {
     // Start of a new task, which must begin with a navigate action.
     // The OnTaskStarted callback will perform the action after the task is
     // setup by the coordinator.
     // TODO(https://crbug.com/407860715): Implement a separate host API to start
     // a task, and remove action handling here.
-    actor_coordinator_->StartTask(
+    GetActorCoordinator()->StartTask(
         action,
         base::BindOnce(&GlicActorController::OnTaskStarted, GetWeakPtr(),
                        action, options, std::move(callback)));
@@ -97,22 +103,26 @@ void GlicActorController::Act(
 }
 
 void GlicActorController::StopTask() {
-  if (!actor_coordinator_) {
+  if (!GetActorCoordinator()) {
     return;
   }
-  actor_coordinator_->StopTask();
+  GetActorCoordinator()->StopTask();
+  actor_task_->SetState(actor::ActorTask::State::kFinished);
 }
 
 bool GlicActorController::IsActorCoordinatorActingOnTab(
     const content::WebContents* tab) const {
-  return actor_coordinator_ && actor_coordinator_->HasTaskForTab(tab);
+  return GetActorCoordinator() && GetActorCoordinator()->HasTaskForTab(tab);
 }
 
 actor::ActorCoordinator& GlicActorController::GetActorCoordinatorForTesting() {
-  if (!actor_coordinator_) {
-    actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(profile_);
+  if (!actor_task_) {
+    auto task = std::make_unique<actor::ActorTask>(
+        std::make_unique<actor::ActorCoordinator>(profile_));
+    actor_task_ = task.get();
+    actor::ActorKeyedService::Get(profile_.get())->AddTask(std::move(task));
   }
-  return *actor_coordinator_;
+  return *actor_task_->GetActorCoordinator();
 }
 
 void GlicActorController::OnTaskStarted(
@@ -137,7 +147,7 @@ void GlicActorController::ActImpl(
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) const {
-  actor_coordinator_->Act(
+  GetActorCoordinator()->Act(
       action,
       base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(),
                      focused_tab_data, options, std::move(callback)));
@@ -179,5 +189,12 @@ base::WeakPtr<const GlicActorController> GlicActorController::GetWeakPtr()
 
 base::WeakPtr<GlicActorController> GlicActorController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+actor::ActorCoordinator* GlicActorController::GetActorCoordinator() const {
+  if (!actor_task_) {
+    return nullptr;
+  }
+  return actor_task_->GetActorCoordinator();
 }
 }  // namespace glic

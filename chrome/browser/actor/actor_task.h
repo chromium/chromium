@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_TASK_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_TASK_H_
 
+#include <memory>
+
 namespace actor {
+
+class ActorCoordinator;
 
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
  public:
   ActorTask();
+  explicit ActorTask(std::unique_ptr<ActorCoordinator> actor_coordinator);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
   ~ActorTask();
@@ -21,9 +26,16 @@ class ActorTask {
   enum class State { kCreated, kActing, kReflecting, kFinished };
 
   State GetState() const;
+  void SetState(State state);
+
+  ActorCoordinator* GetActorCoordinator() const;
 
  private:
   State state_ = State::kCreated;
+
+  // There are multiple possible execution engines. For now we only support
+  // ActorCoordinator.
+  std::unique_ptr<ActorCoordinator> actor_coordinator_;
 };
 
 }  // namespace actor
