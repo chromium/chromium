@@ -47,7 +47,9 @@ const TestCaseItem kTestCaseMax[] = {
     {"http://foo3.com/", u"Foo3"}, {"http://foo4.com/", u"Foo4"},
     {"http://foo5.com/", u"Foo5"}, {"http://foo6.com/", u"Foo6"},
     {"http://foo7.com/", u"Foo7"}, {"http://foo8.com/", u"Foo8"},
+#if !BUILDFLAG(IS_ANDROID)
     {"http://foo9.com/", u"Foo9"}, {"http://foo10.com/", u"Foo10"},
+#endif
 };
 
 const char kTestTitle[] = "Test";

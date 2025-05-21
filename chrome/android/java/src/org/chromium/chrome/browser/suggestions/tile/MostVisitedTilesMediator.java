@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -32,9 +33,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for handling {@link MostVisitedTilesLayout} related logic. */
 public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrlServiceObserver {
-
-    // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
-    static final int MAX_RESULTS = 12;
 
     private final Resources mResources;
     private final UiConfig mUiConfig;
@@ -110,7 +108,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                         new TileDragDelegateImpl(mMvTilesLayout),
                         /* observer= */ this,
                         offlinePageBridge);
-        mTileGroup.startObserving(MAX_RESULTS);
+        mTileGroup.startObserving(SuggestionsConfig.MAX_TILE_COUNT);
 
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);

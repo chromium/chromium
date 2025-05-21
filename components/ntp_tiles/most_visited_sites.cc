@@ -461,8 +461,13 @@ void MostVisitedSites::ResetProfilePrefs(PrefService* prefs) {
 }
 
 size_t MostVisitedSites::GetMaxNumSites() const {
+#if BUILDFLAG(IS_ANDROID)
+  // The "Add new" button (for custom tiles) is not a Tile; don't include.
+  return max_num_sites_;
+#else
   return max_num_sites_ +
          ((custom_links_manager_ && IsCustomLinksEnabled()) ? 1 : 0);
+#endif
 }
 
 void MostVisitedSites::InitiateTopSitesQuery() {

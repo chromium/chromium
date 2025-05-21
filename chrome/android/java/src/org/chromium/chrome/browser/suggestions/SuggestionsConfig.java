@@ -27,7 +27,7 @@ public final class SuggestionsConfig {
     public static final int MAX_TILE_COUNT = 12;
 
     /** Maximum number of custom tiles supported. In C++ backend this is `kMaxNumCustomLinks`. */
-    public static final int MAX_NUM_CUSTOM_LINKS = 10;
+    public static final int MAX_NUM_CUSTOM_LINKS = 8;
 
     /** Maximum length of Custom Tiles name. */
     public static final int MAX_CUSTOM_TILES_NAME_LENGTH = 50;
