@@ -71,3 +71,13 @@ android_library("sms_otp_fetching_interface_java") {
     "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetcherFactoryUpstreamImpl.java",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "android_sms_otp_backend_unittest.cc" ]
+
+  deps = [
+    ":backend",
+    "//base/test:test_support",
+  ]
+}
