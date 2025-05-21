@@ -1571,12 +1571,10 @@ bool CSSSelector::HasLinkOrVisited() const {
         pseudo == CSSSelector::kPseudoVisited) {
       return true;
     }
-    if (const CSSSelectorList* list = current->SelectorList()) {
-      for (const CSSSelector* sub_selector = list->First(); sub_selector;
-           sub_selector = CSSSelectorList::Next(*sub_selector)) {
-        if (sub_selector->HasLinkOrVisited()) {
-          return true;
-        }
+    for (const CSSSelector* sub_selector = current->SelectorListOrParent();
+         sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
+      if (sub_selector->HasLinkOrVisited()) {
+        return true;
       }
     }
   }
