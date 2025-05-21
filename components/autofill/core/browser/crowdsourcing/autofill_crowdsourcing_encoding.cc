@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 
 #include <algorithm>
+#include <array>
+#include <cstdint>
 #include <deque>
 #include <optional>
 #include <string>
@@ -15,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
@@ -35,6 +36,7 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace autofill {
 namespace {
@@ -142,16 +144,15 @@ void InsertParsedOverrides(
 std::string EncodeFieldTypes(const FieldTypeSet& available_field_types) {
   // There are `MAX_VALID_FIELD_TYPE` different field types and 8 bits per byte,
   // so we need ceil(MAX_VALID_FIELD_TYPE / 8) bytes to encode the bit field.
-  const size_t kNumBytes = (MAX_VALID_FIELD_TYPE + 0x7) / 8;
+  constexpr size_t kNumBytes = (MAX_VALID_FIELD_TYPE + 0x7) / 8;
 
   // Pack the types in `available_field_types` into `bit_field`.
-  std::vector<uint8_t> bit_field(kNumBytes, 0);
+  std::array<uint8_t, kNumBytes> bit_field = {};
   for (const auto field_type : available_field_types) {
-    // Set the appropriate bit in the field.  The bit we set is the one
+    // Set the appropriate bit in the field. The bit we set is the one
     // `field_type` % 8 from the left of the byte.
     const size_t byte = field_type / 8;
-    const size_t bit = 0x80 >> (field_type % 8);
-    DCHECK(byte < bit_field.size());
+    const uint8_t bit = 1 << (7 - field_type % 8);
     bit_field[byte] |= bit;
   }
 
@@ -164,9 +165,9 @@ std::string EncodeFieldTypes(const FieldTypeSet& available_field_types) {
 
   // Print all meaningful bytes into a string.
   std::string data_presence;
-  data_presence.reserve(data_end * 2 + 1);
+  data_presence.reserve(data_end * 2);
   for (size_t i = 0; i < data_end; ++i) {
-    base::StringAppendF(&data_presence, "%02x", bit_field[i]);
+    absl::StrAppendFormat(&data_presence, "%02x", bit_field[i]);
   }
 
   return data_presence;
