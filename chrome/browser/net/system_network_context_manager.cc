@@ -631,6 +631,12 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       base::BindRepeating(
           &SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled,
           base::Unretained(this)));
+
+  pref_change_registrar_.Add(
+      prefs::kTLS13EarlyDataEnabled,
+      base::BindRepeating(
+          &SystemNetworkContextManager::UpdateTLS13EarlyDataEnabled,
+          base::Unretained(this)));
 }
 
 SystemNetworkContextManager::~SystemNetworkContextManager() {
@@ -693,6 +699,9 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_LINUX)
 
   registry->RegisterBooleanPref(prefs::kIPv6ReachabilityOverrideEnabled, false);
+
+  // Default value doesn't matter since this pref is only used when managed.
+  registry->RegisterBooleanPref(prefs::kTLS13EarlyDataEnabled, false);
 }
 
 // static
@@ -1056,6 +1065,16 @@ void SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled() {
       net::features::kEnableIPv6ReachabilityOverride);
   bool value = is_managed ? pref_value : is_launched;
   content::GetNetworkService()->SetIPv6ReachabilityOverride(value);
+}
+
+void SystemNetworkContextManager::UpdateTLS13EarlyDataEnabled() {
+  bool is_managed =
+      local_state_->IsManagedPreference(prefs::kTLS13EarlyDataEnabled);
+  bool value =
+      is_managed
+          ? local_state_->GetBoolean(prefs::kTLS13EarlyDataEnabled)
+          : base::FeatureList::IsEnabled(net::features::kEnableTLS13EarlyData);
+  content::GetNetworkService()->SetTLS13EarlyDataEnabled(value);
 }
 
 // static

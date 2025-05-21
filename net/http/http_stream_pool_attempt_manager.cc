@@ -190,8 +190,6 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     ssl_config.privacy_mode = stream_key().privacy_mode();
     ssl_config.disable_cert_verification_network_fetches =
         stream_key().disable_cert_network_fetches();
-    ssl_config.early_data_enabled =
-        http_network_session()->params().enable_early_data;
 
     ssl_config.alpn_protos = http_network_session()->GetAlpnProtos();
     ssl_config.application_settings =
@@ -445,8 +443,12 @@ HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
   CHECK(service_endpoint_request_);
   CHECK(service_endpoint_request_->EndpointsCryptoReady());
 
+  SSLConfig ssl_config = *base_ssl_config_;
+  ssl_config.early_data_enabled =
+      http_network_session()->params().enable_early_data;
+
   if (!IsEchEnabled()) {
-    return *base_ssl_config_;
+    return ssl_config;
   }
 
   const bool svcb_optional = IsSvcbOptional();
@@ -458,7 +460,6 @@ HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
                                                       ? endpoint.ipv4_endpoints
                                                       : endpoint.ipv6_endpoints;
     if (base::Contains(ip_endpoints, ip_endpoint)) {
-      SSLConfig ssl_config = *base_ssl_config_;
       ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
       return ssl_config;
     }

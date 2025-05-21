@@ -2231,6 +2231,7 @@ chromium-metrics-reviews@google.com.
   <int value="1360" label="NTPFooterExtensionAttributionEnabled"/>
   <int value="1361" label="ClearWindowNameForNewBrowsingContextGroup"/>
   <int value="1362" label="PasswordManagerBlocklist"/>
+  <int value="1363" label="TLS13EarlyDataEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

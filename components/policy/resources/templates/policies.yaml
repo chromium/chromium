@@ -1361,6 +1361,7 @@ policies:
   1360: NTPFooterExtensionAttributionEnabled
   1361: ClearWindowNameForNewBrowsingContextGroup
   1362: PasswordManagerBlocklist
+  1363: TLS13EarlyDataEnabled
 
 atomic_groups:
   1: Homepage
