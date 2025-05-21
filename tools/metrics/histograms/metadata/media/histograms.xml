@@ -3242,20 +3242,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.EME.MediaFoundationService.Widevine.HardwareSecure.IsTypeSupported"
-    units="ms" expires_after="2026-01-15">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Time for IMFContentDecryptionModuleFactory::IsTypeSupported() to finish in
-    MediaFoundationService when using Widevine in hardware secure mode, which
-    are called by MediaFoundationService.IsKeySystemSupported() (called once per
-    browser session lifetime). IsKeySystemSupported() calls IsTypeSupported()
-    multiple times, for different audio/video codecs and encryption schemes.
-  </summary>
-</histogram>
-
-<histogram
     name="Media.EME.MediaFoundationService.{KeySystem}.HardwareSecure.GetCdmCapability"
     units="ms" expires_after="2026-01-15">
   <owner>vpasupathy@chromium.org</owner>
@@ -3263,6 +3249,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time spent to get CdmCapability for {KeySystem}. The value will be
     reported once per CDM instance for hw security in MediaFoundationService.
+  </summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.{KeySystem}.HardwareSecure.IsTypeSupported"
+    units="ms" expires_after="2026-01-15">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Time for IMFContentDecryptionModuleFactory::IsTypeSupported() to finish in
+    MediaFoundationService when using {KeySystem} in hardware secure mode, which
+    are called by MediaFoundationService.IsKeySystemSupported() (called once per
+    browser session lifetime). IsKeySystemSupported() calls IsTypeSupported()
+    multiple times, for different audio/video codecs and encryption schemes.
   </summary>
   <token key="KeySystem" variants="KeySystem"/>
 </histogram>
