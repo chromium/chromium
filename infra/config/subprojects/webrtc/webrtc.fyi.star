@@ -10,24 +10,32 @@ load("//lib/xcode.star", "xcode")
 
 luci.bucket(
     name = "webrtc.fyi",
-    acls = [
-        acl.entry(
-            roles = acl.BUILDBUCKET_READER,
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.reader",
             groups = "all",
         ),
-        acl.entry(
-            roles = acl.BUILDBUCKET_TRIGGERER,
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "project-webrtc-led-users",
+        ),
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
             groups = [
                 "project-chromium-ci-schedulers",
                 "project-webrtc-admins",
             ],
         ),
-        acl.entry(
-            roles = acl.BUILDBUCKET_OWNER,
+        luci.binding(
+            roles = "role/buildbucket.owner",
             groups = "project-chromium-admins",
         ),
-        acl.entry(
-            roles = acl.SCHEDULER_OWNER,
+        luci.binding(
+            roles = "role/scheduler.owner",
+            groups = "project-webrtc-admins",
+        ),
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",
             groups = "project-webrtc-admins",
         ),
     ],

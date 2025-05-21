@@ -9,21 +9,32 @@ load("//lib/targets.star", "targets")
 
 luci.bucket(
     name = "webrtc",
-    acls = [
-        acl.entry(
-            roles = acl.BUILDBUCKET_READER,
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.reader",
             groups = "all",
         ),
-        acl.entry(
-            roles = acl.BUILDBUCKET_TRIGGERER,
-            groups = "project-chromium-ci-schedulers",
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "project-webrtc-led-users",
         ),
-        acl.entry(
-            roles = acl.BUILDBUCKET_OWNER,
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            groups = [
+                "project-chromium-ci-schedulers",
+                "project-webrtc-admins",
+            ],
+        ),
+        luci.binding(
+            roles = "role/buildbucket.owner",
             groups = "project-chromium-admins",
         ),
-        acl.entry(
-            roles = acl.SCHEDULER_OWNER,
+        luci.binding(
+            roles = "role/scheduler.owner",
+            groups = "project-webrtc-admins",
+        ),
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",
             groups = "project-webrtc-admins",
         ),
     ],
