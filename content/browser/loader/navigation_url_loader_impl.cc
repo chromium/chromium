@@ -1034,7 +1034,10 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
       std::move(factory), std::move(throttles), global_request_id_.request_id,
       options, resource_request_.get(), /*client=*/this,
       kNavigationUrlLoaderTrafficAnnotation,
-      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}),
+      /*cors_exempt_header_list=*/std::nullopt,
+      /*client_receiver_delegate=*/nullptr,
+      &request_info_->common_params->initiator_origin_trial_features);
 }
 
 void NavigationURLLoaderImpl::OnReceiveEarlyHints(

@@ -21,6 +21,7 @@ bool FeatureEnabledForNavigation(blink::mojom::OriginTrialFeature feature) {
       // feature, for tests.
       blink::mojom::OriginTrialFeature::kOriginTrialsSampleAPINavigation,
       blink::mojom::OriginTrialFeature::kTextFragmentIdentifiers,
+      blink::mojom::OriginTrialFeature::kDeviceBoundSessionCredentials,
   };
   return base::Contains(kEnabledForNavigation, feature);
 }

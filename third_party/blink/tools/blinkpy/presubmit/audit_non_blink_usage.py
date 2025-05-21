@@ -2529,6 +2529,16 @@ _CONFIG = [
             'network::PermissionsPolicy',
         ]
     },
+    {
+        # TODO(crbug.com/418169222): Remove this entry once the device
+        # bound session credentials origin trial is complete.
+        'paths': [
+            'third_party/blink/common/loader/throttling_url_loader.cc',
+        ],
+        'allowed': [
+            'mojom::OriginTrialFeature',
+        ]
+    }
 ]
 
 

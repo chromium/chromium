@@ -1171,29 +1171,29 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
-  if (!request_->allows_device_bound_session_registration() &&
-      !features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
-    return;
-  }
-
   device_bound_sessions::SessionService* service =
       request_->context()->device_bound_session_service();
   if (!service) {
     return;
   }
 
+  const auto& request_url = request_->url();
+  auto* headers = GetResponseHeaders();
+
   // If response header Sec-Session-Registration is present and configured
   // appropriately, trigger a registration request per header value to attempt
   // to create a new session.
-  const auto& request_url = request_->url();
-  auto* headers = GetResponseHeaders();
-  std::vector<device_bound_sessions::RegistrationFetcherParam> params =
-      device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
-          request_url, headers);
-  for (auto& param : params) {
-    service->RegisterBoundSession(
-        request_->device_bound_session_access_callback(), std::move(param),
-        request_->isolation_info(), request_->net_log(), request_->initiator());
+  if (request_->allows_device_bound_session_registration() ||
+      features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
+    std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+        device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
+            request_url, headers);
+    for (auto& param : params) {
+      service->RegisterBoundSession(
+          request_->device_bound_session_access_callback(), std::move(param),
+          request_->isolation_info(), request_->net_log(),
+          request_->initiator());
+    }
   }
 
   // If response header Sec-Session-Challenge is present and configured
