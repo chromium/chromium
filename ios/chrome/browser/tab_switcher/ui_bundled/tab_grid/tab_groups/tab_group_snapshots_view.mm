@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/group_tab_view.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -22,23 +22,24 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 @implementation TabGroupSnapshotsView {
   BOOL _isLight;
   BOOL _isCell;
-  NSArray<GroupTabInfo*>* _tabGroupInfos;
+  NSArray<TabSnapshotAndFavicon*>* _tabSnapshotsAndFavicons;
   NSUInteger _tabGroupTabNumber;
   UIStackView* _firstLine;
   UIStackView* _secondLine;
   GroupTabView* _singleView;
 }
 
-- (instancetype)initWithTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
-                                 size:(NSUInteger)size
-                                light:(BOOL)isLight
-                                 cell:(BOOL)isCell {
+- (instancetype)initWithTabSnapshotsAndFavicons:
+                    (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons
+                                           size:(NSUInteger)size
+                                          light:(BOOL)isLight
+                                           cell:(BOOL)isCell {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group snapshot view outside "
          "the Tab Groups experiment.";
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    CHECK_LE([tabGroupInfos count], size);
+    CHECK_LE([tabSnapshotsAndFavicons count], size);
     self.translatesAutoresizingMaskIntoConstraints = NO;
     _isLight = isLight;
     _isCell = isCell;
@@ -56,14 +57,16 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
     [self addSubview:snapshotsView];
     AddSameConstraints(snapshotsView, self);
 
-    [self configureTabGroupSnapshotsViewWithTabGroupInfos:tabGroupInfos
-                                                     size:size];
+    [self configureTabGroupSnapshotsViewWithTabSnapshotsAndFavicons:
+              tabSnapshotsAndFavicons
+                                                               size:size];
 
     if (!_isCell) {
       _singleView = [[GroupTabView alloc] initWithIsCell:_isCell];
       _singleView.translatesAutoresizingMaskIntoConstraints = NO;
-      [_singleView configureWithSnapshot:tabGroupInfos.firstObject.snapshot
-                                 favicon:tabGroupInfos.firstObject.favicon];
+      [_singleView
+          configureWithSnapshot:tabSnapshotsAndFavicons.firstObject.snapshot
+                        favicon:tabSnapshotsAndFavicons.firstObject.favicon];
       [self addSubview:_singleView];
       AddSameConstraints(_singleView, self);
       _singleView.hidden = size > 1;
@@ -95,7 +98,7 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
           lengthWithoutLastElement:(NSUInteger)length {
   NSUInteger computedNumberOfElement = start + length + 1;
   if (computedNumberOfElement == _tabGroupTabNumber &&
-      computedNumberOfElement <= [_tabGroupInfos count]) {
+      computedNumberOfElement <= [_tabSnapshotsAndFavicons count]) {
     length += 1;
   }
   return NSMakeRange(start, length);
@@ -104,7 +107,8 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 // Returns the list of favicons pictures from the given array of `infos`.
 - (NSMutableArray<UIImage*>*)faviconsFromRange:(NSRange)range {
   NSMutableArray<UIImage*>* faviconsSubArray = [[NSMutableArray alloc] init];
-  for (GroupTabInfo* info : [_tabGroupInfos subarrayWithRange:range]) {
+  for (TabSnapshotAndFavicon* info :
+       [_tabSnapshotsAndFavicons subarrayWithRange:range]) {
     if (info.favicon) {
       [faviconsSubArray addObject:info.favicon];
     } else {
@@ -163,17 +167,19 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
          _isCell;
 }
 
-- (void)configureTabGroupSnapshotsViewWithTabGroupInfos:
-            (NSArray<GroupTabInfo*>*)tabGroupInfos
-                                                   size:(NSUInteger)size {
-  _tabGroupInfos = tabGroupInfos;
+- (void)configureTabGroupSnapshotsViewWithTabSnapshotsAndFavicons:
+            (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons
+                                                             size:(NSUInteger)
+                                                                      size {
+  _tabSnapshotsAndFavicons = tabSnapshotsAndFavicons;
   _tabGroupTabNumber = size;
   if (!_isCell && (size == 1)) {
     _singleView.hidden = NO;
     _firstLine.hidden = YES;
     _secondLine.hidden = YES;
-    [_singleView configureWithSnapshot:_tabGroupInfos.firstObject.snapshot
-                               favicon:_tabGroupInfos.firstObject.favicon];
+    [_singleView
+        configureWithSnapshot:_tabSnapshotsAndFavicons.firstObject.snapshot
+                      favicon:_tabSnapshotsAndFavicons.firstObject.favicon];
   } else {
     _singleView.hidden = YES;
     _firstLine.hidden = NO;
@@ -183,29 +189,31 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 }
 
 - (void)updateViews {
-  NSRange snapshotsViewRange =
-      [self computedRangeStartIndex:0
-           lengthWithoutLastElement:([self compactHeight]
-                                         ? MIN(1, [_tabGroupInfos count])
-                                         : MIN(3, [_tabGroupInfos count]))];
+  NSRange snapshotsViewRange = [self
+       computedRangeStartIndex:0
+      lengthWithoutLastElement:([self compactHeight]
+                                    ? MIN(1, [_tabSnapshotsAndFavicons count])
+                                    : MIN(3,
+                                          [_tabSnapshotsAndFavicons count]))];
   NSRange faviconsViewRange =
       [self computedRangeStartIndex:NSMaxRange(snapshotsViewRange)
-           lengthWithoutLastElement:MIN(3, [_tabGroupInfos count] -
+           lengthWithoutLastElement:MIN(3, [_tabSnapshotsAndFavicons count] -
                                                NSMaxRange(snapshotsViewRange))];
 
   _secondLine.hidden = [self compactHeight];
 
   NSUInteger index = snapshotsViewRange.location;
   for (GroupTabView* view in [self allGroupTabViews]) {
-    if (index >= [_tabGroupInfos count]) {
+    if (index >= [_tabSnapshotsAndFavicons count]) {
       [view hideAllAttributes];
       continue;
     }
 
-    GroupTabInfo* tabGroupInfo = _tabGroupInfos[index];
+    TabSnapshotAndFavicon* tabSnapshotAndFavicon =
+        _tabSnapshotsAndFavicons[index];
     if (index < NSMaxRange(snapshotsViewRange)) {
-      [view configureWithSnapshot:tabGroupInfo.snapshot
-                          favicon:tabGroupInfo.favicon];
+      [view configureWithSnapshot:tabSnapshotAndFavicon.snapshot
+                          favicon:tabSnapshotAndFavicon.favicon];
     } else if (index < _tabGroupTabNumber) {
       NSMutableArray<UIImage*>* faviconImages =
           [self faviconsFromRange:faviconsViewRange];

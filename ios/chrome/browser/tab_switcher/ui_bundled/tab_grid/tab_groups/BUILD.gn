@@ -121,7 +121,6 @@ source_set("tab_group_creation") {
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:group_tab_info",
     "//ios/web/public",
   ]
 }
@@ -218,8 +217,8 @@ source_set("tab_group_creation_ui") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:group_tab_info",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
@@ -239,8 +238,8 @@ source_set("snapshots_view") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:group_tab_info",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",

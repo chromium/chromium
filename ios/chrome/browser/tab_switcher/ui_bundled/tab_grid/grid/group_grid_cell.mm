@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_snapshots_view.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -96,10 +97,10 @@ const CGFloat kTopBarLargeInset = 20;
     contentView.layer.masksToBounds = YES;
     [self setupTopBar];
     _groupSnapshotsView = [[TabGroupSnapshotsView alloc]
-        initWithTabGroupInfos:nil
-                         size:0
-                        light:self.theme == GridThemeLight
-                         cell:YES];
+        initWithTabSnapshotsAndFavicons:nil
+                                   size:0
+                                  light:self.theme == GridThemeLight
+                                   cell:YES];
     _groupSnapshotsView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _closeTapTargetButton =
@@ -276,12 +277,14 @@ const CGFloat kTopBarLargeInset = 20;
   }
 }
 
-- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
-                    totalTabsCount:(NSInteger)totalTabsCount {
-  CHECK_LE((int)groupTabInfos.count, totalTabsCount);
+- (void)configureWithSnapshotsAndFavicons:
+            (NSArray<TabSnapshotAndFavicon*>*)snapshotsAndFavicons
+                           totalTabsCount:(NSInteger)totalTabsCount {
+  CHECK_LE((int)snapshotsAndFavicons.count, totalTabsCount);
   [_groupSnapshotsView
-      configureTabGroupSnapshotsViewWithTabGroupInfos:groupTabInfos
-                                                 size:totalTabsCount];
+      configureTabGroupSnapshotsViewWithTabSnapshotsAndFavicons:
+          snapshotsAndFavicons
+                                                           size:totalTabsCount];
 }
 
 - (NSArray<UIView*>*)allGroupTabViews {

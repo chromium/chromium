@@ -10,8 +10,8 @@
 #import "base/memory/raw_ptr.h"
 
 class FaviconLoader;
-@class GroupTabInfo;
 @class TabGroupItem;
+@class TabSnapshotAndFavicon;
 class WebStateList;
 
 namespace web {
@@ -34,18 +34,19 @@ class TabSnapshotAndFaviconConfigurator {
   // and its associated `web_state_list` asynchronously.
   // The `completion` block is called once all information for the tabs
   // in the group has been fetched.
-  void FetchGroupTabInfoForTabGroupItem(
+  void FetchSnapshotAndFaviconForTabGroupItem(
       TabGroupItem* group_item,
       WebStateList* web_state_list,
-      void (^completion)(TabGroupItem* item,
-                         NSArray<GroupTabInfo*>* tab_infos));
+      void (^completion)(
+          TabGroupItem* item,
+          NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons));
 
   // Fetches the snapshot and favicon for a single `web_state` asynchronously.
   // The `completion` block is called once the information for the web state
   // has been fetched.
-  void FetchSingleGroupTabInfoFromWebState(
+  void FetchSingleSnapshotAndFaviconFromWebState(
       web::WebState* web_state,
-      void (^completion)(GroupTabInfo* tab_info));
+      void (^completion)(TabSnapshotAndFavicon* tab_snapshot_and_favicon));
 
   // TODO(crbug.com/400966281): Add function to fetch snapshot and favicon for
   // TabSwitcherItem.
@@ -53,28 +54,32 @@ class TabSnapshotAndFaviconConfigurator {
  private:
   // Initiates the asynchronous fetching of a snapshot and favicon for a
   // single `web_state` belonging to a `tab_group_item`.
-  void FetchGroupTabInfoFromWebState(
+  void FetchSnapshotAndFaviconFromWebState(
       TabGroupItem* group_item,
       web::WebState* web_state,
-      NSMutableDictionary<NSNumber*, GroupTabInfo*>* tab_group_infos,
+      NSMutableDictionary<NSNumber*, TabSnapshotAndFavicon*>*
+          tab_snapshots_and_favicons,
       NSUInteger request_index,
       NSUInteger number_of_requests,
       NSUUID* request_id,
-      void (^completion)(TabGroupItem* item,
-                         NSArray<GroupTabInfo*>* tab_infos));
+      void (^completion)(
+          TabGroupItem* item,
+          NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons));
 
-  // Called when the snapshot and/or favicon for a single web state has been
-  // fetched. Checks if all information has been collected and calls
-  // the `completion` block.
-  void OnGroupTabInfoFromWebStateFetched(
+  // Called when the snapshot and/or favicon for a web state has been  fetched.
+  // Checks if all information has been collected and calls the `completion`
+  // block.
+  void OnSnapshotAndFaviconFromWebStateFetched(
       TabGroupItem* group_item,
-      GroupTabInfo* tab_info,
-      NSMutableDictionary<NSNumber*, GroupTabInfo*>* tab_group_infos,
+      TabSnapshotAndFavicon* tab_snapshot_and_favicon,
+      NSMutableDictionary<NSNumber*, TabSnapshotAndFavicon*>*
+          tab_snapshots_and_favicons,
       NSUInteger request_index,
       NSUInteger number_of_requests,
       NSUUID* request_id,
-      void (^completion)(TabGroupItem* item,
-                         NSArray<GroupTabInfo*>* tab_infos));
+      void (^completion)(
+          TabGroupItem* item,
+          NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons));
 
   raw_ptr<FaviconLoader> favicon_loader_ = nullptr;
 

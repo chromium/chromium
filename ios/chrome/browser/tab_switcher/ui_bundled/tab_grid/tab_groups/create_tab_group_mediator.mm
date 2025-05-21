@@ -24,10 +24,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon_configurator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -46,8 +46,8 @@
   raw_ptr<WebStateList> _webStateList;
   // Tab group to edit.
   raw_ptr<const TabGroup> _tabGroup;
-  // Array of all pictures of the group.
-  NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
+  // Array of all snapshots and favicons of the group.
+  NSMutableArray<TabSnapshotAndFavicon*>* _tabSnapshotsAndFavicons;
   // Item to fetch pictures.
   TabGroupItem* _groupItem;
   // Helper class to configure tab item images.
@@ -88,7 +88,7 @@
     ProfileIOS* profile = browser->GetProfile();
     BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
-    _tabGroupInfos = [[NSMutableArray alloc] init];
+    _tabSnapshotsAndFavicons = [[NSMutableArray alloc] init];
 
     NSUInteger numberOfRequestedImages = 0;
     for (web::WebStateID identifier : identifiers) {
@@ -116,9 +116,10 @@
       }
 
       __weak CreateTabGroupMediator* weakSelf = self;
-      _tabImagesConfigurator->FetchSingleGroupTabInfoFromWebState(
-          currentWebStateList->GetWebStateAt(index), ^(GroupTabInfo* info) {
-            [weakSelf addInfo:info];
+      _tabImagesConfigurator->FetchSingleSnapshotAndFaviconFromWebState(
+          currentWebStateList->GetWebStateAt(index),
+          ^(TabSnapshotAndFavicon* tabSnapshotAndFavicon) {
+            [weakSelf addTabSnapshotAndFavicon:tabSnapshotAndFavicon];
             [weakSelf updateConsumer];
           });
       numberOfRequestedImages++;
@@ -155,10 +156,11 @@
         std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
 
     __weak CreateTabGroupMediator* weakSelf = self;
-    _tabImagesConfigurator->FetchGroupTabInfoForTabGroupItem(
+    _tabImagesConfigurator->FetchSnapshotAndFaviconForTabGroupItem(
         _groupItem, _webStateList,
-        ^(TabGroupItem* item, NSArray<GroupTabInfo*>* groupTabInfos) {
-          [weakSelf setGroupTabInfos:groupTabInfos];
+        ^(TabGroupItem* item,
+          NSArray<TabSnapshotAndFavicon*>* tabSnapshotsAndFavicons) {
+          [weakSelf setTabSnapshotsAndFavicons:tabSnapshotsAndFavicons];
           [weakSelf updateConsumer];
         });
 
@@ -260,14 +262,16 @@
 
 #pragma mark - Private helpers
 
-// Adds the given info to the GroupTabInfo array.
-- (void)addInfo:(GroupTabInfo*)info {
-  [_tabGroupInfos addObject:info];
+// Adds the given `tabSnapshotAndFavicon` to the GroupTabInfo array.
+- (void)addTabSnapshotAndFavicon:(TabSnapshotAndFavicon*)tabSnapshotAndFavicon {
+  [_tabSnapshotsAndFavicons addObject:tabSnapshotAndFavicon];
 }
 
-// Sets the GroupTabInfo array with `tabGroupInfos`.
-- (void)setGroupTabInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos {
-  _tabGroupInfos = [[NSMutableArray alloc] initWithArray:tabGroupInfos];
+// Sets the _tabSnapshotsAndFavicons array with `tabSnapshotsAndFavicons`.
+- (void)setTabSnapshotsAndFavicons:
+    (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons {
+  _tabSnapshotsAndFavicons =
+      [[NSMutableArray alloc] initWithArray:tabSnapshotsAndFavicons];
 }
 
 // Sends to the consumer the needed pictures and the number of items to display
@@ -275,8 +279,8 @@
 - (void)updateConsumer {
   NSInteger numberOfItem =
       _tabGroup ? _tabGroup->range().count() : _identifiers.size();
-  [_consumer setTabGroupInfos:_tabGroupInfos
-        numberOfSelectedItems:numberOfItem];
+  [_consumer setTabSnapshotsAndFavicons:_tabSnapshotsAndFavicons
+                  numberOfSelectedItems:numberOfItem];
 }
 
 @end

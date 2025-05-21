@@ -2013,7 +2013,8 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 }
 
 - (void)fetchTabGroupItemInfo:(TabGroupItem*)tabGroupItem
-                   completion:(GroupTabInfosFetchingCompletionBlock)completion {
+                   completion:
+                       (GroupTabSnapshotAndFaviconCompletionBlock)completion {
   WebStateList* webStateList = self.webStateList;
   // If this is called during a search result, it may contain items from other
   // windows or from the inactive browser.
@@ -2028,7 +2029,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     }
     webStateList = browser->GetWebStateList();
   }
-  _tabImagesConfigurator->FetchGroupTabInfoForTabGroupItem(
+  _tabImagesConfigurator->FetchSnapshotAndFaviconForTabGroupItem(
       tabGroupItem, webStateList, completion);
 }
 

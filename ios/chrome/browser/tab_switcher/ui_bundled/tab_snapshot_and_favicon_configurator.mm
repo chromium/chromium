@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/item_utils.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -42,10 +42,12 @@ TabSnapshotAndFaviconConfigurator::TabSnapshotAndFaviconConfigurator(
 
 TabSnapshotAndFaviconConfigurator::~TabSnapshotAndFaviconConfigurator() {}
 
-void TabSnapshotAndFaviconConfigurator::FetchGroupTabInfoForTabGroupItem(
+void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconForTabGroupItem(
     TabGroupItem* group_item,
     WebStateList* web_state_list,
-    void (^completion)(TabGroupItem* item, NSArray<GroupTabInfo*>* tab_infos)) {
+    void (^completion)(
+        TabGroupItem* item,
+        NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons)) {
   const TabGroup* tab_group = group_item.tabGroup;
   if (!tab_group || !web_state_list) {
     completion(group_item, nil);
@@ -57,7 +59,7 @@ void TabSnapshotAndFaviconConfigurator::FetchGroupTabInfoForTabGroupItem(
   group_item_fetches_[TabGroupIdentifierKeyforTabGroupItem(group_item)] =
       request_id;
 
-  NSMutableDictionary<NSNumber*, GroupTabInfo*>* tab_group_infos =
+  NSMutableDictionary<NSNumber*, TabSnapshotAndFavicon*>* tab_group_infos =
       [[NSMutableDictionary alloc] init];
   NSUInteger first_index = tab_group->range().range_begin();
   NSUInteger number_of_requests = MIN(7, tab_group->range().count());
@@ -67,24 +69,26 @@ void TabSnapshotAndFaviconConfigurator::FetchGroupTabInfoForTabGroupItem(
     web::WebState* web_state =
         web_state_list->GetWebStateAt(first_index + request_index);
     CHECK(web_state);
-    FetchGroupTabInfoFromWebState(group_item, web_state, tab_group_infos,
-                                  request_index, number_of_requests, request_id,
-                                  completion);
+    FetchSnapshotAndFaviconFromWebState(group_item, web_state, tab_group_infos,
+                                        request_index, number_of_requests,
+                                        request_id, completion);
   }
 }
 
-void TabSnapshotAndFaviconConfigurator::FetchSingleGroupTabInfoFromWebState(
-    web::WebState* web_state,
-    void (^completion)(GroupTabInfo* tab_info)) {
+void TabSnapshotAndFaviconConfigurator::
+    FetchSingleSnapshotAndFaviconFromWebState(
+        web::WebState* web_state,
+        void (^completion)(TabSnapshotAndFavicon* tab_snapshot_and_favicon)) {
   auto inner_completion =
-      ^(TabGroupItem* item, NSArray<GroupTabInfo*>* tab_infos) {
-        CHECK(tab_infos.count == 1);
-        completion([tab_infos firstObject]);
+      ^(TabGroupItem* item,
+        NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons) {
+        CHECK(tab_snapshots_and_favicons.count == 1);
+        completion([tab_snapshots_and_favicons firstObject]);
       };
 
   // For single tab fetches, we don't track them in `group_item_fetches_`
   // as they are not associated with a TabGroupItem that can be re-fetched.
-  FetchGroupTabInfoFromWebState(
+  FetchSnapshotAndFaviconFromWebState(
       /*group_item=*/nil, web_state,
       /*tab_group_infos=*/[[NSMutableDictionary alloc] init],
       /*request_index=*/0, /*number_of_requests=*/1, /*request_id=*/nil,
@@ -93,26 +97,29 @@ void TabSnapshotAndFaviconConfigurator::FetchSingleGroupTabInfoFromWebState(
 
 #pragma mark - Private
 
-void TabSnapshotAndFaviconConfigurator::FetchGroupTabInfoFromWebState(
+void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconFromWebState(
     TabGroupItem* group_item,
     web::WebState* web_state,
-    NSMutableDictionary<NSNumber*, GroupTabInfo*>* tab_group_infos,
+    NSMutableDictionary<NSNumber*, TabSnapshotAndFavicon*>* tab_group_infos,
     NSUInteger request_index,
     NSUInteger number_of_requests,
     NSUUID* request_id,
-    void (^completion)(TabGroupItem* item, NSArray<GroupTabInfo*>* tab_infos)) {
-  GroupTabInfo* tab_info = [[GroupTabInfo alloc] init];
+    void (^completion)(
+        TabGroupItem* item,
+        NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons)) {
+  TabSnapshotAndFavicon* tab_snapshot_and_favicon =
+      [[TabSnapshotAndFavicon alloc] init];
 
   // Fetch the snapshot.
   SnapshotTabHelper::FromWebState(web_state)->RetrieveColorSnapshot(
       ^(UIImage* snapshot) {
         // If there is no available snapshot, configure the snapshot to be an
-        // empty image in order to pass `OnGroupTabInfoFromWebStateFetched`
-        // checks.
-        tab_info.snapshot = snapshot ?: [[UIImage alloc] init];
-        OnGroupTabInfoFromWebStateFetched(group_item, tab_info, tab_group_infos,
-                                          request_index, number_of_requests,
-                                          request_id, completion);
+        // empty image in order to pass
+        // `OnSnapshotAndFaviconFromWebStateFetched` checks.
+        tab_snapshot_and_favicon.snapshot = snapshot ?: [[UIImage alloc] init];
+        OnSnapshotAndFaviconFromWebStateFetched(
+            group_item, tab_snapshot_and_favicon, tab_group_infos,
+            request_index, number_of_requests, request_id, completion);
       });
 
   UIImageConfiguration* configuration = [UIImageSymbolConfiguration
@@ -123,11 +130,11 @@ void TabSnapshotAndFaviconConfigurator::FetchGroupTabInfoFromWebState(
 
   // Set the NTP favicon.
   if (IsUrlNtp(url)) {
-    tab_info.favicon =
+    tab_snapshot_and_favicon.favicon =
         CustomSymbolWithConfiguration(kChromeProductSymbol, configuration);
-    OnGroupTabInfoFromWebStateFetched(group_item, tab_info, tab_group_infos,
-                                      request_index, number_of_requests,
-                                      request_id, completion);
+    OnSnapshotAndFaviconFromWebStateFetched(
+        group_item, tab_snapshot_and_favicon, tab_group_infos, request_index,
+        number_of_requests, request_id, completion);
     return;
   }
 
@@ -135,10 +142,10 @@ void TabSnapshotAndFaviconConfigurator::FetchGroupTabInfoFromWebState(
   UIImage* default_favicon =
       DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
   if (!favicon_loader_) {
-    tab_info.favicon = default_favicon;
-    OnGroupTabInfoFromWebStateFetched(group_item, tab_info, tab_group_infos,
-                                      request_index, number_of_requests,
-                                      request_id, completion);
+    tab_snapshot_and_favicon.favicon = default_favicon;
+    OnSnapshotAndFaviconFromWebStateFetched(
+        group_item, tab_snapshot_and_favicon, tab_group_infos, request_index,
+        number_of_requests, request_id, completion);
     return;
   }
 
@@ -152,26 +159,28 @@ void TabSnapshotAndFaviconConfigurator::FetchGroupTabInfoFromWebState(
         }
         // Asynchronously returned favicon.
         if (attributes.faviconImage) {
-          tab_info.favicon = attributes.faviconImage;
+          tab_snapshot_and_favicon.favicon = attributes.faviconImage;
         } else {
-          tab_info.favicon = default_favicon;
+          tab_snapshot_and_favicon.favicon = default_favicon;
         }
-        OnGroupTabInfoFromWebStateFetched(group_item, tab_info, tab_group_infos,
-                                          request_index, number_of_requests,
-                                          request_id, completion);
+        OnSnapshotAndFaviconFromWebStateFetched(
+            group_item, tab_snapshot_and_favicon, tab_group_infos,
+            request_index, number_of_requests, request_id, completion);
       });
 }
 
-void TabSnapshotAndFaviconConfigurator::OnGroupTabInfoFromWebStateFetched(
+void TabSnapshotAndFaviconConfigurator::OnSnapshotAndFaviconFromWebStateFetched(
     TabGroupItem* group_item,
-    GroupTabInfo* tab_info,
-    NSMutableDictionary<NSNumber*, GroupTabInfo*>* tab_group_infos,
+    TabSnapshotAndFavicon* tab_snapshot_and_favicon,
+    NSMutableDictionary<NSNumber*, TabSnapshotAndFavicon*>* tab_group_infos,
     NSUInteger request_index,
     NSUInteger number_of_requests,
     NSUUID* request_id,
-    void (^completion)(TabGroupItem* item, NSArray<GroupTabInfo*>* tab_infos)) {
+    void (^completion)(
+        TabGroupItem* item,
+        NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons)) {
   // Check if all data have been fetched before proceeding.
-  if (!tab_info.snapshot || !tab_info.favicon) {
+  if (!tab_snapshot_and_favicon.snapshot || !tab_snapshot_and_favicon.favicon) {
     return;
   }
 
@@ -188,7 +197,7 @@ void TabSnapshotAndFaviconConfigurator::OnGroupTabInfoFromWebStateFetched(
     return;
   }
 
-  tab_group_infos[@(request_index)] = tab_info;
+  tab_group_infos[@(request_index)] = tab_snapshot_and_favicon;
   if (tab_group_infos.count != number_of_requests) {
     return;
   }

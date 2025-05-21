@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -28,13 +28,15 @@ std::unique_ptr<KeyedService> BuildTestFaviconLoader(
   return std::make_unique<TestFaviconLoader>();
 }
 
-// Checks that the `GroupTabInfo` in `group_infos` are correctly populated.
-void CheckGroupTabInfos(NSArray<GroupTabInfo*>* group_infos,
-                        int expected_count) {
-  ASSERT_EQ((int)group_infos.count, expected_count);
-  for (GroupTabInfo* info in group_infos) {
-    ASSERT_TRUE(info.favicon);
-    ASSERT_TRUE(info.snapshot);
+// Checks that the `TabSnapshotAndFavicon` in `tab_snapshots_and_favicons` are
+// correctly populated.
+void CheckTabSnapshotsAndFavicons(
+    NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons,
+    int expected_count) {
+  ASSERT_EQ((int)tab_snapshots_and_favicons.count, expected_count);
+  for (TabSnapshotAndFavicon* tab in tab_snapshots_and_favicons) {
+    ASSERT_TRUE(tab.favicon);
+    ASSERT_TRUE(tab.snapshot);
   }
 }
 
@@ -97,17 +99,18 @@ class TabSnapshotAndFaviconConfiguratorTest : public PlatformTest {
   std::unique_ptr<TabSnapshotAndFaviconConfigurator> _configurator;
 };
 
-// Tests the default use case of `FetchGroupTabInfoForTabGroupItem:`.
+// Tests the default use case of `FetchSnapshotAndFaviconForTabGroupItem:`.
 TEST_F(TabSnapshotAndFaviconConfiguratorTest,
-       FetchGroupTabInfoForTabGroupItem) {
+       FetchSnapshotAndFaviconForTabGroupItem) {
   __block BOOL completion_block_called = NO;
   auto completion_block =
-      ^(TabGroupItem* inner_item, NSArray<GroupTabInfo*>* group_tab_infos) {
-        ASSERT_EQ(inner_item, tab_group_item_);
-        CheckGroupTabInfos(group_tab_infos, 2);
+      ^(TabGroupItem* item,
+        NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons) {
+        ASSERT_EQ(item, tab_group_item_);
+        CheckTabSnapshotsAndFavicons(tab_snapshots_and_favicons, 2);
         completion_block_called = YES;
       };
-  _configurator->FetchGroupTabInfoForTabGroupItem(
+  _configurator->FetchSnapshotAndFaviconForTabGroupItem(
       tab_group_item_, web_state_list_, completion_block);
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
@@ -115,15 +118,15 @@ TEST_F(TabSnapshotAndFaviconConfiguratorTest,
       }));
 }
 
-// Tests the default use case of `FetchSingleGroupTabInfoFromWebState:`.
+// Tests the default use case of `FetchSingleSnapshotAndFaviconFromWebState:`.
 TEST_F(TabSnapshotAndFaviconConfiguratorTest,
-       FetchSingleGroupTabInfoFromWebState) {
+       FetchSingleSnapshotAndFaviconFromWebState) {
   __block BOOL completion_block_called = NO;
-  auto completion_block = ^(GroupTabInfo* tab_info) {
-    CheckGroupTabInfos(@[ tab_info ], 1);
+  auto completion_block = ^(TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
+    CheckTabSnapshotsAndFavicons(@[ tab_snapshot_and_favicon ], 1);
     completion_block_called = YES;
   };
-  _configurator->FetchSingleGroupTabInfoFromWebState(
+  _configurator->FetchSingleSnapshotAndFaviconFromWebState(
       web_state_list_->GetWebStateAt(0), completion_block);
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {

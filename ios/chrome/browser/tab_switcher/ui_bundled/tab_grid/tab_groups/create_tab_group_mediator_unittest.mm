@@ -21,8 +21,9 @@
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color {
 }
 
-- (void)setTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
-    numberOfSelectedItems:(NSInteger)numberOfSelectedItems {
+- (void)setTabSnapshotsAndFavicons:
+            (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons
+             numberOfSelectedItems:(NSInteger)numberOfSelectedItems {
 }
 
 - (void)setGroupTitle:(NSString*)title {

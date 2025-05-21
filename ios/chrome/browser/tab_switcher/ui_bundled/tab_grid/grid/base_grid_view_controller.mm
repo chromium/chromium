@@ -1649,9 +1649,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 // Configures `groupCell`'s identifier and title synchronously, and pass the
-// list of `GroupTabInfo`asynchronously with information from `item`. Updates
-// the `cell`'s theme to this view controller's theme. This view controller
-// becomes the delegate for the cell.
+// list of `TabSnapshotAndFavicon` asynchronously with information from `item`.
+// Updates the `cell`'s theme to this view controller's theme. This view
+// controller becomes the delegate for the cell.
 - (void)configureGroupCell:(GroupGridCell*)cell
                   withItem:(TabGroupItem*)item
                    atIndex:(NSUInteger)index {
@@ -1682,11 +1682,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.activityLabelData =
       [self.gridProvider activityLabelDataForItem:groupItemIdentifier];
 
-  auto completionBlock = ^(TabGroupItem* innerItem,
-                           NSArray<GroupTabInfo*>* groupTabInfos) {
+  auto completionBlock = ^(
+      TabGroupItem* innerItem,
+      NSArray<TabSnapshotAndFavicon*>* tabSnapshotsAndFavicons) {
     if ([cell.itemIdentifier.tabGroupItem isEqual:innerItem]) {
-      [cell configureWithGroupTabInfos:groupTabInfos
-                        totalTabsCount:innerItem.numberOfTabsInGroup];
+      [cell configureWithSnapshotsAndFavicons:tabSnapshotsAndFavicons
+                               totalTabsCount:innerItem.numberOfTabsInGroup];
     }
   };
   [self.gridProvider fetchTabGroupItemInfo:item completion:completionBlock];
