@@ -1053,8 +1053,11 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     output_dst.copy_prefix_from(config_data_);
     output_dst = output_dst.subspan(config_size);
   }
-  output_dst.copy_prefix_from(out_buffer_data.subspan(
-      static_cast<size_t>(mc_buffer_info.offset), mc_buffer_size));
+
+  // `AMediaCodec_getOutputBuffer()` called from
+  // `NdkMediaCodecWrapper::GetOutputBuffer`, already took `mc_buffer_info.offset`
+  // into account, and we don't need to do it again here.
+  output_dst.copy_prefix_from(out_buffer_data.first(mc_buffer_size));
 
   auto timestamp = RetrieveRealTimestamp(
       base::Microseconds(mc_buffer_info.presentationTimeUs));
