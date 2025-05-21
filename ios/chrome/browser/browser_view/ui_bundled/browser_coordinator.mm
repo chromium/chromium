@@ -287,6 +287,7 @@
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
+#import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
@@ -695,6 +696,9 @@ enum class ToolbarKind {
 
   // The coordinator for GLIC related logic.
   GLICCoordinator* _glicCoordinator;
+
+  // The coordinator for the Search What You See promo.
+  SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -900,6 +904,7 @@ enum class ToolbarKind {
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissAutoDeletionActionSheet];
+  [self dismissSearchWhatYouSeePromo];
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
@@ -1712,6 +1717,7 @@ enum class ToolbarKind {
   [self dismissAutoDeletionActionSheet];
   [self hideGoogleOne];
   [self stopTrustedVaultReauthentication];
+  [self dismissSearchWhatYouSeePromo];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2430,6 +2436,19 @@ enum class ToolbarKind {
 - (void)dismissEnhancedSafeBrowsingPromo {
   [_enhancedSafeBrowsingPromoCoordinator stop];
   _enhancedSafeBrowsingPromoCoordinator = nil;
+}
+
+- (void)showSearchWhatYouSeePromo {
+  [_searchWhatYouSeePromoCoordinator stop];
+  _searchWhatYouSeePromoCoordinator = [[SearchWhatYouSeePromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [_searchWhatYouSeePromoCoordinator start];
+}
+
+- (void)dismissSearchWhatYouSeePromo {
+  [_searchWhatYouSeePromoCoordinator stop];
+  _searchWhatYouSeePromoCoordinator = nil;
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

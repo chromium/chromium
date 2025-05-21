@@ -1,0 +1,77 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
+
+#import "base/notreached.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_view_controller.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+
+@interface SearchWhatYouSeePromoCoordinator () <
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate>
+@end
+
+@implementation SearchWhatYouSeePromoCoordinator {
+  SearchWhatYouSeePromoViewController* _viewController;
+}
+
+#pragma mark - ChromeCoordinator
+
+- (void)start {
+  _viewController = [[SearchWhatYouSeePromoViewController alloc] init];
+  _viewController.actionHandler = self;
+
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
+  navigationController.presentationController.delegate = self;
+}
+
+- (void)stop {
+  _viewController.actionHandler = nil;
+
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+
+  _viewController = nil;
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  NOTREACHED();
+}
+
+- (void)confirmationAlertSecondaryAction {
+  // TODO(crbug.com/418750898): Present the 'Show me how' steps.
+}
+
+- (void)confirmationAlertDismissAction {
+  [self dismiss];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self dismiss];
+}
+
+#pragma mark - Private methods
+
+// Sends a command that will stop this coordinator and dismiss the promo.
+- (void)dismiss {
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [handler dismissSearchWhatYouSeePromo];
+}
+
+@end

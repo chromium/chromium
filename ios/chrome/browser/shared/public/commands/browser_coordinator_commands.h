@@ -110,6 +110,10 @@ class GURL;
 - (void)showEnhancedSafeBrowsingPromo;
 - (void)dismissEnhancedSafeBrowsingPromo;
 
+// Shows and dismisses the Search What You See promo.
+- (void)showSearchWhatYouSeePromo;
+- (void)dismissSearchWhatYouSeePromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_
