@@ -28,6 +28,7 @@ class BookmarksSidePanelCoordinator;
 class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
 class SidePanelUI;
+class TabMenuModelDelegate;
 class TabSearchToolbarButtonController;
 class TabStripModel;
 class TranslateBubbleController;
@@ -224,6 +225,10 @@ class BrowserWindowFeatures {
     return cookie_controls_bubble_coordinator_.get();
   }
 
+  TabMenuModelDelegate* tab_menu_model_delegate() {
+    return tab_menu_model_delegate_.get();
+  }
+
   // Only fetch the tab_strip_service to register a pending receiver.
   TabStripServiceRegister* tab_strip_service() {
     return tab_strip_service_.get();
@@ -313,6 +318,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<CookieControlsBubbleCoordinator>
       cookie_controls_bubble_coordinator_;
+
+  std::unique_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceRegister> tab_strip_service_;

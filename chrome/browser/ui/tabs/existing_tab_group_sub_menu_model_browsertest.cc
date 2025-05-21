@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -17,6 +18,14 @@
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
+
+namespace {
+std::unique_ptr<TabMenuModelDelegate> CreateTabMenuModelDelegate(
+    Browser* browser) {
+  return std::make_unique<chrome::BrowserTabMenuModelDelegate>(
+      browser->session_id(), browser->profile(), browser->app_controller());
+}
+}  // namespace
 
 class ExistingTabGroupSubMenuModelTest : public InProcessBrowserTest {
  public:
@@ -162,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
   EXPECT_EQ(model_2->count(), 4);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =
-      std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser);
+      CreateTabMenuModelDelegate(new_browser);
 
   // First tabs of each model consists of a tab group.
   model_1->AddToNewGroup({0});
@@ -233,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
   ASSERT_EQ(model_2->group_model()->ListTabGroups().size(), 0U);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =
-      std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser);
+      CreateTabMenuModelDelegate(new_browser);
 
   ExistingTabGroupSubMenuModel menu_1(nullptr, delegate_1.get(), model_1, 1);
   ExistingTabGroupSubMenuModel menu_2(nullptr, delegate_1.get(), model_2, 0);
@@ -318,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
   EXPECT_EQ(model_2->count(), 5);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =
-      std::make_unique<chrome::BrowserTabMenuModelDelegate>(browser_2);
+      CreateTabMenuModelDelegate(browser_2);
   ExistingTabGroupSubMenuModel menu_1(nullptr, delegate_1.get(), model_2, 0);
 
   // Move the selected tabs from Window 2 to the group in Window 1.

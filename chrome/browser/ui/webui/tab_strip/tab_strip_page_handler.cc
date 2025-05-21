@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -119,7 +120,7 @@ class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
                       const ui::AcceleratorProvider* accelerator_provider,
                       int tab_index)
       : TabMenuModel(this,
-                     browser->tab_menu_model_delegate(),
+                     browser->GetFeatures().tab_menu_model_delegate(),
                      browser->tab_strip_model(),
                      tab_index),
         browser_(browser),

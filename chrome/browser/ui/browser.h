@@ -81,7 +81,6 @@ class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 class StatusBubble;
 class TabStripModelDelegate;
-class TabMenuModelDelegate;
 
 namespace tabs {
 class TabInterface;
@@ -489,11 +488,6 @@ class Browser : public TabStripModelObserver,
   // Never nullptr.
   TabStripModelDelegate* tab_strip_model_delegate() const {
     return tab_strip_model_delegate_.get();
-  }
-
-  // Never nullptr.
-  TabMenuModelDelegate* tab_menu_model_delegate() const {
-    return tab_menu_model_delegate_.get();
   }
 
   BrowserActions* browser_actions() const { return browser_actions_.get(); }
@@ -1375,8 +1369,6 @@ class Browser : public TabStripModelObserver,
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;
-
-  std::unique_ptr<TabMenuModelDelegate> const tab_menu_model_delegate_;
 
   // The application name that is also the name of the window to the shell.
   // This name should be set when:

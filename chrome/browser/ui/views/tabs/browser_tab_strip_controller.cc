@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -144,7 +145,10 @@ class BrowserTabStripController::TabContextMenuContents
   TabContextMenuContents(Tab* tab, BrowserTabStripController* controller)
       : tab_(tab), controller_(controller) {
     model_ = controller_->menu_model_factory_->Create(
-        this, controller->browser()->tab_menu_model_delegate(),
+        this,
+        controller->GetBrowserWindowInterface()
+            ->GetFeatures()
+            .tab_menu_model_delegate(),
         controller->model_,
         controller->tabstrip_->GetModelIndexOf(tab).value());
 
