@@ -1832,7 +1832,7 @@
       prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);
   BOOL magicStackEnabled =
       prefService->GetBoolean(prefs::kHomeCustomizationMagicStackEnabled);
-  BOOL feedEnabled = prefService->GetBoolean(prefs::kArticlesForYouEnabled);
+  BOOL feedEnabled = [self.NTPMediator isFeedHeaderVisible];
 
   // All components enabled/disabled.
   if (MVTEnabled && magicStackEnabled && feedEnabled) {

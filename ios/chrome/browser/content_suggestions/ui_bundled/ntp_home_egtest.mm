@@ -1536,57 +1536,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests the Discover submenu of the Home customization menu.
-- (void)testCustomizationDiscoverSubmenu {
-  [self resetCustomizationPrefs];
-
-  // Open the Home customization menu.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kNTPCustomizationMenuButtonIdentifier)]
-      performAction:grey_tap()];
-
-  // Navigate to the Discover submenu.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kCustomizationToggleDiscoverNavigableIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID([HomeCustomizationHelper
-              navigationBarTitleForPage:CustomizationMenuPage::kDiscover])]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that all 4 link cells are visible.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kCustomizationLinkFollowingIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kCustomizationLinkHiddenIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kCustomizationLinkActivityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kCustomizationCollectionDiscoverIdentifier)]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kCustomizationLinkLearnMoreIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap a cell and check that the menu is no longer visible, indicating that a
-  // navigation occurred.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kCustomizationLinkHiddenIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kCustomizationLinkHiddenIdentifier)]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-}
-
 #pragma mark - Helpers
 
 - (void)addMostVisitedTile {

@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator+Testing.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
@@ -26,6 +27,7 @@ class HomeCustomizationCoordinatorUnitTest : public PlatformTest {
   void SetUp() override {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
     base_view_controller_ = [[UIViewController alloc] init];
 
     coordinator_ = [[HomeCustomizationCoordinator alloc]

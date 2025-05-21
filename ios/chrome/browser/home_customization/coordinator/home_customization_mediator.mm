@@ -11,6 +11,8 @@
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
@@ -27,12 +29,18 @@
 @implementation HomeCustomizationMediator {
   // Pref service to handle preference changes.
   raw_ptr<PrefService> _prefService;
+  // Browser agent to be notified of Discover eligibility.
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+      _discoverFeedVisibilityBrowserAgent;
 }
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    discoverFeedVisibilityBrowserAgent:(DiscoverFeedVisibilityBrowserAgent*)
+                                           discoverFeedVisibilityBrowserAgent {
   self = [super init];
   if (self) {
     _prefService = prefService;
+    _discoverFeedVisibilityBrowserAgent = discoverFeedVisibilityBrowserAgent;
   }
   return self;
 }
@@ -45,9 +53,13 @@
        [self isModuleEnabledForType:CustomizationToggleType::kMostVisited]},
       {CustomizationToggleType::kMagicStack,
        [self isModuleEnabledForType:CustomizationToggleType::kMagicStack]},
-      {CustomizationToggleType::kDiscover,
-       [self isModuleEnabledForType:CustomizationToggleType::kDiscover]},
   };
+  if (_discoverFeedVisibilityBrowserAgent->GetEligibility() ==
+      DiscoverFeedEligibility::kEligible) {
+    toggleMap.insert(
+        {CustomizationToggleType::kDiscover,
+         [self isModuleEnabledForType:CustomizationToggleType::kDiscover]});
+  }
   [self.mainPageConsumer populateToggles:toggleMap];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
@@ -117,7 +129,7 @@
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackEnabled);
     case CustomizationToggleType::kDiscover:
-      return _prefService->GetBoolean(prefs::kArticlesForYouEnabled);
+      return _discoverFeedVisibilityBrowserAgent->IsEnabled();
     default:
       NOTREACHED();
   }
@@ -176,7 +188,7 @@
                                enabled);
       break;
     case CustomizationToggleType::kDiscover:
-      _prefService->SetBoolean(prefs::kArticlesForYouEnabled, enabled);
+      _discoverFeedVisibilityBrowserAgent->SetEnabled(enabled);
       break;
 
     // Magic Stack page toggles.

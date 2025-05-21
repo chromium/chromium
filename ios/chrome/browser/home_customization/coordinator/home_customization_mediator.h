@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 
+class DiscoverFeedVisibilityBrowserAgent;
 @protocol HomeCustomizationDiscoverConsumer;
 @protocol HomeCustomizationMagicStackConsumer;
 @protocol HomeCustomizationMainConsumer;
@@ -20,6 +21,8 @@ class PrefService;
 
 // Initializes this mediator with a pref service.
 - (instancetype)initWithPrefService:(PrefService*)prefService
+    discoverFeedVisibilityBrowserAgent:
+        (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

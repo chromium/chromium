@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
@@ -72,7 +73,9 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (void)start {
   _mediator = [[HomeCustomizationMediator alloc]
-      initWithPrefService:self.profile->GetPrefs()];
+                     initWithPrefService:self.profile->GetPrefs()
+      discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
+                                             FromBrowser(self.browser)];
   _mediator.navigationDelegate = self;
 
   // The Customization menu consists of a stack of presenting view controllers.
