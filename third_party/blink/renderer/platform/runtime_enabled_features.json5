@@ -2886,7 +2886,7 @@
     },
     {
       name: "LayoutStretch",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "LazyInitializeMediaControls",
