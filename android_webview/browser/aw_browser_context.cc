@@ -600,6 +600,11 @@ void AwBrowserContext::ConfigureNetworkContextParams(
         aw_ipp_core_host->IsIpProtectionEnabled();
   }
 
+  if (base::FeatureList::IsEnabled(features::kWebViewQuicConnectionTimeout)) {
+    context_params->quic_idle_connection_timeout_seconds =
+        features::kWebViewQuicConnectionTimeoutSeconds.Get();
+  }
+
   // Add proxy settings
   AwProxyConfigMonitor::GetInstance()->AddProxyToNetworkContextParams(
       context_params);

@@ -632,6 +632,10 @@ struct NetworkContextParams {
   // the URLRequestContextOwner object in the NetworkContext.
   [EnableIf=is_android]
   bool stale_dns_enabled = false;
+
+  // Modifies the default value of the QUIC connection timeout, this value
+  // gets applied while constructing NetworkContext by updating the quic_params.
+  int64? quic_idle_connection_timeout_seconds;
 };
 
 struct NetworkConditions {

@@ -2906,6 +2906,11 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
 
   auto quic_context = std::make_unique<net::QuicContext>();
+  if (params_->quic_idle_connection_timeout_seconds &&
+      params_->quic_idle_connection_timeout_seconds.value() >= 0) {
+    quic_context->params()->idle_connection_timeout =
+        base::Seconds(params_->quic_idle_connection_timeout_seconds.value());
+  }
   network_session_configurator::ParseCommandLineAndFieldTrials(
       *base::CommandLine::ForCurrentProcess(), is_quic_force_disabled,
       &session_params, quic_context->params());

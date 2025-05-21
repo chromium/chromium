@@ -55,6 +55,8 @@ BASE_DECLARE_FEATURE(kWebViewInterceptedCookieHeader);
 BASE_DECLARE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite);
 BASE_DECLARE_FEATURE(kWebViewShortCircuitShouldInterceptRequest);
 BASE_DECLARE_FEATURE(kWebViewRecordAppCacheHistograms);
+BASE_DECLARE_FEATURE(kWebViewQuicConnectionTimeout);
+extern const base::FeatureParam<int> kWebViewQuicConnectionTimeoutSeconds;
 
 }  // namespace android_webview::features
 

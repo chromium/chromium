@@ -1058,6 +1058,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.RESTRICT_ABUSE_PORTS_ON_LOCALHOST,
                 "Used to restrict connections to specified ports on localhost."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_QUIC_CONNECTION_TIMEOUT,
+                "Enables updating the QUIC connection timeout to a value set by the"
+                        + " WebViewUpdateQuicConnectionTimeoutSeconds feature param."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

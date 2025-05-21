@@ -246,4 +246,14 @@ BASE_FEATURE(kWebViewRecordAppCacheHistograms,
              "WebViewRecordAppCacheHistograms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, WebView changes the default value of the QUIC connection
+// timeout, it uses the value in `WebViewUpdateQuicConnectionTimeoutSeconds`
+BASE_FEATURE(kWebViewQuicConnectionTimeout,
+             "WebViewQuicConnectionTimeout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A parameter to change the quic connection timeout value, this value is in
+// seconds.
+const base::FeatureParam<int> kWebViewQuicConnectionTimeoutSeconds{
+    &kWebViewQuicConnectionTimeout, "WebViewQuicConnectionTimeoutSeconds", 30};
 }  // namespace android_webview::features
