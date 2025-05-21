@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_H_
 
 #include <climits>
+#include <concepts>
 
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
@@ -1341,16 +1342,16 @@ void ShowNodePath(const blink::Node*);
 namespace cppgc {
 // Assign Node to be allocated on custom NodeSpace.
 template <typename T>
-struct SpaceTrait<T, std::enable_if_t<std::is_base_of<blink::Node, T>::value>> {
+  requires(std::derived_from<T, blink::Node>)
+struct SpaceTrait<T> {
   using Space = blink::NodeSpace;
 };
 }  // namespace cppgc
 
 namespace blink {
 template <typename T>
-struct ThreadingTrait<
-    T,
-    std::enable_if_t<std::is_base_of<blink::Node, T>::value>> {
+  requires(std::derived_from<T, blink::Node>)
+struct ThreadingTrait<T> {
   static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 }  // namespace blink

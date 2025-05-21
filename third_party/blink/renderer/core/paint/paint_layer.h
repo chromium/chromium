@@ -45,6 +45,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_H_
 
+#include <concepts>
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -879,9 +880,8 @@ CORE_EXPORT void ShowLayerTree(const blink::LayoutObject*);
 namespace cppgc {
 // Assign PaintLayer to be allocated on custom LayoutObjectSpace.
 template <typename T>
-struct SpaceTrait<
-    T,
-    std::enable_if_t<std::is_base_of<blink::PaintLayer, T>::value>> {
+  requires(std::derived_from<T, blink::PaintLayer>)
+struct SpaceTrait<T> {
   using Space = blink::LayoutObjectSpace;
 };
 }  // namespace cppgc

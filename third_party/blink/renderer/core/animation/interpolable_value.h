@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_VALUE_H_
 
 #include <array>
+#include <concepts>
 #include <memory>
 #include <utility>
 
@@ -85,9 +86,8 @@ class CORE_EXPORT InterpolableValue
 };
 
 template <typename T>
-struct ThreadingTrait<
-    T,
-    std::enable_if_t<std::is_base_of_v<InterpolableValue, T>>> {
+  requires(std::derived_from<T, InterpolableValue>)
+struct ThreadingTrait<T> {
   static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 

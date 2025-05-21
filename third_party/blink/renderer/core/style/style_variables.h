@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 
+#include <concepts>
 #include <iosfwd>
 #include <optional>
 
@@ -430,10 +431,8 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
                                      const StyleVariables& variables);
 
 template <typename T>
-struct ThreadingTrait<
-    T,
-    std::enable_if_t<
-        std::is_base_of<blink::HashTrieNode<CSSVariableData>, T>::value>> {
+  requires(std::derived_from<T, blink::HashTrieNode<CSSVariableData>>)
+struct ThreadingTrait<T> {
   static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 
