@@ -1778,17 +1778,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Viz.CreatePromiseImageResult" enum="CreatePromiseImageResult"
-    expires_after="2025-12-01">
-  <owner>hitawala@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    This is recorded each time SkiaRenderer attempts to create promise image
-    textures for the original image. The result captures success and failure
-    with a reason for the failure.
-  </summary>
-</histogram>
-
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
     expires_after="2025-07-13">
   <owner>petermcneeley@chromium.org</owner>

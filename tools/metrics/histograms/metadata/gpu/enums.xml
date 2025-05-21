@@ -161,16 +161,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FailedCreateTexture"/>
 </enum>
 
-<enum name="CreatePromiseImageResult">
-  <summary>Result of creating promise texture shared image</summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="FailedCreateRepresentation"/>
-  <int value="2" label="FailedMissingDisplayUsage"/>
-  <int value="3" label="FailedSizeMismatch"/>
-  <int value="4" label="FailedBeginReadAccess"/>
-  <int value="5" label="FailedYcbcrMismatch"/>
-</enum>
-
 <enum name="D3D11FeatureLevel">
   <int value="0" label="Unknown"/>
   <int value="1" label="No D3D11 DLL"/>

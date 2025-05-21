@@ -63,18 +63,6 @@ const char* CreateFallbackImageResultToString(
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class CreatePromiseImageResult {
-  kSuccess = 0,
-  kFailedCreateRepresentation = 1,
-  kFailedMissingDisplayUsage = 2,
-  kFailedSizeMismatch = 3,
-  kFailedBeginReadAccess = 4,
-  kFailedYcbcrMismatch = 5,
-  kMaxValue = kFailedYcbcrMismatch
-};
-
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
 bool DawnYCbCrVkDescriptorsAreCompatible(const wgpu::YCbCrVkDescriptor& left,
                                          const wgpu::YCbCrVkDescriptor& right) {
@@ -408,25 +396,18 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
     return true;
   }
 
-  CreatePromiseImageResult result = CreatePromiseImageResult::kSuccess;
-  absl::Cleanup record_results = [&result] {
-    base::UmaHistogramEnumeration("Viz.CreatePromiseImageResult", result);
-  };
-
   if (!representation_) {
     auto representation =
         representation_factory->ProduceSkia(mailbox(), context_state);
     if (!representation) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "mailbox not found in SharedImageManager.";
-      result = CreatePromiseImageResult::kFailedCreateRepresentation;
       return false;
     }
 
     if (!(representation->usage().Has(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ))) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "was not created with DISPLAY_READ usage.";
-      result = CreatePromiseImageResult::kFailedMissingDisplayUsage;
       return false;
     }
 
@@ -435,7 +416,6 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
                      "size does not match TransferableResource size: "
                   << representation->size().ToString() << " vs "
                   << size().ToString();
-      result = CreatePromiseImageResult::kFailedSizeMismatch;
       return false;
     }
 
@@ -448,7 +428,6 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
     representation_ = nullptr;
     DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                    "begin read access failed..";
-    result = CreatePromiseImageResult::kFailedBeginReadAccess;
     return false;
   }
 
@@ -480,7 +459,6 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
                                              fulfillment_texture_ycbcr_desc)) {
       graphite_ycbcr_info_mismatch_ = true;
       representation_scoped_read_access_.reset();
-      result = CreatePromiseImageResult::kFailedYcbcrMismatch;
       return false;
     }
 #endif
