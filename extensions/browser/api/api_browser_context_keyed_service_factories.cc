@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/alarms/alarm_manager.h"
+#include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/idle/idle_manager_factory.h"
 #include "extensions/browser/api/management/management_api.h"
@@ -33,7 +34,6 @@
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_event_dispatcher.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
-#include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/browser/api/hid/hid_connection_resource.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
@@ -76,6 +76,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   MessageService::GetFactoryInstance();
   OffscreenDocumentManager::GetFactory();
   PowerAPI::GetFactoryInstance();
+  RulesRegistryService::GetFactoryInstance();
   RuntimeAPI::GetFactoryInstance();
   SessionStorageManager::GetFactory();
   StorageFrontend::GetFactoryInstance();
@@ -124,7 +125,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   NetworkingPrivateEventRouterFactory::GetInstance();
 #endif
   PrinterProviderAPIFactory::GetInstance();
-  RulesRegistryService::GetFactoryInstance();
   SystemInfoAPI::GetFactoryInstance();
   UsbDeviceManager::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)

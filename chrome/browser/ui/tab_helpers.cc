@@ -234,14 +234,18 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
+#include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "extensions/browser/view_type_utils.h"  // nogncheck
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/tab_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -738,11 +742,14 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     extensions::SetViewType(web_contents,
                             extensions::mojom::ViewType::kTabContents);
   }
-
-  extensions::TabHelper::CreateForWebContents(web_contents);
+  extensions::AppTabHelper::CreateForWebContents(web_contents);
   extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
-
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // extensions::TabHelper is used on Win/Mac/Linux and desktop Android.
+  extensions::TabHelper::CreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)

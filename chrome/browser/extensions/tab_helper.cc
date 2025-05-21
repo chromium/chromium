@@ -38,10 +38,6 @@
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/app_tab_helper.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -90,10 +86,6 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   // tab id assignment can be done on desktop Android.
   ActiveTabPermissionGranter::CreateForWebContents(web_contents, tab_id,
                                                    profile_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/393179880): Pull this creation out of TabHelper.
-  AppTabHelper::CreateForWebContents(web_contents);
-#endif
 
   ActivityLog::GetInstance(profile_)->ObserveScripts(script_executor_.get());
 
