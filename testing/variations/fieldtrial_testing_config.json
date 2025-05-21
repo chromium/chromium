@@ -597,6 +597,23 @@
             ]
         }
     ],
+    "AndroidGridTabSwitcherUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidThemeModule",
+                        "GridTabSwitcherSurfaceColorUpdate",
+                        "GridTabSwitcherUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidHatsNext": [
         {
             "platforms": [
@@ -762,6 +779,21 @@
                     "disable_features": [
                         "ServiceGroupImportance",
                         "SpareRendererProcessPriority"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidSurfaceColorUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidSurfaceColorUpdate"
                     ]
                 }
             ]

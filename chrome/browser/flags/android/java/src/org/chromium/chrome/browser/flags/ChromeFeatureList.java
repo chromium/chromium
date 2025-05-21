@@ -646,12 +646,16 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidProgressBarVisualUpdate =
             newCachedFlag(ANDROID_PROGRESS_BAR_VISUAL_UPDATE, false);
     public static final CachedFlag sAndroidSurfaceColorUpdate =
-            newCachedFlag(ANDROID_SURFACE_COLOR_UPDATE, /* defaultValue= */ false);
+            newCachedFlag(
+                    ANDROID_SURFACE_COLOR_UPDATE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
-    public static final CachedFlag sAndroidThemeModule = newCachedFlag(ANDROID_THEME_MODULE, false);
+    public static final CachedFlag sAndroidThemeModule =
+            newCachedFlag(ANDROID_THEME_MODULE, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidWebAppLaunchHandler =
             newCachedFlag(ANDROID_WEB_APP_LAUNCH_HANDLER, false, true);
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
@@ -776,9 +780,12 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
     public static final CachedFlag sGridTabSwitcherSurfaceColorUpdate =
-            newCachedFlag(GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE, /* defaultValue= */ false);
+            newCachedFlag(
+                    GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sGridTabSwitcherUpdate =
-            newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false);
+            newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
             newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, true);
     public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);

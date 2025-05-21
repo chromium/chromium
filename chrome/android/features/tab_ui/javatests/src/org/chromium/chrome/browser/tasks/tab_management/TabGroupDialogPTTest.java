@@ -51,7 +51,14 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 // TODO(https://crbug.com/392634251): Fix line height when elegant text height is used with Roboto
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
-@DisableFeatures({ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT})
+// TODO(crbug.com/419289558): Re-enable color surface feature flags
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
+    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
+    ChromeFeatureList.ANDROID_THEME_MODULE
+})
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupDialogPTTest {
     @Rule
