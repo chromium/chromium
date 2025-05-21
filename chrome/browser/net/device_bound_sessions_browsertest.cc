@@ -54,12 +54,10 @@ class DeviceBoundSessionAccessObserver : public content::WebContentsObserver {
 class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
  public:
   DeviceBoundSessionBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{net::features::kDeviceBoundSessions,
-          {{"ForceEnableForTesting", "true"}}},
-         {unexportable_keys::
-              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
-          {}}},
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kDeviceBoundSessions,
+         unexportable_keys::
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
         {});
 
     EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -67,6 +65,12 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
         net::device_bound_sessions::GetTestRequestHandler(
             embedded_test_server()->base_url()));
     embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        "origin-trial-public-key",
+        net::device_bound_sessions::kTestOriginTrialPublicKey);
   }
 
  private:
@@ -79,8 +83,12 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
   DeviceBoundSessionAccessObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
       future.GetRepeatingCallback<const SessionAccess&>());
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/dbsc_required")));
+      browser(), embedded_test_server()->GetURL("/dbsc_login_page")));
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "document.location = \"/dbsc_required\""));
 
   SessionAccess access = future.Take();
   EXPECT_EQ(access.session_key.site,
@@ -115,8 +123,12 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
   WebFeatureHistogramTester histograms;
 
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/dbsc_required")));
+      browser(), embedded_test_server()->GetURL("/dbsc_login_page")));
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "document.location = \"/dbsc_required\""));
 
   // Navigate away in order to flush use counters.
   ASSERT_TRUE(

@@ -1678,7 +1678,7 @@
     {
       name: "DeviceBoundSessionCredentials",
       origin_trial_feature_name: "DeviceBoundSessionCredentials",
-      origin_trial_os: ["win"],
+      origin_trial_os: ["win", "linux", "mac"],
       status: "experimental",
       // Killswitch is net::features::kDeviceBoundSessions
       base_feature: "none",

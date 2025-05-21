@@ -6,11 +6,13 @@
 
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -22,6 +24,7 @@
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -31,12 +34,53 @@ namespace net::device_bound_sessions {
 
 namespace {
 
+// Copied from //tools/origin_trials/eftest.key
+constexpr std::array<uint8_t, 64> kTestOriginTrialPrivateKey = {
+    0x83, 0x67, 0xf4, 0xcd, 0x2a, 0x1f, 0xe,  0x4,  0xd,  0x43, 0x13,
+    0x4c, 0x67, 0xc4, 0xf4, 0x28, 0xc9, 0x90, 0x15, 0x2,  0xe2, 0xba,
+    0xfd, 0xbb, 0xfa, 0xbc, 0x92, 0x76, 0x8a, 0x2c, 0x4b, 0xc7, 0x75,
+    0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2, 0x9a,
+    0xd0, 0xb,  0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f, 0x64,
+    0x90, 0x8,  0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x4,  0xd0};
+
+std::string GetOriginTrialToken(const GURL& base_url) {
+  base::Value::Dict token_data;
+  token_data.Set("origin", url::Origin::Create(base_url).Serialize());
+  token_data.Set("feature", "DeviceBoundSessionCredentials");
+  base::Time expiry = base::Time::Now() + base::Days(1);
+  token_data.Set("expiry", static_cast<int>(expiry.InSecondsFSinceUnixEpoch()));
+
+  std::string payload = base::WriteJson(token_data).value_or(std::string());
+  std::array<uint8_t, 4> payload_size = base::U32ToBigEndian(payload.size());
+  // Version 3
+  std::string data_to_sign =
+      "\x03" + std::string(payload_size.begin(), payload_size.end()) + payload;
+
+  std::array<uint8_t, ED25519_SIGNATURE_LEN> signature;
+
+  if (!ED25519_sign(signature.data(),
+                    reinterpret_cast<const uint8_t*>(data_to_sign.data()),
+                    data_to_sign.size(), kTestOriginTrialPrivateKey.data())) {
+    return "";
+  }
+
+  std::string token = "\x03" + std::string(signature.begin(), signature.end()) +
+                      std::string(payload_size.begin(), payload_size.end()) +
+                      payload;
+
+  return base::Base64Encode(token);
+}
+
 std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     const GURL& base_url,
     const net::test_server::HttpRequest& request) {
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
-  if (request.relative_url == "/dbsc_required") {
+  if (request.relative_url == "/dbsc_login_page") {
+    response->AddCustomHeader("Origin-Trial", GetOriginTrialToken(base_url));
+    response->set_content_type("text/html");
+    return response;
+  } else if (request.relative_url == "/dbsc_required") {
     response->AddCustomHeader(
         "Sec-Session-Registration",
         "(RS256 "
@@ -71,6 +115,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     response->set_content(*json);
     return response;
   } else if (request.relative_url == "/resource_triggered_dbsc_registration") {
+    response->AddCustomHeader("Origin-Trial", GetOriginTrialToken(base_url));
     response->set_content_type("text/html");
     response->set_content(base::StringPrintf(
         R"*(<html><body onload="fetch('%s')"></body></html>)*",
@@ -226,6 +271,10 @@ GetRS256SpkiAndJwkForTesting() {
 
   return {kSpki, jwk};
 }
+
+// Copied from //docs/origin_trials_integration.md
+constexpr char kTestOriginTrialPublicKey[] =
+    "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 
 EmbeddedTestServer::HandleRequestCallback GetTestRequestHandler(
     const GURL& base_url) {
