@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Butt
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
@@ -35,6 +36,20 @@ import java.util.List;
  */
 @NullMarked
 public class TabListEditorMenuItem {
+
+    /** Runs when a menu item is clicked. */
+    public interface OnClickRunnable {
+
+        /**
+         * Called when a menu item is clicked.
+         *
+         * @param triggeringMotion the {@link MotionEventInfo} that triggered the click; it is
+         *     {@code null} if {@link android.view.MotionEvent} wasn't available when the click was
+         *     detected, such as in {@link android.view.View.OnClickListener}.
+         */
+        void run(@Nullable MotionEventInfo triggeringMotion);
+    }
+
     private final Context mContext;
 
     private final ListItem mListItem;
@@ -46,7 +61,7 @@ public class TabListEditorMenuItem {
     private boolean mActionViewShowing;
     private @Nullable ColorStateList mIconTint;
 
-    private @MonotonicNonNull Runnable mOnClickRunnable;
+    private @MonotonicNonNull OnClickRunnable mOnClickRunnable;
     private @Nullable Callback<List<TabListEditorItemSelectionId>> mOnSelectionStateChange;
 
     /**
@@ -190,10 +205,12 @@ public class TabListEditorMenuItem {
         }
     }
 
-    public void setOnClickListener(Runnable runnable) {
+    public void setOnClickListener(OnClickRunnable runnable) {
         mOnClickRunnable = runnable;
         if (mActionView != null) {
-            mActionView.setOnClickListener(v -> onClick());
+            // TODO(crbug.com/419085605): Also attach an OnPeripheralClickListener and use it to
+            // pass triggeringMotion.
+            mActionView.setOnClickListener(v -> onClick(/* triggeringMotion= */ null));
         }
     }
 
@@ -209,11 +226,15 @@ public class TabListEditorMenuItem {
         mOnSelectionStateChange = callback;
     }
 
-    /** Handler for click events on the menu item or action view. */
-    public boolean onClick() {
+    /**
+     * Handler for click events on the menu item or action view.
+     *
+     * @param triggeringMotion see {@link OnClickRunnable#run(MotionEventInfo)}.
+     */
+    public boolean onClick(@Nullable MotionEventInfo triggeringMotion) {
         if (!mEnabled) return false;
 
-        assumeNonNull(mOnClickRunnable).run();
+        assumeNonNull(mOnClickRunnable).run(triggeringMotion);
 
         return true;
     }

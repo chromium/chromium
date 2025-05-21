@@ -23,12 +23,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -131,7 +133,10 @@ public class TabListEditorShareAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Share action should not be enabled for no tabs.";
 
         TabList tabList = getTabGroupModelFilter().getTabModel();

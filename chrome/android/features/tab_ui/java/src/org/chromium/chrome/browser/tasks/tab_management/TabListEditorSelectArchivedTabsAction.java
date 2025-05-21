@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinator.ArchiveDelegate;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 import java.util.List;
 
@@ -49,7 +51,10 @@ public class TabListEditorSelectArchivedTabsAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         mArchiveDelegate.startTabSelection();
         return true;
     }

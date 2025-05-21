@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
@@ -101,7 +102,10 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter();
 
         if (tabs.size() == 1) {

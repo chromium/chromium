@@ -10,10 +10,12 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 import java.util.List;
 
@@ -70,7 +72,10 @@ public class TabListEditorTinkerTankAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Tinker Tank action should not be enabled for no tabs.";
         BottomSheetController bottomSheetController =
                 getActionDelegate().getBottomSheetController();

@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 import java.util.List;
 
@@ -107,7 +109,10 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Bookmark action should not be enabled for no tabs.";
         SnackbarManager snackbarManager = getActionDelegate().getSnackbarManager();
         snackbarManager.dismissAllSnackbars();

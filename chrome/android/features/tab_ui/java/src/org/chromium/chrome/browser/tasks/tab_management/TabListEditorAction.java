@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -220,15 +221,30 @@ public abstract class TabListEditorAction {
     public abstract void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds);
 
     /**
+     * Processes the selected tabs from the selection list.
+     *
+     * @see #performAction(List, List, MotionEventInfo)
+     */
+    public final boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
+        return performAction(tabs, tabGroupSyncIds, /* triggeringMotion= */ null);
+    }
+
+    /**
      * Processes the selected tabs from the selection list this includes related tabs if {@link
      * #editorSupportsActionOnRelatedTabs()} is true.
      *
      * @param tabs A list of tabs from getTabsFromSelection().
      * @param tabGroupSyncIds A list of tab group sync ids representing {@link SavedTabGroups} that
      *     are selected as indicated in the {@link SelectionDelegate}.
+     * @param triggeringMotion the {@link MotionEventInfo} that triggered the action; it is {@code
+     *     null} if {@link android.view.MotionEvent} wasn't available when the action was triggered,
+     *     such as in {@link android.view.View.OnClickListener}.
      * @return Whether an action was performed without an error.
      */
-    public abstract boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds);
+    public abstract boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion);
 
     /**
      * @return Whether to hide the editor after tabking the action.
@@ -238,9 +254,19 @@ public abstract class TabListEditorAction {
     /**
      * Processes the selected tabs from the selection list.
      *
+     * @see #perform(MotionEventInfo)
+     */
+    public final boolean perform() {
+        return perform(/* triggeringMotion= */ null);
+    }
+
+    /**
+     * Processes the selected tabs from the selection list.
+     *
+     * @param triggeringMotion see {@link #performAction(List, List, MotionEventInfo)}.
      * @return whether an action was taken.
      */
-    public boolean perform() {
+    public boolean perform(@Nullable MotionEventInfo triggeringMotion) {
         assert mActionDelegate != null;
         assert mCurrentTabGroupModelFilterSupplier != null;
         assert mSelectionDelegate != null;
@@ -259,7 +285,7 @@ public abstract class TabListEditorAction {
         if (shouldHideEditorAfterAction()) {
             mActionDelegate.syncRecyclerViewPosition();
         }
-        if (!performAction(tabs, tabGroupSyncIds)) {
+        if (!performAction(tabs, tabGroupSyncIds, triggeringMotion)) {
             return false;
         }
 

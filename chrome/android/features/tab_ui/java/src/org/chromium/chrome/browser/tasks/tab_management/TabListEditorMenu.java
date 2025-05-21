@@ -169,7 +169,8 @@ public class TabListEditorMenu
                         ((ListItem) mAdapter.getItem(position))
                                 .model.get(TabListEditorActionProperties.MENU_ITEM_ID));
 
-        if (!item.onClick()) return;
+        // TODO(crbug.com/419085605): Use TouchTrackingListView to pass triggeringMotion.
+        if (!item.onClick(/* triggeringMotion= */ null)) return;
 
         if (item.shouldDismissMenu()) mActionViewLayout.dismissMenu();
     }

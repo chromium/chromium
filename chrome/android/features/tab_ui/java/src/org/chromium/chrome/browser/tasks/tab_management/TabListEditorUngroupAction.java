@@ -10,9 +10,11 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 import java.util.List;
 
@@ -57,7 +59,10 @@ public class TabListEditorUngroupAction extends TabListEditorAction {
     }
 
     @Override
-    public boolean performAction(List<Tab> tabsToUngroup, List<String> tabGroupSyncIds) {
+    public boolean performAction(
+            List<Tab> tabsToUngroup,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         assert !editorSupportsActionOnRelatedTabs()
                 : "Ungrouping is not supported when actions apply to related tabs.";
 

@@ -46,8 +46,8 @@ public class TabListEditorActionProperties {
     public static final WritableObjectPropertyKey<ColorStateList> ICON_TINT =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TabListEditorMenuItem.OnClickRunnable>
+            ON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey SHOULD_DISMISS_MENU =
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Callback<List<TabListEditorItemSelectionId>>>
