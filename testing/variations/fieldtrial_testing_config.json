@@ -10637,6 +10637,24 @@
             ]
         }
     ],
+    "HTMLParserYieldByUserTiming": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableWithTimeout5ms",
+                    "params": {
+                        "timeout_ms": "5"
+                    },
+                    "enable_features": [
+                        "SearchAboveFoldBytesReceived"
+                    ]
+                }
+            ]
+        }
+    ],
     "HTTP2": [
         {
             "platforms": [

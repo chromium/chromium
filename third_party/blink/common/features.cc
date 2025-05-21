@@ -1153,10 +1153,6 @@ BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kHTMLParserYieldByUserTiming,
-             "HTMLParserYieldByUserTiming",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE_PARAM(std::string,
                    kHTMLParserYieldEventNameForPause,
                    &kHTMLParserYieldByUserTiming,

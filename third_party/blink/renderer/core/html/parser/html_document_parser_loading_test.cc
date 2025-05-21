@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -422,6 +423,8 @@ TEST_P(HTMLDocumentParserLoadingTest,
 class HTMLDocumentParserYieldByUserTimingTest : public SimTest {
  public:
   HTMLDocumentParserYieldByUserTimingTest() {
+    WebRuntimeFeatures::EnableFeatureFromString("HTMLParserYieldByUserTiming",
+                                                /*enable=*/true);
     std::map<std::string, std::string> params;
     params["pause_event_name"] = "pause";
     params["resume_event_name"] = "resume";
@@ -488,7 +491,7 @@ TEST_F(HTMLDocumentParserYieldByUserTimingTest,
   // Flush tasks on the task queue. The resume event is scheduled with the
   // timeout and contents after the script will be available after the resume
   // event.
-  platform_->test_task_runner()->FastForwardUntilNoTasksRemain();
+  platform_->test_task_runner()->FastForwardBy(base::Milliseconds(30));
   EXPECT_TRUE(GetDocument().getElementById(AtomicString("after")));
 }
 }  // namespace blink

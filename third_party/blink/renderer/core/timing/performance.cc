@@ -898,7 +898,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
       }
     }
 
-    if (base::FeatureList::IsEnabled(features::kHTMLParserYieldByUserTiming)) {
+    if (RuntimeEnabledFeatures::HTMLParserYieldByUserTimingEnabled() &&
+        !mark_parser_blocking.empty() && !mark_parser_restart.empty()) {
       DCHECK_NE(mark_parser_blocking, "");
       DCHECK_NE(mark_parser_restart, "");
       static const size_t timeout =
@@ -907,7 +908,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
       if (window && window->GetFrame() &&
           window->GetFrame()->IsOutermostMainFrame()) {
         Document* document = window->GetFrame()->GetDocument();
-        if (mark_name == mark_parser_blocking && mark_parser_blocking != "") {
+        if (mark_name == mark_parser_blocking) {
           document->NotifyParserPauseByUserTiming();
           // Schedule a timeout based resume event here since pausing the parser
           // can be a potential footgun. It's not guaranteed that the parser
@@ -924,7 +925,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                   },
                   WrapPersistent(document)),
               base::Milliseconds(timeout));
-        } else if (mark_name == mark_parser_restart && mark_parser_restart != "") {
+        } else if (mark_name == mark_parser_restart) {
           // If the parser is pausing, resume it.
           document->NotifyParserResumeByUserTiming();
           parser_yield_task_handle_.Cancel();

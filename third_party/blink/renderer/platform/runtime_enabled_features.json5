@@ -2614,6 +2614,10 @@
       name: "HTMLParserYieldAndDelayOftenForTesting",
     },
     {
+      name: "HTMLParserYieldByUserTiming",
+      status: "test",
+    },
+    {
       name: "HTMLSelectElementShowPicker",
       status: "stable",
     },

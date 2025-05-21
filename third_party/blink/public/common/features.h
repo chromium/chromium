@@ -688,7 +688,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kGetUserMediaDeferredDeviceSettingsSelection);
 #endif
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHTMLParserYieldByUserTiming);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kHTMLParserYieldEventNameForPause);
