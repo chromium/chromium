@@ -47,7 +47,7 @@ cargo_crate("lib") {
       "Library to support the reading and writing of zip files."
   cargo_pkg_version = "3.0.0"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [
     "//third_party/rust/crc32fast/v1:lib",

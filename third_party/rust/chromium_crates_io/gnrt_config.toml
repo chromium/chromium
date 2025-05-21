@@ -660,4 +660,4 @@ allow_unsafe = true
 allow_unsafe = false
 
 [crate.zip.extra_kv]
-allow_unsafe = false
+allow_unsafe = true

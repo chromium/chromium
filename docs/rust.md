@@ -83,6 +83,14 @@ To use a third-party crate "bar" version 3 from first party code:
    * `git add third_party/rust`
 1. Upload the CL and get a review from `//third_party/rust/OWNERS`.
 
+Note that at this point the new crate is still not seen by `gn` nor `ninja`,
+and is not covered by CQ.  To make the new crate part of the build,
+you need to add a `deps` edge between an existing build target
+and the newly added `//third_party/rust/some_crate/v123:lib` target.
+This will allow `autoninja -C out/Default third_party/rust/some_crate/v123:lib`
+to work.  Additionally, this will help CQ to prevent regressions when updating
+`rustc` or enabling new Rust warnings.
+
 ### Cargo features
 
 To enable a feature "spaceships" in the crate, change the entry in
