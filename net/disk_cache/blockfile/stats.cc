@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/stats.h"
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cstdint>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -24,7 +21,7 @@ const int32_t kDiskSignature = 0xF01427E0;
 
 struct OnDiskStats {
   int32_t signature;
-  int size;
+  uint32_t size;
   int data_sizes[disk_cache::Stats::kDataSizesLength];
   int64_t counters[disk_cache::Stats::MAX_COUNTER];
 };
@@ -54,12 +51,12 @@ bool VerifyStats(OnDiskStats* stats) {
 
   // We don't want to discard the whole cache every time we have one extra
   // counter; we keep old data if we can.
-  if (static_cast<unsigned int>(stats->size) > sizeof(*stats)) {
-    memset(stats, 0, sizeof(*stats));
+  auto stats_bytes = base::byte_span_from_ref(*stats);
+  if (stats->size > sizeof(*stats)) {
+    std::ranges::fill(stats_bytes, 0);
     stats->signature = kDiskSignature;
-  } else if (static_cast<unsigned int>(stats->size) != sizeof(*stats)) {
-    size_t delta = sizeof(*stats) - static_cast<unsigned int>(stats->size);
-    memset(reinterpret_cast<char*>(stats) + stats->size, 0, delta);
+  } else if (stats->size < sizeof(*stats)) {
+    std::ranges::fill(stats_bytes.subspan(stats->size), 0);
     stats->size = sizeof(*stats);
   }
 
@@ -70,35 +67,40 @@ Stats::Stats() = default;
 
 Stats::~Stats() = default;
 
-bool Stats::Init(void* data, int num_bytes, Addr address) {
+bool Stats::Init(base::span<uint8_t> data, Addr address) {
   OnDiskStats local_stats;
   OnDiskStats* stats = &local_stats;
-  if (!num_bytes) {
-    memset(stats, 0, sizeof(local_stats));
+  auto local_stats_bytes = base::byte_span_from_ref(local_stats);
+  if (data.empty()) {
+    std::ranges::fill(local_stats_bytes, 0);
     local_stats.signature = kDiskSignature;
     local_stats.size = sizeof(local_stats);
-  } else if (num_bytes >= static_cast<int>(sizeof(*stats))) {
-    stats = reinterpret_cast<OnDiskStats*>(data);
+  } else if (data.size() >= sizeof(*stats)) {
+    stats = reinterpret_cast<OnDiskStats*>(data.data());
     if (!VerifyStats(stats)) {
-      memset(&local_stats, 0, sizeof(local_stats));
-      if (memcmp(stats, &local_stats, sizeof(local_stats))) {
-        return false;
-      } else {
+      std::ranges::fill(local_stats_bytes, 0);
+      if (base::byte_span_from_ref(*stats).first(sizeof(local_stats)) ==
+          local_stats_bytes) {
         // The storage is empty which means that SerializeStats() was never
         // called on the last run. Just re-initialize everything.
         local_stats.signature = kDiskSignature;
         local_stats.size = sizeof(local_stats);
         stats = &local_stats;
+      } else {
+        return false;
       }
     }
   } else {
+    // Too few bytes.
     return false;
   }
 
   storage_addr_ = address;
 
-  memcpy(data_sizes_, stats->data_sizes, sizeof(data_sizes_));
-  memcpy(counters_, stats->counters, sizeof(counters_));
+  base::as_writable_byte_span(data_sizes_)
+      .copy_from_nonoverlapping(base::as_byte_span(stats->data_sizes));
+  base::as_writable_byte_span(counters_).copy_from_nonoverlapping(
+      base::as_byte_span(stats->counters));
 
   // Clean up old value.
   SetCounter(UNUSED, 0);
@@ -189,15 +191,19 @@ int Stats::GetLargeEntriesSize() {
   return total;
 }
 
-int Stats::SerializeStats(void* data, int num_bytes, Addr* address) {
-  OnDiskStats* stats = reinterpret_cast<OnDiskStats*>(data);
-  if (num_bytes < static_cast<int>(sizeof(*stats)))
+int Stats::SerializeStats(base::span<uint8_t> data, Addr* address) {
+  if (data.size() < sizeof(OnDiskStats)) {
     return 0;
+  }
+  OnDiskStats* stats = reinterpret_cast<OnDiskStats*>(data.data());
 
   stats->signature = kDiskSignature;
   stats->size = sizeof(*stats);
-  memcpy(stats->data_sizes, data_sizes_, sizeof(data_sizes_));
-  memcpy(stats->counters, counters_, sizeof(counters_));
+
+  base::as_writable_byte_span(stats->data_sizes)
+      .copy_from_nonoverlapping(base::as_byte_span(data_sizes_));
+  base::as_writable_byte_span(stats->counters)
+      .copy_from_nonoverlapping(base::as_byte_span(counters_));
 
   *address = storage_addr_;
   return sizeof(*stats);

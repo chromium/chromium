@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/disk_cache/simple/simple_version_upgrade.h"
 
 #include <cstring>
@@ -64,8 +59,9 @@ bool WriteFakeIndexFile(disk_cache::BackendFileOperations* file_operations,
 namespace disk_cache {
 
 FakeIndexData::FakeIndexData() {
-  // Make hashing repeatable: leave no padding bytes untouched.
-  std::memset(this, 0, sizeof(*this));
+  // We don't want unset holes in types stored to disk.
+  static_assert(std::has_unique_object_representations_v<FakeIndexData>,
+                "FakeIndexData should have no implicit padding bytes");
 }
 
 // Some points about the Upgrade process are still not clear:

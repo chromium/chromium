@@ -15,6 +15,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1418,7 +1419,7 @@ bool BackendImpl::InitStats() {
       return false;
 
     data_->header.stats = address.value();
-    return stats_.Init(nullptr, 0, address);
+    return stats_.Init(base::span<uint8_t>(), address);
   }
 
   if (!address.is_block_file()) {
@@ -1431,14 +1432,16 @@ bool BackendImpl::InitStats() {
   if (!file)
     return false;
 
-  auto data = std::make_unique<char[]>(size);
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  if (!file->Read(data.get(), size, offset))
+  if (!file->Read(data.data(), size, offset)) {
     return false;
+  }
 
-  if (!stats_.Init(data.get(), size, address))
+  if (!stats_.Init(data.as_span(), address)) {
     return false;
+  }
   if (GetCacheType() == net::DISK_CACHE && ShouldUpdateStats()) {
     stats_.InitSizeHistogram();
   }
@@ -1447,9 +1450,9 @@ bool BackendImpl::InitStats() {
 
 void BackendImpl::StoreStats() {
   int size = stats_.StorageSize();
-  auto data = std::make_unique<char[]>(size);
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
   Addr address;
-  size = stats_.SerializeStats(data.get(), size, &address);
+  size = stats_.SerializeStats(data.as_span(), &address);
   DCHECK(size);
   if (!address.is_initialized())
     return;
@@ -1460,7 +1463,7 @@ void BackendImpl::StoreStats() {
 
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  file->Write(data.get(), size, offset);  // ignore result.
+  file->Write(data.data(), size, offset);  // ignore result.
 }
 
 void BackendImpl::RestartCache(bool failure) {

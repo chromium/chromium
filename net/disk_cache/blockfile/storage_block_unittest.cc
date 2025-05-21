@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "net/disk_cache/blockfile/storage_block.h"
 
+#include <algorithm>
+
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"
-#include "net/disk_cache/blockfile/storage_block.h"
 #include "net/disk_cache/disk_cache_test_base.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +23,7 @@ TEST_F(DiskCacheTest, StorageBlock_LoadStore) {
   ASSERT_TRUE(file->Init(filename, 8192));
 
   CacheEntryBlock entry1(file.get(), disk_cache::Addr(0xa0010001));
-  memset(entry1.Data(), 0, sizeof(disk_cache::EntryStore));
+  std::ranges::fill(base::byte_span_from_ref(*entry1.Data()), 0);
   entry1.Data()->hash = 0xaa5555aa;
   entry1.Data()->rankings_node = 0xa0010002;
 
