@@ -907,6 +907,12 @@ Document::Document(const DocumentInit& initializer,
             network::mojom::PermissionsPolicyFeature::kVerticalScroll);
     cached_top_frame_site_for_visited_links_ =
         net::SchemefulSite(TopFrameOrigin()->ToUrlOrigin());
+    // The WidgetCreationObserver can be only added during initialization
+    // of the local root. The observer is added to lower the frate rate
+    // during the loading of the page.
+    if (frame->IsLocalRoot() && !frame->GetWidgetForLocalRoot()) {
+      frame->AddWidgetCreationObserver(this);
+    }
   } else {
     // We disable fetches for frame-less Documents.
     // See https://crbug.com/961614 for details.
@@ -7558,8 +7564,7 @@ void Document::OnLargestContentfulPaintUpdated() {
 void Document::OnPrepareToStopParsing() {
   if (render_blocking_resource_manager_) {
     render_blocking_resource_manager_->ClearPendingParsingElements();
-    if (features::kThrottleFrameRateOnInitialization.Get() && GetFrame() &&
-        GetFrame()->IsLocalRoot() && GetFrame()->GetPage() &&
+    if (GetFrame() && GetFrame()->IsLocalRoot() && GetFrame()->GetPage() &&
         GetFrame()->IsAttached()) {
       // The frame rate will be implicitly throttled during initialization
       // if the feature is enabled so unthrottle here.
@@ -9585,6 +9590,16 @@ void Document::HandlePaymentLink(const KURL& href) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+void Document::OnLocalRootWidgetCreated() {
+  if (!features::kThrottleFrameRateOnInitialization.Get() || !GetFrame() ||
+      !GetFrame()->GetPage() || !GetFrame()->IsAttached() ||
+      !GetExecutionContext()->CrossOriginIsolatedCapability()) {
+    return;
+  }
+  GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
+      true, *GetFrame());
+}
+
 void Document::ProcessScheduledShadowTreeCreationsNow() {
   if (elements_needing_shadow_tree_.empty()) {
     return;
@@ -9628,7 +9643,8 @@ void Document::SetHasFullFrameRateBlockingExpectLinkElements(bool flag) {
 }
 
 void Document::UpdateRenderFrameRate() {
-  if (!GetFrame() || !GetFrame()->GetPage() || !GetFrame()->IsAttached()) {
+  if (!GetFrame() || !GetFrame()->GetPage() || !GetFrame()->IsAttached() ||
+      !GetExecutionContext()->CrossOriginIsolatedCapability()) {
     return;
   }
   GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(

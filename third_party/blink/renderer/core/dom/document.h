@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/frame/widget_creation_observer.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -353,6 +354,7 @@ struct UnloadEventTimingInfo {
 class CORE_EXPORT Document : public ContainerNode,
                              public TreeScope,
                              public UseCounter,
+                             public WidgetCreationObserver,
                              public Supplementable<Document> {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -2222,6 +2224,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // passes the payment link back to browser process through the mojo pipe.
   void HandlePaymentLink(const KURL& href);
 #endif
+
+  // WidgetCreationObserver implementation
+  void OnLocalRootWidgetCreated() override;
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }

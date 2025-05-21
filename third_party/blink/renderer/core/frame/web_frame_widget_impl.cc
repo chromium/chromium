@@ -2614,8 +2614,6 @@ void WebFrameWidgetImpl::InitializeCompositingInternal(
 
   probe::DidInitializeFrameWidget(local_root_->GetFrame());
   local_root_->GetFrame()->NotifyFrameWidgetCreated();
-  SetShouldThrottleFrameRate(
-      features::kThrottleFrameRateOnInitialization.Get());
 
   // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
   // will call DidInitializeCompositing once per FrameWidget. It probably makes
