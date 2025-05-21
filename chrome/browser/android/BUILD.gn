@@ -24,3 +24,14 @@ source_set("tabs_impl") {
     "//content/public/browser",
   ]
 }
+
+source_set("keyboard_shortcuts") {
+  sources = [
+    "keyboard_shortcuts.cc",
+    "keyboard_shortcuts.h",
+  ]
+  deps = [
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+}

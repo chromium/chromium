@@ -17,6 +17,8 @@ import android.view.KeyboardShortcutInfo;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -223,7 +225,8 @@ public class KeyboardShortcuts {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
 
     private static @KeyboardShortcutsSemanticMeaning int getKeyboardSemanticMeaning(
-            int keyCodeAndMeta) {
+            KeyEvent event) {
+        int keyCodeAndMeta = event.getKeyCode() | KeyboardUtils.getMetaState(event);
 
         if (KEYBOARD_SHORTCUT_SEMANTIC_MAP.containsKey(keyCodeAndMeta)) {
             return KEYBOARD_SHORTCUT_SEMANTIC_MAP.get(keyCodeAndMeta);
@@ -907,10 +910,8 @@ public class KeyboardShortcuts {
         WebContents currentWebContents = currentTab == null ? null : currentTab.getWebContents();
 
         int tabCount = currentTabModel.getCount();
-        int metaState = KeyboardUtils.getMetaState(event);
-        int keyCodeAndMeta = keyCode | metaState;
-        @KeyboardShortcutsSemanticMeaning
-        int semanticMeaning = getKeyboardSemanticMeaning(keyCodeAndMeta);
+
+        @KeyboardShortcutsSemanticMeaning int semanticMeaning = getKeyboardSemanticMeaning(event);
 
         RecordHistogram.recordEnumeratedHistogram(
                 AccessibilityState.isKnownScreenReaderEnabled()
@@ -1096,5 +1097,10 @@ public class KeyboardShortcuts {
         }
 
         return false;
+    }
+
+    @CalledByNative
+    private static boolean isChromeAccelerator(KeyEvent event) {
+        return getKeyboardSemanticMeaning(event) != KeyboardShortcutsSemanticMeaning.UNKNOWN;
     }
 }

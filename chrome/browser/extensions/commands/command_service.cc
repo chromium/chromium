@@ -34,6 +34,11 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/accelerators/command.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/keyboard_shortcuts.h"
+#include "ui/events/android/key_event_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace extensions {
 namespace {
 
@@ -517,18 +522,12 @@ bool CommandService::CanAutoAssign(const ui::Command& command,
             command.accelerator().key_code() <= ui::VKEY_9);
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Not a global command, check if the command is a Chrome shortcut.
-  return !chrome::IsChromeAccelerator(command.accelerator());
+#if BUILDFLAG(IS_ANDROID)
+  return !chrome::android::IsChromeAccelerator(command.accelerator());
 #else
-  // TODO(crbug.com/406136564): Implement IsChromeAccelerator on desktop
-  // android.
-  // Until IsChromeAccelerator is implemented, allowlist Ctrl-Shift-L. This is
-  // very artificial but eases testing.
-  return command.accelerator().IsCtrlDown() &&
-         command.accelerator().IsShiftDown() &&
-         command.accelerator().key_code() == ui::VKEY_L;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return !chrome::IsChromeAccelerator(command.accelerator());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void CommandService::UpdateExtensionSuggestedCommandPrefs(

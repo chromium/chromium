@@ -25,6 +25,9 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+// Android chrome shortcuts are implemented in KeyboardShortcuts.java.
+static_assert(!BUILDFLAG(IS_ANDROID));
+
 namespace {
 
 // For ChromeOS only: If you plan on adding a new accelerator and want it
