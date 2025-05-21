@@ -617,8 +617,10 @@ enum MetricEventType {
   URL_OPENED = 18;
   URL_CLOSED = 19;
   KIOSK_HEARTBEAT = 20;
+  EXTERNAL_DISPLAY_CONNECTED = 21;
+  EXTERNAL_DISPLAY_DISCONNECTED = 22;
 
-  reserved 2, 3, 10, 11, 12, 21, 22;
+  reserved 2, 3, 10, 11, 12;
 }
 
 // App telemetry data.
