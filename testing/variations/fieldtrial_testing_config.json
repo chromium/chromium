@@ -24261,7 +24261,7 @@
             ]
         }
     ],
-    "UnoDesktopBookmarks": [
+    "UnoDesktopBookmarksAndReadingList": [
         {
             "platforms": [
                 "linux",
@@ -24272,6 +24272,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ReadingListEnableSyncTransportModeUponSignIn",
                         "SyncEnableBookmarksInTransportMode"
                     ]
                 }
