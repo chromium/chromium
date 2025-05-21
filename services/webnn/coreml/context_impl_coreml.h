@@ -18,14 +18,8 @@ class WebNNConstantOperand;
 namespace coreml {
 
 // `ContextImplCoreml` is created by `WebNNContextProviderImpl` and responsible
-// for creating a `GraphImplCoreml` for the CoreML backend on macOS. Mac OS
-// 13.0+ is required for model compilation
-// https://developer.apple.com/documentation/coreml/mlmodel/3931182-compilemodel
-// Mac OS 14.0+ is required to support WebNN logical binary operators because
-// the cast operator does not support casting to uint8 prior to Mac OS 14.0.
-// CoreML returns bool tensors for logical operators which need to be cast to
-// uint8 tensors to match WebNN expectations.
-class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
+// for creating a `GraphImplCoreml` for the CoreML backend on macOS.
+class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
   ContextImplCoreml(mojo::PendingReceiver<mojom::WebNNContext> receiver,

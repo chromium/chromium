@@ -37,9 +37,11 @@ class ContextImplCoreml;
 // https://developer.apple.com/documentation/coreml/mlmodel/3931182-compilemodel
 // Mac OS 14.0+ is required to support WebNN logical binary operators because
 // the cast operator does not support casting to uint8 prior to Mac OS 14.0.
+// Mac OS 14.4 is required to use MLComputePlan.
+// https://developer.apple.com/documentation/coreml/mlcomputeplan-1w21n
 // CoreML returns bool tensors for logical operators which need to be cast to
 // uint8 tensors to match WebNN expectations.
-class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
+class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
@@ -91,12 +93,25 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
     // Represents the compiled and configured Core ML model. This member must be
     // set before these params are used to construct a new `GraphImplCoreml`.
     MLModel* __strong ml_model;
+
+    std::vector<mojom::Device> devices;
+  };
+
+  // Responsible for cleaning up disk artifacts created by the CoreML model
+  // compilation process.
+  // This also dumps model files to to `switches::kWebNNCoreMlDumpModel` if
+  // provided.
+  struct ScopedModelPath {
+    explicit ScopedModelPath(base::ScopedTempDir file_dir);
+    ~ScopedModelPath();
+    ScopedModelPath(ScopedModelPath&& other) = default;
+
+    base::ScopedTempDir file_dir;
   };
 
   GraphImplCoreml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                   ContextImplCoreml* context,
-                  std::unique_ptr<Params> params,
-                  std::vector<mojom::Device> devices);
+                  std::unique_ptr<Params> params);
 
   static MLFeatureValue* CreateMultiArrayFeatureValueFromBytes(
       MLMultiArrayConstraint* multi_array_constraint,
@@ -122,6 +137,14 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
           base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
       NSURL* compiled_model_url,
       NSError* error);
+
+  static void ReadComputePlan(
+      std::unique_ptr<Params> params,
+      base::OnceCallback<void(
+          base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
+      ScopedModelPath temp_dir,
+      MLComputePlan* compute_plan,
+      NSError* compute_plan_error);
 
   static void DidCreateAndBuild(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,

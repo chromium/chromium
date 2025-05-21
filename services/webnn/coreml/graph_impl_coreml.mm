@@ -17,11 +17,13 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -48,6 +50,7 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_switches.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 @interface WebNNMLFeatureProvider : NSObject <MLFeatureProvider>
 - (MLFeatureValue*)featureValueForName:(NSString*)featureName;
@@ -76,46 +79,6 @@ namespace webnn::coreml {
 
 namespace {
 
-// Responsible for cleaning up disk artifacts created by the CoreML model
-// compilation process.
-struct ScopedModelPaths {
-  ~ScopedModelPaths() {
-#if BUILDFLAG(IS_MAC)
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebNNCoreMlDumpModel)) {
-      const auto dump_directory =
-          base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-              switches::kWebNNCoreMlDumpModel);
-      LOG(INFO) << "[WebNN] Copying model files to " << dump_directory;
-      if (dump_directory.empty()) {
-        LOG(ERROR) << "[WebNN] Dump directory not specified.";
-      } else {
-        if (!model_file_dir.IsValid() ||
-            !base::CopyDirectory(model_file_dir.GetPath(), dump_directory,
-                                 /*recursive=*/true)) {
-          LOG(ERROR) << "[WebNN] Failed to copy model file directory.";
-        }
-        if (!compiled_model_dir.IsValid() ||
-            !base::CopyDirectory(compiled_model_dir.GetPath(), dump_directory,
-                                 /*recursive=*/true)) {
-          LOG(ERROR) << "[WebNN] Failed to copy compiled model directory.";
-        }
-      }
-    }
-#endif
-    // Though the destructors of ScopedTempDir will delete these directories.
-    // Explicitly delete them here to check for success.
-    if (model_file_dir.IsValid()) {
-      CHECK(model_file_dir.Delete());
-    }
-    if (compiled_model_dir.IsValid()) {
-      CHECK(compiled_model_dir.Delete());
-    }
-  }
-
-  base::ScopedTempDir model_file_dir;
-  base::ScopedTempDir compiled_model_dir;
-};
 
 // Compute strides which may be used to construct an `MLMultiArray` given
 // `multi_array_constraint`.
@@ -480,9 +443,9 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
     CHECK(scoped_compiled_model_dir.Set(
         base::apple::NSURLToFilePath(compiled_model_url)));
   }
-  ScopedModelPaths scoped_paths{
-      .model_file_dir = std::move(model_file_dir),
-      .compiled_model_dir = std::move(scoped_compiled_model_dir)};
+  ScopedModelPath scoped_model_files{std::move(model_file_dir)};
+  ScopedModelPath scoped_compiled_model_files{
+      std::move(scoped_compiled_model_dir)};
 
   if (error) {
     LOG(ERROR) << "[WebNN] " << error;
@@ -508,6 +471,7 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
 
   base::ElapsedTimer model_load_timer;
   NSError* model_load_error = nil;
+
   params->ml_model = [MLModel modelWithContentsOfURL:compiled_model_url
                                        configuration:configuration
                                                error:&model_load_error];
@@ -519,7 +483,75 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
         mojom::Error::Code::kUnknownError, "Model load error.")));
     return;
   }
+  [MLComputePlan
+      loadContentsOfURL:compiled_model_url
+          configuration:configuration
+      completionHandler:base::CallbackToBlock(base::BindOnce(
+                            &ReadComputePlan, std::move(params),
+                            std::move(callback),
+                            std::move(scoped_compiled_model_files)))];
+}
 
+// static
+void GraphImplCoreml::ReadComputePlan(
+    std::unique_ptr<Params> params,
+    base::OnceCallback<void(
+        base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
+    ScopedModelPath scoped_model_files,
+    MLComputePlan* compute_plan,
+    NSError* compute_plan_error) {
+  if (compute_plan_error) {
+    LOG(ERROR) << "[WebNN] " << compute_plan_error;
+    std::move(callback).Run(base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to get compiled graph devices.")));
+    return;
+  }
+  CHECK(compute_plan);
+
+  MLModelStructureProgram* program = compute_plan.modelStructure.program;
+  CHECK(program);
+
+  MLModelStructureProgramFunction* main_function = program.functions[@"main"];
+  CHECK(main_function);
+
+  double total_weight = 0;
+  NSArray<MLModelStructureProgramOperation*>* operations =
+      main_function.block.operations;
+  base::EnumSet<mojom::Device, mojom::Device::kCpu, mojom::Device::kNpu>
+      devices;
+  DLOG(INFO) << "[WebNN] Getting CoreML compute plan.";
+  for (MLModelStructureProgramOperation* operation in operations) {
+    // Get the compute device usage for the operation.
+    MLComputePlanDeviceUsage* compute_device_usage =
+        [compute_plan computeDeviceUsageForMLProgramOperation:operation];
+    id<MLComputeDeviceProtocol> preferred_device =
+        compute_device_usage.preferredComputeDevice;
+    if (!preferred_device) {
+      // This can happen on a 0 weight operation.
+      DLOG(INFO) << operation.operatorName << " no preferred device";
+    } else if ([preferred_device isKindOfClass:[MLCPUComputeDevice class]]) {
+      DLOG(INFO) << operation.operatorName << " prefers CPU";
+      devices.Put(mojom::Device::kCpu);
+    } else if ([preferred_device isKindOfClass:[MLGPUComputeDevice class]]) {
+      DLOG(INFO) << operation.operatorName << " prefers GPU";
+      devices.Put(mojom::Device::kGpu);
+    } else if ([preferred_device
+                   isKindOfClass:[MLNeuralEngineComputeDevice class]]) {
+      DLOG(INFO) << operation.operatorName << " prefers ANE";
+      devices.Put(mojom::Device::kNpu);
+    } else {
+      NOTREACHED();
+    }
+
+    // Get the estimated cost of executing the operation.
+    MLComputePlanCost* estimated_cost =
+        [compute_plan estimatedCostOfMLProgramOperation:operation];
+    DLOG(INFO) << "Operation weight " << estimated_cost.weight;
+    total_weight += estimated_cost.weight;
+  }
+  params->devices.assign(devices.begin(), devices.end());
+  DLOG(INFO) << "Total weight " << total_weight;
   std::move(callback).Run(std::move(params));
 }
 
@@ -545,10 +577,9 @@ void GraphImplCoreml::DidCreateAndBuild(
   context->AssertCalledOnValidSequence();
 #endif
 
-  // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   std::move(callback).Run(base::WrapUnique(new GraphImplCoreml(
       std::move(receiver), static_cast<ContextImplCoreml*>(context.get()),
-      *std::move(result), /*devices=*/{})));
+      *std::move(result))));
 }
 
 // static
@@ -571,15 +602,44 @@ MLFeatureValue* GraphImplCoreml::CreateMultiArrayFeatureValueFromBytes(
   return [MLFeatureValue featureValueWithMultiArray:multi_array];
 }
 
+GraphImplCoreml::ScopedModelPath::ScopedModelPath(base::ScopedTempDir file_dir)
+    : file_dir(std::move(file_dir)) {}
+
+GraphImplCoreml::ScopedModelPath::~ScopedModelPath() {
+  if (!file_dir.IsValid()) {
+    return;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNCoreMlDumpModel)) {
+    const auto dump_directory =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNCoreMlDumpModel);
+    LOG(INFO) << "[WebNN] Copying model files to " << dump_directory;
+    if (dump_directory.empty()) {
+      LOG(ERROR) << "[WebNN] Dump directory not specified.";
+    } else {
+      if (!base::CopyDirectory(file_dir.GetPath(), dump_directory,
+                               /*recursive=*/true)) {
+        LOG(ERROR) << "[WebNN] Failed to copy model file directory.";
+      }
+    }
+  }
+#endif
+  // Though the destructors of ScopedTempDir will delete these directories.
+  // Explicitly delete them here to check for success.
+  CHECK(file_dir.Delete());
+}
+
 GraphImplCoreml::GraphImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ContextImplCoreml* context,
-    std::unique_ptr<Params> params,
-    std::vector<mojom::Device> devices)
+    std::unique_ptr<Params> params)
     : WebNNGraphImpl(std::move(receiver),
                      context,
                      std::move(params->compute_resource_info),
-                     std::move(devices)),
+                     std::move(params->devices)),
       compute_resources_(base::MakeRefCounted<ComputeResources>(
           std::move(params->coreml_name_to_operand_name),
           params->ml_model)) {}

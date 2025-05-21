@@ -208,7 +208,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
-  if (__builtin_available(macOS 14, *)) {
+  if (__builtin_available(macOS 14.4, *)) {
     if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML)
 #if BUILDFLAG(IS_MAC)
         && base::mac::GetCPUType() == base::mac::CPUType::kArm
