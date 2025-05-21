@@ -1,11 +1,3 @@
-# TODO(crbug.com/40949065): Flakily fails a check.
--IndexedDBQuotaClientTest.DeleteBucketMixedParty/0
--IndexedDBQuotaClientTest.DeleteBucketMixedParty/1
--IndexedDBQuotaClientTest.DeleteBucketCustom/0
--IndexedDBQuotaClientTest.DeleteBucketCustom/1
--IndexedDBQuotaClientTest.DeleteBucketThirdParty/0
--IndexedDBQuotaClientTest.DeleteBucketThirdParty/1
-
 # TODO(crbug.com/393408576): These tests have been failing since
 # https://crrev.com/c/5581575.
 -TracingScenarioSystemBackendTest.FeatureNotEnabled_1
