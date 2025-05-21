@@ -1346,14 +1346,6 @@ const ComputedStyle* StyleResolver::ResolveStyle(
     return nullptr;
   }
 
-  if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
-    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
-        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-        "StyleResolver::ResolveStyle",
-        inspector_style_resolver_resolve_style_event::Data, element,
-        style_request.pseudo_id);
-  }
-
   DCHECK(GetDocument().GetFrame());
   DCHECK(GetDocument().GetSettings());
 
@@ -1392,6 +1384,13 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   ApplyInertness(state);
 
   IncrementResolvedStyleCounters(style_request, GetDocument());
+  if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
+        "StyleResolver::ResolveStyle",
+        inspector_style_resolver_resolve_style_event::Data, element,
+        style_request.pseudo_id);
+  }
 
   if (!IsForPseudoElement(*element, style_request)) {
     if (IsA<HTMLBodyElement>(*element)) {
