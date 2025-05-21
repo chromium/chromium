@@ -44,6 +44,7 @@
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -145,8 +146,6 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
@@ -344,7 +343,6 @@ int GetCountFromBackgroundScript(const Extension* extension,
   return value.GetInt();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Returns the current count of webRequests received by the |extension| in
 // the background script, either background page or service worker. Assumes the
 // extension stores a value on the `self` object. Returns -1 if something goes
@@ -354,7 +352,6 @@ int GetWebRequestCountFromBackgroundScript(const Extension* extension,
   return GetCountFromBackgroundScript(extension, context,
                                       "self.webRequestCount");
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns true if the |extension|'s background script saw an event for a
 // request with the given |hostname| (|hostname| should exclude port).
@@ -3369,14 +3366,9 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   // The server saw a request for the remote Javascript file.
   EXPECT_TRUE(BrowsedTo(example2_com));
 
-#if !BUILDFLAG(IS_ANDROID)
   // The request was hidden from the extension.
-  // TODO(crbug.com/371324825): Enable this check on desktop Android. This will
-  // require enabling PermissionsUpdater, the permissions API, and more
-  // extensions management code.
   EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
                                             request_counter_name));
-#endif
 }
 
 // Tests that the webRequest events aren't dispatched when the URL of the
@@ -3411,13 +3403,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   // The server saw a request for the protected site.
   EXPECT_TRUE(BrowsedTo(protected_domain));
 
-#if !BUILDFLAG(IS_ANDROID)
   // The request was hidden from the extension.
-  // TODO(crbug.com/371324825): Enable this check on desktop Android. This will
-  // require enabling PermissionsUpdater, the permissions API, and more
-  // extensions management code.
   EXPECT_FALSE(before_request_listener.was_satisfied());
-#endif
 
   // Host not protected by policy.
   const std::string unprotected_domain = "notblockedexample.com";
@@ -3437,7 +3424,6 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   EXPECT_TRUE(before_request_listener.was_satisfied());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Test that no webRequest events are seen for a protected host during normal
 // navigation. This replicates most of the tests from
 // WebRequestWithWithheldPermissions with a protected host. Granting a tab
@@ -3463,18 +3449,16 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   // Navigate the browser to a page in a new tab.
-  GURL url = embedded_test_server()->GetURL(protected_domain, "/empty.html");
-  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  ui_test_utils::NavigateToURL(&params);
+  NavigateToURLInNewTab(
+      embedded_test_server()->GetURL(protected_domain, "/empty.html"));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
+#if !BUILDFLAG(IS_ANDROID)
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
-
+#endif  // !BUILDFLAG(IS_ANDROID)
   int port = embedded_test_server()->port();
   const std::string kXhrPath = "simple.html";
 
@@ -3485,6 +3469,7 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
                     kXhrPath);
   EXPECT_EQ(0, GetWebRequestCountFromBackgroundScript(extension, profile()));
 
+#if !BUILDFLAG(IS_ANDROID)
   // Grant activeTab permission, and perform another XHR. The extension should
   // still be blocked due to ExtensionSettings policy on example.com.
   // Only records ACCESS_WITHHELD, not ACCESS_DENIED, this is why it matches
@@ -3495,6 +3480,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   int xhr_count = GetWebRequestCountFromBackgroundScript(extension, profile());
   // ... which means that we should have a non-zero xhr count if the policy
   // didn't block the events.
@@ -3505,6 +3492,7 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   EXPECT_EQ(0, GetWebRequestCountFromBackgroundScript(extension, profile()));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // A test fixture which mocks the Time::Now() function to ensure that the
 // default clock returns monotonically increasing time.
 class ExtensionWebRequestMockedClockTest
@@ -3899,7 +3887,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                             ResponseHeaderType::kNone, 1);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 struct SWTestParams {
   // This parameter is for opt_extraInfoSpec passed to addEventListener.
   // 'blocking' and 'requestHeaders' if it's false, and 'extraHeaders' in
@@ -3978,12 +3965,10 @@ class ServiceWorkerWebRequestApiTest
                              const std::optional<std::string>& scope) {
     GURL url = embedded_test_server()->GetURL(
         "/service_worker/create_service_worker.html");
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    EXPECT_TRUE(NavigateToURL(url));
     std::string script = content::JsReplace("register($1, $2);", worker_path,
                                             scope ? *scope : std::string());
-    EXPECT_EQ(
-        "DONE",
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), script));
+    EXPECT_EQ("DONE", EvalJs(GetActiveWebContents(), script));
   }
 
   // Ensures requests made by the |worker_script_name| service worker can be
@@ -3997,9 +3982,8 @@ class ServiceWorkerWebRequestApiTest
 
     // Register a service worker and navigate to a page it controls.
     RegisterServiceWorker(worker_script_name, std::nullopt);
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(
-                       "/service_worker/fetch_from_page.html")));
+    EXPECT_TRUE(NavigateToURL(embedded_test_server()->GetURL(
+        "/service_worker/fetch_from_page.html")));
 
     // Make a fetch from the controlled page. Depending on the worker script,
     // the fetch might go to the service worker and be re-issued, or might
@@ -4007,9 +3991,8 @@ class ServiceWorkerWebRequestApiTest
     // expects a network request to happen, and that the extension modify the
     // headers of the request before it goes to network. Verify that it was able
     // to inject a header of "foo=bar".
-    EXPECT_EQ("bar",
-              EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "fetch_from_page('/echoheader?foo');"));
+    EXPECT_EQ("bar", EvalJs(GetActiveWebContents(),
+                            "fetch_from_page('/echoheader?foo');"));
   }
 };
 
@@ -4058,17 +4041,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
   RegisterServiceWorker("/fetch_event_passthrough.js", "/echoheader");
 
   // Make sure the request is intercepted with no redirect.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/echoheader?foo")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(embedded_test_server()->GetURL("/echoheader?foo")));
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_EQ("bar", EvalJs(web_contents, "document.body.textContent;"));
 
   // Make sure the request is intercepted with a redirect.
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" +
       embedded_test_server()->GetURL("/echoheader?foo").spec());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
+  ASSERT_TRUE(NavigateToURL(redirect_url));
   EXPECT_EQ("bar", EvalJs(web_contents, "document.body.textContent;"));
 }
 
@@ -4111,11 +4092,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
 
   InstallRequestHeaderModifyingExtension();
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(url));
 
   // Register a service worker. The worker script should have "foo: bar" request
   // header added by the extension.
@@ -4130,7 +4110,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
 
   // Update the worker. The worker should have "foo: bar" request header in the
   // request for update checking.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(url));
   EXPECT_EQ("DONE", EvalJs(web_contents, "update('./in-scope');"));
   {
     base::AutoLock auto_lock(lock);
@@ -4179,11 +4159,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 
   InstallRequestHeaderModifyingExtension();
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(url));
 
   // Register a service worker. `EvalJs` is blocked until the request handler
   // serves the worker script. The worker script should have "foo: bar" request
@@ -4200,7 +4179,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
   // Update the worker. `EvalJs` is blocked until the request handler serves the
   // worker script. The worker should have "foo: bar" request header in the
   // request for update checking.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(url));
   EXPECT_EQ("DONE", EvalJs(web_contents, "update('./in-scope');"));
   {
     base::AutoLock auto_lock(lock);
@@ -4262,11 +4241,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 
   InstallRequestHeaderModifyingExtension();
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(url));
 
   // Register a service worker. The worker script should have "foo: bar" request
   // header added by the extension.
@@ -4281,7 +4259,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 
   // Update the worker. The worker should have "foo: bar" request header in the
   // request for update checking.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(url));
   EXPECT_EQ("DONE", EvalJs(web_contents, "update('./in-scope');"));
   {
     base::AutoLock auto_lock(lock);
@@ -4311,10 +4289,9 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
   // the page.
   GURL url = embedded_test_server()->GetURL(
       "/echoheader?frameId&resourceType&service-worker-navigation-preload");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(url));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   // Since the request was to "/echoheader", the response describes the request
   // headers.
@@ -4357,6 +4334,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
   EXPECT_EQ("ok", EvalJs(web_contents, content::JsReplace(kAddIframe, url)));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
