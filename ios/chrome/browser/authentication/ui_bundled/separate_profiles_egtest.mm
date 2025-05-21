@@ -43,12 +43,8 @@ id<GREYMatcher> MergeBrowsingDataCellMatcher() {
 }
 
 id<GREYMatcher> ManagedProfileCreationSubtitleMergeByDefaultMatcher() {
-  return grey_accessibilityLabel([NSString
-      stringWithFormat:
-          @"%@.\n\n%@",
-          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
-          l10n_util::GetNSString(
-              IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION)]);
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION));
 }
 
 id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
@@ -57,12 +53,8 @@ id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
 }
 
 id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
-  return grey_accessibilityLabel([NSString
-      stringWithFormat:
-          @"%@.\n\n%@",
-          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
-          l10n_util::GetNSString(
-              IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION)]);
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION));
 }
 
 }  // namespace
