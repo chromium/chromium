@@ -616,12 +616,6 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
     return;
   }
 
-  // Retrieve the ax tree id associated with the current web contents.
-  ui::AXTreeID tree_id;
-  if (content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame()) {
-    tree_id = rfh->GetAXTreeID();
-  }
-
   // In order to get the AXPlatformNode for the ax node id, we first need
   // the AXPlatformNode for the web contents.
   ui::AXPlatformNode* root_platform_node =
@@ -630,8 +624,11 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
     return;
   }
 
+  // Retrieve the ax tree id associated with the current web contents.
   ui::AXPlatformNodeDelegate* root_platform_node_delegate =
       root_platform_node->GetDelegate();
+  ui::AXTreeID tree_id =
+      root_platform_node_delegate->GetTreeData().focused_tree_id;
 
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =

@@ -3,14 +3,11 @@
 # --force-renderer-accessibility is used.
 -CaptionBubbleControllerViewsTest.AccessibleTextIsSometimesFocusable
 
-# This test crashes due to DCHECK failed: ax_tree_id != AXTreeIDUnknown()
--AutofillInteractiveTest/AutofillInteractiveFencedFrameTest.DeletingFrameClosesPopup/1
-
-# This test times out, but only if accessibility is enabled.
+# These tests fail because WebUITabStripContainerView is nullptr.
+# The reason why is that WebUITabStripContainerView::UseTouchableTabStrip()
+# returns false when a screen reader is active. Until that changes, these
+# tests are irrelevant on this bot.
 -FeaturePromoDialogWebUITabStripTest.InvokeUi_IPH_WebUITabStrip
-
-# These tests fail because WebUITabStripContainerView is nullptr,
-# but only if accessibility is enabled.
 -WebUITabStripInteractiveTest.CanTypeInOmniboxAfterTabStripClose
 -WebUITabStripInteractiveTest.EventInContainerDoesNotClose
 -WebUITabStripInteractiveTest.EventInTabContentClosesContainer
