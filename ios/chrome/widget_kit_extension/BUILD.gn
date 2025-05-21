@@ -51,7 +51,7 @@ swift_source_set("widget_kit_extension_swift") {
     "//ios/chrome/common/app_group:helper",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/widget_kit_extension/resources",
-    "//ui/base:base",
+    "//ui/base",
   ]
 
   # Swift does not have the equivalent of __IPHONE_16_0, so use a

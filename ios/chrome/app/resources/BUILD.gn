@@ -93,7 +93,7 @@ repack("repack_unscaled_resources") {
     "//components/data_sharing/data_sharing_internals/resources",
     "//components/download/resources/download_internals:resources",
     "//components/metrics:server_urls_grd",
-    "//components/ntp_tiles/webui/resources:resources",
+    "//components/ntp_tiles/webui/resources",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
     "//components/resources",
@@ -128,7 +128,7 @@ repack("repack_unscaled_resources") {
     deps += [
       "//base/tracing/protos:chrome_track_event_resources",
       "//content:content_resources",
-      "//content/browser/resources:resources",
+      "//content/browser/resources",
       "//content/browser/resources/media:resources",
       "//content/browser/webrtc/resources",
       "//third_party/blink/public:devtools_inspector_resources",
