@@ -18,6 +18,7 @@
 
 namespace privacy_sandbox {
 
+using dialog::mojom::BaseDialogPage;
 using dialog::mojom::BaseDialogPageHandler;
 using notice::mojom::PrivacySandboxNotice;
 
@@ -51,12 +52,21 @@ WEB_UI_CONTROLLER_TYPE_IMPL(BaseDialogUI)
 BaseDialogUI::~BaseDialogUI() = default;
 
 void BaseDialogUI::BindInterface(
+    mojo::PendingReceiver<BaseDialogPageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void BaseDialogUI::CreatePageHandler(
+    mojo::PendingRemote<BaseDialogPage> page,
     mojo::PendingReceiver<BaseDialogPageHandler> receiver) {
+  // Checks that the PendingRemote is bound.
+  CHECK(page);
   if (auto* privacy_sandbox_notice_service =
           PrivacySandboxNoticeServiceFactory::GetForProfile(
               Profile::FromWebUI(web_ui()))) {
     page_handler_ = std::make_unique<BaseDialogHandler>(
-        std::move(receiver),
+        std::move(receiver), std::move(page),
         privacy_sandbox_notice_service->GetDesktopViewManager(), delegate_);
   }
 }

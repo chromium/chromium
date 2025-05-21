@@ -13,6 +13,7 @@ import '/strings.m.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {BaseDialogPageHandlerInterface} from './base_dialog.mojom-webui.js';
@@ -40,13 +41,31 @@ export class BaseDialogApp extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  private proxy_: BaseDialogBrowserProxy = BaseDialogBrowserProxy.getInstance();
   private handler_: BaseDialogPageHandlerInterface;
+  private navigateToNextStepListenerId_: number|null = null;
 
   override firstUpdated() {
-    this.handler_ = BaseDialogBrowserProxy.getInstance().handler;
+    this.handler_ = this.proxy_.handler;
     this.navigateToStep_(
             loadTimeData.getInteger('noticeIdToShow') as PrivacySandboxNotice)
         .then(() => this.resizeAndShowNativeDialog());
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    // Once the `callbackRouter` is notified that `navigateToNextStep` is
+    // triggered, we should switch views within this dialog.
+    this.navigateToNextStepListenerId_ =
+        this.proxy_.callbackRouter.navigateToNextStep.addListener(
+            this.navigateToStep_.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.navigateToNextStepListenerId_);
+    this.proxy_.callbackRouter.removeListener(
+        this.navigateToNextStepListenerId_);
   }
 
   private navigateToStep_(step: PrivacySandboxNotice): Promise<void> {

@@ -1226,7 +1226,7 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   RegisterWebUIControllerInterfaceBinder<
-      privacy_sandbox::dialog::mojom::BaseDialogPageHandler,
+      privacy_sandbox::dialog::mojom::BaseDialogPageHandlerFactory,
       privacy_sandbox::BaseDialogUI>(map);
 #endif
 

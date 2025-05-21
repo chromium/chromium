@@ -30,7 +30,6 @@ export const BaseDialogMixin = <T extends Constructor<CrLitElement>>(
     onOptIn() {
       this.handler_.eventOccurred(
           this.notice_, PrivacySandboxNoticeEvent.kOptIn);
-      this.handler_.closeDialog();
     }
 
     onAck() {

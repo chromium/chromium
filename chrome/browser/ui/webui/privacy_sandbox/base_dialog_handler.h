@@ -10,6 +10,7 @@
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace privacy_sandbox {
 
@@ -21,6 +22,7 @@ class BaseDialogHandler
  public:
   BaseDialogHandler(
       mojo::PendingReceiver<dialog::mojom::BaseDialogPageHandler> receiver,
+      mojo::PendingRemote<dialog::mojom::BaseDialogPage> page,
       DesktopViewManagerInterface* view_manager,
       BaseDialogUIDelegate* delegate);
 
@@ -37,7 +39,6 @@ class BaseDialogHandler
   // privacy_sandbox::dialog::mojom::BaseDialogPageHandler
   void ResizeDialog(uint32_t height) override;
   void ShowDialog() override;
-  void CloseDialog() override;
   void EventOccurred(notice::mojom::PrivacySandboxNotice notice,
                      notice::mojom::PrivacySandboxNoticeEvent event) override;
 
@@ -46,6 +47,7 @@ class BaseDialogHandler
                           DesktopViewManagerInterface::Observer>
       desktop_view_manager_observation_{this};
   mojo::Receiver<dialog::mojom::BaseDialogPageHandler> receiver_;
+  mojo::Remote<dialog::mojom::BaseDialogPage> page_;
   raw_ptr<BaseDialogUIDelegate> delegate_;
   raw_ptr<DesktopViewManagerInterface> view_manager_;
   bool has_resized = false;

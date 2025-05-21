@@ -278,5 +278,10 @@ content::WebContents* PrivacySandboxDialogView::GetWebContentsForTesting() {
   return web_view_->GetWebContents();
 }
 
+void PrivacySandboxDialogView::SetPrivacySandboxNotice(
+    privacy_sandbox::notice::mojom::PrivacySandboxNotice notice) {
+  notice_ = notice;
+}
+
 BEGIN_METADATA(PrivacySandboxDialogView)
 END_METADATA

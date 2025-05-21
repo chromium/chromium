@@ -8,15 +8,18 @@
 
 namespace privacy_sandbox {
 
+using dialog::mojom::BaseDialogPage;
 using dialog::mojom::BaseDialogPageHandler;
 using notice::mojom::PrivacySandboxNotice;
 using notice::mojom::PrivacySandboxNoticeEvent;
 
 BaseDialogHandler::BaseDialogHandler(
     mojo::PendingReceiver<BaseDialogPageHandler> receiver,
+    mojo::PendingRemote<BaseDialogPage> page,
     DesktopViewManagerInterface* view_manager,
     BaseDialogUIDelegate* delegate)
     : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
       delegate_(delegate),
       view_manager_(view_manager) {
   CHECK(view_manager_);
@@ -41,13 +44,6 @@ void BaseDialogHandler::ShowDialog() {
   delegate_->ShowNativeView();
 }
 
-void BaseDialogHandler::CloseDialog() {
-  if (!delegate_) {
-    return;
-  }
-  delegate_->CloseNativeView();
-}
-
 void BaseDialogHandler::EventOccurred(PrivacySandboxNotice notice,
                                       PrivacySandboxNoticeEvent event) {
   view_manager_->OnEventOccurred(notice, event);
@@ -55,7 +51,15 @@ void BaseDialogHandler::EventOccurred(PrivacySandboxNotice notice,
 
 void BaseDialogHandler::MaybeNavigateToNextStep(
     std::optional<PrivacySandboxNotice> next_id) {
-  // TODO(crbug.com/408016824): implement and add tests.
+  if (!delegate_) {
+    return;
+  }
+  if (!next_id) {
+    delegate_->CloseNativeView();
+  } else {
+    page_->NavigateToNextStep(*next_id);
+    delegate_->SetPrivacySandboxNotice(*next_id);
+  }
 }
 
 }  // namespace privacy_sandbox

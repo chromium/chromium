@@ -11033,6 +11033,8 @@ if (!is_android && !is_chromeos_device) {
       # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
       # gets modularized.
       "//chrome/browser/privacy_sandbox:test_support",
+      "//chrome/browser/privacy_sandbox/notice:factory",
+      "//chrome/browser/privacy_sandbox/notice:test_support",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",

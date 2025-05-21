@@ -45,6 +45,8 @@ class PrivacySandboxDialogView : public views::View,
   void ShowNativeView() override;
   privacy_sandbox::notice::mojom::PrivacySandboxNotice GetPrivacySandboxNotice()
       override;
+  void SetPrivacySandboxNotice(
+      privacy_sandbox::notice::mojom::PrivacySandboxNotice notice) override;
 
  private:
   friend class PrivacySandboxQueueTestNotice;

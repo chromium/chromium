@@ -9,6 +9,8 @@
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace privacy_sandbox {
 
@@ -112,7 +114,16 @@ NavigationHandler* DesktopViewManager::GetNavigationHandler() {
 
 void DesktopViewManager::HandleChromeOwnedPageNavigation(
     BrowserWindowInterface* browser_interface) {
-  // TODO(crbug.com/408016824): Call MaybeShowView.
+  // TODO(crbug.com/408016824): Move this Feature flag check to the orchestrator
+  // once implemented.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxNoticeFramework)) {
+    // Create a view through the bound `Show` function.
+    MaybeCreateView(browser_interface,
+                    base::BindOnce(static_cast<void (*)(BrowserWindowInterface*,
+                                                        PrivacySandboxNotice)>(
+                        &PrivacySandboxDialog::Show)));
+  }
 }
 
 }  // namespace privacy_sandbox

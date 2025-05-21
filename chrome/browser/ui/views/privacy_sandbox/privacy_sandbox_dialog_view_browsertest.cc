@@ -176,20 +176,25 @@ PrivacySandboxNotice GetNoticeName(const std::string& name) {
 class PrivacySandboxPSNoticeDialogViewBrowserTest : public DialogBrowserTest {
  public:
   PrivacySandboxPSNoticeDialogViewBrowserTest() {
-    set_baseline("crrev.com/c/6540376");
+    set_baseline("crrev.com/c/6546899");
     scoped_feature_list_.InitWithFeatures(
         // Enabled Features
         {privacy_sandbox::kPrivacySandboxNoticeFramework},
         /*disabled_features=*/{});
   }
 
-  void SetUpOnMainThread() override {
-    mock_notice_service_ = static_cast<MockPrivacySandboxNoticeService*>(
-        PrivacySandboxNoticeServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                browser()->profile(),
-                base::BindRepeating(
-                    &privacy_sandbox::BuildMockPrivacySandboxNoticeService)));
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  PrivacySandboxNoticeServiceFactory::GetInstance()
+                      ->SetTestingFactory(
+                          context,
+                          base::BindRepeating(
+                              &privacy_sandbox::
+                                  BuildMockPrivacySandboxNoticeService));
+                }));
   }
 
   // DialogBrowserTest:
@@ -218,14 +223,10 @@ class PrivacySandboxPSNoticeDialogViewBrowserTest : public DialogBrowserTest {
         FROM_HERE, base::BindOnce(&PrivacySandboxDialogView::CloseNativeView,
                                   base::Unretained(dialog_view_)));
     dialog_view_ = nullptr;
-    mock_notice_service_ = nullptr;
-  }
-
-  MockPrivacySandboxNoticeService* mock_notice_service() {
-    return mock_notice_service_;
   }
 
  private:
+  base::CallbackListSubscription create_services_subscription_;
   raw_ptr<MockPrivacySandboxNoticeService> mock_notice_service_;
   raw_ptr<PrivacySandboxDialogView> dialog_view_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -325,7 +326,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
       .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
   ShowAndVerifyUi();
 
-  LOG(INFO) << "Waiting for callback";
   shown_waiter.TimedWait(kMaxWaitTime);
   closed_waiter.TimedWait(kMaxWaitTime);
 }
@@ -347,7 +347,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Notice) {
       .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
   ShowAndVerifyUi();
 
-  LOG(INFO) << "Waiting for callback";
   shown_waiter.TimedWait(kMaxWaitTime);
   closed_waiter.TimedWait(kMaxWaitTime);
 }
@@ -370,7 +369,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
       .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
   ShowAndVerifyUi();
 
-  LOG(INFO) << "Waiting for callback";
   shown_waiter.TimedWait(kMaxWaitTime);
   closed_waiter.TimedWait(kMaxWaitTime);
 }

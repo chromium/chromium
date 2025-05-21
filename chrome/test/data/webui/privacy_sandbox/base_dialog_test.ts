@@ -103,10 +103,6 @@ suite('TopicsConsentNotice', function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kTopicsConsentNotice,
         PrivacySandboxNoticeEvent.kOptIn, testHandler);
-    // TODO(crbug.com/417700269): Remove this once close dialog method is
-    // removed from the mojo interface and the View Manager handles closing the
-    // dialog.
-    await testHandler.whenCalled('closeDialog');
   });
 });
 

@@ -26,10 +26,13 @@ class BaseDialogUIDelegate {
   virtual void ShowNativeView() = 0;
   virtual void CloseNativeView() = 0;
   virtual notice::mojom::PrivacySandboxNotice GetPrivacySandboxNotice() = 0;
+  virtual void SetPrivacySandboxNotice(
+      notice::mojom::PrivacySandboxNotice notice) = 0;
 };
 
 // MojoWebUIController for Privacy Sandbox Base Dialog
-class BaseDialogUI : public ui::MojoWebUIController {
+class BaseDialogUI : public ui::MojoWebUIController,
+                     public dialog::mojom::BaseDialogPageHandlerFactory {
  public:
   explicit BaseDialogUI(content::WebUI* web_ui);
   BaseDialogUI(const BaseDialogUI&) = delete;
@@ -41,9 +44,20 @@ class BaseDialogUI : public ui::MojoWebUIController {
   // privacy_sandbox::dialog::mojom::BaseDialogPageHandler mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<dialog::mojom::BaseDialogPageHandler> receiver);
+      mojo::PendingReceiver<dialog::mojom::BaseDialogPageHandlerFactory>
+          receiver);
 
  private:
+  // The PendingRemote must be valid and bind to a receiver in order to start
+  // sending messages to the receiver. This is set in
+  // base_dialog_browser_proxy.ts. dialog::mojom::BaseDialogPageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<dialog::mojom::BaseDialogPage> page,
+      mojo::PendingReceiver<dialog::mojom::BaseDialogPageHandler> receiver)
+      override;
+
+  mojo::Receiver<dialog::mojom::BaseDialogPageHandlerFactory>
+      page_factory_receiver_{this};
   std::unique_ptr<BaseDialogHandler> page_handler_;
   raw_ptr<BaseDialogUIDelegate> delegate_;
 

@@ -3,13 +3,25 @@
 // found in the LICENSE file.
 
 import type {BaseDialogPageHandlerInterface} from './base_dialog.mojom-webui.js';
-import {BaseDialogPageHandler} from './base_dialog.mojom-webui.js';
+import {BaseDialogPageCallbackRouter, BaseDialogPageHandlerFactory, BaseDialogPageHandlerRemote} from './base_dialog.mojom-webui.js';
 
 export class BaseDialogBrowserProxy {
+  callbackRouter: BaseDialogPageCallbackRouter;
   handler: BaseDialogPageHandlerInterface;
 
+  // Creates communication pipes for both the remote and the receiver.
+  // 1. Constructs a valid PendingRemote to send messages to the
+  // `callbackRouter`.
+  // 2. Constructs a valid PendingReceiver on the existing Remote
+  // (BaseDialogPageHandlerRemote) to accept BaseDialogPageHandler interface
+  // calls.
   constructor() {
-    this.handler = BaseDialogPageHandler.getRemote();
+    this.callbackRouter = new BaseDialogPageCallbackRouter();
+    this.handler = new BaseDialogPageHandlerRemote();
+    BaseDialogPageHandlerFactory.getRemote().createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        (this.handler as BaseDialogPageHandlerRemote)
+            .$.bindNewPipeAndPassReceiver());
   }
 
   static setInstance(proxy: BaseDialogBrowserProxy) {
