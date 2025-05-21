@@ -110,7 +110,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                                       LensOverlayTabChangeAudience>
 
 // Whether the `_containerViewController` is currently presented.
-@property(nonatomic, assign, readonly) BOOL isLensOverlayVisible;
+@property(nonatomic, assign, readonly, getter=isLensOverlayVisible)
+    BOOL lensOverlayVisible;
 
 // Whether the UI is created.
 @property(nonatomic, assign, readonly) BOOL isUICreated;
@@ -412,7 +413,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)showLensUI:(BOOL)animated completion:(void (^)(BOOL))completion {
-  if (!self.isUICreated || self.isLensOverlayVisible) {
+  if (!self.isUICreated || self.lensOverlayVisible) {
     return;
   }
 
@@ -1393,7 +1394,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (BOOL)isLensOverlayVisible {
-  return _containerPresenter.isLensOverlayVisible;
+  return _containerPresenter.lensOverlayVisible;
 }
 
 // Blocks user interaction with the Lens UI.

@@ -19,8 +19,9 @@
 // Delegate for overlay container presentation events.
 @property(nonatomic, weak) id<LensOverlayContainerPresenterDelegate> delegate;
 
-// Whether the overlay is presented or not;
-@property(nonatomic, readonly) BOOL isLensOverlayVisible;
+// Whether the overlay is presented or not.
+@property(nonatomic, readonly, getter=isLensOverlayVisible)
+    BOOL lensOverlayVisible;
 
 // Creates a new container presenter instance.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
