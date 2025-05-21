@@ -220,10 +220,26 @@ const auto kMimeTypeMapping = base::MakeFixedFlatMap<std::string_view,
     {"video/quicktime", "Quicktime Video"},
 });
 
-// Helper for converting a `mime_type` into an abbreviated string.
-std::string_view MimeToDescription(const std::string_view& mime_type) {
-  const auto it = kMimeTypeMapping.find(mime_type);
-  return it != kMimeTypeMapping.end() ? it->second : "";
+// A mapping from `source_type` to the human readable `content_type_description`.
+const auto kSourceTypeMapping = base::MakeFixedFlatMap<std::string_view,
+                                                       std::string_view>({
+    {"buganizer", "Buganizer Issue"},
+    {"jira", "Jira Issue"},
+    {"salesforce", "Salesforce"},
+    {"slack", "Slack Message"},
+});
+
+// Helper for converting `mime_type` and `source_type` into a human readable
+// string. Prioritizes `mime_type` over `source_type`.
+std::string_view ContentTypeToDescription(const std::string_view& mime_type,
+                                          const std::string_view& source_type) {
+  const auto mimeTypeIter = kMimeTypeMapping.find(mime_type);
+  if (mimeTypeIter != kMimeTypeMapping.end()) {
+    return mimeTypeIter->second;
+  }
+  const auto sourceTypeIter = kSourceTypeMapping.find(source_type);
+  return sourceTypeIter != kSourceTypeMapping.end() ? sourceTypeIter->second
+                                                    : "";
 }
 
 // Helper for converting unix timestamp `time` into an abbreviated date.
@@ -911,13 +927,19 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     std::optional<int> response_time =
         result.FindIntByDottedPath("document.derivedStructData.updated_time");
     const std::u16string last_updated = UpdateTimeToString(response_time);
+
     const std::u16string owner = base::UTF8ToUTF16(ptr_to_string(
         result.FindStringByDottedPath("document.derivedStructData.owner")));
-    const std::u16string file_type_description = base::UTF8ToUTF16(
-        MimeToDescription(ptr_to_string(result.FindStringByDottedPath(
-            "document.derivedStructData.mime_type"))));
+
+    const std::u16string content_type_description = base::UTF8ToUTF16(
+        ContentTypeToDescription(
+            ptr_to_string(result.FindStringByDottedPath(
+                "document.derivedStructData.mime_type")),
+            ptr_to_string(result.FindStringByDottedPath(
+                "document.derivedStructData.source_type"))));
+
     return base::UTF16ToUTF8(GetLocalizedContentMetadata(
-        last_updated, owner, file_type_description));
+        last_updated, owner, content_type_description));
   }
 
   return "";
@@ -926,31 +948,31 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
 std::u16string EnterpriseSearchAggregatorProvider::GetLocalizedContentMetadata(
     const std::u16string& update_time,
     const std::u16string& owner,
-    const std::u16string& file_type_description) const {
+    const std::u16string& content_type_description) const {
   if (!update_time.empty()) {
     if (!owner.empty()) {
-      return !file_type_description.empty()
+      return !content_type_description.empty()
                  ? l10n_util::GetStringFUTF16(
                        IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE, update_time,
-                       owner, file_type_description)
+                       owner, content_type_description)
                  : l10n_util::GetStringFUTF16(
                        IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_FILE_TYPE_DESCRIPTION,
                        update_time, owner);
     }
-    return !file_type_description.empty()
+    return !content_type_description.empty()
                ? l10n_util::GetStringFUTF16(
                      IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER,
-                     update_time, file_type_description)
+                     update_time, content_type_description)
                : update_time;
   }
   if (!owner.empty()) {
-    return !file_type_description.empty()
+    return !content_type_description.empty()
                ? l10n_util::GetStringFUTF16(
                      IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE,
-                     owner, file_type_description)
+                     owner, content_type_description)
                : owner;
   }
-  return !file_type_description.empty() ? file_type_description : u"";
+  return !content_type_description.empty() ? content_type_description : u"";
 }
 
 std::vector<std::string>

@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
                       GURL("https://example.com/image.png"))),
           AllOf(Field(&AutocompleteMatch::type,
                       AutocompleteMatchType::NAVSUGGEST),
-                Field(&AutocompleteMatch::contents, u""),
+                Field(&AutocompleteMatch::contents, u"Jira Issue"),
                 Field(&AutocompleteMatch::description, u"John's Document"),
                 Field(&AutocompleteMatch::destination_url,
                       GURL("https://www.example.com/"))),

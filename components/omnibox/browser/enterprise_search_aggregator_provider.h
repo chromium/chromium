@@ -163,11 +163,11 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                SuggestionType suggestion_type) const;
 
   // Helper method to get a localized metadata string depending on which of
-  // `update_time`, `owner`, and `file_type_description` exist.
+  // `update_time`, `owner`, and `content_type_description` exist.
   std::u16string GetLocalizedContentMetadata(
       const std::u16string& update_time,
       const std::u16string& owner,
-      const std::u16string& file_type_description) const;
+      const std::u16string& content_type_description) const;
 
   // Helper method to get user-readable (e.g. 'chromium is awesome
   // document') fields that can be used to compare input similarity.
