@@ -19,6 +19,12 @@
   color: var(--color-side-panel-entry-icon);
 }
 
+@media (forced-colors: active) {
+    #play-pause {
+    --cr-icon-button-fill-color: CanvasText;
+  }
+}
+
 .audio-background-when-active-false {
   --audio-controls-background: transparent;
   --audio-controls-right-margin: 2px;
