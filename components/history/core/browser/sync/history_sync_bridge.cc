@@ -484,59 +484,6 @@ bool SpecificsContainsOnlyValidURLs(
   return true;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SyncHistorySpecificsError)
-enum class SpecificsError {
-  kMissingRequiredFields = 0,
-  kTooOld = 1,
-  kTooNew = 2,
-  kUnwantedURL = 3,
-  kMaxValue = kUnwantedURL
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncHistorySpecificsError)
-
-// Checks the given `specifics` for validity, i.e. whether it passes some basic
-// validation checks, and returns the appropriate error if it doesn't.
-std::optional<SpecificsError> GetSpecificsError(
-    const sync_pb::HistorySpecifics& specifics,
-    const HistoryBackendForSync* history_backend) {
-  // Check for required fields: visit_time and originator_cache_guid must not be
-  // empty, and there must be at least one entry in the redirects list.
-  if (specifics.visit_time_windows_epoch_micros() == 0 ||
-      specifics.originator_cache_guid().empty() ||
-      specifics.redirect_entries_size() == 0) {
-    return SpecificsError::kMissingRequiredFields;
-  }
-
-  base::Time visit_time = GetVisitTime(specifics);
-
-  // Already-expired visits are not valid. (They wouldn't really cause any harm,
-  // but the history backend would just immediately expire them.)
-  if (history_backend->IsExpiredVisitTime(visit_time)) {
-    return SpecificsError::kTooOld;
-  }
-
-  // Visits that are too far in the future are not valid.
-  if (visit_time > base::Time::Now() + kMaxWriteToTheFuture) {
-    return SpecificsError::kTooNew;
-  }
-
-  // Visits to "unwanted" URLs are not valid. Such "unwanted" URLs usually
-  // shouldn't end up on the server in the first place, but in some cases they
-  // might (e.g. due to older clients still using SESSIONS, which is less
-  // strict about filtering URLs).
-  if (!SpecificsContainsOnlyValidURLs(specifics, history_backend)) {
-    return SpecificsError::kUnwantedURL;
-  }
-
-  return {};
-}
-
-void RecordSpecificsError(SpecificsError error) {
-  base::UmaHistogramEnumeration("Sync.History.IncomingSpecificsError", error);
-}
-
 }  // namespace
 
 HistorySyncBridge::HistorySyncBridge(
@@ -585,19 +532,9 @@ HistorySyncBridge::ApplyIncrementalSyncChanges(
 
   for (const std::unique_ptr<syncer::EntityChange>& entity_change :
        entity_changes) {
-    DCHECK(entity_change->data().specifics.has_history());
+    CHECK(IsEntityDataValid(entity_change->data()));
     const sync_pb::HistorySpecifics& specifics =
         entity_change->data().specifics.history();
-
-    // Check validity requirements.
-    std::optional<SpecificsError> specifics_error =
-        GetSpecificsError(specifics, history_backend_);
-    if (specifics_error.has_value()) {
-      DVLOG(1) << "Skipping invalid visit, reason "
-               << static_cast<int>(*specifics_error);
-      RecordSpecificsError(*specifics_error);
-      continue;
-    }
 
     if (specifics.originator_cache_guid() == GetLocalCacheGuid()) {
       // This is likely a reflection, i.e. an update that came from this client.
@@ -759,6 +696,44 @@ std::string HistorySyncBridge::GetStorageKey(
   const sync_pb::HistorySpecifics& history = entity_data.specifics.history();
   return HistorySyncMetadataDatabase::StorageKeyFromMicrosSinceWindowsEpoch(
       history.visit_time_windows_epoch_micros());
+}
+
+bool HistorySyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_history());
+
+  const sync_pb::HistorySpecifics& specifics = entity_data.specifics.history();
+
+  // Check for required fields: visit_time and originator_cache_guid must not be
+  // empty, and there must be at least one entry in the redirects list.
+  if (specifics.visit_time_windows_epoch_micros() == 0 ||
+      specifics.originator_cache_guid().empty() ||
+      specifics.redirect_entries_size() == 0) {
+    return false;
+  }
+
+  base::Time visit_time = GetVisitTime(specifics);
+
+  // Already-expired visits are not valid. (They wouldn't really cause any harm,
+  // but the history backend would just immediately expire them.)
+  if (history_backend_->IsExpiredVisitTime(visit_time)) {
+    return false;
+  }
+
+  // Visits that are too far in the future are not valid.
+  if (visit_time > base::Time::Now() + kMaxWriteToTheFuture) {
+    return false;
+  }
+
+  // Visits to "unwanted" URLs are not valid. Such "unwanted" URLs usually
+  // shouldn't end up on the server in the first place, but in some cases they
+  // might (e.g. due to older clients still using SESSIONS, which is less
+  // strict about filtering URLs).
+  if (!SpecificsContainsOnlyValidURLs(specifics, history_backend_)) {
+    return false;
+  }
+
+  return true;
 }
 
 syncer::ConflictResolution HistorySyncBridge::ResolveConflict(

@@ -1106,19 +1106,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/history/core/browser/sync/history_sync_bridge.cc:SyncHistoryDatabaseError) -->
 
-<!-- LINT.IfChange(SyncHistorySpecificsError) -->
-
-<enum name="SyncHistorySpecificsError">
-  <int value="0"
-      label="Missing required fields (visit time, originator cache GUID, or
-             redirect entries)"/>
-  <int value="1" label="Too old (already expired)"/>
-  <int value="2" label="Too new (too far in the future)"/>
-  <int value="3" label="Unwanted URL (e.g. file: or chrome:)"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/history/core/browser/sync/history_sync_bridge.cc:SyncHistorySpecificsError) -->
-
 <!-- LINT.IfChange(SyncIncomingInvalidationStatus) -->
 
 <enum name="SyncIncomingInvalidationStatus">

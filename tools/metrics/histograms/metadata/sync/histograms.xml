@@ -1329,18 +1329,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.History.IncomingSpecificsError"
-    enum="SyncHistorySpecificsError" expires_after="2025-08-10">
-  <owner>treib@chromium.org</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Recorded when HistorySyncBridge encounters an incoming entity that is
-    invalid, i.e. that fails some validity check. Counts in this histogram
-    should be compared to counts in the &quot;Remote&quot; buckets of
-    Sync.DataTypeEntityChange.History.
-  </summary>
-</histogram>
-
 <histogram name="Sync.IdentityErrorCard{SyncErrorReason}"
     enum="SyncErrorUiAction" expires_after="2025-11-09">
   <owner>ankushkush@google.com</owner>
