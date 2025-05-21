@@ -6553,6 +6553,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMostVisitedTilesNewScoringVariations,
                                     "MostVisitedTilesNewScoring")},
 
+    {"most-visited-tiles-visual-deduplication",
+     flag_descriptions::kMostVisitedTilesVisualDeduplicationName,
+     flag_descriptions::kMostVisitedTilesVisualDeduplicationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(history::kMostVisitedTilesVisualDeduplication)},
+
     {"omnibox-local-history-zero-suggest-beyond-ntp",
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestBeyondNTPName,
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription,

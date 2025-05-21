@@ -1534,6 +1534,9 @@ extern const char kMostVisitedTilesNewScoringDescription[];
 extern const char kMostVisitedTilesReselectName[];
 extern const char kMostVisitedTilesReselectDescription[];
 
+extern const char kMostVisitedTilesVisualDeduplicationName[];
+extern const char kMostVisitedTilesVisualDeduplicationDescription[];
+
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 

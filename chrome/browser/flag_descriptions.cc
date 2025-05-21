@@ -2642,6 +2642,14 @@ const char kMostVisitedTilesNewScoringDescription[] =
     "When showing MV tiles, use a new scoring function to compute the score of "
     "each segment.";
 
+const char kMostVisitedTilesVisualDeduplicationName[] =
+    "Most Visited Tile: Visual deduplication filter";
+
+const char kMostVisitedTilesVisualDeduplicationDescription[] =
+    "When computing MV Tiles, remove tiles that are visual duplicates "
+    "(i.e., have the same title and the same hostname) of another tile with "
+    "higher score.";
+
 const char kCanvas2DLayersName[] =
     "Enables canvas 2D methods BeginLayer and EndLayer";
 const char kCanvas2DLayersDescription[] =

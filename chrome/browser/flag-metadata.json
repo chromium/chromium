@@ -6496,6 +6496,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "most-visited-tiles-visual-deduplication",
+    "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "move-theme-prefs-to-specifics",
     "owners": [ "ankushkush@google.com", "chrome-sync-dev@google.com" ],
     "expiry_milestone": 136

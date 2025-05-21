@@ -31,6 +31,9 @@ BASE_DECLARE_FEATURE(kPopulateVisitedLinkDatabase);
 // Most Visited Tiles scoring function changes.
 BASE_DECLARE_FEATURE(kMostVisitedTilesNewScoring);
 
+// Most Visited Tiles Visual Deduplication.
+BASE_DECLARE_FEATURE(kMostVisitedTilesVisualDeduplication);
+
 // List of values for |kMvtScoringParamRecencyFactor|
 inline constexpr char kMvtScoringParamRecencyFactor_Classic[] = "default";
 inline constexpr char kMvtScoringParamRecencyFactor_Decay[] = "decay";

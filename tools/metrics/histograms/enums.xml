@@ -14184,6 +14184,7 @@ from previous Chrome versions.
   <int value="46334141"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:enabled"/>
   <int value="48159177" label="reduced-referrer-granularity"/>
+  <int value="48619644" label="MostVisitedTilesVisualDeduplication:enabled"/>
   <int value="48666910" label="ClipboardHistoryLongpress:disabled"/>
   <int value="48850808" label="AutocorrectUseReplaceSurroundingText:enabled"/>
   <int value="49971529" label="TabGroupEntryPointsAndroid:disabled"/>
@@ -15283,6 +15284,7 @@ from previous Chrome versions.
   <int value="454778715"
       label="ForceSafeSearchForUnauthenticatedSupervisedUsers:disabled"/>
   <int value="455140116" label="CCTIncognitoAvailableToThirdParty:disabled"/>
+  <int value="455334174" label="MostVisitedTilesVisualDeduplication:disabled"/>
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>

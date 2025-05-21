@@ -84,4 +84,9 @@ BASE_FEATURE(kMostVisitedTilesNewScoring,
              is_android ? base::FEATURE_ENABLED_BY_DEFAULT
                         : base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, heuristically remove possible visual duplicates from top sites.
+BASE_FEATURE(kMostVisitedTilesVisualDeduplication,
+             "MostVisitedTilesVisualDeduplication",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace history
