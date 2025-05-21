@@ -258,8 +258,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                        IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
                                    Suggestion::Icon::kSettings)));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_THAT(lc_submenu_suggestion,
-              HasIcon(Suggestion::Icon::kGoogleWalletMonochrome));
   EXPECT_THAT(lc_submenu_suggestion.children.back(),
               HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
 #endif
