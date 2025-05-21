@@ -88,6 +88,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   bool IsGuestSession() const override;
   bool SearchSuggestEnabled() const override;
   bool IsUrlDataCollectionActive() const override;
+  bool IsPersonalizedUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;
   bool IsSyncActive() const override;
   void Classify(
@@ -122,6 +123,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
+  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+      personalized_url_consent_helper_;
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
   TabMatcherImpl tab_matcher_;

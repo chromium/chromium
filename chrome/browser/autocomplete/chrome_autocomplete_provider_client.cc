@@ -174,6 +174,10 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       url_consent_helper_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs())),
+      personalized_url_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedDataCollectionConsentHelper(
+                  SyncServiceFactory::GetForProfile(profile_))),
       tab_matcher_(GetTemplateURLService(), profile_),
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
@@ -444,6 +448,11 @@ bool ChromeAutocompleteProviderClient::AllowDeletingBrowserHistory() const {
 
 bool ChromeAutocompleteProviderClient::IsUrlDataCollectionActive() const {
   return url_consent_helper_->IsEnabled();
+}
+
+bool ChromeAutocompleteProviderClient::IsPersonalizedUrlDataCollectionActive()
+    const {
+  return personalized_url_consent_helper_->IsEnabled();
 }
 
 bool ChromeAutocompleteProviderClient::IsAuthenticated() const {

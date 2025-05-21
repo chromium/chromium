@@ -142,6 +142,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kContextualSearchBoxUsesContextualSearchProvider);
   DECLARE_FEATURE(kOmniboxZeroSuggestSynchronousMatchesOnly);
   DECLARE_FEATURE(kContextualSearchOpenLensActionUsesThumbnail);
+  DECLARE_FEATURE(kSendPageTitleSuggestParam);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -174,6 +175,12 @@ struct ContextualSearch : Config<ContextualSearch> {
   // Whether the Lens entrypoint action uses a thumbnail of web contents view
   // instead of its regular vector icon.
   bool open_lens_action_uses_thumbnail;
+
+  // Whether to send the current page title (via "pageTitle" CGI param) on zero
+  // suggest requests.
+  // When set to false, the CGI param will not be sent at all (as opposed to
+  // sending an empty value).
+  bool send_page_title_suggest_param;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.

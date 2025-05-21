@@ -94,6 +94,10 @@ BASE_FEATURE(ContextualSearch::kContextualSearchOpenLensActionUsesThumbnail,
              "ContextualSearchOpenLensActionUsesThumbnail",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kSendPageTitleSuggestParam,
+             "SendPageTitleSuggestParam",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -124,6 +128,7 @@ ContextualSearch::ContextualSearch() {
       base::FeatureList::IsEnabled(kOmniboxZeroSuggestSynchronousMatchesOnly);
   open_lens_action_uses_thumbnail = base::FeatureList::IsEnabled(
       kContextualSearchOpenLensActionUsesThumbnail);
+  send_page_title_suggest_param = feature_enabled(kSendPageTitleSuggestParam);
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;

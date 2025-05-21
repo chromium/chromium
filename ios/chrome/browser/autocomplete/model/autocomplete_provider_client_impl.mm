@@ -56,6 +56,10 @@ AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
       url_consent_helper_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs())),
+      personalized_url_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedDataCollectionConsentHelper(
+                  SyncServiceFactory::GetForProfile(profile_))),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()),
       tab_matcher_(profile_) {
@@ -255,6 +259,11 @@ bool AutocompleteProviderClientImpl::SearchSuggestEnabled() const {
 
 bool AutocompleteProviderClientImpl::IsUrlDataCollectionActive() const {
   return url_consent_helper_->IsEnabled();
+}
+
+bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
+    const {
+  return personalized_url_consent_helper_->IsEnabled();
 }
 
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {

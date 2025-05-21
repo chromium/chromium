@@ -9,10 +9,12 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -48,12 +50,25 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/gurl.h"
+#include "url/url_canon.h"
+#include "url/url_util.h"
 
 using OEP = metrics::OmniboxEventProto;
 using OFT = metrics::OmniboxFocusType;
 using OIT = metrics::OmniboxInputType;
 
 namespace {
+
+// Maximum length of page title sent to Suggest via `pageTitle` CGI param,
+// expressed as number of Unicode characters (codepoints).
+//
+// NOTE: The actual string value for the CGI param could be longer (in bytes)
+// than this number, due to the way we're encoding the page title before sending
+// it to Suggest. In the worst-case scenario, the total number of bytes sent
+// could be up to 12x the value specified here:
+// `kMaxPageTitleLength` (# of codepoints) x 4 (UTF-8 code-units per codepoint
+// [maximum]) x 3 (due to URL-encoding [worst-case]).
+const size_t kMaxPageTitleLength = 128;
 
 using ResultType = ZeroSuggestProvider::ResultType;
 constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
@@ -286,23 +301,64 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
   return ResultType::kNone;
 }
 
-void MaybeAddContextualUrlSuggestParam(
+std::u16string TruncateUTF16(const std::u16string& input, size_t max_length) {
+  if (input.empty()) {
+    return u"";
+  }
+
+  size_t num_chars = 0;
+  base::i18n::UTF16CharIterator it(input);
+  while (!it.end() && (num_chars < max_length)) {
+    it.Advance();
+    num_chars++;
+  }
+
+  return input.substr(0, it.array_pos());
+}
+
+std::string EncodeURIComponent(const std::string& component) {
+  url::RawCanonOutputT<char> encoded;
+  url::EncodeURIComponent(component, &encoded);
+  return std::string(encoded.view());
+}
+
+void MaybeAddContextualSuggestParams(
     const AutocompleteProviderClient* client,
+    const AutocompleteInput& input,
     TemplateURLRef::SearchTermsArgs& search_terms_args) {
-  // Do not add the contextual URL suggest param if Lens is not enabled to
-  // fulfill the suggestion.
+  // Do not add the contextual suggest params if Lens is not enabled to fulfill
+  // the suggestion.
   if (!client->IsLensEnabled()) {
     return;
   }
+
+  std::vector<std::string> additional_query_params;
+
   if (!search_terms_args.current_page_url.empty() &&
       omnibox::IsOtherWebPage(search_terms_args.page_classification)) {
+    // Add "ctxus=" CGI param.
     std::string_view contextual_url_suggest_param =
         omnibox_feature_configs::ContextualSearch::Get()
             .contextual_url_suggest_param;
     if (!contextual_url_suggest_param.empty()) {
-      search_terms_args.additional_query_params =
-          base::StrCat({"ctxus=", contextual_url_suggest_param});
+      additional_query_params.push_back(
+          base::StrCat({"ctxus=", contextual_url_suggest_param}));
     }
+
+    // Add "pageTitle=" CGI param.
+    if (omnibox_feature_configs::ContextualSearch::Get()
+            .send_page_title_suggest_param &&
+        client->IsPersonalizedUrlDataCollectionActive()) {
+      std::string page_title = EncodeURIComponent(base::UTF16ToUTF8(
+          TruncateUTF16(input.current_title(), kMaxPageTitleLength)));
+      if (!page_title.empty()) {
+        additional_query_params.push_back(
+            base::StrCat({"pageTitle=", page_title}));
+      }
+    }
+
+    search_terms_args.additional_query_params =
+        base::JoinString(additional_query_params, "&");
   }
 }
 
@@ -433,7 +489,8 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
                                            : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
-  MaybeAddContextualUrlSuggestParam(client(), search_terms_args);
+
+  MaybeAddContextualSuggestParams(client(), input, search_terms_args);
 
   std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;
   if (result_type == ResultType::kRemoteNoURL) {
@@ -519,7 +576,8 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
           : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
-  MaybeAddContextualUrlSuggestParam(client(), search_terms_args);
+
+  MaybeAddContextualSuggestParams(client(), input, search_terms_args);
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the request and take ownership of it.

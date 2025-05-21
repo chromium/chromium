@@ -85,6 +85,7 @@ void OmniboxController::StartZeroSuggestPrefetch() {
   AutocompleteInput input(text, page_classification,
                           client_->GetSchemeClassifier());
   input.set_current_url(current_url);
+  input.set_current_title(client_->GetTitle());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller_->StartPrefetch(input);
 }
