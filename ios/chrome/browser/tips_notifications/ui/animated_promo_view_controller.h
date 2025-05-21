@@ -31,6 +31,10 @@
 // The text for the secondary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* secondaryActionString;
 
+// Controls if the navigation bar dismiss button is available in the view.
+// Default is NO. Must be set before the view is loaded.
+@property(nonatomic) BOOL showDismissBarButton;
+
 // The name of the animation resource to be used in light mode. Must be set
 // before the view is loaded.
 @property(nonatomic, copy) NSString* animationName;

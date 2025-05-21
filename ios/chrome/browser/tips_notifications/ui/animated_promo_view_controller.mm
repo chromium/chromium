@@ -45,6 +45,9 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 
   // TopAnchor constraint for `alertScreen`.
   NSLayoutConstraint* _alertScreenTopAnchorConstraint;
+
+  // The navigation bar for the promo view.
+  UINavigationBar* _navigationBar;
 }
 
 #pragma mark - UIViewController
@@ -57,6 +60,9 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   alertScreen.subtitleString = _subtitleString;
   alertScreen.primaryActionString = _primaryActionString;
   alertScreen.secondaryActionString = _secondaryActionString;
+  // The `alertScreen` itself should not show its own dismiss button, as
+  // `AnimatedPromoViewController` will manage one for the whole view.
+  alertScreen.showDismissBarButton = NO;
   alertScreen.actionHandler = _actionHandler;
   alertScreen.shouldFillInformationStack = YES;
   alertScreen.underTitleView = _underTitleView;
@@ -74,6 +80,16 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+  if (self.showDismissBarButton && ![self isAnyNavigationBarVisible]) {
+    [self setupNavigationBar];
+  } else if (self.showDismissBarButton && [self isAnyNavigationBarVisible]) {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(didTapDismissButton)];
+  }
+
   if (_animationViewWrapper) {
     [self configureAndLayoutAnimationView];
   }
@@ -103,6 +119,60 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 
 #pragma mark - Private
 
+// Helper to determine if any navigation bar is currently visible.
+- (BOOL)isAnyNavigationBarVisible {
+  if (_navigationBar) {
+    return YES;
+  }
+
+  if (self.navigationController.navigationBar &&
+      !self.navigationController.navigationBarHidden) {
+    return YES;
+  }
+
+  return NO;
+}
+
+// Sets up the navigation bar with a "Done" button.
+- (void)setupNavigationBar {
+  CHECK(self.showDismissBarButton);
+  CHECK(!self.navigationController);
+
+  _navigationBar = [[UINavigationBar alloc] init];
+  _navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  _navigationBar.translucent = NO;
+  [_navigationBar setShadowImage:[[UIImage alloc] init]];
+  _navigationBar.barTintColor = [UIColor colorNamed:kBackgroundColor];
+
+  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
+  UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(didTapDismissButton)];
+  navigationItem.rightBarButtonItem = doneButton;
+
+  [_navigationBar setItems:@[ navigationItem ]];
+
+  [self.view addSubview:_navigationBar];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_navigationBar.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+    [_navigationBar.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [_navigationBar.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
+}
+
+// Action for the "Done" button in the navigation bar.
+- (void)didTapDismissButton {
+  if ([self.actionHandler
+          respondsToSelector:@selector(confirmationAlertDismissAction)]) {
+    [self.actionHandler confirmationAlertDismissAction];
+  }
+}
+
 // Creates and returns the LottieAnimation view for the `animationAssetName`.
 - (id<LottieAnimation>)createAnimation:(NSString*)animationAssetName {
   LottieAnimationConfiguration* config =
@@ -116,18 +186,27 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 - (void)configureAlertScreen {
   DCHECK(_alertScreen);
   _alertScreen.imageHasFixedSize = YES;
+  // The `alertScreen` itself should not show its own dismiss button, as
+  // `AnimatedPromoViewController` will manage one for the whole view.
   _alertScreen.showDismissBarButton = NO;
   _alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   _alertScreen.topAlignedLayout = YES;
   _alertScreen.customSpacing = kCustomSpacing;
 
-  if ([self shouldShowAnimation]) {
-    _alertScreen.customSpacingBeforeImageIfNoNavigationBar =
-        kCustomSpacingAtTopIfNoNavigationBar;
-  } else {
-    _alertScreen.customSpacingAfterImage =
-        kCustomSpacingAfterImageWithoutAnimation;
+  CGFloat spacingAfterImage = kCustomSpacing;
+
+  if (![self shouldShowAnimation]) {
+    spacingAfterImage = kCustomSpacingAfterImageWithoutAnimation;
   }
+
+  CGFloat spacingBeforeImage = 0;
+
+  if (![self isAnyNavigationBarVisible]) {
+    spacingBeforeImage = kCustomSpacingAtTopIfNoNavigationBar;
+  }
+
+  _alertScreen.customSpacingBeforeImageIfNoNavigationBar = spacingBeforeImage;
+  _alertScreen.customSpacingAfterImage = spacingAfterImage;
 
   [self addChildViewController:_alertScreen];
   [self.view addSubview:_alertScreen.view];

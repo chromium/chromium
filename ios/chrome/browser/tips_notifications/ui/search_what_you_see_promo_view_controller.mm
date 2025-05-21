@@ -28,12 +28,15 @@ NSString* const kSearchWhatYouSeePromoAXID = @"kSearchWhatYouSeePromoAXID";
 - (void)viewDidLoad {
   self.animationName = kAnimationName;
   self.animationNameDarkMode = kAnimationNameDarkMode;
+
   self.titleString =
       l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_TITLE);
   self.subtitleString =
       l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SUBTITLE);
   self.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SHOW_ME_HOW_ACTION);
+
+  self.showDismissBarButton = YES;
 
   [super viewDidLoad];
 
