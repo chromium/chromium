@@ -2015,15 +2015,15 @@ bool DevToolsUIBindings::MaybeStartLogging() {
     }
     int gen_ai_settings =
         profile_->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings);
-    if (gen_ai_settings &
+    if (gen_ai_settings ==
         static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kDisable)) {
       session_tags |= SessionTags::kDevToolsGetAiEnterprisePolicyDisabled;
     }
-    if (gen_ai_settings &
+    if (gen_ai_settings ==
         static_cast<int>(
             DevToolsGenAiEnterprisePolicyValue::kAllowWithoutLogging)) {
       session_tags |=
-          SessionTags::kDevToolsGetAiEnterprisePolicyAllowWithLogging;
+          SessionTags::kDevToolsGetAiEnterprisePolicyAllowWithoutLogging;
     }
     bool remote_debugging_enabled =
         g_browser_process->local_state()->GetBoolean(

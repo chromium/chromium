@@ -67,7 +67,7 @@ struct SettingAccessEvent {
 enum SessionTags {
   kUserSignedIn = 1 << 0,
   kDevToolsGetAiEnterprisePolicyDisabled = 1 << 1,
-  kDevToolsGetAiEnterprisePolicyAllowWithLogging = 1 << 2,
+  kDevToolsGetAiEnterprisePolicyAllowWithoutLogging = 1 << 2,
   kDevToolsRemoteDebuggingDisabled = 1 << 3,
 };
 
