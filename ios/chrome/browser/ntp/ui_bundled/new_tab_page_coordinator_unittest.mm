@@ -21,6 +21,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
@@ -63,7 +66,9 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/test/fakes/fake_discover_feed_eligibility_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/providers/discover_feed/test_discover_feed_service.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -230,6 +235,15 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
       BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(
           browser_.get());
+      // Set up Discover feed.
+      DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
+      DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser_.get())
+          ->SetEnabled(true);
+      TestDiscoverFeedService* test_discover_feed_service =
+          static_cast<TestDiscoverFeedService*>(
+              DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
+      eligibility_handler_ =
+          test_discover_feed_service->get_eligibility_handler();
       // Create non-NTP WebState
       browser_.get()->GetWebStateList()->InsertWebState(
           CreateWebState("http://chromium.org"),
@@ -255,17 +269,11 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
     fakeFeedCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     [fake_feed_view_controller_.view addSubview:fakeFeedCollectionView];
-    FeedWrapperViewController* feedWrapperViewController =
-        [[FeedWrapperViewController alloc]
-              initWithDelegate:coordinator_
-            feedViewController:fake_feed_view_controller_];
-    OCMExpect([component_factory_mock_ discoverFeedForBrowser:browser_.get()
-                                  viewControllerConfiguration:[OCMArg any]])
+    OCMStub([component_factory_mock_ discoverFeedForBrowser:browser_.get()
+                                viewControllerConfiguration:[OCMArg any]])
         .andReturn(fake_feed_view_controller_);
-    OCMStub([component_factory_mock_
-                feedWrapperViewControllerWithDelegate:[OCMArg any]
-                                   feedViewController:[OCMArg any]])
-        .andReturn(feedWrapperViewController);
+    OCMExpect([component_factory_mock_ discoverFeedForBrowser:browser_.get()
+                                  viewControllerConfiguration:[OCMArg any]]);
 
     coordinator_ =
         [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()
@@ -277,6 +285,11 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     coordinator_.NTPMetricsRecorder = NTPMetricsRecorder_;
 
     InsertWebState(CreateWebStateWithURL(GURL("chrome://newtab")));
+  }
+
+  // Sets the visibility of the feed.
+  void SetFeedHeaderVisible(bool visible) {
+    eligibility_handler_.enabled = visible;
   }
 
   // Inserts a FakeWebState into the browser's WebStateList.
@@ -405,6 +418,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   UIViewController* fake_feed_view_controller_;
   NewTabPageCoordinator* coordinator_;
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;
+  FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
   id component_factory_mock_;
   UIViewController* base_view_controller_;
   id application_handler_mock_;
@@ -710,5 +724,32 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
   // Check that newly opened NTP restores saved state.
   EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition, scrollPosition, 1);
 
+  [coordinator_ stop];
+}
+
+// Tests that the coordinator shows and hides the feed as expected.
+TEST_F(NewTabPageCoordinatorTest, TestShowsAndHidesFeed) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:web_state_];
+
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(DiscoverFeedVisibilityObserver)]);
+  ASSERT_TRUE([coordinator_
+      respondsToSelector:@selector(didChangeDiscoverFeedVisibility)]);
+  id<DiscoverFeedVisibilityObserver> observer =
+      static_cast<id<DiscoverFeedVisibilityObserver>>(coordinator_);
+
+  EXPECT_EQ(fake_feed_view_controller_.parentViewController,
+            coordinator_.feedWrapperViewController);
+  SetFeedHeaderVisible(false);
+  [observer didChangeDiscoverFeedVisibility];
+  EXPECT_NE(fake_feed_view_controller_.parentViewController,
+            coordinator_.feedWrapperViewController);
+  SetFeedHeaderVisible(true);
+  [observer didChangeDiscoverFeedVisibility];
+  EXPECT_EQ(fake_feed_view_controller_.parentViewController,
+            coordinator_.feedWrapperViewController);
   [coordinator_ stop];
 }

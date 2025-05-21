@@ -589,6 +589,9 @@ CGFloat SpaceBetweenModules() {
     // visually keep the same scroll position, but don't allow an offset that
     // is lower than the top.
     [self setContentOffset:MAX(oldOffset - change, -newHeightAboveFeed)];
+    if (!self.feedVisible) {
+      [self setMinimumHeight];
+    }
   }
 }
 

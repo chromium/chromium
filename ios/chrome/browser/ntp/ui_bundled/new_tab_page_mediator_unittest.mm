@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
@@ -51,6 +53,7 @@
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/test/fakes/fake_discover_feed_eligibility_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/discover_feed/test_discover_feed_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -96,6 +99,16 @@ class NewTabPageMediatorTest : public PlatformTest {
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
     browser_view_visibility_notifier_ =
         BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get());
+    // Set up discover feed.
+    DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
+    DiscoverFeedVisibilityBrowserAgent* discover_feed_visibility_browser_agent =
+        DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser_.get());
+    discover_feed_visibility_browser_agent->SetEnabled(true);
+    TestDiscoverFeedService* test_discover_feed_service =
+        static_cast<TestDiscoverFeedService*>(
+            DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
+    eligibility_handler_ =
+        test_discover_feed_service->get_eligibility_handler();
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
@@ -111,24 +124,29 @@ class NewTabPageMediatorTest : public PlatformTest {
     image_fetcher::ImageFetcherService* image_fetcher_service =
         ImageFetcherServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[NewTabPageMediator alloc]
-            initWithTemplateURLService:ios::TemplateURLServiceFactory::
-                                           GetForProfile(profile_.get())
-                             URLLoader:url_loader_
-                           authService:auth_service_
-                       identityManager:identity_manager_
-                 accountManagerService:account_manager_service
-              identityDiscImageUpdater:image_updater_
-                   discoverFeedService:test_discover_feed_service_
-                           prefService:prefs_
-                           syncService:&test_sync_service_
-           regionalCapabilitiesService:ios::RegionalCapabilitiesServiceFactory::
-                                           GetForProfile(profile_.get())
-        backgroundCustomizationService:background_customization_service
-                   imageFetcherService:image_fetcher_service
-         browserViewVisibilityNotifier:browser_view_visibility_notifier_
-                            isSafeMode:NO];
+                initWithTemplateURLService:ios::TemplateURLServiceFactory::
+                                               GetForProfile(profile_.get())
+                                 URLLoader:url_loader_
+                               authService:auth_service_
+                           identityManager:identity_manager_
+                     accountManagerService:account_manager_service
+                  identityDiscImageUpdater:image_updater_
+                       discoverFeedService:test_discover_feed_service_
+                               prefService:prefs_
+                               syncService:&test_sync_service_
+               regionalCapabilitiesService:
+                   ios::RegionalCapabilitiesServiceFactory::GetForProfile(
+                       profile_.get())
+            backgroundCustomizationService:background_customization_service
+                       imageFetcherService:image_fetcher_service
+             browserViewVisibilityNotifier:browser_view_visibility_notifier_
+        discoverFeedVisibilityBrowserAgent:
+            discover_feed_visibility_browser_agent];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
+    visibility_observer_ =
+        OCMProtocolMock(@protocol(DiscoverFeedVisibilityObserver));
+    mediator_.feedVisibilityObserver = visibility_observer_;
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(profile_.get());
     feed_metrics_recorder_ =
@@ -189,9 +207,11 @@ class NewTabPageMediatorTest : public PlatformTest {
   std::unique_ptr<web::WebState> initial_web_state_;
   raw_ptr<PrefService> prefs_;
   id header_consumer_;
+  id visibility_observer_;
   id image_updater_;
   id logo_vendor_;
   FeedMetricsRecorder* feed_metrics_recorder_;
+  FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
   NewTabPageMediator* mediator_;
   raw_ptr<ToolbarTestNavigationManager> navigation_manager_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
@@ -215,36 +235,20 @@ TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(header_consumer_);
+  EXPECT_EQ([eligibility_handler_ observerCount], 1);
 }
 
-// Tests that the feed will be hidden when a non-Google search engine is chosen,
-// but only in EEA countries.
-TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoiceTargeted) {
-  // Test it with the default search engine, with country set to France.
-  OverrideSearchEngineChoiceCountry("FR");
+// Tests that the feed visibility depends on the visibility of the discover
+// visibility browser agent.
+TEST_F(NewTabPageMediatorTest, TestShowAndHideFeed) {
   [mediator_ setUp];
-  EXPECT_TRUE(mediator_.feedHeaderVisible);
-
-  // Set up expectation for custom search engine, country set to France.
-  id feed_control_delegate = OCMProtocolMock(@protocol(FeedControlDelegate));
-  OCMExpect([feed_control_delegate setFeedAndHeaderVisibility:NO]);
-  mediator_.feedControlDelegate = feed_control_delegate;
-
-  // Test setting a custom search engine, country still set to France.
-  SetCustomSearchEngine();
-  EXPECT_FALSE(mediator_.feedHeaderVisible);
-  EXPECT_OCMOCK_VERIFY(feed_control_delegate);
-
-  // Set up expectation for custom search engine, with country set to US.
-  feed_control_delegate = OCMProtocolMock(@protocol(FeedControlDelegate));
-  OCMExpect([feed_control_delegate setFeedAndHeaderVisibility:YES]);
-  mediator_.feedControlDelegate = feed_control_delegate;
-
-  // Test with custom search engine, with country set to US.
-  OverrideSearchEngineChoiceCountry("US");
-  SetCustomSearchEngine();
-  EXPECT_TRUE(mediator_.feedHeaderVisible);
-  EXPECT_OCMOCK_VERIFY(feed_control_delegate);
+  EXPECT_TRUE([mediator_ isFeedHeaderVisible]);
+  [eligibility_handler_
+      setEligibility:DiscoverFeedEligibility::kIneligibleReasonUnknown];
+  EXPECT_FALSE([mediator_ isFeedHeaderVisible]);
+  [eligibility_handler_ setEligibility:DiscoverFeedEligibility::kEligible];
+  eligibility_handler_.enabled = false;
+  EXPECT_FALSE([mediator_ isFeedHeaderVisible]);
 }
 
 // Tests that the mediator updates the Discover feed with the visibility state
@@ -270,13 +274,13 @@ TEST_F(NewTabPageMediatorTest, TestUpdateVisibilityStateOfFeed) {
   EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
 
   // User turns off the feed.
-  prefs_->SetBoolean(prefs::kArticlesForYouEnabled, false);
+  eligibility_handler_.enabled = false;
   [audience browserViewDidTransitionToVisibilityState:kVisible
                                             fromState:kAppearing];
   EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
 
   // User turns the feed back on.
-  prefs_->SetBoolean(prefs::kArticlesForYouEnabled, true);
+  eligibility_handler_.enabled = true;
   [audience browserViewDidTransitionToVisibilityState:kCoveredByOmniboxPopup
                                             fromState:kVisible];
   EXPECT_EQ(test_discover_feed_service_->visibility_state(),

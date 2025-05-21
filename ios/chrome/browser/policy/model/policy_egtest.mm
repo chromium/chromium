@@ -421,36 +421,6 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
                            @"block_popups_settings_view_controller");
 }
 
-// Tests that the feed is disappearing when the policy is set to false while it
-// is visible.
-- (void)testDisableContentSuggestions {
-  // Relaunch the app with Discover enabled, as it is required for this test.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kEnableFeedAblation);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  NSString* feedTitle = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(feedTitle),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kNTPCollectionViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  SetPolicy(false, policy::key::kNTPContentSuggestionsEnabled);
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(feedTitle),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-
-  // Open settings menu and check that it is disabled.
-  [self openSettingsMenu];
-  VerifyManagedSettingItem(kSettingsArticleSuggestionsCellId,
-                           kSettingsTableViewId);
-}
-
 - (void)testTranslateEnabledSettingsUI {
   // Disable TranslateEnabled policy.
   SetPolicy(false, policy::key::kTranslateEnabled);

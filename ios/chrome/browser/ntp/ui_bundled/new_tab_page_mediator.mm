@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
@@ -90,12 +91,14 @@
   // Observes changes of the browser view visibility state.
   raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
       _browserViewVisibilityNotifierBrowserAgent;
+  // Observes changes of the feed visibility state.
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+      _discoverFeedVisibilityBrowserAgent;
   std::unique_ptr<BrowserViewVisibilityObserverBridge>
       _browserViewVisibilityObserverBridge;
   // Used to load URLs.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   raw_ptr<PrefService> _prefService;
-  BOOL _isSafeMode;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
@@ -124,27 +127,29 @@
 @synthesize scrollPositionToSave = _scrollPositionToSave;
 
 - (instancetype)
-        initWithTemplateURLService:(TemplateURLService*)templateURLService
-                         URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                       authService:(AuthenticationService*)authService
-                   identityManager:(signin::IdentityManager*)identityManager
-             accountManagerService:
-                 (ChromeAccountManagerService*)accountManagerService
-          identityDiscImageUpdater:
-              (id<UserAccountImageUpdateDelegate>)imageUpdater
-               discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                       prefService:(PrefService*)prefService
-                       syncService:(syncer::SyncService*)syncService
-       regionalCapabilitiesService:
-           (regional_capabilities::RegionalCapabilitiesService*)
-               regionalCapabilitiesService
-    backgroundCustomizationService:
-        (HomeBackgroundCustomizationService*)backgroundCustomizationService
-               imageFetcherService:
-                   (image_fetcher::ImageFetcherService*)imageFetcherService
-     browserViewVisibilityNotifier:(BrowserViewVisibilityNotifierBrowserAgent*)
-                                       browserViewVisibilityNotifierBrowserAgent
-                        isSafeMode:(BOOL)isSafeMode {
+            initWithTemplateURLService:(TemplateURLService*)templateURLService
+                             URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                           authService:(AuthenticationService*)authService
+                       identityManager:(signin::IdentityManager*)identityManager
+                 accountManagerService:
+                     (ChromeAccountManagerService*)accountManagerService
+              identityDiscImageUpdater:
+                  (id<UserAccountImageUpdateDelegate>)imageUpdater
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                           prefService:(PrefService*)prefService
+                           syncService:(syncer::SyncService*)syncService
+           regionalCapabilitiesService:
+               (regional_capabilities::RegionalCapabilitiesService*)
+                   regionalCapabilitiesService
+        backgroundCustomizationService:
+            (HomeBackgroundCustomizationService*)backgroundCustomizationService
+                   imageFetcherService:
+                       (image_fetcher::ImageFetcherService*)imageFetcherService
+         browserViewVisibilityNotifier:
+             (BrowserViewVisibilityNotifierBrowserAgent*)
+                 browserViewVisibilityNotifierBrowserAgent
+    discoverFeedVisibilityBrowserAgent:(DiscoverFeedVisibilityBrowserAgent*)
+                                           discoverFeedVisibilityBrowserAgent {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -169,19 +174,22 @@
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _imageUpdater = imageUpdater;
     _discoverFeedService = discoverFeedService;
+    _discoverFeedVisibilityBrowserAgent = discoverFeedVisibilityBrowserAgent;
     _prefService = prefService;
     _regionalCapabilitiesService = regionalCapabilitiesService;
     _backgroundCustomizationService = backgroundCustomizationService;
     _imageFetcherService = imageFetcherService;
-    _isSafeMode = isSafeMode;
     _signedInIdentity =
         _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
   return self;
 }
 
+- (BOOL)isFeedHeaderVisible {
+  return _discoverFeedVisibilityBrowserAgent->ShouldBeVisible();
+}
+
 - (void)setUp {
-  _feedHeaderVisible = [self updatedFeedHeaderVisible];
   self.templateURLService->Load();
   [self updateModuleVisibilityForConsumer];
   [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
@@ -193,6 +201,7 @@
   [self startObservingPrefs];
   _browserViewVisibilityNotifierBrowserAgent->AddObserver(
       _browserViewVisibilityObserverBridge.get());
+  _discoverFeedVisibilityBrowserAgent->AddObserver(self.feedVisibilityObserver);
   if (IsNTPBackgroundCustomizationEnabled()) {
     _backgroundCustomizationServiceObserverBridge =
         std::make_unique<HomeBackgroundCustomizationServiceObserverBridge>(
@@ -203,6 +212,8 @@
 - (void)shutdown {
   _browserViewVisibilityNotifierBrowserAgent->RemoveObserver(
       _browserViewVisibilityObserverBridge.get());
+  _discoverFeedVisibilityBrowserAgent->RemoveObserver(
+      self.feedVisibilityObserver);
   _searchEngineObserver.reset();
   _identityObserverBridge.reset();
   _browserViewVisibilityObserverBridge.reset();
@@ -254,7 +265,8 @@
             (BrowserViewVisibilityState)currentState
                                     fromState:(BrowserViewVisibilityState)
                                                   previousState {
-  if (self.discoverFeedService && self.NTPVisible && self.feedHeaderVisible) {
+  if (self.discoverFeedService && self.NTPVisible &&
+      [self isFeedHeaderVisible]) {
     self.discoverFeedService->UpdateFeedViewVisibilityState(
         self.contentCollectionView, currentState, previousState);
   }
@@ -271,7 +283,6 @@
   _defaultSearchEngine = updatedDefaultSearchEngine;
   [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
                                             self.templateURLService)];
-  [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
   [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
 }
 
@@ -295,12 +306,9 @@
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
-
   // Handle customization prefs
   if (preferenceName == prefs::kHomeCustomizationMostVisitedEnabled ||
-      preferenceName == prefs::kHomeCustomizationMagicStackEnabled ||
-      preferenceName == prefs::kArticlesForYouEnabled) {
+      preferenceName == prefs::kHomeCustomizationMagicStackEnabled) {
     [self updateModuleVisibilityForConsumer];
     [self.NTPContentDelegate updateModuleVisibility];
   }
@@ -362,27 +370,6 @@
   // TODO(crbug.com/40693626): Add metrics.
 }
 
-// Returns an updated value for feedHeaderVisible.
-- (BOOL)updatedFeedHeaderVisible {
-  return _prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
-         _prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
-         !IsFeedAblationEnabled() &&
-         IsContentSuggestionsForSupervisedUserEnabled(_prefService) &&
-         !_isSafeMode &&
-         !ShouldHideFeedWithSearchChoice(self.templateURLService,
-                                         _regionalCapabilitiesService);
-}
-
-// Sets whether the feed header should be visible.
-- (void)setFeedHeaderVisible:(BOOL)feedHeaderVisible {
-  if (feedHeaderVisible == _feedHeaderVisible) {
-    return;
-  }
-
-  _feedHeaderVisible = feedHeaderVisible;
-  [self.feedControlDelegate setFeedAndHeaderVisibility:_feedHeaderVisible];
-}
-
 // Updates the consumer with the current visibility of the NTP modules.
 - (void)updateModuleVisibilityForConsumer {
   self.consumer.mostVisitedVisible =
@@ -396,15 +383,6 @@
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(_prefService);
   _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-
-  // Observe feed visibility prefs.
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
-      _prefChangeRegistrar.get());
 
   // Observe customization prefs.
   _prefObserverBridge->ObserveChangesForPreference(

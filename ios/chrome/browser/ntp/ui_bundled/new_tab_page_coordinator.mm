@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/discover_feed/model/feed_model_configuration.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -137,6 +138,7 @@
                                      ContentSuggestionsDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
+                                     DiscoverFeedVisibilityObserver,
                                      FeedControlDelegate,
                                      FeedSignInPromoDelegate,
                                      FeedWrapperViewControllerDelegate,
@@ -351,7 +353,7 @@
   [self updateFeedWithIsSupervisedUser:(capability == signin::Tribool::kTrue)];
 
   [self configureNTPMediator];
-  if (self.NTPMediator.feedHeaderVisible) {
+  if ([self.NTPMediator isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
   }
   [self configureHeaderViewController];
@@ -574,7 +576,7 @@
 }
 
 - (BOOL)isFeedVisible {
-  return self.NTPMediator.feedHeaderVisible && self.feedViewController;
+  return [self.NTPMediator isFeedHeaderVisible] && self.feedViewController;
 }
 
 - (void)clearPresentedState {
@@ -659,7 +661,7 @@
 
 // Creates and configures the feed and feed header based on user prefs.
 - (void)configureFeedAndHeader {
-  CHECK(self.NTPMediator.feedHeaderVisible);
+  CHECK([self.NTPMediator isFeedHeaderVisible]);
   CHECK(self.NTPViewController);
 
   if (!self.feedHeaderViewController) {
@@ -678,7 +680,7 @@
       self.feedHeaderViewController;
 
   // Requests feeds here if the correct flags and prefs are enabled.
-  if (self.NTPMediator.feedHeaderVisible) {
+  if ([self.NTPMediator isFeedHeaderVisible]) {
     if ([self isFollowingFeedAvailable] &&
         self.selectedFeed == FeedTypeFollowing) {
       self.feedViewController = [self.componentFactory
@@ -747,6 +749,7 @@
 - (void)configureNTPMediator {
   NewTabPageMediator* NTPMediator = self.NTPMediator;
   DCHECK(NTPMediator);
+  NTPMediator.feedVisibilityObserver = self;
   NTPMediator.feedControlDelegate = self;
   NTPMediator.NTPContentDelegate = self;
   NTPMediator.headerConsumer = self.headerViewController;
@@ -940,6 +943,18 @@
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
 }
 
+#pragma mark - DiscoverFeedVisibilityObserver
+
+- (void)didChangeDiscoverFeedVisibility {
+  // TODO(crbug.com/412691611): Consider moving to mediator after refactor.
+  if (!self.NTPViewController.viewLoaded) {
+    return;
+  }
+  [self handleChangeInModules];
+  [self.NTPViewController setContentOffsetToTop];
+  [self updateModuleVisibility];
+}
+
 #pragma mark - DiscoverFeedPreviewDelegate
 
 - (UIViewController*)discoverFeedPreviewWithURL:(const GURL)URL {
@@ -1026,14 +1041,6 @@
 
 - (NSUInteger)lastVisibleFeedCardIndex {
   return [self.feedWrapperViewController lastVisibleFeedCardIndex];
-}
-
-- (void)setFeedAndHeaderVisibility:(BOOL)visible {
-  if (!self.NTPViewController.viewLoaded) {
-    return;
-  }
-  [self handleChangeInModules];
-  [self.NTPViewController setContentOffsetToTop];
 }
 
 - (void)updateFeedForDefaultSearchEngineChanged {
@@ -1646,7 +1653,7 @@
 
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.
-  if (self.NTPMediator.feedHeaderVisible) {
+  if ([self.NTPMediator isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
   } else {
     self.NTPViewController.feedHeaderViewController = nil;
@@ -1749,7 +1756,7 @@
 
       // TODO(crbug.com/350990359): Deprecate IOS.NTP.Impression when Home
       // Customization launches.
-      if (self.NTPMediator.feedHeaderVisible) {
+      if ([self.NTPMediator isFeedHeaderVisible]) {
         [self.NTPMetricsRecorder
             recordHomeImpression:IOSNTPImpressionType::kFeedVisible
                   isStartSurface:[self isStartSurface]];

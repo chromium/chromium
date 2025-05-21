@@ -70,9 +70,8 @@ DiscoverFeedVisibilityBrowserAgent::GetVisibilityProvider() {
         ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
     configuration.resumedFromSafeMode =
         [browser_->GetSceneState().profileState.appState resumingFromSafeMode];
-    // TODO(crbug.com/412691611): Uncomment.
-    /*visibility_provider_ =
-        ios::provider::CreateDiscoverFeedVisibilityProvider(configuration);*/
+    visibility_provider_ =
+        ios::provider::CreateDiscoverFeedVisibilityProvider(configuration);
   }
   return visibility_provider_;
 }
