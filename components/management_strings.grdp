@@ -243,13 +243,13 @@
       Desk sync
     </message>
     <message name="IDS_MANAGEMENT_DESK_SYNC_DESCRIPTION" desc="Message explaining that the Desk sync feature is enabled and it will result in synchronization of some data between user's ChromeOS devices. Data will be listed in a list below.">
-      Your administrator enables the following to be synced between your previous and current sessions on any ChromeOS device:
+      Your administrator enabled the following to be synced between your previous and current sessions across your ChromeOS devices:
     </message>
     <message name="IDS_MANAGEMENT_DESK_SYNC_WINDOWS_NOTICE" desc="This string is used to mention windows (i.e. browser and application windows) in the list of data which is synced by the Desk sync feature.">
-      Windows (arrangement and organization of windows and tabs)
+      Windows and tabs arrangement
     </message>
     <message name="IDS_MANAGEMENT_DESK_SYNC_COOKIES_NOTICE" desc="This string is used to mention browser cookies in the list of data which is synced by the Desk sync feature. It also clarifies that cookies are responsible for the signed-in state on websites.">
-      Cookies (signed-in state on your recently visited websites)
+      Website cookies (signed-in state on recently visited websites will be preserved)
     </message>
     <message name="IDS_MANAGEMENT_DESK_SYNC_OPT_OUT" desc="Message explaining that the user can opt out from the effects of the Desk sync feature in Chrome Sync settings.">
       You can opt out of this policy in <ph name="BEGIN_LINK">&lt;a href='chrome://settings/syncSetup'&gt;</ph>Chrome Sync settings<ph name="END_LINK">&lt;/a&gt;</ph>.
