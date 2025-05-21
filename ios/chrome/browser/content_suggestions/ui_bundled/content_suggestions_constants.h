@@ -40,8 +40,8 @@ enum class ContentSuggestionsModuleType {
   kTipsWithProductImage = 16,
   kTips = 17,
   kSendTabPromo = 18,
-  kSetUpListDocking = 19,
-  kSetUpListAddressBar = 20,
+  // Removed: kSetUpListDocking = 19,
+  // Removed: kSetUpListAddressBar = 20,
   kShopCard = 21,
   kMaxValue = kShopCard,
 };

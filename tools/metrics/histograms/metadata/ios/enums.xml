@@ -650,6 +650,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Tips (with Product Image)"/>
   <int value="17" label="Tips"/>
   <int value="18" label="Send Tab to Self Promo"/>
+  <int value="19" label="Obsolete - Set Up List Docking"/>
+  <int value="20" label="Obsolete - Set Up List Address Bar"/>
   <int value="21" label="ShopCard"/>
 </enum>
 
