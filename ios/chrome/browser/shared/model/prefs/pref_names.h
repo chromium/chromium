@@ -207,6 +207,10 @@ inline constexpr char kIosBringAndroidTabsPromptDisplayed[] =
 inline constexpr char kIosCredentialProviderPromoLastActionTaken[] =
     "ios.credential_provider_promo_last_action_taken";
 
+// The timestamp of the last time the CPE promo was displayed.
+inline constexpr char kIosCredentialProviderPromoDisplayTime[] =
+    "ios.credential_provider_promo_display_time";
+
 // Boolean that is true when the CredentialProviderPromoEnabled policy is
 // enabled.
 inline constexpr char kIosCredentialProviderPromoPolicyEnabled[] =

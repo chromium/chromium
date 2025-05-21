@@ -502,6 +502,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(
       prefs::kIosCredentialProviderPromoLastActionTaken, -1);
+  registry->RegisterTimePref(prefs::kIosCredentialProviderPromoDisplayTime,
+                             base::Time());
 
   registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoStopPromo,
                                 false);

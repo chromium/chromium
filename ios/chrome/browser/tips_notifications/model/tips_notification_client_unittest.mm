@@ -778,7 +778,8 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
   EXPECT_EQ(order[2], TipsNotificationType::kOmniboxPosition);
 }
 
-// Tests that the client can register a CPE Promo notification.
+// Tests that the client can register a CPE Promo notification, only when the
+// CPE promo was displayed more than 30 days ago.
 TEST_F(TipsNotificationClientTest, CPERequest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIOSExpandedTips);
@@ -794,11 +795,27 @@ TEST_F(TipsNotificationClientTest, CPERequest) {
       TipsNotificationType::kDocking,
       TipsNotificationType::kSignin,
   });
-  ExpectNotificationRequest(TipsNotificationType::kCPE);
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
+                       base::Time::Now() - base::Days(29));
 
+  // A notification should not be requested yet because promo display time is
+  // less than 30 days ago.
+  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                        withCompletionHandler:[OCMArg any]]);
   base::RunLoop run_loop;
   client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
   run_loop.Run();
+
+  // Simulate that the CPE promo was displayed more than 30 days ago.
+  local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
+                       base::Time::Now() - base::Days(31));
+  SetupMockNotificationCenter();
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kCPE);
+  base::RunLoop run_loop2;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop2.QuitClosure());
+  run_loop2.Run();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",

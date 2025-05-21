@@ -111,6 +111,8 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
                                 completion:nil];
   self.promoSeenInCurrentSession = YES;
 
+  GetApplicationContext()->GetLocalState()->SetTime(
+      prefs::kIosCredentialProviderPromoDisplayTime, base::Time::Now());
   credential_provider_promo::RecordImpression(
       [self.mediator promoOriginalSource],
       self.trigger == CredentialProviderPromoTrigger::RemindMeLater);
