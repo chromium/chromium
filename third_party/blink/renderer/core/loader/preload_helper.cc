@@ -6,7 +6,10 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/cxx23_to_underlying.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -59,6 +62,7 @@
 #include "third_party/blink/renderer/platform/loader/link_header.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -263,6 +267,26 @@ bool IsSubresourceLoad(PreloadHelper::LoadLinksFromHeaderMode mode) {
       NOTREACHED();
   }
 }
+
+PreloadHelper::OriginStatusOnSubresource GetOriginStatus(bool from_same_origin,
+                                                         bool to_same_origin) {
+  using OriginStatusOnSubresource = PreloadHelper::OriginStatusOnSubresource;
+  if (from_same_origin) {
+    if (to_same_origin) {
+      return OriginStatusOnSubresource::kFromSameOriginToSameOrigin;
+    } else {
+      return OriginStatusOnSubresource::kFromSameOriginToCrossOrigin;
+    }
+  } else {
+    if (to_same_origin) {
+      return OriginStatusOnSubresource::kFromCrossOriginToSameOrigin;
+    } else {
+      return OriginStatusOnSubresource::kFromCrossOriginToCrossOrigin;
+    }
+  }
+}
+
+constexpr double kUkmSamplingRate = 0.0025;
 
 }  // namespace
 
@@ -796,6 +820,13 @@ void PreloadHelper::LoadLinksFromHeader(
   base::UmaHistogramEnumeration("Blink.LinkHeader.LoadLinksFromHeaderMode",
                                 mode);
 
+  const bool is_subresource_load = IsSubresourceLoad(mode);
+  const bool from_same_origin =
+      document ? document->GetExecutionContext()
+                     ->GetSecurityOrigin()
+                     ->IsSameOriginWith(SecurityOrigin::Create(base_url).get())
+               : false;
+
   LinkHeaderSet header_set(header_value);
   for (auto& header : header_set) {
     if (!header.Valid() || header.Url().empty() || header.Rel().empty()) {
@@ -814,11 +845,26 @@ void PreloadHelper::LoadLinksFromHeader(
     LinkLoadParameters params(header, base_url);
     bool change_rel_to_prefetch = false;
 
+    // Record UKM by the rate of `kUkmSamplingRate` to avoid UKM infra's
+    // automatic downsampling.
+    if (is_subresource_load && base::RandDouble() < kUkmSamplingRate) {
+      CHECK(document);
+      bool to_same_origin =
+          document->GetExecutionContext()
+              ->GetSecurityOrigin()
+              ->IsSameOriginWith(SecurityOrigin::Create(params.href).get());
+      const OriginStatusOnSubresource origin_status =
+          GetOriginStatus(from_same_origin, to_same_origin);
+      ukm::builders::Blink_Preloading_ByLinkHeader(document->UkmSourceID())
+          .SetOriginStatusOnSubresource(base::to_underlying(origin_status))
+          .Record(document->UkmRecorder());
+    }
+
     // For security purposes, set `referrerpolicy: "no-referrer"` in link loads
     // from subresources. See https://crbug.com/415810136 for details.
     if (base::FeatureList::IsEnabled(
             blink::features::kNoReferrerForPreloadFromSubresource)) {
-      if (IsSubresourceLoad(mode)) {
+      if (is_subresource_load) {
         params.referrer_policy = network::mojom::ReferrerPolicy::kNever;
       }
     }

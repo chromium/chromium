@@ -4848,6 +4848,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.Preloading.ByLinkHeader">
+  <owner>tnak@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Events taken when HTTP responses are received and they have Link headers.
+    Multiple events should be involved if one response contains multiple Link
+    headers. This event provides insights into potential information leakage
+    related to Link headers on subresources.
+  </summary>
+  <metric name="OriginStatusOnSubresource" enum="OriginStatusOnSubresource">
+    <summary>
+      Records the cross-origin usage related to Link headers on subresource
+      fetches. This is only recorded for subresource fetches.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.Script.AsyncScripts" singular="True">
   <owner>dom@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
