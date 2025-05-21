@@ -55,9 +55,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTargetWin final {
   AXTargetWin& operator=(AXTargetWin&&) = default;
   constexpr bool operator!() const { return value_ == nullptr; }
 
-  friend bool operator!=(const AXTargetWin& lhs, const AXTargetWin& rhs) {
-    return !(lhs.value_ == rhs.value_);
-  }
+  friend bool operator==(const AXTargetWin&, const AXTargetWin&) = default;
 
  private:
   using VariantType = std::variant<std::string,

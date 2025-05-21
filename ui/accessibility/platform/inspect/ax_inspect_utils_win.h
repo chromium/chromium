@@ -140,10 +140,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) MSAAChildren final {
       operator++();
       return tmp;
     }
-    bool operator==(const Iterator& rhs) const {
-      return children_ == rhs.children_ && index_ == rhs.index_;
-    }
-    bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
+    friend bool operator==(const Iterator&, const Iterator&) = default;
     const MSAAChild& operator*() { return children_->ChildAt(index_); }
 
    private:

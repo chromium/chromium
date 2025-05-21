@@ -16,9 +16,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) ChildIterator {
   bool operator==(const ChildIterator& rhs) const {
     return GetIndexInParent() == rhs.GetIndexInParent();
   }
-  bool operator!=(const ChildIterator& rhs) const {
-    return GetIndexInParent() != rhs.GetIndexInParent();
-  }
+
   // We can't have a pure virtual postfix increment/decrement operator
   // overloads, since postfix operator overloads need to be return by value, and
   // the overridden overloads in the derived classes would have to differ in

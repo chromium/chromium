@@ -234,7 +234,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
       bool operator==(const Iterator& rhs) const {
         return parent_ == rhs.parent_ && index_ == rhs.index_;
       }
-      bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
       const BrowserAccessibility* operator*();
 
      private:
