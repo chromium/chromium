@@ -13,7 +13,7 @@ namespace webnn::ort {
 
 namespace internal {
 
-std::string OrtStatusFatalMessage(OrtStatus* status) {
+std::string OrtStatusErrorMessage(OrtStatus* status) {
   CHECK(status);
 
   constexpr char kOrtErrorCode[] = "[WebNN] ORT status error code: ";

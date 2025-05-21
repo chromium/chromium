@@ -2666,17 +2666,26 @@ const char kExperimentalWebMachineLearningNeuralNetworkDescription[] =
     "Enables additional, experimental features in Web Machine Learning Neural "
     "Network (WebNN) API. Requires the \"WebNN API\" flag to be enabled.";
 
+#if BUILDFLAG(IS_MAC)
 const char kWebNNCoreMLName[] = "Core ML backend for WebNN";
 const char kWebNNCoreMLDescription[] =
     "Enables using Core ML for GPU and "
     "NPU inference with the WebNN API. Disabling this flag enables a "
     "fallback to TFLite.";
+#endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
 const char kWebNNDirectMLName[] = "DirectML backend for WebNN";
 const char kWebNNDirectMLDescription[] =
     "Enables using DirectML for GPU and "
     "NPU inference with the WebNN API. Disabling this flag enables a "
     "fallback to TFLite.";
+
+const char kWebNNOnnxRuntimeName[] = "ONNX Runtime backend for WebNN";
+const char kWebNNOnnxRuntimeDescription[] =
+    "Enables using ONNX Runtime for CPU, GPU and NPU inference with the WebNN "
+    "API. Disabling this flag enables a fallback to DirectML or TFLite.";
+#endif  // BUILDFLAG(IS_WIN)
 
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";

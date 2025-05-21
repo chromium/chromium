@@ -15042,6 +15042,7 @@ from previous Chrome versions.
   <int value="366524741"
       label="ArcTrackpadScrollTouchscreenEmulation:disabled"/>
   <int value="366860338" label="InternalServerSideSpeechRecognition:enabled"/>
+  <int value="367755253" label="WebNNOnnxRuntime:disabled"/>
   <int value="367917214" label="SearchEngineChoiceTrigger:enabled"/>
   <int value="368073826" label="AnnotatorMode:enabled"/>
   <int value="368224960" label="FedCmRpContext:disabled"/>
@@ -19643,6 +19644,7 @@ from previous Chrome versions.
   <int value="2084913105" label="RequestDesktopSitePerSiteIph:enabled"/>
   <int value="2085186092" label="BulkPrinters:disabled"/>
   <int value="2085438501" label="ChromeHome:enabled"/>
+  <int value="2086569407" label="WebNNOnnxRuntime:enabled"/>
   <int value="2087069781" label="ui-debug-tools:enabled"/>
   <int value="2087994185" label="PasspointSettings:disabled"/>
   <int value="2088061188" label="LibinputHandleTouchpad:enabled"/>

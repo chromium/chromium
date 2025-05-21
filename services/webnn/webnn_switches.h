@@ -26,6 +26,14 @@ inline constexpr char kWebNNCoreMlDumpModel[] = "webnn-coreml-dump-model";
 inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
+#if BUILDFLAG(IS_WIN)
+// Configure the logging severity level of ONNX Runtime.
+// Usage: --no-sandbox --enable-logging --webnn-ort-logging-level=VERBOSE
+// Other severity levels could be "INFO", "WARNING", "ERROR" (default), and
+// "FATAL".
+inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace switches
 
 #endif  // SERVICES_WEBNN_WEBNN_SWITCHES_H_

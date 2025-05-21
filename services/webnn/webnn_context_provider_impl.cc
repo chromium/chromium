@@ -19,7 +19,10 @@
 #include "services/webnn/webnn_context_impl.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "services/webnn/dml/context_provider.h"
+#include "base/types/expected_macros.h"
+#include "services/webnn/dml/context_provider_dml.h"
+#include "services/webnn/ort/context_provider_ort.h"
+#include "services/webnn/ort/ort_session_options.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -177,8 +180,22 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   RecordDeviceType(options->device);
 
 #if BUILDFLAG(IS_WIN)
-  if (dml::ShouldCreateDmlContext(*options)) {
-    auto context_creation_results = dml::CreateContextFromOptions(
+  base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
+      context_creation_results;
+
+  if (base::FeatureList::IsEnabled(mojom::features::kWebNNOnnxRuntime)) {
+    context_creation_results = ort::CreateContextFromOptions(
+        std::move(options), std::move(receiver), this);
+    if (!context_creation_results.has_value()) {
+      std::move(callback).Run(mojom::CreateContextResult::NewError(
+          std::move(context_creation_results.error())));
+      return;
+    }
+    context_impl = std::move(context_creation_results.value());
+  }
+
+  if (!context_impl && dml::ShouldCreateDmlContext(*options)) {
+    context_creation_results = dml::CreateContextFromOptions(
         std::move(options), gpu_feature_info_, gpu_info_,
         shared_context_state_.get(), std::move(receiver), this);
     if (!context_creation_results.has_value()) {

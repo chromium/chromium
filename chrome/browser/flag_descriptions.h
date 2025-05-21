@@ -1546,11 +1546,18 @@ extern const char kWebMachineLearningNeuralNetworkDescription[];
 extern const char kExperimentalWebMachineLearningNeuralNetworkName[];
 extern const char kExperimentalWebMachineLearningNeuralNetworkDescription[];
 
+#if BUILDFLAG(IS_MAC)
 extern const char kWebNNCoreMLName[];
 extern const char kWebNNCoreMLDescription[];
+#endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
 extern const char kWebNNDirectMLName[];
 extern const char kWebNNDirectMLDescription[];
+
+extern const char kWebNNOnnxRuntimeName[];
+extern const char kWebNNOnnxRuntimeDescription[];
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNewEtc1EncoderName[];

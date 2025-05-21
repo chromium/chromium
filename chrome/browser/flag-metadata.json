@@ -10039,6 +10039,11 @@
     "expiry_milestone": 146
   },
   {
+    "name": "webnn-onnxruntime",
+    "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 127

@@ -15,7 +15,6 @@ buildflag_header("buildflags") {
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
     "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
-    "WEBNN_USE_ORT=$webnn_use_ort",
   ]
 }
 
@@ -80,8 +79,8 @@ component("webnn_service") {
       "dml/command_recorder.h",
       "dml/context_impl_dml.cc",
       "dml/context_impl_dml.h",
-      "dml/context_provider.cc",
-      "dml/context_provider.h",
+      "dml/context_provider_dml.cc",
+      "dml/context_provider_dml.h",
       "dml/error.h",
       "dml/graph_builder_dml.cc",
       "dml/graph_builder_dml.h",
@@ -167,12 +166,18 @@ component("webnn_service") {
     }
   }
 
-  if (webnn_use_ort) {
+  if (is_win) {
     sources += [
+      "ort/context_impl_ort.cc",
+      "ort/context_impl_ort.h",
+      "ort/context_provider_ort.cc",
+      "ort/context_provider_ort.h",
       "ort/model_editor.cc",
       "ort/model_editor.h",
       "ort/ort_data_type.cc",
       "ort/ort_data_type.h",
+      "ort/ort_session_options.cc",
+      "ort/ort_session_options.h",
       "ort/ort_status.cc",
       "ort/ort_status.h",
       "ort/platform_functions_ort.cc",
@@ -225,7 +230,7 @@ source_set("tests") {
     ]
   }
 
-  if (webnn_use_ort) {
+  if (is_win) {
     sources += [
       "ort/model_editor_test.cc",
       "ort/platform_functions_ort_test.cc",

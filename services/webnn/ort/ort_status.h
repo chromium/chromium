@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 
 struct OrtStatus;
 
@@ -15,14 +16,33 @@ namespace webnn::ort {
 
 namespace internal {
 
-std::string OrtStatusFatalMessage(OrtStatus* status);
+std::string OrtStatusErrorMessage(OrtStatus* status);
 
 }  // namespace internal
 
-#define CHECK_STATUS(expr)                                 \
-  if (OrtStatus* status = (expr)) {                        \
-    LOG(FATAL) << internal::OrtStatusFatalMessage(status); \
+#define CHECK_STATUS(expr)                                      \
+  if (OrtStatus* status = (expr)) {                             \
+    LOG(FATAL) << ort::internal::OrtStatusErrorMessage(status); \
   }
+
+#define CALL_ORT_FUNC(expr)                                             \
+  ([&]() -> ort::ScopedOrtStatus {                                      \
+    ort::ScopedOrtStatus status(expr);                                  \
+    if (status.is_valid()) {                                            \
+      LOG(ERROR) << "[WebNN] Failed to call " << #expr << ": "          \
+                 << ort::internal::OrtStatusErrorMessage(status.get()); \
+    }                                                                   \
+    return status;                                                      \
+  })()
+
+#define ORT_CALL_FAILED(expr)                         \
+  ([&]() -> bool {                                    \
+    ort::ScopedOrtStatus status(CALL_ORT_FUNC(expr)); \
+    if (status.is_valid()) {                          \
+      return true;                                    \
+    }                                                 \
+    return false;                                     \
+  })()
 
 }  // namespace webnn::ort
 

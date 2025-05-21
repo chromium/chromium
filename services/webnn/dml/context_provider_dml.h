@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_DML_CONTEXT_PROVIDER_H_
-#define SERVICES_WEBNN_DML_CONTEXT_PROVIDER_H_
+#ifndef SERVICES_WEBNN_DML_CONTEXT_PROVIDER_DML_H_
+#define SERVICES_WEBNN_DML_CONTEXT_PROVIDER_DML_H_
 
 #include "base/types/expected.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -39,4 +39,4 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
 
 }  // namespace webnn
 
-#endif  // SERVICES_WEBNN_DML_CONTEXT_PROVIDER_H_
+#endif  // SERVICES_WEBNN_DML_CONTEXT_PROVIDER_DML_H_

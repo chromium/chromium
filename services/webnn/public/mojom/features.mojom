@@ -39,3 +39,10 @@ feature kWebNNDirectML {
   const string name = "WebNNDirectML";
   const bool default_state = true;
 };
+
+// Enables the ONNX Runtime backend for WebNN.
+[EnableIf=is_win]
+feature kWebNNOnnxRuntime {
+  const string name = "WebNNOnnxRuntime";
+  const bool default_state = false;
+};
