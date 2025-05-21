@@ -9,6 +9,10 @@ load("//lib/targets.star", "targets")
 
 luci.bucket(
     name = "webrtc",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.webrtc.ci"],
+        service_accounts = ["webrtc-ci-builder@chops-service-accounts.iam.gserviceaccount.com"],
+    ),
     bindings = [
         luci.binding(
             roles = "role/buildbucket.reader",
