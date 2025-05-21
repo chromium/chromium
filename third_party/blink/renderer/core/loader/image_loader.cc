@@ -413,6 +413,7 @@ void ImageLoader::UpdateImageState(ImageResourceContent* new_image_content) {
 
 void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
                                       UpdateFromElementBehavior update_behavior,
+                                      const KURL* source_url,
                                       UpdateType update_type,
                                       bool force_blocking) {
   // FIXME: According to
@@ -439,8 +440,14 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
     return;
   }
 
+  KURL url;
   AtomicString image_source_url = element_->ImageSourceURL();
-  const KURL url = ImageSourceToKURL(image_source_url);
+  if (base::FeatureList::IsEnabled(features::kOptimizeHTMLElementUrls) &&
+      source_url) {
+    url = *source_url;
+  } else {
+    url = ImageSourceToKURL(image_source_url);
+  }
   ImageResourceContent* new_image_content = nullptr;
   if (!url.IsNull() && !url.IsEmpty()) {
     // Unlike raw <img>, we block mixed content inside of <picture> or
@@ -658,10 +665,12 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     delay_until_do_update_from_element_ = nullptr;
   }
 
-  if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url)) &&
+  const KURL image_source_kurl = ImageSourceToKURL(image_source_url);
+  if (ShouldLoadImmediately(image_source_kurl) &&
       update_behavior != kUpdateFromMicrotask) {
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
-                        update_behavior, UpdateType::kSync, force_blocking);
+                        update_behavior, &image_source_kurl, UpdateType::kSync,
+                        force_blocking);
     return;
   }
   // Allow the idiom "img.src=''; img.src='.." to clear down the image before an

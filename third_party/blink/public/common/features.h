@@ -1327,6 +1327,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrowForCSPBlockedWorker);
 // Fix for https://crbug.com/40927333.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOpenAllUrlsOrFilesOnDrop);
 
+// Optimize URL copies and resolutions by reducing unnecessary URL construction,
+// and caching the URLs in Document.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOptimizeHTMLElementUrls);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kDocumentURLCacheSize);
+
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);

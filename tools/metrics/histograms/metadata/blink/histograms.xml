@@ -1084,6 +1084,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Document.CompleteURLTime" units="microseconds"
+    expires_after="2025-08-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time taken to resolve a non-null URL in Document::CompleteURLWithOverride.
+    This is recorded each time a URL is resolved, and can happen multiple times
+    per navigation.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram
     name="Blink.DocumentLoader.CommitNavigationToStartLoadingResponse.Time.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
     units="ms" expires_after="2025-08-24">

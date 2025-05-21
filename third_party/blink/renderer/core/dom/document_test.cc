@@ -1923,6 +1923,82 @@ TEST_F(DocumentTest, LayoutReplacedUseCounterSvg) {
       WebFeature::kExplicitOverflowVisibleOnReplacedElementWithObjectProp));
 }
 
+class DocumentURLCacheTest : public DocumentTest {
+ public:
+  DocumentURLCacheTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kOptimizeHTMLElementUrls, {{"cache_size", "5"}});
+    cache_ = new Document::URLCache();
+  }
+
+  ~DocumentURLCacheTest() override { delete cache_; }
+
+  Document::URLCache* Cache() { return cache_; }
+
+ protected:
+  const KURL& BaseUrl() {
+    static const KURL base_url(AtomicString("https://example.com"));
+    return base_url;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  Document::URLCache* cache_ = nullptr;
+};
+
+TEST_F(DocumentURLCacheTest, Get) {
+  KURL result = Cache()->Get(BaseUrl(), "hello");
+  EXPECT_TRUE(result.IsEmpty());
+}
+
+TEST_F(DocumentURLCacheTest, Put) {
+  KURL resolved_url("https://example.com/hello");
+  Cache()->Put(BaseUrl(), "hello", resolved_url);
+  KURL result = Cache()->Get(BaseUrl(), "hello");
+  EXPECT_FALSE(result.IsEmpty());
+  EXPECT_EQ(result, resolved_url);
+}
+
+TEST_F(DocumentURLCacheTest, ExceedsCacheSize) {
+  Cache()->Put(BaseUrl(), "hello1", KURL("https://example.com/hello1"));
+  Cache()->Put(BaseUrl(), "hello2", KURL("https://example.com/hello2"));
+  Cache()->Put(BaseUrl(), "hello3", KURL("https://example.com/hello3"));
+  Cache()->Put(BaseUrl(), "hello4", KURL("https://example.com/hello4"));
+  Cache()->Put(BaseUrl(), "hello5", KURL("https://example.com/hello5"));
+  EXPECT_EQ(Cache()->CacheSizeForTesting(), 5);
+
+  Cache()->Put(BaseUrl(), "hello6", KURL("https://example.com/hello6"));
+  EXPECT_EQ(Cache()->CacheSizeForTesting(), 5);
+
+  EXPECT_TRUE(Cache()->Get(BaseUrl(), "hello1").IsEmpty());
+  EXPECT_FALSE(Cache()->Get(BaseUrl(), "hello6").IsEmpty());
+}
+
+TEST_F(DocumentURLCacheTest, RemoveOldEntries) {
+  const KURL base2("https://test.com");
+  Cache()->Put(BaseUrl(), "hello1", KURL("https://example.com/hello1"));
+  Cache()->Put(base2, "hello2", KURL("https://example.com/hello2"));
+  Cache()->Put(base2, "hello3", KURL("https://example.com/hello3"));
+  Cache()->Put(base2, "hello4", KURL("https://example.com/hello4"));
+  Cache()->Put(BaseUrl(), "hello5", KURL("https://example.com/hello5"));
+
+  EXPECT_EQ(Cache()->CacheSizeForTesting(), 5);
+  EXPECT_FALSE(Cache()->Get(BaseUrl(), "hello1").IsEmpty());
+  EXPECT_FALSE(Cache()->Get(base2, "hello2").IsEmpty());
+  EXPECT_FALSE(Cache()->Get(base2, "hello3").IsEmpty());
+  EXPECT_FALSE(Cache()->Get(base2, "hello4").IsEmpty());
+  EXPECT_FALSE(Cache()->Get(BaseUrl(), "hello5").IsEmpty());
+
+  Cache()->RemoveOldEntries(base2);
+
+  EXPECT_EQ(Cache()->CacheSizeForTesting(), 2);
+  EXPECT_FALSE(Cache()->Get(BaseUrl(), "hello1").IsEmpty());
+  EXPECT_TRUE(Cache()->Get(base2, "hello2").IsEmpty());
+  EXPECT_TRUE(Cache()->Get(base2, "hello3").IsEmpty());
+  EXPECT_TRUE(Cache()->Get(base2, "hello4").IsEmpty());
+  EXPECT_FALSE(Cache()->Get(BaseUrl(), "hello5").IsEmpty());
+}
+
 // https://crbug.com/1311370
 TEST_F(DocumentSimTest, HeaderPreloadRemoveReaddClient) {
   SimRequest::Params main_params;

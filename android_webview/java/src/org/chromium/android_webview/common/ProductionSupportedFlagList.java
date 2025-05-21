@@ -217,6 +217,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.PRELOAD_LINK_REL_DATA_URLS,
                 "Allow preloading data: URLs with link rel=preload"),
+        Flag.baseFeature(BlinkFeatures.OPTIMIZE_HTML_ELEMENT_URLS, "Optimize HTML Element URLs"),
         Flag.baseFeature(
                 BlinkFeatures.DOCUMENT_POLICY_EXPECT_NO_LINKED_RESOURCES,
                 "Enables the ability to use Document Policy header to control feature"
