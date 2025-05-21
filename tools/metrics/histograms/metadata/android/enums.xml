@@ -1790,9 +1790,10 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="MultipleBrowserWindowsOpen"/>
   <int value="11" label="DownTimeAfterEventTime"/>
   <int value="12" label="SequenceTransferredBackFromViz"/>
+  <int value="13" label="WebContentsIgnoringInputEvents"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/renderer_host/input/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
+<!-- LINT.ThenChange(//content/public/browser/android/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
 
 <enum name="UrlTargetType">
   <int value="0" label="URL"/>

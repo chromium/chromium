@@ -70,8 +70,12 @@ RenderInputRouterDelegateImpl::GetInputEventRouter() {
 
 bool RenderInputRouterDelegateImpl::IsIgnoringWebInputEvents(
     const blink::WebInputEvent& event) const {
-  // TODO(395844737): Implement notifying Viz of WebContentsImpl's ignoring
-  // input events.
+  // When browser starts ignoring input events, it calls
+  // RenderWidgetHostViewAndroid::ResetGestureDetection which results in
+  // dropping the rest of the current input sequence. If WebContents ignores
+  // input events according to WebInputEventAuditCallback, it is applicable from
+  // the next input sequence and the current input sequence will not ignore
+  // input events on VizCompositorThread.
   return false;
 }
 

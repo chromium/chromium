@@ -95,10 +95,15 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
 
 class MockInputTransferHandler : public InputTransferHandlerAndroid {
  public:
+  bool OnTouchEvent(const ui::MotionEventAndroid& event,
+                    bool is_ignoring_input_events = false) override {
+    return OnTouchEventImpl(event, is_ignoring_input_events);
+  }
+
   MOCK_METHOD(bool,
-              OnTouchEvent,
-              (const ui::MotionEventAndroid& event),
-              (override));
+              OnTouchEventImpl,
+              (const ui::MotionEventAndroid& event,
+               bool is_ignoring_input_events));
 
   MOCK_METHOD(bool,
               IsTouchSequencePotentiallyActiveOnViz,
@@ -475,12 +480,12 @@ TEST_F(RenderWidgetHostViewAndroidTest,
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
       0, 0, false, &p, nullptr);
 
-  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(true));
+  EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
   EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
   rwhva->OnTouchEvent(touch_down);
   EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
 
-  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(false));
+  EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(false));
   rwhva->OnTouchEvent(touch_down);
   EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
 }
@@ -558,7 +563,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
       0, 0, false, &p, nullptr);
 
-  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(true));
+  EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
   rwhva->OnTouchEvent(touch_down1);
 
   time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
@@ -567,7 +572,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
       0, 0, false, &p, nullptr);
 
-  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(false));
+  EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(false));
   rwhva->OnTouchEvent(touch_down2);
   // Expect a call to StopFlingingOnViz mojo method if the input sequence hasn't
   // been transferred to VizCompositorThread for handling.

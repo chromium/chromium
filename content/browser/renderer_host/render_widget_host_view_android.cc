@@ -1552,7 +1552,10 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   // lingering transferred event's touch id and touch id of acked event that the
   // Browser is now handling.
   if (input_transfer_handler_) {
-    if (input_transfer_handler_->OnTouchEvent(event)) {
+    bool is_ignoring_input_events =
+        host()->delegate()->ShouldIgnoreInputEvents();
+    if (input_transfer_handler_->OnTouchEvent(event,
+                                              is_ignoring_input_events)) {
       if (event.GetAction() == ui::MotionEvent::Action::DOWN) {
         latency_histogram.DoNotEmitHistograms();
       }

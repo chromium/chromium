@@ -7,6 +7,8 @@
 
 namespace content {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser
 // LINT.IfChange(TransferInputToVizResult)
@@ -24,7 +26,8 @@ enum class TransferInputToVizResult {
   kMultipleBrowserWindowsOpen = 10,
   kDownTimeAfterEventTime = 11,
   kSequenceTransferredBackFromViz = 12,
-  kMaxValue = kSequenceTransferredBackFromViz,
+  kWebContentsIgnoringInputEvents = 13,
+  kMaxValue = kWebContentsIgnoringInputEvents,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
 

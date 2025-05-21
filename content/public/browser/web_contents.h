@@ -1503,9 +1503,14 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // until all tokens have been destroyed.
   // If WebInputEventAuditCallback is given, it can audits WebInputEvent based
   // input events and ignore only events that the callback returns false for the
-  // event. Other kind of events, such as focus event or ui::Events will be
-  // always ignored without asking the callback. The given callback will be
-  // invoked only while the returned ScopedIgnoreInputEvents alives.
+  // event. This however will only start ignoring input events from the next
+  // input sequence, i.e., this will have no impact on the current input
+  // sequence when input is being handled on VizCompositorThread (with
+  // InputVizard). Call ResetGestureDetection explicitly if the current input
+  // sequence needs to be stopped. Other kind of events, such as focus event or
+  // ui::Events will be always ignored without asking the callback. The given
+  // callback will be invoked only while the returned ScopedIgnoreInputEvents
+  // alives.
   using WebInputEventAuditCallback =
       base::RepeatingCallback<bool(const blink::WebInputEvent&)>;
   [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents(

@@ -73,7 +73,8 @@ void InputTransferHandlerAndroid::EmitTransferResultHistogramAndTraceEvent(
 }
 
 bool InputTransferHandlerAndroid::OnTouchEvent(
-    const ui::MotionEventAndroid& event) {
+    const ui::MotionEventAndroid& event,
+    bool is_ignoring_input_events) {
   if (handler_state_ == HandlerState::kDroppingCurrentSequence) {
     DropCurrentSequence(event);
     return true;
@@ -139,6 +140,14 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
         TransferInputToVizResult::kSequenceTransferredBackFromViz);
     // We don't want to retransfer this sequence which was transferred back from
     // Viz.
+    return false;
+  }
+
+  if (is_ignoring_input_events) {
+    EmitTransferResultHistogramAndTraceEvent(
+        TransferInputToVizResult::kWebContentsIgnoringInputEvents);
+    // Let browser handle this sequence since it might potentially be filtered
+    // out at WebContents level.
     return false;
   }
 

@@ -47,7 +47,8 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   virtual ~InputTransferHandlerAndroid();
 
   // Virtual for testing.
-  virtual bool OnTouchEvent(const ui::MotionEventAndroid& event);
+  virtual bool OnTouchEvent(const ui::MotionEventAndroid& event,
+                            bool is_ignoring_input_events = false);
 
   void set_jni_delegate_for_testing(std::unique_ptr<JniDelegate> delegate) {
     jni_delegate_ = std::move(delegate);
