@@ -5855,8 +5855,8 @@
                 {
                     "name": "MediumThresholds",
                     "params": {
-                        "CommitAvailableCriticalThresholdMB": "500",
-                        "CommitAvailableModerateThresholdMB": "1000"
+                        "CommitAvailableCriticalThresholdMB": "750",
+                        "CommitAvailableModerateThresholdMB": "1500"
                     },
                     "enable_features": [
                         "CommitAvailableMemoryPressureThresholds"
