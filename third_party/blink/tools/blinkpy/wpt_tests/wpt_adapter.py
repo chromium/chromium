@@ -342,13 +342,8 @@ class WPTAdapter:
             *self.port.additional_driver_flags(),
         ])
 
-        # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` and
-        # `--enable-experimental-web-platform-features` to the browser binary.
-        # The latter is needed in addition to `--enable-blink-test-features`
-        # because it enables some Chromium-side `base::Feature()`s:
-        # https://chromium.googlesource.com/chromium/src/+/main/content/public/common/content_switch_dependent_feature_overrides.cc
+        # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest`.
         runner_options.mojojs_path = self.port.generated_sources_directory()
-        runner_options.enable_experimental = True
 
         # TODO: RWT has subtle control on how tests are retried. For example
         # there won't be automatic retry of failed tests when they are specified
