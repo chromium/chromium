@@ -191,8 +191,9 @@ class FakeImageDownloader {
   bool RunCallbackManually() {
     if (!HasPendingManualCallback())
       return false;
-    for (auto& callback : std::move(manual_callbacks_))
+    for (auto& callback : manual_callbacks_) {
       std::move(callback).Run();
+    }
     return true;
   }
 
@@ -268,8 +269,9 @@ class FakeManifestDownloader {
   bool RunCallbackManually() {
     if (!HasPendingManualCallback())
       return false;
-    for (auto& callback : std::move(manual_callbacks_))
+    for (auto& callback : manual_callbacks_) {
       std::move(callback).Run();
+    }
     return true;
   }
 

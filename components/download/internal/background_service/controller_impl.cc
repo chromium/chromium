@@ -1111,8 +1111,9 @@ DownloadBlockageStatus ControllerImpl::IsDownloadBlocked(Entry* entry) {
 }
 
 void ControllerImpl::KillTimedOutUploads() {
-  for (const std::string& guid : std::move(pending_uploads_))
+  for (const std::string& guid : pending_uploads_) {
     HandleCompleteDownload(CompletionType::UPLOAD_TIMEOUT, guid);
+  }
 }
 
 void ControllerImpl::NotifyClientsOfStartup(bool state_lost) {

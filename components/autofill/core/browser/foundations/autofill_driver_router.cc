@@ -171,7 +171,7 @@ void AutofillDriverRouter::FormsSeen(
   std::vector<FormGlobalId> renderer_form_ids =
       base::ToVector(renderer_forms, &FormData::global_id);
 
-  for (FormData& form : std::move(renderer_forms)) {
+  for (FormData& form : renderer_forms) {
     form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
   }
 

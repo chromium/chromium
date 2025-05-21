@@ -398,8 +398,9 @@ void Gpu::OnEstablishedGpuChannel() {
 
   std::vector<gpu::GpuChannelEstablishedCallback> callbacks;
   callbacks.swap(establish_callbacks_);
-  for (auto&& callback : std::move(callbacks))
+  for (auto& callback : callbacks) {
     std::move(callback).Run(gpu_channel_);
+  }
 }
 
 }  // namespace viz

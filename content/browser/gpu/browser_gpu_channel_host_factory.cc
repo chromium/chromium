@@ -235,8 +235,9 @@ void BrowserGpuChannelHostFactory::EstablishRequest::FinishOnMain() {
 void BrowserGpuChannelHostFactory::EstablishRequest::RunCallbacksOnMain() {
   std::vector<gpu::GpuChannelEstablishedCallback> established_callbacks;
   established_callbacks_.swap(established_callbacks);
-  for (auto&& callback : std::move(established_callbacks))
+  for (auto& callback : established_callbacks) {
     std::move(callback).Run(gpu_channel_);
+  }
 }
 
 void BrowserGpuChannelHostFactory::EstablishRequest::Wait() {

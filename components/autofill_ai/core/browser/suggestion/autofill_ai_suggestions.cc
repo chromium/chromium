@@ -160,7 +160,7 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
   // Initialize the output using `suggestions_with_metadata`.
   std::vector<Suggestion> suggestions_with_labels;
   suggestions_with_labels.reserve(n_suggestions);
-  for (SuggestionWithMetadata& s : std::move(suggestions_with_metadata)) {
+  for (SuggestionWithMetadata& s : suggestions_with_metadata) {
     suggestions_with_labels.push_back(std::move(s.suggestion));
   }
 
