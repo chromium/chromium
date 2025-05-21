@@ -164,4 +164,10 @@ BASE_FEATURE(kSyncTrustedVaultInfobarImprovements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements,
+             "SyncTrustedVaultInfobarMessageImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace syncer

@@ -820,6 +820,9 @@ extern const char kSyncSandboxDescription[];
 extern const char kSyncTrustedVaultInfobarImprovementsName[];
 extern const char kSyncTrustedVaultInfobarImprovementsDescription[];
 
+extern const char kSyncTrustedVaultInfobarMessageImprovementsName[];
+extern const char kSyncTrustedVaultInfobarMessageImprovementsDescription[];
+
 extern const char kTabGroupIndicatorName[];
 extern const char kTabGroupIndicatorDescription[];
 

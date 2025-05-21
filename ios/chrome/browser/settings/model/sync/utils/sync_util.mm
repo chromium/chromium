@@ -87,6 +87,12 @@ std::u16string GetIdentityErrorInfoBarTitle(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_PASSPHRASE_TITLE);
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
+      return base::FeatureList::IsEnabled(
+                 syncer::kSyncTrustedVaultInfobarMessageImprovements)
+                 ? l10n_util::GetStringUTF16(
+                       IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_TITLE)
+                 : l10n_util::GetStringUTF16(
+                       IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_ITS_YOU_TITLE);
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
     case syncer::SyncService::UserActionableError::
@@ -112,14 +118,25 @@ NSString* GetIdentityErrorInfoBarMessage(
       return l10n_util::GetNSString(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_YOUR_CHROME_DATA_MESSAGE);
     case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-      return base::FeatureList::IsEnabled(
-                 syncer::kSyncTrustedVaultInfobarImprovements)
-                 ? l10n_util::GetNSStringF(
-                       IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE_WITH_EMAIL,
-                       email)
-                 : l10n_util::GetNSString(
-                       IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE);
+        kNeedsTrustedVaultKeyForPasswords: {
+      if (base::FeatureList::IsEnabled(
+              syncer::kSyncTrustedVaultInfobarImprovements)) {
+        return base::FeatureList::IsEnabled(
+                   syncer::kSyncTrustedVaultInfobarMessageImprovements)
+                   ? l10n_util::GetNSString(
+                         IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_ON_THIS_DEVICE)
+                   : l10n_util::GetNSStringF(
+                         IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE_WITH_EMAIL,
+                         email);
+      } else {
+        return base::FeatureList::IsEnabled(
+                   syncer::kSyncTrustedVaultInfobarMessageImprovements)
+                   ? l10n_util::GetNSString(
+                         IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_ON_THIS_DEVICE)
+                   : l10n_util::GetNSString(
+                         IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE);
+      }
+    }
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
       return l10n_util::GetNSString(
@@ -142,6 +159,12 @@ NSString* GetIdentityErrorInfoBarButtonLabel(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL);
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
+      return base::FeatureList::IsEnabled(
+                 syncer::kSyncTrustedVaultInfobarMessageImprovements)
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_IDENTITY_ERROR_INFOBAR_OKAY_BUTTON_LABEL)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL);
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
     case syncer::SyncService::UserActionableError::

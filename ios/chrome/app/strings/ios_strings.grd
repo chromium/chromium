@@ -2819,6 +2819,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_ITS_YOU_TITLE" desc="The title of the identity error info bar when identity verification is needed. [iOS only]">
         Verify it's you
       </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_TITLE" desc="The title of the identity error info bar when a user needs to fix an error for being able to access their passwords.">
+        Get all your passwords
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_ON_THIS_DEVICE" desc="The error message that explains a sync error: Passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). [iOS only]">
+        Verify it’s you to get all your passwords on this device
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_OKAY_BUTTON_LABEL" desc="Button label for the message shown in the Sync Error Card (due to missing trusted vault keys) for confirming that a user wants to get all their passwords on their device.">
+        Okay
+      </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared, tabs will be closed and the user will be signed out.">
         Tabs were closed and browsing data was deleted. You were signed out
       </message>

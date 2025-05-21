@@ -1385,6 +1385,12 @@ const char kSyncTrustedVaultInfobarImprovementsDescription[] =
     "Enabled improvements to the UI of the trusted vault error infobar (e.g. "
     "displaying it on pages with password forms).";
 
+const char kSyncTrustedVaultInfobarMessageImprovementsName[] =
+    "Trusted vault infobar message improvements";
+const char kSyncTrustedVaultInfobarMessageImprovementsDescription[] =
+    "Enables massage improvements for the UI of the trusted vault error "
+    "infobar.";
+
 const char kTabGroupIndicatorName[] = "Tab Group Indicator";
 const char kTabGroupIndicatorDescription[] =
     "When enabled, displays a tab group indicator next to the omnibox.";

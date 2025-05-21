@@ -9072,6 +9072,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "sync-trusted-vault-infobar-message-improvements",
+    "owners": ["ylahodiuk@google.com", "rgod@google.com"],
+    "expiry_milestone": 141
+  },
+  {
     "name": "sys-ui-holdback-drive-integration",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 135

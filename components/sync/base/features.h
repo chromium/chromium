@@ -160,6 +160,13 @@ inline constexpr base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarImprovements);
 #endif  // BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_IOS)
+// Enables a message improvements to the existing trusted vault error infobar
+// (informing users that fixing the error will help them to start syncing their
+// passwords).
+BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

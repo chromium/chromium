@@ -217,7 +217,9 @@ bool SyncErrorInfoBarDelegate::DisplayPasswordErrorIcon() const {
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
       return base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultInfobarImprovements);
+                 syncer::kSyncTrustedVaultInfobarImprovements) ||
+             base::FeatureList::IsEnabled(
+                 syncer::kSyncTrustedVaultInfobarMessageImprovements);
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
