@@ -147,7 +147,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // kVulkan in case it becomes enabled by default.
   aw_feature_overrides.DisableFeature(::features::kVulkan);
 
-  aw_feature_overrides.DisableFeature(::features::kWebPayments);
   aw_feature_overrides.DisableFeature(::features::kServiceWorkerPaymentApps);
 
   // WebView does not support overlay fullscreen yet for video overlays.

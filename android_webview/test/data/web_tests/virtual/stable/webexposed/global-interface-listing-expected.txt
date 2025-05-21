@@ -3793,6 +3793,7 @@ interface HTMLIFrameElement : HTMLElement
     getter align
     getter allow
     getter allowFullscreen
+    getter allowPaymentRequest
     getter contentDocument
     getter contentWindow
     getter credentialless
@@ -3818,6 +3819,7 @@ interface HTMLIFrameElement : HTMLElement
     setter align
     setter allow
     setter allowFullscreen
+    setter allowPaymentRequest
     setter credentialless
     setter csp
     setter frameBorder
@@ -6332,6 +6334,62 @@ interface Path2D
     method quadraticCurveTo
     method rect
     method roundRect
+interface PaymentAddress
+    attribute @@toStringTag
+    getter addressLine
+    getter city
+    getter country
+    getter dependentLocality
+    getter organization
+    getter phone
+    getter postalCode
+    getter recipient
+    getter region
+    getter sortingCode
+    method constructor
+    method toJSON
+interface PaymentMethodChangeEvent : PaymentRequestUpdateEvent
+    attribute @@toStringTag
+    getter methodDetails
+    getter methodName
+    method constructor
+interface PaymentRequest : EventTarget
+    attribute @@toStringTag
+    getter id
+    getter onpaymentmethodchange
+    getter onshippingaddresschange
+    getter onshippingoptionchange
+    getter shippingAddress
+    getter shippingOption
+    getter shippingType
+    method abort
+    method canMakePayment
+    method constructor
+    method hasEnrolledInstrument
+    method show
+    setter onpaymentmethodchange
+    setter onshippingaddresschange
+    setter onshippingoptionchange
+interface PaymentRequestUpdateEvent : Event
+    attribute @@toStringTag
+    method constructor
+    method updateWith
+interface PaymentResponse : EventTarget
+    attribute @@toStringTag
+    getter details
+    getter methodName
+    getter onpayerdetailchange
+    getter payerEmail
+    getter payerName
+    getter payerPhone
+    getter requestId
+    getter shippingAddress
+    getter shippingOption
+    method complete
+    method constructor
+    method retry
+    method toJSON
+    setter onpayerdetailchange
 interface Performance : EventTarget
     attribute @@toStringTag
     getter eventCounts
