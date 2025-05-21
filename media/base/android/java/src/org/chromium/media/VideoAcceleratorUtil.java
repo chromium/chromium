@@ -276,6 +276,10 @@ class VideoAcceleratorUtil {
 
                 MediaCodecInfo.EncoderCapabilities encoderCapabilities =
                         capabilities.getEncoderCapabilities();
+                if (encoderCapabilities == null) {
+                    // Shouldn't actually happen as we checked `info.isEncoder()` above.
+                    continue;
+                }
                 boolean supportsCbr =
                         encoderCapabilities.isBitrateModeSupported(
                                 MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
@@ -285,6 +289,10 @@ class VideoAcceleratorUtil {
 
                 MediaCodecInfo.VideoCapabilities videoCapabilities =
                         capabilities.getVideoCapabilities();
+                if (videoCapabilities == null) {
+                    // Shouldn't actually happen as we are only querying video codecs.
+                    continue;
+                }
 
                 // In landscape mode, width is always larger than height, so first get the
                 // maximum width and then the height range supported for that width.
@@ -467,6 +475,10 @@ class VideoAcceleratorUtil {
 
                 MediaCodecInfo.VideoCapabilities videoCapabilities =
                         capabilities.getVideoCapabilities();
+                if (videoCapabilities == null) {
+                    // Shouldn't actually happen as we are only querying video codecs.
+                    continue;
+                }
 
                 // In landscape mode, width is always larger than height, so first get the
                 // maximum width and then the height range supported for that width.
