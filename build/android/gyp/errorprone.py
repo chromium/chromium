@@ -50,6 +50,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InvalidInlineTag',
     'MalformedInlineTag',
     'MissingSummary',
+    'NotJavadoc',
     'UnescapedEntity',
     'UnrecognisedJavadocTag',
     # ^^^
