@@ -432,6 +432,15 @@ bool DrawingBuffer::PrepareTransferableResource(
     return false;
   }
 
+  // If the requested alpha type was unpremul, then set the output resource to
+  // be unpremul as well unless we have already handled premultiplication
+  // internally.
+  SkAlphaType resource_alpha_type = kPremul_SkAlphaType;
+  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+      !premultiplying_internally_) {
+    resource_alpha_type = kUnpremul_SkAlphaType;
+  }
+
   if (IsUsingGpuCompositing()) {
     gpu::SyncToken sync_token;
     auto shared_image =
@@ -447,6 +456,7 @@ bool DrawingBuffer::PrepareTransferableResource(
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->is_low_latency_rendering = shared_image->usage().Has(
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+    out_resource->alpha_type = resource_alpha_type;
   } else {
     // Populate the TransferableResource with a SharedImage for the software
     // compositor.
@@ -467,6 +477,7 @@ bool DrawingBuffer::PrepareTransferableResource(
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->is_low_latency_rendering = resource.shared_image->usage().Has(
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+    out_resource->alpha_type = resource_alpha_type;
 
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running). It also
@@ -479,14 +490,6 @@ bool DrawingBuffer::PrepareTransferableResource(
     if (preserve_drawing_buffer_ == kDiscard) {
       SetBufferClearNeeded(true);
     }
-  }
-
-  // If the requested alpha type was unpremul, then set the output resource to
-  // be unpremul as well unless we have already handled premultiplication
-  // internally.
-  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
-      !premultiplying_internally_) {
-    out_resource->alpha_type = requested_alpha_type_;
   }
 
   return true;
