@@ -788,7 +788,6 @@ export class SpeechController {
       isSpeechBeingRepositioned: false,
     };
     this.setState_(speechPlayingState);
-    this.setEngineState_(SpeechEngineState.NONE);
     this.setPreviewVoicePlaying_(null);
     this.model_.setFirstTextNode(null);
     this.model_.setResumeSpeechOnVoiceMenuClose(false);
