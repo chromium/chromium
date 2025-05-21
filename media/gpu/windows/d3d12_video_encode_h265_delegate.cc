@@ -467,24 +467,23 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeH265Delegate::ReadbackBitstream(
   packed_header_.Reset();
   bitstream_buffer = bitstream_buffer.subspan(packed_header_size);
 
-  // Adding a 0x00 byte to make sure the first NALU of each frame has 0x00000001
-  // start code.
-  bitstream_buffer[0] = 0x00u;
-  bitstream_buffer = bitstream_buffer.subspan(1u);
-
   auto size_or_error =
       D3D12VideoEncodeDelegate::ReadbackBitstream(bitstream_buffer);
   if (!size_or_error.has_value()) {
     return std::move(size_or_error).error();
   }
 
-  if (bitstream_buffer.first(3u) != base::span_from_cstring("\0\0\1")) {
+  auto slice_size = std::move(size_or_error).value();
+  DCHECK_GE(slice_size, 4u);
+  // Follow the same logic as H.264 encode delegate. Do not mandate start code
+  // of first NALU to be 0x00000001 only, unless we see interop issue.
+  if (bitstream_buffer.first(3u) != base::span_from_cstring("\0\0\1") &&
+      bitstream_buffer.first(4u) != base::span_from_cstring("\0\0\0\1")) {
     return {EncoderStatus::Codes::kBitstreamConversionError,
             "D3D12VideoEncodeH265Delegate: The encoded bitstream does not "
-            "start with 0x000001"};
+            "start with 0x000001 or 0x00000001"};
   }
-  size_t payload_size =
-      packed_header_size + 1 + std::move(size_or_error).value();
+  size_t payload_size = packed_header_size + slice_size;
   if (software_rate_controller_) {
     // Update the software rate controller here since we do not know the payload
     // size until now.
