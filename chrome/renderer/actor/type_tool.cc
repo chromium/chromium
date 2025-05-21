@@ -261,7 +261,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     gfx::PointF click_point(target->get_coordinate());
     if (!IsPointWithinViewport(click_point, frame_.get())) {
       std::move(callback).Run(
-          MakeResult(mojom::ActionResultCode::kClickInvalidPoint));
+          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds));
       return;
     }
     mojom::ActionResultPtr result = CreateAndDispatchClick(

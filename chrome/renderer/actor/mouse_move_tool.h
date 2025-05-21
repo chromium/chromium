@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -30,7 +31,8 @@ class MouseMoveTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
-  std::optional<gfx::PointF> ValidateAndGetMovePoint() const;
+  using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
+  ValidatedResult Validate() const;
 
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.

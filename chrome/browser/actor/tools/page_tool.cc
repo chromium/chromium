@@ -199,7 +199,7 @@ void PageTool::Invoke(InvokeCallback callback) {
       auto click = mojom::ClickAction::New();
       if (!SetClickToolArgs(click, action_info)) {
         std::move(callback).Run(
-            MakeResult(mojom::ActionResultCode::kClickInvalidArguments));
+            MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
         return;
       }
       request->action = mojom::ToolAction::NewClick(std::move(click));
@@ -209,7 +209,7 @@ void PageTool::Invoke(InvokeCallback callback) {
       auto type = mojom::TypeAction::New();
       if (!SetTypeToolArgs(type, action_info)) {
         std::move(callback).Run(
-            MakeResult(mojom::ActionResultCode::kTypeInvalidArguments));
+            MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
         return;
       }
       request->action = mojom::ToolAction::NewType(std::move(type));
@@ -219,7 +219,7 @@ void PageTool::Invoke(InvokeCallback callback) {
       auto scroll = mojom::ScrollAction::New();
       if (!SetScrollToolArgs(scroll, action_info)) {
         std::move(callback).Run(
-            MakeResult(mojom::ActionResultCode::kScrollInvalidArguments));
+            MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
         return;
       }
       request->action = mojom::ToolAction::NewScroll(std::move(scroll));

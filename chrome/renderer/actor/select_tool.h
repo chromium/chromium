@@ -6,8 +6,11 @@
 #define CHROME_RENDERER_ACTOR_SELECT_TOOL_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_select_element.h"
 
 namespace content {
 class RenderFrame;
@@ -26,7 +29,13 @@ class SelectTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
-  bool Validate() const;
+  struct TargetAndValue {
+    blink::WebSelectElement select;
+    blink::WebString option_value;
+  };
+  using ValidatedResult =
+      base::expected<TargetAndValue, mojom::ActionResultPtr>;
+  ValidatedResult Validate() const;
 
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.

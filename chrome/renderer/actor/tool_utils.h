@@ -41,6 +41,7 @@ bool IsNodeFocused(const content::RenderFrame& frame,
                    const blink::WebNode& node);
 
 // `point` is relative to the viewport origin.
+// Note: this doesn't account for pinch-zoom.
 bool IsPointWithinViewport(const gfx::PointF& point,
                            const content::RenderFrame& frame);
 

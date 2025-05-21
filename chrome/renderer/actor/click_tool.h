@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 
@@ -36,7 +37,8 @@ class ClickTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
-  std::optional<gfx::PointF> ValidateAndGetClickPoint() const;
+  using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
+  ValidatedResult Validate() const;
 
   void SendMouseUp(blink::WebMouseEvent mouse_event,
                    ToolFinishedCallback callback);

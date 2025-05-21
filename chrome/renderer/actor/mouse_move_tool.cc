@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "chrome/common/actor.mojom-data-view.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
@@ -44,24 +45,27 @@ MouseMoveTool::MouseMoveTool(mojom::MouseMoveActionPtr action,
 MouseMoveTool::~MouseMoveTool() = default;
 
 void MouseMoveTool::Execute(ToolFinishedCallback callback) {
-  std::optional<gfx::PointF> move_point = ValidateAndGetMovePoint();
-  if (!move_point.has_value()) {
-    std::move(callback).Run(MakeErrorResult());
+  ValidatedResult validated_result = Validate();
+  if (!validated_result.has_value()) {
+    std::move(callback).Run(std::move(validated_result.error()));
     return;
   }
 
+  gfx::PointF move_point = validated_result.value();
+
   // Dispatch MouseMove event
-  blink::WebMouseEvent mouse_move = CreateMouseEvent(
-      blink::WebInputEvent::Type::kMouseMove, move_point.value());
+  blink::WebMouseEvent mouse_move =
+      CreateMouseEvent(blink::WebInputEvent::Type::kMouseMove, move_point);
 
   blink::WebInputEventResult move_result =
       frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
           blink::WebCoalescedInputEvent(mouse_move, ui::LatencyInfo()));
 
+  // Note: KNotHandled probably shouldn't result in an error.
   if (move_result == blink::WebInputEventResult::kNotHandled ||
       move_result == blink::WebInputEventResult::kHandledSuppressed) {
-    ACTOR_LOG() << "MouseMove event was not handled or suppressed";
-    std::move(callback).Run(MakeErrorResult());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kMouseMoveEventSuppressed));
     return;
   }
   std::move(callback).Run(MakeOkResult());
@@ -71,37 +75,37 @@ std::string MouseMoveTool::DebugString() const {
   return absl::StrFormat("MouseMoveTool[%s]", ToDebugString(action_->target));
 }
 
-std::optional<gfx::PointF> MouseMoveTool::ValidateAndGetMovePoint() const {
-  if (!frame_->GetWebFrame()->FrameWidget()) {
-    ACTOR_LOG() << "RenderWidget is invalid.";
-    return std::nullopt;
+MouseMoveTool::ValidatedResult MouseMoveTool::Validate() const {
+  if (!frame_->GetWebFrame() || !frame_->GetWebFrame()->FrameWidget()) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway));
   }
 
-  std::optional<gfx::PointF> move_point;
   if (action_->target->is_coordinate()) {
-    move_point.emplace(action_->target->get_coordinate());
-  } else {
-    blink::WebNode node =
-        GetNodeFromId(frame_.get(), action_->target->get_dom_node_id());
-    if (node.IsNull()) {
-      ACTOR_LOG() << "Cannot find dom node with id "
-                  << action_->target->get_dom_node_id();
-      return std::nullopt;
+    gfx::PointF move_point = gfx::PointF(action_->target->get_coordinate());
+    if (!IsPointWithinViewport(move_point, frame_.get())) {
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds,
+                     absl::StrFormat("Point [%s]", move_point.ToString())));
     }
 
-    move_point = InteractionPointFromWebNode(node);
-    if (!move_point.has_value()) {
-      ACTOR_LOG() << "Cannot get center interaction point for node id";
-      return std::nullopt;
-    }
+    return move_point;
   }
 
-  if (!IsPointWithinViewport(move_point.value(), frame_.get())) {
-    ACTOR_LOG() << "Target is outside viewport";
-    return std::nullopt;
+  blink::WebNode node =
+      GetNodeFromId(frame_.get(), action_->target->get_dom_node_id());
+  if (node.IsNull()) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
   }
 
-  return move_point;
+  std::optional<gfx::PointF> move_point = InteractionPointFromWebNode(node);
+  if (!move_point.has_value()) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kElementOffscreen));
+  }
+
+  return *move_point;
 }
 
 }  // namespace actor

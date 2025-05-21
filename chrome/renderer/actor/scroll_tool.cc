@@ -35,40 +35,70 @@ ScrollTool::ScrollTool(mojom::ScrollActionPtr action,
 ScrollTool::~ScrollTool() = default;
 
 void ScrollTool::Execute(ToolFinishedCallback callback) {
+  ValidatedResult validated_result = Validate();
+  if (!validated_result.has_value()) {
+    std::move(callback).Run(std::move(validated_result.error()));
+    return;
+  }
+
+  WebElement scrolling_element = validated_result->scroller;
+  gfx::Vector2dF offset_physical = validated_result->scroll_by_offset;
+
+  float physical_to_css = 1 / scrolling_element.GetEffectiveZoom();
+  gfx::Vector2dF offset_css =
+      gfx::ScaleVector2d(offset_physical, physical_to_css, physical_to_css);
+
+  gfx::Vector2dF start_offset_css = scrolling_element.GetScrollOffset();
+  scrolling_element.SetScrollOffset(start_offset_css + offset_css);
+
+  bool did_scroll = scrolling_element.GetScrollOffset() != start_offset_css;
+  std::move(callback).Run(
+      did_scroll
+          ? MakeOkResult()
+          : MakeResult(mojom::ActionResultCode::kScrollOffsetDidNotChange));
+}
+
+std::string ScrollTool::DebugString() const {
+  return absl::StrFormat("ScrollTool[%s;direction(%s);distance(%f)]",
+                         ToDebugString(action_->target),
+                         base::ToString(action_->direction), action_->distance);
+}
+
+ScrollTool::ValidatedResult ScrollTool::Validate() const {
   // The scroll distance should always be positive.
   if (action_->distance <= 0.0) {
-    ACTOR_LOG() << "Invalid scroll distance: " << action_->distance;
-    std::move(callback).Run(MakeErrorResult());
-    return;
+    return base::unexpected(MakeResult(
+        mojom::ActionResultCode::kArgumentsInvalid, "Negative Distance"));
   }
 
   WebLocalFrame* web_frame = frame_->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
-    ACTOR_LOG() << "WebLocalFrame or FrameWidget is null.";
-    std::move(callback).Run(MakeErrorResult());
-    return;
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway));
   }
 
   WebElement scrolling_element;
-
   if (!action_->target) {
     scrolling_element = web_frame->GetDocument().ScrollingElement();
+
+    if (scrolling_element.IsNull()) {
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kScrollNoScrollingElement));
+    }
   } else {
     if (action_->target->is_coordinate()) {
       NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-      std::move(callback).Run(MakeErrorResult());
-      return;
+      return base::unexpected(MakeErrorResult());
     }
 
     int32_t dom_node_id = action_->target->get_dom_node_id();
     scrolling_element =
         GetNodeFromId(frame_.get(), dom_node_id).DynamicTo<WebElement>();
-  }
 
-  if (scrolling_element.IsNull()) {
-    ACTOR_LOG() << "Target element not found.";
-    std::move(callback).Run(MakeErrorResult());
-    return;
+    if (scrolling_element.IsNull()) {
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
+    }
   }
 
   gfx::Vector2dF offset_physical;
@@ -93,28 +123,13 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
 
   if ((offset_physical.x() && !scrolling_element.IsUserScrollableX()) ||
       (offset_physical.y() && !scrolling_element.IsUserScrollableY())) {
-    ACTOR_LOG() << "Target " << scrolling_element
-                << " is not user scrollable for scroll offset "
-                << offset_physical.ToString();
-    std::move(callback).Run(MakeErrorResult());
-    return;
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
+                   absl::StrFormat("ScrollingElement [%s]",
+                                   base::ToString(scrolling_element))));
   }
 
-  float physical_to_css = 1 / scrolling_element.GetEffectiveZoom();
-  gfx::Vector2dF offset_css =
-      gfx::ScaleVector2d(offset_physical, physical_to_css, physical_to_css);
-
-  gfx::Vector2dF start_offset_css = scrolling_element.GetScrollOffset();
-  scrolling_element.SetScrollOffset(start_offset_css + offset_css);
-
-  bool did_scroll = scrolling_element.GetScrollOffset() != start_offset_css;
-  std::move(callback).Run(did_scroll ? MakeOkResult() : MakeErrorResult());
-}
-
-std::string ScrollTool::DebugString() const {
-  return absl::StrFormat("ScrollTool[%s;direction(%s);distance(%f)]",
-                         ToDebugString(action_->target),
-                         base::ToString(action_->direction), action_->distance);
+  return ScrollerAndDistance{scrolling_element, offset_physical};
 }
 
 }  // namespace actor

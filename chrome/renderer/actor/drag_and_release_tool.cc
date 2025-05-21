@@ -36,58 +36,44 @@ DragAndReleaseTool::DragAndReleaseTool(mojom::DragAndReleaseActionPtr action,
 DragAndReleaseTool::~DragAndReleaseTool() = default;
 
 void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
-  WebLocalFrame* web_frame = frame_->GetWebFrame();
-  if (!web_frame || !web_frame->FrameWidget()) {
-    ACTOR_LOG() << "RenderFrame or FrameWidget is invalid.";
-    std::move(callback).Run(MakeErrorResult());
+  ValidatedResult validated_result = Validate();
+  if (!validated_result.has_value()) {
+    std::move(callback).Run(std::move(validated_result.error()));
     return;
   }
 
-  mojom::ToolTargetPtr& from_target = action_->from_target;
-  mojom::ToolTargetPtr& to_target = action_->to_target;
-
-  if (from_target->is_dom_node_id() || to_target->is_dom_node_id()) {
-    NOTIMPLEMENTED()
-        << "DragAndRelease currently supports only coordinate targets.";
-    std::move(callback).Run(MakeErrorResult());
-    return;
-  }
-
-  gfx::PointF from_point = gfx::PointF(from_target->get_coordinate());
-  gfx::PointF to_point = gfx::PointF(to_target->get_coordinate());
-
-  if (!IsPointWithinViewport(from_point, frame_.get()) ||
-      !IsPointWithinViewport(to_point, frame_.get())) {
-    ACTOR_LOG() << "Target point is outside of viewport";
-    std::move(callback).Run(MakeErrorResult());
-    return;
-  }
+  gfx::PointF from_point = validated_result->from;
+  gfx::PointF to_point = validated_result->to;
 
   // TODO(crbug.com/409333494): How should partial success be returned.
 
   // Move and press down the mouse on the from_point.
   if (!InjectMouseEvent(EventType::kMouseMove, from_point,
                         WebMouseEvent::Button::kNoButton)) {
-    std::move(callback).Run(MakeErrorResult());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseFromMoveSuppressed));
     return;
   }
 
   if (!InjectMouseEvent(EventType::kMouseDown, from_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(MakeErrorResult());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseDownSuppressed));
     return;
   }
 
   // Move and release the mouse on the to_point.
   if (!InjectMouseEvent(EventType::kMouseMove, to_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(MakeErrorResult());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed));
     return;
   }
 
   if (!InjectMouseEvent(EventType::kMouseUp, to_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(MakeErrorResult());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed));
     return;
   }
 
@@ -98,6 +84,38 @@ std::string DragAndReleaseTool::DebugString() const {
   return absl::StrFormat("DragAndReleaseTool[from-%s -> to-%s]",
                          ToDebugString(action_->from_target),
                          ToDebugString(action_->to_target));
+}
+
+DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
+  if (!frame_->GetWebFrame() || !frame_->GetWebFrame()->FrameWidget()) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway));
+  }
+  mojom::ToolTargetPtr& from_target = action_->from_target;
+  mojom::ToolTargetPtr& to_target = action_->to_target;
+
+  if (from_target->is_dom_node_id() || to_target->is_dom_node_id()) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+                   "DomNodeId target not supported"));
+  }
+
+  gfx::PointF from_point = gfx::PointF(from_target->get_coordinate());
+  gfx::PointF to_point = gfx::PointF(to_target->get_coordinate());
+
+  if (!IsPointWithinViewport(from_point, frame_.get())) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseFromOffscreen,
+                   absl::StrFormat("Point [%s]", from_point.ToString())));
+  }
+
+  if (!IsPointWithinViewport(to_point, frame_.get())) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kDragAndReleaseToOffscreen,
+                   absl::StrFormat("Point [%s]", to_point.ToString())));
+  }
+
+  return DragParams{from_point, to_point};
 }
 
 bool DragAndReleaseTool::InjectMouseEvent(WebInputEvent::Type type,

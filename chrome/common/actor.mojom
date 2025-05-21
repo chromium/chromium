@@ -154,6 +154,25 @@ enum ActionResultCode {
   // An unknown tool was requested.
   kToolUnknown = 16,
 
+  // The target frame in the renderer no longer exists or is shutting down.
+  kFrameWentAway = 17,
+
+  // The target DOMNodeId does not exist in the document.
+  kInvalidDomNodeId = 18,
+
+  // The targeted element cannot be modified because it is disabled.
+  kElementDisabled = 19,
+
+  // The target element is off screen or otherwise clipped by ancestor elements.
+  kElementOffscreen = 20,
+
+  // When using coordinate target, a supplied coordinate is outside the
+  // viewport.
+  kCoordinatesOutOfBounds = 21,
+
+  // Arguments supplied to the tool are invalid.
+  kArgumentsInvalid = 22,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
   // as it's a browser-side tool.)
@@ -164,38 +183,70 @@ enum ActionResultCode {
   ///////////////////////////////////////////////////////////////////////
   // Codes 200-299: Errors for ClickAction.
 
-  // Arguments passed to the click tool were invalid.
-  kClickInvalidArguments = 200,
-
-  // The DOM node targeted for the click is invalid.
-  kClickInvalidDomNodeId = 201,
-
-  // The form element targeted for the click is disabled.
-  kClickElementDisabled = 202,
-
-  // The element targeted for the click is offscreen.
-  kClickElementOffscreen = 203,
-
-  // The frame targeted for the click is invalid.
-  kClickInvalidFrame = 204,
-
-  // The click point for the element was not valid.
-  kClickInvalidPoint = 205,
-
   // The click event was suppressed.
-  kClickSuppressed = 206,
+  kClickSuppressed = 200,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 300-399: Errors for DragAndRelease.
+
+  // The `from` coordinate is outside of the viewport bounds.
+  kDragAndReleaseFromOffscreen = 300,
+
+  // The `to` coordinate is outside of the viewport bounds.
+  kDragAndReleaseToOffscreen = 301,
+
+  // The initial mouse move event was suppressed.
+  kDragAndReleaseFromMoveSuppressed = 302,
+
+  // The mouse down event was suppressed.
+  kDragAndReleaseDownSuppressed = 303,
+
+  // The mouse move event to the target was suppressed.
+  kDragAndReleaseToMoveSuppressed = 304,
+
+  // The mouse up event was suppressed.
+  kDragAndReleaseUpSuppressed = 305,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 400-499: Errors for MouseMoveAction.
+
+  // The mouse move event was suppressed.
+  kMouseMoveEventSuppressed = 400,
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 500-599: Errors for ScrollAction.
 
-  // Arguments passed to the scroll tool were invalid.
-  kScrollInvalidArguments = 500,
+  // The tool is targeting the viewport but the document doesn't have a
+  // scrolling element for the viewport. (Note: this is a rare edge case in
+  // quirks mode. This does NOT mean that the viewport isn't scrollable.)
+  kScrollNoScrollingElement = 500,
+
+  // The targeted element either has no overflow or the overflow is not user
+  // scrollable.
+  kScrollTargetNotUserScrollable = 501,
+
+  // The offset of the target element didn't change after scrolling.
+  kScrollOffsetDidNotChange = 502,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 600-699: Errors for SelectAction.
+
+  // Target element was not a <select>.
+  kSelectInvalidElement = 600,
+
+  // Specified value to select does not exist as an <option> in the <select>.
+  kSelectNoSuchOption = 601,
+
+  // Specified value to select does exist but is disabled.
+  kSelectOptionDisabled = 602,
+
+  // The invoking the tool resulted in an unexpected value.
+  kSelectUnexpectedValue = 603,
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 700-799: Errors for TypeAction.
 
-  // Arguments passed to the type tool were invalid.
-  kTypeInvalidArguments = 700,
+  // TODO(crbug.com/409558980): Add error codes for type tool
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 800-899: Errors for history tool. (Not part of the ToolAction union

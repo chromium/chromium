@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -36,6 +37,13 @@ class DragAndReleaseTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
+  struct DragParams {
+    gfx::PointF from;
+    gfx::PointF to;
+  };
+  using ValidatedResult = base::expected<DragParams, mojom::ActionResultPtr>;
+  ValidatedResult Validate() const;
+
   bool InjectMouseEvent(blink::WebInputEvent::Type type,
                         const gfx::PointF& position_in_widget,
                         blink::WebMouseEvent::Button button);

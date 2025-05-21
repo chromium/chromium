@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
+#include "chrome/common/actor.mojom-data-view.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_NonExistentElement) {
   TestFuture<mojom::ActionResultPtr> result_fail;
   actor_coordinator().Act(action, result_fail.GetCallback());
   // The node id doesn't exist so the tool will return false.
-  ExpectErrorResult(result_fail, mojom::ActionResultCode::kClickInvalidPoint);
+  ExpectErrorResult(result_fail, mojom::ActionResultCode::kInvalidDomNodeId);
 
   // The page should not have received any events.
   EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_DisabledElement) {
   BrowserAction action = MakeClick(button_id.value());
   TestFuture<mojom::ActionResultPtr> result_fail;
   actor_coordinator().Act(action, result_fail.GetCallback());
-  ExpectErrorResult(result_fail, mojom::ActionResultCode::kClickInvalidPoint);
+  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementDisabled);
 
   // The page should not have received any events.
   EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
@@ -271,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
   BrowserAction action = MakeClick(button_id.value());
   TestFuture<mojom::ActionResultPtr> result_fail;
   actor_coordinator().Act(action, result_fail.GetCallback());
-  ExpectErrorResult(result_fail, mojom::ActionResultCode::kClickInvalidPoint);
+  ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementOffscreen);
 
   // The page should not have received any events.
   EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
@@ -352,7 +353,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToCoordinateOffScreen) {
     BrowserAction action = MakeClick(negative_offscreen);
     TestFuture<mojom::ActionResultPtr> result_fail;
     actor_coordinator().Act(action, result_fail.GetCallback());
-    ExpectErrorResult(result_fail, mojom::ActionResultCode::kClickInvalidPoint);
+    ExpectErrorResult(result_fail,
+                      mojom::ActionResultCode::kCoordinatesOutOfBounds);
 
     // The page should not have received any events.
     EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
@@ -365,7 +367,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToCoordinateOffScreen) {
     BrowserAction action = MakeClick(positive_offscreen);
     TestFuture<mojom::ActionResultPtr> result_fail;
     actor_coordinator().Act(action, result_fail.GetCallback());
-    ExpectErrorResult(result_fail, mojom::ActionResultCode::kClickInvalidPoint);
+    ExpectErrorResult(result_fail,
+                      mojom::ActionResultCode::kCoordinatesOutOfBounds);
     // The page should not have received any events.
     EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
   }
@@ -777,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_SentToOffScreenCoordinates) {
 
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(action, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kClickInvalidPoint);
+  ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
 
   EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 }
@@ -799,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_NonExistentNode) {
 
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(action, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kInvalidDomNodeId);
 }
 
 // Test basic movements using MouseMove tool generates the expected events.
@@ -855,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
 
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(action, result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
   }
 
   // The action should fail without generating any events.
@@ -920,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest,
 
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(action, result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
   }
 
   // The action should fail without generating any events.
@@ -943,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
 
   TestFuture<mojom::ActionResultPtr> result_fail;
   actor_coordinator().Act(action, result_fail.GetCallback());
-  ExpectErrorResult(result_fail, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result_fail, mojom::ActionResultCode::kInvalidDomNodeId);
 
   EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 }
@@ -1055,7 +1058,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_NonScrollable) {
                                       /*scroll_offset_x=*/0, scroll_offset_y);
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(action, result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kScrollTargetNotUserScrollable);
     EXPECT_EQ(0, EvalJs(web_contents(),
                         "document.getElementById('nonscroll').scrollTop"));
     EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
@@ -1080,7 +1084,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OneAxisScroller) {
                                       /*scroll_offset_x=*/0, scroll_offset);
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(action, result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kScrollTargetNotUserScrollable);
     EXPECT_EQ(
         0, EvalJs(web_contents(),
                   "document.getElementById('horizontalscroller').scrollTop"));
@@ -1304,7 +1309,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Offscreen) {
     BrowserAction action = MakeDragAndRelease(start, end);
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(action, result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kDragAndReleaseFromOffscreen);
   }
 
   // Scroll the range into the viewport.
@@ -1703,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonExistentValueFails) {
       MakeSelect(plain_select_dom_node_id, "nonexistentValue");
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(select, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kSelectNoSuchOption);
 
   EXPECT_EQ(GetSelectElementCurrentValue(plain_select_id), initial_value);
 }
@@ -1728,7 +1734,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonOptionNodeValueFails) {
     BrowserAction select = MakeSelect(non_options_select_dom_node_id, "beta");
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(select, result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result, mojom::ActionResultCode::kSelectNoSuchOption);
   }
 
   // Expect the value to remain unchanged
@@ -1740,7 +1746,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonOptionNodeValueFails) {
     BrowserAction select = MakeSelect(non_options_select_dom_node_id, "gamma");
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(select, result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result, mojom::ActionResultCode::kSelectNoSuchOption);
   }
 
   // Expect the value to remain unchanged
@@ -1777,7 +1783,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ValueIsCaseSensitive) {
   BrowserAction select = MakeSelect(plain_select_dom_node_id, "BETA");
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(select, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kSelectNoSuchOption);
 
   // The select value should be unchanged.
   EXPECT_EQ(GetSelectElementCurrentValue(plain_select_id), initial_value);
@@ -1801,7 +1807,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptionFails) {
   BrowserAction select = MakeSelect(plain_select_dom_node_id, "disabledOption");
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(select, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kSelectOptionDisabled);
   EXPECT_EQ(GetSelectElementCurrentValue(plain_select_id), initial_value);
 }
 
@@ -1824,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptGroupFails) {
   BrowserAction select = MakeSelect(plain_select_dom_node_id, "foobar");
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(select, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kSelectOptionDisabled);
   EXPECT_EQ(GetSelectElementCurrentValue(group_select_id), initial_value);
 }
 
@@ -1847,7 +1853,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledSelectFails) {
   BrowserAction select = MakeSelect(disabled_select_dom_node_id, "beta");
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(select, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
   EXPECT_EQ(GetSelectElementCurrentValue(disabled_select_id), initial_value);
 }
 
