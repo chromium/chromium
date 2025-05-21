@@ -1367,6 +1367,11 @@ size_t RenderProcessHostImpl::GetPlatformMaxRendererProcessCount() {
   }
   return limit;
 }
+
+// static
+bool RenderProcessHostImpl::IsPlatformProcessLimitUnknownForTesting() {
+  return GetPlatformProcessLimit() == kUnknownPlatformProcessLimit;
+}
 #endif
 
 // static

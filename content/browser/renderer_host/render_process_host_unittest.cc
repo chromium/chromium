@@ -76,36 +76,73 @@ TEST_F(RenderProcessHostUnitTest, GuestsAreNotSuitableHosts) {
             RenderProcessHostImpl::GetExistingProcessHost(site_instance.get()));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
-  // This test shouldn't run with --site-per-process mode, which prohibits
-  // the renderer process reuse this test explicitly exercises.
-  if (AreAllSitesIsolatedForTesting())
-    return;
-
-  const size_t max_renderer_process_count =
-      RenderProcessHostImpl::GetPlatformMaxRendererProcessCount();
-
-  // Verify that the limit is between 1 and |max_renderer_process_count|.
-  EXPECT_GT(RenderProcessHostImpl::GetMaxRendererProcessCount(), 0u);
-  EXPECT_LE(RenderProcessHostImpl::GetMaxRendererProcessCount(),
-            max_renderer_process_count);
+// Test that an overridden process limit takes effect on all platforms.
+TEST_F(RenderProcessHostUnitTest, RendererProcessLimitOverride) {
+  const size_t overridden_limit = 50;
+  RenderProcessHost::SetMaxRendererProcessCount(overridden_limit);
 
   // Add dummy process hosts to saturate the limit.
-  ASSERT_NE(0u, max_renderer_process_count);
   std::vector<std::unique_ptr<MockRenderProcessHost>> hosts;
-  for (size_t i = 0; i < max_renderer_process_count; ++i) {
+  for (size_t i = 0; i < overridden_limit; ++i) {
     hosts.push_back(std::make_unique<MockRenderProcessHost>(browser_context()));
   }
 
   // Verify that the renderer sharing will happen.
-  GURL test_url("http://foo.com");
+  EXPECT_TRUE(RenderProcessHostImpl::IsProcessLimitReached());
+
+  // Reset the override to avoid interfering with other tests.
+  RenderProcessHost::SetMaxRendererProcessCount(0);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Test that using more than half of the system's process limit will be
+// considered going over Chrome's process limit, on non-Android platforms.
+TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
+  // This is half of the system's process limit, or a fallback value (82) if the
+  // system's limit is unknown.
+  const size_t max_platform_renderer_process_count =
+      RenderProcessHostImpl::GetPlatformMaxRendererProcessCount();
+
+  // Verify that Chrome's process limit is between 1 and
+  // |max_platform_renderer_process_count|.
+  EXPECT_GT(RenderProcessHostImpl::GetMaxRendererProcessCount(), 0u);
+  EXPECT_LE(RenderProcessHostImpl::GetMaxRendererProcessCount(),
+            max_platform_renderer_process_count);
+
+  // Add dummy process hosts to saturate the limit.
+  ASSERT_NE(0u, max_platform_renderer_process_count);
+  std::vector<std::unique_ptr<MockRenderProcessHost>> hosts;
+  for (size_t i = 0; i < max_platform_renderer_process_count; ++i) {
+    hosts.push_back(std::make_unique<MockRenderProcessHost>(browser_context()));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kRemoveRendererProcessLimit)) {
+    // The RemoveRendererProcessLimit feature allows the full system process
+    // limit to be used, so creating half of the limit above is not enough to
+    // reach the limit.
+    EXPECT_FALSE(RenderProcessHostImpl::IsProcessLimitReached());
+
+    // If there is no known limit on this platform, no limit will ever be
+    // imposed, so return early.
+    if (RenderProcessHostImpl::IsPlatformProcessLimitUnknownForTesting()) {
+      return;
+    }
+
+    // Otherwise, create enough processes to reach the other half of the limit.
+    for (size_t i = 0; i < max_platform_renderer_process_count; ++i) {
+      hosts.push_back(
+          std::make_unique<MockRenderProcessHost>(browser_context()));
+    }
+  }
+
+  // Verify that the renderer sharing will happen.
   EXPECT_TRUE(RenderProcessHostImpl::IsProcessLimitReached());
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-TEST_F(RenderProcessHostUnitTest, NoRendererProcessLimitOnAndroidOrChromeOS) {
+#if BUILDFLAG(IS_ANDROID)
+// Test that Android does not use a renderer process limit.
+TEST_F(RenderProcessHostUnitTest, NoRendererProcessLimitOnAndroid) {
   // Add a few dummy process hosts.
   static constexpr size_t kMaxRendererProcessCountForTesting = 82;
   std::vector<std::unique_ptr<MockRenderProcessHost>> hosts;
@@ -114,11 +151,7 @@ TEST_F(RenderProcessHostUnitTest, NoRendererProcessLimitOnAndroidOrChromeOS) {
   }
 
   // Verify that the renderer sharing still won't happen.
-  GURL test_url("http://foo.com");
-  EXPECT_FALSE(
-      GetContentClientForTesting()
-          ->browser()
-          ->ShouldTryToUseExistingProcessHost(browser_context(), test_url));
+  EXPECT_FALSE(RenderProcessHostImpl::IsProcessLimitReached());
 }
 #endif
 

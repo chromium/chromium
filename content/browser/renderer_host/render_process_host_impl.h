@@ -605,6 +605,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #if !BUILDFLAG(IS_ANDROID)
   // Gets the platform-specific limit. Used by GetMaxRendererProcessCount().
   static size_t GetPlatformMaxRendererProcessCount();
+
+  // Returns whether the current platform has no known process limit, in which
+  // case `GetPlatformMaxRendererProcessCount()` will use a fallback value.
+  static bool IsPlatformProcessLimitUnknownForTesting();
 #endif
 
   // This forces a renderer that is running "in process" to shut down.
