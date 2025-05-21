@@ -41,7 +41,7 @@ public class HomepageManagerTest {
         static GURL sHomepageUrl;
 
         @Implementation
-        public static boolean isHomepageManagedByPolicy() {
+        public static boolean isHomepageLocationManaged() {
             return true;
         }
 

@@ -1826,8 +1826,8 @@ public class TabGridDialogTest {
                                 .getEmbeddedTestServerRule()
                                 .getServer()
                                 .getURL("/chrome/test/data/android/google.html"));
-        when(mHomepagePolicyManager.isHomepageLocationPolicyEnabled()).thenReturn(true);
-        when(mHomepagePolicyManager.getHomepagePreference()).thenReturn(url);
+        when(mHomepagePolicyManager.isHomepageLocationPolicyManaged()).thenReturn(true);
+        when(mHomepagePolicyManager.getHomepageLocationPolicyUrl()).thenReturn(url);
 
         HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();

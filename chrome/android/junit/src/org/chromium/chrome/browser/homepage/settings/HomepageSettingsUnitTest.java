@@ -698,14 +698,16 @@ public class HomepageSettingsUnitTest {
     }
 
     private void setHomepagePolicy(GURL homepagePolicy) {
-        Mockito.doReturn(true).when(mMockHomepagePolicyManager).isHomepageLocationPolicyEnabled();
-        Mockito.doReturn(homepagePolicy).when(mMockHomepagePolicyManager).getHomepagePreference();
+        Mockito.doReturn(true).when(mMockHomepagePolicyManager).isHomepageLocationPolicyManaged();
+        Mockito.doReturn(homepagePolicy)
+                .when(mMockHomepagePolicyManager)
+                .getHomepageLocationPolicyUrl();
     }
 
     private void setShowHomeButtonPolicy(Boolean val) {
         Mockito.doReturn(val != null)
                 .when(mMockHomepagePolicyManager)
-                .isShowHomeButtonPolicyEnabled();
+                .isShowHomeButtonPolicyManaged();
         Mockito.doReturn(Boolean.TRUE.equals(val))
                 .when(mMockHomepagePolicyManager)
                 .getShowHomeButtonPolicyValue();

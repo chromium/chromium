@@ -1006,7 +1006,7 @@ public class ToolbarManager
                                 }
                             },
                             this::onHomeButtonMenuClick,
-                            HomepagePolicyManager::isHomepageManagedByPolicy);
+                            HomepagePolicyManager::isHomepageLocationManaged);
         }
 
         ChromeImageButton backButton = mControlContainer.findViewById(R.id.back_button);

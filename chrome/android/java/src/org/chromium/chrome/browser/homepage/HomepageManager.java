@@ -102,9 +102,9 @@ public class HomepageManager
      */
     public boolean isHomepageEnabled() {
         if (HomepagePolicyManager.isShowHomeButtonManaged()) {
-            return HomepagePolicyManager.getShowHomeButtonValueOfPolicy();
+            return HomepagePolicyManager.getShowHomeButtonValue();
         }
-        return HomepagePolicyManager.isHomepageManagedByPolicy() || getPrefHomepageEnabled();
+        return HomepagePolicyManager.isHomepageLocationManaged() || getPrefHomepageEnabled();
     }
 
     /**
@@ -128,7 +128,7 @@ public class HomepageManager
      * <p><b>isManagedByPolicy > useChromeNtp > useDefaultGurl > useCustomGurl</b>
      *
      * @return A non-empty GURL, if homepage is enabled. An empty GURL otherwise.
-     * @see HomepagePolicyManager#isHomepageManagedByPolicy()
+     * @see HomepagePolicyManager#isHomepageLocationManaged()
      * @see #getPrefHomepageUseChromeNtp()
      * @see #getPrefHomepageUseDefaultUri()
      */
@@ -203,10 +203,11 @@ public class HomepageManager
 
     /**
      * Get homepage URI without checking if the homepage is enabled.
+     *
      * @return Homepage GURL based on policy and shared preference settings.
      */
     private @NonNull GURL getHomepageGurlIgnoringEnabledState() {
-        if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
+        if (HomepagePolicyManager.isHomepageLocationManaged()) {
             return HomepagePolicyManager.getHomepageUrl();
         }
         if (getPrefHomepageUseChromeNtp()) {
@@ -262,9 +263,9 @@ public class HomepageManager
     }
 
     /**
-     * True if the homepage URL is the default value. False means the homepage URL is using
-     * the user customized URL. Note that this method does not take enterprise policy into account.
-     * Use {@link HomepagePolicyManager#isHomepageManagedByPolicy} if policy information is needed.
+     * True if the homepage URL is the default value. False means the homepage URL is using the user
+     * customized URL. Note that this method does not take enterprise policy into account. Use
+     * {@link HomepagePolicyManager#isHomepageLocationManaged} if policy information is needed.
      *
      * @return Whether if the homepage URL is the default value.
      */
@@ -342,7 +343,7 @@ public class HomepageManager
      */
     @VisibleForTesting
     public @HomepageLocationType int getHomepageLocationType() {
-        if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
+        if (HomepagePolicyManager.isHomepageLocationManaged()) {
             return UrlUtilities.isNtpUrl(HomepagePolicyManager.getHomepageUrl())
                     ? HomepageLocationType.POLICY_NTP
                     : HomepageLocationType.POLICY_OTHER;

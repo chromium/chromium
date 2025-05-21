@@ -42,11 +42,11 @@ public class HomepagePolicyManager implements PrefObserver {
 
     private static PrefService sPrefServiceForTesting;
 
-    private boolean mIsHomepageLocationPolicyEnabled;
-    @NonNull private GURL mHomepage;
+    private boolean mIsHomepageLocationManaged;
+    @NonNull private GURL mHomepageUrl;
 
-    private boolean mIsShowHomeButtonPolicyEnabled;
-    private boolean mShowHomeButtonPolicyValue;
+    private boolean mIsHomeButtonManaged;
+    private boolean mHomeButtonPolicyValue;
 
     private boolean mIsInitializedWithNative;
     private PrefChangeRegistrar mPrefChangeRegistrar;
@@ -67,31 +67,32 @@ public class HomepagePolicyManager implements PrefObserver {
     /**
      * If policies such as HomepageLocation are enabled on this device, the home page will be marked
      * as managed.
+     *
      * @return True if the current home page is managed by enterprise policy.
      */
-    public static boolean isHomepageManagedByPolicy() {
-        return getInstance().isHomepageLocationPolicyEnabled();
+    public static boolean isHomepageLocationManaged() {
+        return getInstance().isHomepageLocationPolicyManaged();
     }
 
     /**
      * @return The homepage URL from the homepage preference.
      */
     public static @NonNull GURL getHomepageUrl() {
-        return getInstance().getHomepagePreference();
+        return getInstance().getHomepageLocationPolicyUrl();
     }
 
     /**
      * @return True if ShowHomeButton policy is managed/enabled by enterprise.
      */
     public static boolean isShowHomeButtonManaged() {
-        return getInstance().isShowHomeButtonPolicyEnabled();
+        return getInstance().isShowHomeButtonPolicyManaged();
     }
 
     /**
      * Returns the value of the ShowHomeButton policy, if it is enabled. Else throws an
      * AssertionError.
      */
-    public static boolean getShowHomeButtonValueOfPolicy() {
+    public static boolean getShowHomeButtonValue() {
         return getInstance().getShowHomeButtonPolicyValue();
     }
 
@@ -138,7 +139,7 @@ public class HomepagePolicyManager implements PrefObserver {
                 mSharedPreferenceManager.readString(
                         ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, null);
         if (homepageLocationPolicyGurlSerialized != null) {
-            mHomepage = GURL.deserialize(homepageLocationPolicyGurlSerialized);
+            mHomepageUrl = GURL.deserialize(homepageLocationPolicyGurlSerialized);
         } else {
             String homepageLocationPolicy;
             homepageLocationPolicy =
@@ -147,20 +148,20 @@ public class HomepagePolicyManager implements PrefObserver {
             if (homepageLocationPolicy != null) {
                 // This url comes from a native gurl that is written into PrefService as a string,
                 // so we shouldn't need to call fixupUrl.
-                mHomepage = new GURL(homepageLocationPolicy);
+                mHomepageUrl = new GURL(homepageLocationPolicy);
             } else {
-                mHomepage = GURL.emptyGURL();
+                mHomepageUrl = GURL.emptyGURL();
             }
         }
 
-        mIsHomepageLocationPolicyEnabled = !mHomepage.isEmpty();
+        mIsHomepageLocationManaged = !mHomepageUrl.isEmpty();
 
         if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
-            mIsShowHomeButtonPolicyEnabled =
+            mIsHomeButtonManaged =
                     mSharedPreferenceManager.readBoolean(
                             ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_MANAGED, false);
-            if (mIsShowHomeButtonPolicyEnabled) {
-                mShowHomeButtonPolicyValue =
+            if (mIsHomeButtonManaged) {
+                mHomeButtonPolicyValue =
                         mSharedPreferenceManager.readBoolean(
                                 ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_VALUE, true);
             }
@@ -227,7 +228,7 @@ public class HomepagePolicyManager implements PrefObserver {
         }
 
         boolean isHomeButtonManaged = false;
-        boolean homeButtonPolicyVal = mShowHomeButtonPolicyValue;
+        boolean homeButtonPolicyVal = mHomeButtonPolicyValue;
         if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
             isHomeButtonManaged = prefService.isManagedPreference(Pref.SHOW_HOME_BUTTON);
             if (isHomeButtonManaged) {
@@ -236,22 +237,22 @@ public class HomepagePolicyManager implements PrefObserver {
         }
 
         // Early return when nothing changes
-        if (isHomepageLocationManaged == mIsHomepageLocationPolicyEnabled
-                && isHomeButtonManaged == mIsShowHomeButtonPolicyEnabled
-                && homeButtonPolicyVal == mShowHomeButtonPolicyValue
-                && homepage.equals(mHomepage)) {
+        if (isHomepageLocationManaged == mIsHomepageLocationManaged
+                && isHomeButtonManaged == mIsHomeButtonManaged
+                && homeButtonPolicyVal == mHomeButtonPolicyValue
+                && homepage.equals(mHomepageUrl)) {
             return;
         }
 
-        mIsHomepageLocationPolicyEnabled = isHomepageLocationManaged;
-        mHomepage = homepage;
+        mIsHomepageLocationManaged = isHomepageLocationManaged;
+        mHomepageUrl = homepage;
 
-        mIsShowHomeButtonPolicyEnabled = isHomeButtonManaged;
-        mShowHomeButtonPolicyValue = homeButtonPolicyVal;
+        mIsHomeButtonManaged = isHomeButtonManaged;
+        mHomeButtonPolicyValue = homeButtonPolicyVal;
 
         // Update shared preference
         mSharedPreferenceManager.writeString(
-                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, mHomepage.serialize());
+                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, mHomepageUrl.serialize());
         if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
             mSharedPreferenceManager.writeBoolean(
                     ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_MANAGED, isHomeButtonManaged);
@@ -288,25 +289,25 @@ public class HomepagePolicyManager implements PrefObserver {
     }
 
     @VisibleForTesting
-    public boolean isHomepageLocationPolicyEnabled() {
-        return mIsHomepageLocationPolicyEnabled;
+    public boolean isHomepageLocationPolicyManaged() {
+        return mIsHomepageLocationManaged;
     }
 
     @VisibleForTesting
-    public @NonNull GURL getHomepagePreference() {
-        assert mIsHomepageLocationPolicyEnabled;
-        return mHomepage;
+    public @NonNull GURL getHomepageLocationPolicyUrl() {
+        assert mIsHomepageLocationManaged;
+        return mHomepageUrl;
     }
 
     @VisibleForTesting
-    public boolean isShowHomeButtonPolicyEnabled() {
-        return mIsShowHomeButtonPolicyEnabled;
+    public boolean isShowHomeButtonPolicyManaged() {
+        return mIsHomeButtonManaged;
     }
 
     @VisibleForTesting
     public boolean getShowHomeButtonPolicyValue() {
-        assert mIsShowHomeButtonPolicyEnabled;
-        return mShowHomeButtonPolicyValue;
+        assert mIsHomeButtonManaged;
+        return mHomeButtonPolicyValue;
     }
 
     @VisibleForTesting

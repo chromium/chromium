@@ -97,7 +97,7 @@ public class HomepagePolicyIntegrationTest {
                 () ->
                         Assert.assertTrue(
                                 "HomepageLocation Policy should be enforced",
-                                HomepagePolicyManager.isHomepageManagedByPolicy()));
+                                HomepagePolicyManager.isHomepageLocationManaged()));
 
         // The first time when the page starts, the homepage is fetched from shared preference
         // So the homepage policy is not enforced yet at this point.
