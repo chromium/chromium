@@ -91,7 +91,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     private static final String TEST_PAGE = "/chrome/test/data/dom_distiller/simple_article.html";
     // Suffix added to page titles, string is defined as IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX in
     // dom_distiller_strings.grdp.
-    private static final String TITLE_SUFFIX = " - Simplified View";
+    private static final String TITLE_SUFFIX = " - Reading Mode";
     private static final String PAGE_TITLE = "Test Page Title" + TITLE_SUFFIX;
     private static final String CONTENT = "Lorem ipsum";
 
