@@ -144,8 +144,6 @@
   viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   viewController.searchOnlyUI = self.searchOnlyUI;
 
-  OmniboxTextFieldIOS* textField = viewController.textField;
-
   BOOL incognito = profile->IsOffTheRecord();
   OmniboxMediator* mediator = [[OmniboxMediator alloc]
       initWithIncognito:incognito
@@ -175,6 +173,7 @@
 
   DCHECK(_client.get());
 
+  OmniboxTextFieldIOS* textField = viewController.textField;
   id<OmniboxCommands> omniboxHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
