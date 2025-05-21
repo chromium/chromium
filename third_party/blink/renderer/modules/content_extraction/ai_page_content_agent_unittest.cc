@@ -3686,5 +3686,33 @@ TEST_F(AIPageContentAgentTest, LabelNotActionable) {
             button.content_attributes->dom_node_id);
 }
 
+TEST_F(AIPageContentAgentTest, SelectLabelNotActionable) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <label for="fruit-select">Choose a fruit:</label>
+          <select id="fruit-select" name="fruits">
+            <option value="">--Please choose an option--</option>
+            <option value="apple">Apple</option>
+            <option value="banana">Banana</option>
+          </select>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& label = *root.children_nodes.at(0);
+  ASSERT_TRUE(label.content_attributes->node_interaction_info);
+  EXPECT_FALSE(label.content_attributes->node_interaction_info->is_clickable);
+
+  const auto& select = *root.children_nodes.at(1);
+  ASSERT_TRUE(select.content_attributes->node_interaction_info);
+  EXPECT_TRUE(select.content_attributes->node_interaction_info->is_clickable);
+}
+
 }  // namespace
 }  // namespace blink

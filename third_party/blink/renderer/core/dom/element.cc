@@ -7489,7 +7489,7 @@ bool Element::IsMaybeClickable() {
     return true;
   }
 
-  if (HasActivationBehavior()) {
+  if (WillRespondToMouseClickEvents()) {
     return true;
   }
 
