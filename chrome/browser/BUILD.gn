@@ -4296,6 +4296,8 @@ static_library("browser") {
       "webauthn/local_authentication_token.h",
       "webauthn/local_credential_management.cc",
       "webauthn/local_credential_management.h",
+      "webauthn/mechanism_sorter.cc",
+      "webauthn/mechanism_sorter.h",
       "webauthn/observable_authenticator_list.cc",
       "webauthn/observable_authenticator_list.h",
       "webauthn/passkey_model_factory.cc",

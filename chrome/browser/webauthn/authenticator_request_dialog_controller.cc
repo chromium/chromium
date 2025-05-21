@@ -53,6 +53,7 @@
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
+#include "chrome/browser/webauthn/mechanism_sorter.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
@@ -2222,8 +2223,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         specific_local_passkeys_listed = true;
       }
       std::u16string name = base::UTF8ToUTF16(cred.user.name.value_or(""));
-      Mechanism::Type mechanism_type =
-          Mechanism::Credential({cred.source, cred.user.id});
+      Mechanism::Type mechanism_type = Mechanism::Credential(
+          {cred.source, cred.user.id, cred.last_used_time});
       auto& mechanism = model_->mechanisms.emplace_back(
           mechanism_type, name, name,
           GetMechanismIcon(mechanism_type, ui_presentation()),
@@ -2460,6 +2461,9 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
       windows_button_label->second != AuthenticatorTransport::kInternal) {
     AddWindowsButton(windows_button_label->first, windows_button_label->second);
   }
+
+  model_->mechanisms = MechanismSorter::ProcessMechanisms(
+      std::move(model_->mechanisms), ui_presentation());
 }
 
 void AuthenticatorRequestDialogController::AddWindowsButton(
@@ -2702,7 +2706,9 @@ void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
 
 void AuthenticatorRequestDialogController::PopulatePasswords() {
   for (const auto& password : passwords_) {
-    Mechanism::Type mechanism_type = Mechanism::Password();
+    Mechanism::Type mechanism_type = Mechanism::Password(
+        AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
+            password->date_last_used));
     Mechanism mechanism(
         mechanism_type, password->username_value, password->username_value,
         GetMechanismIcon(mechanism_type, ui_presentation()),

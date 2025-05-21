@@ -379,7 +379,7 @@ const device::DiscoverableCredentialMetadata kEnclaveCred1(
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
     const device::DiscoverableCredentialMetadata& metadata) {
   return AuthenticatorRequestDialogModel::Mechanism::CredentialInfo(
-      metadata.source, metadata.user.id);
+      metadata.source, metadata.user.id, metadata.last_used_time);
 }
 
 template <class Value>

@@ -8046,6 +8046,7 @@ test("unit_tests") {
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
       "../browser/webauthn/chrome_web_authentication_delegate_unittest.cc",
       "../browser/webauthn/enclave_manager_unittest.cc",
+      "../browser/webauthn/mechanism_sorter_unittest.cc",
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../renderer/accessibility/phrase_segmentation/dependency_parser_model_unittest.cc",

@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
@@ -327,16 +328,28 @@ struct AuthenticatorRequestDialogModel
     // These types describe the type of Mechanism.
     struct CredentialInfo {
       CredentialInfo(device::AuthenticatorType source_in,
-                     std::vector<uint8_t> user_id_in);
+                     std::vector<uint8_t> user_id_in,
+                     std::optional<base::Time> last_used_time_in);
       CredentialInfo(const CredentialInfo&);
       ~CredentialInfo();
       bool operator==(const CredentialInfo&) const;
 
       const device::AuthenticatorType source;
       const std::vector<uint8_t> user_id;
+      const std::optional<base::Time> last_used_time;
     };
     using Credential = base::StrongAlias<class CredentialTag, CredentialInfo>;
-    using Password = base::StrongAlias<class PasswordTag, std::monostate>;
+
+    struct PasswordInfo {
+      explicit PasswordInfo(std::optional<base::Time> last_used_time_in);
+
+      PasswordInfo(const PasswordInfo&);
+      ~PasswordInfo();
+      bool operator==(const PasswordInfo& other) const;
+
+      const std::optional<base::Time> last_used_time;
+    };
+    using Password = base::StrongAlias<class PasswordTag, PasswordInfo>;
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, std::monostate>;
