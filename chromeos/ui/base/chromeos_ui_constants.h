@@ -11,29 +11,29 @@
 namespace chromeos {
 
 // Radius of the header's top corners when the window is restored.
-constexpr int kTopCornerRadiusWhenRestored = 2;
+inline constexpr int kTopCornerRadiusWhenRestored = 2;
 
 // Rounded corner radius for Pip window.
-constexpr int kPipRoundedCornerRadius = 8;
+inline constexpr int kPipRoundedCornerRadius = 12;
 
 // In the window corners, the resize areas don't actually expand bigger, but the
 // 16 px at the end of each edge triggers diagonal resizing.
-constexpr int kResizeAreaCornerSize = 16;
+inline constexpr int kResizeAreaCornerSize = 16;
 
 // Ash windows do not have a traditional visible window frame. Window content
 // extends to the edge of the window. We consider a small region outside the
 // window bounds and an even smaller region overlapping the window to be the
 // "non-client" area and use it for resizing.
-constexpr int kResizeOutsideBoundsSize = 6;
-constexpr int kResizeOutsideBoundsScaleForTouch = 5;
+inline constexpr int kResizeOutsideBoundsSize = 6;
+inline constexpr int kResizeOutsideBoundsScaleForTouch = 5;
 
-constexpr int kResizeInsideBoundsSize = 1;
+inline constexpr int kResizeInsideBoundsSize = 1;
 
 // The default frame color.
-constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);
+inline constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);
 
 // The default duration for animating frame color changes.
-constexpr base::TimeDelta kDefaultFrameColorChangeAnimationDuration =
+inline constexpr base::TimeDelta kDefaultFrameColorChangeAnimationDuration =
     base::Milliseconds(240);
 
 enum ViewID {

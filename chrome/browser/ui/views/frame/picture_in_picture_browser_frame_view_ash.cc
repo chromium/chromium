@@ -31,7 +31,7 @@ PictureInPictureBrowserFrameViewAsh::~PictureInPictureBrowserFrameViewAsh() =
 
 void PictureInPictureBrowserFrameViewAsh::UpdateWindowRoundedCorners() {
   aura::Window* window = GetWidget()->GetNativeWindow();
-  const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
+  const gfx::RoundedCornersF window_radii{chromeos::kPipRoundedCornerRadius};
 
   window->SetProperty(aura::client::kWindowCornerRadiusKey,
                       window_radii.upper_left());

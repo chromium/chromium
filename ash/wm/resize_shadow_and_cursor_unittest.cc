@@ -533,7 +533,7 @@ TEST_F(ResizeShadowWithRoundedWindowsTest, ResizeShadowMatchesWindowRoundness) {
   Shell::Get()->resize_shadow_controller()->ShowShadow(window());
 
   // For normal window state, top-level windows have rounded window.
-  EXPECT_TRUE(GetShadow()->is_for_rounded_window());
+  EXPECT_TRUE(GetShadow()->is_for_large_rounded_corners());
   VerifyResizeShadow(true);
 
   // Window in snapped state does not have rounded corners, therefore the resize
@@ -542,13 +542,13 @@ TEST_F(ResizeShadowWithRoundedWindowsTest, ResizeShadowMatchesWindowRoundness) {
   window_state->OnWMEvent(&snap_event);
 
   ASSERT_TRUE(window_state->IsSnapped());
-  EXPECT_FALSE(GetShadow()->is_for_rounded_window());
+  EXPECT_FALSE(GetShadow()->is_for_large_rounded_corners());
   VerifyResizeShadow(true);
 
   window_state->Restore();
 
   ASSERT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(GetShadow()->is_for_rounded_window());
+  EXPECT_TRUE(GetShadow()->is_for_large_rounded_corners());
   VerifyResizeShadow(true);
 
   // Ensure that shadow variant is correct after restoring from a state that has
@@ -558,7 +558,7 @@ TEST_F(ResizeShadowWithRoundedWindowsTest, ResizeShadowMatchesWindowRoundness) {
 
   window_state->Restore();
   ASSERT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(GetShadow()->is_for_rounded_window());
+  EXPECT_TRUE(GetShadow()->is_for_large_rounded_corners());
 }
 
 // Tests that shadow gets updated when the window's state changed.

@@ -54,9 +54,9 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
     // Controls whether the resize shadow shall respond to hit testing or not.
     bool hit_test_enabled = true;
     int hide_duration_ms = 100;
-    // True if the resize shadow is configured for a window with rounded
+    // True if the resize shadow is configured for a window with large rounded
     // corners.
-    bool is_for_rounded_window = false;
+    bool is_for_large_rounded_corners = false;
   };
 
   ResizeShadow(aura::Window* window,
@@ -67,7 +67,9 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
   ~ResizeShadow() override;
 
   bool visible() const { return visible_; }
-  bool is_for_rounded_window() const { return params_.is_for_rounded_window; }
+  bool is_for_large_rounded_corners() const {
+    return params_.is_for_large_rounded_corners;
+  }
 
   int GetLastHitTestForTest() const { return last_hit_test_; }
   const ui::Layer* GetLayerForTest() const { return layer_.get(); }

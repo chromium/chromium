@@ -29,6 +29,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/display_item_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
@@ -603,7 +604,6 @@ TEST_P(ClientControlledShellSurfaceTest, Frame) {
 TEST_P(ClientControlledShellSurfaceTest,
        ShadowRoundedCornersWithPipTransition) {
   constexpr gfx::Point kOrigin(20, 20);
-  constexpr int kPipCornerRadius = 8;
 
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kRoundedWindows);
@@ -631,7 +631,8 @@ TEST_P(ClientControlledShellSurfaceTest,
 
   shadow = wm::ShadowController::GetShadowForWindow(window);
   ASSERT_TRUE(shadow);
-  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), kPipCornerRadius);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
+            chromeos::kPipRoundedCornerRadius);
 
   shell_surface->UnsetPip();
   root_surface->Commit();

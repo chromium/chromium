@@ -11,13 +11,19 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/window_properties.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace ash {
+namespace {
+
+// If window rounded corners are larger than the threshold, use resize shadow
+// designed for larger rounded corners.
+constexpr int kLargeRoundedCornerThreshold = 2;
+
+}  // namespace
 
 ResizeShadowController::ResizeShadowController() = default;
 
@@ -152,13 +158,13 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
       window->GetProperty(ash::kResizeShadowTypeKey);
   const int window_corner_radius =
       window->GetProperty(aura::client::kWindowCornerRadiusKey);
-  const bool has_rounded_window =
-      chromeos::features::IsRoundedWindowsEnabled() && window_corner_radius > 0;
+  const bool has_large_rounded_corners =
+      window_corner_radius > kLargeRoundedCornerThreshold;
 
   // If the `window` has a resize shadow with the requested type and the shadow
-  // is configured for a rounded window, no need to recreate it.
+  // is configured for small/large rounded corners, no need to recreate it.
   if (shadow && shadow->type_ == type &&
-      shadow->is_for_rounded_window() == has_rounded_window) {
+      shadow->is_for_large_rounded_corners() == has_large_rounded_corners) {
     return;
   }
 
@@ -171,16 +177,16 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
     params.color = gfx::kGoogleGrey900;
     params.hit_test_enabled = false;
     params.hide_duration_ms = 0;
-    params.is_for_rounded_window = false;
+    params.is_for_large_rounded_corners = false;
   }
 
   // Configure window and shadow corner radius when `window` has rounded
   // corners.
-  if (has_rounded_window) {
+  if (has_large_rounded_corners) {
     params.thickness = 6;
     params.window_corner_radius = window_corner_radius;
     params.shadow_corner_radius = 16;
-    params.is_for_rounded_window = true;
+    params.is_for_large_rounded_corners = true;
   }
 
   auto new_shadow = std::make_unique<ResizeShadow>(window, params, type);
