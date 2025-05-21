@@ -1976,6 +1976,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebApp.Preinstalled.CalculatorForceMigration.ChromeAppAndWebAppInstalled"
+    enum="BooleanSuccess" expires_after="2026-05-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the Calculator Chrome app is installed and the Calculator
+    web app is preinstalled on the user's system. This is recorded at start up
+    for ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Preinstalled.CalculatorForceMigration.ChromeAppNoWebAppInstalled"
+    enum="BooleanSuccess" expires_after="2026-05-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the Calculator Chrome app is installed but the Calculator
+    web app is not preinstalled on the user's system. This is recorded at start
+    up for ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Preinstalled.CalculatorForceMigration.MigrationTriggered"
+    enum="BooleanSuccess" expires_after="2026-05-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the Calculator Chrome app is present and needs migrating to
+    the Calculator web app. This is recorded at start up for ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.CalculatorForceMigration.WebAppInstalled"
+    enum="BooleanSuccess" expires_after="2026-05-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the Calculator web app is preinstalled on the user's system.
+    This is recorded at start up for ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.ChromeAppMigrationNeeded"
+    enum="BooleanSuccess" expires_after="2026-05-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether an installed Chrome app is present and needs migrating to a
+    corresponding preinstalled web app. This is recorded at start up for
+    ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Preinstalled.ConfigErrorCount" units="apps"
     expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
