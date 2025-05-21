@@ -67,7 +67,7 @@ source_set("impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions",
     "//chrome/browser/preloading:prefs",
-    "//chrome/browser/privacy_sandbox",
+    "//chrome/browser/privacy_sandbox/notice:core",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
