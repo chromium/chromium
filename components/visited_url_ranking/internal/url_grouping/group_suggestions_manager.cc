@@ -46,6 +46,9 @@ FetchOptions GetFetchOptionsForSuggestions() {
   fetcher_sources.emplace(
       Fetcher::kTabModel,
       FetchOptions::FetchSources({FetchOptions::Source::kLocal}));
+  fetcher_sources.emplace(
+      Fetcher::kHistory,
+      FetchOptions::FetchSources({FetchOptions::Source::kLocal}));
 
   std::map<URLVisitAggregate::URLType, FetchOptions::ResultOption> result_map;
   result_map[URLVisitAggregate::URLType::kActiveLocalTab] =

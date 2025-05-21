@@ -288,7 +288,7 @@ bool IsGroupVisible(const GroupSuggestion& suggestion,
             history->last_visited.content_annotations.model_annotations
                 .visibility_score > kVisibilityScoreThreshold;
       }
-    };
+    }
   }
 
   // Return false if all tabs in the suggestion do not have a score, or if any
@@ -364,6 +364,11 @@ std::optional<GroupSuggestion> GetSuggestionFromHeuristicResult(
   }
 
   if (!IsGroupVisible(suggestion, candidates)) {
+    VLOG(1) << "Suggestion discarded due to visibility";
+    base::UmaHistogramEnumeration(
+        "GroupSuggestionsService.SuggestionThrottledReason",
+        TabGroupSuggestionThrottleReason::kGroupNotVisible);
+
     return std::nullopt;
   }
 

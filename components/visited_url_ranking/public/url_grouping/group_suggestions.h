@@ -77,6 +77,18 @@ struct GroupSuggestions {
 // Returns a string representation of the reason.
 const char* GetSuggestionReasonString(GroupSuggestion::SuggestionReason reason);
 
+// LINT.IfChange
+// These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class TabGroupSuggestionThrottleReason {
+  kUnknown = 0,
+  kOverlappingTabs = 1,
+  kOverlappingHosts = 2,
+  kGroupNotVisible = 3,
+  kMaxValue = kGroupNotVisible
+};
+// LINT.ThenChange(/tools/metrics/histograms/visited_url_ranking/enums.xml:TabGroupSuggestionThrottleReason)
+
 }  // namespace visited_url_ranking
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_GROUPING_GROUP_SUGGESTIONS_H_

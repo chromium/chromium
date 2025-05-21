@@ -54,6 +54,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GroupSuggestionsService.SuggestionThrottledReason"
+    enum="TabGroupSuggestionThrottleReason" expires_after="2025-11-02">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the reason why the group suggestion is throttled. Logged every time
+    the group suggestion was computed and then throttled.
+  </summary>
+</histogram>
+
 <histogram
     name="GroupSuggestionsService.TopSuggestionContainsLastTab.{ReasonVariant}"
     enum="Boolean" expires_after="2025-11-02">

@@ -41,6 +41,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dismissed"/>
 </enum>
 
+<enum name="TabGroupSuggestionThrottleReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="OverlappingTabs"/>
+  <int value="2" label="OverlappingHosts"/>
+  <int value="3" label="GroupNotVisible"/>
+</enum>
+
 <enum name="VisitedURLRankingRequestStepStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -238,8 +239,16 @@ bool GroupSuggestionsTracker::ShouldShowSuggestion(
            features::kGroupSuggestionThrottleAgeLimit.Get();
   });
 
-  if (HasOverlappingTabs(suggestion) ||
-      HasOverlappingHosts(suggestion, inputs)) {
+  if (HasOverlappingTabs(suggestion)) {
+    base::UmaHistogramEnumeration(
+        "GroupSuggestionsService.SuggestionThrottledReason",
+        TabGroupSuggestionThrottleReason::kOverlappingTabs);
+    return false;
+  }
+  if (HasOverlappingHosts(suggestion, inputs)) {
+    base::UmaHistogramEnumeration(
+        "GroupSuggestionsService.SuggestionThrottledReason",
+        TabGroupSuggestionThrottleReason::kOverlappingHosts);
     return false;
   }
 
