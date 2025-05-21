@@ -95,7 +95,7 @@ suite('NewTabFooterAppTest', () => {
       let managementNoticeText = managementNoticeContainer.querySelector('p');
       assertTrue(!!managementNoticeText);
       assertEquals(
-          managementNoticeText.textContent, 'Managed by your organization');
+          managementNoticeText.innerText, 'Managed by your organization');
       let managementNoticeLogo =
           managementNoticeContainer.querySelector<HTMLImageElement>('img');
       assertTrue(!!managementNoticeLogo);
@@ -108,7 +108,7 @@ suite('NewTabFooterAppTest', () => {
       await callbackRouter.$.flushForTesting();
 
       // Assert.
-      managementNoticeText = $$(element, '#managementNoticeText');
+      managementNoticeText = $$(element, '#managementNoticeContainer p');
       managementNoticeLogo = $$(element, '#managementNoticeLogo');
       assertFalse(!!managementNoticeText);
       assertFalse(!!managementNoticeLogo);
