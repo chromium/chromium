@@ -66,12 +66,9 @@ source_set("regular_ui") {
     "inactive_tabs_button_cell.mm",
     "regular_grid_view_controller.h",
     "regular_grid_view_controller.mm",
-    "tabs_closure_animation.h",
-    "tabs_closure_animation.mm",
   ]
 
   deps = [
-    "//base",
     "//components/tab_groups",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -81,9 +78,9 @@ source_set("regular_ui") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:tabs_closure_animation",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:inactive_tabs_button_ui",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",
     "//ui/base",

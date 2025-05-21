@@ -339,6 +339,19 @@ source_set("activity_label_view") {
   ]
 }
 
+source_set("tabs_closure_animation") {
+  sources = [
+    "tabs_closure_animation.h",
+    "tabs_closure_animation.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

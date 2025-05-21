@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/group_grid_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/inactive_tabs_button_cell.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/tabs_closure_animation.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tabs_closure_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
