@@ -108,7 +108,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         var delegate = getDelegate();
         PageInfoCookiesSettings.PageInfoCookiesViewParams params =
                 new PageInfoCookiesSettings.PageInfoCookiesViewParams(
-                        /* thirdPartyCookieBlockingEnabled= */ delegate.cookieControlsShown(),
                         /* onThirdPartyCookieToggleChanged= */ this
                                 ::onThirdPartyCookieToggleChanged,
                         /* onClearCallback= */ this::onClearCookiesClicked,
@@ -122,7 +121,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                         /* fixedExpirationForTesting= */ mFixedExpirationForTesting,
                         /* daysUntilExpirationForTesting= */ mDaysUntilExpirationForTesting);
         mSubPage.setParams(params, delegate);
-        mSubPage.setStatus(mControlsState, mEnforcement, mExpiration);
+        mSubPage.updateState(mControlsState, mEnforcement, mExpiration);
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
@@ -204,7 +203,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         updateRowViewSubtitle();
 
         if (mSubPage != null) {
-            mSubPage.setStatus(mControlsState, mEnforcement, mExpiration);
+            mSubPage.updateState(mControlsState, mEnforcement, mExpiration);
         }
     }
 
