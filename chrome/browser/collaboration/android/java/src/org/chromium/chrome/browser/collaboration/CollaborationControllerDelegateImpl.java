@@ -19,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -45,6 +46,7 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -76,6 +78,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
     // Stores the runnable to close the current showing UI. Is null when there's no UI showing.
     private @Nullable Runnable mCloseScreenRunnable;
+
+    /** Used to suppress IPH UIs while a collaboration flow UI is on the screen. */
+    private Tracker.@Nullable DisplayLockHandle mFeatureEngagementLock;
 
     /**
      * Constructor for a new {@link CollaborationControllerDelegateImpl} object.
@@ -125,6 +130,11 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void prepareFlowUI(long exitCallback, long resultCallback) {
         mExitCallback = exitCallback;
+
+        // Acquire lock to prevent IPH from being shown in a collaboration flow.
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mDataSharingTabManager.getProfile());
+        mFeatureEngagementLock = tracker.acquireDisplayLock();
+
         Runnable onTabSwitcherShownRunnable =
                 () -> {
                     CollaborationControllerDelegateImplJni.get()
@@ -683,6 +693,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mDataSharingTabManager.onCollaborationDelegateFlowFinished();
         cleanUpPointers();
 
+        if (mFeatureEngagementLock != null) {
+            mFeatureEngagementLock.release();
+        }
         if (mExitCallback != 0) {
             CollaborationControllerDelegateImplJni.get().deleteExitCallback(mExitCallback);
         }

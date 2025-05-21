@@ -31,6 +31,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -50,6 +51,7 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -87,6 +89,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     @Mock private Callback<Runnable> mSwitchToTabSwitcherCallback;
     @Mock private Callback<Callback<Boolean>> mStartAccountRefreshCallback;
     @Mock private CollaborationService mCollaborationService;
+    @Mock private Tracker mMockTracker;
 
     @Mock
     private CollaborationControllerDelegateImpl.Natives
@@ -103,6 +106,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
+        TrackerFactory.setTrackerForTests(mMockTracker);
 
         doReturn(
                         new ServiceStatus(
