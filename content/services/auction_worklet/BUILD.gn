@@ -60,6 +60,8 @@ source_set("auction_worklet") {
     "deprecated_url_lazy_filler.h",
     "direct_from_seller_signals_requester.cc",
     "direct_from_seller_signals_requester.h",
+    "execution_mode_util.cc",
+    "execution_mode_util.h",
     "for_debugging_only_bindings.cc",
     "for_debugging_only_bindings.h",
     "lazy_filler.cc",

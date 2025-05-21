@@ -474,8 +474,11 @@ interface BidderWorklet {
   //
   //  Calls with the same values for `group_by_origin_id` can reuse execution
   //  contexts in group-by-origin mode. `group_by_origin_id` is not used in
-  //  other execution modes; 0 will be passed as a matter of convention, but
-  //  nothing will actually look at it.
+  //  other execution modes. The value will be 0 if neither the auction config
+  //  nor the interest group specify `group-by-origin` as their execution mode;
+  //  if either does, the value will be non-zero. However, in this worklet,
+  //  the value is only ever looked at by the ExecutionModeHelper if the
+  //  interest group specifies `group-by-origin` as the execution mode.
   //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.

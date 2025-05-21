@@ -243,7 +243,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadDeprecatedRenderUrlReplacements(
           &out->deprecated_render_url_replacements) ||
       !data.ReadTrustedScoringSignalsCoordinator(
-          &out->trusted_scoring_signals_coordinator)) {
+          &out->trusted_scoring_signals_coordinator) ||
+      !data.ReadExecutionMode(&out->execution_mode)) {
     return false;
   }
 

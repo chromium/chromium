@@ -802,32 +802,34 @@ bool CopySellerCapabilitiesFromIdlToMojo(
   return true;
 }
 
-bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
-                                    ExceptionState& exception_state,
-                                    const AuctionAdInterestGroup& input,
-                                    mojom::blink::InterestGroup& output) {
-  if (!input.hasExecutionMode()) {
-    return true;
-  }
-  const bool used_deprecated_names = input.executionMode() == "groupByOrigin";
-  base::UmaHistogramBoolean(
-      "Ads.InterestGroup.EnumNaming.Renderer.WorkletExecutionMode",
-      used_deprecated_names);
-  if (used_deprecated_names) {
-    ConsoleWarnDeprecatedEnum(execution_context, "executionMode",
-                              input.executionMode());
+bool CopyExecutionModeFromIdlToMojo(
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state,
+    const WTF::String& execution_mode,
+    const bool check_deprecated_names,
+    mojom::blink::InterestGroup::ExecutionMode& output) {
+  if (check_deprecated_names) {
+    const bool used_deprecated_names = execution_mode == "groupByOrigin";
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.EnumNaming.Renderer.WorkletExecutionMode",
+        used_deprecated_names);
+    if (used_deprecated_names) {
+      ConsoleWarnDeprecatedEnum(execution_context, "executionMode",
+                                execution_mode);
+    }
   }
 
-  if (input.executionMode() == "compatibility") {
-    output.execution_mode =
-        mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode;
-  } else if (input.executionMode() == "group-by-origin" ||
-             input.executionMode() == "groupByOrigin") {
-    output.execution_mode =
-        mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
-  } else if (input.executionMode() == "frozen-context") {
-    output.execution_mode =
-        mojom::blink::InterestGroup::ExecutionMode::kFrozenContext;
+  if (execution_mode == "compatibility") {
+    output = mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+    return true;
+  } else if (execution_mode == "group-by-origin" ||
+             (check_deprecated_names && execution_mode == "groupByOrigin")) {
+    output = mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    return true;
+
+  } else if (execution_mode == "frozen-context") {
+    output = mojom::blink::InterestGroup::ExecutionMode::kFrozenContext;
+    return true;
   }
   // For forward compatibility with new values, don't throw if unrecognized enum
   // values encountered.
@@ -2741,6 +2743,11 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
   }
 
   if (!CopySellerFromIdlToMojo(exception_state, config, *mojo_config) ||
+      (config.hasExecutionMode() &&
+       !CopyExecutionModeFromIdlToMojo(
+           context, exception_state, config.executionMode(),
+           /*check_deprecated_names=*/false,
+           mojo_config->auction_ad_config_non_shared_params->execution_mode)) ||
       !CopyServerResponseFromIdlToMojo(auction_handle, auction_id.get(),
                                        exception_state, config, *mojo_config) ||
       !CopyDecisionLogicUrlFromIdlToMojo(context, exception_state, config,
@@ -3643,8 +3650,10 @@ ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
 
   if (!CopySellerCapabilitiesFromIdlToMojo(*context, exception_state, *group,
                                            *mojo_group) ||
-      !CopyExecutionModeFromIdlToMojo(*context, exception_state, *group,
-                                      *mojo_group) ||
+      (group->hasExecutionMode() &&
+       !CopyExecutionModeFromIdlToMojo(
+           *context, exception_state, group->executionMode(),
+           /*check_deprecated_names=*/true, mojo_group->execution_mode)) ||
       !CopyBiddingLogicUrlFromIdlToMojo(*context, exception_state, *group,
                                         *mojo_group) ||
       !CopyWasmHelperUrlFromIdlToMojo(*context, exception_state, *group,

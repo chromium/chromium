@@ -2325,6 +2325,11 @@
       status: "stable",
     },
     {
+      // Enables having `executionMode` in the auctionConfig to use for seller scripts.
+      name: "FledgeSellerScriptExecutionMode",
+      status: "test",
+    },
+    {
       name: "FledgeTrustedSignalsKVv1CreativeScanning",
       status: "test",
     },

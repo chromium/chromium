@@ -468,6 +468,7 @@ class SellerWorkletTest : public testing::Test,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        group_by_origin_id_, allow_group_by_origin_mode_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindOnce(
             [](double expected_score,
@@ -569,6 +570,7 @@ class SellerWorkletTest : public testing::Test,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        group_by_origin_id_, allow_group_by_origin_mode_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(
             TestScoreAdClient::ScoreAdNeverInvokedCallback()));
@@ -979,6 +981,8 @@ class SellerWorkletTest : public testing::Test,
       browser_signals_component_auction_report_result_params_;
   std::optional<uint32_t> browser_signal_data_version_;
   std::optional<base::TimeDelta> seller_timeout_;
+  uint64_t group_by_origin_id_ = 1;
+  bool allow_group_by_origin_mode_ = false;
   url::Origin bidder_joining_origin_;
 
   // Reuseable run loop for disconnection errors.
@@ -2592,6 +2596,7 @@ TEST_F(SellerWorkletTest, ScoreAdJsFetchLatency) {
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      group_by_origin_id_, allow_group_by_origin_mode_,
       /*trace_id=*/1, bidder_joining_origin_,
       TestScoreAdClient::Create(base::BindLambdaForTesting(
           [&run_loop](double score, mojom::RejectReason reject_reason,
@@ -4659,6 +4664,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
           browser_signal_bidding_duration_msecs_,
           browser_signal_for_debugging_only_in_cooldown_or_lockout_,
           browser_signal_for_debugging_only_sampling_, seller_timeout_,
+          group_by_origin_id_, allow_group_by_origin_mode_,
           /*trace_id=*/1, bidder_joining_origin_,
           TestScoreAdClient::Create(base::BindLambdaForTesting(
               [&run_loop](
@@ -4761,6 +4767,7 @@ TEST_F(SellerWorkletTest,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        group_by_origin_id_, allow_group_by_origin_mode_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -4817,6 +4824,529 @@ TEST_F(SellerWorkletTest,
   run_loop.Run();
 }
 
+TEST_F(SellerWorkletTest, ExecutionModeFrozenContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
+  base::HistogramTester histogram_tester;
+
+  const char kScript[] = R"(
+        if (!('count' in globalThis)){
+          globalThis.count = 1;
+        }
+
+        scoreAd = function() {
+          ++count;
+          return count;
+        }
+
+        reportResult = function() {
+          ++globalThis.count;
+          return globalThis.count;
+        }
+    )";
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, kScript);
+
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+
+  std::vector<int> expected_scores_frozen = {1, 1, 1};
+
+  // Run scoreAd multiple times in frozen context.
+  bool reused_context = false;
+  int reused_context_count = 0;
+  for (int i = 0; i < 3; ++i) {
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(),
+                                       expected_scores_frozen[i]);
+    if (reused_context) {
+      histogram_tester.ExpectBucketCount(
+          "Ads.InterestGroup.Auction.SellerWorkletContextReused",
+          reused_context, reused_context_count);
+    } else {
+      histogram_tester.ExpectBucketCount(
+          "Ads.InterestGroup.Auction.SellerWorkletContextReused", 0, 1);
+    }
+    reused_context = true;
+    reused_context_count += 1;
+  }
+
+  // The Report worklet should get a fresh context, since we do not reuse for
+  // reporting.
+  base::RunLoop report_run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      report_run_loop.QuitClosure());
+}
+
+TEST_F(SellerWorkletTest, ExecutionModeFrozenContextFails) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
+
+  // kFrozenContext freezes the global scope, but not captured closure
+  // variables. `incrementer` modifies captured `a`, causing a failure in frozen
+  // mode. Scripts must avoid modifying captured state to be compatible.
+  const char kScript[] = R"(
+      const incrementer = (function() {
+             let a = 1;
+             return function() { a += 1; return a; };
+           })();
+      scoreAd = function() {
+        return incrementer();
+      }
+
+    )";
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, kScript);
+
+  RunScoreAdWithJavascriptExpectingResult(
+      kScript, 0,
+      {"undefined:0 Uncaught TypeError: Cannot "
+       "DeepFreeze non-const value a."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
+}
+
+TEST_F(SellerWorkletTest, ExecutionModeCompatibility) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode;
+  base::HistogramTester histogram_tester;
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+  scoreAd = function() {
+    if ('fresh' in globalThis) {
+      return 1; // Context was not fresh
+    }
+    globalThis.fresh = true;
+    return 2; // Context is fresh
+  };
+
+  reportResult = scoreAd;
+)");
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  std::vector<double> expected_scores = {2, 2, 2};
+  for (int i = 0; i < 3; ++i) {
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(),
+                                       expected_scores[i]);
+    histogram_tester.ExpectBucketCount(
+        "Ads.InterestGroup.Auction.SellerWorkletContextReused", 0, i + 1);
+  }
+
+  // The Report worklet should also get a fresh context.
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+}
+
+TEST_F(SellerWorkletTest, ExecutionModeGroupByOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+  allow_group_by_origin_mode_ = true;
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  base::HistogramTester histogram_tester;
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+       if (!globalThis.count) {
+         globalThis.count = 0;
+       }
+
+       scoreAd = function() {
+         globalThis.count++;
+         return globalThis.count;
+       };
+
+       reportResult = scoreAd;
+     )");
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  std::vector<double> expected_scores = {1, 2, 3};
+  bool reused_context = false;
+  int reused_context_count = 0;
+
+  for (int i = 0; i < 3; ++i) {
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(),
+                                       expected_scores[i]);
+    if (reused_context) {
+      histogram_tester.ExpectBucketCount(
+          "Ads.InterestGroup.Auction.SellerWorkletContextReused",
+          reused_context, reused_context_count);
+    } else {
+      histogram_tester.ExpectBucketCount(
+          "Ads.InterestGroup.Auction.SellerWorkletContextReused", 0, 1);
+    }
+    reused_context = true;
+    reused_context_count += 1;
+  }
+
+  // The Report worklet should still get a fresh context.
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+}
+
+// Verify that we only reuse the context when the bidder's joining origin is the
+// same.
+TEST_F(SellerWorkletTest, ExecutionModeGroupByOriginDifferentGroupByOriginIds) {
+  allow_group_by_origin_mode_ = true;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+
+  const char kScript[] = R"(
+        globalThis.counter = globalThis.counter || 0;
+
+        scoreAd = function() {
+          globalThis.counter++;
+          return globalThis.counter;
+        };
+
+        reportResult = scoreAd;
+    )";
+
+  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, kScript);
+
+  auto run_score_ad = [&](double expected_score,
+                          const uint64_t group_by_origin_id) {
+    group_by_origin_id_ = group_by_origin_id;
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(), expected_score);
+  };
+
+  // Run 1.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/1);
+
+  // Run 2, same id.
+  run_score_ad(/*expected_score=*/2, /*group_by_origin_id=*/1);
+
+  // Run 3, new id.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/2);
+
+  // Run 3, first id.
+  run_score_ad(/*expected_score=*/3, /*group_by_origin_id=*/1);
+
+  // Run 5, back to second id.
+  run_score_ad(/*expected_score=*/2, /*group_by_origin_id=*/2);
+
+  // Run 6, new id.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/3);
+
+  // The Report worklet should still get a fresh context.
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+}
+
+// Verifies that GroupByOrigin context caching respects the configured limit,
+// using FIFO eviction. Tests saving, overwriting, accessing cached contexts,
+// and confirms ReportResult always gets a fresh context.
+TEST_F(SellerWorkletTest,
+       ExecutionModeGroupByOriginSaveMultipleInterestGroups) {
+  allow_group_by_origin_mode_ = true;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeSellerScriptExecutionMode, {}},
+       {features::kFledgeNumberSellerWorkletGroupByOriginContextsToKeep,
+        {{"SellerGroupByOriginContextLimit", "2"}}}},
+      {});
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+
+  const char kScript[] = R"(
+        globalThis.counter = globalThis.counter || 0;
+
+        scoreAd = function() {
+          globalThis.counter++;
+          return globalThis.counter;
+        };
+
+        reportResult = scoreAd;
+      )";
+
+  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, kScript);
+
+  auto run_score_ad = [&](double expected_score,
+                          const uint64_t group_by_origin_id) {
+    group_by_origin_id_ = group_by_origin_id;
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(), expected_score);
+  };
+
+  // Save origin 1 context.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/1);
+
+  // Save origin 2 context.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/2);
+
+  // Save origin 3 context. This will overwrite origin 1's context.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/3);
+
+  // Access origin 2 context which should still be saved.
+  run_score_ad(/*expected_score=*/2, /*group_by_origin_id=*/2);
+
+  // Access origin 3 context which should still be saved.
+  run_score_ad(/*expected_score=*/2, /*group_by_origin_id=*/3);
+
+  // Origin 1's context is not still saved. This will save it and overwrite
+  // origin 2's context.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/1);
+
+  // Access origin 3 context which should still be saved.
+  run_score_ad(/*expected_score=*/3, /*group_by_origin_id=*/3);
+
+  // Access origin 2 context which is no longer saved.
+  run_score_ad(/*expected_score=*/1, /*group_by_origin_id=*/2);
+
+  // The Report worklet should still get a fresh context.
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+}
+
+// One worklet: Ensures each ScoreAd call on the same worklet gets a fresh,
+// frozen context.
+TEST_F(SellerWorkletTwoThreadsTest, OneWorklet_ExecutionModeFrozenContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
+
+  const char kScript[] = R"(
+        if (!('count' in globalThis))
+          globalThis.count = 1;
+
+        scoreAd = function() {
+          ++count;
+          return count;
+        }
+
+        reportResult = function() {
+          return globalThis.count;
+        }
+      )";
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, kScript);
+
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  // Run multiple ScoreAd calls with frozen context. The 'count' variable
+  // in the global scope should remain at its initial value (1) because
+  // the context is frozen for each ScoreAd call.
+  for (int i = 0; i < 6; ++i) {
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(),
+                                       /*expected_score=*/1);
+  }
+
+  // The Report worklet should also get a fresh context, so the
+  // global 'count' should still be 1.
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+}
+
+// Two worklets: Confirms that concurrent worklets maintain independent, frozen
+// contexts for each call.
+TEST_F(SellerWorkletTwoThreadsTest, TwoWorklets_ExecutionModeFrozenContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
+
+  const char kScript[] = R"(
+        if (!('count' in globalThis))
+          globalThis.count = 1;
+
+        scoreAd = function() {
+          ++count;
+          return count;
+        }
+
+        reportResult = function() {
+          return globalThis.count;
+        }
+      )";
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, kScript);
+
+  auto seller_worklet1 = CreateWorklet();
+  auto seller_worklet2 = CreateWorklet();
+  ASSERT_TRUE(seller_worklet1);
+  ASSERT_TRUE(seller_worklet2);
+
+  // Run multiple ScoreAd calls with two worklets in frozen context mode.
+  // Each worklet should have its own frozen context, so the 'count'
+  // variable in the global scope of each worklet should remain at its
+  // initial value (1).
+  for (int i = 0; i < 6; ++i) {
+    auto* seller_worklet = (i % 2 == 0) ? &seller_worklet1 : &seller_worklet2;
+    RunScoreAdExpectingResultOnWorklet(seller_worklet->get(),
+                                       /*expected_score=*/1);
+  }
+
+  // The Report worklet for each seller worklet should also get a fresh context
+  for (auto* seller_worklet : {&seller_worklet1, &seller_worklet2}) {
+    base::RunLoop run_loop;
+    RunReportResultExpectingResultAsync(
+        seller_worklet->get(),
+        /*expected_signals_for_winner=*/"1",
+        /*expected_report_url=*/std::nullopt,
+        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+        run_loop.QuitClosure());
+  }
+}
+
+TEST_F(SellerWorkletTwoThreadsTest, OneWorklet_ExecutionModeGroupByOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  allow_group_by_origin_mode_ = true;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+        // Globally scoped variable.
+        if (!globalThis.var1)
+          globalThis.var1 = [1];
+        // Globally scoped variable for var2's state.
+        if (!globalThis.var2)
+          globalThis.var2 = [2];
+
+        scoreAd = function() {
+          if (2 == ++globalThis.var1[0] && 3 == ++globalThis.var2[0])
+            return 2;
+          return 1;
+        };
+
+        reportResult = scoreAd;
+      )");
+
+  auto seller_worklet = CreateWorklet();
+
+  ASSERT_TRUE(seller_worklet);
+
+  // Context is reused within the same thread. Since we use a round-robin
+  // scheduling approach and the thread pool has a size of 2, it means the first
+  // two ScoreAds should have score=2 and the rest of them should have score=1.
+  std::vector<double> expected_scores = {2, 2, 1, 1, 1, 1};
+  for (int i = 0; i < 6; ++i) {
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(),
+                                       expected_scores[i]);
+  }
+
+  // The Report worklet should still get a fresh context.
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/"2",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+}
+
+TEST_F(SellerWorkletTwoThreadsTest, TwoWorklets_ExecutionModeGroupByOrigin) {
+  auction_ad_config_non_shared_params_.execution_mode =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  allow_group_by_origin_mode_ = true;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+        globalThis.var1 = globalThis.var1 || 1;
+        globalThis.var2 = globalThis.var2 || 2;
+
+        scoreAd = function() {
+          if (2 == ++globalThis.var1 && 3 == ++globalThis.var2)
+            return 2;
+          return 1;
+        };
+
+        reportResult = scoreAd;
+      )");
+
+  auto seller_worklet1 = CreateWorklet();
+  auto seller_worklet2 = CreateWorklet();
+
+  // Context is reused within the same thread. Since we use a round-robin
+  // scheduling approach and the thread pool has a size of 2, it means the first
+  // two ScoreAds should have score=2 and the rest of them should have score=1.
+  //
+  // Together with the "OneWorklet_XXX" test variant above, this also shows that
+  // the round-robin scheduling state is not local to each SellerWorklet, but
+  // all worklets in the same test case will share the same state.
+  std::vector<double> expected_scores = {2, 2, 1, 1, 1, 1};
+  for (int i = 0; i < 6; ++i) {
+    auto* seller_worklet = (i % 2 == 0) ? &seller_worklet1 : &seller_worklet2;
+    RunScoreAdExpectingResultOnWorklet(seller_worklet->get(),
+                                       expected_scores[i]);
+  }
+
+  // The Report worklet should still get a fresh context.
+  for (auto* seller_worklet : {&seller_worklet1, &seller_worklet2}) {
+    base::RunLoop run_loop;
+    RunReportResultExpectingResultAsync(
+        seller_worklet->get(),
+        /*expected_signals_for_winner=*/"2",
+        /*expected_report_url=*/std::nullopt,
+        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+        run_loop.QuitClosure());
+  }
+}
+
 TEST_F(
     SellerWorkletTwoThreadsTest,
     OneWorklet_ContextIsReusedInSameThreadIfFledgeAlwaysReuseSellerContextEnabled) {
@@ -4825,18 +5355,14 @@ TEST_F(
       features::kFledgeAlwaysReuseSellerContext);
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
-        // Globally scoped variable.
-        if (!globalThis.var1)
-          globalThis.var1 = [1];
+        globalThis.var1 = globalThis.var1 || 1;
+        globalThis.var2 = globalThis.var2 || 2;
+
         scoreAd = function() {
-          // Value only visible within this closure.
-          var var2 = [2];
-          return function() {
-            if (2 == ++globalThis.var1[0] && 3 == ++var2[0])
-              return 2;
-            return 1;
-          }
-        }();
+          if (2 == ++globalThis.var1 && 3 == ++globalThis.var2)
+            return 2;
+          return 1;
+        };
 
         reportResult = scoreAd;
       )");
@@ -4866,6 +5392,7 @@ TEST_F(
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        group_by_origin_id_, allow_group_by_origin_mode_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -4930,18 +5457,14 @@ TEST_F(
       features::kFledgeAlwaysReuseSellerContext);
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
-        // Globally scoped variable.
-        if (!globalThis.var1)
-          globalThis.var1 = [1];
+        globalThis.var1 = globalThis.var1 || 1;
+        globalThis.var2 = globalThis.var2 || 2;
+
         scoreAd = function() {
-          // Value only visible within this closure.
-          var var2 = [2];
-          return function() {
-            if (2 == ++globalThis.var1[0] && 3 == ++var2[0])
-              return 2;
-            return 1;
-          }
-        }();
+          if (2 == ++globalThis.var1 && 3 == ++globalThis.var2)
+            return 2;
+          return 1;
+        };
 
         reportResult = scoreAd;
       )");
@@ -4979,6 +5502,7 @@ TEST_F(
             browser_signal_bidding_duration_msecs_,
             browser_signal_for_debugging_only_in_cooldown_or_lockout_,
             browser_signal_for_debugging_only_sampling_, seller_timeout_,
+            group_by_origin_id_, allow_group_by_origin_mode_,
             /*trace_id=*/1, bidder_joining_origin_,
             TestScoreAdClient::Create(base::BindLambdaForTesting(
                 [&run_loop, &expected_score](
@@ -5096,6 +5620,7 @@ TEST_F(SellerWorkletTwoThreadsTest,
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        group_by_origin_id_, allow_group_by_origin_mode_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -5158,6 +5683,7 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        group_by_origin_id_, allow_group_by_origin_mode_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop, &expected_score](
@@ -5204,6 +5730,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      group_by_origin_id_, allow_group_by_origin_mode_,
       /*trace_id=*/1, bidder_joining_origin_,
       TestScoreAdClient::Create(
           // Callback should not be invoked since worklet deleted
@@ -6219,6 +6746,7 @@ TEST_F(SellerWorkletTest, Cancelation) {
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      group_by_origin_id_, allow_group_by_origin_mode_,
       /*trace_id=*/1, bidder_joining_origin_,
       client_receiver.BindNewPipeAndPassRemote());
 
@@ -6285,6 +6813,7 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
       browser_signal_bidding_duration_msecs_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       browser_signal_for_debugging_only_sampling_, seller_timeout_,
+      group_by_origin_id_, allow_group_by_origin_mode_,
       /*trace_id=*/1, bidder_joining_origin_,
       client_receiver.BindNewPipeAndPassRemote());
   task_environment_.RunUntilIdle();
@@ -7766,6 +8295,7 @@ TEST_F(SellerWorkletRealTimeTest, ForDebuggingOnlyReportsScriptIsolation) {
         browser_signal_bidding_duration_msecs_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         browser_signal_for_debugging_only_sampling_, seller_timeout_,
+        group_by_origin_id_, allow_group_by_origin_mode_,
         /*trace_id=*/1, bidder_joining_origin_,
         TestScoreAdClient::Create(base::BindLambdaForTesting(
             [&run_loop](double score, mojom::RejectReason reject_reason,

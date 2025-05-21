@@ -37,6 +37,7 @@
 #include "content/services/auction_worklet/auction_worklet_util.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
+#include "content/services/auction_worklet/execution_mode_util.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
@@ -250,6 +251,14 @@ bool AppendAuctionConfig(
     auction_config_dict.Set(
         "sellerCurrency",
         auction_ad_config_non_shared_params.seller_currency->currency_code());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeSellerScriptExecutionMode)) {
+    auction_config_dict.Set(
+        "executionMode",
+        auction_worklet::GetExecutionModeString(
+            auction_ad_config_non_shared_params.execution_mode));
   }
 
   const auto& component_auctions =
@@ -568,6 +577,8 @@ void SellerWorklet::ScoreAd(
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
     bool browser_signal_for_debugging_only_sampling,
     const std::optional<base::TimeDelta> seller_timeout,
+    uint64_t group_by_origin_id,
+    bool allow_group_by_origin_mode,
     uint64_t trace_id,
     const url::Origin& bidder_joining_origin,
     mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
@@ -607,6 +618,8 @@ void SellerWorklet::ScoreAd(
   score_ad_task->browser_signal_for_debugging_only_sampling =
       browser_signal_for_debugging_only_sampling;
   score_ad_task->seller_timeout = seller_timeout;
+  score_ad_task->group_by_origin_id = group_by_origin_id;
+  score_ad_task->allow_group_by_origin_mode = allow_group_by_origin_mode;
   score_ad_task->trace_id = trace_id;
   score_ad_task->score_ad_client.Bind(std::move(score_ad_client));
   score_ad_task->thread = get_next_thread_index_callback_.Run();
@@ -882,7 +895,8 @@ SellerWorklet::V8State::V8State(
       experiment_group_id_(experiment_group_id),
       send_creative_scanning_metadata_(send_creative_scanning_metadata),
       creative_scanning_enabled_(base::FeatureList::IsEnabled(
-          blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)) {
+          blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)),
+      execution_mode_helper_(/*is_seller=*/true) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
@@ -901,6 +915,7 @@ std::unique_ptr<ContextRecycler>
 SellerWorklet::V8State::CreateContextRecyclerAndRunTopLevel(
     uint64_t trace_id,
     AuctionV8Helper::TimeLimit& total_timeout,
+    bool should_deep_freeze,
     bool& script_timed_out,
     std::vector<std::string>& errors_out) {
   std::unique_ptr<ContextRecycler> context_recycler =
@@ -940,6 +955,12 @@ SellerWorklet::V8State::CreateContextRecyclerAndRunTopLevel(
         mojom::AuctionWorkletFunction::kSellerScoreAd,
         permissions_policy_state_->shared_storage_allowed);
   }
+
+  if (should_deep_freeze && !ExecutionModeHelper::DeepFreezeContext(
+                                context, v8_helper_, errors_out)) {
+    return nullptr;
+  }
+
   return context_recycler;
 }
 
@@ -959,6 +980,7 @@ void SellerWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   std::unique_ptr<ContextRecycler> context_recycler =
       CreateContextRecyclerAndRunTopLevel(trace_id, *total_timeout,
+                                          /*should_deep_freeze=*/false,
                                           script_timed_out, errors_out);
   unused_context_recyclers_.push_back(std::make_tuple(
       std::move(context_recycler), script_timed_out, errors_out));
@@ -993,6 +1015,8 @@ void SellerWorklet::V8State::ScoreAd(
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
     bool browser_signal_for_debugging_only_sampling,
     const std::optional<base::TimeDelta> seller_timeout,
+    uint64_t group_by_origin_id,
+    bool allow_group_by_origin_mode,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_score_ad_task,
     base::TimeTicks task_enqueued_time,
@@ -1005,6 +1029,7 @@ void SellerWorklet::V8State::ScoreAd(
     // We must have cancelled the fetch, so nothing should be set).
     CHECK(!trusted_scoring_signals);
   }
+
   UMA_HISTOGRAM_ENUMERATION(
       "Ads.InterestGroup.Auction.TrustedSellerSignalsOriginRelation",
       trusted_signals_relation_);
@@ -1041,18 +1066,44 @@ void SellerWorklet::V8State::ScoreAd(
   ContextRecycler* context_recycler = nullptr;
   std::unique_ptr<ContextRecycler> fresh_context_recycler;
   bool used_premade_context = false;
-  if (context_recycler_for_context_reuse_) {
-    context_recycler = context_recycler_for_context_reuse_.get();
-  } else {
+  bool reused_context = false;
+  bool should_deep_freeze = false;
+
+  const auto execution_mode =
+      auction_ad_config_non_shared_params.execution_mode;
+
+  context_recycler = execution_mode_helper_.TryReuseContext(
+      execution_mode, group_by_origin_id, allow_group_by_origin_mode,
+      /*context_recycler_for_kanon_rerun=*/nullptr, should_deep_freeze);
+
+  if (context_recycler) {
+    reused_context = true;
+  }
+
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.Auction.SellerWorkletContextReused", reused_context);
+
+  if (!context_recycler) {
     bool script_timed_out = false;
-    if (!unused_context_recyclers_.empty()) {
+    if (unused_context_recyclers_.empty()) {
+      fresh_context_recycler = CreateContextRecyclerAndRunTopLevel(
+          trace_id, *total_timeout, should_deep_freeze, script_timed_out,
+          errors_out);
+    } else {
       std::tie(fresh_context_recycler, script_timed_out, errors_out) =
           std::move(unused_context_recyclers_.back());
       unused_context_recyclers_.pop_back();
+      // Assume context is reused unless deep freeze fails.
       used_premade_context = true;
-    } else {
-      fresh_context_recycler = CreateContextRecyclerAndRunTopLevel(
-          trace_id, *total_timeout, script_timed_out, errors_out);
+      if (fresh_context_recycler && should_deep_freeze) {
+        ContextRecyclerScope scope(*fresh_context_recycler);
+        v8::Local<v8::Context> context = scope.GetContext();
+        if (!ExecutionModeHelper::DeepFreezeContext(context, v8_helper_,
+                                                    errors_out)) {
+          fresh_context_recycler.reset();
+          used_premade_context = false;
+        }
+      }
     }
     if (!fresh_context_recycler) {
       PostScoreAdCallbackToUserThreadOnError(
@@ -1067,6 +1118,26 @@ void SellerWorklet::V8State::ScoreAd(
       return;
     }
     context_recycler = fresh_context_recycler.get();
+
+    // Save the generated context for potential reuse in subsequent calls
+    // based on the execution mode and feature flags. Contexts are saved if:
+    //  - The `kFledgeAlwaysReuseSellerContext` feature is enabled, OR
+    //  - The execution mode is `kFrozenContext`, OR
+    //  - The execution mode is `kGroupedByOriginMode` AND
+    //  `allow_group_by_origin_mode` is true.
+    // Otherwise a fresh context is used for each invocation and not saved for
+    // reuse.
+    if (base::FeatureList::IsEnabled(
+            features::kFledgeAlwaysReuseSellerContext) ||
+        (execution_mode ==
+         blink::mojom::InterestGroup::ExecutionMode::kFrozenContext) ||
+        (execution_mode ==
+             blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+         allow_group_by_origin_mode)) {
+      execution_mode_helper_.SaveContextForReuse(
+          execution_mode, group_by_origin_id, allow_group_by_origin_mode,
+          std::move(fresh_context_recycler));
+    }
   }
   base::UmaHistogramBoolean(
       "Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet",
@@ -1232,6 +1303,7 @@ void SellerWorklet::V8State::ScoreAd(
       direct_from_seller_result_auction_signals,
       direct_from_seller_auction_signals_header_ad_slot, *v8_helper_, context,
       errors_out);
+
   if (!direct_from_seller_signals_dict.Set("sellerSignals", seller_signals) ||
       !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
     PostScoreAdCallbackToUserThreadOnError(
@@ -1311,11 +1383,6 @@ void SellerWorklet::V8State::ScoreAd(
         /*script_timed_out=*/result == AuctionV8Helper::Result::kTimeout,
         std::move(errors_out));
     return;
-  }
-
-  if (!context_recycler_for_context_reuse_ &&
-      base::FeatureList::IsEnabled(features::kFledgeAlwaysReuseSellerContext)) {
-    context_recycler_for_context_reuse_ = std::move(fresh_context_recycler);
   }
 
   double score;
@@ -1633,8 +1700,8 @@ void SellerWorklet::V8State::ScoreAd(
           ->TakePrivateAggregationRequests(
               /*did_uncaught_error_occur=*/false),
       FilterRealtimeContributions(std::move(real_time_contributions), elapsed),
-      /*scoring_latency=*/elapsed, /*script_timed_out=*/false,
-      std::move(errors_out));
+      /*scoring_latency=*/elapsed,
+      /*script_timed_out=*/false, std::move(errors_out));
 }
 
 void SellerWorklet::V8State::ReportResult(
@@ -2422,7 +2489,8 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           task->browser_signal_bidding_duration_msecs,
           task->browser_signal_for_debugging_only_in_cooldown_or_lockout,
           task->browser_signal_for_debugging_only_sampling,
-          std::move(task->seller_timeout), task->trace_id,
+          std::move(task->seller_timeout), std::move(task->group_by_origin_id),
+          task->allow_group_by_origin_mode, task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_score_ad_task)),
           /*task_enqueued_time=*/base::TimeTicks::Now(),
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,

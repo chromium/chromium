@@ -786,6 +786,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeMultiBid, {}},
          {blink::features::kFledgeSampleDebugReports, {}},
          {blink::features::kFledgeEnableSampleDebugReportOnCookieSetting, {}},
+         {blink::features::kFledgeSellerScriptExecutionMode, {}},
          // These are in field trial config, but we want this consistent among
          // bots.
          {blink::features::kFledgeCustomMaxAuctionAdComponents,
@@ -5956,6 +5957,204 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   })",
                                                  origin, url)));
   WaitForAccessObserved({});
+}
+
+class AuctionConfigExecutionModeBrowserTest : public InterestGroupBrowserTest {
+ public:
+  AuctionConfigExecutionModeBrowserTest() {
+    feature_list_.InitWithFeatures({/*enabled_features=*/blink::features::
+                                        kFledgeSellerScriptExecutionMode},
+                                   /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that we handle converting the executionMode from the auction config's
+// idl to mojo properly. Covers all the modes and an invalid mode as well.
+IN_PROC_BROWSER_TEST_F(AuctionConfigExecutionModeBrowserTest,
+                       AuctionConfigExecutionModes) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  url::Origin origin = url::Origin::Create(url);
+
+  constexpr char kDecisionLogicPath[] =
+      R"(/interest_group/decision_logic_$1.js)";
+  constexpr char kBiddingLogicPath[] =
+      "/interest_group/test_generated_bidding_argument_validator.js";
+
+  constexpr char kBiddingLogicScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        unusedBrowserSignals) {
+      const ad = interestGroup.ads[0];
+      return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
+    }
+    )";
+
+  constexpr char kDecisionLogicScript[] = R"(
+  function scoreAd(
+      adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
+      unusedBrowserSignals) {
+    validateAuctionConfig(auctionConfig);
+    return bid;
+  }
+
+  function validateAuctionConfig(auctionConfig) {
+    const executionMode = auctionConfig.executionMode;
+    if (executionMode !== $1){
+      throw 'Execution mode should be $1, but was: ' + executionMode;
+    }
+  }
+  )";
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          origin, "cars",
+          /*priority=*/0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          embedded_https_test_server().GetURL("a.test", kBiddingLogicPath),
+          /*ads=*/
+          {{{GURL("https://example.com/render"),
+             /*metadata=*/std::nullopt}}},
+          /*ad_components=*/std::nullopt, std::nullopt));
+
+  const struct TestCases {
+    std::string auction_config_execution_mode;
+    std::string expected_execution_mode;
+  } kTestCases[] = {
+      {/*auction_config_execution_mode=*/"compatibility",
+       /*expected_execution_mode=*/"compatibility"},
+      {/*auction_config_execution_mode=*/"group-by-origin",
+       /*expected_execution_mode=*/"group-by-origin"},
+      {/*auction_config_execution_mode=*/"frozen-context",
+       /*expected_execution_mode=*/"frozen-context"},
+      {/*auction_config_execution_mode=*/"invalid-mode",
+       /*expected_execution_mode=*/"compatibility"},
+  };
+
+  // Used to make different decision logic urls, since caching causes flaky
+  // tests.
+  int url_count = 0;
+  for (const auto& test_case : kTestCases) {
+    url_count++;
+    auto current_decision_url = JsReplace(kDecisionLogicPath, url_count);
+    network_responder_->RegisterNetworkResponse(
+        kBiddingLogicPath, kBiddingLogicScript, "application/javascript");
+    network_responder_->RegisterNetworkResponse(
+        current_decision_url,
+        JsReplace(kDecisionLogicScript, test_case.expected_execution_mode),
+        "application/javascript");
+
+    EXPECT_EQ(
+        "https://example.com/render",
+        RunAuctionAndWaitForUrl(JsReplace(
+            R"({
+                    seller: $1,
+                    decisionLogicURL: $2,
+                    executionMode: $3,
+                    interestGroupBuyers: [$1]
+                    })",
+            origin,
+            embedded_https_test_server().GetURL("a.test", current_decision_url),
+            test_case.auction_config_execution_mode)));
+  }
+}
+
+class AuctionConfigExecutionModeDisabledBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  AuctionConfigExecutionModeDisabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {/*enabled_features=*/},
+        /*disabled_features=*/{
+            blink::features::kFledgeSellerScriptExecutionMode});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that when the feature is disabled, execution mode does not get passed
+// to the seller worklet.
+IN_PROC_BROWSER_TEST_F(AuctionConfigExecutionModeDisabledBrowserTest,
+                       AuctionConfigExecutionModes) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  url::Origin origin = url::Origin::Create(url);
+
+  constexpr char kDecisionLogicPath[] =
+      "/interest_group/non_object_decision_argument_validator.js";
+  constexpr char kBiddingLogicPath[] =
+      "/interest_group/test_generated_bidding_argument_validator.js";
+
+  constexpr char kBiddingLogicScript[] = R"(
+     function generateBid(
+         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+         unusedBrowserSignals) {
+       const ad = interestGroup.ads[0];
+       return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
+     }
+     )";
+
+  constexpr char kDecisionLogicScript[] = R"(
+   function scoreAd(
+       adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
+       unusedBrowserSignals) {
+     validateAuctionConfig(auctionConfig);
+     return bid;
+   }
+
+   function validateAuctionConfig(auctionConfig) {
+     const executionMode = auctionConfig.executionMode;
+     if (executionMode !== undefined) {
+       throw 'Execution mode should be undefined, but was: ' + executionMode;
+     }
+   }
+   )";
+
+  const std::string kTestCases[] = {
+      "compatibility",
+      "group-by-origin",
+      "frozen-context",
+      "invalid-mode",
+  };
+
+  for (const auto& execution_mode : kTestCases) {
+    network_responder_->RegisterNetworkResponse(
+        kBiddingLogicPath, kBiddingLogicScript, "application/javascript");
+    network_responder_->RegisterNetworkResponse(
+        kDecisionLogicPath, kDecisionLogicScript, "application/javascript");
+
+    EXPECT_EQ(
+        kSuccess,
+        JoinInterestGroupAndVerify(
+            origin, "cars",
+            /*priority=*/0, /*execution_mode=*/
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+            /*bidding_url=*/
+            embedded_https_test_server().GetURL("a.test", kBiddingLogicPath),
+            /*ads=*/
+            {{{GURL("https://example.com/render"),
+               /*metadata=*/std::nullopt}}},
+            /*ad_components=*/std::nullopt, std::nullopt));
+
+    EXPECT_EQ(
+        "https://example.com/render",
+        RunAuctionAndWaitForUrl(JsReplace(
+            R"({
+                     seller: $1,
+                     decisionLogicURL: $2,
+                     executionMode: $3,
+                     interestGroupBuyers: [$1]
+                     })",
+            origin,
+            embedded_https_test_server().GetURL("a.test", kDecisionLogicPath),
+            execution_mode)));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -16395,6 +16594,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
     perBuyerPrioritySignals: {[componentBuyer]: {bar: 1}, '*': {BaZ: -2}},
     perBuyerCurrencies: maybePromise({[componentBuyer]: 'USD'}),
     sellerCurrency: 'CAD',
+    executionMode: 'group-by-origin',
   }],
 })",
                            top_level_seller_origin, top_level_seller_script_url,
@@ -16649,6 +16849,7 @@ IN_PROC_BROWSER_TEST_F(
     perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
     perBuyerCurrencies: maybePromise({$8: 'USD'}),
     sellerCurrency: 'CAD',
+    executionMode: 'group-by-origin',
   }],
 })",
                      top_level_seller_origin, top_level_seller_script_url,
@@ -16851,6 +17052,7 @@ IN_PROC_BROWSER_TEST_F(
     perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
     perBuyerCurrencies: maybePromise({$8: 'USD'}),
     sellerCurrency: 'CAD',
+    executionMode: 'group-by-origin',
   }],
 })",
                      top_level_seller_origin, top_level_seller_script_url,

@@ -26,6 +26,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
+#include "content/services/auction_worklet/execution_mode_util.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -155,6 +156,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       bool browser_signal_for_debugging_only_sampling,
       const std::optional<base::TimeDelta> seller_timeout,
+      uint64_t group_by_origin_id,
+      bool allow_group_by_origin_mode,
       uint64_t trace_id,
       const url::Origin& bidder_joining_origin,
       mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
@@ -224,6 +227,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout;
     bool browser_signal_for_debugging_only_sampling;
     std::optional<base::TimeDelta> seller_timeout;
+    uint64_t group_by_origin_id;
+    bool allow_group_by_origin_mode;
     uint64_t trace_id;
 
     // Time where tracing for wait_score_ad_deps began.
@@ -418,6 +423,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
         bool browser_signal_for_debugging_only_sampling,
         const std::optional<base::TimeDelta> seller_timeout,
+        uint64_t group_by_origin_id,
+        bool allow_group_by_origin_mode,
         uint64_t trace_id,
         base::ScopedClosureRunner cleanup_score_ad_task,
         base::TimeTicks task_enqueued_time,
@@ -511,6 +518,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     std::unique_ptr<ContextRecycler> CreateContextRecyclerAndRunTopLevel(
         uint64_t trace_id,
         AuctionV8Helper::TimeLimit& total_timeout,
+        bool should_deep_freeze,
         bool& script_timed_out,
         std::vector<std::string>& errors_out);
 
@@ -536,12 +544,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
-    // If `kFledgeAlwaysReuseSellerContext` is enabled, use this pointer to
-    // store our `ContextRecycler`. This `ContextRecycler` will be used on all
-    // calls to `ScoreAd`, but not for `ReportResult`. If
-    // `kFledgeAlwaysReuseSellerContext` is disabled, a fresh `ContextRecycler`
-    // will be created as needed.
-    std::unique_ptr<ContextRecycler> context_recycler_for_context_reuse_;
+    ExecutionModeHelper execution_mode_helper_;
 
     // ContextRecyclers we prepare in advance, along with a bool indicating if
     // there was a timeout and any errors in preparing the context.

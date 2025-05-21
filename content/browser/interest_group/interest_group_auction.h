@@ -240,6 +240,10 @@ class CONTENT_EXPORT InterestGroupAuction
     // 0 for things that don't use that mode.
     size_t group_by_origin_id = 0;
 
+    // ID used to isolate conflicting IGs in GroupByOrigin execution mode.
+    // 0 for things that don't use that mode.
+    std::optional<size_t> seller_group_by_origin_id;
+
     // ReceiverId for use as a GenerateBidClient. Only populated while
     // generateBid() is running.
     std::optional<mojo::ReceiverId> generate_bid_client_receiver_id;

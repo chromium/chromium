@@ -449,6 +449,9 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
                     conf.non_shared_params.trusted_scoring_signals_coordinator,
                     result);
 
+  SerializeIntoDict("executionMode", conf.non_shared_params.execution_mode,
+                    result);
+
   // direct_from_seller_signals --- skipped.
   SerializeIntoDict("expectsDirectFromSellerSignalsHeaderAdSlot",
                     conf.expects_direct_from_seller_signals_header_ad_slot,

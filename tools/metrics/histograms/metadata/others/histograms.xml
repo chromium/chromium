@@ -626,6 +626,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.BidderWorkletContextReused"
+    enum="Boolean" expires_after="2026-04-15">
+  <owner>ybourouphael@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the browser reused an existing worklet context for a generateBid()
+    call. This includes contexts reused due to the
+    FledgeAlwaysReuseBidderContext feature, k-anon re-run, group-by-origin mode,
+    or frozen context mode.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram
     name="Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes"
     units="KB" expires_after="2025-09-21">
@@ -767,20 +782,6 @@ chromium-metrics-reviews@google.com.
     is not the same as how long the auction needed to wait for a config promise,
     since other work happened simultaneously. That's better captured by
     Ads.InterestGroup.Auction.ConfigPromises.CriticalPathLatency.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-</histogram>
-
-<histogram name="Ads.InterestGroup.Auction.ContextReused" enum="Boolean"
-    expires_after="2025-11-09">
-  <owner>pauljensen@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    True if the browser can reuse an existing context when calling generateBid()
-    whose corresponding interest group has the executionMode set to
-    group-by-origin.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -1424,6 +1425,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.SellerWorkletContextReused"
+    enum="Boolean" expires_after="2026-04-15">
+  <owner>ybourouphael@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the browser reuses an existing context for scoreAd() calls. This
+    includes cases where the kFledgeAlwaysReuseSellerContext feature is enabled,
+    or when the auction configuration's execution mode is group-by-origin or
+    frozen-context.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram
     name="Ads.InterestGroup.Auction.SellerWorkletIsolateTotalHeapSizeKilobytes"
     units="KB" expires_after="2025-11-02">
@@ -1587,7 +1603,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     True if the browser can use a prepared context when calling generateBid().
     Recorded when a previously used context cannot be used
-    (Ads.InterestGroup.Auction.ContextReused is false).
+    (Ads.InterestGroup.Auction.BidderWorkletContextReused is false).
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

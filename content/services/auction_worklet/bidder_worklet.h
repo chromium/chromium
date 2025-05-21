@@ -29,6 +29,7 @@
 #include "content/services/auction_worklet/bidder_worklet_thread_selector.h"
 #include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
+#include "content/services/auction_worklet/execution_mode_util.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -679,9 +680,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
         bool restrict_to_kanon_ads);
 
-    bool DeepFreezeContext(v8::Local<v8::Context>& context,
-                           std::vector<std::string>& errors_out);
-
     std::unique_ptr<ContextRecycler>
     CreateContextRecyclerAndRunTopLevelForGenerateBid(
         uint64_t trace_id,
@@ -740,13 +738,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // SharedStorageBindings, which have raw pointers to it.
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
-    // ContextRecyclers for "group-by-origin" execution mode. The number of
-    // previously-used contexts to keep track of is configured by
-    // kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue.
-    //
-    // The key is the group by origin ID..
-    base::LRUCache<uint64_t, std::unique_ptr<ContextRecycler>>
-        context_recyclers_for_origin_group_mode_;
 
     // ContextRecyclers we prepare in advance, along with a bool indicating if
     // there was a timeout and any errors in preparing the context. These can be
@@ -761,12 +752,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // Ads.InterestGroup.Auction.NonPremadeContextsCreated.
     size_t non_premade_contexts_created = 0;
 
-    // ContextRecycler for "frozen-context" execution mode.
-    std::unique_ptr<ContextRecycler> context_recycler_for_frozen_context_;
-
-    // If FledgeAlwaysReuseBidderContext is enabled, the execution mode is
-    // ignored and the context below is always reused.
-    std::unique_ptr<ContextRecycler> context_recycler_for_always_reuse_feature_;
+    ExecutionModeHelper execution_mode_helper_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/seller_capabilities.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -408,6 +409,12 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // Optional coordinator for matching encryption public key and indicating
     // which key-value server to send trusted scoring signals to.
     std::optional<url::Origin> trusted_scoring_signals_coordinator;
+
+    // Controls the execution environment for the seller's scoring script,
+    // impacting isolation and state persistence. Options match those of
+    // interest group's execution mode. Defaults to 'compatibility' mode.
+    InterestGroup::ExecutionMode execution_mode =
+        mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
   };
 
   AuctionConfig();
@@ -483,7 +490,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // will be sent to V1 trusted seller signals server.
   std::optional<bool> send_creative_scanning_metadata;
 
-  static_assert(__LINE__ == 486, R"(
+  static_assert(__LINE__ == 493, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

@@ -32,6 +32,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -41,6 +42,7 @@
 #include "content/services/auction_worklet/bidder_worklet_thread_selector.h"
 #include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
+#include "content/services/auction_worklet/execution_mode_util.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/private_model_training_bindings.h"
@@ -100,15 +102,6 @@
 namespace auction_worklet {
 
 namespace {
-
-class DeepFreezeAllowAll : public v8::Context::DeepFreezeDelegate {
- public:
-  bool FreezeEmbedderObjectAndGetChildren(
-      v8::Local<v8::Object> obj,
-      v8::LocalVector<v8::Object>& children_out) override {
-    return true;
-  }
-};
 
 bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
                            v8::Local<v8::Context> context,
@@ -280,15 +273,6 @@ std::vector<mojom::BidderWorkletBidPtr> ClassifyBidsAndApplyComponentAdLimits(
     }
   }
   return bids;
-}
-
-size_t GetNumberOfGroupByOriginContextsToKeep() {
-  if (base::FeatureList::IsEnabled(
-          features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeep)) {
-    return features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue
-        .Get();
-  }
-  return 1;
 }
 
 size_t CalculateNumberOfContextsToPreparePerThread(
@@ -831,8 +815,7 @@ BidderWorklet::V8State::V8State(
           trusted_bidding_signals_url_ ? std::make_optional(url::Origin::Create(
                                              *trusted_bidding_signals_url_))
                                        : std::nullopt),
-      context_recyclers_for_origin_group_mode_(
-          GetNumberOfGroupByOriginContextsToKeep()) {
+      execution_mode_helper_(/*is_seller=*/false) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
@@ -1701,54 +1684,20 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
   bool reused_context = false;
   bool should_deep_freeze = false;
-  std::string_view execution_mode_string;
-
   // See if we can reuse an existing context, and determine string to use for
   // `executionMode`.
-  switch (bidder_worklet_non_shared_params.execution_mode) {
-    case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
-      execution_mode_string = "group-by-origin";
-      {
-        auto it =
-            context_recyclers_for_origin_group_mode_.Get(group_by_origin_id);
-        if (it != context_recyclers_for_origin_group_mode_.end()) {
-          context_recycler = it->second.get();
-          reused_context = true;
-        }
-      }
-      break;
-    case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
-      execution_mode_string = "frozen-context";
-      if (!base::FeatureList::IsEnabled(
-              features::kFledgeAlwaysReuseBidderContext)) {
-        should_deep_freeze = true;
-      }
-      if (context_recycler_for_frozen_context_) {
-        context_recycler = context_recycler_for_frozen_context_.get();
-        reused_context = true;
-      }
-      break;
-    case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
-      execution_mode_string = "compatibility";
-      break;
-  }
-  DCHECK(!execution_mode_string.empty());
+  context_recycler = execution_mode_helper_.TryReuseContext(
+      bidder_worklet_non_shared_params.execution_mode, group_by_origin_id,
+      /*allow_group_by_origin=*/true,
+      /*context_recycler_for_kanon_rerun=*/context_recycler_for_rerun.get(),
+      should_deep_freeze);
 
-  base::UmaHistogramBoolean("Ads.InterestGroup.Auction.ContextReused",
-                            reused_context);
-
-  if (!context_recycler && context_recycler_for_always_reuse_feature_) {
-    context_recycler = context_recycler_for_always_reuse_feature_.get();
+  if (context_recycler) {
     reused_context = true;
   }
 
-  // See if we can reuse a context for k-anon re-run. The group-by-origin and
-  // frozen context mode would do that, too, so this is only a fallback for
-  // when that's not on.
-  if (!context_recycler && context_recycler_for_rerun) {
-    context_recycler = context_recycler_for_rerun.get();
-    reused_context = true;
-  }
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.Auction.BidderWorkletContextReused", reused_context);
 
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeBidderWorkletBiddingStart");
@@ -1772,7 +1721,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       if (fresh_context_recycler && should_deep_freeze) {
         ContextRecyclerScope scope(*fresh_context_recycler);
         v8::Local<v8::Context> context = scope.GetContext();
-        if (!DeepFreezeContext(context, errors_out)) {
+        if (!ExecutionModeHelper::DeepFreezeContext(context, v8_helper_,
+                                                    errors_out)) {
           fresh_context_recycler.reset();
         }
       }
@@ -1798,24 +1748,19 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
     context_recycler = fresh_context_recycler.get();
 
-    // Save the context for next time (if applicable).
+    // Save the generated context for potential reuse in subsequent calls
+    // based on the execution mode and feature flags. Contexts are saved if:
+    //  - The kFledgeAlwaysReuseBidderContext feature is enabled, OR
+    //  - The execution mode is not `compatibility` mode.
+    // In `compatibility` mode without the feature flag, a fresh context is used
+    // for each invocation and not saved for reuse.
     if (base::FeatureList::IsEnabled(
-            features::kFledgeAlwaysReuseBidderContext)) {
-      context_recycler_for_always_reuse_feature_ =
-          std::move(fresh_context_recycler);
-    } else {
-      switch (bidder_worklet_non_shared_params.execution_mode) {
-        case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
-          context_recyclers_for_origin_group_mode_.Put(
-              group_by_origin_id, std::move(fresh_context_recycler));
-          break;
-        case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
-          context_recycler_for_frozen_context_ =
-              std::move(fresh_context_recycler);
-          break;
-        case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
-          break;
-      }
+            features::kFledgeAlwaysReuseBidderContext) ||
+        bidder_worklet_non_shared_params.execution_mode !=
+            blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode) {
+      execution_mode_helper_.SaveContextForReuse(
+          bidder_worklet_non_shared_params.execution_mode, group_by_origin_id,
+          /*allow_group_by_origin=*/true, std::move(fresh_context_recycler));
     }
   }
 
@@ -1896,7 +1841,10 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       !interest_group_dict.Set("enableBiddingSignalsPrioritization",
                                bidder_worklet_non_shared_params
                                    .enable_bidding_signals_prioritization) ||
-      !interest_group_dict.Set("executionMode", execution_mode_string) ||
+      !interest_group_dict.Set(
+          "executionMode",
+          auction_worklet::GetExecutionModeString(
+              bidder_worklet_non_shared_params.execution_mode)) ||
       !interest_group_dict.Set(
           "trustedBiddingSignalsSlotSizeMode",
           blink::InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
@@ -2181,20 +2129,6 @@ void BidderWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
       std::move(context_recycler), script_timed_out, errors_out));
 }
 
-bool BidderWorklet::V8State::DeepFreezeContext(
-    v8::Local<v8::Context>& context,
-    std::vector<std::string>& errors_out) {
-  v8::TryCatch try_catch(v8_helper_->isolate());
-  DeepFreezeAllowAll allow_jsapiobject;
-  context->DeepFreeze(&allow_jsapiobject);
-  if (try_catch.HasCaught()) {
-    errors_out.push_back(
-        AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
-    return false;
-  }
-  return true;
-}
-
 std::unique_ptr<ContextRecycler>
 BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
     uint64_t trace_id,
@@ -2259,7 +2193,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "addBindingsToContextRecycler",
                                   trace_id);
 
-  if (should_deep_freeze && !DeepFreezeContext(context, errors_out)) {
+  if (should_deep_freeze && !ExecutionModeHelper::DeepFreezeContext(
+                                context, v8_helper_, errors_out)) {
     return nullptr;
   }
 
@@ -2831,6 +2766,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // deleted by the caller (unless the BidderWorklet  itself is deleted).
   // Therefore, it's safe to post a callback with the `task`  iterator the v8
   // thread.
+
   task->generate_bid_start_time = base::TimeTicks::Now();
   task->task_id = cancelable_task_tracker_.PostTask(
       v8_runners_[thread_index].get(), FROM_HERE,

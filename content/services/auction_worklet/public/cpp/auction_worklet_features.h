@@ -27,12 +27,22 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeNoWasmLazyCompilation);
 // If kFledgeNumberBidderWorkletGroupByOriginContextsToKeep is enabled,
 // kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue sets the number of
 // previously-used group-by-origin contexts to keep in case they can be reused
-// in a bidder worklet. Defaulted to 1.
+// in a bidder worklet. Defaulted to 10.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFledgeNumberBidderWorkletGroupByOriginContextsToKeep);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue);
+
+// If kFledgeNumberSellerWorkletGroupByOriginContextsToKeep is enabled,
+// kFledgeNumberSellerWorkletGroupByOriginContextsToKeepValue sets the number of
+// previously-used group-by-origin contexts to keep in case they can be reused
+// in a bidder worklet. Defaulted to 10.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeNumberSellerWorkletGroupByOriginContextsToKeep);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeNumberSellerWorkletGroupByOriginContextsToKeepValue);
 
 // Prepare bidder contexts, including running top level scripts, before
 // we're ready to generate a worklet's first bid.

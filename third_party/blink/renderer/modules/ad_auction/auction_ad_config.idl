@@ -109,6 +109,8 @@ dictionary AuctionAdConfig {
   AuctionRealTimeReportingConfig sellerRealTimeReportingConfig;
   [RuntimeEnabled=FledgeRealTimeReporting]
   record<USVString, AuctionRealTimeReportingConfig> perBuyerRealTimeReportingConfig;
+  [RuntimeEnabled=FledgeSellerScriptExecutionMode]
+  DOMString executionMode;
 
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;

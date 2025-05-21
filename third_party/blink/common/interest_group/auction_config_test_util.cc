@@ -54,6 +54,8 @@ AuctionConfig CreateFullAuctionConfig() {
   non_shared_params.seller_tkv_signals =
       AuctionConfig::MaybePromiseJson::FromValue("[6]");
   non_shared_params.seller_timeout = base::Seconds(6);
+  non_shared_params.execution_mode =
+      InterestGroup::ExecutionMode::kGroupedByOriginMode;
 
   std::optional<base::flat_map<url::Origin, std::string>> per_buyer_signals;
   per_buyer_signals.emplace();

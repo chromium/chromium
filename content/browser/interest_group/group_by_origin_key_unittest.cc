@@ -12,6 +12,7 @@
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -19,6 +20,7 @@
 namespace content {
 
 class GroupByOriginKeyTest : public testing::Test {
+ public:
  protected:
   url::Origin kOwner1 = url::Origin::Create(GURL("https://owner1.test"));
   url::Origin kJoin1 = url::Origin::Create(GURL("https://join1.test"));
@@ -37,7 +39,8 @@ TEST_F(GroupByOriginKeyTest, Basic) {
     sig.joining_origin = kJoin1;
 
     EXPECT_EQ(0, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+                     SingleStorageInterestGroup(std::move(sig)),
+                     blink::InterestGroup::ExecutionMode::kCompatibilityMode));
   }
 
   {
@@ -50,8 +53,10 @@ TEST_F(GroupByOriginKeyTest, Basic) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -64,8 +69,10 @@ TEST_F(GroupByOriginKeyTest, Basic) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -78,8 +85,10 @@ TEST_F(GroupByOriginKeyTest, Basic) {
             .Build();
     sig.joining_origin = kJoin2;
 
-    EXPECT_EQ(2, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(2,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -92,8 +101,10 @@ TEST_F(GroupByOriginKeyTest, Basic) {
             .Build();
     sig.joining_origin = kJoin2;
 
-    EXPECT_EQ(2, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(2,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -106,8 +117,10 @@ TEST_F(GroupByOriginKeyTest, Basic) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -118,7 +131,8 @@ TEST_F(GroupByOriginKeyTest, Basic) {
     sig.joining_origin = kJoin1;
 
     EXPECT_EQ(0, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+                     SingleStorageInterestGroup(std::move(sig)),
+                     blink::InterestGroup::ExecutionMode::kCompatibilityMode));
   }
 
   {
@@ -132,7 +146,72 @@ TEST_F(GroupByOriginKeyTest, Basic) {
     sig.joining_origin = kJoin1;
 
     EXPECT_EQ(0, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+                     SingleStorageInterestGroup(std::move(sig)),
+                     blink::InterestGroup::ExecutionMode::kFrozenContext));
+  }
+}
+
+TEST_F(GroupByOriginKeyTest, BasicConfig) {
+  GroupByOriginKeyMapper mapper;
+
+  {
+    // With grouped by origin mode, the group by origin key is just 1.
+    StorageInterestGroup sig;
+    sig.interest_group = blink::TestInterestGroupBuilder(kOwner1, "a").Build();
+    sig.joining_origin = kJoin1;
+
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
+  }
+
+  {
+    // With frozen context, the group by origin key is just 0.
+    StorageInterestGroup sig;
+    sig.interest_group = blink::TestInterestGroupBuilder(kOwner1, "a").Build();
+    sig.joining_origin = kJoin1;
+
+    EXPECT_EQ(0, mapper.LookupGroupByOriginId(
+                     SingleStorageInterestGroup(std::move(sig)),
+                     blink::InterestGroup::ExecutionMode::kFrozenContext));
+  }
+  {
+    // With compatibility, the group by origin key is just 0.
+    StorageInterestGroup sig;
+    sig.interest_group = blink::TestInterestGroupBuilder(kOwner1, "a").Build();
+    sig.joining_origin = kJoin1;
+
+    EXPECT_EQ(0, mapper.LookupGroupByOriginId(
+                     SingleStorageInterestGroup(std::move(sig)),
+                     blink::InterestGroup::ExecutionMode::kCompatibilityMode));
+  }
+}
+
+TEST_F(GroupByOriginKeyTest, BasicConfigDifferentOrigins) {
+  GroupByOriginKeyMapper mapper;
+
+  {
+    // With grouped by origin mode, the group by origin key is just 1.
+    StorageInterestGroup sig;
+    sig.interest_group = blink::TestInterestGroupBuilder(kOwner1, "a").Build();
+    sig.joining_origin = kJoin1;
+
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
+  }
+  {
+    // With compatibility, the group by origin key is just 0.
+    StorageInterestGroup sig;
+    sig.interest_group = blink::TestInterestGroupBuilder(kOwner1, "a").Build();
+    sig.joining_origin = kJoin2;
+
+    EXPECT_EQ(2,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 }
 
@@ -152,8 +231,10 @@ TEST_F(GroupByOriginKeyTest, Clickiness) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -166,8 +247,10 @@ TEST_F(GroupByOriginKeyTest, Clickiness) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(2, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(2,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -180,8 +263,10 @@ TEST_F(GroupByOriginKeyTest, Clickiness) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(3, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(3,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -195,8 +280,10 @@ TEST_F(GroupByOriginKeyTest, Clickiness) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(3, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(3,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 }
 
@@ -216,8 +303,10 @@ TEST_F(GroupByOriginKeyTest, ClickinessEmptyCanon) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -230,8 +319,10 @@ TEST_F(GroupByOriginKeyTest, ClickinessEmptyCanon) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -244,8 +335,10 @@ TEST_F(GroupByOriginKeyTest, ClickinessEmptyCanon) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 }
 
@@ -265,8 +358,10 @@ TEST_F(GroupByOriginKeyTest, ClickinessDisabled) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -279,8 +374,10 @@ TEST_F(GroupByOriginKeyTest, ClickinessDisabled) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -293,8 +390,10 @@ TEST_F(GroupByOriginKeyTest, ClickinessDisabled) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 
   {
@@ -308,8 +407,10 @@ TEST_F(GroupByOriginKeyTest, ClickinessDisabled) {
             .Build();
     sig.joining_origin = kJoin1;
 
-    EXPECT_EQ(1, mapper.LookupGroupByOriginId(
-                     SingleStorageInterestGroup(std::move(sig))));
+    EXPECT_EQ(1,
+              mapper.LookupGroupByOriginId(
+                  SingleStorageInterestGroup(std::move(sig)),
+                  blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
   }
 }
 

@@ -78,6 +78,7 @@
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
@@ -2279,7 +2280,6 @@ class InterestGroupAuction::BuyerHelper
   base::flat_set<std::string> ComputeKAnon(
       const SingleStorageInterestGroup& storage_interest_group,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode) {
-
     // k-anon cache is always checked against the same time, to avoid weird
     // behavior of validity changing in the middle of the auction.
     base::Time start_time = auction_->auction_start_time_;
@@ -2338,7 +2338,9 @@ class InterestGroupAuction::BuyerHelper
 
     bid_state->group_by_origin_id =
         bid_state->worklet_handle->GetGroupByOriginKeyMapper()
-            .LookupGroupByOriginId(bid_state->bidder);
+            .LookupGroupByOriginId(
+                bid_state->bidder,
+                bid_state->bidder->interest_group.execution_mode);
 
     bool browser_signal_for_debugging_only_sampling = ShouldSampleDebugReport();
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
@@ -5812,6 +5814,29 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
         cache_handle->compression_group_token(), partition_id);
   }
 
+  // We only want to allow group by origin for single level auctions or non top
+  // level auctions. We also do not allow additional bids to be use group by
+  // origin.
+  bool allow_group_by_origin_mode = true;
+  if (bid->bid_state->additional_bid_buyer ||
+      !config_->non_shared_params.component_auctions.empty()) {
+    allow_group_by_origin_mode = false;
+  }
+
+  // Only look up the group by origin id if we allow group by origin mode, there
+  // isn't already one computed and the feature is enabled.
+  if (allow_group_by_origin_mode &&
+      !bid->bid_state->seller_group_by_origin_id.has_value() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgeSellerScriptExecutionMode)) {
+    bid->bid_state->seller_group_by_origin_id =
+        seller_worklet_handle_->GetGroupByOriginKeyMapper()
+            .LookupGroupByOriginId(bid->bid_state->bidder,
+                                   config_->non_shared_params.execution_mode);
+  }
+  size_t maybe_seller_group_by_origin_id =
+      bid->bid_state->seller_group_by_origin_id.value_or(0);
+
   bool browser_signal_for_debugging_only_sampling = ShouldSampleDebugReport();
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid->ad_metadata, bid->bid, bid->bid_currency, config_->non_shared_params,
@@ -5834,7 +5859,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_,
           base::Time::Now()),
-      browser_signal_for_debugging_only_sampling, SellerTimeout(), bid_trace_id,
+      browser_signal_for_debugging_only_sampling, SellerTimeout(),
+      maybe_seller_group_by_origin_id, allow_group_by_origin_mode, bid_trace_id,
       bid->bid_state->bidder->joining_origin,
       score_ad_receiver.InitWithNewPipeAndPassRemote());
 

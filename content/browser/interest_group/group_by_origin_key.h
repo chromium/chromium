@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "url/origin.h"
 
 namespace content {
@@ -24,8 +25,11 @@ class CONTENT_EXPORT GroupByOriginKeyMapper {
   ~GroupByOriginKeyMapper();
 
   // Returns the appropriate group-by-origin ID to use for the interest group
-  // `ig`. 0 if this group doesn't use that execution mode.
-  size_t LookupGroupByOriginId(const SingleStorageInterestGroup& ig);
+  // `ig`. 0 if this group and the auction config do not use that execution
+  // mode.
+  size_t LookupGroupByOriginId(
+      const SingleStorageInterestGroup& ig,
+      const blink::InterestGroup::ExecutionMode execution_mode);
 
  private:
   struct Key {
@@ -38,6 +42,7 @@ class CONTENT_EXPORT GroupByOriginKeyMapper {
     Key& operator=(const Key&) = delete;
 
     url::Origin joining_origin;
+    url::Origin bidding_origin;
     base::flat_set<url::Origin> view_and_click_counts_providers;
 
     friend bool operator==(const Key&, const Key&) = default;

@@ -22,13 +22,15 @@ GroupByOriginKeyMapper::GroupByOriginKeyMapper() = default;
 GroupByOriginKeyMapper::~GroupByOriginKeyMapper() = default;
 
 size_t GroupByOriginKeyMapper::LookupGroupByOriginId(
-    const SingleStorageInterestGroup& ig) {
-  if (ig->interest_group.execution_mode !=
+    const SingleStorageInterestGroup& ig,
+    const blink::InterestGroup::ExecutionMode execution_mode) {
+  if (execution_mode !=
       blink::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
     return 0;
   }
   Key key;
   key.joining_origin = ig->joining_origin;
+  key.bidding_origin = ig->interest_group.owner;
   if (base::FeatureList::IsEnabled(blink::features::kFledgeClickiness)) {
     const auto& maybe_view_and_click_counts_providers =
         ig->interest_group.view_and_click_counts_providers;

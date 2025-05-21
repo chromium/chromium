@@ -5576,6 +5576,116 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
               BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/42)))));
 }
 
+// Test to make sure that component auctions do reuse a context.
+// Also makes sure that the top level seller does not reuse a context.
+TEST_F(AuctionRunnerTest, ComponentAuctionScoreAdGroupedByOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeSellerScriptExecutionMode);
+
+  interest_group_buyers_.emplace();
+  std::vector<url::Origin> component1_buyers;
+  std::vector<url::Origin> component2_buyers;
+
+  const char kSellerScript[] = R"(
+        let auctionName = "%s";
+        if (!('count' in globalThis))
+          globalThis.count = 1;
+        function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                         browserSignals) {
+          if(count>1){
+            throw "Reused context in " + auctionName;
+          }
+          ++count;
+
+          return {desirability: count,
+                  allowComponentAuction: true,
+                  ad: adMetadata};
+        }
+        function reportResult(auctionConfig, browserSignals) {
+          sendReportTo("https://component-report.test/" + auctionName);
+        }
+      )";
+
+  const char kBidderScript[] = R"(
+      function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                           trustedBiddingSignals, browserSignals) {
+                           return {bid: 1,
+                           render: interestGroup.ads[0].renderURL,
+                           allowComponentAuction: true};
+        }
+
+        function reportWin() {}
+      )";
+
+  component1_buyers.push_back(kBidder1);
+  component2_buyers.push_back(kBidder2);
+
+  auto config1 =
+      CreateAuctionConfig(kComponentSeller1Url, std::move(component1_buyers));
+  config1.non_shared_params.execution_mode =
+      blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+
+  component_auctions_.emplace_back(std::move(config1));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      base::StringPrintf(kSellerScript, "component-1"));
+
+  auto config2 =
+      CreateAuctionConfig(kComponentSeller2Url, std::move(component2_buyers));
+  config2.non_shared_params.execution_mode =
+      blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  component_auctions_.emplace_back(std::move(config2));
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller2Url,
+      base::StringPrintf(kSellerScript, "component-2"));
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidderScript);
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         kBidderScript);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      base::StringPrintf(kSellerScript, "top-level"));
+
+  std::vector<StorageInterestGroup> bidders;
+
+  // Make sure both component auctions have the same buyer in the same
+  // component auction to test that they will be reusing a context
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/std::nullopt, {}, GURL("https://ad1.com"),
+      std::vector<GURL>{GURL("https://ad1.com-component1.com"),
+                        GURL("https://ad1.com-component2.com")}));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name + "2", kBidder1Url,
+      /*trusted_bidding_signals_url=*/std::nullopt, {}, GURL("https://ad1.com"),
+      std::vector<GURL>{GURL("https://ad1.com-component1.com"),
+                        GURL("https://ad1.com-component2.com")}));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/std::nullopt, {}, GURL("https://ad2.com"),
+      std::vector<GURL>{GURL("https://ad2.com-component1.com"),
+                        GURL("https://ad2.com-component2.com")}));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name + "2", kBidder2Url,
+      /*trusted_bidding_signals_url=*/std::nullopt, {}, GURL("https://ad2.com"),
+      std::vector<GURL>{GURL("https://ad2.com-component1.com"),
+                        GURL("https://ad2.com-component2.com")}));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(
+                                  "https://component.seller2.test/bar.js:8 "
+                                  "Uncaught Reused context in component-2.",
+                                  "https://component.seller1.test/foo.js:8 "
+                                  "Uncaught Reused context in component-1."));
+}
+
 // A component auction with two successful bids from different components.
 TEST_F(AuctionRunnerTest, ComponentAuction) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
@@ -14234,7 +14344,7 @@ TEST_F(AuctionRunnerTest, SizeLimitHighestPriorityGroupHasNoBidScript) {
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 }
 
-TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
+TEST_F(AuctionRunnerTest, GenerateBidExecutionModeGroupByOrigin) {
   // Test of group-by-origin execution mode at AuctionRunner level;
   // this primarily shows that the sorting actually groups things, and that
   // distinct groups are kept separate.

@@ -275,6 +275,22 @@ interface SellerWorklet {
   //  `seller_timeout`. Null if not provided by the publisher page. Null will be
   //  passed to the worklet in that case.
   //
+  //  Calls with the same values for `group_by_origin_id` can reuse execution
+  //  contexts in group-by-origin mode. `group_by_origin_id` is not used in
+  //  other execution modes. The value will be 0 if neither the auction config
+  //  nor the interest group specify group-by-origin as their execution mode;
+  //  if either does, the value will be non-zero. However, in this worklet,
+  //  this value is only ever used by the ExecutionModeHelper if the feature
+  //  is enabled and the current auction configuration's execution mode is
+  //  `group-by-origin`.
+  //
+  // `allow_group_by_origin_mode` controls whether the `scoreAd()` script
+  //  is permitted to use `group-by-origin` execution. This mode is not
+  //  available when scoring an additional bid or if the auction
+  //  configuration includes any component auctions. Additionally, this
+  //  setting is only relevant if the `kFledgeSellerScriptExecutionMode`
+  //  flag is active.
+  //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
@@ -301,6 +317,8 @@ interface SellerWorklet {
           bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
           bool browser_signal_for_debugging_only_sampling,
           mojo_base.mojom.TimeDelta? seller_timeout,
+          uint64 group_by_origin_id,
+          bool allow_group_by_origin_mode,
           uint64 trace_id,
           url.mojom.Origin bidder_joining_origin,
           pending_remote<ScoreAdClient> score_ad_client);

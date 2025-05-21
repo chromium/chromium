@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 
@@ -455,6 +456,11 @@ struct BLINK_COMMON_EXPORT
   static const std::optional<url::Origin>& trusted_scoring_signals_coordinator(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.trusted_scoring_signals_coordinator;
+  }
+
+  static const blink::InterestGroup::ExecutionMode& execution_mode(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.execution_mode;
   }
 
   static bool Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,
