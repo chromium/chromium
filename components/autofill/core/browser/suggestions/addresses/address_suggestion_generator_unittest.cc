@@ -724,7 +724,7 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsUsingEmailOverride) {
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile1, profile2}, {EMAIL_ADDRESS}, SuggestionType::kAddressEntry,
-      EMAIL_ADDRESS, /*trigger_field_max_length=*/0, false, "en-US",
+      EMAIL_ADDRESS, /*trigger_field_max_length=*/0, "en-US",
       "plus-address-override@me.com",
       base::UTF16ToUTF8(profile2.GetRawInfo(EMAIL_ADDRESS)));
   ASSERT_EQ(suggestions.size(), 2u);
