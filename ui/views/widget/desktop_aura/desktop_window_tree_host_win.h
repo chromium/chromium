@@ -296,6 +296,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // Call Windows API to update the window display affinity.
   void UpdateAllowScreenshots();
 
+  // Creates a Windows.Ui.Composition backdrop and attaches it to the hwnd if
+  // the window does not have a redirection bitmap and Chromium is responsible
+  // for drawing the frame. Also resets the backdrop if the frame mode is
+  // changed to be system drawn.
+  void UpdateWUCBackdrop();
+
   std::unique_ptr<HWNDMessageHandler> message_handler_;
   std::unique_ptr<aura::client::FocusClient> focus_client_;
 
