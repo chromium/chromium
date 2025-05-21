@@ -40,8 +40,6 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     promoBrowserCommandHandler = installMock(
         CommandHandlerRemote,
         mock => BrowserCommandProxy.setInstance({handler: mock}));
-    newTabPageHandler.setResultFor(
-        'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
   });
 
   function createPromo() {
@@ -297,140 +295,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Assert that the promo resurfaces.
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-    });
-  });
-
-  suite('mobilePromoEnabled', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        mobilePromoEnabled: true,
-      });
-    });
-
-    test(`mobile promo doesn't exist if default promo renders`, async () => {
-      // Instantiate the element with data for both promos.
-      newTabPageHandler.setResultFor(
-          'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      await createMiddleSlotPromoWithData();
-
-      // Assert that only the default promo is visible.
       assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertFalse(!!middleSlotPromo.shadowRoot.querySelector('#mobilePromo'));
-
-      // Remove data for the default promo to make it disappear.
-      callbackRouterRemote.setPromo(null);
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Assert that the mobile promo remains hidden even when the
-      // default promo is gone.
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertFalse(!!middleSlotPromo.shadowRoot.querySelector('#mobilePromo'));
-      assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
-    });
-
-    test(`mobile promo shows if default promo doesn't render`, async () => {
-      // Instantiate the element with mobile promo data only.
-      newTabPageHandler.setResultFor(
-          'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      await createMiddleSlotPromo(/*canShowPromo=*/ false);
-
-      // Assert that only the mobile promo is visible.
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
-      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
-    });
-
-    test(`default promo doesn't render if mobile promo rendered`, async () => {
-      // Instantiate the element with mobile promo data only.
-      newTabPageHandler.setResultFor(
-          'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      await createMiddleSlotPromo(/*canShowPromo=*/ false);
-
-      // Set up default promo data.
-      callbackRouterRemote.setPromo(createPromo());
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Assert that the mobile promo remains visible.
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
-    });
-
-    test(
-        `mobile promo hides if default promo doesn't render and no qr code`,
-        async () => {
-          // Instantiate the element with invalid mobile promo data and no
-          // default promo data.
-          newTabPageHandler.setResultFor(
-              'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
-          await createMiddleSlotPromo(/*canShowPromo=*/ false);
-
-          // Assert that neither promo shows.
-          assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-          assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
-          assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
-        });
-
-    test(
-        'default promo renders later on if mobile promo has no valid qr code',
-        async () => {
-          // Instantiate the element with invalid mobile promo data and no
-          // default promo data.
-          newTabPageHandler.setResultFor(
-              'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
-          await createMiddleSlotPromo(/*canShowPromo=*/ false);
-
-          // Set up data for the default promo.
-          promoBrowserCommandHandler.setResultFor(
-              'canExecuteCommand', Promise.resolve({canExecute: true}));
-          callbackRouterRemote.setPromo(createPromo());
-          await callbackRouterRemote.$.flushForTesting();
-
-          // Assert that the default promo shows.
-          assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-          assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
-        });
-
-    test('mobile promo shows if it gets a QR code later', async () => {
-      // Instantiate the element with invalid mobile promo data and no
-      // default promo data.
-      newTabPageHandler.setResultFor(
-          'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
-      await createMiddleSlotPromo(/*canShowPromo=*/ false);
-      const mobilePromo = middleSlotPromo.$.mobilePromo;
-
-      // Give the mobile promo valid data.
-      mobilePromo.dispatchEvent(new CustomEvent('qr-code-changed', {
-        bubbles: true,
-        composed: true,
-        detail: {value: 'abc'},
-      }));
-      await microtasksFinished();
-
-      // Assert that the mobile promo shows.
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertTrue(isVisible(mobilePromo));
-    });
-
-    test('mobile promo hides if QR code gets removed later', async () => {
-      // Instantiate the element with valid mobile promo data and no
-      // default promo data.
-      newTabPageHandler.setResultFor(
-          'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      await createMiddleSlotPromo(/*canShowPromo=*/ false);
-
-      // Remove the mobile promo's data.
-      const mobilePromo = middleSlotPromo.$.mobilePromo;
-      mobilePromo.dispatchEvent(new CustomEvent('qr-code-changed', {
-        bubbles: true,
-        composed: true,
-        detail: {value: ''},
-      }));
-      await microtasksFinished();
-
-      // Assert that neither promo shows.
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertFalse(isVisible(mobilePromo));
     });
   });
 });

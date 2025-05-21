@@ -70,7 +70,6 @@
 #include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/qr_code_generator/bitmap_generator.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/logo_service.h"
@@ -431,27 +430,6 @@ base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
   }
 
   return std::move(*value_with_error).TakeDict();
-}
-
-std::string MakeMobilePromoQRCode() {
-  std::string qr_code_url = ntp_features::GetMobilePromoTargetURL();
-  auto generated_code = qr_code_generator::GenerateImage(
-      base::as_byte_span(qr_code_url), qr_code_generator::ModuleStyle::kCircles,
-      qr_code_generator::LocatorStyle::kRounded,
-      qr_code_generator::CenterImage::kDino,
-      qr_code_generator::QuietZone::kIncluded);
-
-  if (!generated_code.has_value()) {
-    return "";
-  }
-
-  SkBitmap bitmap = generated_code.value().GetRepresentation(1.0f).GetBitmap();
-  std::optional<std::vector<uint8_t>> encoded_bitmap =
-      gfx::WebpCodec::Encode(bitmap, /*quality=*/100);
-  if (!encoded_bitmap) {
-    return "";
-  }
-  return base::Base64Encode(encoded_bitmap.value());
 }
 
 }  // namespace
@@ -1449,138 +1427,6 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
   }
 
   return kNoTriggerId;
-}
-
-void NewTabPageHandler::GetMobilePromoQrCode(
-    GetMobilePromoQrCodeCallback callback) {
-  CheckIfUserEligibleForMobilePromo(std::move(callback));
-}
-
-void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
-    GetMobilePromoQrCodeCallback callback) {
-  // Skip eligibility checks if the promo is forced.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceNtpMobilePromo)) {
-    std::move(callback).Run(MakeMobilePromoQRCode());
-    return;
-  }
-  // Verify that the user is currently syncing their preferences before
-  // bothering to query segmentation.
-  // TODO(crbug.com/369871205): Also check other restrictions (e.g. user hasn't
-  // seen other mobile promos recently, user hasn't seen this module too many
-  // times, user hasn't dismissed this promo).
-  if (promos_utils::ShouldShowIOSDesktopNtpPromo(profile_, sync_service_)) {
-    auto input_context =
-        base::MakeRefCounted<segmentation_platform::InputContext>();
-    input_context->metadata_args.emplace(
-        "active_days_limit", promos_utils::kiOSDesktopPromoLookbackWindow);
-    input_context->metadata_args.emplace(
-        "wait_for_device_info_in_seconds",
-        segmentation_platform::processing::ProcessedValue(0));
-
-    segmentation_platform::PredictionOptions options;
-    options.on_demand_execution = true;
-
-    // Query segmentation platform for detailed data.
-    segmentation_platform_service_->GetClassificationResult(
-        segmentation_platform::kDeviceSwitcherKey, options, input_context,
-        base::BindOnce(
-            &NewTabPageHandler::HandleMobilePromoSegmentationResponse,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-            base::Time::Now()));
-    return;
-  }
-
-  std::move(callback).Run("");
-}
-
-void NewTabPageHandler::HandleMobilePromoSegmentationResponse(
-    GetMobilePromoQrCodeCallback callback,
-    base::Time request_start_time,
-    const segmentation_platform::ClassificationResult& result) {
-  base::TimeDelta request_duration = base::Time::Now() - request_start_time;
-  switch (result.status) {
-    case segmentation_platform::PredictionStatus::kNotReady:
-      base::UmaHistogramTimes(
-          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.NotReady."
-          "Duration",
-          request_duration);
-      break;
-    case segmentation_platform::PredictionStatus::kFailed:
-      base::UmaHistogramTimes(
-          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Failed."
-          "Duration",
-          request_duration);
-      break;
-    case segmentation_platform::PredictionStatus::kSucceeded:
-      base::UmaHistogramTimes(
-          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Succeeded."
-          "Duration",
-          request_duration);
-      break;
-    default:
-      base::UmaHistogramTimes(
-          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Unknown."
-          "Duration",
-          request_duration);
-      break;
-  }
-  if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result)) {
-    std::move(callback).Run(MakeMobilePromoQRCode());
-    return;
-  }
-
-  std::move(callback).Run("");
-}
-
-void NewTabPageHandler::OnMobilePromoShown() {
-  // Don't change prefs if promo is forced.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceNtpMobilePromo)) {
-    return;
-  }
-
-  promos_utils::IOSDesktopNtpPromoShown(profile_->GetPrefs());
-  int appearance_count =
-      profile_->GetPrefs()
-          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
-          .size();
-  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.Displayed",
-                              appearance_count);
-}
-
-void NewTabPageHandler::OnDismissMobilePromo() {
-  // Don't change prefs if promo is forced.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceNtpMobilePromo)) {
-    return;
-  }
-
-  int appearance_count =
-      profile_->GetPrefs()
-          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
-          .size();
-  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.Dismiss",
-                              appearance_count);
-  profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
-                                   true);
-}
-
-void NewTabPageHandler::OnUndoDismissMobilePromo() {
-  // Don't change prefs if promo is forced.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceNtpMobilePromo)) {
-    return;
-  }
-
-  int appearance_count =
-      profile_->GetPrefs()
-          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
-          .size();
-  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.DismissUndone",
-                              appearance_count);
-  profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
-                                   false);
 }
 
 void NewTabPageHandler::SetModuleHidden(const std::string& module_id,

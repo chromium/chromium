@@ -154,10 +154,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
   void UpdateModulesLoadable() override;
-  void GetMobilePromoQrCode(GetMobilePromoQrCodeCallback callback) override;
-  void OnMobilePromoShown() override;
-  void OnDismissMobilePromo() override;
-  void OnUndoDismissMobilePromo() override;
   void MaybeShowFeaturePromo(
       new_tab_page::mojom::IphFeature iph_feature) override;
   void OnAppRendered(double time) override;
@@ -245,16 +241,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   const std::string& GetSurveyTriggerIdForModuleAndInteraction(
       std::string_view interaction,
       const std::string& module_id);
-
-  // Check if user is eligible to see a mobile promo generated locally. The
-  // callback is a mojo callback that must be called in all cases.
-  void CheckIfUserEligibleForMobilePromo(GetMobilePromoQrCodeCallback callback);
-  // Handle the response from the segmentation platform querying mobile promo
-  // status. The callback is a mojo callback that must be called in all cases.
-  void HandleMobilePromoSegmentationResponse(
-      GetMobilePromoQrCodeCallback callback,
-      base::Time request_start_time,
-      const segmentation_platform::ClassificationResult& result);
 
   void SetModuleHidden(const std::string& module_id, bool hidden);
 

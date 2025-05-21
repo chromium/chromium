@@ -53,10 +53,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, MiddleSlotPromo) {
   RunTest("new_tab_page/middle_slot_promo_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MobilePromo) {
-  RunTest("new_tab_page/mobile_promo_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ImageProcessor) {
   RunTest("new_tab_page/image_processor_test.js", "mocha.run()");
 }

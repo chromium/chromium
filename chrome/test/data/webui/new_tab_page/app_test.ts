@@ -62,7 +62,6 @@ suite('NewTabPageAppTest', () => {
       doodle: null,
     }));
     handler.setResultFor('getModulesIdNames', Promise.resolve({data: []}));
-    handler.setResultFor('getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
     windowProxy.setResultMapperFor('matchMedia', () => ({
                                                    addListener() {},
                                                    addEventListener() {},
