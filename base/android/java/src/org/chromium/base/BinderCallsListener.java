@@ -43,12 +43,7 @@ public class BinderCallsListener {
 
     private static @Nullable BinderCallsListener sInstance;
 
-    /** A means of reporting an exception/stack without crashing. */
-    private static @Nullable Callback<Throwable> sExceptionReporter;
-
     private static final long LONG_BINDER_CALL_LIMIT_MILLIS = 2;
-    private static final double UPLOAD_PROBABILITY = 0.2;
-    private static final int MAX_UPLOADS_PER_SESSION = 3;
     private static final HashSet<String> sSlowBinderCallAllowList = new HashSet<>();
 
     // The comments mostly correspond to the slow use cases.
@@ -172,7 +167,10 @@ public class BinderCallsListener {
                 // Checks if Advanced Protection is enabled - https://crbug.com/407749727.
                 "android.security.advancedprotection.IAdvancedProtectionService",
                 // Web APK Notification permissions check - https://crbug.com/407749507.
-                "org.chromium.webapk.lib.runtime_library.IWebApkApi");
+                "org.chromium.webapk.lib.runtime_library.IWebApkApi",
+                // Creating media sessions & router service - https://crbug.com/417686302.
+                "android.media.session.ISessionManager",
+                "android.media.IMediaRouterService");
     }
 
     private @Nullable Object mImplementation;
@@ -185,13 +183,6 @@ public class BinderCallsListener {
 
         if (sInstance == null) sInstance = new BinderCallsListener();
         return sInstance;
-    }
-
-    /**
-     * @param reporter A means of reporting an exception without crashing.
-     */
-    public static void setExceptionReporter(Callback<Throwable> reporter) {
-        sExceptionReporter = reporter;
     }
 
     private BinderCallsListener() {
@@ -284,7 +275,6 @@ public class BinderCallsListener {
         private String mCurrentInterfaceDescriptor = EMPTY_INTERFACE;
         private @Nullable BiConsumer<String, String> mObserver;
         private int mCurrentTransactionId;
-        private int mNumUploads;
         private long mTotalTimeSpentInBinderCallsMillis;
         private long mCurrentTransactionStartTimeMillis;
 
@@ -353,12 +343,9 @@ public class BinderCallsListener {
                         return null;
                     }
 
-                    // Only report a subset of slow calls for non-local builds.
                     boolean shouldReportSlowCall =
-                            transactionDurationMillis >= LONG_BINDER_CALL_LIMIT_MILLIS
-                                    && Math.random() < UPLOAD_PROBABILITY
-                                    && mNumUploads < MAX_UPLOADS_PER_SESSION;
-                    if (shouldReportSlowCall && sExceptionReporter != null) {
+                            transactionDurationMillis >= LONG_BINDER_CALL_LIMIT_MILLIS;
+                    if (shouldReportSlowCall) {
                         // If there was a new Binder call introduced, consider moving it to a
                         // background thread if possible. If not, add it to the allow list.
                         String message =
@@ -370,8 +357,7 @@ public class BinderCallsListener {
                                         + "ms (max allowed: "
                                         + LONG_BINDER_CALL_LIMIT_MILLIS
                                         + "ms)";
-                        sExceptionReporter.onResult(new Throwable(message));
-                        mNumUploads++;
+                        Log.w(TAG, message);
                     }
                     return null;
             }
