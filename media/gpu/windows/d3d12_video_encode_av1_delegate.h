@@ -20,6 +20,11 @@ namespace media {
 class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
     : public D3D12VideoEncodeDelegate {
  public:
+  struct PictureControlFlags {
+    bool allow_screen_content_tools = false;
+    bool allow_intrabc = false;
+  };
+
   static std::vector<
       std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
   GetSupportedProfiles(ID3D12VideoDevice3* video_device);
@@ -46,7 +51,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   EncoderStatus::Or<size_t> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer) override;
 
-  void FillPictureControlParams(bool force_keyframe);
+  void FillPictureControlParams(const VideoEncoder::EncodeOptions& options);
 
   D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS input_arguments_{};
 
@@ -64,6 +69,15 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
 
   // Bitrate allocation in bps.
   VideoBitrateAllocation bitrate_allocation_{Bitrate::Mode::kConstant};
+
+  // Enabled features for creating D3D12 AV1 encoder.
+  D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features_{};
+
+  // Picture control flags for each Encoding frame.
+  PictureControlFlags picture_ctrl_{};
+
+  // The encoding content is a screen content.
+  bool is_screen_ = false;
 
   uint32_t framerate_ = 30;
   AV1BitstreamBuilder::SequenceHeader sequence_header_;

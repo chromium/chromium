@@ -111,6 +111,8 @@ struct AV1BitstreamBuilder::FrameHeader {
   std::array<std::array<uint32_t, 8 /*libgav1::kMaxSegments*/>,
              8 /*libgav1::kSegmentFeatureMax*/>
       feature_data;
+  bool allow_screen_content_tools;
+  bool allow_intrabc;
 };
 
 }  // namespace media

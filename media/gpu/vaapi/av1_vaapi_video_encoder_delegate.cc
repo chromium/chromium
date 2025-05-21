@@ -353,6 +353,9 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
       pic_hdr.feature_mask[i] = pic_param.segments.feature_mask[i];
     }
   }
+  pic_hdr.allow_screen_content_tools =
+      pic_param.picture_flags.bits.palette_mode_enable;
+  pic_hdr.allow_intrabc = pic_param.picture_flags.bits.allow_intrabc;
   return pic_hdr;
 }
 

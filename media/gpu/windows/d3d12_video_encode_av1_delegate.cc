@@ -73,6 +73,7 @@ AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
 }
 
 AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
+    const D3D12VideoEncodeAV1Delegate::PictureControlFlags& picture_ctrl,
     const D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA& pic_params) {
   AV1BitstreamBuilder::FrameHeader frame_header{};
   frame_header.frame_type =
@@ -116,11 +117,15 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
 
   frame_header.reduced_tx_set = true;
   frame_header.segmentation_enabled = false;
+  frame_header.allow_screen_content_tools =
+      picture_ctrl.allow_screen_content_tools;
+  frame_header.allow_intrabc = picture_ctrl.allow_intrabc;
 
   return frame_header;
 }
 
 aom::AV1RateControlRtcConfig ConvertToRateControlConfig(
+    bool is_screen,
     const VideoBitrateAllocation& bitrate_allocation,
     const D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC& resolution,
     uint32_t frame_rate,
@@ -157,7 +162,51 @@ aom::AV1RateControlRtcConfig ConvertToRateControlConfig(
     base::span(rc_config.max_quantizers)[tid] = rc_config.max_quantizer;
     base::span(rc_config.min_quantizers)[tid] = rc_config.min_quantizer;
   }
+  rc_config.is_screen = is_screen;
   return rc_config;
+}
+
+EncoderStatus::Or<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS> GetEnabledAV1Features(
+    bool is_screen,
+    const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS supported_features) {
+  const std::array<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS, 3> expected_flgs = {
+      D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING,
+      D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS,
+      D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET,
+  };
+  auto enabled_features = D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_NONE;
+  for (const auto feature : expected_flgs) {
+    if (!(supported_features & feature)) {
+      return {
+          EncoderStatus::Codes::kEncoderHardwareDriverError,
+          base::StringPrintf(" d3d12 driver doesn't support %x .", feature)};
+    }
+    enabled_features |= feature;
+  }
+
+  // Enable AV1 SCC tools for screen content encoding.
+  if (is_screen) {
+    auto scc_tools = D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_PALETTE_ENCODING |
+                     D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_INTRA_BLOCK_COPY;
+    if (supported_features & scc_tools) {
+      enabled_features |= scc_tools;
+    }
+  }
+  return enabled_features;
+}
+
+D3D12VideoEncodeAV1Delegate::PictureControlFlags GetAV1PictureControl(
+    bool is_keyframe,
+    const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features) {
+  D3D12VideoEncodeAV1Delegate::PictureControlFlags picture_ctrl;
+  picture_ctrl.allow_screen_content_tools =
+      enabled_features & D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_PALETTE_ENCODING;
+  // D3D12 AV1 VEA only allow intra block copy for keyframes.
+  picture_ctrl.allow_intrabc =
+      is_keyframe ? enabled_features &
+                        D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_INTRA_BLOCK_COPY
+                  : false;
+  return picture_ctrl;
 }
 
 }  // namespace
@@ -234,7 +283,9 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
            VideoCodec::kAV1);
   CHECK(!config.HasSpatialLayer());
   CHECK(!config.HasTemporalLayer());
-  CHECK_GE(max_num_ref_frames_, 1ull);
+  CHECK_EQ(max_num_ref_frames_, 1ull)
+      << "Currently D3D12VideoEncodeAV1Delegate only support 1 reference "
+         "frame.";
 
   if (config.bitrate.mode() != Bitrate::Mode::kConstant) {
     return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
@@ -276,35 +327,25 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
     return status;
   }
 
-  auto enabled_features = D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_NONE;
-  if (!(config_support_limit.SupportedFeatureFlags &
-        D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING)) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "d3d12 driver doesn't support CDEF filtering."};
+  is_screen_ = config.content_type ==
+               VideoEncodeAccelerator::Config::ContentType::kDisplay;
+  auto features_or_error = GetEnabledAV1Features(
+      is_screen_, config_support_limit.SupportedFeatureFlags);
+  if (!features_or_error.has_value()) {
+    return std::move(features_or_error).error();
   }
-  enabled_features |= D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING;
+  enabled_features_ = std::move(features_or_error).value();
+  DVLOG(3) << base::StringPrintf("Enabled d3d12 encoding feature : %x.",
+                                 enabled_features_);
 
-  if (!(config_support_limit.SupportedFeatureFlags &
-        D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS)) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "d3d12 driver doesn't support order hint tools."};
-  }
-  enabled_features |= D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS;
-
-  if (!(config_support_limit.SupportedFeatureFlags &
-        D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET)) {
-    return {EncoderStatus::Codes::kEncoderHardwareDriverError,
-            "d3d12 driver doesn't support reduced tx set."};
-  }
-  enabled_features |= D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET;
   D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION codec_config = {
-      .FeatureFlags = enabled_features,
+      .FeatureFlags = enabled_features_,
       .OrderHintBitsMinus1 = kDefaultOrderHintBitsMinus1};
 
   framerate_ = config.framerate;
   bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
   software_brc_ = aom::AV1RateControlRTC::Create(
-      ConvertToRateControlConfig(bitrate_allocation_, input_size_,
+      ConvertToRateControlConfig(is_screen_, bitrate_allocation_, input_size_,
                                  config.framerate, 1 /*num_temporal_layers_*/));
 
   CHECK(config.gop_length.has_value());
@@ -391,8 +432,8 @@ bool D3D12VideoEncodeAV1Delegate::UpdateRateControl(const Bitrate& bitrate,
   bitrate_allocation.SetBitrate(0, 0, bitrate.target_bps());
   if (bitrate_allocation != bitrate_allocation_ || framerate != framerate_) {
     software_brc_->UpdateRateControl(
-        ConvertToRateControlConfig(bitrate_allocation, input_size_, framerate,
-                                   1 /*num_temporal_layers_*/));
+        ConvertToRateControlConfig(is_screen_, bitrate_allocation, input_size_,
+                                   framerate, 1 /*num_temporal_layers_*/));
 
     bitrate_allocation_ = bitrate_allocation;
     framerate_ = framerate;
@@ -402,19 +443,31 @@ bool D3D12VideoEncodeAV1Delegate::UpdateRateControl(const Bitrate& bitrate,
 }
 
 void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
-    bool force_keyframe) {
+    const VideoEncoder::EncodeOptions& options) {
   CHECK(software_brc_);
 
+  base::span picture_params_span = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<uint8_t*>(&picture_params_), sizeof(picture_params_)));
+  std::ranges::fill(picture_params_span, 0);
   // Update picture index and determine if a keyframe is needed.
   if (++picture_id_ == static_cast<int>(gop_sequence_.InterFramePeriod) ||
-      force_keyframe) {
+      options.key_frame) {
     picture_id_ = 0;
   }
-  bool request_keyframe = force_keyframe | (picture_id_ == 0);
+  bool request_keyframe = picture_id_ == 0;
 
   picture_params_.PictureIndex = picture_id_;
+  picture_ctrl_ = GetAV1PictureControl(request_keyframe, enabled_features_);
   picture_params_.Flags =
       D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_REDUCED_TX_SET;
+  if (picture_ctrl_.allow_screen_content_tools) {
+    picture_params_.Flags |=
+        D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_PALETTE_ENCODING;
+  }
+  if (picture_ctrl_.allow_intrabc) {
+    picture_params_.Flags |=
+        D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ALLOW_INTRA_BLOCK_COPY;
+  }
   picture_params_.FrameType =
       request_keyframe ? D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_KEY_FRAME
                        : D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_INTER_FRAME;
@@ -423,7 +476,7 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
   picture_params_.InterpolationFilter =
       D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP;
   picture_params_.TxMode = D3D12_VIDEO_ENCODER_AV1_TX_MODE_SELECT;
-  picture_params_.SuperResDenominator = 0;
+  picture_params_.SuperResDenominator = 8 /*SUPERRES_NUM*/;
   picture_params_.OrderHint =
       picture_params_.PictureIndex % (1 << (kDefaultOrderHintBitsMinus1 + 1));
   picture_params_.TemporalLayerIndexPlus1 = 0;
@@ -457,22 +510,26 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
   DVLOG(4) << base::StringPrintf(
       "Encoding picture: %d, is_keyframe = %d, QP = %d", picture_id_,
       request_keyframe, computed_qp);
-  const aom::AV1LoopfilterLevel lf = software_brc_->GetLoopfilterLevel();
-  base::span(picture_params_.LoopFilter.LoopFilterLevel)[0] =
-      base::span(lf.filter_level)[0];
-  base::span(picture_params_.LoopFilter.LoopFilterLevel)[1] =
-      base::span(lf.filter_level)[1];
-  picture_params_.LoopFilter.LoopFilterLevelU = lf.filter_level_u;
-  picture_params_.LoopFilter.LoopFilterLevelV = lf.filter_level_v;
 
-  auto& cdef = picture_params_.CDEF;
-  cdef.CdefDampingMinus3 = 2;
-  cdef.CdefBits = 3;
-  for (uint32_t i = 0; i < (1 << cdef.CdefBits); i++) {
-    base::span(cdef.CdefYPriStrength)[i] = kCdefYPriStrength[i];
-    base::span(cdef.CdefUVPriStrength)[i] = kCdefUVPriStrength[i];
-    base::span(cdef.CdefYSecStrength)[i] = KCdefYSecStrength[i];
-    base::span(cdef.CdefUVSecStrength)[i] = kCdefUvSecStrength[i];
+  // Enable SCC tools will turn off CDEF, loop filter, etc on I-frame.
+  if (!picture_ctrl_.allow_intrabc) {
+    const aom::AV1LoopfilterLevel lf = software_brc_->GetLoopfilterLevel();
+    base::span(picture_params_.LoopFilter.LoopFilterLevel)[0] =
+        base::span(lf.filter_level)[0];
+    base::span(picture_params_.LoopFilter.LoopFilterLevel)[1] =
+        base::span(lf.filter_level)[1];
+    picture_params_.LoopFilter.LoopFilterLevelU = lf.filter_level_u;
+    picture_params_.LoopFilter.LoopFilterLevelV = lf.filter_level_v;
+
+    auto& cdef = picture_params_.CDEF;
+    cdef.CdefDampingMinus3 = 2;
+    cdef.CdefBits = 3;
+    for (uint32_t i = 0; i < (1 << cdef.CdefBits); i++) {
+      base::span(cdef.CdefYPriStrength)[i] = kCdefYPriStrength[i];
+      base::span(cdef.CdefUVPriStrength)[i] = kCdefUVPriStrength[i];
+      base::span(cdef.CdefYSecStrength)[i] = KCdefYSecStrength[i];
+      base::span(cdef.CdefUVSecStrength)[i] = kCdefUvSecStrength[i];
+    }
   }
 }
 
@@ -491,7 +548,7 @@ D3D12VideoEncodeAV1Delegate::EncodeImpl(
   input_arguments_.SequenceControlDesc.PictureTargetResolution = input_size_;
 
   // Fill picture_params_ for next encoded frame.
-  FillPictureControlParams(options.key_frame);
+  FillPictureControlParams(options);
 
   bool is_keyframe =
       picture_params_.FrameType == D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_KEY_FRAME;
@@ -554,7 +611,8 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
   // Pack Frame OBU, see section 5.9 of the AV1 specification.
   pack_header.WriteOBUHeader(/*type=*/libgav1::kObuFrame, /*has_size=*/true);
   AV1BitstreamBuilder frame_obu = AV1BitstreamBuilder::BuildFrameHeaderOBU(
-      sequence_header_, FillAV1BuilderFrameHeader(picture_params_));
+      sequence_header_,
+      FillAV1BuilderFrameHeader(picture_ctrl_, picture_params_));
   CHECK_EQ(frame_obu.OutstandingBits() % 8, 0ull);
   pack_header.WriteValueInLeb128(frame_obu.OutstandingBits() / 8 +
                                  compressed_size);

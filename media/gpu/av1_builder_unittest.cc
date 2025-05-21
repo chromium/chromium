@@ -71,6 +71,8 @@ class AV1BuilderTest : public ::testing::Test {
     }
     pic_hdr.reduced_tx_set = true;
     pic_hdr.segmentation_enabled = false;
+    pic_hdr.allow_screen_content_tools = false;
+    pic_hdr.allow_intrabc = false;
 
     return pic_hdr;
   }

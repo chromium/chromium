@@ -97,7 +97,7 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     ret.WriteBool(pic_hdr.error_resilient_mode);
   }
   ret.WriteBool(pic_hdr.disable_cdf_update);
-  ret.WriteBool(false);  // Disable allow screen content tools.
+  ret.WriteBool(pic_hdr.allow_screen_content_tools);
   ret.WriteBool(false);  // Disable frame size override flag.
   if (seq_hdr.enable_order_hint) {
     ret.Write(pic_hdr.order_hint, seq_hdr.order_hint_bits_minus_1 + 1);
@@ -128,6 +128,9 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     ret.WriteBool(false);  // Motion not switchable.
   } else {
     ret.WriteBool(false);  // Render and frame size are the same.
+    if (pic_hdr.allow_screen_content_tools) {
+      ret.WriteBool(pic_hdr.allow_intrabc);
+    }
   }
   if (!pic_hdr.disable_cdf_update) {
     ret.WriteBool(pic_hdr.disable_frame_end_update_cdf);
@@ -174,26 +177,28 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     ret.WriteBool(false);  // No delta q present.
   }
 
-  // Pack loop filter parameters.
-  ret.Write(pic_hdr.filter_level.at(0), 6);
-  ret.Write(pic_hdr.filter_level.at(1), 6);
-  if (pic_hdr.filter_level.at(0) || pic_hdr.filter_level.at(1)) {
-    ret.Write(pic_hdr.filter_level_u, 6);
-    ret.Write(pic_hdr.filter_level_v, 6);
-  }
-  ret.Write(pic_hdr.sharpness_level, 3);
-  ret.WriteBool(pic_hdr.loop_filter_delta_enabled);
+  if (!pic_hdr.allow_intrabc) {
+    // Pack loop filter parameters.
+    ret.Write(pic_hdr.filter_level.at(0), 6);
+    ret.Write(pic_hdr.filter_level.at(1), 6);
+    if (pic_hdr.filter_level.at(0) || pic_hdr.filter_level.at(1)) {
+      ret.Write(pic_hdr.filter_level_u, 6);
+      ret.Write(pic_hdr.filter_level_v, 6);
+    }
+    ret.Write(pic_hdr.sharpness_level, 3);
+    ret.WriteBool(pic_hdr.loop_filter_delta_enabled);
 
-  // Pack CDEF parameters.
-  if (seq_hdr.enable_cdef) {
-    uint8_t num_planes = 3;  // mono_chrome not supported.
-    ret.Write(2, 2);         // Set CDEF damping minus 3 to 5 - 3.
-    ret.Write(3, 2);         // Set cdef_bits to 3.
-    for (size_t i = 0; i < (1 << num_planes); i++) {
-      ret.Write(pic_hdr.cdef_y_pri_strength.at(i), 4);
-      ret.Write(pic_hdr.cdef_y_sec_strength.at(i), 2);
-      ret.Write(pic_hdr.cdef_uv_pri_strength.at(i), 4);
-      ret.Write(pic_hdr.cdef_uv_sec_strength.at(i), 2);
+    // Pack CDEF parameters.
+    if (seq_hdr.enable_cdef) {
+      uint8_t num_planes = 3;  // mono_chrome not supported.
+      ret.Write(2, 2);         // Set CDEF damping minus 3 to 5 - 3.
+      ret.Write(3, 2);         // Set cdef_bits to 3.
+      for (size_t i = 0; i < (1 << num_planes); i++) {
+        ret.Write(pic_hdr.cdef_y_pri_strength.at(i), 4);
+        ret.Write(pic_hdr.cdef_y_sec_strength.at(i), 2);
+        ret.Write(pic_hdr.cdef_uv_pri_strength.at(i), 4);
+        ret.Write(pic_hdr.cdef_uv_sec_strength.at(i), 2);
+      }
     }
   }
   ret.WriteBool(true);  // TxMode TX_MODE_SELECT.
