@@ -613,6 +613,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.ScrollTo.ScrollDistance" units="dip"
+    expires_after="2026-01-15">
+  <owner>liuwilliam@google.com</owner>
+  <owner>adithyas@google.com</owner>
+  <summary>
+    Records the scroll distance (in device independent pixels) for a scroll
+    triggered by scrollTo()
+  </summary>
+</histogram>
+
 <histogram name="Glic.Session.AttachStateChanges" units="count"
     expires_after="2026-01-15">
   <owner>dullweber@chromium.org</owner>
