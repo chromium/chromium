@@ -18,7 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -300,11 +300,11 @@ constexpr char kTestUrl[] = "https://google.com";
 // Only responses obtained via the BinaryUploadService are faked.
 class ContentAnalysisDelegateBrowserTestBase
     : public test::DeepScanningBrowserTestBase,
-      public ContentAnalysisDialog::TestObserver {
+      public ContentAnalysisDialogController::TestObserver {
  public:
   explicit ContentAnalysisDelegateBrowserTestBase(bool machine_scope)
       : machine_scope_(machine_scope) {
-    ContentAnalysisDialog::SetObserverForTesting(this);
+    ContentAnalysisDialogController::SetObserverForTesting(this);
   }
 
   void EnableUploadsScanningAndReporting() {
@@ -371,7 +371,7 @@ class ContentAnalysisDelegateBrowserTestBase
             identity_test_environment_->identity_manager());
   }
 
-  void DestructorCalled(ContentAnalysisDialog* dialog) override {
+  void DestructorCalled(ContentAnalysisDialogController* dialog) override {
     // The test is over once the views are destroyed.
     CallQuitClosure();
   }
@@ -2260,22 +2260,22 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
   // The dialog should appear on blocking scans for both paste and files upload,
   // because CBUS retries authorizarion check first and then update the scan
   // result.
-  void ConstructorCalled(ContentAnalysisDialog* dialog,
+  void ConstructorCalled(ContentAnalysisDialogController* dialog,
                          base::TimeTicks timestamp) override {
     ASSERT_TRUE(blocking_scan());
   }
 
-  void ViewsFirstShown(ContentAnalysisDialog* dialog,
+  void ViewsFirstShown(ContentAnalysisDialogController* dialog,
                        base::TimeTicks timestamp) override {
     ASSERT_TRUE(blocking_scan());
   }
 
-  void DialogUpdated(ContentAnalysisDialog* dialog,
+  void DialogUpdated(ContentAnalysisDialogController* dialog,
                      FinalContentAnalysisResult result) override {
     ASSERT_TRUE(blocking_scan());
   }
 
-  void DestructorCalled(ContentAnalysisDialog* dialog) override {
+  void DestructorCalled(ContentAnalysisDialogController* dialog) override {
     ASSERT_TRUE(blocking_scan());
     CallQuitClosure();
   }

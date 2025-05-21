@@ -166,7 +166,7 @@ class AppRestartDialog;
 }
 
 namespace enterprise_connectors {
-class ContentAnalysisDialog;
+class ContentAnalysisDialogController;
 class ContentAnalysisDialogBehaviorBrowserTest;
 }  // namespace enterprise_connectors
 
@@ -430,7 +430,7 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class ::constrained_window::BrowserModalHelper;
     friend class ::content::ShellPlatformDelegate;
     friend class ::crostini::AppRestartDialog;
-    friend class ::enterprise_connectors::ContentAnalysisDialog;
+    friend class ::enterprise_connectors::ContentAnalysisDialogController;
     friend class ::enterprise_connectors::
         ContentAnalysisDialogBehaviorBrowserTest;
     friend class ::exo::ShellSurfaceBase;

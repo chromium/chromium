@@ -29,7 +29,7 @@ using safe_browsing::BinaryUploadService;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -353,7 +353,7 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
 
   // This dialog opens itself, and is thereafter owned by constrained window
   // code.
-  new ContentAnalysisDialog(
+  new ContentAnalysisDialogController(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
           filename, custom_message, learn_more_url,
           bypass_justification_required, std::move(keep_closure),

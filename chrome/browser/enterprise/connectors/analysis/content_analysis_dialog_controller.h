@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_CONTROLLER_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_CONTROLLER_H_
 
 #include <cstddef>
 #include <memory>
@@ -45,49 +45,51 @@ class DeepScanningSideIconSpinnerView;
 
 // Dialog shown for Deep Scanning to offer the possibility of cancelling the
 // upload to the user.
-class ContentAnalysisDialog : public views::DialogDelegate,
-                              public content::WebContentsObserver,
-                              public views::TextfieldController,
-                              public download::DownloadItem::Observer {
+class ContentAnalysisDialogController
+    : public views::DialogDelegate,
+      public content::WebContentsObserver,
+      public views::TextfieldController,
+      public download::DownloadItem::Observer {
  public:
   // TestObserver should be implemented by tests that need to track when certain
-  // ContentAnalysisDialog functions are called. The test can add itself as an
-  // observer by using SetObserverForTesting.
+  // ContentAnalysisDialogController functions are called. The test can add
+  // itself as an observer by using SetObserverForTesting.
   class TestObserver {
    public:
     virtual ~TestObserver() = default;
 
-    // Called at the start of ContentAnalysisDialog's constructor. `dialog` is
-    // a pointer to the newly constructed ContentAnalysisDialog and should be
-    // kept in memory by the test in order to validate its state.
-    virtual void ConstructorCalled(ContentAnalysisDialog* dialog,
+    // Called at the start of ContentAnalysisDialogController's constructor.
+    // `dialog` is a pointer to the newly constructed
+    // ContentAnalysisDialogController and should be kept in memory by the test
+    // in order to validate its state.
+    virtual void ConstructorCalled(ContentAnalysisDialogController* dialog,
                                    base::TimeTicks timestamp) {}
 
-    // Called at the end of ContentAnalysisDialog::Show. `timestamp` is the
-    // time used by ContentAnalysisDialog to decide whether the pending state
-    // has been shown for long enough. The test can keep this time in memory and
-    // validate the pending time was sufficient in DialogUpdated.
-    virtual void ViewsFirstShown(ContentAnalysisDialog* dialog,
+    // Called at the end of ContentAnalysisDialogController::Show. `timestamp`
+    // is the time used by ContentAnalysisDialogController to decide whether the
+    // pending state has been shown for long enough. The test can keep this time
+    // in memory and validate the pending time was sufficient in DialogUpdated.
+    virtual void ViewsFirstShown(ContentAnalysisDialogController* dialog,
                                  base::TimeTicks timestamp) {}
 
-    // Called at the end of ContentAnalysisDialog::UpdateDialog. `result` is
-    // the value that UpdatedDialog used to transition from the pending state to
-    // the success/failure/warning state.
-    virtual void DialogUpdated(ContentAnalysisDialog* dialog,
+    // Called at the end of ContentAnalysisDialogController::UpdateDialog.
+    // `result` is the value that UpdatedDialog used to transition from the
+    // pending state to the success/failure/warning state.
+    virtual void DialogUpdated(ContentAnalysisDialogController* dialog,
                                FinalContentAnalysisResult result) {}
 
     // Called at the start of CancelDialogAndDelete(). `dialog` is a pointer
     // that will soon be destructed. Along with `result`, it is used by the test
     // to validate the dialog should be canceled or deleted.
     virtual void CancelDialogAndDeleteCalled(
-        ContentAnalysisDialog* dialog,
+        ContentAnalysisDialogController* dialog,
         FinalContentAnalysisResult result) {}
 
-    // Called at the end of ContentAnalysisDialog's destructor. `dialog` is a
-    // pointer to the ContentAnalysisDialog being destructed. It can be used
-    // to compare it to the pointer obtained from ConstructorCalled to ensure
-    // which view is being destroyed.
-    virtual void DestructorCalled(ContentAnalysisDialog* dialog) {}
+    // Called at the end of ContentAnalysisDialogController's destructor.
+    // `dialog` is a pointer to the ContentAnalysisDialogController being
+    // destructed. It can be used to compare it to the pointer obtained from
+    // ConstructorCalled to ensure which view is being destroyed.
+    virtual void DestructorCalled(ContentAnalysisDialogController* dialog) {}
   };
 
   static void SetObserverForTesting(TestObserver* observer);
@@ -100,14 +102,15 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   static base::TimeDelta GetSuccessDialogTimeout();
   static base::TimeDelta ShowDialogDelay();
 
-  ContentAnalysisDialog(std::unique_ptr<ContentAnalysisDelegateBase> delegate,
-                        bool is_cloud,
-                        content::WebContents* web_contents,
-                        safe_browsing::DeepScanAccessPoint access_point,
-                        int files_count,
-                        FinalContentAnalysisResult final_result =
-                            FinalContentAnalysisResult::SUCCESS,
-                        download::DownloadItem* download_item = nullptr);
+  ContentAnalysisDialogController(
+      std::unique_ptr<ContentAnalysisDelegateBase> delegate,
+      bool is_cloud,
+      content::WebContents* web_contents,
+      safe_browsing::DeepScanAccessPoint access_point,
+      int files_count,
+      FinalContentAnalysisResult final_result =
+          FinalContentAnalysisResult::SUCCESS,
+      download::DownloadItem* download_item = nullptr);
 
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
@@ -139,19 +142,19 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   inline bool is_cloud() const { return is_cloud_; }
 
   bool has_custom_message() const {
-    return delegate_->GetCustomMessage().has_value();
+    return delegate_base_->GetCustomMessage().has_value();
   }
 
   bool has_learn_more_url() const {
-    return delegate_->GetCustomLearnMoreUrl().has_value();
+    return delegate_base_->GetCustomLearnMoreUrl().has_value();
   }
 
   bool has_custom_message_ranges() const {
-    return delegate_->GetCustomRuleMessageRanges().has_value();
+    return delegate_base_->GetCustomRuleMessageRanges().has_value();
   }
 
   bool bypass_requires_justification() const {
-    return delegate_->BypassRequiresJustification();
+    return delegate_base_->BypassRequiresJustification();
   }
 
   // Cancels the dialog an schedules it for deletion if visible, otherwise
@@ -185,7 +188,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   friend class ContentAnalysisDialogPlainTest;
 
   // Friend to allow use of TaskRunner::DeleteSoon().
-  friend class base::DeleteHelper<ContentAnalysisDialog>;
+  friend class base::DeleteHelper<ContentAnalysisDialogController>;
 
   // Enum used to represent what the dialog is currently showing.
   enum class State {
@@ -209,7 +212,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     WARNING,
   };
 
-  ~ContentAnalysisDialog() override;
+  ~ContentAnalysisDialogController() override;
 
   // Callback function of delayed timer to make the dialog visible.
   void ShowDialogNow();
@@ -303,7 +306,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // method is shared for those different conditions to close the dialog.
   void CancelDialogWithoutCallback();
 
-  std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
+  std::unique_ptr<ContentAnalysisDelegateBase> delegate_base_;
 
   // Views above the buttons. `contents_view_` owns every other view.
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
@@ -370,9 +373,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // time of the dialog.
   base::WeakPtr<content::WebContents> top_level_contents_;
 
-  base::WeakPtrFactory<ContentAnalysisDialog> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ContentAnalysisDialogController> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_CONTROLLER_H_

@@ -36,7 +36,7 @@ class WebContent;
 
 namespace enterprise_connectors {
 
-class ContentAnalysisDialog;
+class ContentAnalysisDialogController;
 class FilesRequestHandler;
 class PagePrintRequestHandler;
 class ClipboardRequestHandler;
@@ -446,7 +446,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   CompletionCallback callback_;
 
   // Pointer to UI when enabled.
-  raw_ptr<ContentAnalysisDialog> dialog_ = nullptr;
+  raw_ptr<ContentAnalysisDialogController> dialog_ = nullptr;
 
   // Access point to use to record UMA metrics.
   safe_browsing::DeepScanAccessPoint access_point_;

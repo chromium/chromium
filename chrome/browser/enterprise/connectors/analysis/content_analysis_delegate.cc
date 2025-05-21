@@ -26,7 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
@@ -428,7 +428,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
 #endif
 
     // This dialog is owned by the constrained_window code.
-    delegate_ptr->dialog_ = new ContentAnalysisDialog(
+    delegate_ptr->dialog_ = new ContentAnalysisDialogController(
         std::move(delegate),
         delegate_ptr->data_.settings.cloud_or_local_settings
             .is_cloud_analysis(),

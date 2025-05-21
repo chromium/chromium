@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -106,10 +106,12 @@ class UnresponsiveContentAnalysisDelegate : public FakeContentAnalysisDelegate {
 DeepScanningBrowserTestBase::DeepScanningBrowserTestBase() {
   // Change the time values of the upload UI to smaller ones to make tests
   // showing it run faster.
-  ContentAnalysisDialog::SetMinimumPendingDialogTimeForTesting(
+  ContentAnalysisDialogController::SetMinimumPendingDialogTimeForTesting(
       kMinimumPendingDelay);
-  ContentAnalysisDialog::SetSuccessDialogTimeoutForTesting(kSuccessTimeout);
-  ContentAnalysisDialog::SetShowDialogDelayForTesting(kShowDialogDelay);
+  ContentAnalysisDialogController::SetSuccessDialogTimeoutForTesting(
+      kSuccessTimeout);
+  ContentAnalysisDialogController::SetShowDialogDelayForTesting(
+      kShowDialogDelay);
 }
 
 DeepScanningBrowserTestBase::~DeepScanningBrowserTestBase() = default;
