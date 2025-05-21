@@ -229,7 +229,7 @@ ci.thin_tester(
             "gpu_fyi_android_webgl2_and_gold_telemetry_tests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
             "has_native_resultdb_integration",
         ],
         per_test_modifications = {
