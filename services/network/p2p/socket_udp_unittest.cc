@@ -17,16 +17,20 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/port_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -411,6 +415,50 @@ TEST_F(P2PSocketUdpTest, SendDataNoAuth) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_client_->connection_error());
+}
+
+TEST_F(P2PSocketUdpTest, SendRestrictedAddress) {
+  base::test::ScopedFeatureList feature_list;
+  int restricted_port = 12345;
+  net::IPEndPoint restricted_dest = ParseAddress("127.0.0.1", restricted_port);
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kRestrictAbusePortsOnLocalhost,
+      {{"localhost_restrict_ports", base::NumberToString(restricted_port)}});
+  net::ReloadLocalhostRestrictedPortsForTesting();
+  base::circular_deque<FakeDatagramServerSocket::UDPPacket> sent_packets;
+  std::vector<uint16_t> used_ports;
+  P2PSocketUdp::DatagramServerSocketFactory fake_socket_factory =
+      base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets,
+                          &used_ports, &fake_clock_);
+  P2PMessageThrottler throttler;
+
+  mojo::PendingRemote<mojom::P2PSocketClient> socket_client;
+  mojo::PendingRemote<mojom::P2PSocket> socket;
+  auto socket_receiver = socket.InitWithNewPipeAndPassReceiver();
+
+  FakeSocketClient fake_client2(std::move(socket),
+                                socket_client.InitWithNewPipeAndPassReceiver());
+
+  auto socket_impl = std::make_unique<P2PSocketUdp>(
+      &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
+      &throttler, TRAFFIC_ANNOTATION_FOR_TESTS, /*net_log=*/nullptr,
+      std::move(fake_socket_factory), std::nullopt);
+  net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, kTestPort1);
+
+  auto* socket_impl_ptr = socket_impl.get();
+  socket_delegate_.ExpectDestruction(std::move(socket_impl));
+  socket_impl_ptr->Init(local_address, 0, 0,
+                        P2PHostAndIPEndPoint(std::string(), restricted_dest),
+                        net::NetworkAnonymizationKey());
+
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+  webrtc::AsyncSocketPacketOptions options;
+  socket_impl_ptr->Send(request_packet,
+                        P2PPacketInfo(restricted_dest, options, 0));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return fake_client2.connection_error(); }));
 }
 
 // Verify that we can send data after we've received STUN request

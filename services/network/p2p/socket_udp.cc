@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/log/net_log_source.h"
 #include "services/network/p2p/socket_throttler.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
@@ -347,6 +348,11 @@ bool P2PSocketUdp::HandleReadResult(int result) {
 
 bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
   int64_t send_time_us = webrtc::TimeMicros();
+
+  if (!net::IsPortAllowedForIpEndpoint(packet.to)) {
+    OnError();
+    return false;
+  }
 
   // The peer is considered not connected until the first incoming STUN
   // request/response. In that state the renderer is allowed to send only STUN
