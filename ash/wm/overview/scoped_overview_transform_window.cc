@@ -585,10 +585,10 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
     return;
   }
 
+  const bool is_being_dragged = !!window_tree_synchronizer_during_drag_;
   auto window_tree_synchronizer([&]() {
-    return window_tree_synchronizer_during_drag_
-               ? window_tree_synchronizer_during_drag_.get()
-               : window_tree_synchronizer_.get();
+    return is_being_dragged ? window_tree_synchronizer_during_drag_.get()
+                            : window_tree_synchronizer_.get();
   });
 
   // Synchronizing the rounded corners of a window and its transient hierarchy
@@ -597,9 +597,17 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   //   surface.
   // * It ensures that the transient windows' corners are correctly rounded,
   //   ensuring that all four corners of the WindowMiniView appear rounded.
-  //   See b/325635179.
+  //   See b:325635179.
+  //
+  // Note: Disable layer curvature considerations during window dragging to
+  // prevent synchronization issues with reference bounds. This problem arises
+  // in edge cases where extreme downscaling (at the top edges of display) leads
+  // to exaggerated rounded corners, causing excessive layer curvature and
+  // hindering proper syncing, ultimately resulting in visual artifacts. See
+  // b:419292910.
   window_tree_synchronizer()->SynchronizeRoundedCorners(
       window(), window()->GetRootWindow(), rounded_contents_bounds,
+      /*consider_curvature=*/!is_being_dragged,
       /*ignore_predicate=*/base::BindRepeating([](aura::Window* window) {
         return window->GetProperty(kHideInOverviewKey) ||
                window->GetProperty(kExcludeFromTransientTreeTransformKey);

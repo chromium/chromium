@@ -52,7 +52,8 @@ class LayerTreeSynchronizerBase {
   // Note: `reference_bounds` are in target space of `root_layer`;
   bool SynchronizeLayerTreeRoundedCorners(ui::Layer* layer,
                                           const ui::Layer* root_layer,
-                                          const gfx::RRectF& reference_bounds);
+                                          const gfx::RRectF& reference_bounds,
+                                          bool consider_curvature);
 
   // Traverses through the layer subtree rooted at `layer`. Restores the radii
   // of layer if it was updated by in `SynchronizeLayerTreeRoundedCorners()`.
@@ -67,7 +68,8 @@ class LayerTreeSynchronizerBase {
   bool SynchronizeLayerTreeRoundedCornersImpl(
       ui::Layer* layer,
       const gfx::RRectF& reference_bounds,
-      const gfx::Transform& transform);
+      const gfx::Transform& transform,
+      bool consider_curvature);
 
   void RestoreLayerTreeImpl(ui::Layer* layer);
 
@@ -134,6 +136,7 @@ class ASH_EXPORT WindowTreeSynchronizer : public LayerTreeSynchronizerBase,
   void SynchronizeRoundedCorners(aura::Window* window,
                                  const aura::Window* root_window,
                                  const gfx::RRectF& reference_bounds,
+                                 bool consider_curvature,
                                  TransientTreeIgnorePredicate ignore_predicate);
 
   // LayerTreeSynchronizerBase:
