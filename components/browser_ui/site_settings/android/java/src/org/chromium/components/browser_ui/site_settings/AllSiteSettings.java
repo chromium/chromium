@@ -439,8 +439,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         if (mSearch == null && mSearchItem != null) {
             SearchUtils.clearSearch(mSearchItem, getActivity());
@@ -551,5 +551,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                 it.remove();
             }
         }
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

@@ -414,4 +414,9 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             category.addPreference(preference);
         }
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

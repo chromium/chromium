@@ -124,4 +124,9 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
             return;
         }
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

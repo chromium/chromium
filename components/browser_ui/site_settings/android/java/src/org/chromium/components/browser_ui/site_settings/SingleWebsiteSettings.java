@@ -1680,4 +1680,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
         return false;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

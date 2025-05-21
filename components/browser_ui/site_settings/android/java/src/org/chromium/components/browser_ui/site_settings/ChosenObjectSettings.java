@@ -173,8 +173,8 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         if (mSites == null) {
             getInfo();
@@ -354,5 +354,10 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }
