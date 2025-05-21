@@ -22,7 +22,7 @@
     (ShareExtensionSheet*)shareExtensionSheet;
 - (void)didTapSearchInIncognitoShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet;
-- (void)shareExtensionSheetWillDisappear:
+- (void)shareExtensionSheetDidDisappear:
     (ShareExtensionSheet*)shareExtensionSheet;
 
 @end

@@ -94,10 +94,10 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
+  self.view.backgroundColor = [UIColor clearColor];
   self.shareSheet = [[ShareExtensionSheet alloc] init];
   self.shareSheet.delegate = self;
-  self.shareSheet.modalPresentationStyle = UIModalPresentationPageSheet;
+  self.shareSheet.modalPresentationStyle = UIModalPresentationFormSheet;
   UISheetPresentationController* presentationController =
       self.shareSheet.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
@@ -252,23 +252,13 @@ const NSUInteger kSearchCharacterLimit = 1000;
   }
 }
 
-- (void)shareExtensionSheetWillDisappear:
+- (void)shareExtensionSheetDidDisappear:
     (ShareExtensionSheet*)shareExtensionSheet {
-  __weak ExtendedShareViewController* weakSelf = self;
   [self
-      queueActionItemURL:nil
-                   title:nil
-                  action:app_group::READING_LIST_ITEM  // Ignored
-                  cancel:YES
-              completion:^{
-                [weakSelf
-                    dismissAndReturnItem:nil
-                                   error:
-                                       [NSError
-                                           errorWithDomain:NSCocoaErrorDomain
+      handleSheetDismissalForItem:nil
+                            error:[NSError errorWithDomain:NSCocoaErrorDomain
                                                       code:NSUserCancelledError
                                                   userInfo:nil]];
-              }];
 }
 
 #pragma mark - Private methods
