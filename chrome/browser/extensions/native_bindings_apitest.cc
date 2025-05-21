@@ -786,8 +786,21 @@ class DeveloperModeNativeBindingsApiTest
       public testing::WithParamInterface<bool> {
  public:
   DeveloperModeNativeBindingsApiTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        extensions_features::kDebuggerAPIRestrictedToDevMode, GetParam());
+    if (GetParam()) {
+      // Ensure chrome.debugger is controlled by Developer Mode.
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {extensions_features::kUserScriptUserExtensionToggle,
+           extensions_features::kDebuggerAPIRestrictedToDevMode},
+          /*disabled_features=*/{});
+
+    } else {
+      // Ensure chrome.userScripts is controlled by Developer Mode.
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/{
+              extensions_features::kUserScriptUserExtensionToggle,
+              extensions_features::kDebuggerAPIRestrictedToDevMode});
+    }
   }
 
  private:
