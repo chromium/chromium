@@ -161,8 +161,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&,
                                       viz::ResourceId resource_id);
 
-  void ReclaimResourceInternal(const ResourceMap::iterator&);
-
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};

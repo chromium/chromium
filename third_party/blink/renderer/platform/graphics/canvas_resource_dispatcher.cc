@@ -460,7 +460,7 @@ void CanvasResourceDispatcher::ReclaimResources(
 
     it->value->set_sync_token(resource.sync_token);
     it->value->set_is_lost(resource.lost);
-    ReclaimResourceInternal(it);
+    resources_.erase(it);
   }
 }
 
@@ -512,11 +512,6 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
         CrossThreadBindOnce(UpdatePlaceholderDispatcher, GetWeakPtr(),
                             task_runner_, placeholder_canvas_id));
   }
-}
-
-void CanvasResourceDispatcher::ReclaimResourceInternal(
-    const ResourceMap::iterator& it) {
-  resources_.erase(it);
 }
 
 }  // namespace blink
