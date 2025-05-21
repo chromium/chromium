@@ -106,6 +106,21 @@ class CONTENT_EXPORT Status {
   std::string msg_;
 };
 
+// The canonical way of representing a non-error would be base::expected<void,
+// Status>, and that would allow us to make use of the `base::expected` macros
+// such as RETURN_IF_ERROR. However, that would require updating tons of code,
+// so we simply define similar macros.
+#define IDB_RETURN_IF_ERROR_AND_DO(expr, on_error) \
+  {                                                \
+    Status _status = expr;                         \
+    if (!_status.ok()) [[unlikely]] {              \
+      on_error;                                    \
+      return _status;                              \
+    }                                              \
+  }
+
+#define IDB_RETURN_IF_ERROR(expr) IDB_RETURN_IF_ERROR_AND_DO(expr, {})
+
 }  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_STATUS_H_

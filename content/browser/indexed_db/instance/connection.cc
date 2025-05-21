@@ -928,15 +928,11 @@ Status Connection::AbortAllTransactionsAndIgnoreErrors(
 
 Status Connection::AbortAllTransactions(const DatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& pair : transactions_) {
-    auto& transaction = pair.second;
+  for (auto& [_, transaction] : transactions_) {
     if (transaction->state() != Transaction::FINISHED) {
       TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
                    transaction->id());
-      Status status = transaction->Abort(error);
-      if (!status.ok()) {
-        return status;
-      }
+      IDB_RETURN_IF_ERROR(transaction->Abort(error));
     }
   }
   return Status::OK();

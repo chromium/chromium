@@ -278,22 +278,18 @@ Status Database::RunTasks() {
 }
 
 Status Database::ForceCloseAndRunTasks(const std::string& message) {
-  Status status;
   DCHECK(!force_closing_);
   force_closing_ = true;
   for (Connection* connection : connections_) {
     connection->CloseAndReportForceClose(message);
   }
   connections_.clear();
-  Status abort_status =
-      connection_coordinator_.PruneTasksForForceClose(message);
-  if (!abort_status.ok()) [[unlikely]] {
-    return abort_status;
-  }
+  IDB_RETURN_IF_ERROR(connection_coordinator_.PruneTasksForForceClose(message));
   connection_coordinator_.OnNoConnections();
 
   // Execute any pending tasks in the connection coordinator.
   ConnectionCoordinator::ExecuteTaskResult task_state;
+  Status status;
   do {
     std::tie(task_state, status) = connection_coordinator_.ExecuteTask(false);
     DCHECK(task_state !=
@@ -327,11 +323,8 @@ Status Database::VersionChangeOperation(int64_t version,
   int64_t old_version = metadata().version;
   DCHECK_GT(version, old_version);
 
-  Status s =
-      transaction->BackingStoreTransaction()->SetDatabaseVersion(version);
-  if (!s.ok()) {
-    return s;
-  }
+  IDB_RETURN_IF_ERROR(
+      transaction->BackingStoreTransaction()->SetDatabaseVersion(version));
 
   connection_coordinator_.BindVersionChangeTransactionReceiver();
   connection_coordinator_.OnUpgradeTransactionStarted(old_version);
@@ -662,12 +655,10 @@ Status Database::GetAllOperation(
       cursor_valid = true;
       did_first_seek = true;
     }
-    if (!s.ok()) {
-      result_sink->Get()->OnError(
-          CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                            "Seek failure, unable to continue", transaction));
-      return s;
-    }
+    IDB_RETURN_IF_ERROR_AND_DO(
+        s, result_sink->Get()->OnError(CreateIDBErrorPtr(
+               blink::mojom::IDBException::kUnknownError,
+               "Seek failure, unable to continue", transaction)));
 
     if (!cursor_valid) {
       break;
@@ -758,11 +749,9 @@ Status Database::SetIndexKeysOperation(
   }
 
   for (const auto& writer : index_writers) {
-    Status s = writer->WriteIndexKeys(
-        *found_record, transaction->BackingStoreTransaction(), object_store_id);
-    if (!s.ok()) {
-      return s;
-    }
+    IDB_RETURN_IF_ERROR(writer->WriteIndexKeys(
+        *found_record, transaction->BackingStoreTransaction(),
+        object_store_id));
   }
   return Status::OK();
 }
@@ -903,9 +892,7 @@ Status Database::CountOperation(
   uint32_t count = 1;
   Status s;
   while ((*backing_store_cursor)->Continue(&s)) {
-    if (!s.ok()) {
-      return s;
-    }
+    IDB_RETURN_IF_ERROR(s);
     ++count;
   }
   std::move(callback).Run(/*success=*/true, count);
