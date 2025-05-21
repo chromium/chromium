@@ -57,6 +57,8 @@ ResizeObserver::ResizeObserver(Delegate* delegate, LocalDOMWindow* window)
     controller_ = ResizeObserverController::From(*window);
     controller_->AddObserver(*this);
   }
+  record_replay_created_node_id_ = recordreplay::NewDependencyGraphNode(
+      "{\"kind\":\"createResizeObserver\"}");
 }
 
 ResizeObserverBoxOptions ResizeObserver::ParseBoxOptions(
