@@ -34,6 +34,7 @@ LensOverlayTabHelper::~LensOverlayTabHelper() {
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
   }
+  ReleaseSnapshotAuxiliaryWindows();
 }
 
 void LensOverlayTabHelper::SetLensOverlayUIAttachedAndAlive(

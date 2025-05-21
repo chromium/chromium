@@ -373,6 +373,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                              animated:(BOOL)animated
                            completion:(void (^)(BOOL))completion {
   if (!imageSource.isValid) {
+    if (_associatedTabHelper) {
+      _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
+    }
+
     if (completion) {
       completion(NO);
     }
@@ -501,11 +505,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   _isExiting = YES;
 
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIApplicationDidReceiveMemoryWarningNotification
-              object:nil];
-
+  [self monitorMemoryWarnings:NO];
   [_metricsRecorder
       recordDismissalMetricsWithSource:dismissalSource
                      generatedTabCount:_mediator.generatedTabCount];
@@ -672,13 +672,16 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)lensOverlayContainerPresenterDidCompletePresentation:
             (LensOverlayContainerPresenter*)containerPresenter
                                                     animated:(BOOL)animated {
+  // The auxiliary window should be retained until the container is confirmed
+  // presented to avoid visual flickering when swapping back the main window.
+  if (_associatedTabHelper) {
+    _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
+  }
+
   // In some situations this coordinator shouldn't do
   // anything because it's already being torn down. Just do minimal clean up and
   // return.
   if (_isStopped || _isExiting) {
-    if (_associatedTabHelper) {
-      _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
-    }
     return;
   }
 
@@ -709,12 +712,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     } else {
       [self scheduleTooltipHintDisplayIfNecessary];
     }
-  }
-
-  // The auxiliary window should be retained until the container is confirmed
-  // presented to avoid visual flickering when swapping back the main window.
-  if (_associatedTabHelper) {
-    _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
   }
 
   // If the results bottom sheet hasn't been created yet, dismiss the
@@ -1021,6 +1018,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Prepares the lens overlay for display from the given entrypoint.
 - (BOOL)prepareOverlayWithEntrypoint:(LensOverlayEntrypoint)entrypoint {
+  if (_isExiting) {
+    return NO;
+  }
+
   if (self.isUICreated) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
@@ -1028,15 +1029,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                  reason:lens::LensOverlayDismissalSource::kNewLensInvocation];
   }
 
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(lowMemoryWarningReceived)
-             name:UIApplicationDidReceiveMemoryWarningNotification
-           object:nil];
-
+  [self monitorMemoryWarnings:YES];
   _entrypoint = entrypoint;
 
-  LensOverlayTabHelper* tabHelper = self.activeTabHelper;
+  LensOverlayTabHelper* tabHelper = [self tabHelperForActiveWebState];
   if (!tabHelper) {
     return NO;
   }
@@ -1285,7 +1281,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 // The tab helper for the active web state.
-- (LensOverlayTabHelper*)activeTabHelper {
+- (LensOverlayTabHelper*)tabHelperForActiveWebState {
   if (!self.browser || !self.browser->GetWebStateList() ||
       !self.browser->GetWebStateList()->GetActiveWebState()) {
     return nullptr;
@@ -1338,6 +1334,24 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 
   _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
+}
+
+#pragma mark - Low memory warning
+
+// Whether to monitor low memory warnings.
+- (void)monitorMemoryWarnings:(BOOL)shouldMonitor {
+  if (shouldMonitor) {
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(lowMemoryWarningReceived)
+               name:UIApplicationDidReceiveMemoryWarningNotification
+             object:nil];
+  } else {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:self
+                  name:UIApplicationDidReceiveMemoryWarningNotification
+                object:nil];
+  }
 }
 
 // Handles a low memory warning.

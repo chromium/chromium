@@ -430,13 +430,18 @@ void LensOverlaySnapshotController::StartSnapshotFlow() {
 }
 
 void LensOverlaySnapshotController::ProcessRawSnapshot(UIImage* snapshot) {
-  if (!snapshot || !is_capturing_) {
+  if (!is_capturing_) {
     return;
   }
 
   if (ShouldShowStaticSnapshot()) {
     base_window_.hidden = NO;
     mirror_window_.windowLevel = base_window_.windowLevel - 1;
+  }
+
+  if (!snapshot) {
+    NotifySnapshotComplete(nil);
+    return;
   }
 
   base::OnceCallback<void(UIImage*)> snapshotCapturedCallback =
