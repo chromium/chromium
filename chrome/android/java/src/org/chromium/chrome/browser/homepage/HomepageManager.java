@@ -101,6 +101,9 @@ public class HomepageManager
      * @return Whether or not homepage is enabled.
      */
     public boolean isHomepageEnabled() {
+        if (HomepagePolicyManager.isShowHomeButtonManaged()) {
+            return HomepagePolicyManager.getShowHomeButtonValueOfPolicy();
+        }
         return HomepagePolicyManager.isHomepageManagedByPolicy() || getPrefHomepageEnabled();
     }
 

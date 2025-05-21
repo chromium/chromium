@@ -20,6 +20,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager.HomepagePolicyStateListener;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -31,6 +33,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for the {@link HomepagePolicyManager}. */
+@Features.EnableFeatures(ChromeFeatureList.SHOW_HOME_BUTTON_POLICY_ANDROID)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HomepagePolicyManagerTest {
@@ -59,26 +62,36 @@ public class HomepagePolicyManagerTest {
 
         // Disable the policy during setup
         HomepagePolicyManager.setPrefServiceForTesting(mMockPrefService);
-        setupNewHomepagePolicyManagerForTests(false, "", null);
+        setupNewHomepagePolicyManagerForTests(
+                false,
+                "",
+                /* isButtonPolicyEnabled= */ false,
+                /* buttonPolicyValue= */ false,
+                null);
 
         // Verify setup
         Assert.assertFalse(
                 "#isHomepageManagedByPolicy == true without homepage pref setup",
                 mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
+        Assert.assertFalse(
+                "#isShowHomeButtonPolicyEnabled == true without pref setup",
+                mHomepagePolicyManager.isShowHomeButtonPolicyEnabled());
     }
 
-    /**
-     * Set up the homepage location for Mock PrefService, and create HomepagePolicyManager instance.
-     *
-     * @param homepageLocation homepage preference that will be returned by mock pref service
-     */
     private void setupNewHomepagePolicyManagerForTests(
-            boolean isPolicyEnabled,
+            boolean isHomepageLocationPolicyEnabled,
             String homepageLocation,
+            boolean isButtonPolicyEnabled,
+            boolean buttonPolicyValue,
             @Nullable HomepagePolicyStateListener listener) {
         Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE))
-                .thenReturn(isPolicyEnabled);
+                .thenReturn(isHomepageLocationPolicyEnabled);
         Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(homepageLocation);
+
+        Mockito.when(mMockPrefService.isManagedPreference(Pref.SHOW_HOME_BUTTON))
+                .thenReturn(isButtonPolicyEnabled);
+        Mockito.when(mMockPrefService.getBoolean(Pref.SHOW_HOME_BUTTON))
+                .thenReturn(buttonPolicyValue);
 
         mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, listener);
         HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
@@ -101,6 +114,9 @@ public class HomepagePolicyManagerTest {
         Assert.assertFalse(
                 "#isHomepageManagedByPolicy not consistent with test setting",
                 manager.isHomepageLocationPolicyEnabled());
+        Assert.assertFalse(
+                "#isShowHomeButtonPolicyEnabled not consistent with test setting",
+                manager.isShowHomeButtonPolicyEnabled());
     }
 
     @Test
@@ -131,12 +147,19 @@ public class HomepagePolicyManagerTest {
         manager.initializeWithNative(mMockRegistrar);
         Assert.assertTrue("HomepagePolicyManager should be initialized", manager.isInitialized());
         Mockito.verify(mMockRegistrar, Mockito.times(1)).addObserver(Pref.HOME_PAGE, manager);
+        Mockito.verify(mMockRegistrar, Mockito.times(1))
+                .addObserver(Pref.SHOW_HOME_BUTTON, manager);
     }
 
     @Test
     @SmallTest
     public void testInitialization() {
-        setupNewHomepagePolicyManagerForTests(true, TEST_URL, null);
+        setupNewHomepagePolicyManagerForTests(
+                true,
+                TEST_URL,
+                /* isButtonPolicyEnabled= */ true,
+                /* buttonPolicyValue= */ false,
+                null);
 
         Assert.assertTrue(
                 "#isHomepageManagedByPolicy not consistent with test setting",
@@ -154,12 +177,24 @@ public class HomepagePolicyManagerTest {
                 "Updated HomepageLocation should be stored in shared preference",
                 TEST_URL,
                 homepageGurl.getSpec());
+
+        Assert.assertTrue(
+                "#ShowHomeButton policy is disabled but should be enabled",
+                HomepagePolicyManager.isShowHomeButtonManaged());
+        Assert.assertFalse(
+                "#ShowHomeButton policy has wrong value in test",
+                HomepagePolicyManager.getShowHomeButtonValueOfPolicy());
     }
 
     @Test
     @SmallTest
     public void testInitialization_NTP() {
-        setupNewHomepagePolicyManagerForTests(true, CHROME_NTP, null);
+        setupNewHomepagePolicyManagerForTests(
+                true,
+                CHROME_NTP,
+                /* isButtonPolicyEnabled= */ false,
+                /* buttonPolicyValue= */ false,
+                null);
 
         Assert.assertTrue(
                 "#isHomepageManagedByPolicy not consistent with test setting",
@@ -216,13 +251,36 @@ public class HomepagePolicyManagerTest {
                 newUrl,
                 mHomepagePolicyManager.getHomepagePreference().getSpec());
         Mockito.verify(mListener, Mockito.times(1)).onHomepagePolicyUpdate();
+
+        // Change ShowHomeButton policy same as above.
+        Assert.assertFalse(
+                "Policy should be disabled after set up",
+                mHomepagePolicyManager.isShowHomeButtonPolicyEnabled());
+
+        Mockito.when(mMockPrefService.isManagedPreference(Pref.SHOW_HOME_BUTTON)).thenReturn(true);
+        Mockito.when(mMockPrefService.getBoolean(Pref.SHOW_HOME_BUTTON)).thenReturn(true);
+
+        mHomepagePolicyManager.onPreferenceChange();
+
+        Assert.assertTrue(
+                "#ShowHomeButton policy is disabled but should be enabled",
+                mHomepagePolicyManager.isShowHomeButtonPolicyEnabled());
+        Assert.assertTrue(
+                "#ShowHomeButton policy has wrong value in test",
+                mHomepagePolicyManager.getShowHomeButtonPolicyValue());
+        Mockito.verify(mListener, Mockito.times(2)).onHomepagePolicyUpdate();
     }
 
     @Test
     @SmallTest
     public void testPrefRefreshToDisablePolicy() {
         // Set a new HomepagePolicyManager with policy enabled.
-        setupNewHomepagePolicyManagerForTests(true, TEST_URL, null);
+        setupNewHomepagePolicyManagerForTests(
+                true,
+                TEST_URL,
+                /* isButtonPolicyEnabled= */ true,
+                /* buttonPolicyValue= */ true,
+                null);
         mHomepagePolicyManager.addListener(mListener);
 
         // The verify policyEnabled
@@ -240,22 +298,46 @@ public class HomepagePolicyManagerTest {
                 "Policy should be disabled after refresh",
                 mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
         Mockito.verify(mListener, Mockito.times(1)).onHomepagePolicyUpdate();
+
+        // Same as above for ShowHomeButton policy.
+        Assert.assertTrue(
+                "#ShowHomeButton policy is disabled but should be enabled",
+                mHomepagePolicyManager.isShowHomeButtonPolicyEnabled());
+        Mockito.when(mMockPrefService.isManagedPreference(Pref.SHOW_HOME_BUTTON)).thenReturn(false);
+        mHomepagePolicyManager.onPreferenceChange();
+        Assert.assertFalse(
+                "#ShowHomeButton policy is enabled but should be disabled",
+                mHomepagePolicyManager.isShowHomeButtonPolicyEnabled());
+        Mockito.verify(mListener, Mockito.times(2)).onHomepagePolicyUpdate();
     }
 
     @Test
     @SmallTest
     public void testPrefRefreshWithoutChanges() {
         // Set a new HomepagePolicyManager with policy enabled.
-        setupNewHomepagePolicyManagerForTests(true, TEST_URL, null);
+        setupNewHomepagePolicyManagerForTests(
+                true,
+                TEST_URL,
+                /* isButtonPolicyEnabled= */ true,
+                /* buttonPolicyValue= */ true,
+                null);
 
         // The verify policyEnabled
         Assert.assertTrue(
                 "Policy should be enabled after set up",
                 mHomepagePolicyManager.isHomepageLocationPolicyEnabled());
+        Assert.assertTrue(
+                "#ShowHomeButton policy is disabled but should be enabled",
+                mHomepagePolicyManager.isShowHomeButtonPolicyEnabled());
 
         // Perform an debounce - creating a new homepage manager with same setting, and add the
         // listener.
-        setupNewHomepagePolicyManagerForTests(true, TEST_URL, mListener);
+        setupNewHomepagePolicyManagerForTests(
+                true,
+                TEST_URL,
+                /* isButtonPolicyEnabled= */ true,
+                /* buttonPolicyValue= */ true,
+                mListener);
 
         // Verify listeners should not receive updates.
         Assert.assertTrue(
@@ -265,6 +347,12 @@ public class HomepagePolicyManagerTest {
                 "#getHomepageUrl not consistent with test setting",
                 TEST_URL,
                 mHomepagePolicyManager.getHomepagePreference().getSpec());
+        Assert.assertTrue(
+                "#ShowHomeButton policy is disabled but should be enabled",
+                mHomepagePolicyManager.isShowHomeButtonPolicyEnabled());
+        Assert.assertTrue(
+                "#ShowHomeButton policy has wrong value in test",
+                mHomepagePolicyManager.getShowHomeButtonPolicyValue());
 
         // However, because the native setting is consistent with cached value in SharedPreference,
         // listeners will not receive update.
@@ -274,7 +362,12 @@ public class HomepagePolicyManagerTest {
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testIllegal_GetHomepageUrl() {
-        setupNewHomepagePolicyManagerForTests(false, "", null);
+        setupNewHomepagePolicyManagerForTests(
+                false,
+                "",
+                /* isButtonPolicyEnabled= */ false,
+                /* buttonPolicyValue= */ false,
+                null);
         HomepagePolicyManager.getHomepageUrl();
     }
 

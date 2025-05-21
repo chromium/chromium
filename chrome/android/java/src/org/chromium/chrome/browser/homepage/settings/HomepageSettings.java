@@ -51,7 +51,8 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
                 new ChromeManagedPreferenceDelegate(getProfile()) {
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return HomepagePolicyManager.isHomepageManagedByPolicy();
+                        return HomepagePolicyManager.isHomepageManagedByPolicy()
+                                || HomepagePolicyManager.isShowHomeButtonManaged();
                     }
                 });
 
