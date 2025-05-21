@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -18,10 +19,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_action_runner.h"
-#endif
-
 namespace extensions {
 
 namespace {
@@ -35,7 +32,6 @@ constexpr const char kPrefShowAccessRequestsInToolbar[] =
 constexpr int kRefreshRequiredActionsMask =
     BLOCKED_ACTION_WEB_REQUEST | BLOCKED_ACTION_SCRIPT_AT_START;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 std::vector<ExtensionId> GetExtensionIds(
     const std::vector<const Extension*>& extensions) {
   std::vector<ExtensionId> extension_ids;
@@ -45,7 +41,6 @@ std::vector<ExtensionId> GetExtensionIds(
   }
   return extension_ids;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -115,14 +110,9 @@ void SitePermissionsHelper::UpdateSiteAccess(
   auto current_url = web_contents->GetLastCommittedURL();
 
   auto* permissions_manager = PermissionsManager::Get(profile_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/393179880): Port ExtensionActionRunner to desktop Android.
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   bool reload_required = false;
-#else
-  NOTIMPLEMENTED_LOG_ONCE();
-#endif
 
   for (auto const* extension : extensions) {
     auto current_access =
@@ -177,7 +167,6 @@ void SitePermissionsHelper::UpdateSiteAccess(
         break;
     }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Clear extension's tab permission when revoking user site permissions.
     bool revoking_current_site_permissions =
         new_access == PermissionsManager::UserSiteAccess::kOnClick;
@@ -207,17 +196,14 @@ void SitePermissionsHelper::UpdateSiteAccess(
     } else if (blocked_actions != BLOCKED_ACTION_NONE) {
       action_runner->RunBlockedActions(extension);
     }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (action_runner && reload_required) {
     // Show the reload bubble for all extensions, since it could be confusing to
     // the user why only some of them appear on the dialog.
     std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
     action_runner->ShowReloadPageBubble(extension_ids);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 bool SitePermissionsHelper::PageNeedsRefreshToRun(int blocked_actions) {
@@ -227,15 +213,9 @@ bool SitePermissionsHelper::PageNeedsRefreshToRun(int blocked_actions) {
 bool SitePermissionsHelper::HasBeenBlocked(
     const Extension& extension,
     content::WebContents* web_contents) const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/393179880): Port ExtensionActionRunner to desktop Android.
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   return action_runner && action_runner->WantsToRun(&extension);
-#else
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-#endif
 }
 
 bool SitePermissionsHelper::ShowAccessRequestsInToolbar(

@@ -97,6 +97,7 @@ bool DidInjectScript(content::WebContents& web_contents) {
 
 using ContextType = extensions::browser_test_util::ContextType;
 
+// TODO(crbug.com/393179880): Port to desktop Android.
 class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
  public:
   explicit ExtensionActionRunnerBrowserTest(

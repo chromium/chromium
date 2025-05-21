@@ -6,6 +6,8 @@
 
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,13 +21,6 @@
 #include "extensions/common/extension_urls.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "url/gurl.h"
-
-// TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
-// TODO(crbug.com/411737232): Port TabHelper to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/tab_helper.h"
-#endif
 
 namespace extensions {
 
@@ -51,8 +46,6 @@ void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
     return;
   }
 
-// TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents_);
   if (!runner) {
@@ -61,10 +54,6 @@ void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
   }
   runner->OnRequestScriptInjectionPermission(extension_id, script_type,
                                              run_location, std::move(callback));
-#else
-  NOTIMPLEMENTED();
-  std::move(callback).Run(false);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ChromeExtensionFrameHost::GetAppInstallState(
@@ -88,16 +77,10 @@ void ChromeExtensionFrameHost::GetAppInstallState(
 
 void ChromeExtensionFrameHost::WatchedPageChange(
     const std::vector<std::string>& css_selectors) {
-// TODO(crbug.com/411737232): Support TabHelper on desktop Android. For now it
-// has too many UI dependencies.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   TabHelper* tab_helper = TabHelper::FromWebContents(web_contents_);
   if (!tab_helper)
     return;
   tab_helper->OnWatchedPageChanged(css_selectors);
-#else
-  NOTIMPLEMENTED();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(

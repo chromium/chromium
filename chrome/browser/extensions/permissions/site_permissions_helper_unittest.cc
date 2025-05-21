@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -24,10 +25,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/permissions_manager_waiter.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_action_runner.h"
-#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -273,9 +270,6 @@ TEST_F(SitePermissionsHelperUnitTest,
             SiteInteraction::kNone);
 }
 
-// TODO(crbug.com/393179880): Port these tests to desktop Android after
-// ExtensionActionRunner is ported.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that updating site access only applies to the specified extensions for
 // the current site.
 TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
@@ -455,6 +449,5 @@ TEST_F(SitePermissionsHelperWithUserHostControlsUnitTest,
       extension->permissions_data()->GetPageAccess(
           non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

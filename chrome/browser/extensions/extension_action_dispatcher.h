@@ -74,12 +74,10 @@ class ExtensionActionDispatcher : public BrowserContextKeyedAPI {
                     content::WebContents* web_contents,
                     content::BrowserContext* browser_context);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Dispatches the onClicked event for extension that owns the given action.
   void DispatchExtensionActionClicked(const ExtensionAction& extension_action,
                                       content::WebContents* web_contents,
                                       const Extension* extension);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Called when the action for the given extension is pinned or unpinned from
   // the toolbar. Dispatches the onUserSettingsChanged event for extension that

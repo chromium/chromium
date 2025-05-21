@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -39,7 +40,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/app_tab_helper.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -76,12 +76,8 @@ TabHelper::TabHelper(content::WebContents* web_contents)
       content::WebContentsUserData<TabHelper>(*web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       script_executor_(std::make_unique<ScriptExecutor>(web_contents)),
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      // TODO(crbug.com/393179880): Port ExtensionActionRunner to desktop
-      // Android.
       extension_action_runner_(
           std::make_unique<ExtensionActionRunner>(web_contents)),
-#endif
       declarative_net_request_helper_(web_contents) {
   // The ActiveTabPermissionManager requires a session ID; ensure this
   // WebContents has one.

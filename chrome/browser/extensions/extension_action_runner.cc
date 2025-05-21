@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
@@ -25,9 +24,6 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -50,6 +46,13 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#endif
 
 namespace {
 
@@ -76,10 +79,7 @@ ExtensionActionRunner::PendingScript::~PendingScript() = default;
 
 ExtensionActionRunner::ExtensionActionRunner(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      num_page_requests_(0),
-      browser_context_(web_contents->GetBrowserContext()),
-      was_used_on_page_(false),
-      ignore_active_tab_granted_(false) {
+      browser_context_(web_contents->GetBrowserContext()) {
   CHECK(web_contents);
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
@@ -113,6 +113,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     return ExtensionAction::ShowAction::kNone;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Anything that gets here should have a page or browser action, or toggle the
   // extension's side panel, and not blocked actions.
   // This method is only called to execute an action by the user, so we can
@@ -131,6 +132,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
       side_panel_service->HasSidePanelActionForTab(*extension, tab_id)) {
     return ExtensionAction::ShowAction::kToggleSidePanel;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (grant_tab_permissions) {
     GrantTabPermissions({extension});
@@ -417,6 +419,7 @@ void ExtensionActionRunner::ShowReloadPageBubble(
     return;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // TODO(emiliapaz): Consider showing the dialog as a modal if container
   // doesn't exist. Currently we get the extension's icon via the action
   // controller from the container, so the container must exist.
@@ -431,6 +434,16 @@ void ExtensionActionRunner::ShowReloadPageBubble(
       browser, extension_ids,
       base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
                      weak_factory_.GetWeakPtr()));
+#else
+  // TODO(crbug.com/371432155): Add the above code to desktop Android when we
+  // have a tab interface that works on Android. For now, just accept the
+  // dialog.
+  NOTIMPLEMENTED() << "Accepting reload page bubble";
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
+                     weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ExtensionActionRunner::OnReloadPageBubbleAccepted() {

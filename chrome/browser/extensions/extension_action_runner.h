@@ -39,8 +39,6 @@ class Extension;
 
 // The provider for ExtensionActions corresponding to scripts which are actively
 // running or need permission.
-// TODO(crbug.com/393179880): Port this to desktop Android, then update
-// SitePermissionsHelperUnitTest and SitePermissionsHelperBrowserTest.
 class ExtensionActionRunner : public content::WebContentsObserver,
                               public ExtensionRegistryObserver {
  public:
@@ -211,14 +209,14 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // The total number of requests from the renderer on the current page,
   // including any that are pending or were immediately granted.
   // Right now, used only in tests.
-  int num_page_requests_;
+  int num_page_requests_ = 0;
 
   // The associated browser context.
   raw_ptr<content::BrowserContext> browser_context_;
 
   // Whether or not the feature was used for any extensions. This may not be the
   // case if the user never enabled the scripts-require-action flag.
-  bool was_used_on_page_;
+  bool was_used_on_page_ = false;
 
   // The map of extension_id:pending_request of all pending script requests.
   PendingScriptMap pending_scripts_;
@@ -234,7 +232,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // If true, ignore active tab being granted rather than running pending
   // actions.
-  bool ignore_active_tab_granted_;
+  bool ignore_active_tab_granted_ = false;
 
   // If true, immediately accept the blocked action dialog by running the
   // callback.

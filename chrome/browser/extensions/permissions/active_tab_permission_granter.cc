@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
@@ -35,10 +36,6 @@
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_action_runner.h"
-#endif
 
 namespace extensions {
 
@@ -201,15 +198,11 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
           process_manager->GetRenderFrameHostsForExtension(extension->id()),
           process, update_message);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       // It's important that this comes after the Mojo message is sent to the
       // renderer, so that any tasks executing in the renderer occur after it
       // has the updated permissions.
-      // TODO(crbug.com/393179880): Port ExtensionActionRunner to desktop
-      // Android.
       ExtensionActionRunner::GetForWebContents(web_contents())
           ->OnActiveTabPermissionGranted(extension);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
       auto* permissions_manager =
           PermissionsManager::Get(web_contents()->GetBrowserContext());
