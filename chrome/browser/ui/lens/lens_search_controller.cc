@@ -187,10 +187,10 @@ void LensSearchController::StartContextualization(
   // Setup all state necessary for this Lens session.
   StartLensSession(invocation_source);
 
-  // TODO(crbug.com/404941800): This flow should not start the overlay once
-  // contextualization is separated from the overlay.
-  lens_overlay_controller_->StartContextualizationWithoutOverlay(
-      invocation_source, lens_overlay_query_controller_.get());
+  // TODO(crbug.com/418856988): Replace this with a call that starts
+  // contextualization without the unneeded callback.
+  lens_contextualization_controller_->StartContextualization(invocation_source,
+                                                             base::DoNothing());
 }
 
 void LensSearchController::IssueContextualSearchRequest(
