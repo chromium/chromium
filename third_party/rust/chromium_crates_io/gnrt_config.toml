@@ -167,9 +167,6 @@ allow_unsafe = false
 [crate.crc32fast.extra_kv]
 allow_unsafe = true
 
-[crate.crossbeam-utils.extra_kv]
-allow_unsafe = false
-
 [crate.cxx]
 extra_kv = { allow_unsafe = true }
 remove_deps = ['cc', 'link-cplusplus']
@@ -269,16 +266,8 @@ extra_kv = { allow_unsafe = false }
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 
-[crate.icu_collator_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
-
 [crate.icu_collections]
 extra_kv = { allow_unsafe = true }
-
-[crate.icu_datetime_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
 
 [crate.icu_decimal_data]
 extra_input_roots = ['../data']
@@ -319,17 +308,6 @@ extra_kv = { allow_unsafe = true }
 
 [crate.icu_provider_baked]
 extra_kv = { allow_unsafe = true }
-
-[crate.icu_segmenter_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
-
-[crate.icu_time_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
-
-[crate.icu_capi.extra_kv]
-allow_unsafe = false
 
 [crate.icu_casemap.extra_kv]
 allow_unsafe = false
@@ -377,15 +355,6 @@ allow_unsafe = false
 allow_unsafe = false
 
 [crate.icu_properties_data.extra_kv]
-allow_unsafe = false
-
-[crate.icu_provider_adapters.extra_kv]
-allow_unsafe = false
-
-[crate.icu_time.extra_kv]
-allow_unsafe = false
-
-[crate.icu_time_data.extra_kv]
 allow_unsafe = false
 
 [crate.foldhash.extra_kv]

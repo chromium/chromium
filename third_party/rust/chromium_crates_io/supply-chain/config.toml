@@ -182,29 +182,14 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."icu_calendar_data:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."icu_capi:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."icu_casemap:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_casemap_data:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."icu_collator:2.0.0-beta2"]
-criteria = []
-
-[policy."icu_collator_data:2.0.0-beta2"]
-criteria = []
-
 [policy."icu_collections:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."icu_datetime:2.0.0-beta2"]
-criteria = []
-
-[policy."icu_datetime_data:2.0.0-beta2"]
-criteria = []
 
 [policy."icu_decimal:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -257,22 +242,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."icu_provider:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."icu_provider_adapters:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."icu_provider_baked:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."icu_segmenter:2.0.0-beta2"]
-criteria = []
-
-[policy."icu_segmenter_data:2.0.0-beta2"]
-criteria = []
-
-[policy."icu_time:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."icu_time_data:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."indexmap:2.9.0"]
@@ -443,17 +413,11 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."toktrie:0.7.19"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."unicode-bidi:0.3.18"]
-criteria = []
-
 [policy."unicode-ident:1.0.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-width:0.1.14"]
 criteria = ["crypto-safe", "safe-to-run"]
-
-[policy."utf16_iter:1.0.5"]
-criteria = []
 
 [policy."utf8_iter:1.0.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]

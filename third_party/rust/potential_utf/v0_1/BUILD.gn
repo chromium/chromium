@@ -30,13 +30,9 @@ cargo_crate("lib") {
 
   allow_unsafe = true
 
-  deps = [
-    "//third_party/rust/writeable/v0_6:lib",
-    "//third_party/rust/zerovec/v0_11:lib",
-  ]
+  deps = [ "//third_party/rust/zerovec/v0_11:lib" ]
   features = [
     "alloc",
-    "writeable",
     "zerovec",
   ]
 

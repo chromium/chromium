@@ -112,7 +112,6 @@ dependencies = [
  "fend-core",
  "font-types",
  "hex",
- "icu_capi",
  "icu_casemap",
  "icu_experimental",
  "icu_locale_core",
@@ -399,7 +398,6 @@ dependencies = [
  "icu_calendar_data",
  "icu_locale_core",
  "icu_provider",
- "ixdtf",
  "tinystr",
  "writeable",
  "zerovec",
@@ -412,35 +410,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "icu_locale",
  "icu_provider_baked",
-]
-
-[[package]]
-name = "icu_capi"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "diplomat",
- "diplomat-runtime",
- "icu_calendar",
- "icu_casemap",
- "icu_collator",
- "icu_datetime",
- "icu_decimal",
- "icu_experimental",
- "icu_list",
- "icu_locale",
- "icu_locale_core",
- "icu_normalizer",
- "icu_plurals",
- "icu_properties",
- "icu_provider",
- "icu_provider_adapters",
- "icu_segmenter",
- "icu_time",
- "potential_utf",
- "tinystr",
- "writeable",
- "zerovec",
 ]
 
 [[package]]
@@ -468,33 +437,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "icu_collator"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "displaydoc",
- "icu_collator_data",
- "icu_collections",
- "icu_locale_core",
- "icu_normalizer",
- "icu_properties",
- "icu_provider",
- "smallvec",
- "utf16_iter",
- "utf8_iter",
- "zerovec",
-]
-
-[[package]]
-name = "icu_collator_data"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "icu_locale",
- "icu_provider_baked",
-]
-
-[[package]]
 name = "icu_collections"
 version = "2.0.0-beta2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -504,38 +446,6 @@ dependencies = [
  "yoke",
  "zerofrom",
  "zerovec",
-]
-
-[[package]]
-name = "icu_datetime"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "displaydoc",
- "either",
- "fixed_decimal",
- "icu_calendar",
- "icu_datetime_data",
- "icu_decimal",
- "icu_locale_core",
- "icu_pattern",
- "icu_plurals",
- "icu_provider",
- "icu_time",
- "potential_utf",
- "smallvec",
- "tinystr",
- "writeable",
- "zerovec",
-]
-
-[[package]]
-name = "icu_datetime_data"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "icu_locale",
- "icu_provider_baked",
 ]
 
 [[package]]
@@ -726,7 +636,6 @@ dependencies = [
  "icu_properties_data",
  "icu_provider",
  "potential_utf",
- "unicode-bidi",
  "zerotrie",
  "zerovec",
 ]
@@ -755,17 +664,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "icu_provider_adapters"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "icu_locale",
- "icu_provider",
- "tinystr",
- "zerovec",
-]
-
-[[package]]
 name = "icu_provider_baked"
 version = "2.0.0-beta2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -774,57 +672,6 @@ dependencies = [
  "writeable",
  "zerotrie",
  "zerovec",
-]
-
-[[package]]
-name = "icu_segmenter"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "core_maths",
- "displaydoc",
- "icu_collections",
- "icu_locale_core",
- "icu_provider",
- "icu_segmenter_data",
- "potential_utf",
- "utf8_iter",
- "zerovec",
-]
-
-[[package]]
-name = "icu_segmenter_data"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "icu_locale",
- "icu_provider_baked",
-]
-
-[[package]]
-name = "icu_time"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "calendrical_calculations",
- "displaydoc",
- "icu_calendar",
- "icu_provider",
- "icu_time_data",
- "ixdtf",
- "serde",
- "tinystr",
- "writeable",
- "zerotrie",
- "zerovec",
-]
-
-[[package]]
-name = "icu_time_data"
-version = "2.0.0-beta2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "icu_provider_baked",
 ]
 
 [[package]]
@@ -986,7 +833,6 @@ version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "serde",
- "writeable",
  "zerovec",
 ]
 
@@ -1266,11 +1112,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "unicode-bidi"
-version = "0.3.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "unicode-ident"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1278,11 +1119,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "unicode-width"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "utf16_iter"
-version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
