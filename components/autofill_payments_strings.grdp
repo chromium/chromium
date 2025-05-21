@@ -1231,6 +1231,9 @@
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_CONTINUE_BUTTON" desc="The label of the button, which would fill in the web form with card credentials." formatter_data="android_java">
       Continue
     </message>
+    <message name="IDS_AUTOFILL_LOYALTY_CARD_AUTOFILL_BUTTON" desc="The label of the button, which would fill in the web form with a loyalty card number." formatter_data="android_java">
+      Autofill
+    </message>
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet where a user can pick a payment method to fill into a form." formatter_data="android_java">
       Payment methods available to be filled on touch. Keyboard hidden.
     </message>

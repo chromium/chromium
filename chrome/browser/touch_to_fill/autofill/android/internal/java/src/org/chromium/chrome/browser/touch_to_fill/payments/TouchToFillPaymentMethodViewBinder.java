@@ -295,6 +295,10 @@ class TouchToFillPaymentMethodViewBinder {
             view.setOnClickListener(unusedView -> model.get(ON_IBAN_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
+        } else if (propertyKey == ON_LOYALTY_CARD_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_LOYALTY_CARD_CLICK_ACTION).run());
+            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
+            buttonTitleText.setText(R.string.autofill_loyalty_card_autofill_button);
         } else if (propertyKey == CARD_IMAGE
                 || propertyKey == MAIN_TEXT
                 || propertyKey == MAIN_TEXT_CONTENT_DESCRIPTION

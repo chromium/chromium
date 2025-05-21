@@ -255,6 +255,12 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(LOYALTY_CARD, model));
         }
 
+        if (mLoyaltyCards.size() == 1) {
+            // Use the LOYALTY_CARD model as the property model for the fill button too.
+            assert sheetItems.get(0).type == LOYALTY_CARD;
+            sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
+        }
+
         sheetItems.add(0, buildHeaderForLoyaltyCards());
 
         mBottomSheetFocusHelper.registerForOneTimeUse();

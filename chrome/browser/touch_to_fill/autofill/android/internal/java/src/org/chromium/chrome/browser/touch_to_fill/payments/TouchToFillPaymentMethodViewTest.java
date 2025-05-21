@@ -1036,6 +1036,39 @@ public class TouchToFillPaymentMethodViewTest {
         waitForEvent(actionCallback).run();
     }
 
+    @Test
+    @MediumTest
+    public void testAutofillLoyaltyCardIsClickable() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            LOYALTY_CARD,
+                                            createLoyaltyCardModel(
+                                                    CVS_LOYALTY_CARD, actionCallback)));
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            FILL_BUTTON,
+                                            createLoyaltyCardModel(
+                                                    CVS_LOYALTY_CARD, actionCallback)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.autofill_loyalty_card_autofill_button)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(actionCallback).run();
+    }
+
     private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.sheet_item_list);
     }

@@ -881,6 +881,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 loyaltyCardModel.get(LOYALTY_CARD_NUMBER),
                 is(LOYALTY_CARD_1.getLoyaltyCardNumber()));
         assertThat(loyaltyCardModel.get(MERCHANT_NAME), is(LOYALTY_CARD_1.getMerchantName()));
+
+        assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(1));
     }
 
     @Test
@@ -907,6 +909,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 loyaltyCardModel2.get(LOYALTY_CARD_NUMBER),
                 is(LOYALTY_CARD_2.getLoyaltyCardNumber()));
         assertThat(loyaltyCardModel2.get(MERCHANT_NAME), is(LOYALTY_CARD_2.getMerchantName()));
+
+        assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(0));
     }
 
     @Test
