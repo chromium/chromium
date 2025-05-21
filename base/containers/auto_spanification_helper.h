@@ -94,4 +94,17 @@ inline T& ToPointer(T& value) {
     return UNSAFE_TODO(base::span<hb_glyph_position_t>(pos, len));          \
   }(arg_buffer, arg_length))
 
+// https://source.chromium.org/chromium/chromium/src/+/main:remoting/host/xsession_chooser_linux.cc;drc=fca90714b3949f0f4c27f26ef002fe8d33f3cb73;l=274
+// https://web.mit.edu/barnowl/share/gtk-doc/html/glib/glib-Miscellaneous-Utility-Functions.html#g-get-system-data-dirs
+#define UNSAFE_G_GET_SYSTEM_DATA_DIRS()                             \
+  ([]() {                                                           \
+    const gchar* const* dirs = g_get_system_data_dirs();            \
+    size_t count = 0;                                               \
+    while (UNSAFE_TODO(dirs[count]))                                \
+      ++count;                                                      \
+    /* It's okay to access the null-terminator at the end. */       \
+    size_t size = count + 1;                                        \
+    return UNSAFE_TODO(base::span<const gchar* const>(dirs, size)); \
+  }())
+
 #endif  // BASE_CONTAINERS_AUTO_SPANIFICATION_HELPER_H_

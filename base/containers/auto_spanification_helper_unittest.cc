@@ -91,6 +91,21 @@ TEST(AutoSpanificationHelperTest, HbBufferGetGlyphPositions) {
   EXPECT_NE(length, 0);            // even when `length` is non-zero.
 }
 
+// Minimized mock of g_get_system_data_dirs
+// https://web.mit.edu/barnowl/share/gtk-doc/html/glib/glib-Miscellaneous-Utility-Functions.html#g-get-system-data-dirs
+using gchar = char;
+constexpr auto kGlibSystemDataDirs =
+    std::to_array<const gchar* const>({"foo", "bar", "baz", nullptr});
+const gchar* const* g_get_system_data_dirs() {
+  return kGlibSystemDataDirs.data();
+}
+
+TEST(AutoSpanificationHelperTest, GGetSystemDataDirs) {
+  base::span<const gchar* const> dirs = UNSAFE_G_GET_SYSTEM_DATA_DIRS();
+  EXPECT_EQ(dirs.data(), kGlibSystemDataDirs.data());
+  EXPECT_EQ(dirs.size(), kGlibSystemDataDirs.size());
+}
+
 }  // namespace
 
 }  // namespace base::internal::spanification

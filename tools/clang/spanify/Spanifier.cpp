@@ -187,6 +187,8 @@ std::optional<UnsafeFreeFuncToMacro> FindUnsafeFreeFuncToBeRewrittenToMacro(
   static constexpr UnsafeFreeFuncToMacro unsafe_free_func_table[] = {
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/perl/c/include/harfbuzz/hb-buffer.h;drc=6f3e5028eb65d0b4c5fdd792106ac4c84eee1eb3;l=442
       {"hb_buffer_get_glyph_positions", "UNSAFE_HB_BUFFER_GET_GLYPH_POSITIONS"},
+      // https://source.chromium.org/chromium/chromium/src/+/main:remoting/host/xsession_chooser_linux.cc;drc=fca90714b3949f0f4c27f26ef002fe8d33f3cb73;l=274
+      {"g_get_system_data_dirs", "UNSAFE_G_GET_SYSTEM_DATA_DIRS"},
   };
 
   const std::string& function_name = function_decl->getQualifiedNameAsString();
