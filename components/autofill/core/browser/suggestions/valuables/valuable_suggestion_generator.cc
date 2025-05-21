@@ -153,7 +153,9 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
       SuggestionType::kLoyaltyCardEntry);
   submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   submenu_suggestion.children = loyalty_card_suggestions;
-
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
+#endif
   // There is at least one email, separator and manage addresses suggestion.
   CHECK(email_suggestions.size() >= 3);
   email_suggestions.insert(email_suggestions.end() - 1, submenu_suggestion);

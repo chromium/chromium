@@ -2134,7 +2134,12 @@ TEST_F(BrowserAutofillManagerTestValuables,
 
   Suggestion loyalty_cards_submenu = Suggestion(
       l10n_util::GetStringUTF8(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE), "",
-      Suggestion::Icon::kNoIcon, SuggestionType::kLoyaltyCardEntry);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      Suggestion::Icon::kGoogleWalletMonochrome,
+#else
+      Suggestion::Icon::kNoIcon,
+#endif
+      SuggestionType::kLoyaltyCardEntry);
   loyalty_cards_submenu.acceptability =
       Suggestion::Acceptability::kUnacceptable;
   loyalty_cards_submenu.children = {
