@@ -1,9 +1,10 @@
 include_rules = [
   "+pdf/mojom/pdf.mojom.h",
-  "+third_party/zstd",
+  "+third_party/farmhash",
   "+third_party/icu",
   "+third_party/lens_server_proto",
   "+third_party/omnibox_proto",
+  "+third_party/zstd",
   "+components/endpoint_fetcher",
   "+components/ukm",
   "+services/metrics/public/cpp",

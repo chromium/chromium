@@ -41,6 +41,7 @@ source_set("lens") {
     "lens_preselection_bubble.h",
     "lens_search_contextualization_controller.h",
     "lens_session_metrics_logger.h",
+    "lens_url_matcher.h",
     "page_content_type_conversions.h",
     "ref_counted_lens_overlay_client_logs.h",
   ]
@@ -104,6 +105,7 @@ source_set("impl") {
     "lens_searchbox_controller.cc",
     "lens_session_metrics_logger.cc",
     "lens_side_panel_untrusted_ui.cc",
+    "lens_url_matcher.cc",
     "page_content_type_conversions.cc",
   ]
 
@@ -172,6 +174,7 @@ source_set("impl") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//skia",
+    "//third_party/farmhash",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//third_party/omnibox_proto",
     "//third_party/zlib/google:compression_utils",
@@ -323,6 +326,7 @@ source_set("unit_tests") {
     "lens_overlay_request_id_generator_unittest.cc",
     "lens_overlay_side_panel_navigation_throttle_unittest.cc",
     "lens_overlay_url_builder_unittest.cc",
+    "lens_url_matcher_unittest.cc",
   ]
   deps = [
     ":lens",

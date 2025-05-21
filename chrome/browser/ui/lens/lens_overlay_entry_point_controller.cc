@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_url_matcher.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -94,6 +95,14 @@ void LensOverlayEntryPointController::Initialize(
 
   // Update all entry points.
   UpdateEntryPointsState(/*hide_if_needed=*/true);
+
+  edu_url_matcher_ = std::make_unique<lens::LensUrlMatcher>(
+      lens::features::GetLensOverlayEduUrlAllowFilters(),
+      lens::features::GetLensOverlayEduUrlBlockFilters(),
+      lens::features::GetLensOverlayEduUrlPathMatchAllowFilters(),
+      lens::features::GetLensOverlayEduUrlPathMatchBlockFilters(),
+      lens::features::GetLensOverlayEduUrlForceAllowedMatchPatterns(),
+      lens::features::GetLensOverlayEduHashedDomainBlockFilters());
 }
 
 LensOverlayEntryPointController::~LensOverlayEntryPointController() {
@@ -178,6 +187,13 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
     }
   }
   UpdatePageActionState();
+}
+
+bool LensOverlayEntryPointController::IsUrlEduEligible(const GURL& url) {
+  if (!IsEnabled()) {
+    return false;
+  }
+  return edu_url_matcher_->IsMatch(url);
 }
 
 // static

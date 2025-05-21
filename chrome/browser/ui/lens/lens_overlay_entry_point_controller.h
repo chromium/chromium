@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "chrome/browser/ui/lens/lens_url_matcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -64,6 +65,10 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   // entrypoints will be updated to their correct state.
   void UpdateEntryPointsState(bool hide_toolbar_entrypoint);
 
+  // Returns true if the given URL is eligible for EDU promos present on some
+  // entrypoints.
+  bool IsUrlEduEligible(const GURL& url);
+
   // Invokes the entrypoint action.
   static void InvokeAction(tabs::TabInterface* active_tab,
                            const actions::ActionInvocationContext& context);
@@ -116,6 +121,9 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   PrefChangeRegistrar pref_change_registrar_;
 
   raw_ptr<views::View> location_bar_;
+
+  // URL matcher for entrypoints with EDU promos.
+  std::unique_ptr<LensUrlMatcher> edu_url_matcher_;
 };
 
 }  // namespace lens
