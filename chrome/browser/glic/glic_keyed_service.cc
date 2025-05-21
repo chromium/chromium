@@ -360,15 +360,7 @@ void GlicKeyedService::ActInFocusedTab(
     const std::vector<uint8_t>& action_proto,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
-    mojom::ActInFocusedTabResultPtr result =
-        mojom::ActInFocusedTabResult::NewErrorReason(
-            mojom::ActInFocusedTabErrorReason::kUnknown);
-
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
 
   optimization_guide::proto::BrowserAction action;
   if (!action.ParseFromArray(action_proto.data(), action_proto.size())) {
@@ -387,10 +379,8 @@ void GlicKeyedService::ActInFocusedTab(
 }
 
 void GlicKeyedService::StopActorTask() {
-  if (!actor_controller_) {
-    return;
-  }
-
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
+  CHECK(actor_controller_);
   actor_controller_->StopTask();
 }
 
