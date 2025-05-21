@@ -316,6 +316,10 @@ const blink::WebString ServiceWorkerProviderContext::client_id() const {
   return blink::WebString::FromUTF8(client_id_);
 }
 
+void ServiceWorkerProviderContext::Destroy() const {
+  DestructOnMainThread();
+}
+
 void ServiceWorkerProviderContext::UnregisterWorkerFetchContext(
     blink::mojom::ServiceWorkerWorkerClient* client) {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
