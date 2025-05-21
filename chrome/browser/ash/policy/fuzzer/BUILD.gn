@@ -62,8 +62,9 @@ if (use_fuzzing_engine_with_lpm) {
       "$root_gen_dir/components/policy/proto",
     ]
 
-    proto_deps = [ "//components/policy/proto/fuzzer" ]
-
-    link_deps = [ "//components/policy/proto/fuzzer" ]
+    proto_library_deps = [
+      "//components/policy/proto/fuzzer:chrome_device_policy_full_runtime_proto",
+      "//components/policy/proto/fuzzer:cloud_policy_full_runtime_proto",
+    ]
   }
 }
