@@ -176,6 +176,11 @@ constexpr base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly{
     /*name=*/"group_suggestion_enable_tab_switcher_only",
     /*default_value=*/false};
 
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableVisibilityCheck{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_visibility_check",
+    /*default_value=*/true};
+
 constexpr base::FeatureParam<bool> kGroupSuggestionTriggerCalculationOnPageLoad{
     &kGroupSuggestionService,
     /*name=*/"group_suggestion_trigger_calculation_on_page_load",

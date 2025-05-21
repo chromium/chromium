@@ -48,10 +48,10 @@ class TestGroupSuggestionsDelegate : public GroupSuggestionsDelegate {
 class GroupSuggestionsServiceFactoryTest : public AndroidBrowserTest {
  public:
   GroupSuggestionsServiceFactoryTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(features::kGroupSuggestionService,
-                                         {})},
-        {});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGroupSuggestionService,
+        {{"group_suggestion_enable_recently_opened", "true"},
+         {"group_suggestion_enable_visibility_check", "false"}});
   }
   ~GroupSuggestionsServiceFactoryTest() override = default;
 
@@ -103,13 +103,14 @@ class GroupSuggestionsServiceFactoryTest : public AndroidBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GroupSuggestionsServiceFactoryTest, DISABLED_SuggestionsShown) {
+IN_PROC_BROWSER_TEST_F(GroupSuggestionsServiceFactoryTest, SuggestionsShown) {
   TestGroupSuggestionsDelegate delegate;
   GetService()->RegisterDelegate(&delegate, GroupSuggestionsService::Scope());
   GetService()->SetConfigForTesting(base::TimeDelta());
   AddTab(GURL("https://1.com"));
   AddTab(GURL("https://2.com"));
   AddTab(GURL("https://3.com"));
+  AddTab(GURL("https://4.com"));
   delegate.WaitForSuggestion();
   GetService()->UnregisterDelegate(&delegate);
 }

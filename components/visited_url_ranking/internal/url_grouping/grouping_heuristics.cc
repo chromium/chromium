@@ -262,6 +262,9 @@ void SetSuggestionText(GroupSuggestion& suggestion) {
 // Returns true if the group is visible.
 bool IsGroupVisible(const GroupSuggestion& suggestion,
                     const std::vector<URLVisitAggregate>& candidates) {
+  if (!features::kGroupSuggestionEnableVisibilityCheck.Get()) {
+    return true;
+  }
   std::map<int, bool> suggestion_tabs_visibility;
   for (const auto& candidate : candidates) {
     auto tab_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
