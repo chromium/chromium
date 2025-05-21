@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_NETWORK_SERVICE_PROXY_DELEGATE_H_
 #define SERVICES_NETWORK_NETWORK_SERVICE_PROXY_DELEGATE_H_
 
-#include <deque>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"

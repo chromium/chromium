@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_UDP_SOCKET_H_
 #define SERVICES_NETWORK_UDP_SOCKET_H_
 
-#include <deque>
 #include <memory>
 #include <vector>
 

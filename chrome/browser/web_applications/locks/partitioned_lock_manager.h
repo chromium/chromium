@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 
-#include <deque>
 #include <iosfwd>
 #include <list>
 #include <memory>

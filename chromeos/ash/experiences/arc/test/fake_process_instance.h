@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_PROCESS_INSTANCE_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_PROCESS_INSTANCE_H_
 
-#include <deque>
 #include <optional>
 #include <utility>
 

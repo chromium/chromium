@@ -6,7 +6,6 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_
 
 #include <cstddef>
-#include <deque>
 #include <string>
 
 #include "base/gtest_prod_util.h"

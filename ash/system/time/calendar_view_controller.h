@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_VIEW_CONTROLLER_H_
 #define ASH_SYSTEM_TIME_CALENDAR_VIEW_CONTROLLER_H_
 
-#include <deque>
 #include <list>
 #include <map>
 #include <memory>

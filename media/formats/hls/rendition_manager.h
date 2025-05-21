@@ -5,7 +5,6 @@
 #ifndef MEDIA_FORMATS_HLS_RENDITION_MANAGER_H_
 #define MEDIA_FORMATS_HLS_RENDITION_MANAGER_H_
 
-#include <deque>
 #include <optional>
 #include <set>
 #include <string>

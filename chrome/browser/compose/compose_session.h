@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_COMPOSE_COMPOSE_SESSION_H_
 
 #include <memory>
-#include <stack>
 #include <string>
 #include <string_view>
 #include <vector>
