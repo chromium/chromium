@@ -252,7 +252,7 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
                                            "disable_drive", true)
                       .Get();
   multiple_requests = base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                                               "multiple_requests", false)
+                                               "multiple_requests", true)
                           .Get();
 
   relevance_scoring_mode =
