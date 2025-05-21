@@ -16,11 +16,13 @@
 #include "media/base/media_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace base {
@@ -182,21 +184,28 @@ class MODULES_EXPORT CodecLogger final {
       status_code_ = status.code();
     }
 
+    String sanitized_message;
+    String unsanitized_message;
     if (status.message().empty()) {
-      return MakeGarbageCollected<DOMException>(code, error_msg.c_str());
+      sanitized_message = error_msg.c_str();
+    } else {
+      // If the message comes from a bundled codec we can log it to JS.
+      sanitized_message = String::Format("%s (%s)", error_msg.c_str(),
+                                         status.message().c_str());
+      if (!can_log_status_message) {
+        // If not we can only set it as the unsanitized message which the
+        // console will show in some circumstances.
+        unsanitized_message = sanitized_message;
+        sanitized_message = error_msg.c_str();
+      }
     }
 
-    // If the message comes from a bundled codec we can log it to JS.
-    auto detailed_message =
-        String::Format("%s (%s)", error_msg.c_str(), status.message().c_str());
-    if (can_log_status_message) {
-      return MakeGarbageCollected<DOMException>(code, detailed_message);
+    if (code == DOMExceptionCode::kQuotaExceededError &&
+        RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+      return MakeGarbageCollected<QuotaExceededError>(sanitized_message);
     }
-
-    // If not we can only set it as the unsanitized message which the console
-    // will show in some circumstances.
-    return MakeGarbageCollected<DOMException>(code, error_msg.c_str(),
-                                              detailed_message);
+    return MakeGarbageCollected<DOMException>(code, sanitized_message,
+                                              unsanitized_message);
   }
 
   std::optional<typename StatusImpl::Codes> status_code_;

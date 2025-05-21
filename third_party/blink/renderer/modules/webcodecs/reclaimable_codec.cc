@@ -7,10 +7,12 @@
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -127,8 +129,13 @@ void ReclaimableCodec::SimulateLifecycleStateForTesting(
 }
 
 void ReclaimableCodec::SimulateCodecReclaimedForTesting() {
-  OnCodecReclaimed(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kQuotaExceededError, "Codec reclaimed for testing."));
+  auto* message = "Codec reclaimed for testing.";
+  if (RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+    OnCodecReclaimed(MakeGarbageCollected<QuotaExceededError>(message));
+  } else {
+    OnCodecReclaimed(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kQuotaExceededError, message));
+  }
 }
 
 void ReclaimableCodec::SimulateActivityTimerFiredForTesting() {

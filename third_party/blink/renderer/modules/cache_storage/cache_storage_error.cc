@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -48,7 +49,6 @@ void RejectCacheStorageWithError(ScriptPromiseResolverBase* resolver,
                                  mojom::blink::CacheStorageError web_error,
                                  const String& message) {
   String final_message =
-
       !message.empty() ? message : GetDefaultMessage(web_error);
   switch (web_error) {
     case mojom::CacheStorageError::kSuccess:
@@ -67,8 +67,7 @@ void RejectCacheStorageWithError(ScriptPromiseResolverBase* resolver,
                                        final_message);
       return;
     case mojom::CacheStorageError::kErrorQuotaExceeded:
-      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
-                                       final_message);
+      QuotaExceededError::Reject(resolver, final_message);
       return;
     case mojom::CacheStorageError::kErrorCacheNameNotFound:
       resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,

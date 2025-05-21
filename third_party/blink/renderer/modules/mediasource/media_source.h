@@ -67,6 +67,8 @@ class MediaSource final : public EventTarget,
   static void LogAndThrowDOMException(ExceptionState&,
                                       DOMExceptionCode error,
                                       const String& message);
+  static void LogAndThrowQuotaExceededError(ExceptionState&,
+                                            const String& message);
   static void LogAndThrowTypeError(ExceptionState&, const String&);
 
   // Web-exposed methods from media_source.idl

@@ -8,12 +8,15 @@
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_quota_exceeded_error_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -230,6 +233,11 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
           kExceptionMessageSessionDestroyed,
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
     case ModelStreamingResponseStatus::kErrorInputTooLarge:
+      if (RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+        return QuotaExceededError::Create(
+            kExceptionMessageInputTooLarge,
+            MakeGarbageCollected<QuotaExceededErrorOptions>());
+      }
       return DOMException::Create(
           kExceptionMessageInputTooLarge,
           DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));

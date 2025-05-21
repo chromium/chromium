@@ -56,6 +56,22 @@ void QuotaExceededError::Throw(ExceptionState& exception_state,
   }
 }
 
+// static
+void QuotaExceededError::Reject(ScriptPromiseResolverBase* resolver,
+                                const String& message,
+                                std::optional<double> quota,
+                                std::optional<double> requested) {
+  if (RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+    ScriptState* script_state = resolver->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    v8::Isolate* isolate = script_state->GetIsolate();
+    resolver->Reject(Create(isolate, message, quota, requested));
+  } else {
+    resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
+                                     message);
+  }
+}
+
 QuotaExceededError::QuotaExceededError(const String& message,
                                        const QuotaExceededErrorOptions* options)
     : DOMException(DOMExceptionCode::kQuotaExceededError, message),

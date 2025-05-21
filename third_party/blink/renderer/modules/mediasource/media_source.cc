@@ -184,6 +184,12 @@ void MediaSource::LogAndThrowDOMException(ExceptionState& exception_state,
   exception_state.ThrowDOMException(error, message);
 }
 
+void MediaSource::LogAndThrowQuotaExceededError(ExceptionState& exception_state,
+                                                const String& message) {
+  DVLOG(1) << __func__ << " (message=" << message << ")";
+  QuotaExceededError::Throw(exception_state, message);
+}
+
 void MediaSource::LogAndThrowTypeError(ExceptionState& exception_state,
                                        const String& message) {
   DVLOG(1) << __func__ << " (message=" << message << ")";
@@ -1676,11 +1682,11 @@ std::unique_ptr<WebSourceBuffer> MediaSource::CreateWebSourceBuffer(
       // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-MediaSource-addSourceBuffer-SourceBuffer-DOMString-type
       // Step 3: If the user agent can't handle any more SourceBuffer objects
       // then throw a QuotaExceededError exception and abort these steps.
-      LogAndThrowDOMException(exception_state,
-                              DOMExceptionCode::kQuotaExceededError,
-                              "This MediaSource has reached the limit of "
-                              "SourceBuffer objects it can handle. No "
-                              "additional SourceBuffer objects may be added.");
+      LogAndThrowQuotaExceededError(
+          exception_state,
+          "This MediaSource has reached the limit of "
+          "SourceBuffer objects it can handle. No "
+          "additional SourceBuffer objects may be added.");
       return nullptr;
   }
 

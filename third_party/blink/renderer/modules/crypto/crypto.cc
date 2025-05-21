@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/modules/crypto/crypto.h"
 
 #include "crypto/random.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -65,8 +66,8 @@ NotShared<DOMArrayBufferView> Crypto::getRandomValues(
     return NotShared<DOMArrayBufferView>(nullptr);
   }
   if (array->byteLength() > 65536) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kQuotaExceededError,
+    QuotaExceededError::Throw(
+        exception_state,
         String::Format("The ArrayBufferView's byte length (%zu) exceeds the "
                        "number of bytes of entropy available via this API "
                        "(65536).",

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelpromptdict_string.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
@@ -181,9 +182,7 @@ void LanguageModelCreateClient::OnError(
       break;
     }
     case AIManagerCreateClientError::kInitialInputTooLarge: {
-      GetResolver()->RejectWithDOMException(
-          DOMExceptionCode::kQuotaExceededError,
-          kExceptionMessageInputTooLarge);
+      QuotaExceededError::Reject(GetResolver(), kExceptionMessageInputTooLarge);
       break;
     }
     case AIManagerCreateClientError::kUnsupportedLanguage: {

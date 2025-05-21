@@ -1893,8 +1893,8 @@ bool SourceBuffer::PrepareAppend(double media_time,
     //    If the incoming data exceeds wtf_size_t::max, then our implementation
     //    cannot deal with it, so we also throw a QuotaExceededError.
     DVLOG(3) << __func__ << " this=" << this << " -> throw QuotaExceededError";
-    MediaSource::LogAndThrowDOMException(
-        exception_state, DOMExceptionCode::kQuotaExceededError,
+    MediaSource::LogAndThrowQuotaExceededError(
+        exception_state,
         "The SourceBuffer is full, and cannot free space to append additional "
         "buffers.");
     TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::prepareAppend",
@@ -1990,8 +1990,8 @@ void SourceBuffer::AppendBufferInternal_Locked(
   // just a single async segment parser loop run later, with nothing added to
   // the parser's input buffer here synchronously.
   if (!web_source_buffer_->AppendToParseBuffer(data)) {
-    MediaSource::LogAndThrowDOMException(
-        *exception_state, DOMExceptionCode::kQuotaExceededError,
+    MediaSource::LogAndThrowQuotaExceededError(
+        *exception_state,
         "Unable to allocate space required to buffer appended media.");
     TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::prepareAsyncAppend",
                                     TRACE_ID_LOCAL(this));

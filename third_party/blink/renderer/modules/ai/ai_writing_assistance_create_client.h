@@ -7,6 +7,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
@@ -137,9 +138,8 @@ class AIWritingAssistanceCreateClient
         break;
       }
       case AIManagerCreateClientError::kInitialInputTooLarge: {
-        this->GetResolver()->RejectWithDOMException(
-            DOMExceptionCode::kQuotaExceededError,
-            kExceptionMessageInputTooLarge);
+        QuotaExceededError::Reject(this->GetResolver(),
+                                   kExceptionMessageInputTooLarge);
         break;
       }
       case AIManagerCreateClientError::kUnsupportedLanguage: {

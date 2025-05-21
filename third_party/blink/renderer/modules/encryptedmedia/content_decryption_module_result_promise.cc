@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -39,8 +40,7 @@ void WebCdmExceptionToPromiseRejection(
                                        message);
       return;
     case kWebContentDecryptionModuleExceptionQuotaExceededError:
-      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
-                                       message);
+      QuotaExceededError::Reject(resolver, message);
       return;
   }
 

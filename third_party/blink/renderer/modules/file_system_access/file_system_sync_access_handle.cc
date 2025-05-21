@@ -7,6 +7,7 @@
 #include "base/files/file_error_or.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/expected_macros.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -119,9 +120,8 @@ void FileSystemSyncAccessHandle::truncate(uint64_t size,
   RETURN_IF_ERROR(
       file_delegate()->SetLength(size), [&](base::File::Error error) {
         if (error == base::File::FILE_ERROR_NO_SPACE) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kQuotaExceededError,
-              "No space available for this operation");
+          QuotaExceededError::Throw(exception_state,
+                                    "No space available for this operation");
         } else if (error != base::File::FILE_OK) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kInvalidStateError, "truncate failed");
@@ -196,9 +196,8 @@ uint64_t FileSystemSyncAccessHandle::write(base::span<const uint8_t> buffer,
   int64_t write_end_offset;
   if (!base::CheckAdd(file_offset, write_size)
            .AssignIfValid(&write_end_offset)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kQuotaExceededError,
-        "No capacity available for this operation");
+    QuotaExceededError::Throw(exception_state,
+                              "No capacity available for this operation");
     return 0;
   }
   DCHECK_GE(write_end_offset, 0);
@@ -208,9 +207,8 @@ uint64_t FileSystemSyncAccessHandle::write(base::span<const uint8_t> buffer,
       [&](base::File::Error error) {
         DCHECK_NE(error, base::File::FILE_OK);
         if (error == base::File::FILE_ERROR_NO_SPACE) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kQuotaExceededError,
-              "No space available for this operation");
+          QuotaExceededError::Throw(exception_state,
+                                    "No space available for this operation");
         } else {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kInvalidStateError,

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
@@ -295,8 +296,7 @@ void BackgroundFetchManager::DidFetch(
           "There is no service worker available to service the fetch."));
       return;
     case mojom::blink::BackgroundFetchError::QUOTA_EXCEEDED:
-      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
-                                       "Quota exceeded.");
+      QuotaExceededError::Reject(resolver, "Quota exceeded.");
       return;
     case mojom::blink::BackgroundFetchError::REGISTRATION_LIMIT_EXCEEDED:
       resolver->Reject(V8ThrowException::CreateTypeError(

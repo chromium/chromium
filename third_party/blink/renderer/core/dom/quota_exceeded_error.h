@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -36,6 +37,12 @@ class CORE_EXPORT QuotaExceededError : public DOMException {
                     const String& message,
                     std::optional<double> quota = std::nullopt,
                     std::optional<double> requested = std::nullopt);
+
+  // For throwing a QuotaExceededError from ScriptPromiseResolverBase::Reject.
+  static void Reject(ScriptPromiseResolverBase* resolver,
+                     const String& message,
+                     std::optional<double> quota = std::nullopt,
+                     std::optional<double> requested = std::nullopt);
 
   QuotaExceededError(const String& message,
                      const QuotaExceededErrorOptions* options);
