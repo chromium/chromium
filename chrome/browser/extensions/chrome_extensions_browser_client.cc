@@ -539,6 +539,10 @@ ChromeExtensionsBrowserClient::GetExtensionWebContentsObserver(
 
 void ChromeExtensionsBrowserClient::ClearBackForwardCache() {
   ExtensionTabUtil::ClearBackForwardCache();
+
+  if (on_clear_back_forward_cache_for_test_) {
+    std::move(on_clear_back_forward_cache_for_test_).Run();
+  }
 }
 
 void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(

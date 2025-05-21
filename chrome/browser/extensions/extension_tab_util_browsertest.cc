@@ -4,19 +4,17 @@
 
 #include "chrome/browser/extensions/extension_tab_util.h"
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -25,23 +23,64 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 const GURL& GetActiveUrl(Browser* browser) {
   return browser->tab_strip_model()
       ->GetActiveWebContents()
       ->GetLastCommittedURL();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
 using ExtensionTabUtilBrowserTest = ExtensionBrowserTest;
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, ForEachTab) {
+  // Browser tests start with 1 tab.
+  EXPECT_EQ(GetTabCount(), 1);
+  // ForEachTab should always supply a non-null WebContents.
+  int count = 0;
+  ExtensionTabUtil::ForEachTab(
+      base::BindLambdaForTesting([&count](content::WebContents* contents) {
+        EXPECT_TRUE(contents) << count;
+        ++count;
+      }));
+  EXPECT_EQ(count, 1);
+}
+
+// Regression test for a crash on Android in ClearBackForwardCache caused by an
+// extension that uses redirects. crbug.com/419143076
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
+                       ClearBackForwardCache_NoCrash) {
+  base::RunLoop run_loop;
+  ChromeExtensionsBrowserClient* client =
+      static_cast<ChromeExtensionsBrowserClient*>(
+          ExtensionsBrowserClient::Get());
+  client->set_on_clear_back_forward_cache_for_test(run_loop.QuitClosure());
+  ASSERT_TRUE(InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII("crash_on_clear_back_forward_cache"),
+      std::nullopt));
+  run_loop.Run();
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/41370170): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                        DISABLED_OpenExtensionsOptionsPage) {
@@ -427,5 +466,6 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsTabUtilTest,
   EXPECT_TRUE(ExtensionTabUtil::GetSharedStateOfGroup(group_id));
   EXPECT_TRUE(ExtensionTabUtil::CreateTabGroupObject(group_id)->shared);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

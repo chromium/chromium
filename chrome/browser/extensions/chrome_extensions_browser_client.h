@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
@@ -268,6 +269,10 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   static void set_did_chrome_update_for_testing(bool did_update);
 
+  void set_on_clear_back_forward_cache_for_test(base::OnceClosure closure) {
+    on_clear_back_forward_cache_for_test_ = std::move(closure);
+  }
+
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;
 
@@ -296,6 +301,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<UserScriptListener> user_script_listener_;
 
   scoped_refptr<EventRouterForwarder> event_router_forwarder_;
+
+  base::OnceClosure on_clear_back_forward_cache_for_test_;
 };
 
 }  // namespace extensions

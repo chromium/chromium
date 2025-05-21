@@ -1226,7 +1226,11 @@ void ExtensionTabUtil::ForEachTab(
   for (TabModel* tab_model : TabModelList::models()) {
     int tab_count = tab_model->GetTabCount();
     for (int i = 0; i < tab_count; ++i) {
-      callback.Run(tab_model->GetWebContentsAt(i));
+      auto* web_contents = tab_model->GetWebContentsAt(i);
+      // On Android, not every tab is guaranteed to have a WebContents.
+      if (web_contents) {
+        callback.Run(web_contents);
+      }
     }
   }
 #endif
