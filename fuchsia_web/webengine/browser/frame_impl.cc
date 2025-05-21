@@ -200,7 +200,7 @@ FrameImplMap& WebContentsToFrameImplMap() {
   return frame_impl_map;
 }
 
-blink::PermissionType FidlPermissionTypeToContentPermissionType(
+std::optional<blink::PermissionType> FidlPermissionTypeToContentPermissionType(
     fuchsia::web::PermissionType fidl_type) {
   switch (fidl_type) {
     case fuchsia::web::PermissionType::MICROPHONE:
@@ -211,6 +211,8 @@ blink::PermissionType FidlPermissionTypeToContentPermissionType(
       return blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER;
     case fuchsia::web::PermissionType::PERSISTENT_STORAGE:
       return blink::PermissionType::DURABLE_STORAGE;
+    default:
+      return std::nullopt;
   }
 }
 
@@ -1268,8 +1270,14 @@ void FrameImpl::SetPermissionState(
     return;
   }
 
-  blink::PermissionType type =
+  std::optional<blink::PermissionType> type =
       FidlPermissionTypeToContentPermissionType(fidl_permission.type());
+  if (!type) {
+    LOG(ERROR) << "SetPermissionState() called with invalid permission type: "
+               << static_cast<uint16_t>(fidl_permission.type()) << ".";
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+    return;
+  }
 
   blink::mojom::PermissionStatus state =
       (fidl_state == fuchsia::web::PermissionState::GRANTED)
@@ -1279,8 +1287,8 @@ void FrameImpl::SetPermissionState(
   // TODO(crbug.com/40724536): Remove this once the PermissionManager API is
   // available.
   if (web_origin_string == "*" &&
-      type == blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
-    permission_controller_.SetDefaultPermissionState(type, state);
+      *type == blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
+    permission_controller_.SetDefaultPermissionState(*type, state);
     return;
   }
 
@@ -1293,7 +1301,7 @@ void FrameImpl::SetPermissionState(
     return;
   }
 
-  permission_controller_.SetPermissionState(type, web_origin.value(), state);
+  permission_controller_.SetPermissionState(*type, web_origin.value(), state);
 }
 
 void FrameImpl::GetPrivateMemorySize(GetPrivateMemorySizeCallback callback) {
