@@ -14,7 +14,7 @@
 #import "ios/web/public/web_state.h"
 
 ViewSourceBrowserAgent::ViewSourceBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {}
+    : BrowserUserData(browser) {}
 
 ViewSourceBrowserAgent::~ViewSourceBrowserAgent() {}
 

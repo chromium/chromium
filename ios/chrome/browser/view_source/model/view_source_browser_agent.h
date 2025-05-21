@@ -47,9 +47,6 @@ class ViewSourceBrowserAgent : public BrowserUserData<ViewSourceBrowserAgent> {
   // ViewSourceForActiveWebState.
   void OnHandleViewSourceForActiveWebStateResult(const base::Value* value);
 
-  // The browser this agent is associated with.
-  raw_ptr<Browser> browser_;
-
   base::WeakPtrFactory<ViewSourceBrowserAgent> weak_ptr_factory_{this};
 };
 
