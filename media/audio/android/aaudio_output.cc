@@ -56,6 +56,7 @@ bool AAudioOutputStream::Open() {
 void AAudioOutputStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  Stop();
   stream_wrapper_.Close();
 
   // Note: This must be last, it will delete |this|.

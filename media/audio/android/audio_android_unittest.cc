@@ -48,6 +48,7 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::DoAll;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
 
@@ -1014,6 +1015,30 @@ TEST_F(AudioAndroidOutputTest, OpenAndCloseOutputStreamWithDevice) {
   histogram_tester.ExpectTotalCount(base::StrCat({kHistogramPrefix, "Failure"}),
                                     0);
 
+  CloseAudioOutputStreamOnAudioThread(audio_output_stream_);
+}
+
+// Ensure that a default input stream can be opened, started, and closed without
+// explicitly being stopped.
+TEST_P(AudioAndroidInputTest, OpenStartAndCloseInputStream) {
+  NiceMock<MockAudioInputCallback> callback;
+  EXPECT_CALL(callback, OnError()).Times(0);
+
+  AudioParameters params = GetDefaultInputStreamParametersOnAudioThread();
+  MakeAudioInputStreamOnAudioThread(params);
+  OpenAndStartAudioInputStreamOnAudioThread(&callback);
+  CloseAudioInputStreamOnAudioThread(audio_input_stream_);
+}
+
+// Ensure that a default output stream can be opened, started, and closed
+// without explicitly being stopped.
+TEST_P(AudioAndroidOutputTest, OpenStartAndCloseOutputStream) {
+  NiceMock<MockAudioSourceCallback> callback;
+  EXPECT_CALL(callback, OnError(_)).Times(0);
+
+  AudioParameters params = GetDefaultOutputStreamParametersOnAudioThread();
+  MakeAudioOutputStreamOnAudioThread(params);
+  OpenAndStartAudioOutputStreamOnAudioThread(&callback);
   CloseAudioOutputStreamOnAudioThread(audio_output_stream_);
 }
 

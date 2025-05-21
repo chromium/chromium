@@ -54,6 +54,8 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
   void OnError() override;
   void OnDeviceChange() override;
 
+  android::AudioDevice GetDevice();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

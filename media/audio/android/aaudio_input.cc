@@ -71,6 +71,7 @@ void AAudioInputStream::Start(AudioInputCallback* callback) {
 
   if (stream_wrapper_->Start()) {
     // Successfully started `stream_wrapper_`.
+    audio_manager_->OnStartAAudioInputStream(this);
     return;
   }
 
@@ -100,6 +101,8 @@ void AAudioInputStream::Stop() {
     callback_ = nullptr;
   }
 
+  audio_manager_->OnStopAAudioInputStream(this);
+
   if (!stream_wrapper_->Stop()) {
     temp_error_callback->OnError();
   }
@@ -109,6 +112,7 @@ void AAudioInputStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (stream_wrapper_) {
+    Stop();
     stream_wrapper_->Close();
   }
 
@@ -182,6 +186,10 @@ void AAudioInputStream::HandleDeviceChange() {
   if (!stream_wrapper_->Start()) {
     callback_->OnError();
   }
+}
+
+android::AudioDevice AAudioInputStream::GetDevice() {
+  return device_;
 }
 
 double AAudioInputStream::GetMaxVolume() {

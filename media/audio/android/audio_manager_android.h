@@ -5,13 +5,14 @@
 #ifndef MEDIA_AUDIO_ANDROID_AUDIO_MANAGER_ANDROID_H_
 #define MEDIA_AUDIO_ANDROID_AUDIO_MANAGER_ANDROID_H_
 
-#include <set>
-
 #include "base/android/jni_android.h"
+#include "base/android/requires_api.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/audio_device.h"
 #include "media/audio/android/audio_device_id.h"
 #include "media/audio/audio_manager_base.h"
@@ -92,6 +93,16 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   static int GetSinkAudioEncodingFormats();
 
+  // Called by an `AAudioInputStream` when it is started, i.e. it begins
+  // providing audio data.
+  void REQUIRES_ANDROID_API(AAUDIO_MIN_API)
+      OnStartAAudioInputStream(AAudioInputStream* stream);
+
+  // Called by an `AAudioInputStream` when it is stopped, i.e. it stops
+  // providing audio data.
+  void REQUIRES_ANDROID_API(AAUDIO_MIN_API)
+      OnStopAAudioInputStream(AAudioInputStream* stream);
+
  protected:
   void ShutdownOnAudioThread() override;
   AudioParameters GetPreferredOutputStreamParameters(
@@ -121,7 +132,14 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   void SetCommunicationAudioModeOn(bool on);
   bool SetCommunicationDevice(const std::string& device_id);
   int GetNativeOutputSampleRate();
-  bool IsBluetoothMicrophoneOn();
+
+  // Gets whether Bluetooth SCO is currently enabled.
+  bool IsBluetoothScoOn();
+
+  // Requests for Bluetooth SCO to be enabled or disabled. This request may
+  // fail.
+  void MaybeSetBluetoothScoState(bool state);
+
   bool IsAudioLowLatencySupported();
   int GetAudioLowLatencyOutputFrameSize();
   int GetOptimalOutputFrameSize(int sample_rate, int channels);
@@ -147,9 +165,13 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   Devices input_devices_;
   Devices output_devices_;
 
-  typedef std::set<raw_ptr<MuteableAudioOutputStream, SetExperimental>>
-      OutputStreams;
-  OutputStreams streams_;
+  using OutputStreams =
+      base::flat_set<raw_ptr<MuteableAudioOutputStream, CtnExperimental>>;
+  OutputStreams output_streams_;
+
+  using InputStreams =
+      base::flat_set<raw_ptr<AudioInputStream, CtnExperimental>>;
+  InputStreams input_streams_requiring_sco_;
 
   // Enabled when first input stream is created and set to false when last
   // input stream is destroyed. Also affects the stream type of output streams.

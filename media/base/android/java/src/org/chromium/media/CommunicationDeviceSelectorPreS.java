@@ -80,8 +80,17 @@ class CommunicationDeviceSelectorPreS extends CommunicationDeviceSelector {
     }
 
     @Override
-    public boolean isBluetoothMicrophoneOn() {
+    public boolean isBluetoothScoOn() {
         return mAudioManager.isBluetoothScoOn();
+    }
+
+    @Override
+    public void maybeSetBluetoothScoState(boolean state) {
+        if (state) {
+            startBluetoothSco();
+        } else {
+            stopBluetoothSco();
+        }
     }
 
     @Override

@@ -318,9 +318,11 @@ class AudioManagerAndroid {
                     continue;
                 case AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
                 case AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
-                    // TODO(crbug.com/405955144): Bluetooth Classic streams do not work correctly,
-                    // as they do not manage or react to SCO state changes.
-                    continue;
+                    // TODO(crbug.com/405955144): Bluetooth Classic output streams do not work
+                    // correctly, as they do not react to SCO state changes.
+                    if (!inputs) {
+                        continue;
+                    }
             }
 
             int id = deviceInfo.getId();
@@ -360,9 +362,16 @@ class AudioManagerAndroid {
         return mCommunicationDeviceSelector.getDevices();
     }
 
+    /** Gets whether Bluetooth SCO is currently enabled. */
     @CalledByNative
-    private boolean isBluetoothMicrophoneOn() {
-        return mCommunicationDeviceSelector.isBluetoothMicrophoneOn();
+    private boolean isBluetoothScoOn() {
+        return mCommunicationDeviceSelector.isBluetoothScoOn();
+    }
+
+    /** Requests for Bluetooth SCO to be enabled or disabled. This request may fail. */
+    @CalledByNative
+    private void maybeSetBluetoothScoState(boolean state) {
+        mCommunicationDeviceSelector.maybeSetBluetoothScoState(state);
     }
 
     @CalledByNative

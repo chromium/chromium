@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -112,11 +113,25 @@ class CommunicationDeviceSelectorPostS extends CommunicationDeviceSelector {
     }
 
     @Override
-    public boolean isBluetoothMicrophoneOn() {
+    public boolean isBluetoothScoOn() {
         // TODO(crbug.com/376166935): Consider BLE headset as well.
         AudioDeviceInfo currentDevice = mAudioManager.getCommunicationDevice();
         return currentDevice != null
                 && currentDevice.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
+    }
+
+    @Override
+    public void maybeSetBluetoothScoState(boolean state) {
+        if (state) {
+            AudioDeviceInfo device =
+                    getMatchingCommunicationDevice(
+                            Arrays.asList(AudioDeviceInfo.TYPE_BLUETOOTH_SCO));
+            if (device != null) {
+                mAudioManager.setCommunicationDevice(device);
+            }
+        } else {
+            mAudioManager.clearCommunicationDevice();
+        }
     }
 
     @Override
