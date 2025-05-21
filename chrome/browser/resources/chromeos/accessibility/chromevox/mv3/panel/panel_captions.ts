@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PanelCommandType} from '../common/panel_command.js';
+
 /**
  * @fileoverview Handles processing and displaying braille in the ChromeVox
  * panel.
@@ -43,8 +45,9 @@ class BrailleCaptions {
             'is formatted like int-string. For example, 0-brailleCell is a ' +
             'valid cell ID.');
       }
-      chrome.extension.getBackgroundPage()['ChromeVox'].braille.route(
-          displayPosition);
+      chrome.runtime.sendMessage(
+          undefined,
+          {command: PanelCommandType.BRAILLE_ROUTE, displayPosition});
     }
   }
 

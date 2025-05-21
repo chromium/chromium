@@ -55,10 +55,15 @@ export class PanelCommand {
   }
 }
 
+/**
+ * The types of commands that can be sent between the panel popup and the
+ * ChromeVox service worker.
+ */
 export enum PanelCommandType {
   CLEAR_SPEECH = 'clear_speech',
   ADD_NORMAL_SPEECH = 'add_normal_speech',
   ADD_ANNOTATION_SPEECH = 'add_annotation_speech',
+  BRAILLE_ROUTE = 'braille_route',
   CLOSE_CHROMEVOX = 'close_chromevox',
   UPDATE_BRAILLE = 'update_braille',
   OPEN_MENUS = 'open_menus',
