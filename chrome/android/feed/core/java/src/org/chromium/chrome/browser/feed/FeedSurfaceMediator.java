@@ -1022,17 +1022,18 @@ public class FeedSurfaceMediator
         }
 
         if (mSectionHeaderModel != null) {
-            if (mTabToStreamMap.isEmpty()) return;
-
-            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
-            for (Stream s : mTabToStreamMap.values()) {
-                s.removeOnContentChangedListener(mStreamContentChangedListener);
-                s.destroy();
+            if (!mTabToStreamMap.isEmpty()) {
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
+                for (Stream s : mTabToStreamMap.values()) {
+                    s.removeOnContentChangedListener(mStreamContentChangedListener);
+                    s.destroy();
+                }
+                mTabToStreamMap.clear();
             }
-            mTabToStreamMap.clear();
         } else {
-            if (mCurrentStream == null) return;
-            mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
+            if (mCurrentStream != null) {
+                mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
+            }
         }
         mStreamContentChangedListener = null;
         unbindStream();

@@ -580,6 +580,26 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
+    public void testshowOrHideFeed_afterDestroy() {
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+
+        mFeedSurfaceMediator.updateContent();
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+
+        mFeedSurfaceMediator.showOrHideFeed();
+
+        // Calling showOrHideFeed after destroy should not cause any crash.
+        mFeedSurfaceMediator.destroy();
+        mFeedSurfaceMediator.showOrHideFeed();
+    }
+
+    @Test
     public void testOnHeaderSelected_selectedWithOptions() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
