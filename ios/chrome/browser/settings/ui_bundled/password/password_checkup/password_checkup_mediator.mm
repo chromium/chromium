@@ -199,13 +199,12 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
       return PasswordCheckupHomepageStateRunning;
     case PasswordCheckState::kNoPasswords:
       return PasswordCheckupHomepageStateDisabled;
+    case PasswordCheckState::kCanceled:
+    case PasswordCheckState::kIdle:
     case PasswordCheckState::kSignedOut:
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
     case PasswordCheckState::kOther:
-      return PasswordCheckupHomepageStateDone;
-    case PasswordCheckState::kCanceled:
-    case PasswordCheckState::kIdle:
       return PasswordCheckupHomepageStateDone;
   }
 }
