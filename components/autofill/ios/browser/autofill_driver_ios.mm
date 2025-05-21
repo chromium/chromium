@@ -499,8 +499,10 @@ void AutofillDriverIOS::FormSubmitted(
       for (const auto& remote_token : form.child_frames()) {
         if (std::optional<LocalFrameToken> local_token =
                 driver.Resolve(remote_token.token)) {
-          FromWebStateAndLocalFrameToken(webstate_ptr, *local_token)
-              ->ClearLastInteractedForm();
+          if (AutofillDriverIOS* child_driver =
+                  FromWebStateAndLocalFrameToken(webstate_ptr, *local_token)) {
+            child_driver->ClearLastInteractedForm();
+          }
         }
       }
     }
