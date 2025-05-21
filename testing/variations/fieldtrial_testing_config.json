@@ -11865,6 +11865,21 @@
             ]
         }
     ],
+    "IOSEnterpriseRealtimeUrlFiltering": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSEnterpriseRealtimeUrlFiltering"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExplicitUITraitRegistration": [
         {
             "platforms": [
