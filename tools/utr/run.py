@@ -12,7 +12,8 @@ as-is to all triggered tests. Example uses:
 
 - vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST compile
 - vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST compile-and-test
-- vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST test --gtest_filter=Test.Case
+- vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST test --
+    --gtest_filter=Test.Case
 """
 
 import argparse
