@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
@@ -14,10 +15,12 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 
@@ -139,7 +142,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   if (dismissalCause != LensOverlayDismissalCauseSwipeDownFromSelection &&
       dismissalCause != LensOverlayDismissalCauseSwipeDownFromTranslate) {
     // All other dismissal sources cause the UI to shut down.
-    [self exitLensViewFinderAnimated:NO];
+    [self exitLensViewFinderAnimated:NO completion:nil];
   }
 }
 
@@ -168,13 +171,17 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
 - (void)lensController:(id<ChromeLensViewFinderController>)lensController
           didSelectURL:(GURL)url {
-  // NO-OP
+  __weak __typeof(self) weakSelf = self;
+  [self exitLensViewFinderAnimated:YES
+                        completion:^{
+                          [weakSelf openInNewTab:url];
+                        }];
 }
 
 - (void)lensControllerDidTapDismissButton:
     (id<ChromeLensViewFinderController>)lensController {
   [_metricsRecorder recordLensViewFinderDismissTapped];
-  [self exitLensViewFinderAnimated:YES];
+  [self exitLensViewFinderAnimated:YES completion:nil];
 }
 
 - (void)lensControllerWillAppear:
@@ -189,10 +196,13 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
 #pragma mark - Private
 
-- (void)exitLensViewFinderAnimated:(BOOL)animated {
+- (void)exitLensViewFinderAnimated:(BOOL)animated
+                        completion:(ProceduralBlock)completion {
   if (self.baseViewController.presentedViewController == _lensViewController) {
     [self.baseViewController dismissViewControllerAnimated:animated
-                                                completion:nil];
+                                                completion:completion];
+  } else if (completion) {
+    completion();
   }
 }
 
@@ -209,6 +219,15 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   if (AppState* appState = sceneState.profileState.appState) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
   }
+}
+
+- (void)openInNewTab:(GURL)URL {
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:URL
+                                      inIncognito:self.isOffTheRecord];
+
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+      openURLInNewTab:command];
 }
 
 @end
