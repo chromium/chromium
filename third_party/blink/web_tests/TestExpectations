@@ -9442,6 +9442,8 @@ crbug.com/417479566 [ Mac ] external/wpt/css/css-transitions/transitioncancel-00
 # Gardener 2025-05-15
 crbug.com/417921517 [ Win11-arm64 ] external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure Pass ]
 
+crbug.com/406631048 http/tests/devtools/copy-network-request.js [ Failure Pass ]
+
 # Gardener 2025-05-19
 crbug.com/418345234 [ Win ] external/wpt/fetch/fetch-later/quota/max-payload.tentative.https.window.html [ Failure ]
 crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
