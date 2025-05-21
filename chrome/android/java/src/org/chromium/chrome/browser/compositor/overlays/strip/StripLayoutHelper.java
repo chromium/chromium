@@ -1063,6 +1063,9 @@ public class StripLayoutHelper
             computeAndUpdateTabWidth(
                     /* animate= */ false, /* deferAnimations= */ false, /* closedTab= */ null);
         }
+        if (getSelectedTabId() != Tab.INVALID_TAB_ID) {
+            tabSelected(LayoutManagerImpl.time(), getSelectedTabId(), Tab.INVALID_TAB_ID);
+        }
     }
 
     /** Called to notify that the tab state has been initialized. */
@@ -1091,6 +1094,9 @@ public class StripLayoutHelper
         // Recreate the StripLayoutTabs from the TabModel, now that all of the real Tabs have been
         // restored. This will reuse valid tabs, discard invalid tabs, and correct tab orders.
         rebuildStripTabs(false, false);
+        if (getSelectedTabId() != Tab.INVALID_TAB_ID) {
+            tabSelected(LayoutManagerImpl.time(), getSelectedTabId(), Tab.INVALID_TAB_ID);
+        }
     }
 
     /**
@@ -1381,7 +1387,9 @@ public class StripLayoutHelper
             updateCloseButtons();
 
             Tab tab = getTabById(id);
-            if (tab != null && mTabGroupModelFilter.getTabGroupCollapsed(tab.getRootId())) {
+            if (tab != null
+                    && mTabGroupModelFilter != null
+                    && mTabGroupModelFilter.getTabGroupCollapsed(tab.getRootId())) {
                 mTabGroupModelFilter.deleteTabGroupCollapsed(tab.getRootId());
             }
 
@@ -1394,7 +1402,9 @@ public class StripLayoutHelper
             mUpdateHost.requestUpdate();
 
             setAccessibilityDescription(stripTab, getTabById(id));
-            setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
+            if (prevId != Tab.INVALID_TAB_ID) {
+                setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
+            }
         }
         StripLayoutTab previouslyFocusedTab = findTabById(prevId);
         if (previouslyFocusedTab != null) previouslyFocusedTab.setIsSelected(false);

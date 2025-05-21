@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -3939,6 +3940,33 @@ public class StripLayoutHelperTest {
         verifySharedGroupState(groupTitle, false);
     }
 
+    @Test
+    public void testTabSelectionStateSet_whenTabModelSet() {
+        mStripLayoutHelper = spy(createStripLayoutHelper(/* rtl= */ false, /* incognito= */ false));
+        mModel.setIndex(0);
+        when(mModel.getTabAt(0)).thenReturn(mTab);
+        int tabId = 100;
+        when(mTab.getId()).thenReturn(tabId);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
+        verify(mStripLayoutHelper, times(1))
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
+    }
+
+    @Test
+    public void testTabSelectionStateSet_whenTabStateInitialized() {
+        mStripLayoutHelper = spy(createStripLayoutHelper(/* rtl= */ false, /* incognito= */ false));
+        mModel.setIndex(0);
+        when(mModel.getTabAt(0)).thenReturn(mTab);
+        int tabId = 100;
+        when(mTab.getId()).thenReturn(tabId);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
+        verify(mStripLayoutHelper, times(1))
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
+        mStripLayoutHelper.onTabStateInitialized();
+        verify(mStripLayoutHelper, times(2))
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
+    }
+
     private SavedTabGroup setupTabGroupSync(Token tabGroupId) {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.localId = new LocalTabGroupId(tabGroupId);
@@ -4102,7 +4130,7 @@ public class StripLayoutHelperTest {
                 "Tab strip should match tab model.",
                 expectedNumTabs,
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        verify(mUpdateHost, times(7)).requestUpdate();
+        verify(mUpdateHost, times(8)).requestUpdate();
     }
 
     @Test
