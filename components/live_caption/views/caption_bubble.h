@@ -264,6 +264,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::u16string GetSourceLanguageName() const;
   std::u16string GetTargetLanguageName() const;
 
+  bool IsTranslateHeaderEnabled() const;
+
   // Unowned. Owned by views hierarchy.
   raw_ptr<CaptionBubbleLabel> label_;
   raw_ptr<views::Label> title_;
