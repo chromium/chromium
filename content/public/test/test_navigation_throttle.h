@@ -13,8 +13,6 @@
 
 namespace content {
 
-class NavigationHandle;
-
 // This class can be used to cancel navigations synchronously or asynchronously
 // at specific times in the NavigationThrottle lifecycle.
 //
@@ -35,11 +33,6 @@ class TestNavigationThrottle : public NavigationThrottle {
     SYNCHRONOUS,
     ASYNCHRONOUS,
   };
-
-  // Note: This legacy constructor will be removed soon. New code should use the
-  // other constructor that takes a NavigationThrottleRegistry&.
-  // TODO(https://crbug.com/412524375): Remove this constructor.
-  explicit TestNavigationThrottle(NavigationHandle* handle);
 
   explicit TestNavigationThrottle(NavigationThrottleRegistry& registry);
 

@@ -12,6 +12,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -22,9 +23,9 @@ namespace content {
 // called.
 class DeletingNavigationThrottle : public NavigationThrottle {
  public:
-  DeletingNavigationThrottle(NavigationHandle* handle,
+  DeletingNavigationThrottle(NavigationThrottleRegistry& registry,
                              const base::RepeatingClosure& deletion_callback)
-      : NavigationThrottle(handle), deletion_callback_(deletion_callback) {}
+      : NavigationThrottle(registry), deletion_callback_(deletion_callback) {}
   ~DeletingNavigationThrottle() override {}
 
   NavigationThrottle::ThrottleCheckResult WillStartRequest() override {
@@ -69,8 +70,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    runner_ =
-        std::make_unique<NavigationThrottleRunner>(this, 1, true);
+    runner_ = std::make_unique<NavigationThrottleRunner>(this, 1, true);
   }
 
   void Resume() { runner_->CallResumeForTesting(); }
@@ -153,7 +153,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
   TestNavigationThrottle* CreateTestNavigationThrottle(
       NavigationThrottle::ThrottleCheckResult result) {
     TestNavigationThrottle* test_throttle =
-        new TestNavigationThrottle(&handle_);
+        new TestNavigationThrottle(registry_);
     test_throttle->SetResponseForAllMethods(TestNavigationThrottle::SYNCHRONOUS,
                                             result);
     runner_->AddThrottle(
@@ -178,7 +178,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
   // NavigationHandle in checks.
   void AddDeletingNavigationThrottle() {
     runner_->AddThrottle(std::make_unique<DeletingNavigationThrottle>(
-        &handle_,
+        registry_,
         base::BindRepeating(
             &NavigationThrottleRunnerTest::ResetNavigationThrottleRunner,
             base::Unretained(this))));
@@ -199,8 +199,15 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
 
   void ResetNavigationThrottleRunner() { runner_.reset(); }
 
-  std::unique_ptr<NavigationThrottleRunner> runner_;
   MockNavigationHandle handle_;
+  // Used to construct NavigationThrottle inheritances as the `runner` instance
+  // created in this test doesn't handle GetNavigationHandle() correctly for an
+  // unexpected downcast.
+  // TODO(https://crbug.com/412524375) Should be fixed together with the
+  // `Delegate` issue, tried at https://crrev.com/c/6508568.
+  MockNavigationThrottleRegistry registry_ =
+      MockNavigationThrottleRegistry(&handle_);
+  std::unique_ptr<NavigationThrottleRunner> runner_;
   NavigationThrottleRunner::Event observer_last_event_ =
       NavigationThrottleRunner::Event::kNoEvent;
   bool was_delegate_notified_ = false;

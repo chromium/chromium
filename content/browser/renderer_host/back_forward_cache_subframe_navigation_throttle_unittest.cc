@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "content/public/test/test_navigation_throttle.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -46,7 +47,7 @@ class BackForwardCacheSubframeNavigationThrottleTestBase
   // Subclass should override this method to achieve desired behavior. See
   // `CreatePausedSubframeNavigationRequest`.
   void DidStartNavigation(NavigationHandle* handle) override {
-    NOTIMPLEMENTED();
+    ASSERT_TRUE(false) << "DidStartNavigation should not be called";
   }
 
   // Returns `BackForwardCacheSubframeNavigationThrottle` for a paused subframe
@@ -107,19 +108,29 @@ class BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest
   void SetUp() override {
     BackForwardCacheSubframeNavigationThrottleTestBase::SetUp();
     Observe(contents());
+
+    throttle_inserter_ = std::make_unique<TestNavigationThrottleInserter>(
+        contents(),
+        base::BindLambdaForTesting(
+            [&](NavigationThrottleRegistry& registry) -> void {
+              // Defers subframe navigations on `WillCommitWithoutUrlLoader` by
+              // registering a `TestNavigationThrottle`, so that
+              // NavigationRequest created in each test from
+              // `CreatePausedSubframeNavigationRequest` wouldn't commit
+              // immediately.
+              auto throttle =
+                  std::make_unique<TestNavigationThrottle>(registry);
+              throttle->SetResponse(
+                  TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER,
+                  TestNavigationThrottle::SYNCHRONOUS,
+                  NavigationThrottle::DEFER);
+              registry.AddThrottle(std::move(throttle));
+            }));
   }
 
-  // Defers subframe navigations on `WillCommitWithoutUrlLoader` by
-  // registering a `TestNavigationThrottle`, so that NavigationRequest created
-  // in each test from `CreatePausedSubframeNavigationRequest` wouldn't commit
-  // immediately.
   void DidStartNavigation(NavigationHandle* handle) override {
-    auto throttle = std::make_unique<TestNavigationThrottle>(handle);
-    throttle->SetResponse(
-        TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER,
-        TestNavigationThrottle::SYNCHRONOUS, NavigationThrottle::DEFER);
-    handle->RegisterThrottleForTesting(
-        std::unique_ptr<TestNavigationThrottle>(std::move(throttle)));
+    // Override to hide the parent class's ASSERT_TRUE(false) to permit the
+    // callback.
   }
 
   GURL GetNavigationTargetURL() override {
@@ -128,6 +139,7 @@ class BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest
 
  private:
   static constexpr char kSubframeNavigateWithoutURLLoaderURL[] = "about:blank";
+  std::unique_ptr<TestNavigationThrottleInserter> throttle_inserter_;
 };
 
 TEST_F(BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest,
@@ -227,7 +239,10 @@ TEST_F(
 class BackForwardCacheSubframeNavigationThrottleTest
     : public BackForwardCacheSubframeNavigationThrottleTestBase {
  protected:
-  void DidStartNavigation(NavigationHandle* handle) override {}
+  void DidStartNavigation(NavigationHandle* handle) override {
+    // Override to hide the parent class's ASSERT_TRUE(false) to permit the
+    // callback.
+  }
 
   GURL GetNavigationTargetURL() override {
     return GURL(kSubframeNavigateWithURLLoaderURL);

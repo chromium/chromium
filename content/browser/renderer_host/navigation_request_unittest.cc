@@ -162,8 +162,8 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   // synchronously return |result| on checks by default.
   TestNavigationThrottle* CreateTestNavigationThrottle(
       NavigationThrottle::ThrottleCheckResult result) {
-    TestNavigationThrottle* test_throttle =
-        new TestNavigationThrottle(GetNavigationRequest());
+    TestNavigationThrottle* test_throttle = new TestNavigationThrottle(
+        *GetNavigationRequest()->GetNavigationThrottleRunnerForTesting());
     test_throttle->SetResponseForAllMethods(TestNavigationThrottle::SYNCHRONOUS,
                                             result);
     GetNavigationRequest()->RegisterThrottleForTesting(

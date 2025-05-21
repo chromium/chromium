@@ -12,9 +12,6 @@
 
 namespace content {
 
-TestNavigationThrottle::TestNavigationThrottle(NavigationHandle* handle)
-    : NavigationThrottle(handle) {}
-
 TestNavigationThrottle::TestNavigationThrottle(
     NavigationThrottleRegistry& registry)
     : NavigationThrottle(registry) {}

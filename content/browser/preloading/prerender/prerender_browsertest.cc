@@ -5555,8 +5555,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
   ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
           [&throttle](NavigationThrottleRegistry& registry) -> void {
-            auto throttle_ptr = std::make_unique<TestNavigationThrottle>(
-                &registry.GetNavigationHandle());
+            auto throttle_ptr =
+                std::make_unique<TestNavigationThrottle>(registry);
             CHECK(!throttle);
             throttle = throttle_ptr.get();
             throttle_ptr->SetResponse(

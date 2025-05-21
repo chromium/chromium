@@ -152,8 +152,7 @@ const ActivationListTestData kActivationListTestData[] = {
 }  //  namespace
 
 class SafeBrowsingPageActivationThrottleTest
-    : public content::RenderViewHostTestHarness,
-      public content::WebContentsObserver {
+    : public content::RenderViewHostTestHarness {
  public:
   SafeBrowsingPageActivationThrottleTest()
       : content::RenderViewHostTestHarness(
@@ -189,7 +188,6 @@ class SafeBrowsingPageActivationThrottleTest
         /*database_manager=*/nullptr, ruleset_dealer_.get());
     fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
     NavigateAndCommit(GURL("https://test.com"));
-    Observe(contents);
 
     observer_ = std::make_unique<TestSubresourceFilterObserver>(contents);
 
@@ -199,7 +197,12 @@ class SafeBrowsingPageActivationThrottleTest
         &message_dispatcher_bridge_);
 #endif
 
-    SetUpThrottleInserter();
+    throttle_inserter_ =
+        std::make_unique<content::TestNavigationThrottleInserter>(
+            content::RenderViewHostTestHarness::web_contents(),
+            base::BindRepeating(
+                &SafeBrowsingPageActivationThrottleTest::InsertThrottle,
+                base::Unretained(this)));
   }
 
   virtual void Configure() {
@@ -230,27 +233,15 @@ class SafeBrowsingPageActivationThrottleTest
 
   TestSubresourceFilterObserver* observer() { return observer_.get(); }
 
-  // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override {}
-
-  void SetUpThrottleInserter() {
-    throttle_inserter_ =
-        std::make_unique<content::TestNavigationThrottleInserter>(
-            content::RenderViewHostTestHarness::web_contents(),
-            base::BindLambdaForTesting(
-                [&](content::NavigationThrottleRegistry& registry) -> void {
-                  auto& navigation_handle = registry.GetNavigationHandle();
-                  if (IsInSubresourceFilterRoot(&navigation_handle)) {
-                    registry.AddThrottle(
-                        std::make_unique<SafeBrowsingPageActivationThrottle>(
-                            registry, delegate(),
-                            fake_safe_browsing_database_));
-                  }
-                  ContentSubresourceFilterThrottleManager::FromNavigationHandle(
-                      registry.GetNavigationHandle())
-                      ->MaybeCreateAndAddNavigationThrottles(registry);
-                }));
+  virtual void InsertThrottle(content::NavigationThrottleRegistry& registry) {
+    auto& navigation_handle = registry.GetNavigationHandle();
+    if (IsInSubresourceFilterRoot(&navigation_handle)) {
+      registry.AddThrottle(std::make_unique<SafeBrowsingPageActivationThrottle>(
+          registry, delegate(), fake_safe_browsing_database_));
+    }
+    ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+        registry.GetNavigationHandle())
+        ->MaybeCreateAndAddNavigationThrottles(registry);
   }
 
   // Returns the frame host the navigation committed in, or nullptr if it did
@@ -429,12 +420,11 @@ class SafeBrowsingPageActivationThrottleTestWithCancelling
 
   ~SafeBrowsingPageActivationThrottleTestWithCancelling() override {}
 
-  void DidStartNavigation(content::NavigationHandle* handle) override {
-    auto throttle = std::make_unique<content::TestNavigationThrottle>(handle);
+  void InsertThrottle(content::NavigationThrottleRegistry& registry) override {
+    auto throttle = std::make_unique<content::TestNavigationThrottle>(registry);
     throttle->SetResponse(throttle_method_, result_sync_,
                           content::NavigationThrottle::CANCEL);
-    handle->RegisterThrottleForTesting(std::move(throttle));
-    SafeBrowsingPageActivationThrottleTest::DidStartNavigation(handle);
+    registry.AddThrottle(std::move(throttle));
   }
 
   content::TestNavigationThrottle::ThrottleMethod throttle_method() {
