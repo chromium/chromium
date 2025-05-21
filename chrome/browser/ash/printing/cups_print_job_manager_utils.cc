@@ -92,11 +92,17 @@ void UpdateProcessingJob(const ::printing::PrinterStatus& printer_status,
   }
 }
 
-void UpdateCompletedJob(const ::printing::CupsJob& job,
+void UpdateCompletedJob(const ::printing::PrinterStatus& printer_status,
+                        const ::printing::CupsJob& job,
                         CupsPrintJob* print_job) {
-  DCHECK_GE(job.current_pages, print_job->total_page_number());
-  print_job->set_error_code(PrinterErrorCode::NO_ERROR);
-  print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
+  if (job.current_pages >= print_job->total_page_number()) {
+    print_job->set_error_code(PrinterErrorCode::NO_ERROR);
+    print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
+  } else {
+    print_job->set_error_code(
+        PrinterErrorCodeFromPrinterStatusReasons(printer_status));
+    print_job->set_state(CupsPrintJob::State::STATE_CANCELLED);
+  }
 }
 
 void UpdateStoppedJob(const ::printing::CupsJob& job, CupsPrintJob* print_job) {
@@ -138,7 +144,7 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
       UpdateProcessingJob(printer_status, job, print_job, &pages_updated);
       break;
     case ::printing::CupsJob::COMPLETED:
-      UpdateCompletedJob(job, print_job);
+      UpdateCompletedJob(printer_status, job, print_job);
       break;
     case ::printing::CupsJob::STOPPED:
       UpdateStoppedJob(job, print_job);
