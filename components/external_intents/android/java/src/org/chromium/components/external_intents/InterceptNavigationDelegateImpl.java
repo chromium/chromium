@@ -649,7 +649,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     /** Returns whether a Tab instance should be reparented from the PWA to the browser. */
     public boolean shouldReparentTab(WebContents webContents) {
-        return ExternalIntentsFeatures.NAVIGATION_CAPTURE_REFACTOR_ANDROID.isEnabled()
+        return ExternalIntentsFeatures.REPARENT_AUXILIARY_NAVIGATION_FROM_PWA.isEnabled()
                 && mClient.isTabInPWA()
                 && mClient.isInDesktopWindowingMode()
                 && webContents.hasOpener()

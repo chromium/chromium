@@ -5041,8 +5041,8 @@ const char kNavBarColorMatchesTabBackgroundDescription[] =
 const char kNavigationCaptureRefactorAndroidName[] =
     "Navigation Capture refactoring for Chrome on Android";
 const char kNavigationCaptureRefactorAndroidDescription[] =
-    "Enables opening links from Chrome in an installed PWA."
-    "Currently under refactoring.";
+    "Prevents UI jank when a navigation is 'captured', causing a new "
+    "app to be opened.";
 
 const char kNotificationOneTapUnsubscribeName[] =
     "Notification one-tap unsubscribe";
@@ -5125,6 +5125,11 @@ const char kReaderModeImprovementsName[] = "Reader Mode improvements";
 const char kReaderModeImprovementsDescription[] =
     "Collection of improvements to reader modefor android.";
 
+const char kReparentAuxiliaryNavigationFromPWAName[] =
+    "Reparent Auxiliary Navigation From PWA";
+const char kReparentAuxiliaryNavigationFromPWADescription[] =
+    "Opens a new browser tab every time a new auxiliary navigation "
+    "starts in a PWA.";
 const char kReparentTopLevelNavigationFromPWAName[] =
     "Reparent Top Level Navigation From PWA";
 const char kReparentTopLevelNavigationFromPWADescription[] =

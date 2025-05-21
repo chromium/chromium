@@ -4,12 +4,12 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <script>
-    function openApp() {
-      window.open('intent://test/#Intent;scheme=externalappscheme;end');
+    function openUrl() {
+      window.open('https://example.com', '_blank');
     };
   </script>
 </head>
-<body style='height:10000px;' onclick='openApp();'>
-  Click page to open App!!
+<body style='height:10000px;' onclick='openUrl();'>
+  Click page. Will open a new tab.
 </body>
 </html>

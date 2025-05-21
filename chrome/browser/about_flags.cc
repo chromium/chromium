@@ -7535,6 +7535,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kEducationalTipDefaultBrowserPromoCard)},
 
+    {"enable-reparent-auxiliary-navigation-from-pwa",
+     flag_descriptions::kReparentAuxiliaryNavigationFromPWAName,
+     flag_descriptions::kReparentAuxiliaryNavigationFromPWADescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(external_intents::kReparentAuxiliaryNavigationFromPWA)},
+
     {"enable-reparent-top-level-navigation-from-pwa",
      flag_descriptions::kReparentTopLevelNavigationFromPWAName,
      flag_descriptions::kReparentTopLevelNavigationFromPWADescription,

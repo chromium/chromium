@@ -23,11 +23,12 @@ public class ExternalIntentsFeatures {
     public static final String BLOCK_INTENTS_TO_SELF_NAME = "BlockIntentsToSelf";
     public static final String NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME =
             "NavigationCaptureRefactorAndroid";
-    // Feature instance declared in AuxiliaryNavigationStaysInBrowserFeature
     public static final String AUXILIARY_NAVIGATION_STAYS_IN_BROWSER_NAME =
             "AuxiliaryNavigationStaysInBrowser";
     public static final String REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA_NAME =
             "ReparentTopLevelNavigationFromPWA";
+    public static final String REPARENT_AUXILIARY_NAVIGATION_FROM_PWA_NAME =
+            "ReparentAuxiliaryNavigationFromPWA";
 
     public static final ExternalIntentsFeature EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeature(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
@@ -45,6 +46,9 @@ public class ExternalIntentsFeatures {
 
     public static final ExternalIntentsFeature REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA =
             new ExternalIntentsFeature(4, REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA_NAME);
+
+    public static final ExternalIntentsFeature REPARENT_AUXILIARY_NAVIGATION_FROM_PWA =
+            new ExternalIntentsFeature(5, REPARENT_AUXILIARY_NAVIGATION_FROM_PWA_NAME);
 
     public static class ExternalIntentsFeature extends Features {
         private final int mOrdinal;
@@ -77,9 +81,9 @@ public class ExternalIntentsFeatures {
         public boolean isEnabled(boolean isInDesktopWindowingMode) {
             String featureString = getFieldTrialParamByFeatureAsString(PARAM_NAME);
 
-            // Arbitrary way to enable the feature (e.g. for testing)
+            // Arbitrary way to enable the feature (e.g. for testing).
             boolean isEnabled = isEnabled();
-            // The feature is supposed to work for desktop windowing only
+            // The feature is supposed to work for desktop windowing only.
             boolean isValidDesktopWindowingMode =
                     featureString.equals(DESKTOP_WM_FIELD) && isInDesktopWindowingMode;
             // The feature is supposed to work independently of windowing mode.
