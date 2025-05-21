@@ -234,7 +234,8 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
       waitForUIElementToDisappearWithMatcher:VirtualCardEnrollmentTitle()];
 }
 
-- (void)testSaveCardInfobarFollowedByVirtualCardEnrollment {
+// TODO(crbug.com/419219302): Test is flaky.
+- (void)DISABLED_testSaveCardInfobarFollowedByVirtualCardEnrollment {
   [self fillAndSubmitFormWithServerResponse];
 
   // Dismiss save card bottomsheet. Dismissing the bottomsheet incurs a strike
