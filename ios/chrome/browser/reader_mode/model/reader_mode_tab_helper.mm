@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -156,11 +155,11 @@ UIView* ReaderModeTabHelper::GetReaderModeContentView() {
 }
 
 bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
-  if (!web_state_ || web_state_->IsBeingDestroyed()) {
+  if (!web_state_ || web_state_->IsBeingDestroyed() ||
+      web_state_->GetLastCommittedURL() != reader_mode_eligible_url_ ||
+      !reader_mode_eligible_url_.is_valid()) {
     return false;
   }
-  // TODO(crbug.com/416226085): Maybe return false if the page is not
-  // distillable.
   return !IsUrlNtp(web_state_->GetVisibleURL()) && web_state_->ContentIsHTML();
 }
 
@@ -173,20 +172,21 @@ void ReaderModeTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   CHECK_EQ(web_state, web_state_);
-  // TODO(crbug.com/409940117): If `IsReaderModeAvailable()` then Reader mode is
-  // being debugged, so the heuristic shouldn't be started automatically on page
-  // load. Remove this check when debugging code is cleaned up.
-  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS &&
-      !IsReaderModeAvailable()) {
-    // Guarantee that there is only one trigger heuristic running at a time.
-    if (trigger_reader_mode_timer_.IsRunning()) {
-      trigger_reader_mode_timer_.Stop();
-    }
-    trigger_reader_mode_timer_.Start(
-        FROM_HERE, ReaderModeDistillerPageLoadDelay(),
-        base::BindOnce(&ReaderModeTabHelper::TriggerReaderModeHeuristic,
-                       weak_ptr_factory_.GetWeakPtr()));
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    TriggerReaderModeHeuristicAsync(web_state_->GetLastCommittedURL());
   }
+}
+
+void ReaderModeTabHelper::TriggerReaderModeHeuristicAsync(const GURL& url) {
+  if (!IsReaderModeAvailable()) {
+    return;
+  }
+  // Guarantee that there is only one trigger heuristic running at a time.
+  ResetUrlEligibility(url);
+  trigger_reader_mode_timer_.Start(
+      FROM_HERE, ReaderModeDistillerPageLoadDelay(),
+      base::BindOnce(&ReaderModeTabHelper::TriggerReaderModeHeuristic,
+                     weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void ReaderModeTabHelper::DidStartNavigation(
@@ -198,9 +198,7 @@ void ReaderModeTabHelper::DidStartNavigation(
   // A new navigation is started while the Reader Mode heuristic trigger is
   // running on the previous navigation. Stop the trigger to attach the new
   // navigation.
-  if (trigger_reader_mode_timer_.IsRunning()) {
-    trigger_reader_mode_timer_.Stop();
-  }
+  ResetUrlEligibility(navigation_context->GetUrl());
 }
 
 void ReaderModeTabHelper::DidFinishNavigation(
@@ -217,6 +215,14 @@ void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   SetActive(false);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
+  // Ensure that only one asynchronous eligibility check is running at a time.
+  if (trigger_reader_mode_timer_.IsRunning()) {
+    trigger_reader_mode_timer_.Stop();
+  }
+  reader_mode_eligible_url_ = GURL();
 }
 
 void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
@@ -249,6 +255,15 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
         .SetResult(static_cast<int64_t>(result))
         .Record(ukm::UkmRecorder::Get());
   }
+
+  if (url != web_state_->GetLastCommittedURL()) {
+    // There has been a change in the committed URL since the last heuristic
+    // run. Re-run the heuristic and reset the eligible URL.
+    TriggerReaderModeHeuristicAsync(web_state_->GetLastCommittedURL());
+    return;
+  }
+  reader_mode_eligible_url_ =
+      result == ReaderModeHeuristicResult::kReaderModeEligible ? url : GURL();
 }
 
 void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
@@ -264,27 +279,8 @@ void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
   }
 }
 
-bool ReaderModeTabHelper::CanTriggerReaderModeHeuristic() {
-  if (IsReaderModeAvailable()) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          kEnableReaderModeDistillerHeuristicForMetrics)) {
-    return false;
-  }
-  const double page_load_probability =
-      kReaderModeDistillerPageLoadProbability.Get();
-  if (page_load_probability <= 0.0 || page_load_probability > 1.0) {
-    // Invalid probability range. Disable the Reader Mode feature.
-    return false;
-  }
-
-  const double rand_double = base::RandDouble();
-  return rand_double < page_load_probability;
-}
-
-void ReaderModeTabHelper::TriggerReaderModeHeuristic() {
-  if (!CanTriggerReaderModeHeuristic()) {
+void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
+  if (!IsReaderModeAvailable()) {
     return;
   }
   web::WebFramesManager* web_frames_manager =

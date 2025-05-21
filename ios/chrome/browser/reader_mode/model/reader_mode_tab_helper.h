@@ -76,15 +76,18 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       NSURLRequest* request,
       web::WebStatePolicyDecider::RequestInfo request_info) override;
 
-  // Trigger the heuristic to determine reader mode eligibility.
-  void TriggerReaderModeHeuristic();
-
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
-  // Determine if the page load is eligible for triggering the reader mode
-  // heuristic.
-  bool CanTriggerReaderModeHeuristic();
+  // Trigger the heuristic to determine reader mode eligibility.
+  void TriggerReaderModeHeuristic(const GURL& url);
+
+  // Starts the reader mode heuristic with a timer.
+  void TriggerReaderModeHeuristicAsync(const GURL& url);
+
+  // Resets `reader_mode_eligible_url_` if it is different than the current url
+  // context and stops all heuristic triggering.
+  void ResetUrlEligibility(const GURL& url);
 
   // Callback for handling completion of the page distillation.
   void PageDistillationCompleted(
@@ -108,6 +111,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   base::TimeDelta heuristic_latency_;
   base::OneShotTimer trigger_reader_mode_timer_;
 
+  GURL reader_mode_eligible_url_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   raw_ptr<DistillerService> distiller_service_;
 

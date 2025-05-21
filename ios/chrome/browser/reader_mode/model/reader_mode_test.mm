@@ -23,10 +23,16 @@ ReaderModeTest::~ReaderModeTest() = default;
 void ReaderModeTest::SetUp() {
   scoped_feature_list_.InitAndEnableFeature(kEnableReaderMode);
   profile_ = TestProfileIOS::Builder().Build();
+
+  web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
+      ->ConfigureFeatures({ReaderModeJavaScriptFeature::GetInstance()});
 }
 
 std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
-  return std::make_unique<web::FakeWebState>();
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  return web_state;
 }
 
 void ReaderModeTest::LoadWebpage(web::FakeWebState* web_state,

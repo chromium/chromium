@@ -8084,12 +8084,7 @@
     "expiry_milestone": 145
   },
   {
-    "name": "reader-mode-distiller-enabled",
-    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "reader-mode-distiller-heuristic-enabled",
+    "name": "reader-mode-debug-info-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145
   },

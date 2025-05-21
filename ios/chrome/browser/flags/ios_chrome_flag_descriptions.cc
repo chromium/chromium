@@ -1199,19 +1199,14 @@ const char kNotificationSettingsMenuItemDescription[] =
     "Displays the menu item for the notification controls inside the chrome "
     "settings UI.";
 
-const char kReaderModeDistillerName[] = "Enables Reader Mode distillation";
-const char kReaderModeDistillerDescription[] =
-    "Enables Reader Mode distillation on the current web page.";
-
-const char kReaderModeDistillerHeuristicName[] =
-    "Reader Mode distillation trigger heuristic";
-const char kReaderModeDistillerHeuristicDescription[] =
-    "Enables Reader Mode distillation heuristic that triggers Reader Mode UI "
-    "entry point if available";
-
 const char kReaderModeName[] = "Enables Reader Mode";
 const char kReaderModeDescription[] =
     "Enables Reader Mode UI and entry points.";
+
+const char kReaderModeDebugInfoName[] = "Enables Reader Mode Debugging";
+const char kReaderModeDebugInfoDescription[] =
+    "Enables additional debug information for the Reader Mode feature such as "
+    "latency metrics.";
 
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =

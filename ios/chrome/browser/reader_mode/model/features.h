@@ -8,20 +8,11 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 
-// Feature to enable Reader Mode page distillation heuristic that tracks
-// an approximation of when the Reader Mode UI will be available.
-BASE_DECLARE_FEATURE(kEnableReaderModeDistillerHeuristicForMetrics);
-
-// Feature to enable Reader Mode page distillation.
-BASE_DECLARE_FEATURE(kEnableReaderModeDistillerForMetrics);
-
 // Feature to enable Reader Mode UI and entry points.
 BASE_DECLARE_FEATURE(kEnableReaderMode);
 
-// Name to configure the page load probability.
-extern const char kReaderModeDistillerPageLoadProbabilityName[];
-// Configurable rate from (0, 1] at which to trigger the distiller heuristic.
-extern const base::FeatureParam<double> kReaderModeDistillerPageLoadProbability;
+// Feature to enable debugging information for Reader Mode UI.
+BASE_DECLARE_FEATURE(kEnableReaderModeDebugInfo);
 
 // Name to configure the duration string for page load delay. See
 // `base::TimeDeltaFromString` for valid duration string configurations.

@@ -1356,17 +1356,6 @@ const FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
     {"- Animated IPH", kFeedSwipeInProductHelpAnimated,
      std::size(kFeedSwipeInProductHelpAnimated), nullptr}};
 
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam[] = {
-        {kReaderModeDistillerPageLoadProbabilityName, "1"},
-        {kReaderModeDistillerPageLoadDelayDurationStringName, "0"}};
-const FeatureEntry::FeatureVariation kReaderModeDistillerHeuristicOptions[] = {
-    {"no sampling with no delay",
-     kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam,
-     std::size(kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam),
-     nullptr},
-};
-
 // LINT.IfChange(AutofillVcnEnrollStrikeExpiryTime)
 const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_120Days[] =
     {{"autofill_vcn_strike_expiry_time_days", "120"}};
@@ -2605,18 +2594,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForHomeAndWork)},
-    {"reader-mode-distiller-heuristic-enabled",
-     flag_descriptions::kReaderModeDistillerHeuristicName,
-     flag_descriptions::kReaderModeDistillerHeuristicDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kEnableReaderModeDistillerHeuristicForMetrics,
-         kReaderModeDistillerHeuristicOptions,
-         "ReaderModeHeuristicSampling")},
-    {"reader-mode-distiller-enabled",
-     flag_descriptions::kReaderModeDistillerName,
-     flag_descriptions::kReaderModeDistillerDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableReaderModeDistillerForMetrics)},
     {"lens-overlay-navigation-history",
      flag_descriptions::kLensOverlayNavigationHistoryName,
      flag_descriptions::kLensOverlayNavigationHistoryDescription,
@@ -2678,6 +2655,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"reader-mode-enabled", flag_descriptions::kReaderModeName,
      flag_descriptions::kReaderModeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableReaderMode)},
+    {"reader-mode-debug-info-enabled",
+     flag_descriptions::kReaderModeDebugInfoName,
+     flag_descriptions::kReaderModeDebugInfoDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableReaderModeDebugInfo)},
     {"best-of-app-fre", flag_descriptions::kBestOfAppFREName,
      flag_descriptions::kBestOfAppFREDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBestOfAppFRE,

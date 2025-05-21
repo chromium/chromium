@@ -704,14 +704,11 @@ extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 extern const char kNotificationSettingsMenuItemName[];
 extern const char kNotificationSettingsMenuItemDescription[];
 
-extern const char kReaderModeDistillerName[];
-extern const char kReaderModeDistillerDescription[];
-
-extern const char kReaderModeDistillerHeuristicName[];
-extern const char kReaderModeDistillerHeuristicDescription[];
-
 extern const char kReaderModeName[];
 extern const char kReaderModeDescription[];
+
+extern const char kReaderModeDebugInfoName[];
+extern const char kReaderModeDebugInfoDescription[];
 
 // Title and description for the flag to refactor the toolbarsSize.
 extern const char kRefactorToolbarsSizeName[];

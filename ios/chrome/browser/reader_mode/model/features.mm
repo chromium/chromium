@@ -9,32 +9,20 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
-BASE_FEATURE(kEnableReaderModeDistillerHeuristicForMetrics,
-             "EnableReaderModeDistillerHeuristic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableReaderModeDistillerForMetrics,
-             "EnableReaderModeDistiller",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableReaderMode,
              "EnableReaderMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kReaderModeDistillerPageLoadProbabilityName[] =
-    "reader-mode-distiller-page-load-probability";
-
-constexpr base::FeatureParam<double> kReaderModeDistillerPageLoadProbability{
-    &kEnableReaderModeDistillerHeuristicForMetrics,
-    /*name=*/kReaderModeDistillerPageLoadProbabilityName,
-    /*default_value=*/0.001};
+BASE_FEATURE(kEnableReaderModeDebugInfo,
+             "EnableReaderModeDebugInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kReaderModeDistillerPageLoadDelayDurationStringName[] =
     "reader-mode-distiller-page-load-delay-duration-string";
 
 const base::TimeDelta ReaderModeDistillerPageLoadDelay() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kEnableReaderModeDistillerHeuristicForMetrics,
+      kEnableReaderMode,
       /*name=*/kReaderModeDistillerPageLoadDelayDurationStringName,
       /*default_value=*/kReaderModeDistillerPageLoadDelay);
 }
@@ -44,5 +32,5 @@ bool IsReaderModeAvailable() {
 }
 
 bool IsReaderModeSnackbarEnabled() {
-  return base::FeatureList::IsEnabled(kEnableReaderMode);
+  return base::FeatureList::IsEnabled(kEnableReaderModeDebugInfo);
 }
