@@ -41,10 +41,9 @@ class GlicE2ETest : public InteractiveBrowserTestT<signin::test::LiveTest> {
 
   void PreRunTestOnMainThread() override;
 
-  MultiStep WaitForAndInstrumentGlic();
+  MultiStep WaitForAndInstrumentFre();
 
-  MultiStep ClickElement(
-      const WebContentsInteractionTestUtil::DeepQuery& where);
+  MultiStep WaitForAndInstrumentGlic();
 
   // Based on the test mode, do a UI signin flow (live mode or record mode),
   // or force signin a fake account (replay mode).

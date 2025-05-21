@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_TEST_UTIL_H_
 
 #include "base/scoped_observation_traits.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -30,6 +31,17 @@ struct ScopedObservationTraits<glic::GlicWindowController,
 namespace glic::test {
 
 namespace internal {
+
+// Observes FRE showing dialog for changes to state().
+class GlicFreShowingDialogObserver
+    : public ui::test::PollingStateObserver<bool> {
+ public:
+  explicit GlicFreShowingDialogObserver(GlicFreController* controller);
+  ~GlicFreShowingDialogObserver() override;
+};
+
+DECLARE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,
+                               kGlicFreShowingDialogState);
 
 // Observes `controller` for changes to state().
 class GlicWindowControllerStateObserver
@@ -101,6 +113,11 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WebUiStateObserver, kWebUiState);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
 // The glic webview contents.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
+
+// The glic FRE WebUI web contents.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicFreHostElementId);
+// The glic FRE webview contents.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicFreContentsElementId);
 
 }  // namespace glic::test
 

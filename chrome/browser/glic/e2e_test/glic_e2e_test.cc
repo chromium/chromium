@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -47,6 +48,7 @@ namespace glic::test {
 
 namespace {
 
+using glic::test::internal::kGlicFreShowingDialogState;
 using glic::test::internal::kGlicWindowControllerState;
 
 constexpr base::FilePath::StringViewType kRecordingDirectoryPath =
@@ -151,7 +153,8 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
     CHECK(test_account.has_value());
     sign_in_functions.TurnOnSync(*test_account, 0);
   } else {
-    ForceSigninAndModelExecutionCapability(browser()->profile());
+    SigninWithPrimaryAccount(browser()->profile());
+    SetModelExecutionCapability(browser()->profile(), true);
   }
 }
 
@@ -176,6 +179,25 @@ void GlicE2ETest::TearDownOnMainThread() {
   LiveTest::TearDownOnMainThread();
 }
 
+ui::test::InteractiveTestApi::MultiStep GlicE2ETest::WaitForAndInstrumentFre() {
+  MultiStep steps(Steps(
+      UninstrumentWebContents(kGlicFreContentsElementId, false),
+      UninstrumentWebContents(kGlicFreHostElementId, false),
+      InAnyContext(ObserveState(kGlicFreShowingDialogState,
+                                window_controller().fre_controller()),
+                   WaitForState(kGlicFreShowingDialogState, true),
+                   Steps(InstrumentNonTabWebView(
+                             kGlicFreHostElementId,
+                             GlicFreDialogView::kWebViewElementIdForTesting),
+                         InstrumentInnerWebContents(kGlicFreContentsElementId,
+                                                    kGlicFreHostElementId, 0),
+                         WaitForWebContentsReady(kGlicFreContentsElementId)),
+                   StopObservingState(kGlicFreShowingDialogState))));
+
+  AddDescriptionPrefix(steps, "WaitForAndInstrumentFre");
+  return steps;
+}
+
 ui::test::InteractiveTestApi::MultiStep
 GlicE2ETest::WaitForAndInstrumentGlic() {
   MultiStep steps(Steps(
@@ -193,15 +215,6 @@ GlicE2ETest::WaitForAndInstrumentGlic() {
           StopObservingState(kGlicWindowControllerState))));
 
   AddDescriptionPrefix(steps, "WaitForAndInstrumentGlic");
-  return steps;
-}
-
-ui::test::InteractiveTestApi::MultiStep GlicE2ETest::ClickElement(
-    const WebContentsInteractionTestUtil::DeepQuery& where) {
-  MultiStep steps =
-      Steps(WaitForElementVisible(kGlicContentsElementId, {"body"}),
-            ExecuteJsAt(kGlicContentsElementId, where, "(el)=>el.click()"));
-  AddDescriptionPrefix(steps, "ClickElement");
   return steps;
 }
 
