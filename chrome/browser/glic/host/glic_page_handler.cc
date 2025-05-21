@@ -346,8 +346,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicActor);
     state->enable_scroll_to =
         base::FeatureList::IsEnabled(features::kGlicScrollTo);
-    state->enable_drag_to_resize_panel =
-        base::FeatureList::IsEnabled(features::kGlicUserResize);
     state->enable_zero_state_suggestions = base::FeatureList::IsEnabled(
         contextual_cueing::kGlicZeroStateSuggestions);
 

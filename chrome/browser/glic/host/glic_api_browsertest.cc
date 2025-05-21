@@ -174,7 +174,6 @@ class GlicApiTest : public NonInteractiveGlicTest {
               {features::kGlicMinLoadingTimeMs.name, "40"},
           }},
          {features::kGlicScrollTo, {}},
-         {features::kGlicUserResize, {}},
          {features::kGlicClosedCaptioning, {}},
          {features::kGlicApiActivationGating, {}}},
         /*disabled_features=*/

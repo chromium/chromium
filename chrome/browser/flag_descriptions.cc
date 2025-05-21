@@ -8331,10 +8331,6 @@ const char kGlicDescription[] = "Enables glic";
 const char kGlicZOrderChangesName[] = "Glic Z Order Changes";
 const char kGlicZOrderChangesDescription[] = "Enables glic z order changing";
 
-const char kGlicUserResizeName[] = "Glic User Resize";
-const char kGlicUserResizeDescription[] =
-    "Enables resizing the glic panel by dragging";
-
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
     "Desktop PWA Link Capturing with Scope Extensions";
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =

@@ -10520,7 +10520,6 @@ from previous Chrome versions.
       label="OmniboxUIExperimentJogTextfieldOnPopup:disabled"/>
   <int value="-1351107814" label="Picker:enabled"/>
   <int value="-1350572940" label="BatchUploadDesktop:enabled"/>
-  <int value="-1350537890" label="GlicUserResize:disabled"/>
   <int value="-1350260119" label="OngoingProcesses:disabled"/>
   <int value="-1349896789" label="DelayNavigation:enabled"/>
   <int value="-1349872906"
@@ -18795,7 +18794,6 @@ from previous Chrome versions.
       label="AccessibilityInternalsPageImprovements:disabled"/>
   <int value="1779720440"
       label="AutofillEnableIbanClientSideUrlFiltering:disabled"/>
-  <int value="1780206325" label="GlicUserResize:enabled"/>
   <int value="1780392521"
       label="OmniboxUpdatedConnectionSecurityIndicators:disabled"/>
   <int value="1781225884" label="FedCmAuthz:disabled"/>

@@ -958,11 +958,9 @@ void GlicWindowControllerImpl::EnableDragResize(bool enabled) {
     SetGlicWindowToFloatingMode(!enabled);
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
-    GetGlicWidget()->widget_delegate()->SetCanResize(enabled);
-    GetGlicView()->UpdateBackgroundColor();
-    glic_window_animator_->MaybeAnimateToTargetSize();
-  }
+  GetGlicWidget()->widget_delegate()->SetCanResize(enabled);
+  GetGlicView()->UpdateBackgroundColor();
+  glic_window_animator_->MaybeAnimateToTargetSize();
 }
 
 gfx::Size GlicWindowControllerImpl::GetSize() {

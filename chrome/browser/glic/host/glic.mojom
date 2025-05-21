@@ -109,8 +109,7 @@ interface PageHandler {
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
   // Set whether the panel can be manually resized, or if the panel hasn't been
-  // created yet, whether it should be resizable when created. No effect if the
-  // GlicUserResize feature flag is disabled.
+  // created yet, whether it should be resizable when created.
   EnableDragResize(bool enabled);
 
   // Notifies the PageHandler that the state of the WebUI has changed.
@@ -201,8 +200,6 @@ struct WebClientInitialState {
   bool enable_act_in_focused_tab;
   // Whether features::kGlicScrollTo is enabled.
   bool enable_scroll_to;
-  // Whether features::kGlicUserResize is enabled.
-  bool enable_drag_to_resize_panel;
   // Whether features::kGlicClosedCaptioning is enabled.
   bool enable_closed_captioning_feature;
   // Whether the glic closed captioning setting is enabled.
@@ -602,8 +599,7 @@ struct OpenPanelInfo {
   gfx.mojom.Size? panelSize;
   // Resize animation duration.
   mojo_base.mojom.TimeDelta resizeDuration;
-  // Whether the panel should start out user-resizable. No effect if the GlicUserResize feature
-  // flag is disabled.
+  // Whether the panel should start out user-resizable.
   bool can_user_resize;
 };
 

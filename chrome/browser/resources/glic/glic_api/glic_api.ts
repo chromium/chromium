@@ -127,7 +127,7 @@ export declare interface GlicBrowserHost {
   /**
    * Set the state of the panel's user drag-to-resize capability, or if the
    * panel hasn't been created yet, set whether it will be user resizable when
-   * it is created. No effect if the GlicUserResize feature flag is disabled.
+   * it is created.
    */
   enableDragResize?(enabled: boolean): Promise<void>;
 
@@ -565,8 +565,7 @@ export declare interface OpenPanelInfo {
 
   /**
    * Whether the panel should start out resizable by the user. The panel is
-   * resizable if this field is not provided. No effect if the GlicUserResize
-   * feature flag is disabled.
+   * resizable if this field is not provided.
    */
   canUserResize?: boolean;
 }

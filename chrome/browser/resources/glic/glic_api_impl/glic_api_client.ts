@@ -241,10 +241,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.stopActorTask = undefined;
     }
 
-    if (!state.enableDragToResizePanel) {
-      this.enableDragResize = undefined;
-    }
-
     if (state.alwaysDetachedMode) {
       this.attachPanel = undefined;
       this.detachPanel = undefined;
