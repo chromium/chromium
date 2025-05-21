@@ -20,11 +20,7 @@ namespace input_method {
 
 std::optional<GURL> GetFocusedTabUrl() {
   Browser* browser = chrome::FindLastActive();
-  // Ash chrome will return true for browser->window()->IsActive() if the
-  // user is currently typing in an ash browser tab. IsActive() will return
-  // false if the user is currently typing a lacros browser tab.
-  if (browser && browser->window() && browser->window()->IsActive() &&
-      browser->tab_strip_model() &&
+  if (browser && browser->window() && browser->tab_strip_model() &&
       browser->tab_strip_model()->GetActiveWebContents()) {
     return browser->tab_strip_model()
         ->GetActiveWebContents()
