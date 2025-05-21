@@ -731,6 +731,9 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ENTRY_POSITION" desc="This text is mainly for screen readers to differentiate between different entries inside a dictionary, by referring to the entry and its position in the list of entries inside the dictionary. The number value will be a number like 1,2,3,etc">
    Entry <ph name="number">$1</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_DELETE_ENTRY" desc="Button to delete an entry into a Japanese dictionary. In Japanese, this text should be: この単語を削除">
+    Delete entry
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NEW_ENTRY" desc="Button to add a new entry into a Japanese dictionary. In Japanese, this text should be: 単語を追加">
     New entry
   </message>
