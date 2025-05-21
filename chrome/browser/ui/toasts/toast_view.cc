@@ -156,15 +156,6 @@ void ToastView::AddMenu(std::unique_ptr<ui::MenuModel> model) {
                           ToastCloseReason::kMenuItemClick));
 }
 
-void ToastView::AddAcceleratorCallback(ui::Accelerator accelerator,
-                                       base::RepeatingClosure callback) {
-  has_accelerator_ = true;
-  accelerator_ = accelerator;
-  accelerator_callback_ = std::move(callback);
-
-  AddAccelerator(accelerator);
-}
-
 int ToastView::GetIconSize() {
   const ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
   return lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE);
@@ -315,8 +306,7 @@ void ToastView::Init() {
       top_margin, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
       total_vertical_margins - top_margin, right_margin));
 
-  if (has_action_button_ || has_close_button_ || menu_model_ ||
-      has_accelerator_) {
+  if (has_action_button_ || has_close_button_ || menu_model_) {
     SetFocusTraversesOut(true);
   } else {
     set_focus_traversable_from_anchor_view(false);
@@ -441,15 +431,6 @@ void ToastView::OnThemeChanged() {
         *icon_, color_provider->GetColor(ui::kColorToastForeground),
         GetIconSize()));
   }
-}
-
-bool ToastView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  if (accelerator == accelerator_) {
-    accelerator_callback_.Run();
-    return true;
-  }
-
-  return false;
 }
 
 void ToastView::AnimateOut(base::OnceClosure callback,

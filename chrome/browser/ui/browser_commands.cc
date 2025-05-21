@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1032,16 +1033,25 @@ void CloseTab(Browser* browser) {
   tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
   bool single_tab_selected =
       browser->tab_strip_model()->selection_model().size() == 1;
-  if (tab->IsPinned() && single_tab_selected) {
-    // Pinned tabs should show a toast asking the user to continue holding the
-    // command for some time before a pinned tab is closed. The toast will
-    // handle the call to TabStripModel::CloseSelectedTabs so we don't need to
-    // handle it here.
-    toast_controller->MaybeShowToast(ToastParams(ToastId::kClosePinnedTab));
-    return;
-  }
+  if (tab->IsPinned() && single_tab_selected &&
+      toast_controller->GetCurrentToastId() != ToastId::kClosePinnedTab) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    CHECK(browser_view);
+    ui::Accelerator accelerator;
+    CHECK(
+        browser_view->GetAcceleratorForCommandId(IDC_CLOSE_TAB, &accelerator));
 
-  browser->tab_strip_model()->CloseSelectedTabs();
+    ToastParams params(ToastId::kClosePinnedTab);
+    params.body_string_replacement_params.emplace_back(
+        accelerator.GetShortcutText());
+
+    // Closing a single pinned tab will show a toast asking the user to press
+    // the command again to close the tab. Triggering the action again will
+    // enter the else path of this block.
+    toast_controller->MaybeShowToast(std::move(params));
+  } else {
+    browser->tab_strip_model()->CloseSelectedTabs();
+  }
 }
 
 bool CanZoomIn(content::WebContents* contents) {

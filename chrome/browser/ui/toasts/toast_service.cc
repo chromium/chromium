@@ -8,10 +8,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -24,7 +22,6 @@
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -41,7 +38,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -259,20 +255,10 @@ void ToastService::RegisterToasts(
   }
 
   if (toast_features::IsEnabled(toast_features::kPinnedTabToastOnClose)) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
-        browser_window_interface->GetBrowserForMigrationOnly());
-
-    auto callback = base::BindRepeating(
-        [](TabStripModel* model) { model->CloseSelectedTabs(); },
-        browser_window_interface->GetTabStripModel());
-
-    ui::Accelerator accelerator;
-    CHECK(
-        browser_view->GetAcceleratorForCommandId(IDC_CLOSE_TAB, &accelerator));
     toast_registry_->RegisterToast(
         ToastId::kClosePinnedTab,
         ToastSpecification::Builder(kKeepIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
-            .AddAccelerator(accelerator, std::move(callback))
+            .SetToastAsActionable()
             .Build());
   }
 

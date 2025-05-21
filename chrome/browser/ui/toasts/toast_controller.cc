@@ -76,7 +76,7 @@ bool ToastController::CanShowToast(ToastId toast_id) const {
       toasts::ToastAlertLevel::kActionable) {
     const ToastSpecification* toast_spec =
         toast_registry_->GetToastSpecification(toast_id);
-    return toast_spec->has_close_button() || toast_spec->has_menu();
+    return toast_spec->is_actionable();
   }
   return true;
 }
@@ -263,11 +263,6 @@ void ToastController::CreateToast(ToastParams params,
                                              ? &params.image_override.value()
                                              : nullptr;
 
-  if (spec->has_accelerator()) {
-    params.body_string_replacement_params.emplace_back(
-        spec->accelerator().GetShortcutText());
-  }
-
   const std::u16string body_string =
       params.body_string_override.has_value()
           ? params.body_string_override.value()
@@ -297,11 +292,6 @@ void ToastController::CreateToast(ToastParams params,
     toast_view->AddMenu(std::move(params.menu_model));
   }
 
-  if (spec->has_accelerator()) {
-    toast_view->AddAcceleratorCallback(spec->accelerator(),
-                                       spec->accelerator_callback());
-  }
-
   toast_view_ = toast_view.get();
   toast_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast_view));
@@ -326,12 +316,7 @@ void ToastController::CreateToast(ToastParams params,
   toast_widget_->SetFocusTraversableParentView(anchor_view);
 
   if (!is_omnibox_popup_showing_) {
-    if (spec->has_accelerator()) {
-      toast_widget_->Show();
-    } else {
-      toast_widget_->ShowInactive();
-    }
-
+    toast_widget_->ShowInactive();
     toast_view_->AnimateIn();
   } else {
     toast_widget_->Hide();

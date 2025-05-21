@@ -12,10 +12,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/vector_icon_types.h"
 
-// ToastSpecification details the supported actions and elements it contains.
+// ToastSpecification details what the toast should contain when shown.
 class ToastSpecification {
  public:
   class Builder final {
@@ -49,10 +48,12 @@ class ToastSpecification {
     // dismiss.
     Builder& AddGlobalScoped();
 
-    // Adds the accelerator that is used to trigger an action when this toast is
-    // displayed. The accelerator is handled by the view.
-    Builder& AddAccelerator(ui::Accelerator accelerator,
-                            base::RepeatingClosure callback);
+    // Explicitly marks this toast as an actionable toast (allows the user to
+    // interact with it in some way).
+    // NOTE: Only use this for toasts that do not have actionable buttons /
+    // menus but have interactions tied to the toast that are handled outside
+    // the toast framework such as keyboard shortcuts.
+    Builder& SetToastAsActionable();
 
     std::unique_ptr<ToastSpecification> Build();
 
@@ -78,21 +79,19 @@ class ToastSpecification {
   base::RepeatingClosure action_button_callback() const {
     return action_button_closure_;
   }
-  const ui::Accelerator& accelerator() const { return accelerator_; }
-  base::RepeatingClosure accelerator_callback() const {
-    return accelerator_callback_;
-  }
 
   bool has_menu() const { return has_menu_; }
   bool is_global_scope() const { return is_global_scope_; }
-  bool has_accelerator() const { return !accelerator_.IsEmpty(); }
+  bool is_actionable() const {
+    return has_close_button() || has_menu() || has_actionable_override();
+  }
+  bool has_actionable_override() const { return actionable_toast_override_; }
 
   void AddCloseButton();
   void AddActionButton(int string_id, base::RepeatingClosure closure);
   void AddMenu();
   void AddGlobalScope();
-  void AddAccelerator(ui::Accelerator accelerator,
-                      base::RepeatingClosure callback);
+  void SetToastAsActionable();
 
  private:
   const base::raw_ref<const gfx::VectorIcon> icon_;
@@ -102,8 +101,7 @@ class ToastSpecification {
   std::optional<int> action_button_string_id_;
   base::RepeatingClosure action_button_closure_;
   bool is_global_scope_ = false;
-  ui::Accelerator accelerator_;
-  base::RepeatingClosure accelerator_callback_;
+  bool actionable_toast_override_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_API_TOAST_SPECIFICATION_H_

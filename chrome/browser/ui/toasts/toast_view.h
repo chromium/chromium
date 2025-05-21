@@ -12,7 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -80,13 +79,6 @@ class ToastView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView::CreateBubble).
   void AddMenu(std::unique_ptr<ui::MenuModel> model);
 
-  // Adds the accelerator that runs `callback` when triggered. The accelerator
-  // is handled in this view when it has focus.
-  // Must be called prior to Init
-  // (which is called from views::BubbleDialogDelegateView::CreateBubble).
-  void AddAcceleratorCallback(ui::Accelerator accelerator,
-                              base::RepeatingClosure callback);
-
   // views::BubbleDialogDelegateView:
   void Init() override;
 
@@ -115,7 +107,6 @@ class ToastView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
   void OnThemeChanged() override;
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
  private:
   void AnimateOut(base::OnceClosure callback, bool show_height_animation);
@@ -138,13 +129,10 @@ class ToastView : public views::BubbleDialogDelegateView,
   bool render_toast_over_web_contents_;
   bool has_close_button_ = false;
   bool has_action_button_ = false;
-  bool has_accelerator_ = false;
   std::u16string action_button_text_;
   base::RepeatingClosure action_button_callback_;
   base::RepeatingClosure close_button_callback_;
   base::RepeatingCallback<void(ToastCloseReason)> toast_close_callback_;
-  ui::Accelerator accelerator_;
-  base::RepeatingClosure accelerator_callback_;
   std::unique_ptr<ui::MenuModel> menu_model_;
   // Wraps `menu_model_` and triggers closing the toast after executing menu
   // commands.
