@@ -22,6 +22,7 @@ blink_modules_sources("accessibility") {
     "ax_media_element.h",
     "ax_node_object.cc",
     "ax_node_object.h",
+    "ax_object-inl.h",
     "ax_object.cc",
     "ax_object.h",
     "ax_object_cache_impl.cc",

@@ -293,7 +293,11 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Element* ActionElement() const override;
   Element* AnchorElement() const override;
   Document* GetDocument() const override;
-  Node* GetNode() const final;
+  // This function is manually inlined because it is very hot and LTO/PGO
+  // doesn't manage to inline it. To call it, you will need to include
+  // ax_object-inl.h.
+  ALWAYS_INLINE Node* GetNode() const;
+
   LayoutObject* GetLayoutObject() const final;
 
   // Modify or take an action on an object.
@@ -446,6 +450,15 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   Member<Node> node_;
   Member<LayoutObject> layout_object_;
+
+  friend class AXObject;  // For GetNode().
+};
+
+template <>
+struct DowncastTraits<AXNodeObject> {
+  static bool AllowFrom(const AXObject& object) {
+    return object.IsNodeObject();
+  }
 };
 
 }  // namespace blink

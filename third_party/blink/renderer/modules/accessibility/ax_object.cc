@@ -114,6 +114,7 @@
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #if AX_FAIL_FAST_BUILD()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
@@ -595,10 +596,11 @@ const AXObject* FindAncestorWithAriaHidden(const AXObject* start) {
 // static
 unsigned AXObject::number_of_live_ax_objects_ = 0;
 
-AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
+AXObject::AXObject(AXObjectCacheImpl& ax_object_cache, bool is_node_object)
     : id_(0),
       parent_(nullptr),
       role_(ax::mojom::blink::Role::kUnknown),
+      is_node_object_(is_node_object),
       cached_live_region_root_(nullptr),
       ax_object_cache_(&ax_object_cache) {
   ++number_of_live_ax_objects_;
@@ -772,10 +774,6 @@ void AXObject::Detach() {
   child_cached_values_need_update_ = false;
   has_dirty_descendants_ = false;
   id_ = 0;
-}
-
-bool AXObject::IsDetached() const {
-  return !ax_object_cache_;
 }
 
 bool AXObject::IsRoot() const {
@@ -6977,10 +6975,6 @@ void AXObject::ChildrenChangedWithCleanLayout() {
                         << this;
 
   AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
-}
-
-Node* AXObject::GetNode() const {
-  return nullptr;
 }
 
 LayoutObject* AXObject::GetLayoutObject() const {

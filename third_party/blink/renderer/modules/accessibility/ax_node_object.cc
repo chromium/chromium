@@ -169,6 +169,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
@@ -602,11 +603,11 @@ const int kDefaultHeadingLevel = 2;
 // means that the LayoutObject is purposely being set to null, as it is not
 // relevant for this object in the AX tree.
 AXNodeObject::AXNodeObject(Node* node, AXObjectCacheImpl& ax_object_cache)
-    : AXObject(ax_object_cache), node_(node) {}
+    : AXObject(ax_object_cache, /*is_node_object=*/true), node_(node) {}
 
 AXNodeObject::AXNodeObject(LayoutObject* layout_object,
                            AXObjectCacheImpl& ax_object_cache)
-    : AXObject(ax_object_cache),
+    : AXObject(ax_object_cache, /*is_node_object=*/true),
       node_(layout_object->GetNode()),
       layout_object_(layout_object) {
 #if DCHECK_IS_ON()
@@ -6373,19 +6374,6 @@ Document* AXNodeObject::GetDocument() const {
     return &GetLayoutObject()->GetDocument();
   }
   return nullptr;
-}
-
-Node* AXNodeObject::GetNode() const {
-  if (IsDetached()) {
-    DCHECK(!node_);
-    return nullptr;
-  }
-
-  DCHECK(!GetLayoutObject() || GetLayoutObject()->GetNode() == node_)
-      << "If there is an associated layout object, its node should match the "
-         "associated node of this accessibility object.\n"
-      << this;
-  return node_.Get();
 }
 
 LayoutObject* AXNodeObject::GetLayoutObject() const {
