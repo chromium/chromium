@@ -12,6 +12,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -392,6 +394,12 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
   ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
 
   EDataFlow data[] = {eRender, eCapture};
+  const char* loopbackDevices[] = {
+      AudioDeviceDescription::kLoopbackInputDeviceId,
+      AudioDeviceDescription::kLoopbackWithMuteDeviceId,
+      AudioDeviceDescription::kLoopbackWithoutChromeId,
+      AudioDeviceDescription::kLoopbackAllDevicesId,
+      AudioDeviceDescription::kApplicationLoopbackDeviceId};
 
   // Verify that the preferred audio parameters are OK for the default render
   // and capture devices.
@@ -402,14 +410,12 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
         AudioDeviceDescription::kDefaultDeviceId, is_output_device, &params));
     EXPECT_TRUE(params.IsValid());
     if (!is_output_device) {
-      // Loopack devices are supported for input streams.
-      EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
-          AudioDeviceDescription::kLoopbackInputDeviceId, is_output_device,
-          &params));
-      EXPECT_TRUE(params.IsValid());
-      EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
-          AudioDeviceDescription::kApplicationLoopbackDeviceId,
-          is_output_device, &params));
+      for (const char* loopbackDevice : loopbackDevices) {
+        // Loopack devices are supported for input streams.
+        EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+            loopbackDevice, is_output_device, &params));
+        EXPECT_TRUE(params.IsValid());
+      }
       {
         base::test::ScopedFeatureList feature_list;
         base::HistogramTester histogram_tester;

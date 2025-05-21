@@ -124,19 +124,4 @@ TEST(AudioDeviceDescriptionTest, IsApplicationLoopbackDevice) {
       AudioDeviceDescription::kDefaultDeviceId));
 }
 
-TEST(AudioDeviceDescriptionTest, IsLoopbackAllDevices) {
-  EXPECT_TRUE(AudioDeviceDescription::IsLoopbackAllDevices(
-      AudioDeviceDescription::kLoopbackAllDevicesId));
-  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
-      AudioDeviceDescription::kDefaultDeviceId));
-  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
-      AudioDeviceDescription::kCommunicationsDeviceId));
-  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
-      AudioDeviceDescription::kLoopbackInputDeviceId));
-  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
-      AudioDeviceDescription::kLoopbackWithMuteDeviceId));
-  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackAllDevices(
-      AudioDeviceDescription::kApplicationLoopbackDeviceId));
-}
-
 }  // namespace media

@@ -19,7 +19,7 @@ CreateApplicationLoopbackDeviceId(const uint32_t application_id) {
 }
 
 uint32_t MEDIA_EXPORT
-GetApplicationIdFromApplicationLoopbackDeviceId(const std::string& device_id) {
+GetApplicationIdFromApplicationLoopbackDeviceId(std::string_view device_id) {
   CHECK(AudioDeviceDescription::IsApplicationLoopbackDevice(device_id));
 
   size_t colon_pos = device_id.find(':');

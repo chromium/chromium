@@ -31,9 +31,8 @@ IFACEMETHODIMP FakeIAudioCaptureClient::GetBuffer(BYTE** data,
   *qpc_position = qpc_position_;
 
   // Simulate a device position increment for the next call.
-  if (client_type_ !=
-      FakeIAudioClient::ClientType::kApplicationLoopbackDevice) {
-    // Application loopback uses a virtual device, which do not have a device
+  if (client_type_ != FakeIAudioClient::ClientType::kProcessLoopbackDevice) {
+    // Process loopback uses a virtual device, which do not have a device
     // position and should always return 0.
     device_position_ += *num_frames_available;
   }

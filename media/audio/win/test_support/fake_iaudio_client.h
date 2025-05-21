@@ -26,7 +26,7 @@ class FakeIAudioClient
           Microsoft::WRL::FtmBase,
           IAudioClient> {
  public:
-  enum class ClientType { kDefaultDevice, kApplicationLoopbackDevice };
+  enum class ClientType { kDefaultDevice, kProcessLoopbackDevice };
 
   FakeIAudioClient(ClientType client_type);
   FakeIAudioClient(const FakeIAudioClient&) = delete;

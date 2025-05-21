@@ -85,11 +85,6 @@ bool AudioDeviceDescription::IsApplicationLoopbackDevice(
 }
 
 // static
-bool AudioDeviceDescription::IsLoopbackAllDevices(std::string_view device_id) {
-  return device_id == kLoopbackAllDevicesId;
-}
-
-// static
 bool AudioDeviceDescription::UseSessionIdToSelectDevice(
     const base::UnguessableToken& session_id,
     std::string_view device_id) {

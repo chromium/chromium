@@ -360,7 +360,6 @@ ChannelLayout GetChannelLayout(
              << mix_format->nChannels;
     channel_layout = GuessChannelLayout(mix_format->nChannels);
   }
-  DVLOG(1) << "channel layout: " << ChannelLayoutToString(channel_layout);
 
   return channel_layout;
 }
@@ -553,8 +552,6 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
         default_frames_per_buffer = default_period_frames;
         frames_per_buffer = default_period_frames;
       }
-      DVLOG(1) << "IAudioClient3 => min_period_frames: " << min_period_frames;
-      DVLOG(1) << "IAudioClient3 => frames_per_buffer: " << frames_per_buffer;
     }
 
     // If the call to GetSharedModeEnginePeriod() fails we fall back to
@@ -1058,8 +1055,8 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
   // Loopback capture audio streams must be input streams. If an output device
   // is requested for a loopback device, the default output device will be used
   // instead. See https://crbug.com/956526 for more details.
-  // TODO(crbug.com/40947205): figure out which parameters to use for
-  // application loopback capture.
+  // TODO(crbug.com/40947205): figure out which parameters to use for process
+  // loopback capture.
   DCHECK(!(is_output_device &&
            (AudioDeviceDescription::IsLoopbackDevice(device_id))));
   if (AudioDeviceDescription::IsLoopbackDevice(device_id) && is_output_device) {

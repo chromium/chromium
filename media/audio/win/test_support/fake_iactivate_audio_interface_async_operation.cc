@@ -31,7 +31,7 @@ IFACEMETHODIMP FakeIActivateAudioInterfaceAsyncOperation::GetActivateResult(
 
   Microsoft::WRL::ComPtr<IAudioClient> audio_client =
       Microsoft::WRL::Make<FakeIAudioClient>(
-          FakeIAudioClient::ClientType::kApplicationLoopbackDevice);
+          FakeIAudioClient::ClientType::kProcessLoopbackDevice);
   *activateResult = S_OK;
   *activatedInterface = audio_client.Detach();
   return S_OK;

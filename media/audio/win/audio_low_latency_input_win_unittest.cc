@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
@@ -69,6 +70,15 @@ void LogCallbackDummy(const std::string& /* message */) {}
 ACTION_P4(CheckCountAndPostQuitTask, count, limit, task_runner, quit_closure) {
   if (++*count >= limit)
     task_runner->PostTask(FROM_HERE, quit_closure);
+}
+
+void FlushTaskRunner(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (!task_runner->BelongsToCurrentThread()) {
+    base::RunLoop run_loop;
+    task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
@@ -378,7 +388,9 @@ class WinAudioInputTest : public ::testing::Test {
   WinAudioInputTest() {
     audio_manager_ =
         AudioManager::CreateForTesting(std::make_unique<TestAudioThread>());
-    base::RunLoop().RunUntilIdle();
+    // Ensure that the AudioManager's thread (TestAudioThread) has processed
+    // its initial tasks posted during AudioManager::CreateForTesting.
+    FlushTaskRunner(audio_manager_->GetTaskRunner());
   }
   ~WinAudioInputTest() override { audio_manager_->Shutdown(); }
 
@@ -810,11 +822,21 @@ TEST_F(WinAudioInputLoopbackTest,
   EXPECT_FALSE(sink.error());
 }
 
-class WinAudioApplicationLoopbackTest : public WinAudioInputTest {
+class WinAudioProcessLoopbackTest
+    : public ::testing::TestWithParam<std::string> {
  public:
-  WinAudioApplicationLoopbackTest()
-      : device_info_accessor_(audio_manager_.get()) {
+  WinAudioProcessLoopbackTest()
+      : audio_manager_(AudioManager::CreateForTesting(
+            std::make_unique<TestAudioThread>())),
+        device_info_accessor_(audio_manager_.get()) {
+    // Ensure that the AudioManager's thread (TestAudioThread) has processed
+    // its initial tasks posted during AudioManager::CreateForTesting.
+    FlushTaskRunner(audio_manager_->GetTaskRunner());
     // Defer stream creation and parameter fetching to SetUp.
+  }
+
+  ~WinAudioProcessLoopbackTest() override {
+    CHECK_DEREF(audio_manager_.get()).Shutdown();
   }
 
   void SetUp() override {
@@ -829,14 +851,16 @@ class WinAudioApplicationLoopbackTest : public WinAudioInputTest {
   }
 
   void CreateParameters() {
-    params_ = device_info_accessor_.GetInputStreamParameters(
-        AudioDeviceDescription::kApplicationLoopbackDeviceId);
+    params_ = device_info_accessor_.GetInputStreamParameters(GetParam());
   }
 
   void CreateStream() {
+    std::string device_id =
+        GetParam() == AudioDeviceDescription::kApplicationLoopbackDeviceId
+            ? kMockApplicationLoopbackDeviceId
+            : GetParam();
     stream_.Reset(audio_manager_->MakeAudioInputStream(
-        params_, kMockApplicationLoopbackDeviceId,
-        base::BindRepeating(&LogCallbackDummy)));
+        params_, device_id, base::BindRepeating(&LogCallbackDummy)));
     EXPECT_THAT(stream_.get(), NotNull());
   }
 
@@ -849,24 +873,26 @@ class WinAudioApplicationLoopbackTest : public WinAudioInputTest {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<AudioManager> audio_manager_;
   AudioDeviceInfoAccessorForTests device_info_accessor_;
   AudioParameters params_;
   ScopedAudioInputStream stream_;
   FakeWinWASAPIEnvironment fake_wasapi_environment_;
 };
 
-TEST_F(WinAudioApplicationLoopbackTest, OpenStreamSuccess) {
+TEST_P(WinAudioProcessLoopbackTest, OpenStreamSuccess) {
   ASSERT_THAT(stream_->Open(), Eq(AudioInputStream::OpenOutcome::kSuccess));
 }
 
-TEST_F(WinAudioApplicationLoopbackTest,
+TEST_P(WinAudioProcessLoopbackTest,
        OpenStreamActivateAudioInterfaceAsyncFailed) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kActivateAudioInterfaceAsyncFailed);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
 }
 
-TEST_F(WinAudioApplicationLoopbackTest,
+TEST_P(WinAudioProcessLoopbackTest,
        OpenInputStreamActivateAudioInterfaceAsyncOperationTimedOut) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientActivationTimeout);
@@ -876,7 +902,7 @@ TEST_F(WinAudioApplicationLoopbackTest,
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
 }
 
-TEST_F(WinAudioApplicationLoopbackTest,
+TEST_P(WinAudioProcessLoopbackTest,
        OpenStreamAudioClientActivationAsyncOperationFailed) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientActivationAsyncOperationFailed);
@@ -886,13 +912,13 @@ TEST_F(WinAudioApplicationLoopbackTest,
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
 }
 
-TEST_F(WinAudioApplicationLoopbackTest, OpenStreamAudioClientActivationFailed) {
+TEST_P(WinAudioProcessLoopbackTest, OpenStreamAudioClientActivationFailed) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientActivationFailed);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
 }
 
-TEST_F(WinAudioApplicationLoopbackTest, SuccessfulCapture) {
+TEST_P(WinAudioProcessLoopbackTest, SuccessfulCapture) {
   ASSERT_THAT(stream_->Open(), Eq(AudioInputStream::OpenOutcome::kSuccess));
 
   FakeAudioInputCallback sink;
@@ -906,6 +932,22 @@ TEST_F(WinAudioApplicationLoopbackTest, SuccessfulCapture) {
   EXPECT_GT(sink.num_received_audio_frames(), 0);
   EXPECT_FALSE(sink.error());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ProcessLoopbackDevices,
+    WinAudioProcessLoopbackTest,
+    ::testing::Values(AudioDeviceDescription::kApplicationLoopbackDeviceId,
+                      AudioDeviceDescription::kLoopbackWithoutChromeId,
+                      AudioDeviceDescription::kLoopbackAllDevicesId),
+    [](const testing::TestParamInfo<WinAudioProcessLoopbackTest::ParamType>&
+           info) {
+      return info.param == AudioDeviceDescription::kApplicationLoopbackDeviceId
+                 ? "ApplicationLoopback"
+                 : (info.param ==
+                            AudioDeviceDescription::kLoopbackWithoutChromeId
+                        ? "LoopbackWithoutChromeId"
+                        : "LoopbackAllDevices");
+    });
 
 // This test is intended for manual tests and should only be enabled
 // when it is required to store the captured data on a local file.

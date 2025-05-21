@@ -38,7 +38,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   static const char kLoopbackWithMuteDeviceId[];
 
   // Similar to |kLoopbackInputDeviceId|, but without audio from Chrome.
-  // Only supported on ChromeOS.
+  // Only supported on Windows, Mac and ChromeOS.
   static const char kLoopbackWithoutChromeId[];
 
   // Similar to |kLoopbackInputDeviceId|, but instead of capturing audio being
@@ -60,7 +60,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
 
   // Returns true if |device_id| represents a loopback audio capture device.
   // Note that this will not work if |device_id| is hashed, which may be the
-  // case in the Renderer.
+  // case in the renderer.
   static bool IsLoopbackDevice(std::string_view device_id);
 
   // Returns true if |device_id| represents an application loopback audio
@@ -68,10 +68,6 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // Note that this will not work if |device_id| is hashed, which is the case in
   // the Renderer.
   static bool IsApplicationLoopbackDevice(std::string_view device_id);
-
-  // Returns true if |device_id| represents an "all output devices" loopback
-  // capture device.
-  static bool IsLoopbackAllDevices(std::string_view device_id);
 
   // If |device_id| is not empty, |session_id| should be ignored and the output
   // device should be selected basing on |device_id|.

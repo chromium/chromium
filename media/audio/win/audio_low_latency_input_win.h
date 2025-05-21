@@ -369,12 +369,13 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Will be set to nullptr during construction if AEC is not supported.
   std::unique_ptr<EchoCancellationConfig> aec_config_;
 
-  // It's is possible to check this using
-  // AudioDeviceDescription::IsApplicationLoopbackDevice. However, we need to
-  // perform this check every time we need to pull data from the audio engine,
-  // which can be expensive. Checking the variable is cheaper than calling the
-  // function.
-  const bool is_application_loopback_capture_;
+  // Process loopback captures do not get audio from an endpoint device but
+  // from a specified process IDs instead. It's is possible to check this using
+  // an internal helper method called IsProcessLoopbackDevice. However, we need
+  // to perform this check every time we need to pull data from the audio
+  // engine, which can be expensive. Checking the variable is cheaper than
+  // calling the function.
+  const bool is_process_loopback_capture_;
 
   // Timeout period for waiting on the OS to activate the audio interface for
   // application loopback capture.
