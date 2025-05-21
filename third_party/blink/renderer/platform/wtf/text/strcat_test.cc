@@ -31,4 +31,12 @@ TEST(StrCatTest, MixedBits) {
   EXPECT_FALSE(result.Is8Bit());
 }
 
+TEST(StrCatTest, MixedBitsResulting8it) {
+  const String src16(u"a");
+  ASSERT_FALSE(src16.Is8Bit());
+  String result = StrCat({"foo \"", src16, "\" bar."});
+  EXPECT_EQ("foo \"a\" bar.", result);
+  EXPECT_TRUE(result.Is8Bit());
+}
+
 }  // namespace WTF
