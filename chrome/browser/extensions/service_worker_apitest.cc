@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -44,7 +45,9 @@
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/web_navigation.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -71,6 +74,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
@@ -1361,6 +1365,225 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, WebAccessibleResourcesFetch) {
                                {.extension_url = "page.html"}));
 }
 
+class ServiceWorkerFetchTest : public ServiceWorkerTest {
+ public:
+  ServiceWorkerFetchTest() = default;
+
+  ServiceWorkerFetchTest(const ServiceWorkerFetchTest&) = delete;
+  ServiceWorkerFetchTest& operator=(const ServiceWorkerFetchTest&) = delete;
+  ~ServiceWorkerFetchTest() override = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    ServiceWorkerTest::SetUpOnMainThread();
+    ASSERT_TRUE(InitializeEmbeddedTestServer());
+    // All requests to embedded_test_server() will be passed to RecordRequest().
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &ServiceWorkerFetchTest::RecordRequest, base::Unretained(this)));
+
+    // Serve embedded_test_server() requests from a specific directory.
+    base::FilePath http_server_root_path;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &http_server_root_path);
+    http_server_root_path = http_server_root_path.AppendASCII(
+        "extensions/api_test/service_worker/");
+    embedded_test_server()->ServeFilesFromDirectory(http_server_root_path);
+    EmbeddedTestServerAcceptConnections();
+  }
+
+  // Records requests that are sent to embedded_test_server() during the test.
+  void RecordRequest(const net::test_server::HttpRequest& request) {
+    base::AutoLock lock(requests_to_server_lock_);
+    requests_to_server_[request.GetURL()] = request;
+    if (url_to_wait_for_ != request.GetURL()) {
+      return;
+    }
+    ASSERT_TRUE(wait_for_request_run_loop_);
+    url_to_wait_for_ = GURL();
+    wait_for_request_run_loop_->Quit();
+  }
+
+  // Waits for `url_to_wait_for` request to be seen by the test and then
+  // confirms that the value of header with `header_name` matches
+  // `expected_header_value`.
+  bool WaitForRequestAndCheckHeaderValue(
+      const GURL& url_to_wait_for,
+      const char* header_name,
+      const std::string& expected_header_value) {
+    {
+      SCOPED_TRACE(
+          base::StringPrintf("waiting for url request: %s to be captured",
+                             url_to_wait_for.spec()));
+      WaitForRequest(url_to_wait_for);
+    }
+
+    std::string header_value =
+        GetHeaderValueFromRequest(url_to_wait_for, header_name);
+    if (expected_header_value == header_value) {
+      return true;
+    }
+    ADD_FAILURE() << "header name: " << header_name
+                  << " for request: " << url_to_wait_for.spec()
+                  << " had value: " << header_value
+                  << " instead of expected value: " << expected_header_value;
+    return false;
+  }
+
+  // Waits for `url_to_wait_for` to be requested from the embedded_test_server()
+  // during the test.
+  void WaitForRequest(const GURL& url_to_wait_for) {
+    {
+      base::AutoLock lock(requests_to_server_lock_);
+
+      DCHECK(url_to_wait_for_.is_empty());
+      DCHECK(!wait_for_request_run_loop_);
+
+      if (requests_to_server_.count(url_to_wait_for)) {
+        return;
+      }
+      url_to_wait_for_ = url_to_wait_for;
+      wait_for_request_run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    wait_for_request_run_loop_->Run();
+    wait_for_request_run_loop_.reset();
+  }
+
+  // Gets the headers for `url_request` that was seen during the test. If the
+  // request wasn't recorded, or the header isn't present on the request then
+  // return an empty string.
+  std::string GetHeaderValueFromRequest(const GURL& url_request,
+                                        const char* header_name) {
+    base::AutoLock lock(requests_to_server_lock_);
+    const auto url_request_search = requests_to_server_.find(url_request);
+    if (url_request_search == requests_to_server_.end()) {
+      ADD_FAILURE() << "url_request: " << url_request.spec()
+                    << " wasn't seen during the test";
+      return "";
+    }
+    const auto headers_for_request = url_request_search->second.headers;
+    auto header = headers_for_request.find(header_name);
+    if (header == headers_for_request.end()) {
+      ADD_FAILURE() << "header_name: " << header_name
+                    << " wasn't set on the request during the test";
+      return "";
+    }
+    return header->second;
+  }
+
+  // Requests observed by the EmbeddedTestServer. This is accessed on both the
+  // UI and the EmbeddedTestServer's IO thread. Access is protected by
+  // `requests_to_server_lock_`.
+  std::map<GURL, net::test_server::HttpRequest> requests_to_server_
+      GUARDED_BY(requests_to_server_lock_);
+  // URL that `wait_for_request_run_loop_` is currently waiting to observe.
+  GURL url_to_wait_for_ GUARDED_BY(requests_to_server_lock_);
+  // RunLoop to quit when a request for `url_to_wait_for_` is observed.
+  std::unique_ptr<base::RunLoop> wait_for_request_run_loop_;
+  base::Lock requests_to_server_lock_;
+};
+
+// Tests the behavior of a privileged (background) context when it
+// attempts to set forbidden and non-forbidden headers on fetch() requests to a
+// URL for which the extension has host_permissions.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchTest,
+                       SetFetchHeadersFromExtensionBackground) {
+  SetCustomArg("run_background_tests");
+  // Run fetch() header setting tests from the (privileged) background context.
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_fetch_headers/test_extension"));
+
+  // Confirm that headers that are not forbidden are allowed to be set on a
+  // fetch() request by an extension background script.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch/fetch_allowed.html"),
+      /*header_name=*/"Content-Type",
+      /*expected_header_value=*/"text/testing"));
+  // Confirm that headers that are forbidden are not allowed to be set on a
+  // fetch() request by an extension background script (they're overridden).
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch/fetch_forbidden.html"),
+      /*header_name=*/"Accept-Encoding",
+      // TODO(crbug.com/418811955): Set this to "fakeencoding, fakeencoding2"
+      // when this capability is allowed.
+      /*expected_header_value=*/"gzip, deflate, br, zstd"));
+}
+
+// Tests the behavior of a privileged (extension resource) context when it
+// attempts to set forbidden and non-forbidden headers on fetch() requests to a
+// URL for which the extension has host_permissions.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchTest,
+                       SetFetchHeadersFromExtensionResource) {
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_fetch_headers/test_extension"));
+  ASSERT_TRUE(extension);
+
+  // Opening extension popup causes popup script to run the fetch() header
+  // setting tests.
+  {
+    SCOPED_TRACE("waiting for extension popup to open");
+    // Open popup and test allowed and forbidden header setting.
+    extensions::ExtensionHostTestHelper popup_waiter(profile(),
+                                                     extension->id());
+    popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
+    ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+    popup_waiter.WaitForHostCompletedFirstLoad();
+  }
+
+  // Confirm that headers that are not forbidden are allowed to be set on a
+  // fetch() request by an extension resource (popup) script.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch/fetch_allowed.html"),
+      /*header_name=*/"Content-Type",
+      /*expected_header_value=*/"text/testing"));
+  // Confirm that headers that are forbidden are not allowed to be set on a
+  // fetch() request by an extension resource (popup) (they're overridden).
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch/fetch_forbidden.html"),
+      /*header_name=*/"Accept-Encoding",
+      // TODO(crbug.com/418811955): Set this to "fakeencoding, fakeencoding2"
+      // when this capability is allowed.
+      /*expected_header_value=*/"gzip, deflate, br, zstd"));
+}
+
+// Tests the behavior of an unprivileged (content script) context when it
+// attempts to set forbidden and non-forbidden headers on fetch() requests to a
+// URL for which the extension has host_permissions.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchTest,
+                       SetFetchHeadersFromExtensionContentScript) {
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_fetch_headers/test_extension"));
+  ASSERT_TRUE(extension);
+
+  // Navigating to URL causes content script to run the fetch() header setting
+  // tests.
+  {
+    SCOPED_TRACE(
+        "waiting for page to load and content script to finish running");
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ResultCatcher content_script_catcher;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(
+                       "/fetch/fetch_from_content_script.html")));
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+    EXPECT_TRUE(content_script_catcher.GetNextResult())
+        << content_script_catcher.message();
+  }
+
+  // Confirm that headers that are not forbidden are allowed to be set on a
+  // fetch() request by a content script.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch/fetch_allowed.html"),
+      /*header_name=*/"Content-Type",
+      /*expected_header_value=*/"text/testing"));
+  // Confirm that headers that are forbidden are not allowed to be set on a
+  // fetch() request by a content script since it's not a privileged extension
+  // context (they're overridden).
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch/fetch_forbidden.html"),
+      /*header_name=*/"Accept-Encoding",
+      /*expected_header_value=*/"gzip, deflate, br, zstd"));
+}
 // Tests that updating a packed extension with modified scripts works
 // properly -- we expect that the new script will execute, rather than the
 // previous one.
