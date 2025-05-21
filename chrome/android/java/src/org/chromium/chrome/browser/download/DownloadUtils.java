@@ -309,6 +309,10 @@ public class DownloadUtils {
             return false;
         }
 
+        if (isDownloadRestrictedByPolicy(tab.getProfile().getOriginalProfile())) {
+            return false;
+        }
+
         // Check if the page url is supported for saving. Only HTTP and HTTPS pages are allowed.
         if (!OfflinePageBridge.canSavePage(tab.getUrl())) return false;
 
