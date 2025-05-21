@@ -521,6 +521,8 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
     AttributionTrigger trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.MaybeCreateAndStoreReportTime");
+
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 

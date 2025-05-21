@@ -798,6 +798,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.MaybeCreateAndStoreReportTime" units="ms"
+    expires_after="2025-11-16">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time it took AttributionResolverImpl::MaybeCreateAndStoreReport
+    to run: that is, the complete attribution algorithm, covering both
+    event-level and aggregatable reports, regardless of the result.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.NamedBudgetsPer{Type}Registration"
     units="named_budgets" expires_after="2025-09-23">
   <owner>tquintanilla@chromium.org</owner>
