@@ -301,10 +301,16 @@ void PaymentRequest::Show(bool wait_for_updated_details,
     return;
   }
 
+  VLOG(2) << "PaymentRequest (" << *spec_->details().id
+          << ").show(); had_user_activation: " << had_user_activation;
+
   if (!had_user_activation) {
     PaymentRequestWebContentsManager* manager =
         PaymentRequestWebContentsManager::GetOrCreateForWebContents(
             *web_contents());
+    VLOG(2) << "PaymentRequest (" << *spec_->details().id
+            << ").show(); manager->HadActivationlessShow(): "
+            << manager->HadActivationlessShow();
     if (manager->HadActivationlessShow()) {
       log_.Error(errors::kCannotShowWithoutUserActivation);
       DCHECK(!has_recorded_completion_);
@@ -314,6 +320,9 @@ void PaymentRequest::Show(bool wait_for_updated_details,
                        errors::kCannotShowWithoutUserActivation);
       ResetAndDeleteThis();
       return;
+    } else {
+      VLOG(2) << "PaymentRequest (" << *spec_->details().id
+              << ").show(); allowing activationless show";
     }
 
     is_activationless_show_ = true;

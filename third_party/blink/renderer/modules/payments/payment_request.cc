@@ -972,7 +972,9 @@ ScriptPromise<PaymentResponse> PaymentRequest::show(
   DomWindow()->ConsumePaymentRequestToken();
   LocalFrame::ConsumeTransientUserActivation(local_frame);
 
-  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): show()";
+  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): show(); "
+          << "has_transient_user_activation=" << has_transient_user_activation
+          << ", has_delegated_activation: " << has_delegated_activation;
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestShow);
 
