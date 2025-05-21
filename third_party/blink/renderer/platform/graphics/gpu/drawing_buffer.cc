@@ -481,11 +481,11 @@ bool DrawingBuffer::PrepareTransferableResource(
     }
   }
 
-  // If staging_texture_ exists, then premultiplication
-  // has already been handled via CopySubTextureCHROMIUM.
-  // TODO(crbug.com/410591523): Always set this field when not using
-  // `staging_texture_` under a killswitch.
-  if (!staging_texture_ && requested_alpha_type_ == kUnpremul_SkAlphaType) {
+  // If the requested alpha type was unpremul, then set the output resource to
+  // be unpremul as well unless we have already handled premultiplication
+  // internally.
+  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+      !premultiplying_internally_) {
     out_resource->alpha_type = requested_alpha_type_;
   }
 
@@ -2036,6 +2036,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     // backbuffer that we will use for compositing will be premultiplied (e.g,
     // because it be used as an overlay), then we will need to create a separate
     // unpremultiplied staging backbuffer for WebGL to render to.
+    premultiplying_internally_ = true;
     staging_texture_needed_ = true;
   }
   if (requested_format_ == GL_SRGB8_ALPHA8) {
