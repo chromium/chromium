@@ -34,12 +34,15 @@ std::optional<proto::Value> GetProtoValue(
 std::unique_ptr<google::protobuf::MessageLite> GetProtoFromAny(
     const proto::Any& msg);
 
-// Constructs a new proto of `proto_name` type, and sets `value` in it's
-// `proto_field` and returns it wrapped in a proto::Any.
-// Returns nullopt if `proto_field` is not a valid string type field.
-std::optional<proto::Any> SetProtoValue(const std::string& proto_name,
-                                        const proto::ProtoField& proto_field,
-                                        const std::string& value);
+// Builds a new proto message of type `proto_name`.
+std::unique_ptr<google::protobuf::MessageLite> BuildMessage(
+    const std::string& proto_name);
+
+// Sets `value` in `msg`'s `proto_field`. Returns kError if `proto_field` is not
+// a valid string type field.
+ProtoStatus SetProtoValue(google::protobuf::MessageLite* msg,
+                          const proto::ProtoField& proto_field,
+                          const std::string& value);
 
 // Get immutable value for a singular message field.
 // Analogous to google::protobuf::Reflection::GetMessage.

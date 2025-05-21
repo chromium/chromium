@@ -247,6 +247,7 @@ def GenerateProtoDescriptors(out: IO[str], messages: KnownMessages):
     out.write('}  // namespace\n\n')
     _GetProtoValue.GenPublic(out)
     _GetProtoFromAny.GenPublic(out, readable_messages)
+    _BuildMessage.GenPublic(out, writable_messages)
     _SetProtoValue.GenPublic(out)
     _SetProtoFieldString(readable_messages).GenPublic(out)
     _GetProtoMessage(readable_messages).GenPublic(out)
@@ -602,65 +603,85 @@ class _SetProtoFieldString:
         out.write('}\n')  # End case
 
 
+class _BuildMessage:
+    """Namespace class for BuildMessage method builders."""
+
+    @classmethod
+    def GenPublic(cls, out: IO[str], messages: list[Message]):
+        out.write('std::unique_ptr<google::protobuf::MessageLite> ')
+        out.write('BuildMessage(\n')
+        out.write('    const std::string& proto_name) {\n')
+        for msg in messages:
+            cls._IfMsg(out, msg)
+        out.write('  return nullptr;\n')
+        out.write('}\n')
+
+    @classmethod
+    def _IfMsg(cls, out: IO[str], msg: Message):
+        out.write(f'if (proto_name == "{msg.type_name}") {{\n')
+        out.write(f'  return std::make_unique<{msg.cpp_name}>();\n')
+        out.write('}\n')
+
+
 class _SetProtoValue:
     """Namespace class for SetProtoValue method builders."""
 
     @classmethod
     def GenPublic(cls, out: IO[str]):
         out.write("""
-      std::optional<proto::Any> SetProtoValue(
-          const std::string& proto_name,
+      ProtoStatus SetProtoValue(
+          google::protobuf::MessageLite* msg,
           const proto::ProtoField& proto_field,
           const std::string& value) {
-        return SetProtoValue(proto_name, proto_field, value, /*index=*/0);
+        return SetProtoValue(msg, proto_field, value, /*index=*/0);
       }
     """)
 
     @classmethod
     def GenPrivate(cls, out: IO[str], messages: list[Message]):
         out.write("""
-      std::optional<proto::Any> SetProtoValue(
-          const std::string& proto_name,
+      ProtoStatus SetProtoValue(
+          google::protobuf::MessageLite* msg,
           const proto::ProtoField& proto_field,
           const std::string& value,
           int32_t index) {
         if (index >= proto_field.proto_descriptors_size()) {
-          return std::nullopt;
+          return ProtoStatus::kError;
         }
     """)
         for msg in messages:
             cls._IfMsg(out, msg)
         out.write("""
-        return std::nullopt;
+        return ProtoStatus::kError;
       }
     """)
 
     @classmethod
+    def _IsSupported(cls, field: Field):
+        return field.type == Type.STRING and not field.is_repeated
+
+    @classmethod
     def _IfMsg(cls, out: IO[str], msg: Message):
-        out.write(f'if (proto_name == "{msg.type_name}") {{\n')
+        if not any(cls._IsSupported(field) for field in msg.fields):
+            return
+
+        out.write(f'if (msg->GetTypeName() == "{msg.type_name}") {{\n')
+        out.write(f'  auto* typed_msg = static_cast<{msg.cpp_name}*>(msg);\n')
         out.write(
-            'switch(proto_field.proto_descriptors(index).tag_number()) {\n')
+            '  switch (proto_field.proto_descriptors(index).tag_number()) {\n')
         for field in msg.fields:
-            cls._FieldCase(out, msg, field)
-        out.write("""
-      default:
-        return std::nullopt;\n
-      """)
-        out.write('}')
+            if cls._IsSupported(field):
+                cls._FieldCase(out, msg, field)
+        out.write('  }\n')
+        out.write('  return ProtoStatus::kError;\n')
         out.write('}\n')  # End if statement
 
     @classmethod
     def _FieldCase(cls, out: IO[str], msg: Message, field: Field):
-        if field.type == Type.STRING and not field.is_repeated:
-            out.write(f'case {field.tag_number}: {{\n')
-            out.write('proto::Any any;\n')
-            out.write(
-                f'any.set_type_url("type.googleapis.com/{msg.type_name}");\n')
-            out.write(f'{msg.cpp_name} response_value;\n')
-            out.write(f'response_value.set_{field.name}(value);')
-            out.write('response_value.SerializeToString(any.mutable_value());')
-            out.write('return any;')
-            out.write('}\n')
+        out.write(f'    case {field.tag_number}: {{\n')
+        out.write(f'      typed_msg->set_{field.name}(value);\n')
+        out.write('      return ProtoStatus::kOk;\n')
+        out.write('    }\n')
 
 
 class _ConvertValue:

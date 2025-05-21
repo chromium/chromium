@@ -19,8 +19,12 @@ namespace optimization_guide {
 enum class ResponseParsingError {
   // Response did not have the expected structure, or similar parsing errors.
   kFailed = 1,
+
   // Response potentially contained disallowed PII.
   kRejectedPii = 2,
+
+  // The response configuration had an error that prevented parsing.
+  kInvalidConfiguration = 3,
 };
 
 // A method for converting model responses to structured data.

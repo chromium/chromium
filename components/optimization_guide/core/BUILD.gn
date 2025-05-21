@@ -239,6 +239,8 @@ static_library("core") {
       "model_execution/aqa_response_parser.h",
       "model_execution/execute_remote_fn.cc",
       "model_execution/execute_remote_fn.h",
+      "model_execution/fieldwise_response_parser.cc",
+      "model_execution/fieldwise_response_parser.h",
       "model_execution/json_response_parser.cc",
       "model_execution/json_response_parser.h",
       "model_execution/model_broker_client.cc",
@@ -554,6 +556,7 @@ source_set("unit_tests") {
   if (build_with_model_execution) {
     sources += [
       "model_execution/aqa_response_parser_unittest.cc",
+      "model_execution/fieldwise_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
       "model_execution/model_broker_client_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",

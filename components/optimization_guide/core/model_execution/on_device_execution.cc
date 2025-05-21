@@ -386,6 +386,7 @@ void OnDeviceExecution::OnParsedResponse(
         CancelPendingResponse(Result::kContainedPII,
                               ModelExecutionError::kFiltered);
         return;
+      case ResponseParsingError::kInvalidConfiguration:
       case ResponseParsingError::kFailed:
         CancelPendingResponse(Result::kFailedConstructingResponseMessage,
                               ModelExecutionError::kGenericFailure);

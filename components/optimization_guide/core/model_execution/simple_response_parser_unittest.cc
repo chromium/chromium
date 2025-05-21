@@ -50,7 +50,8 @@ TEST(SimpleResponseParserTest, EmptyProtoField) {
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());
-  EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
+  EXPECT_EQ(maybe_metadata.error(),
+            ResponseParsingError::kInvalidConfiguration);
 }
 
 TEST(SimpleResponseParserTest, BadProtoType) {
@@ -61,7 +62,8 @@ TEST(SimpleResponseParserTest, BadProtoType) {
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());
-  EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
+  EXPECT_EQ(maybe_metadata.error(),
+            ResponseParsingError::kInvalidConfiguration);
 }
 
 TEST(SimpleResponseParserTest, NotStringField) {
@@ -73,7 +75,8 @@ TEST(SimpleResponseParserTest, NotStringField) {
   auto maybe_metadata = response_future.Get();
 
   EXPECT_FALSE(maybe_metadata.has_value());
-  EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
+  EXPECT_EQ(maybe_metadata.error(),
+            ResponseParsingError::kInvalidConfiguration);
 }
 
 TEST(SimpleResponseParserTest, SuppressParsingIncompleteResponse) {
