@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageTabData;
@@ -1829,6 +1830,11 @@ public class ToolbarManager
         }
 
         @Override
+        public boolean isIncognitoNewTabPageCurrentlyVisible() {
+            return getIncognitoNewTabPageForCurrentTab() != null;
+        }
+
+        @Override
         public boolean dispatchTouchEvent(MotionEvent ev) {
             assert mVisibleNtp != null;
             // No null check -- the toolbar should not be moved if we are not on an NTP.
@@ -1929,6 +1935,15 @@ public class ToolbarManager
         if (mLocationBarModel.hasTab()) {
             NativePage nativePage = mLocationBarModel.getTab().getNativePage();
             if (nativePage instanceof NewTabPage) return (NewTabPage) nativePage;
+        }
+        return null;
+    }
+
+    private IncognitoNewTabPage getIncognitoNewTabPageForCurrentTab() {
+        if (mLocationBarModel.hasTab()) {
+            NativePage nativePage = mLocationBarModel.getTab().getNativePage();
+            if (nativePage instanceof IncognitoNewTabPage incognitoNewTabPage)
+                return incognitoNewTabPage;
         }
         return null;
     }

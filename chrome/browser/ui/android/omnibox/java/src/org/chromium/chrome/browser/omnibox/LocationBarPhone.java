@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 /** A location bar implementation specific for smaller/phone screens. */
 @NullMarked
@@ -98,7 +99,9 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     int getOffsetOfFirstVisibleFocusedView() {
-        if (mLocationBarDataProvider.isIncognito() && mStatusView.getVisibility() != View.GONE) {
+        if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
+                && mLocationBarDataProvider.isIncognito()
+                && mStatusView.getVisibility() != View.GONE) {
             return mStatusView.getMeasuredWidth();
         }
 

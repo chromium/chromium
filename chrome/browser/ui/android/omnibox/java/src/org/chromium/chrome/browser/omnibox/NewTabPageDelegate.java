@@ -34,6 +34,14 @@ public interface NewTabPageDelegate {
     }
 
     /**
+     * Whether the incognito version of the NewTabPage {@link
+     * org.chromium.chrome.browser.ntp.IncognitoNewTabPage} is currently visible.
+     */
+    default boolean isIncognitoNewTabPageCurrentlyVisible() {
+        return false;
+    }
+
+    /**
      * @return Whether the location bar is shown in the NTP.
      */
     default boolean isLocationBarShown() {

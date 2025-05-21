@@ -265,6 +265,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void searchEngineLogoTablet() {
         setupStatusMediator(/* isTablet= */ true);
         mMediator.setUrlHasFocus(true);
@@ -347,6 +348,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void searchEngineLogo_incognitoStateChanged() {
         mMediator.onIncognitoStateChanged();
 
@@ -439,6 +441,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void testIncognitoStateChange_goingToIncognito() {
         mMediator.setShowIconsWhenUrlFocused(true);
 
@@ -450,6 +453,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void testIncognitoStateChange_backFromIncognito() {
         mMediator.setShowIconsWhenUrlFocused(true);
 
@@ -459,6 +463,30 @@ public final class StatusMediatorUnitTest {
         mMediator.onIncognitoStateChanged();
         Assert.assertEquals(null, mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         Assert.assertEquals(1f, mModel.get(StatusProperties.STATUS_ICON_ALPHA), 0f);
+    }
+
+    @Test
+    @SmallTest
+    public void testIncognitoStateChange() {
+        mMediator.setShowIconsWhenUrlFocused(true);
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
+        mMediator.onIncognitoStateChanged();
+        Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
+
+        doReturn(true).when(mNewTabPageDelegate).isIncognitoNewTabPageCurrentlyVisible();
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        Assert.assertEquals(
+                R.drawable.ic_logo_googleg_20dp,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+        Assert.assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
+
+        mMediator.setUrlHasFocus(true);
+        Assert.assertEquals(
+                R.drawable.ic_logo_googleg_20dp,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+        Assert.assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
     }
 
     @Test

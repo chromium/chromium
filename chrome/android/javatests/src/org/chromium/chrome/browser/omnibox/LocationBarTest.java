@@ -798,7 +798,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 
     @Test

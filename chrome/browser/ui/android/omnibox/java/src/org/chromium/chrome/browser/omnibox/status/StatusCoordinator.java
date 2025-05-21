@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
@@ -391,7 +392,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      */
     public void populateFadeAnimation(
             List<Animator> animators, long startDelayMs, long durationMs, float targetAlpha) {
-        if (mLocationBarDataProvider.isIncognitoBranded()) {
+        if (mLocationBarDataProvider.isIncognitoBranded()
+                && !OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
             Animator animator =
                     PropertyModelAnimatorFactory.ofFloat(
                                     mModel, StatusProperties.ALPHA, targetAlpha)
