@@ -73,6 +73,14 @@ from blinkpy.web_tests.port.base import Port
 _log = logging.getLogger(__name__)
 
 
+def parse_suffixes(option, opt_str, value, parser):
+    suffixes = set(value.split(','))
+    if invalid_suffixes := suffixes - set(get_args(BaselineSuffix)):
+        raise optparse.OptionValueError('invalid suffixes: ' +
+                                        ', '.join(sorted(invalid_suffixes)))
+    parser.values.suffixes = sorted(suffixes)
+
+
 class AbstractRebaseliningCommand(Command):
     """Base class for rebaseline-related commands."""
     # pylint: disable=abstract-method; not overriding `execute()`
@@ -104,8 +112,10 @@ class AbstractRebaseliningCommand(Command):
         help='Local results directory to use.')
     suffixes_option = optparse.make_option(
         '--suffixes',
-        default=','.join(get_args(BaselineSuffix)),
-        action='store',
+        action='callback',
+        callback=parse_suffixes,
+        type='string',
+        default=get_args(BaselineSuffix),
         help='Comma-separated-list of file types to rebaseline.')
     builder_option = optparse.make_option(
         '--builder',

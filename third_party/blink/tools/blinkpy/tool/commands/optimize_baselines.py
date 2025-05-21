@@ -71,7 +71,7 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         worker_factory = functools.partial(Worker,
                                            port_names=port_names,
                                            options=options)
-        tasks = self._make_tasks(test_set, options.suffixes.split(','))
+        tasks = self._make_tasks(test_set, options.suffixes)
         self._run_in_message_pool(worker_factory, tasks)
         if options.check:
             if self._successful:

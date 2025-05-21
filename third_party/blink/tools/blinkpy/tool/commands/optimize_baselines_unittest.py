@@ -46,7 +46,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
 
         exit_code = self.command.execute(
             optparse.Values({
-                'suffixes': 'txt,wav,png',
+                'suffixes': ['txt', 'wav', 'png'],
                 'all_tests': False,
                 'platform': 'test-mac-mac10.10',
                 'check': False,
@@ -87,7 +87,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
                 """))
         exit_code = self.command.execute(
             optparse.Values({
-                'suffixes': 'txt',
+                'suffixes': ['txt'],
                 'all_tests': False,
                 'platform': None,
                 'check': False,
@@ -140,7 +140,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
 
         exit_code = self.command.check_arguments_and_execute(
             optparse.Values({
-                'suffixes': 'txt,wav,png',
+                'suffixes': ['txt', 'wav', 'png'],
                 'all_tests': False,
                 'platform': 'test-mac-mac10.10',
                 'check': True,
@@ -167,7 +167,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
 
         exit_code = self.command.execute(
             optparse.Values({
-                'suffixes': 'txt',
+                'suffixes': ['txt'],
                 'all_tests': False,
                 'platform': 'test-mac-mac10.10',
                 'check': True,
@@ -195,7 +195,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
 
         exit_code = self.command.execute(
             optparse.Values({
-                'suffixes': 'txt',
+                'suffixes': ['txt'],
                 'all_tests': False,
                 'platform': 'test-mac-mac10.10',
                 'check': True,
@@ -244,7 +244,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
         self.command.handle = mock.Mock(wraps=self.command.handle)
         exit_code = self.command.execute(
             optparse.Values({
-                'suffixes': 'txt',
+                'suffixes': ['txt'],
                 'all_tests': False,
                 'platform': None,
                 'check': False,
