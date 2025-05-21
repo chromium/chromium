@@ -32,6 +32,7 @@
 <translation id="1186712907912748007">Glisser-déposer en cours. <ph name="GESTURE" /> pour l'arrêter. Les autres gestes sont temporairement indisponibles.</translation>
 <translation id="1188858454923323853">complémentaire</translation>
 <translation id="1189258430971676908">Section d'entraînement : listes déroulantes</translation>
+<translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{niveau imbriqué {$$COUNT}}}</translation>
 <translation id="1195238899008218998">Postface</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1198865190323699001">Gestes tactiles</translation>
@@ -100,6 +101,7 @@
 <translation id="1506187449813838456">Lire un ton plus haut</translation>
 <translation id="151784044608172266">Phrase suivante</translation>
 <translation id="1524531499102321782">Ligne suivante (braille)</translation>
+<translation id="1534255288158532891">.input {$$COUNT :number} .match $$COUNT 1{{tilde}} *{{{$$COUNT} tildes}}</translation>
 <translation id="1542513807034338907">Faire défiler jusqu'à la page précédente</translation>
 <translation id="1546370775711804143">Barre de défilement</translation>
 <translation id="1551572888042734032">Été</translation>
@@ -135,7 +137,9 @@
 <translation id="1756785467854861272">Magenta foncé</translation>
 <translation id="1758693804775271377">Balayez l'écran vers la gauche ou la droite avec un doigt pour parcourir les leçons sur ce thème</translation>
 <translation id="1765245556747822181">Balayer l'écran vers le haut avec un doigt</translation>
+<translation id="1766900865718394987">.input {$$COUNT :number} .match $$COUNT 1{{dièse}} *{{{$$COUNT} dièses}}</translation>
 <translation id="1771761307086386028">Vers la droite</translation>
+<translation id="1776454891300234201">.input {$$COUNT :number} .match $$COUNT 1{{puce carrée}} *{{{$$COUNT} puces carrées}}</translation>
 <translation id="1781173782405573156">Ignorer la touche</translation>
 <translation id="1787176709638001873">Modifier le texte du mot de passe</translation>
 <translation id="1795438342141780114">Replacer le curseur au centre</translation>
@@ -152,6 +156,7 @@
 <translation id="1902396333223336119">Cellule</translation>
 <translation id="1903683160884433981">Vert printemps moyen</translation>
 <translation id="1905379170753160525">Afficher la liste des en-têtes</translation>
+<translation id="1909599030163690992">.input {$$COUNT :number} .match $$COUNT 1{{esperluette}} *{{{$$COUNT} esperluettes}}</translation>
 <translation id="1913761808037590218">#ed</translation>
 <translation id="1914424852593176649">Taille <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Accord <ph name="DOT" /></translation>
@@ -159,6 +164,7 @@
 <translation id="1926147969119007125">Mettre en pause la commande par le visage</translation>
 <translation id="1928932365747995741">Aucun champ de texte modifiable précédent</translation>
 <translation id="1964135212174907577">Objet suivant</translation>
+<translation id="1969502304370936079">.input {$$COUNT :number} .match $$COUNT 1{{égal}} *{{{$$COUNT} signes égal}}</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Afficher les commandes braille dans les menus ChromeVox</translation>
 <translation id="2009187674653301682">Pas en exposant</translation>
@@ -166,12 +172,14 @@
 <translation id="203030071582665758">Aucun titre de niveau 4 précédent</translation>
 <translation id="2045055672832940894">Aucune commande précédente</translation>
 <translation id="2045606329038304310">Contrôle des champs de formulaire</translation>
+<translation id="2061553293808239752">.input {$$COUNT :number} .match $$COUNT 1{{minute}} *{{minutes}}</translation>
 <translation id="2063539687800151747">Épigraphe</translation>
 <translation id="2086961585857038472">Mot suivant</translation>
 <translation id="2087981446621639008">dtl lstdscrp</translation>
 <translation id="2089387485033699258">fr</translation>
 <translation id="2091933974477985526">Zone de texte modifiable précédente</translation>
 <translation id="2100350898815792233">Tous les signes de ponctuation</translation>
+<translation id="2109693710509473741">.input {$$COUNT :number} .match $$COUNT 1{{virgule}} *{{{$$COUNT} virgules}}</translation>
 <translation id="2110480898214777136">Déplace du début à la fin ou de la fin au début au sein d'une page, d'une boîte de dialogue ou d'un autre conteneur</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">touche d'accès : <ph name="KEY" /></translation>
@@ -211,6 +219,7 @@
 <translation id="2371402123699727805">Dictée activée. <ph name="GESTURE" /> pour l'arrêter. Les autres gestes sont temporairement indisponibles.</translation>
 <translation id="2381733276052567791">Activer/Désactiver la voix</translation>
 <translation id="2390264819538553347">Pour avancer, appuyez sur Entrée. Pour revenir en arrière, appuyez sur Retour arrière.</translation>
+<translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{astérisque}} *{{{$$COUNT} astérisques}}</translation>
 <translation id="2398579267367951220">Saisissez le texte à rechercher dans la page. Appuyez sur Entrée pour accéder au résultat. Appuyez sur les flèches vers le haut et vers le bas pour passer d'un résultat à l'autre. Continuez de saisir du texte pour modifier votre recherche, ou appuyez sur Échap pour l'annuler.</translation>
 <translation id="240709722712693803">Bleu-violet</translation>
 <translation id="2416512023405990736">Une case décochée</translation>
@@ -267,6 +276,7 @@
 <translation id="2708078563826046398">Rose pêche</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717271541250958000">tabpnl</translation>
+<translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{barre oblique inverse}} *{{{$$COUNT} barres obliques inverses}}</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">Aucun repère ARIA suivant</translation>
 <translation id="2749275490991666823">Cochée</translation>
@@ -329,6 +339,7 @@
 <translation id="3090227230165225418">Annoncer les notifications de téléchargement</translation>
 <translation id="3090532668523289635">groupe</translation>
 <translation id="3093176084511590672">Repère suivant</translation>
+<translation id="3096276106587041702">.input {$$COUNT :number} .match $$COUNT 1{{seconde}} *{{secondes}}</translation>
 <translation id="3096671415663099226">cbo</translation>
 <translation id="309749186376891736">Curseur de déplacement</translation>
 <translation id="3103579948980282461">Pourpre</translation>
@@ -367,6 +378,7 @@
 <translation id="3270069636408109001">Aucun tableau suivant</translation>
 <translation id="3273791280096244679">Libellé d'enregistrement</translation>
 <translation id="3283583562490372694">décochée</translation>
+<translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{avec {$$COUNT} élément}} * {{avec {$$COUNT} éléments}}</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3286390186030710347">Curseur</translation>
 <translation id="3300733168898541351">annuler</translation>
@@ -403,6 +415,7 @@
 <translation id="3473744269398144689">Commencer la dictée</translation>
 <translation id="3490765818161916458">Grille de liste</translation>
 <translation id="3494946239022273294">mnuitm</translation>
+<translation id="3501911317648720697">.input {$$COUNT :number} .match $$COUNT 1{{deux points}} *{{{$$COUNT}signes deux points}}</translation>
 <translation id="3505359110822747654">Réduire les menus ChromeVox</translation>
 <translation id="352577523970648069">Un champ de texte modifiable</translation>
 <translation id="3538907380453898475">lstdscrp</translation>
@@ -439,6 +452,7 @@
 <translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Afficher le journal</translation>
 <translation id="3801735343383419236">Saisie semi-automatique sous forme de liste</translation>
+<translation id="3805994235248464699">.input {$$COUNT :number} .match $$COUNT 1{{pourcent}} *{{{$$COUNT} signes pour cent}}</translation>
 <translation id="3806327402890551732">Passer à l'élément suivant ou précédent</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3813387282697781382">Corail clair</translation>
@@ -449,6 +463,7 @@
 <translation id="3856075812838139784">Lecture seule</translation>
 <translation id="3857141338659865495">Turquoise moyen</translation>
 <translation id="3870295413168340326">Aucun titre de niveau 3 précédent</translation>
+<translation id="3882892620695970398">.input {$$COUNT :number} .match $$COUNT 1{{arobase}} *{{{$$COUNT} arobases}}</translation>
 <translation id="3887399638190992181">Touches essentielles</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3896762831164962772">Commande par le visage mise en pause. <ph name="GESTURE" /> pour la reprendre. Les autres gestes sont temporairement indisponibles.</translation>
@@ -479,10 +494,13 @@
 <translation id="4054936709456751127">statut</translation>
 <translation id="4058278702844053247">Un chargement de page en cours</translation>
 <translation id="4065205963140826639">Pour accéder au bouton Suivant, appuyez sur la touche de recherche + la flèche vers la droite, puis pour cliquer dessus, appuyez sur la touche de recherche + la barre d'espace.</translation>
+<translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{accent circonflexe}} *{{{$$COUNT} accents circonflexes}}</translation>
 <translation id="409334809956508737">Objet précédent</translation>
+<translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{plus}} *{{{$$COUNT} signes plus}}</translation>
 <translation id="4099274309791143834">avec sous-menu</translation>
 <translation id="4101527861445851766">Une case cochée</translation>
 <translation id="410225014223200513">Former un cercle avec vos lèvres</translation>
+<translation id="411038122342629251">.input {$$COUNT :number} .match $$COUNT 1{{point}} 3{{points de suspension}} *{{{$$COUNT} points}}</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Alerte</translation>
 <translation id="4159784952369912983">Violet</translation>
@@ -516,6 +534,7 @@
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="4294967782363273192">Tri par ordre croissant</translation>
 <translation id="4300318234632215983">Énoncer l'URL du lien</translation>
+<translation id="4306112273432859778">.input {$$COUNT :number} .match $$COUNT 1{{supérieur à}} *{{{$$COUNT} signes supérieur à}}</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Terre de Sienne</translation>
 <translation id="4352022650330571548">saisir <ph name="PHRASE" /></translation>
@@ -550,12 +569,14 @@
 <translation id="4547556996012970016">En-tête suivant de niveau 5</translation>
 <translation id="4562381607973973258">En-tête</translation>
 <translation id="4597532268155981612">formulaire</translation>
+<translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{inférieur à}} *{{{$$COUNT} signes inférieur à}}</translation>
 <translation id="4601367666219428522">Tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">Combinaison de touches personnalisée : <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">La prochaine touche actionnée sera ignorée.</translation>
 <translation id="4617384941327705512">Mode rémanent intelligent désactivé</translation>
 <translation id="4623097797855662355">Achevé d'imprimer</translation>
 <translation id="4624970070706497034">TalkBack n'offre plus de personnalisation pour les Chromebooks. Vous pouvez encore l'utiliser, mais avec les raccourcis clavier par défaut. Pour voir les raccourcis disponibles, appuyez sur Recherche+A, puis sur K. Si vous voulez toujours utiliser TalkBack, appuyez de nouveau sur la touche Commande.</translation>
+<translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{puce}} *{{{$$COUNT} puces}}</translation>
 <translation id="4649220074413114917">Appuyez sur l'écran avec deux doigts si vous ne voulez plus que ChromeVox énonce le texte affiché. Pour continuer, appuyez sur l'écran avec deux doigts.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
@@ -590,6 +611,7 @@
 <translation id="4854380505292502090">Aucun widget de contenu multimédia précédent</translation>
 <translation id="4855927945655956315">Touches essentielles : Ctrl</translation>
 <translation id="485806788160414322">Lancer ou mettre en pause le contenu multimédia</translation>
+<translation id="4861593489403902434">.input {$$COUNT :number} .match $$COUNT 1{{parenthèse fermée}} *{{{$$COUNT} parenthèses fermées}}</translation>
 <translation id="4862744964787595316">Pas en gras</translation>
 <translation id="4865995900839719272">passer à la ligne précédente</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -615,6 +637,7 @@
 <translation id="4993152509206108683">Vitesse : <ph name="PERCENT" /> %</translation>
 <translation id="4994420463726586413">Annoncer l'état actuel de la batterie</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, case d'option sélectionnée</translation>
+<translation id="500303467799629809">.input {$$COUNT :number} .match $$COUNT 1{{point d'interrogation}} *{{{$$COUNT} points d'interrogation}}</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, case d'option sélectionnée de l'élément de menu</translation>
 <translation id="5014131807708055994">Impossible de : <ph name="COMMAND" />. Motif : <ph name="REASON" />.</translation>
 <translation id="5020651427400641814">Activer l'enregistrement de la voix dans le journal</translation>
@@ -715,6 +738,7 @@
 <translation id="5669637233317991674">Appuyez sur Recherche+Flèche vers la droite ou sur Recherche+Flèche vers la gauche pour parcourir cette leçon</translation>
 <translation id="5677240841070992068">Position actuelle</translation>
 <translation id="5678161956734658133">mled</translation>
+<translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{accolade droite}} *{{{$$COUNT} accolades droites}}</translation>
 <translation id="5681643281275621376">déf.</translation>
 <translation id="5682113568322255809">Rep</translation>
 <translation id="5683155931978483559">Case à cocher précédente</translation>
@@ -755,6 +779,7 @@
 <translation id="5899860758576822363">Réduire le volume lorsque ChromeVox parle</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5906974869830879618">Veuillez saisir un code</translation>
+<translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{point-virgule}} *{{{$$COUNT} points-virgules}}</translation>
 <translation id="5921587111466148855">Chapitre</translation>
 <translation id="5923780477617566089">Date actuelle</translation>
 <translation id="5926889058434275234">La liste complète des gestes figure dans le centre d'aide.</translation>
@@ -795,6 +820,7 @@
 <translation id="6197361807490522975">Bleu foncé</translation>
 <translation id="6218813441317556731">remplacer <ph name="DELETE_PHRASE" /> par <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">En-tête suivant</translation>
+<translation id="625349470169752824">.input {$$COUNT :number} .match $$COUNT 1{{barre verticale}} *{{{$$COUNT} barres verticales}}</translation>
 <translation id="6254901459154107917">Zone de texte modifiable suivante</translation>
 <translation id="6259464875943891919">Vous avez quitté <ph name="TYPE" />.</translation>
 <translation id="6280088282605782512">Appuyez deux fois</translation>
@@ -827,6 +853,7 @@
 <translation id="6493991254603208962">Baisser la luminosité</translation>
 <translation id="6501595918865591267">Turquoise</translation>
 <translation id="6508059270146105198">Déplacer l'écran de braille vers le bas de la page</translation>
+<translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{parenthèse ouverte}} *{{{$$COUNT} parenthèses ouvertes}}}</translation>
 <translation id="6521550811716689390">Violet foncé</translation>
 <translation id="6536157907112457272">Lin</translation>
 <translation id="6540201937398578274">Dans ChromeVox, la touche de recherche correspond à la touche de modification. La plupart des raccourcis ChromeVox commencent par la touche de recherche. Les touches fléchées sont utilisées pour la navigation.</translation>
@@ -867,6 +894,7 @@
 <translation id="6859876496651143278">Balayer l'écran vers la gauche avec un doigt</translation>
 <translation id="6865519907510167493">Faute d'orthographe</translation>
 <translation id="6873188295213080042">Indice : Maintenez la touche Recherche enfoncée et appuyez sur les touches fléchées pour vous déplacer.</translation>
+<translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">Énoncer la date et l'heure actuelles</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6897341342232909480">Déplacer vers la gauche</translation>
@@ -880,6 +908,7 @@
 <translation id="6951482098621102657">Aucun titre de niveau 5 suivant</translation>
 <translation id="6955705049214951590">Garance rose</translation>
 <translation id="696356426651109308">Aller au début</translation>
+<translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{heure}} *{{heures}}</translation>
 <translation id="6994042831499278539">Référence de glossaire</translation>
 <translation id="6996566555547746822">Liste déroulante suivante</translation>
 <translation id="6997224546856374593">Lors de la lecture de majuscules :</translation>
@@ -888,6 +917,7 @@
 <translation id="7005146664810010831">Aucune URL trouvée</translation>
 <translation id="7026338066939101231">Diminuer</translation>
 <translation id="7031651751836475482">élément liste</translation>
+<translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{puce blanche}} *{{{$$COUNT} puces blanches}}</translation>
 <translation id="7037042857287298941">Liste précédente</translation>
 <translation id="7039555289296502784">Vert olive</translation>
 <translation id="7041173719775863268">Fin de la sélection</translation>
@@ -897,6 +927,7 @@
 <translation id="7086377898680121060">Augmenter la luminosité</translation>
 <translation id="7088743565397416204">Appuyez deux fois pour activer l'élément sélectionné</translation>
 <translation id="7088960765736518739">Switch Access</translation>
+<translation id="7089749381037113497">.input {$$COUNT :number} .match $$COUNT 1{{trait de soulignement}} *{{{$$COUNT} traits de soulignement}}</translation>
 <translation id="7090715360595433170">Cela peut aussi être plus efficace que de balayer l'écran vers la gauche ou vers la droite avec un doigt.</translation>
 <translation id="7091296112653361280">Chair moyen</translation>
 <translation id="7095834689119144465">Texte de modification (chiffres uniquement)</translation>
@@ -907,6 +938,7 @@
 <translation id="712735679809149106">lecture des mots</translation>
 <translation id="7137397390322864165">Saumon</translation>
 <translation id="7140168702531682811">Exposant</translation>
+<translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{tabulation}} *{{{$$COUNT} tabulations}}</translation>
 <translation id="7143034430156387447">Alterner entre les méthodes braille à six et huit points</translation>
 <translation id="7143207342074048698">Connexion</translation>
 <translation id="7153618581592392745">Lavande</translation>
@@ -936,6 +968,7 @@
 <translation id="7289186959554153431">Titre 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7297440685387139507">Arrêter le glisser-déposer</translation>
+<translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{espace}} *{{{$$COUNT} espaces}}</translation>
 <translation id="7308519659008003150">Aucun champ de formulaire précédent</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">aide</translation>
@@ -966,6 +999,7 @@
 <translation id="7543255924852002459">Libellé d'annulation</translation>
 <translation id="7552432549459840808">Raccourcis Chrome utiles</translation>
 <translation id="7553679324939294712">insérer <ph name="INSERT_PHRASE" /> avant <ph name="BEFORE_PHRASE" /></translation>
+<translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{apostrophe}} *{{{$$COUNT} apostrophes}}</translation>
 <translation id="7569983096843329377">Noir</translation>
 <translation id="7579911500627256166">point <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Partielle</translation>
@@ -982,6 +1016,7 @@
 <translation id="7637342083105831460">Appuyez sur Recherche+Flèche vers la droite pour trouver le bouton "Section d'entraînement" ou "Leçon suivante". Pour activer le bouton choisi, appuyez ensuite sur Recherche+Espace.</translation>
 <translation id="7639968568612851608">Gris foncé</translation>
 <translation id="7663318257180412551">Titre 2</translation>
+<translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{dollar}} *{{{$$COUNT} signes dollar}}</translation>
 <translation id="7674576868851035240">Lien suivant</translation>
 <translation id="7674768236845044097">surlignage</translation>
 <translation id="7676847077928500578">Réinitialiser les paramètres de synthèse vocale</translation>
@@ -991,9 +1026,11 @@
 <translation id="7696631298608145306">aller au mot suivant</translation>
 <translation id="7701040980221191251">Désactivé</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{tiret}} *{{{$$COUNT} tirets}}</translation>
 <translation id="7714340021005120797">Aucune boîte combinée suivante</translation>
 <translation id="7715455358521357192">Plisser l'œil droit</translation>
 <translation id="7724603315864178912">Couper</translation>
+<translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{accent grave}} *{{{$$COUNT} accents graves}}</translation>
 <translation id="7731785449856576010">Aucun widget de contenu multimédia suivant</translation>
 <translation id="7735498529470878067">En explorant l'écran au toucher, vous saurez aussitôt ce qui se trouve sous votre doigt.</translation>
 <translation id="773906353055481349">Appuyez simultanément sur Recherche+Ctrl+Alt et sur les flèches pour parcourir le contenu par cellule</translation>
@@ -1010,9 +1047,11 @@
 <translation id="7839679365527550018">Mot précédent</translation>
 <translation id="7846634333498149051">Clavier</translation>
 <translation id="7851816175263618915">Certains signes de ponctuation</translation>
+<translation id="7861676488745595432">.input {$$COUNT :number} .match $$COUNT 1{{crochet gauche}} *{{{$$COUNT} crochets gauches}}</translation>
 <translation id="7871691770940645922">Affichage braille virtuel</translation>
 <translation id="7882421473871500483">Marron</translation>
 <translation id="78826985582142166">crsr</translation>
+<translation id="7889376040363236522">.input {$$COUNT :number} .match $$COUNT 1{{guillemet}} *{{{$$COUNT} guillemets}}</translation>
 <translation id="7913106023953875143">Aucun titre de niveau 2 suivant</translation>
 <translation id="7927711904086083099">Non sélectionné</translation>
 <translation id="7935627501098484003">Contrôle de l'heure</translation>
@@ -1052,6 +1091,7 @@
 <translation id="8132248161074464367">Élément non valide précédent</translation>
 <translation id="8138880386467279117">Tactile</translation>
 <translation id="8146613869421949343">Vous allez à présent découvrir l'utilisation de la touche Recherche. La touche Recherche est associée à d'autres touches pour effectuer des commandes ChromeVox. Cette touche se trouve juste au-dessus de la touche Maj de gauche. Pour continuer, appuyez sur la touche Recherche.</translation>
+<translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{crochet droit}} *{{{$$COUNT} crochets droits}}</translation>
 <translation id="8158033275290782295">tout sélectionner</translation>
 <translation id="816818801578874684">Ceci est le premier titre. Appuyez sur Recherche+H pour accéder au titre suivant.</translation>
 <translation id="8173092779156526980">Balayer l'écran vers la gauche avec quatre doigts</translation>
@@ -1144,6 +1184,7 @@
 <translation id="8897030325301866860">Police <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Lecture de la ponctuation par cycle</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{accolade gauche}} *{{{$$COUNT} accolades gauches}}</translation>
 <translation id="8910180774920883033">Actions possibles. Appuyez sur Recherche+Ctrl+A pour les afficher</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Touches de modification</translation>
@@ -1173,12 +1214,14 @@
 <translation id="9108370397979208512">math.</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="9128414153595658330">boîte dialogue</translation>
+<translation id="9132815018758550541">.input {$$COUNT :number} .match $$COUNT 1{{point d'exclamation}} *{{{$$COUNT} points d'exclamation}}</translation>
 <translation id="9133928141873682933">Kaki</translation>
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">Onglet</translation>
 <translation id="9151249085738989067">Changer automatiquement de voix ChromeVox en fonction de la langue</translation>
 <translation id="9153606228985488238">Timbre de voix : <ph name="PERCENT" /> %</translation>
 <translation id="9160096769946561184">Accéder à la fin de la colonne actuelle</translation>
+<translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{barre oblique}} *{{{$$COUNT} barres obliques}}</translation>
 <translation id="9173115498289768110">Volume : <ph name="PERCENT" /> %</translation>
 <translation id="9185200690645120087">Tutoriel sur les gestes avec ChromeVox</translation>
 <translation id="9192904702577636854">Marquee</translation>

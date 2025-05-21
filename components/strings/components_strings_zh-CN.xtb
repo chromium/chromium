@@ -18,6 +18,7 @@
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 想在您的设备上永久存储大量数据</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{无}=1{来自 1 个网站。会致使您从大多数网站退出账号。}other{来自 # 个网站。会致使您从大多数网站退出账号。}}</translation>
+<translation id="1035509598913574970">青色 3</translation>
 <translation id="1035709686865413354">滤水器和净水器</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1036881361735705143">C4 信封</translation>
@@ -631,6 +632,7 @@
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
 <translation id="2083256696566019397">每次访问时都允许</translation>
 <translation id="2085876078937250610">保存…</translation>
+<translation id="2088913896151127116">添加文字</translation>
 <translation id="2090451897496479509">如需了解详情，请联系提供商</translation>
 <translation id="2091887806945687916">声音</translation>
 <translation id="2093982008204312032">Google Chrome 正在尝试关闭 Windows Hello，以使其不再作为填充密码时的验证机制。</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">崩溃时间：<ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">绘画</translation>
 <translation id="2916038427272391327">关闭其他程序</translation>
+<translation id="2917630513638801879">青色 1</translation>
 <translation id="2919185931486062599">打猎与射击</translation>
 <translation id="2922350208395188000">无法核实服务器证书。</translation>
 <translation id="2922792708490674">{0,plural, =1{此文件已被禁止下载}other{<ph name="FILE_COUNT" /> 个文件已被禁止下载}}</translation>
@@ -2077,6 +2080,7 @@
 <translation id="4562155266774382038">忽略建议</translation>
 <translation id="4566017918361049074">户外活动</translation>
 <translation id="4569155249847375786">已验证</translation>
+<translation id="4570008401337135432">文字对齐方式</translation>
 <translation id="457875822857220463">递送</translation>
 <translation id="4579699065574932398">银行服务</translation>
 <translation id="4582595824823167856">接收短信</translation>
@@ -2390,6 +2394,7 @@
 <translation id="5115232566827194440">受限受管理访客会话的替换设置</translation>
 <translation id="5115563688576182185">（64 位）</translation>
 <translation id="5120526915373271910">家庭片</translation>
+<translation id="5121592697493894155">侧边栏中的 Google 搜索结果</translation>
 <translation id="5122786942953798871">信封（棉纸）</translation>
 <translation id="5123063207673082822">周末</translation>
 <translation id="5123433949759960244">篮球</translation>
@@ -2600,6 +2605,7 @@
 <translation id="5481682542063333508">提供写作帮助</translation>
 <translation id="54817484435770891">添加有效地址</translation>
 <translation id="5483838506518938965">一切都已就绪</translation>
+<translation id="5484396522446324950">样式</translation>
 <translation id="5485100387355669506">超粗</translation>
 <translation id="5485973315555778056">云端设备</translation>
 <translation id="5488367146069768854">Web 应用安装</translation>
@@ -2938,6 +2944,7 @@
 <translation id="6062937464449575061">取消跟踪价格</translation>
 <translation id="6063415549109819824">住宅融资</translation>
 <translation id="6070432475334343308">有一个或多个文件未上传到“<ph name="CLOUD_PROVIDER" />”上的“<ph name="FOLDER_NAME" />”</translation>
+<translation id="6078069862923723141">青色 2</translation>
 <translation id="6085149458302186532">标签（彩色）</translation>
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6089505343295765444">您从 Chrome 历史记录中删除的标签页仍会显示在比较表格中</translation>
@@ -3837,6 +3844,7 @@
 <translation id="7598391785903975535">少于 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前无法处理此请求。</translation>
 <translation id="7599089013883397081">下载超时</translation>
+<translation id="7602868996817972616">向 Google 询问此页面</translation>
 <translation id="7608583484192556132">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />网站推荐广告<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。详细了解如何<ph name="BEGIN_LINK_3" />管理广告隐私权<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>
 <translation id="761261689936461781">粗</translation>

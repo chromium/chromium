@@ -719,6 +719,7 @@
 <translation id="1494349716233667318">사이트에서 기기에 설치된 글꼴 사용을 요청할 수 있음</translation>
 <translation id="1494429729245089920">가상 머신 '<ph name="VM_NAME" />'이(가) 존재하지만 유효한 <ph name="APP_NAME" /> 가상 머신이 아닌 것 같습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1495677929897281669">탭으로 돌아가기</translation>
+<translation id="1496514951988037011">사용자 이름</translation>
 <translation id="1498498210836053409">텍스트 수정 시 고정 모드 사용 중지(스마트 고정 모드)</translation>
 <translation id="1499041187027566160">볼륨 크게</translation>
 <translation id="1500297251995790841">알 수 없는 기기[<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -791,7 +792,7 @@
 <translation id="1545775234664667895">테마('<ph name="THEME_NAME" />')를 설치했습니다.</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{시크릿 창이 다시 열리지 않습니다.}other{시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1546280085599573572">홈 버튼을 클릭하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
-<translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다.</translation>
+<translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다</translation>
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
 <translation id="1547808936554660006">설치된 eSIM 프로필이 파워워시로 삭제되지 않음을 이해합니다</translation>
 <translation id="1547936895218027488">측면 패널 아이콘을 클릭하여 엽니다.</translation>
@@ -1448,6 +1449,7 @@
 <translation id="1981434377190976112">모든 웹사이트의 전체 데이터 읽기</translation>
 <translation id="1982851102516626421">로그아웃 상태임</translation>
 <translation id="1983612835086592681">지난주에 열어 본 항목</translation>
+<translation id="1984087999855033707">전화번호</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1984683754853869253">학교 프로필을 새로 만드시겠습니까?</translation>
 <translation id="198507684520034826">도움말</translation>
@@ -5177,6 +5179,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4585793705637313973">페이지 수정</translation>
 <translation id="4586275095964870617"><ph name="URL" />을(를) 대체 브라우저에서 열 수 없습니다. 시스템 관리자에게 문의하세요.</translation>
 <translation id="4587589328781138893">사이트</translation>
+<translation id="4588497044036650559">현재 탭에서 새 탭 페이지 확장 프로그램의 옵션 페이지 열기</translation>
 <translation id="4588749726511456218">스크롤 가속 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> 및 <ph name="DOMAIN" /> 도메인이 관련이 있는 것으로 보입니다. <ph name="DOMAIN" /> 도메인을 신뢰하는 경우에만 이 비밀번호를 사용하세요.</translation>
 <translation id="4589713469967853491">로그가 다운로드 디렉터리에 작성되었습니다.</translation>
@@ -9153,6 +9156,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746216226901520237">다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">조직에서 이러한 기능으로 수집한 데이터를 사용하는 방식을 관리합니다.</translation>
 <translation id="7464645554245611385">이 탭의 최종 업데이트</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{열려 있는 탭 #개, 눌러서 탭 표시줄 표시/숨기기}other{열려 있는 탭 #개, 눌러서 탭 표시줄 표시/숨기기}}</translation>
 <translation id="7465635034594602553">문제가 발생했습니다. 잠시 후 <ph name="APP_NAME" /> 앱을 다시 실행해 주세요.</translation>
@@ -11717,6 +11721,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="934244546219308557">그룹 이름 지정</translation>
 <translation id="93480724622239549">버그 또는 오류</translation>
 <translation id="9354763467503131">기기에 웹 앱 설치를 요청할 수 있음</translation>
+<translation id="936329857119665832">현재 탭에서 열기</translation>
 <translation id="936646668635477464">카메라 및 마이크</translation>
 <translation id="936801553271523408">시스템 진단 데이터</translation>
 <translation id="93766956588638423">확장 프로그램 복구</translation>
@@ -11780,7 +11785,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> 인증서 삭제</translation>
 <translation id="975893173032473675">다음 언어로 번역</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" />에서 <ph name="CORRECTED_WORD" />(으)로 수정된 것과 관련하여 자동 수정 실행취소 대화상자가 표시되었습니다.  액세스하려면 위쪽 화살표를, 무시하려면 Esc를 누르세요.</translation>
-<translation id="976572010712028687">부모임을 확인</translation>
+<translation id="976572010712028687">부모임을 확인해 주세요</translation>
 <translation id="978146274692397928">초기 구두점 폭을 최대로 설정</translation>
 <translation id="978978324795544535">항목을 이동하려면 항목을 두 번 탭하는데 두 번째로 탭할 때 길게 터치한 상태에서 드래그합니다.</translation>
 <translation id="97905529126098460">취소가 완료되면 이 창이 닫힙니다.</translation>

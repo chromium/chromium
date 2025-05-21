@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030706264415084469">Сайт <ph name="URL" /> хоче постійно зберігати великий обсяг даних на вашому пристрої</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Немає}=1{З 1 сайту. Ви автоматично вийдете з облікових записів на більшості сайтів. }one{З # сайту. Ви автоматично вийдете з облікових записів на більшості сайтів. }few{З # сайтів. Ви автоматично вийдете з облікових записів на більшості сайтів. }many{З # сайтів. Ви автоматично вийдете з облікових записів на більшості сайтів. }other{З # сайту. Ви автоматично вийдете з облікових записів на більшості сайтів. }}</translation>
+<translation id="1035509598913574970">Бірюзовий 3</translation>
 <translation id="1035709686865413354">Водні фільтри й очисники</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
@@ -631,6 +632,7 @@
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Дозволити під час кожного відвідування</translation>
 <translation id="2085876078937250610">Зберегти…</translation>
+<translation id="2088913896151127116">Додати текст</translation>
 <translation id="2090451897496479509">Щоб дізнатися більше, зв’яжіться з постачальником</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2093982008204312032">Google Chrome намагається вимкнути Windows Hello для заповнення паролів.</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">Аварійне завершення роботи за <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Живопис</translation>
 <translation id="2916038427272391327">Закрийте інші програми</translation>
+<translation id="2917630513638801879">Бірюзовий 1</translation>
 <translation id="2919185931486062599">Полювання й стрільба</translation>
 <translation id="2922350208395188000">Сертифікат сервера неможливо перевірити.</translation>
 <translation id="2922792708490674">{0,plural, =1{Файл заборонено завантажувати на комп’ютер}one{<ph name="FILE_COUNT" /> файл заборонено завантажувати на комп’ютер}few{<ph name="FILE_COUNT" /> файли заборонено завантажувати на комп’ютер}many{<ph name="FILE_COUNT" /> файлів заборонено завантажувати на комп’ютер}other{<ph name="FILE_COUNT" /> файлу заборонено завантажувати на комп’ютер}}</translation>
@@ -1847,6 +1850,7 @@
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4165422751765527461">Відкрити статтю Довідкового центру в новій вкладці</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
+<translation id="4169189393773057143">Керуйте картками постійного покупця або вимкніть ці пропозиції в Google Гаманці</translation>
 <translation id="4169535189173047238">Не дозволяти</translation>
 <translation id="4171400957073367226">Недійсний підпис для підтвердження</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -2081,6 +2085,7 @@
 <translation id="4562155266774382038">Відхилити пропозицію</translation>
 <translation id="4566017918361049074">Дозвілля на природі</translation>
 <translation id="4569155249847375786">Перевірено</translation>
+<translation id="4570008401337135432">Вирівнювання тексту</translation>
 <translation id="457875822857220463">Доставка</translation>
 <translation id="4579699065574932398">Банківська справа</translation>
 <translation id="4582595824823167856">Отримати SMS</translation>
@@ -2394,6 +2399,7 @@
 <translation id="5115232566827194440">Перевизначення для керованого сеансу в режимі "Гість" з обмеженнями</translation>
 <translation id="5115563688576182185">(64-розрядна версія)</translation>
 <translation id="5120526915373271910">Сімейні фільми</translation>
+<translation id="5121592697493894155">Пошук Google на бічній панелі</translation>
 <translation id="5122786942953798871">Конверт (бавовняний)</translation>
 <translation id="5123063207673082822">Вихідні</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
@@ -2604,6 +2610,7 @@
 <translation id="5481682542063333508">Пропонувати допомогу з текстом</translation>
 <translation id="54817484435770891">Додати дійсну адресу</translation>
 <translation id="5483838506518938965">Готово</translation>
+<translation id="5484396522446324950">Стилі</translation>
 <translation id="5485100387355669506">Дуже товстий</translation>
 <translation id="5485973315555778056">Машина хмари</translation>
 <translation id="5488367146069768854">Встановлення вебдодатків</translation>
@@ -2942,6 +2949,7 @@
 <translation id="6062937464449575061">Не відстежувати ціну</translation>
 <translation id="6063415549109819824">Іпотечне кредитування</translation>
 <translation id="6070432475334343308">Принаймні один файл не завантажено в папку "<ph name="FOLDER_NAME" />" у сервісі <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Бірюзовий 2</translation>
 <translation id="6085149458302186532">Етикетки (кольорові)</translation>
 <translation id="6087312102907839798">Пов’язані пошукові запити</translation>
 <translation id="6089505343295765444">Вкладки, які ви видалите з історії Chrome, усе одно відображатимуться в порівняльних таблицях</translation>
@@ -3437,6 +3445,7 @@
 <translation id="692638818576287323">Комерційні транспортні засоби</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Пошукова система за умовчанням дає змогу здійснювати пошук в Інтернеті й підтримує такі функції Chrome,<ph name="END_BOLD" /> як пошук з адресного рядка й за зображеннями на веб-сторінках. Функція може бути недоступна, якщо ваша пошукова система її не підтримує.</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
+<translation id="6935077351544118151">Тепер ви можете автоматично заповнювати форми даними карток постійного покупця з Google Гаманця</translation>
 <translation id="6935082727755903526">Вакансії у сфері бухгалтерського обліку й фінансів</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
 <translation id="6936976777388162184">Цей пристрій входить у комплект, тому його не можна зареєструвати за ліцензією Kiosk &amp; Signage Upgrade.</translation>
@@ -3842,6 +3851,7 @@
 <translation id="7598391785903975535">Менше <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Хост <ph name="HOST_NAME" /> зараз не може обробити цей запит.</translation>
 <translation id="7599089013883397081">Час очікування завантаження минув</translation>
+<translation id="7602868996817972616">Запитати Google про цю сторінку</translation>
 <translation id="7608583484192556132">Персоналізація реклами залежить від різних факторів, зокрема цього параметра, <ph name="BEGIN_LINK_1" />пропонованих сайтами оголошень<ph name="END_LINK_1" /> і <ph name="BEGIN_LINK_2" />налаштувань файлів cookie<ph name="END_LINK_2" />, а також від того, чи персоналізує рекламу сайт, який ви переглядаєте. <ph name="BEGIN_LINK_3" />Докладніше про керування конфіденційністю в рекламі.<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Значення за межами діапазону <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Товстий</translation>

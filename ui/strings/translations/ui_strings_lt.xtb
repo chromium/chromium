@@ -21,7 +21,7 @@
 <translation id="1523230076022876491">{MONTHS,plural, =1{prieš 1 mėnesį}one{prieš # mėnesį}few{prieš # mėnesius}many{prieš # mėnesio}other{prieš # mėnesių}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutė ir }one{# minutė ir }few{# minutės ir }many{# minutės ir }other{# minučių ir }}</translation>
 <translation id="1643823602425662293">Pranešimas</translation>
-<translation id="169515659049020177">Lyg2</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1710340000377843106">dabar</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 minutė}one{# minutė}few{# minutės}many{# minutės}other{# minučių}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
@@ -204,7 +204,7 @@
 <translation id="7814458197256864873">&amp;Kopijuoti</translation>
 <translation id="7879499977785298635">Neblokuoti</translation>
 <translation id="7907591526440419938">Atidaryti failą</translation>
-<translation id="7969046989155602842">Komanda</translation>
+<translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Daugiau nei 1 neskaitytas pranešimas}one{Daugiau nei # neskaitytas pranešimas}few{Daugiau nei # neskaityti pranešimai}many{Daugiau nei # neskaityto pranešimo}other{Daugiau nei # neskaitytų pranešimų}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{po 1 min.}one{po # min.}few{po # min.}many{po # min.}other{po # min.}}</translation>
 <translation id="8090736967111090568">Numeris iš <ph name="ORIGIN" /></translation>

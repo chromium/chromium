@@ -18,6 +18,7 @@
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{なし}=1{1 件のサイトが対象。ほとんどのサイトからログアウトします。}other{# 件のサイトが対象。ほとんどのサイトからログアウトします。}}</translation>
+<translation id="1035509598913574970">シアン 3</translation>
 <translation id="1035709686865413354">浄水器</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036881361735705143">C4 封筒</translation>
@@ -631,6 +632,7 @@
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
 <translation id="2083256696566019397">すべてのアクセスで許可</translation>
 <translation id="2085876078937250610">保存…</translation>
+<translation id="2088913896151127116">テキストを追加</translation>
 <translation id="2090451897496479509">詳しくはプロバイダにお問い合わせください</translation>
 <translation id="2091887806945687916">音声</translation>
 <translation id="2093982008204312032">Google Chrome がパスワード入力で Windows Hello を無効にしようとしています。</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> のクラッシュ</translation>
 <translation id="2915496182262110498">絵画</translation>
 <translation id="2916038427272391327">他のプログラムを終了する</translation>
+<translation id="2917630513638801879">シアン 1</translation>
 <translation id="2919185931486062599">狩猟、シューティング</translation>
 <translation id="2922350208395188000">サーバーの証明書を確認できません。</translation>
 <translation id="2922792708490674">{0,plural, =1{ファイルのダウンロードがブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルのダウンロードがブロックされています}}</translation>
@@ -2082,6 +2085,7 @@
 <translation id="4562155266774382038">候補を却下</translation>
 <translation id="4566017918361049074">アウトドア</translation>
 <translation id="4569155249847375786">確認済み</translation>
+<translation id="4570008401337135432">テキストの配置</translation>
 <translation id="457875822857220463">配送</translation>
 <translation id="4579699065574932398">銀行</translation>
 <translation id="4582595824823167856">テキスト メッセージを送信する</translation>
@@ -2395,6 +2399,7 @@
 <translation id="5115232566827194440">制限付き管理対象ゲスト セッションのオーバーライド</translation>
 <translation id="5115563688576182185">（64 ビット）</translation>
 <translation id="5120526915373271910">ファミリー映画</translation>
+<translation id="5121592697493894155">サイドパネルで Google 検索</translation>
 <translation id="5122786942953798871">封筒（コットン）</translation>
 <translation id="5123063207673082822">週末</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
@@ -2605,6 +2610,7 @@
 <translation id="5481682542063333508">文書作成をサポートする</translation>
 <translation id="54817484435770891">有効なアドレスを追加</translation>
 <translation id="5483838506518938965">以上で完了です</translation>
+<translation id="5484396522446324950">スタイル</translation>
 <translation id="5485100387355669506">極太</translation>
 <translation id="5485973315555778056">クラウドマシン</translation>
 <translation id="5488367146069768854">ウェブアプリのインストール</translation>
@@ -2943,6 +2949,7 @@
 <translation id="6062937464449575061">価格トラッキングを停止</translation>
 <translation id="6063415549109819824">住宅ローン</translation>
 <translation id="6070432475334343308">1 つ以上のファイルが <ph name="CLOUD_PROVIDER" /> の <ph name="FOLDER_NAME" /> にアップロードされませんでした</translation>
+<translation id="6078069862923723141">シアン 2</translation>
 <translation id="6085149458302186532">ラベル（カラー）</translation>
 <translation id="6087312102907839798">他のキーワード</translation>
 <translation id="6089505343295765444">Chrome 履歴から削除したタブも比較表には引き続き表示されます</translation>
@@ -3845,6 +3852,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> 未満</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> では現在このリクエストを処理できません。</translation>
 <translation id="7599089013883397081">ダウンロードがタイムアウトしました</translation>
+<translation id="7602868996817972616">このページについて Google に質問する</translation>
 <translation id="7608583484192556132">表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK_1" />サイトによる広告の提案<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定<ph name="END_LINK_2" />、アクセスしたサイトが広告をパーソナライズしているかどうかなど、さまざまな要素によって決まります。<ph name="BEGIN_LINK_3" />広告のプライバシー管理について<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">値（<ph name="VALUE" />）が範囲外です。</translation>
 <translation id="761261689936461781">太い</translation>

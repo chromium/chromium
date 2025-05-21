@@ -47,6 +47,7 @@
 <translation id="1917964099031477364">Цей обліковий запис і всі незбережені дані буде вилучено з Chrome та інших додатків Google на цьому пристрої.</translation>
 <translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
 <translation id="1965935827552890526">Завершіть те, що ви робили в іншому відкритому вікні Chrome.</translation>
+<translation id="1966638102563776885">Порада щодо Chrome: використовуйте свої паролі в будь-якому додатку</translation>
 <translation id="1973910962341002002">У розділі "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" увімкніть перемикач "Chrome"</translation>
 <translation id="1984705450038014246">Синхронізуйте дані Chrome</translation>
 <translation id="1987779152850321833">Щоб користуватися всіма можливостями Chrome, виконайте дії нижче.</translation>
@@ -137,6 +138,7 @@
 <translation id="4724297637870447613">Використовуйте Chrome на всіх пристроях</translation>
 <translation id="4738647308035481133">Сторінка Google Chrome</translation>
 <translation id="4742795653798179840">Дані Chrome видалено</translation>
+<translation id="4749294594657945639">Щоб легко вводити збережені паролі в інших додатках, увімкніть автозаповнення в Chrome.</translation>
 <translation id="4761869838909035636">Виконати перевірку безпеки Chrome</translation>
 <translation id="4798859546468762093">Щоб користуватися персоналізацією і іншими можливостями, включіть Chrome у такі функції: <ph name="FEATURE_NAME_1" /> і <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Щоб покращити додаток, Chrome надсилає в Google дані про використання та збої. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>

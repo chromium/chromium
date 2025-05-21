@@ -1638,6 +1638,25 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="2180795125410219364">การตั้งค่า Home/End ปิดอยู่</translation>
 <translation id="2180958780733364832">ควบคุมการใช้โหมดไม่มีส่วนหัว</translation>
 <translation id="2182291258410176649">ผู้ใช้ตัดสินใจว่าจะเปิดใช้การสำรองข้อมูลและการกู้คืนหรือไม่</translation>
+<translation id="2182945089357619926">นโยบายนี้อนุญาตให้ผู้ดูแลระบบตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กรที่กำหนดซึ่งจะแสดงคำแนะนำและผลการค้นหาในแถบที่อยู่เมื่อถูกเรียกให้แสดงโดยคีย์เวิร์ดเฉพาะ ผู้ใช้เริ่มการค้นหาได้โดยการพิมพ์คีย์เวิร์ดที่ระบุในช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> โดยใส่หรือไม่ใส่คำนำหน้า @ (เช่น <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) ตามด้วยการกด Space หรือ Tab ในแถบที่อยู่
+
+ต้องใส่ข้อมูลในช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
+
+ช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับชื่อเครื่องมือค้นหาที่แสดงให้ผู้ใช้เห็นในแถบที่อยู่
+
+ช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับคีย์เวิร์ดที่ผู้ใช้ป้อนเพื่อเรียกใช้การค้นหา ทางลัดมีคำและอักขระธรรมดาได้ แต่ต้องไม่มีการเว้นวรรคหรือเริ่มต้นด้วยสัญลักษณ์ @ และทางลัดต้องไม่ซ้ำกัน
+
+ช่อง <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่จะค้นหา ป้อนที่อยู่เว็บสำหรับหน้าผลการค้นหาของเครื่องมือค้นหา แล้วใช้ <ph name="SEARCH_TERM_MARKER" /> แทนตำแหน่งที่เป็นคำค้นหา
+
+ช่อง <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่ให้การแนะนำการค้นหา ระบบจะสร้างคำขอ POST และส่งคำค้นหาของผู้ใช้ในพารามิเตอร์ POST ภายใต้คีย์ <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />
+
+ช่อง <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ไปยังรูปภาพที่จะใช้ในการแนะนำการค้นหา ระบบจะใช้ไอคอนเริ่มต้นเมื่อไม่ได้ตั้งค่าช่องนี้ ขอแนะนำให้ใช้ไอคอน Fav (ตัวอย่าง <ph name="ICON_URL_EXAMPLE" />) รูปแบบไฟล์ภาพที่รองรับ ได้แก่ JPEG, PNG และ ICO
+
+ช่อง <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุว่าต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> เพื่อดูการแนะนำการค้นหาหรือไม่ หากไม่ได้ตั้งค่าช่องนี้ ก็ไม่จำเป็นต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
+
+ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
+
+ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
 <translation id="2183338188392346527">ไม่รายงานตัวนับรันไทม์ของอุปกรณ์</translation>
 <translation id="2187372280917024033">เทมเพลต URI ของรีโซลเวอร์ DNS-over-HTTPS ที่ต้องการ วิธีระบุรีโซลเวอร์ DNS-over-HTTPS หลายรายการคือเว้นวรรคระหว่างเทมเพลต URI ที่เกี่ยวข้อง นโยบายนี้คล้ายเป็นอย่างมากกับ <ph name="DOH_TEMPLATES_POLICY_NAME" /> ซึ่งจะถูกลบล้างหากระบุ
 นโยบายนี้รองรับการระบุข้อมูลยืนยันตัวตน ซึ่งตรงข้ามกับนโยบาย <ph name="DOH_TEMPLATES_POLICY_NAME" />

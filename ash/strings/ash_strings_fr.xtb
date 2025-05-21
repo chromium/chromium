@@ -462,6 +462,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2530896289327917474">Activer ou désactiver la navigation au clavier</translation>
 <translation id="2531025035050312891">appareil lent</translation>
 <translation id="2531107890083353124">Appuyez sur <ph name="KEY_ONE" /> tout en faisant glisser l'onglet</translation>
+<translation id="2532199152994248594">Faites glisser ou appuyez sur la barre d'espace pour sélectionner une zone à capturer</translation>
 <translation id="2545334090614121435">Vous essayez d'utiliser Début ? Utilisez</translation>
 <translation id="254900897760075745">Copier le contenu sélectionné dans le presse-papiers</translation>
 <translation id="2549711466868162843">Améliorer l'éclairage</translation>
@@ -1485,6 +1486,7 @@ Aucun appareil connecté.</translation>
 <translation id="5788127256798019331">Fichiers Play</translation>
 <translation id="5788535737706478207">Rouvrir le dernier onglet ou la dernière fenêtre que vous avez fermé(e)</translation>
 <translation id="5790085346892983794">Succès</translation>
+<translation id="5791926618942305301">Dans Capture d'écran, sélectionner <ph name="SOURCE" /> <ph name="TYPE" />. Appuyer sur Tabulation pour choisir le type de capture. Appuyer sur Entrée pour effectuer une capture. Pour sélectionner une zone de capture, choisir la capture d'écran partielle. Si elle n'est pas déjà active, appuyer sur la barre d'espace pour sélectionner la région.</translation>
 <translation id="579415080077680903">Silencieux</translation>
 <translation id="5802516411616338943">Ouvrir la fenêtre de configuration rapide</translation>
 <translation id="5804651031882187592">Désactiver le paramètre "Verrouiller la carte SIM"</translation>
@@ -1769,6 +1771,7 @@ Nouvelle installation</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
 <translation id="6704073473590541209">Poignée sélectionnée sur le bord droit, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="6706742084323792866">Épingler le clavier</translation>
+<translation id="6709719156428404245">Faites glisser ou appuyez sur la barre d'espace pour sélectionner une zone à enregistrer</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6723839937902243910">Marche/Arrêt</translation>
 <translation id="672609503628871915">Voir les nouveautés</translation>

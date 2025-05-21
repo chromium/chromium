@@ -122,6 +122,7 @@
 <translation id="1480287803138246127">Некоторые данные могут здесь не показываться. Чтобы увидеть их все, откройте историю Chrome.</translation>
 <translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
 <translation id="1493287004536771723">Вы подписались на сайт "<ph name="SITE_NAME" />"</translation>
+<translation id="1496514951988037011">имя пользователя</translation>
 <translation id="1501480321619201731">Удалить группу</translation>
 <translation id="1502010315804028179">Чтобы управлять паролями, обновите сервисы Google Play.</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
@@ -221,6 +222,7 @@
 <translation id="197288927597451399">Сохранить</translation>
 <translation id="1973912524893600642">Не удалять данные</translation>
 <translation id="1974060860693918893">Дополнительные настройки</translation>
+<translation id="1984087999855033707">номер телефона</translation>
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
 <translation id="1986685561493779662">Это имя уже используется.</translation>
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
@@ -1874,6 +1876,7 @@
 <translation id="939598580284253335">Введите кодовую фразу</translation>
 <translation id="95817756606698420">В Китае Chrome может использовать для поиска <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Это можно изменить в <ph name="BEGIN_LINK" />Настройках<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>
+<translation id="963246339335003378">Открыть диспетчер задач</translation>
 <translation id="966131775676567255">Удаление данных из аккаунта</translation>
 <translation id="96681097142096641">Посмотреть страницу в упрощенном виде?</translation>
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>

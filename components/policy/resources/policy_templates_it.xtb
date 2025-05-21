@@ -3001,6 +3001,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 Se la policy è impostata su Attivata, il menu Accessibilità mobile verrà mostrato sempre.
 
 Se la policy è impostata su Disattivata o non è impostata, il menu Accessibilità mobile non verrà mai mostrato.</translation>
+<translation id="312646755999968569">Disabilita TLS 1.3 Early Data</translation>
 <translation id="3126748868885248792">Il pulsante destro è il principale</translation>
 <translation id="3128072319047570212">Impostazioni keygen</translation>
 <translation id="3131703464330936425">Non consentire il roaming dei dati mobili</translation>
@@ -5227,6 +5228,21 @@ Se viene disattivata, all'utente non viene mostrata la promozione dell'estension
 <translation id="4789450349513792856">Blocca popup su questi siti</translation>
 <translation id="4790391579868456557">Usa cookie essenziali e non essenziali nella ricerca.</translation>
 <translation id="4790588245699320140">Permetti all'Assistente Google di accedere al contesto dello schermo</translation>
+<translation id="4799820756794591883">TLS 1.3 Early Data è un'estensione di TLS 1.3 per inviare una richiesta HTTP contemporaneamente al TLS handshake.
+
+      Se la policy non viene configurata, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita per TLS 1.3 Early Data.
+
+      Se viene abilitata, <ph name="PRODUCT_NAME" /> abiliterà TLS 1.3 Early Data.
+
+      Se viene disabilitata, <ph name="PRODUCT_NAME" /> non abiliterà TLS 1.3 Early Data.
+
+      Se la funzionalità viene abilitata, <ph name="PRODUCT_NAME" /> potrebbe utilizzare o meno TLS 1.3 Early Data, a seconda del supporto del server.
+
+      TLS 1.3 Early Data è un protocollo consolidato. I server TLS, i middlebox e il software per la sicurezza esistenti dovrebbero gestire o rifiutare TLS 1.3 Early Data senza interrompere la connessione.
+
+      Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente e disconnettersi quando è in uso TLS 1.3 Early Data. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+      Questa policy è una misura temporanea per controllare la funzionalità e verrà rimossa in seguito. Potrebbe essere abilitata per consentirti di testare i problemi e disabilitata durante la risoluzione di questi ultimi.</translation>
 <translation id="4800438168909332958">Consente di attivare la funzionalità di cancellazione dell'eco per l'audio di sistema (AEC). La funzionalità AEC di sistema è un sistema di cancellazione dell'eco acustico, ovvero un modulo di elaborazione audio che rimuove la riproduzione dell'audio di sistema (eco) dal segnale del microfono.
 Questa policy è temporanea e verrà rimossa non appena verrà lanciata la funzionalità di cancellazione dell'eco per l'audio di sistema.
 
@@ -6630,6 +6646,7 @@ L'intervallo di ricaricamento massimo è di una settimana (10.080 minuti).
 
 La policy riguarda i flussi di autenticazione di accesso e della schermata di blocco.</translation>
 <translation id="5676740747107495269">Mostra le opzioni di accessibilità nel menu della barra delle applicazioni nella schermata di accesso</translation>
+<translation id="5679082773290670847">Abilita TLS 1.3 Early Data</translation>
 <translation id="5679540979548648200">Impedisci agli utenti di questo dispositivo di utilizzare il processo sideload ADB e forza la funzione Powerwash del dispositivo se tale processo è stato attivato in precedenza</translation>
 <translation id="5681258683432554972">Impostazione popup predefiniti</translation>
 <translation id="5683494457096171405">Le scorciatoie con il tasto Ricerca vengono inviate all'app prima di essere gestite dal sistema operativo solo quando l'app attiva è a schermo intero.</translation>
@@ -10228,6 +10245,7 @@ L'utente deve consentire esplicitamente l'esecuzione in modalità di navigazione
 Se un'estensione specificata in questa policy non viene installata, la navigazione in incognito viene bloccata.
 
 Questa policy viene applicata alla modalità di navigazione in incognito. Ciò significa che la modalità deve essere attivata nel browser. Se la modalità di navigazione in incognito viene disattivata tramite la policy <ph name="INCOGNITO_MODE_AVAILABILITY" />, questa policy non ha effetto.</translation>
+<translation id="8218485948330739485">Abilita TLS 1.3 Early Data</translation>
 <translation id="8219813789911069300">Blocca download dannosi (opzione consigliata).</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>

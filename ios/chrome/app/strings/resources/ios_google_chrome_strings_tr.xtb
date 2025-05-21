@@ -47,6 +47,7 @@ Dikkate alınması gereken noktalar:
 <translation id="1917964099031477364">Bu hesap ve kaydedilmemiş tüm veriler, Chrome'un yanı sıra bu cihazdaki diğer Google uygulamalarından kaldırılacak.</translation>
 <translation id="1919130412786645364">Chrome'da oturum açmaya izin ver</translation>
 <translation id="1965935827552890526">Açık olan diğer Chrome pencerenizde yaptığınız işlemi tamamlayın.</translation>
+<translation id="1966638102563776885">Chrome İpucu: Şifrelerinizi tüm uygulamalarda görün</translation>
 <translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ayarlarından "Chrome"u etkinleştirin</translation>
 <translation id="1984705450038014246">Chrome verilerimi senkronize et</translation>
 <translation id="1987779152850321833">Chrome'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın.</translation>
@@ -137,6 +138,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="4724297637870447613">Chrome'u her yerde kullanın</translation>
 <translation id="4738647308035481133">Google Chrome sayfası</translation>
 <translation id="4742795653798179840">Chrome verileri silindi</translation>
+<translation id="4749294594657945639">Kayıtlı şifrelerinizi diğer uygulamalarda da kolayca görmek üzere Otomatik Doldurma için Chrome'u kullanın.</translation>
 <translation id="4761869838909035636">Chrome Güvenlik Kontrolü Yürüt</translation>
 <translation id="4798859546468762093">Kişiselleştirme ve diğer özelliklerden yararlanmak için Chrome'u <ph name="FEATURE_NAME_1" /> ve <ph name="FEATURE_NAME_2" /> bölümlerine ekleyin</translation>
 <translation id="4819268619367838612">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>

@@ -230,7 +230,6 @@
 <translation id="3885770153807205175">Selettore lingua</translation>
 <translation id="3889417619312448367">Disinstalla Google Chrome</translation>
 <translation id="3892148308691398805">Copia testo</translation>
-<translation id="3905898164685175077">Eseguirai l'upgrade a Windows 11 a breve? Scarica il programma di installazione di Chrome su One Drive per avere tutto pronto fin dal primo giorno.</translation>
 <translation id="3941890832296813527">Errore di installazione: il nome file del programma di installazione non è valido o non è supportato.</translation>
 <translation id="395904275706073188">Le pagine protette non possono essere lette. Prova con un'altra pagina.</translation>
 <translation id="3968962723676998462">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -580,7 +579,6 @@
 <translation id="842386925677997438">Strumenti per la sicurezza di Chrome</translation>
 <translation id="8425765582779547329">Per navigare online in modo più sicuro con le scelte del tuo genitore, accedi a Chrome</translation>
 <translation id="8433638294851456451">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
-<translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8496177819998570653">Gestore delle p&amp;assword di Google</translation>
 <translation id="8498858610309223613">È stato appena applicato un aggiornamento di sicurezza speciale per Google Chrome. Riavvia ora e le schede verranno ripristinate.</translation>
 <translation id="8516431725144212809">I tuoi interessi stimati da Chrome</translation>
@@ -608,7 +606,7 @@
 <translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito</translation>
 <translation id="8781673607513845160">Per usare la fotocamera, consenti l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Errore di installazione: l'amministratore di rete ha applicato una policy di gruppo che impedisce l'installazione: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8798550110818026746">La tua organizzazione può vedere e gestire i dati di navigazione, ad esempio i preferiti, la cronologia e le password. Non può vedere i dati di navigazione in altri profili Chrome.</translation>
+<translation id="8798550110818026746">La tua organizzazione può vedere e gestire i dati di navigazione, ad esempio i preferiti, la cronologia e le password. Non può vedere i dati di navigazione in altri profili Chrome</translation>
 <translation id="8801657293260363985">V8 è il motore JavaScript e WebAssembly di Chrome utilizzato per migliorare le prestazioni del sito</translation>
 <translation id="8821043148920470810">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 7.</translation>
 <translation id="8823341990149967727">Chrome non è aggiornato</translation>

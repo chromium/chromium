@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Ключ за достъп</translation>
 <translation id="1030706264415084469"><ph name="URL" /> иска да съхранява за постоянно голямо количество данни на устройството ви</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Няма}=1{От 1 сайт. Ще излезете от повечето сайтове. }other{От # сайта. Ще излезете от повечето сайтове. }}</translation>
+<translation id="1035509598913574970">синьо-зелено 3</translation>
 <translation id="1035709686865413354">Водни филтри и пречистватели</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1036881361735705143">Плик C4</translation>
@@ -631,6 +632,7 @@
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Разрешаване при всяко посещение</translation>
 <translation id="2085876078937250610">Запазване…</translation>
+<translation id="2088913896151127116">Добавяне на текст</translation>
 <translation id="2090451897496479509">За повече информация се обърнете към доставчика</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2093982008204312032">Google Chrome се опитва да изключи Windows Hello за попълване на паролите.</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">Срив от <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Рисуване</translation>
 <translation id="2916038427272391327">Затворете другите програми.</translation>
+<translation id="2917630513638801879">синьо-зелено 1</translation>
 <translation id="2919185931486062599">Лов и стрелба</translation>
 <translation id="2922350208395188000">Сертификатът на сървъра не може да бъде проверен.</translation>
 <translation id="2922792708490674">{0,plural, =1{Изтеглянето на файла е блокирано}other{Изтеглянето на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
@@ -1847,6 +1850,7 @@
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4165422751765527461">Отваря статия в Помощния център в нов раздел</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
+<translation id="4169189393773057143">Управлявайте картите за лоялност или изключете тези предложения в Google Wallet</translation>
 <translation id="4169535189173047238">Забраняване</translation>
 <translation id="4171400957073367226">Невалиден подпис за потвърждаване</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -2081,6 +2085,7 @@
 <translation id="4562155266774382038">Отхвърляне на предложението</translation>
 <translation id="4566017918361049074">Занимания на открито</translation>
 <translation id="4569155249847375786">Потвърдено</translation>
+<translation id="4570008401337135432">Подравняване на текста</translation>
 <translation id="457875822857220463">Бърза доставка</translation>
 <translation id="4579699065574932398">Банкиране</translation>
 <translation id="4582595824823167856">Получаване на SMS</translation>
@@ -2394,6 +2399,7 @@
 <translation id="5115232566827194440">Отмяна на ограничената управлявана сесия като гост</translation>
 <translation id="5115563688576182185">(64 бита)</translation>
 <translation id="5120526915373271910">Семейни филми</translation>
+<translation id="5121592697493894155">Google Търсене в страничния панел</translation>
 <translation id="5122786942953798871">Плик (памучен)</translation>
 <translation id="5123063207673082822">Уикенда</translation>
 <translation id="5123433949759960244">Баскетболна топка</translation>
@@ -2604,6 +2610,7 @@
 <translation id="5481682542063333508">Предлагане на помощ при писане</translation>
 <translation id="54817484435770891">Добавяне на валиден адрес</translation>
 <translation id="5483838506518938965">Готови сте</translation>
+<translation id="5484396522446324950">Стилове</translation>
 <translation id="5485100387355669506">Изключително дебела</translation>
 <translation id="5485973315555778056">Машина в облака</translation>
 <translation id="5488367146069768854">Инсталирания на уеб приложения</translation>
@@ -2942,6 +2949,7 @@
 <translation id="6062937464449575061">Спиране на проследяването на цената</translation>
 <translation id="6063415549109819824">Жилищно финансиране</translation>
 <translation id="6070432475334343308">Един или повече файлове не бяха качени в папката „<ph name="FOLDER_NAME" />“ в(ъв) <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">синьо-зелено 2</translation>
 <translation id="6085149458302186532">Етикети (цветни)</translation>
 <translation id="6087312102907839798">Сродни търсения</translation>
 <translation id="6089505343295765444">Разделите, които изтриете от историята си в Chrome, ще продължат да се показват в таблиците ви за сравнение</translation>
@@ -3437,6 +3445,7 @@
 <translation id="692638818576287323">Търговски превозни средства</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chrome<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
+<translation id="6935077351544118151">Вече можете да попълвате автоматично карти за лоялност от Google Wallet</translation>
 <translation id="6935082727755903526">Работни места в сферата на счетоводството и финансите</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. При следващото ви посещение някои сайтове може да се зареждат по-бавно.</translation>
 <translation id="6936976777388162184">Това устройство се предлага в пакет и не може да бъде регистрирано в Kiosk and Signage Upgrade.</translation>
@@ -3842,6 +3851,7 @@
 <translation id="7598391785903975535">По-малко от <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Понастоящем <ph name="HOST_NAME" /> не може да обработи тази заявка.</translation>
 <translation id="7599089013883397081">Времето за изчакване при изтегляне изтече</translation>
+<translation id="7602868996817972616">Попитайте Google за тази страница</translation>
 <translation id="7608583484192556132">Рекламите, които виждате, могат да бъдат персонализирани. Това зависи от много неща, включително тази настройка, <ph name="BEGIN_LINK_1" />предложените от сайтовете реклами<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />настройките ви за „бисквитките“<ph name="END_LINK_2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите. Научете повече за <ph name="BEGIN_LINK_3" />управлението на поверителността при рекламите<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Стойността е извън обхват <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Дебела</translation>

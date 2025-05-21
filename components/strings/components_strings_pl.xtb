@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Klucz dostępu</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce na stałe przechowywać dużą ilość danych na Twoim urządzeniu</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Brak}=1{Z 1 witryny. Wylogowuje z większości witryn. }few{Z # witryn. Wylogowuje z większości witryn. }many{Z # witryn. Wylogowuje z większości witryn. }other{Z # witryny. Wylogowuje z większości witryn. }}</translation>
+<translation id="1035509598913574970">Cyjan 3</translation>
 <translation id="1035709686865413354">Filtry i oczyszczacze wody</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1036881361735705143">Koperta C4</translation>
@@ -631,6 +632,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2082238445998314030">Wynik <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Zezwalaj przy każdej wizycie</translation>
 <translation id="2085876078937250610">Zapisz…</translation>
+<translation id="2088913896151127116">Dodaj tekst</translation>
 <translation id="2090451897496479509">Aby uzyskać więcej informacji, skontaktuj się z usługodawcą</translation>
 <translation id="2091887806945687916">Dźwięk</translation>
 <translation id="2093982008204312032">Google Chrome próbuje wyłączyć używanie Windows Hello do wypełniania haseł.</translation>
@@ -1093,6 +1095,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2915068235268646559">Awaria od <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Malarstwo</translation>
 <translation id="2916038427272391327">Zamknij inne programy</translation>
+<translation id="2917630513638801879">Cyjan 1</translation>
 <translation id="2919185931486062599">Łowiectwo i strzelectwo</translation>
 <translation id="2922350208395188000">Nie można sprawdzić certyfikatu serwera.</translation>
 <translation id="2922792708490674">{0,plural, =1{Pobieranie pliku zostało zablokowane}few{Pobieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Pobieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Pobieranie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
@@ -2081,6 +2084,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4562155266774382038">Odrzuć sugestię</translation>
 <translation id="4566017918361049074">Rekreacja w plenerze</translation>
 <translation id="4569155249847375786">Zweryfikowane</translation>
+<translation id="4570008401337135432">Wyrównanie tekstu</translation>
 <translation id="457875822857220463">Dostawa</translation>
 <translation id="4579699065574932398">Bankowość</translation>
 <translation id="4582595824823167856">Odbierz SMS-a</translation>
@@ -2394,6 +2398,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5115232566827194440">Zastąpienie zarządzanej sesji gościa z ograniczonym dostępem</translation>
 <translation id="5115563688576182185">(64-bitowa)</translation>
 <translation id="5120526915373271910">Kino familijne</translation>
+<translation id="5121592697493894155">Wyszukiwarka Google w panelu bocznym</translation>
 <translation id="5122786942953798871">Koperta (bawełna)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
@@ -2604,6 +2609,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5481682542063333508">Pomoc w tworzeniu ofert</translation>
 <translation id="54817484435770891">Dodaj poprawny adres</translation>
 <translation id="5483838506518938965">Wszystko gotowe</translation>
+<translation id="5484396522446324950">Style</translation>
 <translation id="5485100387355669506">Bardzo gruba</translation>
 <translation id="5485973315555778056">Chmura – urządzenie</translation>
 <translation id="5488367146069768854">Instalacje aplikacji internetowych</translation>
@@ -2942,6 +2948,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6062937464449575061">Wyłącz śledzenie ceny</translation>
 <translation id="6063415549109819824">Finansowanie zakupu domu lub mieszkania</translation>
 <translation id="6070432475334343308">Co najmniej 1 plik nie został przesłany do folderu <ph name="FOLDER_NAME" /> w usłudze <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Cyjan 2</translation>
 <translation id="6085149458302186532">Etykiety (kolorowe)</translation>
 <translation id="6087312102907839798">Podobne wyszukiwania</translation>
 <translation id="6089505343295765444">Karty usunięte z historii w Chrome nadal będą widoczne w tabelach porównawczych</translation>
@@ -3842,6 +3849,7 @@ Dodatkowe informacje:
 <translation id="7598391785903975535">Mniej niż <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Serwer <ph name="HOST_NAME" /> nie może teraz obsłużyć tego żądania.</translation>
 <translation id="7599089013883397081">Przekroczono limit czasu pobierania</translation>
+<translation id="7602868996817972616">Zapytaj Google o tę stronę</translation>
 <translation id="7608583484192556132">To, czy wyświetlana reklama jest spersonalizowana, może zależeć od wielu czynników, m.in. od tego ustawienia, od <ph name="BEGIN_LINK_1" />reklam sugerowanych przez witryny<ph name="END_LINK_1" />, od <ph name="BEGIN_LINK_2" />ustawień plików cookie<ph name="END_LINK_2" /> oraz od tego, czy witryna, którą odwiedzasz, personalizuje reklamy. Dowiedz się więcej o <ph name="BEGIN_LINK_3" />zarządzaniu prywatnością w reklamach<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>
 <translation id="761261689936461781">Gruba</translation>

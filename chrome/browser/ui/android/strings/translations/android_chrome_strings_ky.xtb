@@ -122,6 +122,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1480287803138246127">Айрым изделген нерселер бул жерде көрсөтүлбөшү мүмкүн. Chrome'до көрүлгөн бардык вебсайттарды көрүү үчүн Chrome'до көрүлгөн вебсайттардын толук тизмесин ачыңыз.</translation>
 <translation id="1492417797159476138">Бул сайт үчүн ушул колдонуучунун атын сактап койгонсуз</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> жаңылыктарына жазылдыңыз</translation>
+<translation id="1496514951988037011">колдонуучунун аты</translation>
 <translation id="1501480321619201731">Топту жок кылуу</translation>
 <translation id="1502010315804028179">Сырсөздөрдү тескөө үчүн Google Play кызматтарын жаңыртыңыз</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
@@ -221,6 +222,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="197288927597451399">Сактоо</translation>
 <translation id="1973912524893600642">Дайындарды сактоо</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
+<translation id="1984087999855033707">телефон номери</translation>
 <translation id="1984417487208496350">Корголбойт (сунушталбайт)</translation>
 <translation id="1986685561493779662">Мындай аталыш мурунтан эле бар</translation>
 <translation id="200114059308480249">Google'да издегенде көбүрөөк текст камтылсынбы?</translation>
@@ -1874,6 +1876,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="939598580284253335">Купуя сөз айкашын киргизиңиз</translation>
 <translation id="95817756606698420">Chrome Кытай жергесинде издөө үчүн <ph name="BEGIN_BOLD" />Sogou'ду<ph name="END_BOLD" /> колдоно алат. Аны <ph name="BEGIN_LINK" />Параметрлерден<ph name="END_LINK" /> өзгөртүп койсоңуз болот.</translation>
 <translation id="961856697154696964">Серептөө дайындарын өчүрүү</translation>
+<translation id="963246339335003378">Маселелерди башкаргычты ачуу</translation>
 <translation id="966131775676567255">Аккаунтта сакталган нерселер өчүрүлүүдө</translation>
 <translation id="96681097142096641">Жөнөкөйлөтүлгөн баракты көрөсүзбү?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> мүн. калды</translation>

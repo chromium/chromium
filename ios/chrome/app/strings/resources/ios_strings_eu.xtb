@@ -1249,6 +1249,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6223816392543092032">Izan eskura laster-markak, historia, pasahitzak eta bestelakoak gailu guztietan.</translation>
 <translation id="6225572914528673855">Helbide-barra</translation>
 <translation id="6227126502342367214">Lens-eko kamera bidezko bilaketa</translation>
+<translation id="6227958838185907047">Hasi saioa <ph name="NAME" /> (<ph name="EMAIL" />) gisa</translation>
 <translation id="6231782223312638214">Iradokitakoak</translation>
 <translation id="6232329973559504466">Ezkutuko moduko bilaketa</translation>
 <translation id="6234310016144827337">Egiaztatu konektatuta zaudela eta saiatu berriro</translation>
@@ -1556,7 +1557,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7468373585447318060">Jakin ezazu noiz jaisten diren jarraitzen diezun produktu guztien prezioak.</translation>
 <translation id="746872191028309255">Arakatu ikusten dituzun produktuak kameraren edo argazki-galeriaren bidez.</translation>
 <translation id="7471557245617580330">Sortu beste fitxa bat</translation>
-<translation id="7473891865547856676">Ez, eskerrik asko</translation>
 <translation id="7476548258282096076">Gehien bisitatzen dituzun webguneak agertzen dira txartel honetan.</translation>
 <translation id="7484645889979462775">Inoiz ez webgune honetan</translation>
 <translation id="7486006552035434095">Mantendu gailuak sinkronizatuta</translation>
@@ -1901,6 +1901,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8786100550345425552">Editatu baimenak</translation>
 <translation id="878871978861915380">Ezkutatu "Prezioen jarraipena"</translation>
 <translation id="8792626944327216835">mikrofonoa</translation>
+<translation id="8796634520835503150">Irakurtzeko modua erabilgarri</translation>
 <translation id="8803526663383843427">Aktibatuta dagoenean</translation>
 <translation id="8803639129939845298">Segurua da</translation>
 <translation id="8806823403540278281">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak. Fitxak ez dira gordetzen ezkutuko moduan.

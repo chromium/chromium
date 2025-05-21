@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil grote gegevens permanent op je apparaat opslaan</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Geen}=1{Van 1 site. Hiermee word je uitgelogd bij de meeste sites. }other{Van # sites. Hiermee word je uitgelogd bij de meeste sites. }}</translation>
+<translation id="1035509598913574970">Cyaan 3</translation>
 <translation id="1035709686865413354">Waterfilters en -zuiveraars</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1036881361735705143">Envelop C4</translation>
@@ -631,6 +632,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Toestaan bij elk bezoek</translation>
 <translation id="2085876078937250610">Opslaan…</translation>
+<translation id="2088913896151127116">Tekst toevoegen</translation>
 <translation id="2090451897496479509">Neem voor meer informatie contact op met de provider</translation>
 <translation id="2091887806945687916">Geluid</translation>
 <translation id="2093982008204312032">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
@@ -1093,6 +1095,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2915068235268646559">Crash van <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Schilderen en schilderijen</translation>
 <translation id="2916038427272391327">Andere programma's sluiten</translation>
+<translation id="2917630513638801879">Cyaan 1</translation>
 <translation id="2919185931486062599">Jagen en schieten</translation>
 <translation id="2922350208395188000">Het servercertificaat kan niet worden gecontroleerd.</translation>
 <translation id="2922792708490674">{0,plural, =1{Bestand kan niet worden gedownload}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden gedownload}}</translation>
@@ -2076,6 +2079,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4562155266774382038">Suggestie afwijzen</translation>
 <translation id="4566017918361049074">Buitenactiviteiten</translation>
 <translation id="4569155249847375786">Geverifieerd</translation>
+<translation id="4570008401337135432">Tekstuitlijning</translation>
 <translation id="457875822857220463">Bezorging</translation>
 <translation id="4579699065574932398">Bankieren</translation>
 <translation id="4582595824823167856">Sms krijgen</translation>
@@ -2389,6 +2393,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5115232566827194440">Beperkte beheerde gastsessie overschrijven</translation>
 <translation id="5115563688576182185">(64-bits)</translation>
 <translation id="5120526915373271910">Familiefilms</translation>
+<translation id="5121592697493894155">Google Zoeken in zijvenster</translation>
 <translation id="5122786942953798871">Envelop (katoen)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basketbal</translation>
@@ -2599,6 +2604,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5481682542063333508">Hulp bij het schrijven aanbieden</translation>
 <translation id="54817484435770891">Voeg een geldig adres toe</translation>
 <translation id="5483838506518938965">Je bent helemaal klaar</translation>
+<translation id="5484396522446324950">Stijlen</translation>
 <translation id="5485100387355669506">Extra dik</translation>
 <translation id="5485973315555778056">Cloud-apparaat</translation>
 <translation id="5488367146069768854">Installaties van web-apps</translation>
@@ -2937,6 +2943,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6062937464449575061">Prijs niet meer volgen</translation>
 <translation id="6063415549109819824">Woningfinanciering</translation>
 <translation id="6070432475334343308">Een of meer bestanden zijn niet geüpload naar <ph name="FOLDER_NAME" /> in <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Cyaan 2</translation>
 <translation id="6085149458302186532">Labels (gekleurd)</translation>
 <translation id="6087312102907839798">Gerelateerde zoekopdrachten</translation>
 <translation id="6089505343295765444">Tabbladen die je uit je Chrome-geschiedenis verwijdert, worden nog steeds getoond in je vergelijkingstabellen</translation>
@@ -3837,6 +3844,7 @@ Aanvullende informatie:
 <translation id="7598391785903975535">Minder dan <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan dit verzoek momenteel niet verwerken.</translation>
 <translation id="7599089013883397081">Time-out bij downloaden</translation>
+<translation id="7602868996817972616">Google vragen over deze pagina</translation>
 <translation id="7608583484192556132">Of een getoonde advertentie wordt gepersonaliseerd, is afhankelijk van verschillende factoren, waaronder deze instelling, <ph name="BEGIN_LINK_1" />door sites voorgestelde advertenties<ph name="END_LINK_1" />, je <ph name="BEGIN_LINK_2" />cookie-instellingen<ph name="END_LINK_2" /> en of de site die je bekijkt advertenties personaliseert. Meer informatie over hoe je <ph name="BEGIN_LINK_3" />je advertentieprivacy beheert<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Waarde <ph name="VALUE" /> is buiten bereik.</translation>
 <translation id="761261689936461781">Dik</translation>

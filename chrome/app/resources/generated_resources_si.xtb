@@ -5164,6 +5164,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4585793705637313973">පිටුව සංස්කරණය කරන්න</translation>
 <translation id="4586275095964870617"><ph name="URL" /> වෛකල්පික බ්‍රවුසරයක් තුළ විවෘත කළ නොහැකි විය. ඔබේ පද්ධති පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
 <translation id="4587589328781138893">අඩවි</translation>
+<translation id="4588497044036650559">වත්මන් පටිත්තේ නව පටිති පිටු දිගු විකල්ප පිටුව විවෘත කරන්න</translation>
 <translation id="4588749726511456218">අනුචලන ත්වරණය <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> සහ <ph name="DOMAIN" /> සම්බන්ධ බව පෙනේ. ඔබ ඔබේ මුරපදය භාවිතා කිරීමට පෙර <ph name="DOMAIN" /> විශ්වාස කරන බව සහතික කර ගන්න.</translation>
 <translation id="4589713469967853491">ලොග බාගැනීම් නාමාවලියට සාර්ථකව ලියන ලදි</translation>
@@ -9140,6 +9141,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7461924472993315131">පින්</translation>
 <translation id="746216226901520237">ඊළඟ වරට ඔබේ දුරකථනය ඔබේ <ph name="DEVICE_TYPE" /> අඟුලු අරියි. ඔබට සැකසීම් තුළ Smart Lock අක්‍රිය කළ හැක.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">මෙම විශේෂාංග මගින් රැස් කරන ලද දත්ත භාවිතා කළ හැකි ආකාරය ඔබේ සංවිධානය කළමනාකරණය කරයි.</translation>
 <translation id="7464645554245611385">මෙම පටිත්තට අවසන් යාවත්කාලීන කිරීම</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# විවෘත පටිත්තක්, පටිති තීරුව ටොගල් කිරීමට ඔබන්න}one{විවෘත පටිති # ක්, පටිති තීරුව ටොගල් කිරීමට ඔබන්න}other{විවෘත පටිති # ක්, පටිති තීරුව ටොගල් කිරීමට ඔබන්න}}</translation>
 <translation id="7465635034594602553">යමක් වැරදිණි. විනාඩි කිහිපයක් රැඳී සිට, <ph name="APP_NAME" /> ධාවන කිරීමට නැවත උත්සාහ කරන්න.</translation>
@@ -11702,6 +11704,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="934244546219308557">මෙම සමූහය නම් කරන්න</translation>
 <translation id="93480724622239549">දොස හෝ දෝෂය</translation>
 <translation id="9354763467503131">ඔබේ උපාංගයේ වෙබ් යෙදුම් ස්ථාපනය කිරීම සඳහා ඉල්ලීමට ඉඩ දී ඇත</translation>
+<translation id="936329857119665832">වත්මන් පටිත්තේ විවෘත වේ</translation>
 <translation id="936646668635477464">කැමරාව හා මයික්‍රෆෝනය</translation>
 <translation id="936801553271523408">පද්ධති සොයා ගැනීමේ දත්ත</translation>
 <translation id="93766956588638423">දිගුව අලුත්වැඩියා කරන්න</translation>

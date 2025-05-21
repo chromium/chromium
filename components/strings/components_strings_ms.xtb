@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1030706264415084469"><ph name="URL" /> mahu menyimpan data bersaiz besar pada peranti anda secara kekal</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Tiada}=1{Daripada 1 laman. Mengelog anda keluar dari kebanyakan laman. }other{Daripada # laman. Mengelog anda keluar dari kebanyakan laman. }}</translation>
+<translation id="1035509598913574970">Sian 3</translation>
 <translation id="1035709686865413354">Penapis &amp; Penulenan Air</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1036881361735705143">Sampul C4</translation>
@@ -631,6 +632,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2082238445998314030">Hasil carian <ph name="RESULT_NUMBER" /> daripada <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Benarkan setiap kali melawat</translation>
 <translation id="2085876078937250610">Simpan…</translation>
+<translation id="2088913896151127116">Tambahkan teks</translation>
 <translation id="2090451897496479509">Hubungi penyedia untuk mendapatkan maklumat lanjut</translation>
 <translation id="2091887806945687916">Bunyi</translation>
 <translation id="2093982008204312032">Google Chrome cuba mematikan Windows Hello untuk mengisikan kata laluan.</translation>
@@ -1093,6 +1095,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2915068235268646559">Ranap sistem dari <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Lukisan</translation>
 <translation id="2916038427272391327">Tutup atur cara lain</translation>
+<translation id="2917630513638801879">Sian 1</translation>
 <translation id="2919185931486062599">Memburu &amp; Menembak</translation>
 <translation id="2922350208395188000">Sijil pelayan tidak boleh diperiksa.</translation>
 <translation id="2922792708490674">{0,plural, =1{Fail disekat daripada dimuat turun}other{<ph name="FILE_COUNT" /> fail disekat daripada dimuat turun}}</translation>
@@ -2083,6 +2086,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4562155266774382038">Ketepikan cadangan</translation>
 <translation id="4566017918361049074">Aktiviti luar</translation>
 <translation id="4569155249847375786">Disahkan</translation>
+<translation id="4570008401337135432">Penjajaran teks</translation>
 <translation id="457875822857220463">Penghantaran</translation>
 <translation id="4579699065574932398">Perbankan</translation>
 <translation id="4582595824823167856">Dapatkan mesej teks</translation>
@@ -2396,6 +2400,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5115232566827194440">Penggantian sesi tetamu terurus terhad</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5120526915373271910">Filem Keluarga</translation>
+<translation id="5121592697493894155">Google Search dalam panel sisi</translation>
 <translation id="5122786942953798871">Sampul (Kapas)</translation>
 <translation id="5123063207673082822">Hujung minggu</translation>
 <translation id="5123433949759960244">Bola Keranjang</translation>
@@ -2606,6 +2611,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5481682542063333508">Tawaran bantuan menulis</translation>
 <translation id="54817484435770891">Tambahkan alamat yang sah</translation>
 <translation id="5483838506518938965">Anda sudah sedia</translation>
+<translation id="5484396522446324950">Gaya</translation>
 <translation id="5485100387355669506">Amat tebal</translation>
 <translation id="5485973315555778056">Mesin awan</translation>
 <translation id="5488367146069768854">Pemasangan apl web</translation>
@@ -2944,6 +2950,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6062937464449575061">Nyahjejak Harga</translation>
 <translation id="6063415549109819824">Pembiayaan Kediaman</translation>
 <translation id="6070432475334343308">Satu atau beberapa fail tidak dapat dimuat naik kepada <ph name="FOLDER_NAME" /> pada <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Sian 2</translation>
 <translation id="6085149458302186532">Label (Berwarna)</translation>
 <translation id="6087312102907839798">Carian berkaitan</translation>
 <translation id="6089505343295765444">Tab yang anda padamkan daripada sejarah Chrome anda akan tetap dipaparkan dalam jadual perbandingan anda</translation>
@@ -3845,6 +3852,7 @@ Butiran tambahan:
 <translation id="7598391785903975535">Kurang daripada <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> tidak dapat mengendalikan permintaan ini pada masa ini.</translation>
 <translation id="7599089013883397081">Muat turun tamat masa</translation>
+<translation id="7602868996817972616">Tanya Google tentang halaman ini</translation>
 <translation id="7608583484192556132">Sama ada iklan yang anda lihat diperibadikan atau tidak boleh bergantung pada banyak perkara termasuk tetapan ini, <ph name="BEGIN_LINK_1" />iklan yang dicadangkan laman<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />tetapan kuki<ph name="END_LINK_2" /> anda dan sama ada laman yang anda lihat memeribadikan iklan atau tidak. Ketahui lebih lanjut tentang <ph name="BEGIN_LINK_3" />pengurusan privasi iklan anda<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Nilai berada di luar julat <ph name="VALUE" /></translation>
 <translation id="761261689936461781">Tebal</translation>

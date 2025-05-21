@@ -47,6 +47,7 @@ Aspectos que debes tener en cuenta:
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
 <translation id="1965935827552890526">Completa las tareas que tenías en curso en otra ventana abierta de Chrome.</translation>
+<translation id="1966638102563776885">Sugerencia para Chrome: Obtén tus contraseñas en cualquier app</translation>
 <translation id="1973910962341002002">En la configuración de "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", activa "Chrome"</translation>
 <translation id="1984705450038014246">Sincroniza tus datos de Chrome</translation>
 <translation id="1987779152850321833">Completa estas acciones sugeridas para aprovechar Chrome al máximo.</translation>
@@ -137,6 +138,7 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="4724297637870447613">Usa Chrome en todas partes</translation>
 <translation id="4738647308035481133">Página de Google Chrome</translation>
 <translation id="4742795653798179840">Se borraron los datos de Chrome</translation>
+<translation id="4749294594657945639">Para obtener fácilmente tus contraseñas guardadas en otras apps, elige Autocompletar en Chrome.</translation>
 <translation id="4761869838909035636">Ejecutar la Verificación de seguridad de Chrome</translation>
 <translation id="4798859546468762093">Para obtener la personalización y otras funciones, incluye Chrome en <ph name="FEATURE_NAME_1" /> y <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ayudarnos a mejorar la app, Chrome envía datos de uso y fallas a Google. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>

@@ -721,6 +721,7 @@
 <translation id="1494349716233667318">Сайты могуць запытваць дазвол на выкарыстанне шрыфтоў, усталяваных на прыладзе</translation>
 <translation id="1494429729245089920">Віртуальная машына "<ph name="VM_NAME" />" існуе, але яе тып не адпавядае патрэбнаму (<ph name="APP_NAME" />). Звярніцеся да адміністратара.</translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
+<translation id="1496514951988037011">імя карыстальніка</translation>
 <translation id="1498498210836053409">Выключаць рэжым заліпання клавіш пры рэдагаванні тэксту (разумны рэжым заліпання клавіш)</translation>
 <translation id="1499041187027566160">павялічыць гучнасць</translation>
 <translation id="1500297251995790841">Невядомая прылада [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1440,6 +1441,7 @@
 <translation id="1981434377190976112">Праглядаць усе вашы даныя на ўсіх вэб-сайтах</translation>
 <translation id="1982851102516626421">Вы выйшлі з уліковага запісу</translation>
 <translation id="1983612835086592681">Вы адкрывалі на мінулым тыдні</translation>
+<translation id="1984087999855033707">нумар тэлефона</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
 <translation id="1984683754853869253">Стварыць новы профіль для навучання?</translation>
 <translation id="198507684520034826">Даведка</translation>

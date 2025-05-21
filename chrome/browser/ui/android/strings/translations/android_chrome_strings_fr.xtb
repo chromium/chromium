@@ -122,6 +122,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1480287803138246127">Il est possible qu'une partie de votre historique ne s'affiche pas ici. Pour l'afficher en intégralité, sélectionnez "Ouvrir tout l'historique Chrome".</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1493287004536771723">Vous suivez <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">nom d'utilisateur</translation>
 <translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1502010315804028179">Pour gérer vos mots de passe, mettez à jour les services Google Play</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
@@ -221,6 +222,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="197288927597451399">Enregistrer</translation>
 <translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
+<translation id="1984087999855033707">numéro de téléphone</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1986685561493779662">Nom déjà attribué</translation>
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google ?</translation>

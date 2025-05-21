@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Κλειδί πρόσβασης</translation>
 <translation id="1030706264415084469">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει δεδομένα μεγάλου όγκου μόνιμα στη συσκευή σας</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Κανένας}=1{Από 1 ιστότοπο. Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους. }other{Από # ιστοτόπους. Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους. }}</translation>
+<translation id="1035509598913574970">Κυανό 3</translation>
 <translation id="1035709686865413354">Φίλτρα νερού</translation>
 <translation id="1036348656032585052">Απενεργοποίηση</translation>
 <translation id="1036881361735705143">Φάκελος C4</translation>
@@ -631,6 +632,7 @@
 <translation id="2082238445998314030">Αποτέλεσμα <ph name="RESULT_NUMBER" /> από <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Να επιτρέπεται σε κάθε επίσκεψη</translation>
 <translation id="2085876078937250610">Αποθήκευση…</translation>
+<translation id="2088913896151127116">Προσθήκη κειμένου</translation>
 <translation id="2090451897496479509">Επικοινωνήστε με τον πάροχο για περισσότερες πληροφορίες</translation>
 <translation id="2091887806945687916">Ήχος</translation>
 <translation id="2093982008204312032">Το Google Chrome επιχειρεί να απενεργοποιήσει το Windows Hello για τη συμπλήρωση κωδικών πρόσβασης.</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">Σφάλμα από τις <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Ζωγραφική</translation>
 <translation id="2916038427272391327">Κλείστε τα άλλα προγράμματα</translation>
+<translation id="2917630513638801879">Κυανό 1</translation>
 <translation id="2919185931486062599">Κυνήγι και σκοποβολή</translation>
 <translation id="2922350208395188000">Δεν είναι δυνατός ο έλεγχος του πιστοποιητικού του διακομιστή.</translation>
 <translation id="2922792708490674">{0,plural, =1{Η λήψη του αρχείου αποκλείστηκε}other{Αποκλείστηκε η λήψη <ph name="FILE_COUNT" /> αρχείων}}</translation>
@@ -2083,6 +2086,7 @@
 <translation id="4562155266774382038">Παράβλεψη πρότασης</translation>
 <translation id="4566017918361049074">Δραστηριότητες σε εξωτερικούς χώρους</translation>
 <translation id="4569155249847375786">Επαληθεύτηκε</translation>
+<translation id="4570008401337135432">Στοίχιση κειμένου</translation>
 <translation id="457875822857220463">Παράδοση</translation>
 <translation id="4579699065574932398">Τραπεζικές υπηρεσίες</translation>
 <translation id="4582595824823167856">Λήψη μηνύματος κειμένου</translation>
@@ -2396,6 +2400,7 @@
 <translation id="5115232566827194440">Παράκαμψη περιορισμένης διαχειριζόμενης περιόδου σύνδεσης επισκέπτη</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5120526915373271910">Οικογενειακές ταινίες</translation>
+<translation id="5121592697493894155">Αναζήτηση Google στο πλαϊνό πλαίσιο</translation>
 <translation id="5122786942953798871">Φάκελος (Βαμβακερός)</translation>
 <translation id="5123063207673082822">Σαββατοκύριακο</translation>
 <translation id="5123433949759960244">Μπάλα μπάσκετ</translation>
@@ -2607,6 +2612,7 @@
 <translation id="5481682542063333508">Να προσφέρεται βοήθεια κατά τη σύνταξη</translation>
 <translation id="54817484435770891">Προσθήκη έγκυρης διεύθυνσης</translation>
 <translation id="5483838506518938965">Είστε έτοιμοι</translation>
+<translation id="5484396522446324950">Στιλ</translation>
 <translation id="5485100387355669506">Πολύ παχύ</translation>
 <translation id="5485973315555778056">Μηχάνημα cloud</translation>
 <translation id="5488367146069768854">Εγκαταστάσεις εφαρμογής ιστού</translation>
@@ -2945,6 +2951,7 @@
 <translation id="6062937464449575061">Κατάργηση παρακολούθησης τιμής</translation>
 <translation id="6063415549109819824">Στεγαστική χρηματοδότηση</translation>
 <translation id="6070432475334343308">Ένα ή περισσότερα αρχεία δεν ανέβηκαν στον φάκελο <ph name="FOLDER_NAME" /> στο <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Κυανό 2</translation>
 <translation id="6085149458302186532">Ετικέτες (Έγχρωμες)</translation>
 <translation id="6087312102907839798">Συναφείς αναζητήσεις</translation>
 <translation id="6089505343295765444">Οι καρτέλες που διαγράφετε από το Ιστορικό Chrome θα εξακολουθούν να εμφανίζονται στους πίνακες σύγκρισης</translation>
@@ -3847,6 +3854,7 @@
 <translation id="7598391785903975535">Λιγότερο από <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Αυτήν τη στιγμή, ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν μπορεί να διαχειριστεί αυτό το αίτημα.</translation>
 <translation id="7599089013883397081">Έληξε το χρονικό όριο για τη λήψη</translation>
+<translation id="7602868996817972616">Ρωτήστε την Google σχετικά με αυτή τη σελίδα</translation>
 <translation id="7608583484192556132">Το αν μια διαφήμιση που βλέπετε είναι εξατομικευμένη μπορεί να εξαρτάται από πολλούς παράγοντες, όπως είναι αυτή η ρύθμιση, οι <ph name="BEGIN_LINK_1" />διαφημίσεις που προτείνονται από ιστοτόπους<ph name="END_LINK_1" />, οι <ph name="BEGIN_LINK_2" />ρυθμίσεις cookie<ph name="END_LINK_2" /> και το κατά πόσο ο ιστότοπος που βλέπετε εξατομικεύει τις διαφημίσεις. Μάθετε περισσότερα σχετικά με τη <ph name="BEGIN_LINK_3" />διαχείριση του απορρήτου διαφημίσεων<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Η τιμή είναι εκτός του εύρους τιμών <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Παχύ</translation>

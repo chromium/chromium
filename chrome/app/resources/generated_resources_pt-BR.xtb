@@ -5177,6 +5177,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617">Não foi possível abrir <ph name="URL" /> em um navegador alternativo. Fale com o administrador do sistema.</translation>
 <translation id="4587589328781138893">Sites</translation>
+<translation id="4588497044036650559">Abre a página de opções da extensão "Nova guia" na guia atual</translation>
 <translation id="4588749726511456218">Aceleração de rolagem. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> e <ph name="DOMAIN" /> parecem estar relacionados. Confira se o site <ph name="DOMAIN" /> é confiável antes de usar sua senha.</translation>
 <translation id="4589713469967853491">Os registros foram gravados no diretório Downloads.</translation>
@@ -9157,6 +9158,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Na próxima vez, o smartphone desbloqueará o <ph name="DEVICE_TYPE" />. É possível desativar o Smart Lock nas configurações.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7463985990119325874">Sua organização gerencia como os dados coletados por esses recursos podem ser usados.</translation>
 <translation id="7464645554245611385">Última atualização desta guia</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# guia aberta, pressione para alternar a barra de guias}one{# guia aberta, pressione para alternar a barra de guias}other{# guias abertas, pressione para alternar a barra de guias}}</translation>
 <translation id="7465635034594602553">Algo deu errado. Espere alguns minutos e abra o app <ph name="APP_NAME" /> novamente.</translation>
@@ -11115,7 +11117,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8811923271770626905">Esta extensão pode ser executada em segundo plano</translation>
 <translation id="8813199641941291474">Controle e reprogramação bloqueados para dispositivos MIDI</translation>
 <translation id="8813698869395535039">Não é possível fazer login em <ph name="USERNAME" /></translation>
-<translation id="8813872945700551674">Peça para seu familiar responsável aprovar a extensão <ph name="EXTENSION_NAME" /></translation>
+<translation id="8813872945700551674">Peça para o familiar responsável aprovar a extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813937837706331325">Economia média</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">Os idiomas para verificação ortográfica são baseados na sua preferência de idioma</translation>
@@ -11721,6 +11723,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="934244546219308557">Dê um nome para este grupo</translation>
 <translation id="93480724622239549">Bug ou erro</translation>
 <translation id="9354763467503131">Podem pedir para instalar apps da Web no dispositivo</translation>
+<translation id="936329857119665832">Abre na guia atual</translation>
 <translation id="936646668635477464">Câmera e microfone</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensão</translation>

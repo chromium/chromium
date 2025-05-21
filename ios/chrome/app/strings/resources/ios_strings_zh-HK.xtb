@@ -1251,6 +1251,7 @@
 <translation id="6223816392543092032">您可從任何裝置取得自己的書籤、記錄、密碼和其他設定。</translation>
 <translation id="6225572914528673855">網址列</translation>
 <translation id="6227126502342367214">「智能鏡頭」相機搜尋功能</translation>
+<translation id="6227958838185907047">以<ph name="NAME" /> (<ph name="EMAIL" />) 身分登入</translation>
 <translation id="6231782223312638214">建議</translation>
 <translation id="6232329973559504466">無痕搜尋</translation>
 <translation id="6234310016144827337">請檢查你的連線，然後再試一次</translation>
@@ -1560,7 +1561,6 @@
 <translation id="7468373585447318060">緊貼所有追蹤產品的減價消息。</translation>
 <translation id="746872191028309255">透過相機或相片庫購買所見內容。</translation>
 <translation id="7471557245617580330">新增分頁</translation>
-<translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7476548258282096076">此資訊卡顯示你最常瀏覽的網站。</translation>
 <translation id="7484645889979462775">永不儲存這個網站的密碼</translation>
 <translation id="7486006552035434095">讓你的裝置保持同步</translation>
@@ -1971,7 +1971,7 @@
 <translation id="9008201768610948239">略過</translation>
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
 <translation id="9013605037177245304">開啟通知</translation>
-<translation id="9013632079355478927">隱藏閱讀器模式</translation>
+<translation id="9013632079355478927">隱藏「閱讀器模式」</translation>
 <translation id="9029650858822697271">系統已將你登出</translation>
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9039373489628511875">頻寬</translation>

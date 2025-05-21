@@ -122,6 +122,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1480287803138246127">일부 방문 기록이 여기에 표시되지 않을 수 있습니다. 모든 Chrome 방문 기록을 보려면 전체 Chrome 방문 기록을 여세요.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> 사이트를 팔로우 중입니다.</translation>
+<translation id="1496514951988037011">사용자 이름</translation>
 <translation id="1501480321619201731">그룹 삭제</translation>
 <translation id="1502010315804028179">비밀번호를 관리하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
@@ -221,6 +222,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="197288927597451399">계속</translation>
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
+<translation id="1984087999855033707">전화번호</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1986685561493779662">이미 사용 중인 이름입니다.</translation>
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
@@ -1874,6 +1876,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="939598580284253335">암호 입력</translation>
 <translation id="95817756606698420">중국에서 검색할 때 Chrome에서 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />를 사용할 수 있습니다. <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 변경할 수 있습니다.</translation>
 <translation id="961856697154696964">인터넷 사용 기록 삭제</translation>
+<translation id="963246339335003378">작업 관리자 열기</translation>
 <translation id="966131775676567255">계정 데이터 삭제 중</translation>
 <translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>

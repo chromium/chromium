@@ -719,6 +719,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1494349716233667318">Webbplatser kan begära tillstånd att använda teckensnitt som har installerats på enheten</translation>
 <translation id="1494429729245089920">Den virtuella maskinen <ph name="VM_NAME" /> finns men verkar inte vara en giltig <ph name="APP_NAME" />-VM. Kontakta administratören.</translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
+<translation id="1496514951988037011">användarnamn</translation>
 <translation id="1498498210836053409">Inaktivera låstangentsläge när du redigerar text (smart låstangentsläge)</translation>
 <translation id="1499041187027566160">höj volymen</translation>
 <translation id="1500297251995790841">Okänd enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1447,6 +1448,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1981434377190976112">Läsa all din data på alla webbplatser</translation>
 <translation id="1982851102516626421">Du är utloggad</translation>
 <translation id="1983612835086592681">Du har öppnat filen under den senaste veckan</translation>
+<translation id="1984087999855033707">telefonnummer</translation>
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
 <translation id="1984683754853869253">Vill du skapa en ny profil för skolan?</translation>
 <translation id="198507684520034826">Hjälp</translation>

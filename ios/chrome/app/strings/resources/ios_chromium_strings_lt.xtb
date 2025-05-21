@@ -332,6 +332,7 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="9059693977935746710">Jums nereikia prisiminti šio slaptažodžio. Jis bus išsaugotas Slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">„Chromium“ versija yra pasenusi</translation>
 <translation id="9152995302810511799">„Chromium“ patarimas: gaukite patikimiausią „Chromium“ apsaugą</translation>
+<translation id="9177628952266852500"><ph name="EMAIL" />. „Chromium“ tvarkoma.</translation>
 <translation id="921174536258924340">„Chromium“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="924957577793602335">Suasmeninkite „Chromium“</translation>
 <translation id="981812233959540767">Žaisti „Chromium“ dinozauro žaidimą</translation>

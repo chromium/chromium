@@ -790,7 +790,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" installato</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{La finestra di navigazione in incognito non verrà riaperta.}other{# finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="1546280085599573572">Questa estensione ha cambiato la pagina mostrata quando fai clic sul pulsante Pagina iniziale.</translation>
-<translation id="1546452108651444655"><ph name="CHILD_NAME" /> vuole installare una <ph name="EXTENSION_TYPE" /> che può:</translation>
+<translation id="1546452108651444655"><ph name="CHILD_NAME" /> vuole installare un'<ph name="EXTENSION_TYPE" /> che può:</translation>
 <translation id="1547123415014299762">Sono consentiti i cookie di terze parti</translation>
 <translation id="1547808936554660006">Sono consapevole che i profili eSIM installati non verranno rimossi eseguendo il Powerwash</translation>
 <translation id="1547936895218027488">Fai clic sull'icona del riquadro laterale per aprirlo</translation>

@@ -1251,6 +1251,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6223816392543092032">Få dine bogmærker, din historik, dine adgangskoder og andre indstillinger på alle dine enheder.</translation>
 <translation id="6225572914528673855">Adresselinje</translation>
 <translation id="6227126502342367214">Lens-kamerasøgning</translation>
+<translation id="6227958838185907047">Log ind som <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">Foreslået</translation>
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
 <translation id="6234310016144827337">Tjek din forbindelse, og prøv igen</translation>
@@ -1560,7 +1561,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7468373585447318060">Hold dig opdateret om prisfald på alle de produkter, du holder øje med.</translation>
 <translation id="746872191028309255">Køb det, du ser, ved hjælp af dit kamera eller billedgalleri.</translation>
 <translation id="7471557245617580330">Opret ny fane</translation>
-<translation id="7473891865547856676">Nej tak</translation>
 <translation id="7476548258282096076">Dette kort viser de websites, du besøger oftest.</translation>
 <translation id="7484645889979462775">Aldrig for dette website</translation>
 <translation id="7486006552035434095">Bevar synkroniseringen af dine enheder</translation>
@@ -1905,6 +1905,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8786100550345425552">Rediger tilladelser</translation>
 <translation id="878871978861915380">Skjul "Prissporing"</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8796634520835503150">Læsetilstand er tilgængelig</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8803639129939845298">Sikker</translation>
 <translation id="8806823403540278281">Din organisation kræver, at du bruger privat browsing. Faner gemmes ikke i inkognitotilstand.

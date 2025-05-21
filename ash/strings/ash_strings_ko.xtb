@@ -462,6 +462,7 @@
 <translation id="2530896289327917474">캐럿 브라우징 사용 설정 또는 중지</translation>
 <translation id="2531025035050312891">기기 속도가 느림</translation>
 <translation id="2531107890083353124">탭을 드래그하는 동안 <ph name="KEY_ONE" /> 키 누르기</translation>
+<translation id="2532199152994248594">드래그하거나 스페이스바를 눌러 캡처할 영역을 선택하세요.</translation>
 <translation id="2545334090614121435">Home 키를 사용하려는 중인가요? 사용</translation>
 <translation id="254900897760075745">클립보드에 선택한 콘텐츠 복사</translation>
 <translation id="2549711466868162843">조명 개선</translation>
@@ -1485,6 +1486,7 @@
 <translation id="5788127256798019331">Play 파일</translation>
 <translation id="5788535737706478207">마지막으로 닫았던 탭이나 창 다시 열기</translation>
 <translation id="5790085346892983794">완료</translation>
+<translation id="5791926618942305301">화면 캡처에서 <ph name="SOURCE" /> <ph name="TYPE" /> 유형으로 설정합니다. Tab 키를 눌러 캡처 유형을 선택합니다. Enter 키를 눌러 캡처합니다. 캡처 영역을 선택하려면 부분 스크린샷으로 설정합니다. 아직 활성화되지 않은 경우 스페이스바를 눌러 영역을 선택합니다.</translation>
 <translation id="579415080077680903">음소거</translation>
 <translation id="5802516411616338943">빠른 설정 열기</translation>
 <translation id="5804651031882187592">'SIM 잠금' 설정 사용 중지</translation>
@@ -1769,6 +1771,7 @@
 <translation id="6700713906295497288">IME 메뉴 버튼</translation>
 <translation id="6704073473590541209">선택된 오른쪽 가장자리 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="6706742084323792866">키보드 고정</translation>
+<translation id="6709719156428404245">드래그하거나 스페이스바를 눌러 녹화할 영역을 선택하세요.</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6723839937902243910">전원</translation>
 <translation id="672609503628871915">새로운 기능 알아보기</translation>

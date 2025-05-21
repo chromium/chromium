@@ -492,6 +492,8 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="3020183492814296499">Atallos</translation>
 <translation id="3023690182746510369">Agarda un anaco mentres usamos a IA para darlle un pulo ao teu evento do calendario co contexto da páxina web.</translation>
 <translation id="3030138564564344289">Reintentar a descarga</translation>
+<translation id="3032704072014531631">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />" e <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) xa non poderá interactuar contigo nos servizos de Google</translation>
+<translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) perderá inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />" e xa non poderá interactuar contigo nos servizos de Google</translation>
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3039671569659952257">Eliminar cartafol</translation>
 <translation id="3053332585453689122">Envía a Navegación segura de Google os URL que visites e unha pequena mostra do contido da páxina, das descargas, da actividade das extensións e da información do sistema para comprobar se son daniños.</translation>
@@ -1249,6 +1251,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6223816392543092032">Accede aos teus marcadores, historial, contrasinais e outras opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="6225572914528673855">Barra de enderezos</translation>
 <translation id="6227126502342367214">Busca mediante a cámara de Lens</translation>
+<translation id="6227958838185907047">Iniciar sesión como <ph name="NAME" /> (<ph name="EMAIL" />)</translation>
 <translation id="6231782223312638214">Suxerido</translation>
 <translation id="6232329973559504466">Busca do modo de incógnito</translation>
 <translation id="6234310016144827337">Comproba a túa conexión e téntao de novo</translation>
@@ -1534,6 +1537,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7402602673739047753">{count,plural, =1{Hai 1 marcador gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google ({email}).}other{Hai {count} marcadores gardados só neste dispositivo. Para usalos noutros, gárdaos na túa Conta de Google ({email}).}}</translation>
+<translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) perderá inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos non lidos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Si, acepto</translation>
@@ -1546,6 +1550,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7437712592381799950">Podes pasar o dedo cara arriba para ver máis contido adaptado ás túas preferencias.</translation>
+<translation id="7438473148803748807">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"; ademais, desactivaranse todas as ligazóns de invitación</translation>
 <translation id="7438481509621345350">Agora mostraránseche historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Gardouse o marcador en {title}}other{Gardáronse os marcadores en {title}}}</translation>
 <translation id="7451404862887877229">Toca Privacidade e seguranza e, a continuación, Navegación segura</translation>
@@ -1556,7 +1561,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7468373585447318060">Mantente ao tanto das baixadas de prezos de todos os produtos dos que fas un seguimento.</translation>
 <translation id="746872191028309255">Compra o que vexas coa cámara ou na galería de fotos.</translation>
 <translation id="7471557245617580330">Crear unha pestana nova</translation>
-<translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7476548258282096076">Esta tarxeta mostra os sitios que máis visitas.</translation>
 <translation id="7484645889979462775">Nunca neste sitio</translation>
 <translation id="7486006552035434095">Mantén sincronizados os teus dispositivos</translation>

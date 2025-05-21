@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Kalit</translation>
 <translation id="1030706264415084469"><ph name="URL" /> saytidan katta hajmdagi ma’lumotlarni mobil qurilmangizda saqlashga ruxsat so‘rovi keldi</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Hech qanday}=1{1 ta saytdan. Bir nechta saytlardagi hisobingizdan chiqasiz. }other{# ta saytdan. Bir nechta saytlardagi hisobingizdan chiqasiz. }}</translation>
+<translation id="1035509598913574970">Zangori 3</translation>
 <translation id="1035709686865413354">Suv filtrlari va tozalagichlar</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
@@ -630,6 +631,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2082238445998314030">Natija: <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Har tashrifda ruxsat berish</translation>
 <translation id="2085876078937250610">Saqlash…</translation>
+<translation id="2088913896151127116">Matn kiriting</translation>
 <translation id="2090451897496479509">Batafsil axborot olish uchun provayderga murojaat qiling</translation>
 <translation id="2091887806945687916">Tovush</translation>
 <translation id="2093982008204312032">Google Chrome parollarni kiritishda Windows Hello himoyasini faolsizlantirishga urinmoqda.</translation>
@@ -1092,6 +1094,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2915068235268646559">Ishdan chiqdi: <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Rassomlik</translation>
 <translation id="2916038427272391327">Boshqa dasturlarni yoping</translation>
+<translation id="2917630513638801879">Zangori 1</translation>
 <translation id="2919185931486062599">Ovchilik va merganlik</translation>
 <translation id="2922350208395188000">Server sertifikatini tekshirib bo‘lmadi.</translation>
 <translation id="2922792708490674">{0,plural, =1{Faylni yuklab olish taqiqlangan}other{<ph name="FILE_COUNT" /> ta faylni yuklab olish taqiqlangan}}</translation>
@@ -2077,6 +2080,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4562155266774382038">Taklifni yopish</translation>
 <translation id="4566017918361049074">Ochiq havoda</translation>
 <translation id="4569155249847375786">Tasdiqlangan</translation>
+<translation id="4570008401337135432">Matnni tekislash</translation>
 <translation id="457875822857220463">Yetkazib berish</translation>
 <translation id="4579699065574932398">Bank ishi</translation>
 <translation id="4582595824823167856">SMS qabul qilish</translation>
@@ -2390,6 +2394,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5115232566827194440">Mehmon seansini oʻzgartirish taqiqlangan</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
 <translation id="5120526915373271910">Oilaviy filmlar</translation>
+<translation id="5121592697493894155">Google Qidiruv yon panelda joylashgan</translation>
 <translation id="5122786942953798871">Konvert (paxta qogʻoz)</translation>
 <translation id="5123063207673082822">Dam olish kunlari</translation>
 <translation id="5123433949759960244">Basketbol</translation>
@@ -2600,6 +2605,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5481682542063333508">Matn yozishda yordam taklifi chiqsin</translation>
 <translation id="54817484435770891">To‘g‘ri manzilni kiriting</translation>
 <translation id="5483838506518938965">Hammasi tayyor</translation>
+<translation id="5484396522446324950">Uslublar</translation>
 <translation id="5485100387355669506">Juda qalin</translation>
 <translation id="5485973315555778056">Cloud kompyuteri</translation>
 <translation id="5488367146069768854">Veb-ilovalar oʻrnatish</translation>
@@ -2938,6 +2944,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6062937464449575061">Narxni kuzatmaslik</translation>
 <translation id="6063415549109819824">Uylarni moliyalashtirish</translation>
 <translation id="6070432475334343308">Bir yoki bir nechta fayl <ph name="CLOUD_PROVIDER" /> omboridagi <ph name="FOLDER_NAME" /> jildiga yuklanmadi</translation>
+<translation id="6078069862923723141">Zangori 2</translation>
 <translation id="6085149458302186532">Yorliqlar (rangli)</translation>
 <translation id="6087312102907839798">Aloqador qidiruvlar</translation>
 <translation id="6089505343295765444">Chrome tarixidan oʻchirilgan varaqlar taqqoslash jadvallarida chiqishda davom etadi</translation>
@@ -3837,6 +3844,7 @@ Batafsil axborot:
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />dan kam</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> sayti ayni vaqtda ushbu so‘rovni qayta ishlay olmaydi.</translation>
 <translation id="7599089013883397081">Yuklab olish vaqti tugadi</translation>
+<translation id="7602868996817972616">Bu sahifa haqida Googlega savol bering</translation>
 <translation id="7608583484192556132">Chiqadigan reklama shu sozlama, <ph name="BEGIN_LINK_1" />sayt taklif qiladigan reklama<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cookie sozlamalari<ph name="END_LINK_2" /> hamda ochilgan saytda moslangan reklama chiqishi asosida moslashtiriladi. <ph name="BEGIN_LINK_3" />Reklamada maxfiylikni boshqarish<ph name="END_LINK_3" /> haqida batafsil.</translation>
 <translation id="7610193165460212391">Diapazondan tashqaridagi qiymat: <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Qalin</translation>

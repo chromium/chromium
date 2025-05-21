@@ -722,6 +722,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1494349716233667318">Spletna mesta lahko zahtevajo uporabo pisave, nameščene v napravi</translation>
 <translation id="1494429729245089920">Navidezni računalnik »<ph name="VM_NAME" />« obstaja, vendar je videti, da ni veljaven navidezni računalnik <ph name="APP_NAME" />. Obrnite se na skrbnika.</translation>
 <translation id="1495677929897281669">Nazaj na zavihek</translation>
+<translation id="1496514951988037011">uporabniško ime</translation>
 <translation id="1498498210836053409">Izklop zaklepanja pri urejanju besedila (pametno zaklepanje)</translation>
 <translation id="1499041187027566160">povečanje glasnosti</translation>
 <translation id="1500297251995790841">Neznana naprava [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1450,6 +1451,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1981434377190976112">Branje vseh vaših podatkov na vseh spletnih mestih</translation>
 <translation id="1982851102516626421">Odjavljeni ste</translation>
 <translation id="1983612835086592681">Odprli ste v preteklem tednu</translation>
+<translation id="1984087999855033707">telefonska številka</translation>
 <translation id="1984417487208496350">Brez zaščite (ni priporočljivo)</translation>
 <translation id="1984683754853869253">Ali želite ustvariti nov profil za šolo?</translation>
 <translation id="198507684520034826">Pomoč</translation>

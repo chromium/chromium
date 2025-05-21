@@ -1636,6 +1636,25 @@ Als je dit beleid niet instelt voor gewone gebruikers, is dit functioneel vergel
 <translation id="2180795125410219364">Instellingen voor Home/End staan uit</translation>
 <translation id="2180958780733364832">Gebruik van de stand zonder interface beheer</translation>
 <translation id="2182291258410176649">De gebruiker beslist of back-up maken en terugzetten moet worden aangezet</translation>
+<translation id="2182945089357619926">Met dit beleid kunnen beheerders een aangewezen zakelijke verzamelsite voor zoeken instellen die zoekaanbevelingen en -resultaten in de adresbalk geeft indien geactiveerd door een specifiek zoekwoord. Gebruikers kunnen een zoekopdracht beginnen door het aangegeven zoekwoord in het veld <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> met of zonder het voorvoegsel @ (bijvoorbeeld <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), gevolgd door de spatiebalk of Tab, in de adresbalk te typen.
+
+De volgende velden zijn vereist: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+Het veld <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> komt overeen met de naam van de zoekmachine die aan de gebruiker wordt getoond in de adresbalk.
+
+Het veld <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> komt overeen met het zoekwoord dat de gebruiker invoert om de zoekopdracht te activeren. De snelkoppeling kan gewone woorden en tekens bevatten, maar mag geen spaties bevatten of beginnen met het symbool @. Snelkoppelingen moeten uniek zijn.
+
+Het veld <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan waarop moet worden gezocht. Voer het webadres voor de resultatenpagina van de zoekmachine in en gebruik <ph name="SEARCH_TERM_MARKER" /> in plaats van de zoekopdracht.
+
+Het veld <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan die zoeksuggesties levert. Anders wordt een POST-verzoek verstuurd en wordt de zoekopdracht van de gebruiker doorgegeven in de POST-parameters onder de sleutel <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+Het veld <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan van een afbeelding die wordt gebruikt voor de zoeksuggesties. Er wordt een standaardicoon gebruikt als dit veld niet is ingesteld. We raden je aan een favicon te gebruiken (bijvoorbeeld <ph name="ICON_URL_EXAMPLE" />). Ondersteunde bestandsindelingen voor afbeeldingen: jpeg, png en ico.
+
+Het veld <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft aan of de adresbalk <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> vereist is om zoekaanbevelingen te bekijken. Als je dit veld niet instelt, is de adresbalk <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> niet vereist.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2183338188392346527">Runtime-tellers voor apparaat niet rapporteren</translation>
 <translation id="2187372280917024033">De URI-template van de gewenste DNS-over-HTTPS-resolver. Als je meerdere DNS-over-HTTPS-resolvers wilt invoeren, scheid je de overeenkomstige URI-templates met een spatie. Dit beleid lijkt sterk op <ph name="DOH_TEMPLATES_POLICY_NAME" />, dat wordt overschreven als dit is gespecificeerd.
 In tegenstelling tot het beleid <ph name="DOH_TEMPLATES_POLICY_NAME" /> ondersteunt dit beleid het invoeren van identiteitsgegevens.
@@ -1985,6 +2004,9 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2421779938235645781">De achtergrondverlichting van het toetsenbord komt overeen met de huidige achtergrond</translation>
 <translation id="2423255396068675416">Als je het beleid toepast of niet instelt, kunnen gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> uitvoeren, zolang <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aanstaan. Als je het beleid niet toepast, staat <ph name="PRODUCT_CROSTINI_NAME" /> uit voor de gebruiker. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe <ph name="PRODUCT_CROSTINI_NAME" />-containers en niet op containers die al actief zijn.</translation>
 <translation id="2423654977291507457">Integraties uitzetten</translation>
+<translation id="2424141395604579502">Als je het beleid toepast of niet instelt, kunnen gebruikers bookmarks toevoegen, verwijderen, wijzigen of uploaden.
+
+      Als je het beleid niet toepast, kunnen gebruikers geen bookmarks toevoegen, verwijderen, wijzigen of uploaden. Ze kunnen nog wel bestaande bookmarks gebruiken.</translation>
 <translation id="242521047682347997">Niet toestaan dat gebruikers sms-berichten synchroniseren tussen hun telefoon en Chromebook</translation>
 <translation id="2426782419955104525">Hiermee zet je de Instant-functie van <ph name="PRODUCT_NAME" /> aan en voorkom je dat gebruikers deze instelling wijzigen.
 
@@ -2927,6 +2949,7 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 Als je dit beleid toepast, wordt het zwevende toegankelijkheidsmenu altijd getoond.
 
 Als je dit beleid niet toepast, of niet instelt, wordt het zwevende toegankelijkheidsmenu nooit getoond.</translation>
+<translation id="312646755999968569">TLS 1.3 Early Data uitzetten</translation>
 <translation id="3126748868885248792">Rechterknop is primair</translation>
 <translation id="3128072319047570212">Instellingen voor sleutelgenerator</translation>
 <translation id="3131703464330936425">Geen mobiele dataroaming toestaan</translation>
@@ -5110,6 +5133,21 @@ Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggeg
 <translation id="4789450349513792856">Pop-ups blokkeren op deze sites</translation>
 <translation id="4790391579868456557">Essentiële en niet-essentiële cookies gebruiken voor zoeken.</translation>
 <translation id="4790588245699320140">De Google Assistent toegang geven tot schermcontext</translation>
+<translation id="4799820756794591883">TLS 1.3 Early Data is een extensie van TLS 1.3 waarmee je een HTTP-verzoek tegelijkertijd met de TLS-handshake kunt sturen.
+
+      Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor TLS 1.3 Early Data.
+
+      Als je dit beleid toepast, zet <ph name="PRODUCT_NAME" /> TLS 1.3 Early Data aan.
+
+      Als je het beleid niet toepast, zet <ph name="PRODUCT_NAME" /> TLS 1.3 Early Data niet aan.
+
+      Als de functie aanstaat, kan <ph name="PRODUCT_NAME" /> TLS 1.3 Early Data wel of niet gebruiken, afhankelijk van de serverondersteuning.
+
+      TLS 1.3 Early Data is een vastgesteld protocol. Van bestaande TLS-servers, middleboxes en beveiligingssoftware wordt verwacht dat ze TLS 1.3 Early Data verwerken of weigeren zonder de verbinding te verbreken.
+
+      Apparaten waarop TLS niet correct wordt geïmplementeerd, werken misschien niet goed en verbreken mogelijk de verbinding als TLS 1.3 Early Data wordt gebruikt. Als dit gebeurt, moeten beheerders contact opnemen met de leverancier voor een oplossing.
+
+      Dit beleid is een tijdelijke maatregel om de functie te beheren en wordt daarna verwijderd. Je kunt het beleid aanzetten om te testen of er problemen zijn en uitzetten als er problemen optreden.</translation>
 <translation id="4800438168909332958">De functie voor systeemaudio-echo opheffen (AEC) aanzetten. Systeem-AEC is een akoestische echo-opheffing, ofwel een audioverwerkingsmodule waarmee systeemaudioweergave (echo) uit het microfoonsignaal wordt verwijderd.
 Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-echo wordt gelanceerd.
 
@@ -6489,6 +6527,7 @@ Het maximaal mogelijke interval voor opnieuw laden is één week (10.080 minuten
 
 Dit beleid heeft invloed op de verificatieprocessen voor zowel inloggen als het vergrendelscherm.</translation>
 <translation id="5676740747107495269">Toegankelijkheidsopties tonen in het systeemvakmenu op het inlogscherm</translation>
+<translation id="5679082773290670847">TLS 1.3 Early Data aanzetten</translation>
 <translation id="5679540979548648200">Voorkomen dat gebruikers van dit apparaat ADB-sideloading gebruiken en een Powerwash van het apparaat afdwingen als sideloading eerder was aangezet</translation>
 <translation id="5681258683432554972">Standaardinstelling voor pop-ups</translation>
 <translation id="5683494457096171405">Snelkoppelingen met de zoektoets worden eerst naar de app gestuurd voordat ze worden verwerkt door het OS, alleen als de gefocuste app op volledig scherm wordt weergegeven.</translation>
@@ -6810,6 +6849,11 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5917897389577978190">Gmail (ondersteund sinds versie 135)</translation>
 <translation id="592036544845479336">Beëindigde/verwijderde mutatiegebeurtenissen opnieuw aanzetten</translation>
 <translation id="5921713479449475707">Downloads voor automatische updates via HTTP toestaan</translation>
+<translation id="5923084443277419535">De HTML-parser wordt gewijzigd zodat extra HTML-tags zijn toegestaan in het &lt;select&gt;-element. Met dit beleid kan het oude gedrag van de HTML-parser worden gebruikt tot M138.
+
+Als je dit beleid toepast of niet instelt, staat de HTML-parser extra tags toe in het &lt;select&gt;-element.
+
+Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;select&gt;-element kunnen worden geplaatst.</translation>
 <translation id="5925405187134730827">Dit beleid is beëindigd omdat de functie die het beleid beheert, nooit is gelanceerd. Gebruik in plaats daarvan het beleid <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Als je dit beleid niet instelt of instelt op <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (waarde 0), wordt het label Werk of School naast de werkbalkavatar getoond.
@@ -9999,6 +10043,7 @@ De gebruiker moet expliciet toestaan dat alle extensies in deze lijst worden uit
 Als een in dit beleid opgegeven extensie niet is geïnstalleerd, wordt incognitonavigatie geblokkeerd.
 
 Dit beleid wordt toegepast op de incognitomodus. Dit betekent dat de incognitomodus in de browser moet aanstaan. Als de incognitomodus is uitgezet via het beleid <ph name="INCOGNITO_MODE_AVAILABILITY" />, heeft dit beleid geen effect.</translation>
+<translation id="8218485948330739485">TLS 1.3 Early Data aanzetten</translation>
 <translation id="8219813789911069300">Schadelijke downloads blokkeren. Aanbevolen.</translation>
 <translation id="8220023426952118761">Gewenste downloadsnelheid in kbits/s.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>

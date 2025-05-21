@@ -18,6 +18,7 @@
 <translation id="102916930470544692">წვდომის გასაღები</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ითხოვს თქვენს მოწყობილობაზე დიდი მოცულობის მონაცემების სამუდამოდ შენახვის ნებართვას</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{არცერთი}=1{1 საიტიდან. თქვენ გამოხვალთ სისტემიდან საიტების უმეტესობაზე. }other{# საიტიდან. თქვენ გამოხვალთ სისტემიდან საიტების უმეტესობაზე. }}</translation>
+<translation id="1035509598913574970">ცისფერი 3</translation>
 <translation id="1035709686865413354">წყლის ფილტრები და გამწმენდები</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1036881361735705143">კონვერტი C4</translation>
@@ -631,6 +632,7 @@
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
 <translation id="2083256696566019397">ყველა ვიზიტზე დაშვება</translation>
 <translation id="2085876078937250610">შენახვა…</translation>
+<translation id="2088913896151127116">ტექსტის დამატება</translation>
 <translation id="2090451897496479509">დამატებითი ინფორმაციისთვის დაუკავშირდით პროვაიდერს</translation>
 <translation id="2091887806945687916">ხმა</translation>
 <translation id="2093982008204312032">Google Chrome ცდილობს, გამორთოს Windows Hello პაროლების შესავსებად.</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">ავარიულად გათიშვა (<ph name="CRASH_TIME" />)</translation>
 <translation id="2915496182262110498">ფერწერა</translation>
 <translation id="2916038427272391327">სხვა პროგრამების დახურვა</translation>
+<translation id="2917630513638801879">ცისფერი 1</translation>
 <translation id="2919185931486062599">ნადირობა და სროლა</translation>
 <translation id="2922350208395188000">სერვერის სერთიფიკატი ვერ მოწმდება.</translation>
 <translation id="2922792708490674">{0,plural, =1{ფაილის ჩამოტვირთვის შესაძლებლობა დაიბლოკა}other{<ph name="FILE_COUNT" /> ფაილის ჩამოტვირთვის შესაძლებლობა დაიბლოკა}}</translation>
@@ -2082,6 +2085,7 @@
 <translation id="4562155266774382038">შემოთავაზების უარყოფა</translation>
 <translation id="4566017918361049074">ღია ცის ქვეშ</translation>
 <translation id="4569155249847375786">გადამოწმებული</translation>
+<translation id="4570008401337135432">ტექსტის სწორება</translation>
 <translation id="457875822857220463">მიწოდება</translation>
 <translation id="4579699065574932398">საბანკო საქმე</translation>
 <translation id="4582595824823167856">ტექსტური შეტყობინების მიღება</translation>
@@ -2395,6 +2399,7 @@
 <translation id="5115232566827194440">სტუმრის შეზღუდული მართული სესიის უგულებელყოფა</translation>
 <translation id="5115563688576182185">(64-ბიტი)</translation>
 <translation id="5120526915373271910">საოჯახო ფილმები</translation>
+<translation id="5121592697493894155">Google Search გვერდით პანელში</translation>
 <translation id="5122786942953798871">კონვერტი (ბამბის)</translation>
 <translation id="5123063207673082822">შაბათ-კვირა</translation>
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>
@@ -2605,6 +2610,7 @@
 <translation id="5481682542063333508">წერაში დახმარების შეთავაზება</translation>
 <translation id="54817484435770891">დაამატეთ სწორი მისამართი</translation>
 <translation id="5483838506518938965">თქვენ ყველა მითითებული ხართ</translation>
+<translation id="5484396522446324950">სტილები</translation>
 <translation id="5485100387355669506">ძალიან სქელი</translation>
 <translation id="5485973315555778056">ღრუბლის მოწყობილობა</translation>
 <translation id="5488367146069768854">ვებ-აპების ინსტალაცია</translation>
@@ -2943,6 +2949,7 @@
 <translation id="6062937464449575061">ფასისთვის თვალის მიდევნების გაუქმება</translation>
 <translation id="6063415549109819824">დაფინანსება სახლისთვის</translation>
 <translation id="6070432475334343308">ერთი ან მეტი ფაილი არ აიტვირთა <ph name="FOLDER_NAME" />-ში, <ph name="CLOUD_PROVIDER" />-ზე</translation>
+<translation id="6078069862923723141">ცისფერი 2</translation>
 <translation id="6085149458302186532">ლეიბლები (ფერადი)</translation>
 <translation id="6087312102907839798">დაკავშირებული ძიებები</translation>
 <translation id="6089505343295765444">თქვენი Chrome-ის ისტორიიდან წაშლილი ჩანართები მაინც გამოჩნდება შედარების ცხრილებში</translation>
@@ -3843,6 +3850,7 @@
 <translation id="7598391785903975535">ნაკლები, ვიდრე <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ამჟამად ვერ ამუშავებს ამ მოთხოვნას.</translation>
 <translation id="7599089013883397081">ჩამოტვირთვის დრო ამოიწურა</translation>
+<translation id="7602868996817972616">ჰკითხეთ Google-ს ამ გვერდის შესახებ</translation>
 <translation id="7608583484192556132">რეკლამის პერსონალიზების საკითხი ზოგჯერ დამოკიდებულია მრავალ ფაქტორზე, მათ შორის, ამ პარამეტრზე, <ph name="BEGIN_LINK_1" />საიტების მიერ შემოთავაზებული რეკლამაზე<ph name="END_LINK_1" />, თქვენს <ph name="BEGIN_LINK_2" />ქუქი-ჩანაწერების პარამეტრებსა<ph name="END_LINK_2" /> და იმაზე, ზოგადად მხარდაჭერილია თუ არა რეკლამის პერსონალიზება იმ საიტის მიერ, რომელსაც სტუმრობთ. შეიტყვეთ მეტი <ph name="BEGIN_LINK_3" />რეკლამის კუთხით თქვენი კონფიდენციალურობის მართვის<ph name="END_LINK_3" /> შესახებ.</translation>
 <translation id="7610193165460212391">მნიშვნელობა დიაპაზონის გარეთაა <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">სქელი</translation>

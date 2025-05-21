@@ -722,6 +722,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1494349716233667318">Svetainės gali prašyti leidimo naudoti šriftus, įdiegtus jūsų įrenginyje</translation>
 <translation id="1494429729245089920">Virtualusis įrenginys „<ph name="VM_NAME" />“ yra, bet panašu, kad jis nėra tinkamas „<ph name="APP_NAME" />“ virtualusis įrenginys. Susisiekite su administratoriumi.</translation>
 <translation id="1495677929897281669">Atgal į skirtuką</translation>
+<translation id="1496514951988037011">naudotojo vardas</translation>
 <translation id="1498498210836053409">Išjungti atmenųjį režimą redaguojant tekstą (išmanusis atmenusis režimas)</translation>
 <translation id="1499041187027566160">garsumo didinimas</translation>
 <translation id="1500297251995790841">Nežinomas įrenginys [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1450,6 +1451,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1981434377190976112">Skaityti visus jūsų duomenis visose svetainėse</translation>
 <translation id="1982851102516626421">Esate atsijungę</translation>
 <translation id="1983612835086592681">Atidarėte per pastarąją savaitę</translation>
+<translation id="1984087999855033707">telefono numeris</translation>
 <translation id="1984417487208496350">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="1984683754853869253">Ar norite sukurti naują mokslo įstaigos profilį?</translation>
 <translation id="198507684520034826">Pagalba</translation>
@@ -9909,7 +9911,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7968742106503422125">Skaityti ir keisti kopijuojamus ir įklijuojamus duomenis</translation>
 <translation id="7968833647796919681">Įgalinti našumo duomenų rinkimą</translation>
 <translation id="7968982339740310781">Žiūrėti išsamią informaciją</translation>
-<translation id="7969046989155602842">Komanda</translation>
+<translation id="7969046989155602842">Command</translation>
 <translation id="7969144945436590933">Gauti išsamesnės informacijos</translation>
 <translation id="7970673414865679092">Išsami eterneto informacija</translation>
 <translation id="7972714317346275248">PKCS Nr. 1 SHA-384 su RSA šifruote</translation>

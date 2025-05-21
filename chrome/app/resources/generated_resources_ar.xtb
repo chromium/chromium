@@ -721,6 +721,7 @@
 <translation id="1494349716233667318">السماح للمواقع الإلكترونية بطلب إذن باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="1494429729245089920">تم رصد جهاز افتراضي باسم "<ph name="VM_NAME" />"، لكن لا يبدو أنّه يستخدم "<ph name="APP_NAME" />" صالحًا. يُرجى التواصل مع المشرف.</translation>
 <translation id="1495677929897281669">الرجوع إلى علامة التبويب</translation>
+<translation id="1496514951988037011">اسم المستخدم</translation>
 <translation id="1498498210836053409">إيقاف "وضع التثبيت" عند تعديل النص (وضع التثبيت الذكي)</translation>
 <translation id="1499041187027566160">الصوت مرتفع</translation>
 <translation id="1500297251995790841">جهاز غير معروف [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1442,6 +1443,7 @@
 <translation id="1981434377190976112">الاطّلاع على جميع بياناتك على جميع المواقع الإلكترونية</translation>
 <translation id="1982851102516626421">لقد سجّلت الخروج من حسابك</translation>
 <translation id="1983612835086592681">تم فتحه الأسبوع الماضي</translation>
+<translation id="1984087999855033707">رقم الهاتف</translation>
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1984683754853869253">هل المطلوب إنشاء ملف مؤسسة تعليمية جديد؟</translation>
 <translation id="198507684520034826">مساعدة</translation>

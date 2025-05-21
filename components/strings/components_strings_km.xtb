@@ -18,6 +18,7 @@
 <translation id="102916930470544692">កូដសម្ងាត់</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ចង់ផ្ទុក​ទិន្នន័យ​ទំហំធំ​នៅលើ​ឧបករណ៍​របស់អ្នក​ជា​អចិន្ត្រៃយ៍</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{គ្មាន}=1{ពី​គេហទំព័រ 1។ ធ្វើឱ្យអ្នកចេញពីគេហទំព័រភាគច្រើន។ }other{ពី​គេហទំព័រ #។ ធ្វើឱ្យអ្នកចេញពីគេហទំព័រភាគច្រើន។ }}</translation>
+<translation id="1035509598913574970">ពងក្រសាទី 3</translation>
 <translation id="1035709686865413354">ម៉ាស៊ីនបន្សុទ្ធ និងចម្រោះ​ទឹក</translation>
 <translation id="1036348656032585052">បិទ</translation>
 <translation id="1036881361735705143">ស្រោមសំបុត្រ C4</translation>
@@ -633,6 +634,7 @@
 <translation id="2082238445998314030">លទ្ធផល <ph name="RESULT_NUMBER" /> នៃ <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">អនុញ្ញាត​រាល់ពេល​ចូលមើល</translation>
 <translation id="2085876078937250610">រក្សាទុក…</translation>
+<translation id="2088913896151127116">បញ្ចូល​អក្សរ</translation>
 <translation id="2090451897496479509">ទាក់ទងទៅ​ក្រុមហ៊ុន​ផ្ដល់សេវា ដើម្បី​ទទួលបាន​ព័ត៌មាន​បន្ថែម</translation>
 <translation id="2091887806945687916">សំឡេង</translation>
 <translation id="2093982008204312032">Google Chrome កំពុងព្យាយាម​បិទ Windows Hello សម្រាប់ការបំពេញ​ពាក្យសម្ងាត់។</translation>
@@ -1096,6 +1098,7 @@
 <translation id="2915068235268646559">ការគាំងពី <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">ការគូរ​គំនូរ</translation>
 <translation id="2916038427272391327">បិទកម្មវិធីផ្សេងទៀត</translation>
+<translation id="2917630513638801879">ពងក្រសាទី 1</translation>
 <translation id="2919185931486062599">ការបរបាញ់ និងការ​បាញ់​កាំភ្លើង</translation>
 <translation id="2922350208395188000">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេមិនអាចត្រូវបានពិនិត្យទេ។</translation>
 <translation id="2922792708490674">{0,plural, =1{បានទប់ស្កាត់​មិនឱ្យទាញយក​ឯកសារ}other{បានទប់ស្កាត់​មិនឱ្យទាញយក​ឯកសារ <ph name="FILE_COUNT" />}}</translation>
@@ -2086,6 +2089,7 @@
 <translation id="4562155266774382038">ច្រានចោល​ការណែនាំ</translation>
 <translation id="4566017918361049074">ខាង​ក្រៅ</translation>
 <translation id="4569155249847375786">បានផ្ទៀងផ្ទាត់</translation>
+<translation id="4570008401337135432">ការតម្រឹម​អក្សរ</translation>
 <translation id="457875822857220463">ការបញ្ជូន</translation>
 <translation id="4579699065574932398">ធនាគារ</translation>
 <translation id="4582595824823167856">ទទួល​សារជាអក្សរ</translation>
@@ -2399,6 +2403,7 @@
 <translation id="5115232566827194440">ការលុបពីលើ​វគ្គភ្ញៀវ​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង ដែលត្រូវបាន​រឹតបន្តឹង</translation>
 <translation id="5115563688576182185">(64-ប៊ីត)</translation>
 <translation id="5120526915373271910">ភាពយន្ត​លក្ខណៈ​គ្រួសារ</translation>
+<translation id="5121592697493894155">ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google នៅក្នុង​ផ្ទាំង​ចំហៀង</translation>
 <translation id="5122786942953798871">ស្រោមសំបុត្រ (កប្បាស)</translation>
 <translation id="5123063207673082822">ចុង​សប្ដាហ៍</translation>
 <translation id="5123433949759960244">​បាល់បោះ</translation>
@@ -2609,6 +2614,7 @@
 <translation id="5481682542063333508">ផ្ដល់ជូនជំនួយក្នុងការសរសេរ</translation>
 <translation id="54817484435770891">បន្ថែមអាសយដ្ឋានត្រឹមត្រូវ</translation>
 <translation id="5483838506518938965">អ្នកត្រូវបានកំណត់រួចអស់ហើយ</translation>
+<translation id="5484396522446324950">រចនាបថ</translation>
 <translation id="5485100387355669506">ក្រាស់ខ្លាំង</translation>
 <translation id="5485973315555778056">ម៉ាស៊ីនពពក</translation>
 <translation id="5488367146069768854">ការដំឡើង​កម្មវិធីវេប</translation>
@@ -2947,6 +2953,7 @@
 <translation id="6062937464449575061">ឈប់​តាមដាន​តម្លៃ</translation>
 <translation id="6063415549109819824">ហិរញ្ញវត្ថុ​ទិញ​ផ្ទះ</translation>
 <translation id="6070432475334343308">ឯកសារមួយ ឬច្រើនមិនត្រូវបានបង្ហោះទៅ <ph name="FOLDER_NAME" /> លើ <ph name="CLOUD_PROVIDER" /> ទេ</translation>
+<translation id="6078069862923723141">ពងក្រសាទី 2</translation>
 <translation id="6085149458302186532">ស្លាក (មានពណ៌)</translation>
 <translation id="6087312102907839798">ការស្វែងរក​ដែលពាក់ព័ន្ធ</translation>
 <translation id="6089505343295765444">ផ្ទាំងដែលអ្នកលុបពីប្រវត្តិ Chrome របស់អ្នកនឹងនៅតែបង្ហាញនៅក្នុងតារាងប្រៀបធៀបរបស់អ្នក</translation>
@@ -3848,6 +3855,7 @@
 <translation id="7598391785903975535">តិចជាង <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> មិនអាចដោះស្រាយសំណើនេះនៅពេលនេះបានទេ</translation>
 <translation id="7599089013883397081">ការទាញយក​អស់ម៉ោងហើយ</translation>
+<translation id="7602868996817972616">សួរ Google អំពី​ទំព័រនេះ</translation>
 <translation id="7608583484192556132">ថាតើការផ្សាយពាណិជ្ជកម្មដែលអ្នកមើលឃើញមានលក្ខណៈផ្ទាល់ខ្លួនឬអត់អាចអាស្រ័យលើអ្វីៗជាច្រើន រួមទាំងការកំណត់នេះ <ph name="BEGIN_LINK_1" />ការ​ផ្សាយពាណិជ្ជកម្ម​ដែលណែនាំ​ដោយ​គេហទំព័រ<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />ការកំណត់ខូគី<ph name="END_LINK_2" />របស់អ្នក និង​ថាតើ​គេហទំព័រ​ដែល​អ្នក​កំពុងមើល​កំណត់​ការ​ផ្សាយពាណិជ្ជកម្ម​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់។ ស្វែងយល់បន្ថែមអំពី<ph name="BEGIN_LINK_3" />ការគ្រប់គ្រងឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្មរបស់អ្នក<ph name="END_LINK_3" />។</translation>
 <translation id="7610193165460212391">តម្លៃនៅក្រៅចន្លោះ <ph name="VALUE" />។</translation>
 <translation id="761261689936461781">ក្រាស់</translation>

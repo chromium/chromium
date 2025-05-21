@@ -18,6 +18,7 @@
 <translation id="102916930470544692">പാസ്‌കീ</translation>
 <translation id="1030706264415084469">നിങ്ങളുടെ ഉപകരണത്തിൽ ശാശ്വതമായി വലിയ അളവിൽ ഡാറ്റ സംഭരിക്കാന്‍ <ph name="URL" />ആഗ്രഹിക്കുന്നു</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റിൽ നിന്ന്. നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും. }other{# സൈറ്റുകളിൽ നിന്ന്. നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും. }}</translation>
+<translation id="1035509598913574970">സിയാൻ 3</translation>
 <translation id="1035709686865413354">വാട്ടർ ഫിൽട്ടറുകളും പ്യൂരിഫയറുകളും</translation>
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
@@ -631,6 +632,7 @@
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /> ഫലം</translation>
 <translation id="2083256696566019397">സന്ദർശിക്കുമ്പോഴല്ലാം അനുവദിക്കുക</translation>
 <translation id="2085876078937250610">സംരക്ഷിക്കുക…</translation>
+<translation id="2088913896151127116">ടെക്‌സ്റ്റ് ചേർക്കുക</translation>
 <translation id="2090451897496479509">കൂടുതൽ വിവരങ്ങൾക്ക്, സേവനദാതാവിനെ ബന്ധപ്പെടുക</translation>
 <translation id="2091887806945687916">ശബ്‌ദം</translation>
 <translation id="2093982008204312032">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് Windows Hello ഓഫാക്കാൻ Google Chrome ശ്രമിക്കുന്നു.</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> മുതൽ ക്രാഷ് ആയി</translation>
 <translation id="2915496182262110498">പെയിന്റിംഗ്</translation>
 <translation id="2916038427272391327">മറ്റ് പ്രോഗ്രാമുകൾ അടയ്‌ക്കുക</translation>
+<translation id="2917630513638801879">സിയാൻ 1</translation>
 <translation id="2919185931486062599">വേട്ടയും നായാട്ടും</translation>
 <translation id="2922350208395188000">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് പരിശോധിക്കാനാകുന്നില്ല.</translation>
 <translation id="2922792708490674">{0,plural, =1{ഫയൽ ഡൗൺലോഡ് ചെയ്യുന്നതിൽ നിന്ന് ബ്ലോക്ക് ചെയ്‌തു}other{<ph name="FILE_COUNT" /> ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നതിൽ നിന്ന് ബ്ലോക്ക് ചെയ്‌തു}}</translation>
@@ -2081,6 +2084,7 @@
 <translation id="4562155266774382038">നിർദ്ദേശം ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="4566017918361049074">ഔട്ട്ഡോർ</translation>
 <translation id="4569155249847375786">പരിശോധിച്ചുറപ്പിച്ചു</translation>
+<translation id="4570008401337135432">ടെക്‌സ്‌റ്റ് അലൈൻമെന്റ്</translation>
 <translation id="457875822857220463">ഡെലിവറി വിവരങ്ങൾ</translation>
 <translation id="4579699065574932398">ബാങ്കിംഗ്</translation>
 <translation id="4582595824823167856">ടെക്സ്റ്റ് മെസേജ് നേടുക</translation>
@@ -2394,6 +2398,7 @@
 <translation id="5115232566827194440">നിയന്ത്രിത 'മാനേജ് ചെയ്യുന്ന അതിഥി സെഷൻ' അസാധുവാക്കൽ</translation>
 <translation id="5115563688576182185">(64-ബിറ്റ്)</translation>
 <translation id="5120526915373271910">കുടുംബ സിനിമകൾ</translation>
+<translation id="5121592697493894155">സൈഡ് പാനലിലെ Google Search</translation>
 <translation id="5122786942953798871">എൻവലപ്പ് (കോട്ടൺ)</translation>
 <translation id="5123063207673082822">വാരാന്ത്യം</translation>
 <translation id="5123433949759960244">ബാസ്ക്കറ്റ്ബോൾ</translation>
@@ -2604,6 +2609,7 @@
 <translation id="5481682542063333508">എഴുതാനുള്ള സഹായം നൽകുക</translation>
 <translation id="54817484435770891">ശരിയായ വിലാസം ചേർക്കുക</translation>
 <translation id="5483838506518938965">നിങ്ങൾ തയ്യാറായിക്കഴിഞ്ഞു</translation>
+<translation id="5484396522446324950">സ്റ്റൈലുകൾ</translation>
 <translation id="5485100387355669506">നല്ല കട്ടിയുള്ളത്</translation>
 <translation id="5485973315555778056">ക്ലൗഡ് മെഷീൻ</translation>
 <translation id="5488367146069768854">വെബ് ആപ്പ് ഇൻസ്റ്റലേഷനുകൾ</translation>
@@ -2942,6 +2948,7 @@
 <translation id="6062937464449575061">നിരക്ക് ട്രാക്ക് ചെയ്യൽ അവസാനിപ്പിക്കുക</translation>
 <translation id="6063415549109819824">ഹോം ഫിനാൻസിംഗ്</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> എന്നതിലെ <ph name="FOLDER_NAME" /> എന്നതിലേക്ക് ഒന്നോ അതിലധികമോ ഫയലുകൾ അപ്‌ലോഡ് ചെയ്തില്ല</translation>
+<translation id="6078069862923723141">സിയാൻ 2</translation>
 <translation id="6085149458302186532">ലേബലുകൾ (നിറമുള്ളത്)</translation>
 <translation id="6087312102907839798">അനുബന്ധ തിരയലുകൾ</translation>
 <translation id="6089505343295765444">നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ നിന്ന് നിങ്ങൾ ഇല്ലാതാക്കുന്ന ടാബുകൾ നിങ്ങളുടെ താരതമ്യ ടേബിളുകളിൽ തുടർന്നും ദൃശ്യമാകും</translation>
@@ -3841,6 +3848,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />-യിൽ താഴെ</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" />-ന് നിലവിൽ ഈ അഭ്യർത്ഥന കൈകാര്യം ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="7599089013883397081">ഡൗൺലോഡ് ചെയ്യുന്നത് ടൈംഔട്ട് ആയി</translation>
+<translation id="7602868996817972616">ഈ പേജിനെ കുറിച്ച് Google-നോട് ചോദിക്കുക</translation>
 <translation id="7608583484192556132">നിങ്ങൾ കാണുന്ന പരസ്യം വ്യക്തിപരമാക്കിയതാണോ എന്നത് ഈ ക്രമീകരണം, <ph name="BEGIN_LINK_1" />സൈറ്റ് നിർദ്ദേശിക്കുന്ന പരസ്യങ്ങൾ<ph name="END_LINK_1" />, നിങ്ങളുടെ <ph name="BEGIN_LINK_2" />കുക്കി ക്രമീകരണം<ph name="END_LINK_2" />, നിങ്ങൾ കാണുന്ന സൈറ്റ് പരസ്യങ്ങൾ വ്യക്തിപരമാക്കുന്നുണ്ടോ എന്നിവ ഉൾപ്പെടെ നിരവധി കാര്യങ്ങളെ ആശ്രയിച്ചിരിക്കും. <ph name="BEGIN_LINK_3" />നിങ്ങളുടെ പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത മാനേജ് ചെയ്യുന്നതിനെ<ph name="END_LINK_3" /> കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="7610193165460212391">മൂല്യം പരിധിക്ക് പുറത്താണ് <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">കട്ടിയുള്ളത്</translation>
