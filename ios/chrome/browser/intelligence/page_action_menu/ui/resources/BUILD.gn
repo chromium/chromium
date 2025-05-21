@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/page_action_menu_header_chromium.imageset/Contents.json",
+    "Assets.xcassets/page_action_menu_header_chromium.imageset/page.action.menu.header.chromium.cr.svg",
+  ]
+}

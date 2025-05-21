@@ -40,9 +40,10 @@
 
   _viewController.mutator = _mediator;
 
-  // TODO(crbug.com/408006823): Have the view controller call this when its
-  // button is pressed.
-  [self handleEntryPointPressed];
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
+
   [super start];
 }
 

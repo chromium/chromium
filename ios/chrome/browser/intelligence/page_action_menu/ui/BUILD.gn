@@ -11,7 +11,10 @@ source_set("ui") {
     "page_action_menu_view_controller.mm",
   ]
   deps = [
+    "//build:branding_buildflags",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/page_action_menu/ui/resources",
+    "//ios/chrome/browser/intelligence/page_action_menu/utils",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
