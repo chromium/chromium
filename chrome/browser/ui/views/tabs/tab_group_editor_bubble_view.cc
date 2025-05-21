@@ -488,7 +488,7 @@ std::u16string TabGroupEditorBubbleView::GetGroupTitle() {
 
 std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildNewTabInGroupButton() {
-  return CreateMenuItem(
+  std::unique_ptr<views::LabelButton> menu_item = CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
@@ -496,6 +496,10 @@ TabGroupEditorBubbleView::BuildNewTabInGroupButton() {
       ui::ImageModel::FromVectorIcon(kNewTabInGroupRefreshIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize),
       GetAcceleratorText(IDC_ADD_NEW_TAB_TO_GROUP, browser_));
+
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleNewTabInGroupButtonId);
+  return menu_item;
 }
 
 std::unique_ptr<views::LabelButton>

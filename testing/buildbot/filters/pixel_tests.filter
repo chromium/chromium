@@ -143,6 +143,7 @@ SyncConfirmationUIDialogPixelTest.*
 SyncConfirmationUIWindowPixelTest.*
 SyncPassphraseDialogBrowserTest.*
 TabGroupEditorBubbleViewDialogBrowserTest.*
+TabGroupShortcutsInteractiveTest.Screenshot*
 TabHoverCardBubbleViewDialogBrowserTest.*
 TabSearchBubbleUIBrowserTest.*
 *TailoredSecurityDesktopDialogManagerTest.InvokeUi_*

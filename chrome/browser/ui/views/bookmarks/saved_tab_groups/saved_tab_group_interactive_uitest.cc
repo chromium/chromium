@@ -1179,7 +1179,7 @@ class TabGroupShortcutsInteractiveTest
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
-                       ScreenshotAcceleratorsInTabGroupEditorBubble) {
+                       ScreenshotAcceleratorsInCreateNewTabInGroupMenuItem) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
   ASSERT_TRUE(
@@ -1193,11 +1193,37 @@ IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kSkipPixelTestsReason),
       // Verify the tab group editor bubble has the accelerators for New tab in
-      // group and Close group.
-      Screenshot(kTabGroupEditorBubbleId,
-                 "tab_group_editor_bubble_with_accelerators", "6564307"),
+      // group.
+      Screenshot(kTabGroupEditorBubbleNewTabInGroupButtonId,
+                 "tab_group_editor_bubble_new_tab_in_group_with_accelerators",
+                 "6564307"),
       // Close the tab group editor bubble to prevent flakes on mac.
-      HoverTabAt(0), ClickMouse(), WaitForHide(kTabGroupEditorBubbleId));
+      HoverTabAt(0), ClickMouse(),
+      WaitForHide(kTabGroupEditorBubbleNewTabInGroupButtonId));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
+                       ScreenshotAcceleratorsInCloseGroupMenuItem) {
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const TabGroupId group_id = browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), OpenTabGroupEditorMenu(group_id),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      // Verify the tab group editor bubble has the accelerators for Close
+      // group.
+      Screenshot(kTabGroupEditorBubbleCloseGroupButtonId,
+                 "tab_group_editor_bubble_close_group_with_accelerators",
+                 "6564307"),
+      // Close the tab group editor bubble to prevent flakes on mac.
+      HoverTabAt(0), ClickMouse(),
+      WaitForHide(kTabGroupEditorBubbleCloseGroupButtonId));
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
