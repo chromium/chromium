@@ -76,6 +76,8 @@ class TabMatcher {
   // if another tab exists with the same stripped URL. Allows affordance for
   // replacing any other components of the URL before stripping it.
   // ** NOTE: Only implemented in Desktop **
+  // TOOD(crbug.com/419058674): Clean up up unused functions / params in
+  // TabMatcher.
   virtual bool IsTabOpenWithSameTitleOrSimilarURL(
       const std::u16string& title,
       const GURL& url,
@@ -91,7 +93,8 @@ class TabMatcher {
 
   // Returns tab wrappers for all open tabs for the current profile.
   virtual std::vector<TabWrapper> GetOpenTabs(
-      const AutocompleteInput* input) const;
+      const AutocompleteInput* input,
+      bool exclude_active_tab = true) const;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TAB_MATCHER_H_

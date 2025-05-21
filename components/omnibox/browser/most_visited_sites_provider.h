@@ -58,6 +58,7 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
                            DesktopProviderDoesNotAllowChromeSites);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, BlocklistedURLs);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, DuplicateSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, DedupingOpenTabs);
 
   ~MostVisitedSitesProvider() override;
 

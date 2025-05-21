@@ -145,6 +145,15 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
       omnibox::IsSearchResultsPage(input.current_page_classification())
           ? omnibox::kMostVisitedTilesZeroSuggestLowRelevance
           : omnibox::kMostVisitedTilesZeroSuggestHighRelevance;
+  // Store open tab titles and stripped urls to compare to history results.
+  std::unordered_set<std::u16string> tab_titles;
+  std::unordered_set<std::string> tab_stripped_urls;
+  std::vector<TabMatcher::TabWrapper> open_tabs =
+      tab_matcher.GetOpenTabs(&input, /*exclude_active_tab=*/false);
+  for (const auto& tab : open_tabs) {
+    tab_titles.insert(tab.title);
+    tab_stripped_urls.insert((StripURL(client, tab.url, replacements).spec()));
+  }
   for (const auto& url : urls) {
     GURL stripped_url = StripURL(client, url.url, replacements);
     // Skip the match if the following is true:
@@ -153,8 +162,8 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
     // - Match with the same title already exists
     // - Match with the same stripped url already exists
     if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url) ||
-        tab_matcher.IsTabOpenWithSameTitleOrSimilarURL(
-            url.title, url.url, replacements, /*exclude_active_tab=*/false) ||
+        tab_titles.contains(url.title) ||
+        tab_stripped_urls.contains(stripped_url.spec()) ||
         IsURLBlocklisted(url.url) || match_titles.contains(url.title) ||
         match_urls.contains(stripped_url.spec())) {
       continue;

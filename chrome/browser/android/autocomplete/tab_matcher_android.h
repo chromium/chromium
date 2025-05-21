@@ -28,7 +28,8 @@ class TabMatcherAndroid : public TabMatcher {
   void FindMatchingTabs(GURLToTabInfoMap* map,
                         const AutocompleteInput* input) const override;
   std::vector<TabMatcher::TabWrapper> GetOpenTabs(
-      const AutocompleteInput* input) const override;
+      const AutocompleteInput* input,
+      bool unused_exclude_active_tab = true) const override;
 
  private:
   std::vector<raw_ptr<TabAndroid, VectorExperimental>> GetOpenAndroidTabs(
