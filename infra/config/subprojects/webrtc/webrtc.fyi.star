@@ -17,7 +17,10 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_TRIGGERER,
-            groups = "project-chromium-ci-schedulers",
+            groups = [
+                "project-chromium-ci-schedulers",
+                "project-webrtc-admins",
+            ],
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
