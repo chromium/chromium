@@ -38,6 +38,8 @@ class SessionClientImpl {
   using GetSessionCallback = base::OnceCallback<void(
       base::expected<std::unique_ptr<::boca::Session>,
                      google_apis::ApiErrorCode> result)>;
+  using UpdateStudentActivitiesCallback = base::OnceCallback<void(
+      base::expected<bool, google_apis::ApiErrorCode> result)>;
 
   SessionClientImpl();
   explicit SessionClientImpl(
@@ -66,6 +68,9 @@ class SessionClientImpl {
   google_apis::RequestSender* sender() { return sender_.get(); }
 
  private:
+  void OnInsertStudentActivityCompleted(
+      UpdateStudentActivitiesCallback callback,
+      base::expected<bool, google_apis::ApiErrorCode> result);
   void OnGetSessionCompleted(GetSessionCallback callback,
                              base::expected<std::unique_ptr<::boca::Session>,
                                             google_apis::ApiErrorCode> result);
@@ -76,6 +81,11 @@ class SessionClientImpl {
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool has_blocking_get_session_request_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+
+  bool has_blocking_update_activity_request_
+      GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::unique_ptr<UpdateStudentActivitiesRequest>
+      pending_update_student_activity_request_;
   base::WeakPtrFactory<SessionClientImpl> weak_ptr_factory_{this};
 };
 }  // namespace ash::boca

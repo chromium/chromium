@@ -318,6 +318,11 @@ BASE_FEATURE(kBocaSpotlightRobotRequester,
              "BocaSpotlightRobotRequester",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables enforcing sequential execution for Boca insert activity.
+BASE_FEATURE(kBocaSequentialInsertActivity,
+             "BocaSequentialInsertActivity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3552,6 +3557,10 @@ bool IsBocaCaptionToggleEnabled() {
 
 bool IsBocaSpotlightRobotRequesterEnabled() {
   return base::FeatureList::IsEnabled(kBocaSpotlightRobotRequester);
+}
+
+bool IsBocaSequentialInsertActivityEnabled() {
+  return base::FeatureList::IsEnabled(kBocaSequentialInsertActivity);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
