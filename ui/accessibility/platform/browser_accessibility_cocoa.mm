@@ -2725,7 +2725,10 @@ bool ui::IsNSRange(id value) {
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
     manager->ShowContextMenu(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
-    manager->ScrollToMakeVisible(*actionTarget, gfx::Rect());
+    ui::AXPlatformNodeBase* mac_obj =
+        [base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            actionTarget->GetNativeViewAccessible().Get()) node];
+    mac_obj->ScrollToNode(ui::AXPlatformNodeMac::ScrollType::Anywhere);
   } else if ([action isEqualToString:NSAccessibilityIncrementAction]) {
     manager->Increment(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityDecrementAction]) {
