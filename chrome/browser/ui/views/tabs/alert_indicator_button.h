@@ -45,12 +45,6 @@ class AlertIndicatorButton : public views::ImageButton,
   AlertIndicatorButton& operator=(const AlertIndicatorButton&) = delete;
   ~AlertIndicatorButton() override;
 
-  static ui::ImageModel GetTabAlertIndicatorImage(tabs::TabAlert alert_state,
-                                                  ui::ColorId button_color);
-
-  static ui::ImageModel GetTabAlertIndicatorImageForHoverCard(
-      tabs::TabAlert alert_state);
-
   // Returns the current TabAlert except, while the indicator image is
   // fading out, returns the prior TabAlert.
   std::optional<tabs::TabAlert> showing_alert_state() const {

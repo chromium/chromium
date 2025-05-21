@@ -10,6 +10,7 @@ source_set("tab_alert") {
   public = [
     "tab_alert.h",
     "tab_alert_controller.h",
+    "tab_alert_icon.h",
   ]
 
   public_deps = [
@@ -19,9 +20,21 @@ source_set("tab_alert") {
 }
 
 source_set("impl") {
-  sources = [ "tab_alert_controller.cc" ]
+  sources = [
+    "tab_alert_controller.cc",
+    "tab_alert_icon.cc",
+  ]
 
-  deps = [ ":tab_alert" ]
+  deps = [
+    ":tab_alert",
+    "//chrome/app/vector_icons:vector_icons",
+    "//chrome/common:chrome_features",
+    "//components/vector_icons:vector_icons",
+  ]
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic:glic" ]
+  }
 }
 
 source_set("unit_tests") {

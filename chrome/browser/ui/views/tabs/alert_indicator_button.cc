@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -93,30 +94,14 @@ bool IsShiftOrControlDown(const ui::Event& event) {
 ui::ImageModel GetTabAlertIndicatorImageForPressedState(
     tabs::TabAlert alert_state,
     ui::ColorId button_color) {
-  switch (alert_state) {
-    case tabs::TabAlert::AUDIO_PLAYING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          tabs::TabAlert::AUDIO_MUTING, button_color);
-    case tabs::TabAlert::AUDIO_MUTING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          tabs::TabAlert::AUDIO_PLAYING, button_color);
-    case tabs::TabAlert::MEDIA_RECORDING:
-    case tabs::TabAlert::AUDIO_RECORDING:
-    case tabs::TabAlert::VIDEO_RECORDING:
-    case tabs::TabAlert::TAB_CAPTURING:
-    case tabs::TabAlert::BLUETOOTH_CONNECTED:
-    case tabs::TabAlert::USB_CONNECTED:
-    case tabs::TabAlert::PIP_PLAYING:
-    case tabs::TabAlert::DESKTOP_CAPTURING:
-    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
-    case tabs::TabAlert::HID_CONNECTED:
-    case tabs::TabAlert::SERIAL_CONNECTED:
-    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
-    case tabs::TabAlert::GLIC_ACCESSING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(alert_state,
-                                                             button_color);
+  tabs::TabAlert pressed_alert_state = alert_state;
+  if (alert_state == tabs::TabAlert::AUDIO_PLAYING) {
+    alert_state = tabs::TabAlert::AUDIO_MUTING;
+  } else if (alert_state == tabs::TabAlert::AUDIO_MUTING) {
+    alert_state = tabs::TabAlert::AUDIO_PLAYING;
   }
-  NOTREACHED();
+
+  return tabs::GetAlertImageModel(pressed_alert_state, button_color);
 }
 
 }  // namespace
@@ -378,100 +363,9 @@ Tab* AlertIndicatorButton::GetTab() {
   return parent_tab_;
 }
 
-// Returns a cached image, to be shown by the alert indicator for the given
-// `alert_state`.  Uses the global ui::ResourceBundle shared instance.
-ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
-    tabs::TabAlert alert_state,
-    ui::ColorId button_color) {
-  const gfx::VectorIcon* icon = nullptr;
-  int image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
-  switch (alert_state) {
-    case tabs::TabAlert::AUDIO_PLAYING:
-      icon = &vector_icons::kVolumeUpChromeRefreshIcon;
-      break;
-    case tabs::TabAlert::AUDIO_MUTING:
-      icon = &vector_icons::kVolumeOffChromeRefreshIcon;
-      break;
-    case tabs::TabAlert::MEDIA_RECORDING:
-    case tabs::TabAlert::AUDIO_RECORDING:
-    case tabs::TabAlert::VIDEO_RECORDING:
-    case tabs::TabAlert::DESKTOP_CAPTURING:
-      icon = &vector_icons::kRadioButtonCheckedIcon;
-      break;
-    case tabs::TabAlert::TAB_CAPTURING:
-      icon = &vector_icons::kCaptureIcon;
-
-      // Tab capturing and presenting icon uses a different width compared to
-      // the other tab alert indicator icons.
-      image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH);
-      break;
-    case tabs::TabAlert::BLUETOOTH_CONNECTED:
-      icon = &vector_icons::kBluetoothConnectedIcon;
-      break;
-    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
-      icon = &vector_icons::kBluetoothScanningChromeRefreshIcon;
-      break;
-    case tabs::TabAlert::USB_CONNECTED:
-      icon = &vector_icons::kUsbChromeRefreshIcon;
-      icon = &kTabUsbConnectedIcon;
-      break;
-    case tabs::TabAlert::HID_CONNECTED:
-      icon = &vector_icons::kVideogameAssetChromeRefreshIcon;
-      break;
-    case tabs::TabAlert::SERIAL_CONNECTED:
-      icon = &vector_icons::kSerialPortChromeRefreshIcon;
-      break;
-    case tabs::TabAlert::PIP_PLAYING:
-      icon = &vector_icons::kPictureInPictureAltIcon;
-      break;
-    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
-      icon = &vector_icons::kCardboardIcon;
-      break;
-    case tabs::TabAlert::GLIC_ACCESSING:
-#if BUILDFLAG(ENABLE_GLIC)
-      icon =
-          &glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_ACCESSING_ICON);
-#else
-      icon = &kTvIcon;
-#endif
-      break;
-  }
-  DCHECK(icon);
-  return ui::ImageModel::FromVectorIcon(*icon, button_color, image_width);
-}
-
-ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
-    tabs::TabAlert alert_state) {
-  switch (alert_state) {
-    case tabs::TabAlert::MEDIA_RECORDING:
-    case tabs::TabAlert::AUDIO_RECORDING:
-    case tabs::TabAlert::VIDEO_RECORDING:
-    case tabs::TabAlert::DESKTOP_CAPTURING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorHoverCardTabAlertMediaRecordingIcon);
-    case tabs::TabAlert::TAB_CAPTURING:
-    case tabs::TabAlert::PIP_PLAYING:
-    case tabs::TabAlert::GLIC_ACCESSING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorHoverCardTabAlertPipPlayingIcon);
-    case tabs::TabAlert::AUDIO_PLAYING:
-    case tabs::TabAlert::AUDIO_MUTING:
-    case tabs::TabAlert::BLUETOOTH_CONNECTED:
-    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
-    case tabs::TabAlert::USB_CONNECTED:
-    case tabs::TabAlert::HID_CONNECTED:
-    case tabs::TabAlert::SERIAL_CONNECTED:
-    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorHoverCardTabAlertAudioPlayingIcon);
-  }
-  NOTREACHED();
-}
-
 void AlertIndicatorButton::UpdateIconForAlertState(tabs::TabAlert state) {
   const ui::ColorId color = parent_tab_->GetAlertIndicatorColor(state);
-  const ui::ImageModel indicator_image =
-      GetTabAlertIndicatorImage(state, color);
+  const ui::ImageModel indicator_image = tabs::GetAlertImageModel(state, color);
   SetImageModel(views::Button::STATE_NORMAL, indicator_image);
   SetImageModel(views::Button::STATE_DISABLED, indicator_image);
   SetImageModel(views::Button::STATE_PRESSED,
