@@ -2774,7 +2774,7 @@ BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
