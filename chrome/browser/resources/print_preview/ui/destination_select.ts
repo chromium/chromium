@@ -117,9 +117,9 @@ export class PrintPreviewDestinationSelectElement extends
     }
     iconSetAndIcon = iconSetAndIcon || icon.split(':');
 
-    const iconset = IconsetMap.getInstance().get(iconSetAndIcon[0]);
+    const iconset = IconsetMap.getInstance().get(iconSetAndIcon[0]!);
     assert(iconset);
-    return getSelectDropdownBackground(iconset, iconSetAndIcon[1], this);
+    return getSelectDropdownBackground(iconset, iconSetAndIcon[1]!, this);
   }
 
   override onProcessSelectChange(value: string) {

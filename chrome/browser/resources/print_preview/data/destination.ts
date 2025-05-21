@@ -346,7 +346,7 @@ export class Destination {
     const defaultOptions = capability.option.filter(option => {
       return option.is_default;
     });
-    return defaultOptions.length !== 0 ? defaultOptions[0] : null;
+    return defaultOptions.length > 0 ? defaultOptions[0]! : null;
   }
 
   /**
@@ -364,7 +364,7 @@ export class Destination {
         return option.type === typesToLookFor[i];
       });
       if (matchingOptions.length > 0) {
-        return matchingOptions[0];
+        return matchingOptions[0]!;
       }
     }
     return null;

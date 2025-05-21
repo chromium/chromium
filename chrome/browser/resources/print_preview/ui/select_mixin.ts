@@ -30,7 +30,7 @@ export const SelectMixin =
           };
         }
 
-        accessor selectedValue: string;
+        accessor selectedValue: string = '';
         private debouncer_: Debouncer = new Debouncer(100);
 
         onSelectChange(e: Event) {

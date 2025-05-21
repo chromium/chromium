@@ -10,10 +10,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Coordinate2d} from '../data/coordinate2d.js';
+import {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';
-import type {Size} from '../data/size.js';
+import {Size} from '../data/size.js';
 
 import {InputMixin} from './input_mixin.js';
 import {getCss} from './margin_control.css.js';
@@ -92,8 +92,8 @@ export class PrintPreviewMarginControlElement extends
   accessor invisible: boolean = false;
   accessor measurementSystem: MeasurementSystem|null = null;
   accessor scaleTransform: number = 1;
-  accessor translateTransform: Coordinate2d;
-  accessor pageSize: Size;
+  accessor translateTransform: Coordinate2d = new Coordinate2d(0, 0);
+  accessor pageSize: Size = new Size(612, 792);
   accessor clipSize: Size|null = null;
 
   private accessor focused_: boolean = false;

@@ -209,7 +209,7 @@ export class PrintPreviewDestinationSettingsElement extends
         return numDestinationsToDisplay;
       }
       // If a destination is pinned, increment numDestinationsToDisplay.
-      if (isPdfPrinter(recentDestinations[i].id)) {
+      if (isPdfPrinter(recentDestinations[i]!.id)) {
         numDestinationsToDisplay++;
       }
     }
@@ -283,11 +283,11 @@ export class PrintPreviewDestinationSettingsElement extends
     // necessarily be set to true in this case.
     let isVisible = false;
     let numUnpinnedChecked = 0;
-    for (let index = 0; index < recentDestinations.length; index++) {
-      const recent = recentDestinations[index];
+    for (let i = 0; i < recentDestinations.length; i++) {
+      const recent = recentDestinations[i]!;
       if (recent.id === newDestination.id &&
           recent.origin === newDestination.origin) {
-        indexFound = index;
+        indexFound = i;
         // If we haven't seen the maximum unpinned destinations already, this
         // destination is visible in the dropdown.
         isVisible = numUnpinnedChecked < NUM_UNPINNED_DESTINATIONS;
@@ -300,7 +300,7 @@ export class PrintPreviewDestinationSettingsElement extends
 
     // No change
     if (indexFound === 0 &&
-        recentDestinations[0].capabilities === newDestination.capabilities) {
+        recentDestinations[0]!.capabilities === newDestination.capabilities) {
       return;
     }
     const isNew = indexFound === -1;

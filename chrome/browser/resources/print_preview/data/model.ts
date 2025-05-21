@@ -14,12 +14,13 @@ import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, 
 import {DuplexType} from './cdd.js';
 import type {Destination, RecentDestination} from './destination.js';
 import {DestinationOrigin, PrinterType} from './destination.js';
+import {createDocumentSettings} from './document_info.js';
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
 import {Observable, setValueAtPath} from './observable.js';
 import {ScalingType} from './scaling.js';
-import type {Size} from './size.js';
+import {Size} from './size.js';
 
 /**
  * |key| is the field in the serialized settings state that corresponds to the
@@ -492,9 +493,9 @@ export class PrintPreviewModelElement extends CrLitElement {
 
   accessor settingsManaged: boolean = false;
   accessor destination: Destination;
-  accessor documentSettings: DocumentSettings;
+  accessor documentSettings: DocumentSettings = createDocumentSettings();
   accessor margins: Margins;
-  accessor pageSize: Size;
+  accessor pageSize: Size = new Size(612, 792);
 
   observable: Observable<Settings>;
   private initialized_: boolean = false;
@@ -909,7 +910,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       this.setSettingPath_(
           'color.unavailableValue',
           !['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'].includes(
-              caps.color.option[0].type!));
+              caps.color.option[0]!.type!));
     } else if (!this.settings_.color.available) {
       // if no color capability is reported, assume black and white.
       this.setSettingPath_('color.unavailableValue', false);

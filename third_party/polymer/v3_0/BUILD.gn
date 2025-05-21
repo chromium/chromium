@@ -131,7 +131,6 @@ ts_library("library") {
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/password_manager:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
-    "//chrome/browser/resources/print_preview:build_ts",
     "//chrome/browser/resources/privacy_sandbox:build_ts",
     "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",

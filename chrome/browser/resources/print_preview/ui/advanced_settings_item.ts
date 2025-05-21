@@ -43,7 +43,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   }
 
   accessor capability: VendorCapability;
-  private accessor currentValue_: string;
+  private accessor currentValue_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();

@@ -36,7 +36,8 @@ import type {Error} from '../data/state.js';
 import {State} from '../data/state.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
-import type {DestinationState, PrintPreviewDestinationSettingsElement} from './destination_settings.js';
+import {DestinationState} from './destination_settings.js';
+import type {PrintPreviewDestinationSettingsElement} from './destination_settings.js';
 import {SettingsMixin} from './settings_mixin.js';
 import {getCss} from './sidebar.css.js';
 import {getHtml} from './sidebar.html.js';
@@ -122,10 +123,10 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   accessor controlsManaged: boolean = false;
   accessor destination: Destination|null = null;
   accessor destinationCapabilities_: Cdd|null = null;
-  accessor destinationState: DestinationState;
+  accessor destinationState: DestinationState = DestinationState.INIT;
   accessor error: Error|null = null;
   accessor isPdf: boolean = false;
-  accessor pageCount: number;
+  accessor pageCount: number = 0;
   accessor state: State = State.NOT_READY;
   protected accessor settingsAvailable_: Record<keyof Settings, boolean>;
   protected accessor controlsDisabled_: boolean = false;

@@ -561,7 +561,7 @@ export class DestinationStore extends EventTarget {
     // Try selecting the first destination if there is at least one
     // destination already loaded.
     if (this.destinations_.length > 0) {
-      this.selectDestination(this.destinations_[0]);
+      this.selectDestination(this.destinations_[0]!);
       return true;
     }
 

@@ -111,8 +111,8 @@ export class PrintPreviewOtherOptionsSettingsElement extends
    * @param index The index of the option to update.
    */
   private updateOptionFromSetting_(index: number) {
-    const setting = this.getSetting(this.options_[index].name);
-    const option = this.options_[index];
+    const setting = this.getSetting(this.options_[index]!.name);
+    const option = this.options_[index]!;
     option.available = setting.available;
     option.value = setting.value;
     option.managed = setting.setByGlobalPolicy;
@@ -121,7 +121,7 @@ export class PrintPreviewOtherOptionsSettingsElement extends
     // Update first index
     const availableOptions = this.options_.filter(option => !!option.available);
     if (availableOptions.length > 0) {
-      this.firstIndex_ = this.options_.indexOf(availableOptions[0]);
+      this.firstIndex_ = this.options_.indexOf(availableOptions[0]!);
     }
   }
 
@@ -155,7 +155,7 @@ export class PrintPreviewOtherOptionsSettingsElement extends
   protected onChange_(e: Event) {
     const index =
         Number.parseInt((e.target as HTMLElement).dataset['index']!, 10);
-    const name = this.options_[index].name;
+    const name = this.options_[index]!.name;
     this.updateSettingWithTimeout_(
         name,
         this.shadowRoot.querySelector<CrCheckboxElement>(`#${name}`)!.checked);

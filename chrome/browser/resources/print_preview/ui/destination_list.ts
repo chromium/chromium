@@ -50,7 +50,7 @@ export class PrintPreviewDestinationListElement extends CrLitElement {
   }
 
   accessor destinations: Destination[] = [];
-  accessor searchQuery: RegExp|null;
+  accessor searchQuery: RegExp|null = null;
   accessor loadingDestinations: boolean = false;
   protected accessor matchingDestinations_: Destination[] = [];
   protected accessor hasDestinations_: boolean = true;

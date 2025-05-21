@@ -100,7 +100,7 @@ export class PrintPreviewPreviewAreaElement extends
   accessor error: Error|null = null;
   accessor margins: Margins;
   accessor measurementSystem: MeasurementSystem|null = null;
-  accessor pageSize: Size;
+  accessor pageSize: Size = new Size(612, 792);
   accessor previewState: PreviewAreaState = PreviewAreaState.LOADING;
   accessor state: State = State.NOT_READY;
   private accessor pluginLoadComplete_: boolean = false;
@@ -663,7 +663,7 @@ export class PrintPreviewPreviewAreaElement extends
    */
   private getDpiForTicket_(dpiField: string): number {
     const dpi = this.getSettingValue('dpi') as {[key: string]: number};
-    const value = (dpi && dpiField in dpi) ? dpi[dpiField] : 0;
+    const value = (dpi && dpiField in dpi) ? dpi[dpiField]! : 0;
     return value;
   }
 

@@ -76,7 +76,7 @@ export class PrintPreviewMarginControlContainerElement extends
     };
   }
 
-  accessor pageSize: Size;
+  accessor pageSize: Size = new Size(612, 792);
   accessor documentMargins: Margins;
   accessor previewLoaded: boolean = false;
   accessor measurementSystem: MeasurementSystem|null = null;

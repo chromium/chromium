@@ -95,7 +95,7 @@ export class PrintPreviewPagesSettingsElement extends
   }
 
   accessor disabled: boolean = false;
-  accessor pageCount: number;
+  accessor pageCount: number = 0;
   protected accessor controlsDisabled_: boolean = false;
   private accessor errorState_: PagesInputErrorState =
       PagesInputErrorState.NO_ERROR;
@@ -255,8 +255,8 @@ export class PrintPreviewPagesSettingsElement extends
         return;
       }
 
-      let min = parseIntStrict(limits[0]);
-      if ((limits[0].length > 0 && Number.isNaN(min)) || min < 1) {
+      let min = parseIntStrict(limits[0]!);
+      if ((limits[0]!.length > 0 && Number.isNaN(min)) || min < 1) {
         this.errorState_ = PagesInputErrorState.INVALID_SYNTAX;
         this.onRangeChange_();
         return;
@@ -274,8 +274,8 @@ export class PrintPreviewPagesSettingsElement extends
         continue;
       }
 
-      let max = parseIntStrict(limits[1]);
-      if (Number.isNaN(max) && limits[1].length > 0) {
+      let max = parseIntStrict(limits[1]!);
+      if (Number.isNaN(max) && limits[1]!.length > 0) {
         this.errorState_ = PagesInputErrorState.INVALID_SYNTAX;
         this.onRangeChange_();
         return;
@@ -320,9 +320,9 @@ export class PrintPreviewPagesSettingsElement extends
       return [];
     }
 
-    let from = this.pagesToPrint_[0];
-    let to = this.pagesToPrint_[0];
-    const ranges = [];
+    let from = this.pagesToPrint_[0]!;
+    let to = this.pagesToPrint_[0]!;
+    const ranges: Range[] = [];
     for (const page of this.pagesToPrint_.slice(1)) {
       if (page === to + 1) {
         to = page;

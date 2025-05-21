@@ -61,8 +61,8 @@ export class PrintPreviewNumberSettingsSectionElement extends
     };
   }
 
-  accessor currentValue: string;
-  accessor defaultValue: string;
+  accessor currentValue: string = '';
+  accessor defaultValue: string = '';
   accessor disabled: boolean = false;
   accessor hintMessage: string = '';
   accessor inputAriaLabel: string = '';

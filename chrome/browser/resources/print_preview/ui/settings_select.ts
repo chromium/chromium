@@ -42,7 +42,7 @@ export class PrintPreviewSettingsSelectElement extends
 
   override accessor ariaLabel: string = '';
   accessor capability: CapabilityWithReset&{option: SelectOption[]}|null = null;
-  accessor settingName: keyof Settings;
+  accessor settingName: keyof Settings = 'dpi';
   accessor disabled: boolean = false;
 
   /**

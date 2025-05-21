@@ -27,7 +27,7 @@ import type {Margins} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
 import type {PrintPreviewModelElement} from '../data/model.js';
 import {DuplexMode, whenReady} from '../data/model.js';
-import type {Size} from '../data/size.js';
+import {Size} from '../data/size.js';
 import type {PrintPreviewStateElement} from '../data/state.js';
 import {Error, State} from '../data/state.js';
 import type {NativeInitialSettings, NativeLayer} from '../native_layer.js';
@@ -88,9 +88,9 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   private accessor destinationsManaged_: boolean = false;
   protected accessor documentSettings_: DocumentSettings =
       createDocumentSettings();
-  protected accessor error_: Error;
+  protected accessor error_: Error|null = null;
   protected accessor margins_: Margins;
-  protected accessor pageSize_: Size;
+  protected accessor pageSize_: Size = new Size(612, 792);
   protected accessor settingsManaged_: boolean = false;
   protected accessor measurementSystem_: MeasurementSystem|null = null;
 
@@ -168,7 +168,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
 
     if (changedPrivateProperties.has('error_')) {
-      if (this.error_ !== Error.NONE) {
+      if (this.error_ !== null && this.error_ !== Error.NONE) {
         this.nativeLayer_!.recordInHistogram(
             'PrintPreview.StateError', this.error_, Error.MAX_BUCKET);
       }
@@ -189,10 +189,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     // itself is closed.
     if (e.key === 'Escape' && !hasKeyModifiers(e)) {
       // Don't close the Print Preview dialog if there is a child dialog open.
-      if (this.openDialogs_.length !== 0) {
+      if (this.openDialogs_.length > 0) {
         // Manually cancel the dialog, since we call preventDefault() to prevent
         // views from closing the Print Preview dialog.
-        const dialogToClose = this.openDialogs_[this.openDialogs_.length - 1];
+        const dialogToClose = this.openDialogs_[this.openDialogs_.length - 1]!;
         dialogToClose.cancel();
         e.preventDefault();
         return;
