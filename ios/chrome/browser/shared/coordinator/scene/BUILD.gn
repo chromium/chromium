@@ -132,7 +132,7 @@ source_set("scene") {
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/intelligence/features",
-    "//ios/chrome/browser/intelligence/glic/coordinator",
+    "//ios/chrome/browser/intelligence/gemini/coordinator",
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/model",

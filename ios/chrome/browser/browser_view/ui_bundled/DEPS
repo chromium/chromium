@@ -45,7 +45,7 @@ include_rules = [
   "+ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h",
   "+ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h",
   "+ios/chrome/browser/intelligence/features",
-  "+ios/chrome/browser/intelligence/glic/coordinator",
+  "+ios/chrome/browser/intelligence/gemini/coordinator",
   "+ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h",

@@ -103,7 +103,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/first_run/ui_bundled/welcome_back/ui",
     "//ios/chrome/browser/intelligence/features",
-    "//ios/chrome/browser/intelligence/glic/ui",
+    "//ios/chrome/browser/intelligence/gemini/ui",
     "//ios/chrome/browser/post_restore_signin/ui_bundled",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/shared/model/application_context",

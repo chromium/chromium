@@ -319,7 +319,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/confirm:unit_tests",
     "//ios/chrome/browser/infobars/ui_bundled/banners:unit_tests",
     "//ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile:unit_tests",
-    "//ios/chrome/browser/intelligence/glic/coordinator:unit_tests",
+    "//ios/chrome/browser/intelligence/gemini/coordinator:unit_tests",
     "//ios/chrome/browser/intents/model:unit_tests",
     "//ios/chrome/browser/itunes_urls/model:unit_tests",
     "//ios/chrome/browser/keyboard/ui_bundled:unit_tests",

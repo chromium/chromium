@@ -12,9 +12,9 @@ source_set("coordinator") {
   deps = [
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/intelligence/glic/coordinator",
-    "//ios/chrome/browser/intelligence/glic/model",
-    "//ios/chrome/browser/intelligence/glic/model:glic_service_factory",
+    "//ios/chrome/browser/intelligence/gemini/coordinator",
+    "//ios/chrome/browser/intelligence/gemini/model",
+    "//ios/chrome/browser/intelligence/gemini/model:glic_service_factory",
     "//ios/chrome/browser/intelligence/page_action_menu/ui",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

@@ -6,7 +6,7 @@ include_rules = [
   "+ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/intelligence/features",
-  "+ios/chrome/browser/intelligence/glic/ui",
+  "+ios/chrome/browser/intelligence/gemini/ui",
   "+ios/chrome/browser/post_restore_signin/ui_bundled",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model/sync_service_factory.h",

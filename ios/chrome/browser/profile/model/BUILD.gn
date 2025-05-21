@@ -177,7 +177,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/home_customization/model",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/image_fetcher/model",
-    "//ios/chrome/browser/intelligence/glic/model:glic_service_factory",
+    "//ios/chrome/browser/intelligence/gemini/model:glic_service_factory",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/language_detection/model",
