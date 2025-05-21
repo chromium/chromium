@@ -353,7 +353,7 @@ used when committed.
 *   [Piranha Plant](piranha_plant.md) - Future architecture of MediaStreams
 *   [Media Capture](media/capture/README.md) - Features and APIs that enable the
     browser to capture pixels and audio from itself or the underlying OS.
-*   [Video Encode Accelerator Tests](media/gpu/veatest_usage.md) - How to
+*   [Video Encode Accelerator Tests](media/gpu/video_encoder_test_usage.md) - How to
     use the accelerated video encoder test program.
 *   [Video Decoder Tests](media/gpu/video_decoder_test_usage.md) - Running the
     video decoder tests.
