@@ -765,6 +765,7 @@ if (_is_default_toolchain) {
       "//third_party/androidx:androidx_viewpager2_viewpager2_java",
       "//third_party/androidx:androidx_viewpager_viewpager_java",
       "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
+      "//third_party/androidx:androidx_xr_runtime_runtime_java",
       "//third_party/blink/public:blink_headers_java",
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
       "//third_party/blink/public/mojom:mojom_core_java",

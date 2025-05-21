@@ -9,10 +9,8 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
-import androidx.xr.scenecore.PanelEntity;
-import androidx.xr.scenecore.PixelDimensions;
-import androidx.xr.scenecore.Session;
+import androidx.xr.runtime.internal.PanelEntity;
+import androidx.xr.runtime.internal.PixelDimensions;
 import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
 
 import org.chromium.base.Log;
@@ -31,7 +29,7 @@ public class XrHelper {
     public static final int OVERVIEW_HEIGHT_IN_PIXELS = 1536;
 
     // For spatialization of Chrome app using Jetpack XR.
-    private @Nullable Session mXrSession;
+    private @Nullable JxrPlatformAdapterAxr mJxrPlatformAdapter;
     private boolean mModeSwitchInProgress;
 
     /**
@@ -45,20 +43,21 @@ public class XrHelper {
         if (!XrUtils.isXrDevice()) return;
 
         // Initialization of XR for spatialization will occur here using JXR.
-        mXrSession = createJxrSession(activity);
-        mXrSession
+        mJxrPlatformAdapter = createJxrPlatformAdapter(activity);
+        if (mJxrPlatformAdapter == null) return;
+        mJxrPlatformAdapter
                 .getActivitySpace()
-                .addBoundsChangedListener(
+                .addOnBoundsChangedListener(
                         dimensions -> {
-                            if (mXrSession == null) return;
+                            if (mJxrPlatformAdapter == null) return;
 
                             if (mModeSwitchInProgress) {
                                 mModeSwitchInProgress = false;
                                 Log.i(TAG, "SPA completed switch to FSM/HSM");
-                                if (dimensions.getWidth() == Float.POSITIVE_INFINITY) {
+                                if (dimensions.width == Float.POSITIVE_INFINITY) {
                                     resizeMainPanel();
                                 }
-                                mXrSession.getMainPanelEntity().setHidden(false);
+                                mJxrPlatformAdapter.getMainPanelEntity().setHidden(false);
                             }
                         });
     }
@@ -67,9 +66,9 @@ public class XrHelper {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void reset() {
         if (!XrUtils.isXrDevice()) return;
-
-        if (mXrSession != null) {
-            mXrSession = null;
+        if (mJxrPlatformAdapter != null) {
+            mJxrPlatformAdapter.dispose();
+            mJxrPlatformAdapter = null;
         }
     }
 
@@ -81,26 +80,19 @@ public class XrHelper {
                 /* useSplitEngine= */ false);
     }
 
-    @VisibleForTesting
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    protected Session createJxrSession(@NonNull Activity activity) {
-        return Session.create(activity, createJxrPlatformAdapter(activity));
-    }
-
     /**
      * Initialize viewing of the XR environment in the full space mode in which only the single
      * activity is visible to the user and all other activities are hidden out.
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void viewInFullSpaceMode() {
-        if (mXrSession == null) return;
-
+        if (mJxrPlatformAdapter == null) return;
         // Requesting of full space mode using JXR.
         mModeSwitchInProgress = true;
         Log.i(TAG, "SPA requesting FullSpaceMode");
         XrUtils.getInstance().setFullSpaceMode(true);
-        mXrSession.getSpatialEnvironment().requestFullSpaceMode();
-        mXrSession.getMainPanelEntity().setHidden(true);
+        mJxrPlatformAdapter.requestFullSpaceMode();
+        mJxrPlatformAdapter.getMainPanelEntity().setHidden(true);
     }
 
     /**
@@ -109,28 +101,29 @@ public class XrHelper {
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void viewInHomeSpaceMode() {
-        if (mXrSession == null) return;
+        if (mJxrPlatformAdapter == null) return;
 
         // Requesting return to home space mode using JXR.
         mModeSwitchInProgress = true;
         Log.i(TAG, "SPA requesting HomeSpaceMode");
-        mXrSession.getSpatialEnvironment().requestHomeSpaceMode();
+        mJxrPlatformAdapter.requestHomeSpaceMode();
         XrUtils.getInstance().setFullSpaceMode(false);
-        mXrSession.getMainPanelEntity().setHidden(true);
+        mJxrPlatformAdapter.getMainPanelEntity().setHidden(true);
     }
 
     /** Resize the main panel if the immersive environment is in full space mode. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void resizeMainPanel() {
-        if (mXrSession == null || !XrUtils.getInstance().getFullSpaceMode()) return;
+        if (mJxrPlatformAdapter == null || !XrUtils.getInstance().getFullSpaceMode()) return;
 
-        PanelEntity mainPanelEntity = mXrSession.getMainPanelEntity();
+        PanelEntity mainPanelEntity = mJxrPlatformAdapter.getMainPanelEntity();
+        mainPanelEntity.setHidden(true);
         PixelDimensions fsmPixelDimensions =
                 new PixelDimensions(OVERVIEW_WIDTH_IN_PIXELS, OVERVIEW_HEIGHT_IN_PIXELS);
-        mainPanelEntity.setPixelDimensions(fsmPixelDimensions);
+        mainPanelEntity.setSizeInPixels(fsmPixelDimensions);
     }
 
     boolean isXrInitializedForTesting() {
-        return mXrSession != null;
+        return mJxrPlatformAdapter != null;
     }
 }

@@ -1,5 +1,7 @@
 apk_path=lib/armeabi-v7a/libchromium_android_linker.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False, alignment=4
+apk_path=assets/images/black_skybox_android_xr_scenecore.exr, compress=True, alignment=0
+apk_path=assets/images/black_skybox_android_xr_scenecore.exr+com.android.webview+, compress=True, alignment=0
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/am.pak, compress=False, alignment=4
 apk_path=assets/locales/ar.pak, compress=False, alignment=4
