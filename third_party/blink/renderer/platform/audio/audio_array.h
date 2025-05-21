@@ -105,13 +105,20 @@ class AudioArray final {
   }
 
   T& at(size_t i) {
-    // Note that although it is a size_t, m_size is now guaranteed to be
+    // Note that although it is a size_t, `size_` is now guaranteed to be
+    // no greater than max unsigned. This guarantee is enforced in Allocate().
+    SECURITY_DCHECK(i < size());
+    return as_span()[i];
+  }
+  const T& at(size_t i) const {
+    // Note that although it is a size_t, `size_` is now guaranteed to be
     // no greater than max unsigned. This guarantee is enforced in Allocate().
     SECURITY_DCHECK(i < size());
     return as_span()[i];
   }
 
   T& operator[](size_t i) { return at(i); }
+  const T& operator[](size_t i) const { return at(i); }
 
   void Zero() {
     // This multiplication is made safe by the check in Allocate().
@@ -126,7 +133,7 @@ class AudioArray final {
     }
 
     // This expression cannot overflow because end - start cannot be
-    // greater than m_size, which is safe due to the check in Allocate().
+    // greater than `size_`, which is safe due to the check in Allocate().
     std::ranges::fill(as_span().subspan(start, end - start), 0);
   }
 
@@ -138,7 +145,7 @@ class AudioArray final {
     }
 
     // This expression cannot overflow because end - start cannot be
-    // greater than m_size, which is safe due to the check in Allocate().
+    // greater than `size_`, which is safe due to the check in Allocate().
     as_span()
         .subspan(start, end - start)
         .copy_from(
@@ -148,8 +155,8 @@ class AudioArray final {
   }
 
  private:
-  // Return an address that is aligned to an |alignment| boundary.
-  // |alignment| MUST be a power of two!
+  // Return an address that is aligned to an `alignment` boundary.
+  // `alignment` MUST be a power of two!
   static T* AlignedAddress(T* address, intptr_t alignment) {
     intptr_t value = reinterpret_cast<intptr_t>(address);
     return reinterpret_cast<T*>((value + alignment - 1) & ~(alignment - 1));

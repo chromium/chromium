@@ -562,7 +562,7 @@ void Biquad::SetBandpassParams(int index, double frequency, double q) {
 void Biquad::GetFrequencyResponse(int n_frequencies,
                                   const float* frequency,
                                   float* mag_response,
-                                  float* phase_response) {
+                                  float* phase_response) const {
   // Evaluate the Z-transform of the filter at given normalized
   // frequency from 0 to 1.  (1 corresponds to the Nyquist
   // frequency.)
@@ -692,7 +692,7 @@ static double RootFinder(double low,
   return root;
 }
 
-double Biquad::TailFrame(int coef_index, double max_frame) {
+double Biquad::TailFrame(int coef_index, double max_frame) const {
   // The Biquad filter is given by
   //
   //   H(z) = (b0 + b1/z + b2/z^2)/(1 + a1/z + a2/z^2).

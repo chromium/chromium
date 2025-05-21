@@ -78,7 +78,7 @@ class PLATFORM_EXPORT Biquad final {
   // impulse response of the filter falls below a threshold value.
   // The maximum allowed frame value is given by |max_frame|.  This
   // limits how much work is done in computing the frame numer.
-  double TailFrame(int coef_index, double max_frame);
+  double TailFrame(int coef_index, double max_frame) const;
 
   // Filter response at a set of n frequencies. The magnitude and
   // phase response are returned in magResponse and phaseResponse.
@@ -86,7 +86,7 @@ class PLATFORM_EXPORT Biquad final {
   void GetFrequencyResponse(int n_frequencies,
                             const float* frequency,
                             float* mag_response,
-                            float* phase_response);
+                            float* phase_response) const;
 
  private:
   void SetNormalizedCoefficients(int,
