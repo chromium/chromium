@@ -59,6 +59,7 @@ bool TerminateNow(pid_t process_id) {
     base::AutoLock guard(*g_process_table_lock_);
     auto it = g_process_table_->find(process_id);
     if (it != g_process_table_->end()) {
+      it->second->SetNormalTermination();
       process = it->second->GetProcess();
     }
   }
@@ -296,6 +297,7 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
         if (event == XPC_ERROR_CONNECTION_INTERRUPTED ||
             event == XPC_ERROR_CONNECTION_INVALID) {
           OnChildProcessTerminatedOnAnyThread(process_id);
+          return;
         }
 
         const char* message_type = xpc_dictionary_get_string(event, "message");
@@ -413,7 +415,9 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
     info.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
   } else if (static_cast<ProcessStorage*>(process_storage_.get())->Process() ==
              nullptr) {
-    info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
+    info.status = normal_termination_
+                      ? base::TERMINATION_STATUS_NORMAL_TERMINATION
+                      : base::TERMINATION_STATUS_PROCESS_CRASHED;
   } else {
     info.status = base::TERMINATION_STATUS_STILL_RUNNING;
   }
@@ -424,6 +428,10 @@ void ChildProcessLauncherHelper::ClearProcessStorage() {
   if (process_storage_) {
     process_storage_->ReleaseProcess();
   }
+}
+
+void ChildProcessLauncherHelper::SetNormalTermination() {
+  normal_termination_ = true;
 }
 
 NSObject* ChildProcessLauncherHelper::GetProcess() {
