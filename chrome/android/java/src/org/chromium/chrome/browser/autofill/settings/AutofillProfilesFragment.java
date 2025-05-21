@@ -46,6 +46,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.plus_addresses.PlusAddressesUserActions;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -152,8 +153,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         // Always rebuild our list of profiles.  Although we could detect if profiles are added or
         // deleted (GUID list changes), the profile summary (name+addr) might be different.  To be
         // safe, we update all.
@@ -367,5 +368,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             default:
                 return R.drawable.location_on_logo;
         }
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

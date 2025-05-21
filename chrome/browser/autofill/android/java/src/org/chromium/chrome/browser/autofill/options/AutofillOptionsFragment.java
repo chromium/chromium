@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
@@ -140,5 +141,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         assert extras.containsKey(AUTOFILL_OPTIONS_REFERRER)
                 : "missing autofill-options-referrer fragment";
         return extras.getInt(AUTOFILL_OPTIONS_REFERRER);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

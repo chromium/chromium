@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.url.GURL;
@@ -93,8 +94,8 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
     // ChromeBaseSettingsFragment override.
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         // Rebuild the preference list in case any of the underlying data has been updated and if
         // any preferences need to be added/removed based on that.
         rebuildPage();
@@ -276,5 +277,10 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(canvas);
         }
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

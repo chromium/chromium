@@ -24,6 +24,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
 
@@ -58,8 +59,8 @@ public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         rebuildPaymentAppsList();
     }
 
@@ -109,5 +110,10 @@ public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

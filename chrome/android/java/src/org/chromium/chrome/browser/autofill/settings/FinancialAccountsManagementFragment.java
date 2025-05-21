@@ -35,6 +35,7 @@ import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 
 /** Fragment showing management options for financial accounts like Pix, e-Wallets etc. */
 @NullMarked
@@ -98,8 +99,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
 
     // ChromeBaseSettingsFragment override.
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         // Rebuild the preference list in case any of the underlying data has been updated and if
         // any preferences need to be added/removed based on that.
         rebuildPage();
@@ -291,5 +292,10 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     @VisibleForTesting
     static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.Fi
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -634,5 +635,10 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         return PersonalDataManager.getBasicCardIssuerNetwork(
                         cardNumber, /* emptyIfInvalid= */ false)
                 .equals(AMEX_NETWORK_NAME);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }
