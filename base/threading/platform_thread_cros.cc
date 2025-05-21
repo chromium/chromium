@@ -192,11 +192,15 @@ void SetThreadLatencySensitivity(ProcessId process_id,
       break;
   }
 
-  PLOG_IF(ERROR, !WriteFile(latency_sensitive_file,
-                            (is_urgent && latency_sensitive_urgent)
-                                ? base::byte_span_from_cstring("1")
-                                : base::byte_span_from_cstring("0")))
-      << "Failed to write latency file.";
+  // Logging error only if failed to write when latency sensitive, otherwise
+  // silently ignore as "0" is the default value.
+  if (is_urgent && latency_sensitive_urgent) {
+    PLOG_IF(ERROR, !WriteFile(latency_sensitive_file,
+                              base::byte_span_from_cstring("1")))
+        << "Failed to write latency file.";
+  } else {
+    WriteFile(latency_sensitive_file, base::byte_span_from_cstring("0"));
+  }
 
   attr.sched_flags |= SCHED_FLAG_UTIL_CLAMP_MIN;
   attr.sched_flags |= SCHED_FLAG_UTIL_CLAMP_MAX;
