@@ -3,19 +3,14 @@
 # found in the LICENSE file.
 
 import functools
-import itertools
 import logging
 import optparse
-from typing import Collection, List, Set, Tuple
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
-from blinkpy.common.net.web_test_results import BaselineSuffix
 from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 
 _log = logging.getLogger(__name__)
-
-OptimizationTask = Tuple[str, str, BaselineSuffix]
 
 
 class OptimizeBaselines(AbstractParallelRebaselineCommand):
@@ -71,7 +66,7 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         worker_factory = functools.partial(Worker,
                                            port_names=port_names,
                                            options=options)
-        tasks = self._make_tasks(test_set, options.suffixes)
+        tasks = [(self.name, test_name) for test_name in sorted(test_set)]
         self._run_in_message_pool(worker_factory, tasks)
         if options.check:
             if self._successful:
@@ -81,15 +76,6 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
                 _log.warning('Rerun `optimize-baselines` without `--check` '
                              'to fix these issues.')
                 return 2
-
-    def _make_tasks(
-            self, test_set: Set[str],
-            suffixes: Collection[BaselineSuffix]) -> List[OptimizationTask]:
-        tasks = []
-        for test_name, suffix in itertools.product(sorted(test_set), suffixes):
-            if self._test_can_have_suffix(test_name, suffix):
-                tasks.append((self.name, test_name, suffix))
-        return tasks
 
     def _get_test_set(self, options, args):
         if options.all_tests:
@@ -122,15 +108,19 @@ class Worker:
         # The manifest should already be updated by `optimize-baselines` or
         # `rebaseline-cl`.
         self._options.manifest_update = False
-        self._optimizer = BaselineOptimizer(
-            self._connection.host,
-            self._connection.host.port_factory.get(options=self._options),
-            self._port_names,
-            check=self._options.check)
+        self._default_port = self._connection.host.port_factory.get(
+            options=self._options)
+        self._optimizer = BaselineOptimizer(self._connection.host,
+                                            self._default_port,
+                                            self._port_names,
+                                            check=self._options.check)
 
-    def handle(self, name: str, source: str, test_name: str,
-               suffix: BaselineSuffix):
-        successful = self._optimizer.optimize(test_name, suffix)
+    def handle(self, name: str, source: str, test_name: str):
+        suffixes = sorted(
+            set(self._options.suffixes)
+            & self._default_port.allowed_suffixes(test_name))
+        successful = all(
+            self._optimizer.optimize(test_name, suffix) for suffix in suffixes)
         if self._options.check and not self._options.verbose and successful:
             # Without `--verbose`, do not show optimization logs when a test
             # passes the check.

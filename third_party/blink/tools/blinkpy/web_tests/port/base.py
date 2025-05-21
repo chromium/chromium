@@ -54,6 +54,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    get_args,
 )
 
 import six
@@ -67,7 +68,10 @@ from blinkpy.common import path_finder
 from blinkpy.common import read_checksum_from_png
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
-from blinkpy.common.net.web_test_results import BASELINE_EXTENSIONS
+from blinkpy.common.net.web_test_results import (
+    BaselineSuffix,
+    BASELINE_EXTENSIONS,
+)
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.w3c.wpt_manifest import (
@@ -828,6 +832,23 @@ class Port(object):
                 path) if path else path
 
         return baseline_dict
+
+    def allowed_suffixes(self, test_name: str) -> set[BaselineSuffix]:
+        """Get possible suffixes for the given test."""
+        wpt_type = self.get_wpt_type(test_name)
+        if wpt_type in {'testharness', 'wdspec'}:
+            return {'txt'}
+        elif wpt_type == 'manual':
+            # Some manual tests are run as pixel tests (crbug.com/1114920), so
+            # `png` is allowed in that case.
+            return {'png'}
+        elif wpt_type:
+            return set()
+
+        suffixes = set(get_args(BaselineSuffix))
+        if self.reference_files(test_name):
+            suffixes.discard('png')
+        return suffixes
 
     def output_filename(self, test_name, suffix, extension):
         """Generates the output filename for a test.
