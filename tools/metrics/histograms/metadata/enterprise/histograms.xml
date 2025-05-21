@@ -2312,6 +2312,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.FileAnalysisRequest.FileSize" units="KB"
+    expires_after="2025-11-16">
+  <owner>eliashomsi@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the size of files being scanned for a file content analysis request.
+    These requests happen for CEP to scan downloaded and uploaded files for DLP
+    rules.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.FileDownloadObfuscation.Result"
     enum="EnterpriseObfuscationError" expires_after="2026-01-01">
   <owner>haihan@google.com</owner>

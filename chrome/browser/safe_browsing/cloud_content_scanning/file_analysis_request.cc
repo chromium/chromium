@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
@@ -33,6 +34,7 @@ namespace safe_browsing {
 namespace {
 
 constexpr size_t kReadFileChunkSize = 4096;
+constexpr size_t kMaxUploadSizeMetricsKB = 500 * 1024;
 
 std::string GetFileMimeType(const base::FilePath& path,
                             std::string_view first_bytes) {
@@ -139,6 +141,10 @@ GetFileDataBlocking(const base::FilePath& path,
     }
   }
 
+  // Create a histogram to track the size of files being scanned up to 500MB.
+  base::UmaHistogramCustomCounts(
+      "Enterprise.FileAnalysisRequest.FileSize", file_data.size / 1024, 1,
+      kMaxUploadSizeMetricsKB, 50);
   return {file_data.size <= BinaryUploadService::kMaxUploadSizeBytes
               ? BinaryUploadService::Result::SUCCESS
               : BinaryUploadService::Result::FILE_TOO_LARGE,
