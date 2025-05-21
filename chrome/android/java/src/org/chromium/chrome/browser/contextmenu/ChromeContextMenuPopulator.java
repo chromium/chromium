@@ -351,9 +351,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         if (mParams.isPage() && shouldShowEmptySpaceContextMenu()) {
             ModelList pageGroup = new ModelList();
-            // TODO(crbug.com/405842034): investigate supporting downloads in incognito mode.
-            if (!mItemDelegate.isIncognito()
-                    && UrlUtilities.isDownloadableScheme(mParams.getPageUrl())) {
+            if (UrlUtilities.isDownloadableScheme(mParams.getPageUrl())) {
                 pageGroup.add(
                         createListItem(Item.SAVE_PAGE, false, !mIsDownloadRestrictedByPolicy));
             }
