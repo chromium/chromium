@@ -195,6 +195,13 @@ std::string OutgoingPasswordSharingInvitationSyncBridge::GetStorageKey(
       entity_data.specifics.outgoing_password_sharing_invitation());
 }
 
+bool OutgoingPasswordSharingInvitationSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  // OUTGOING_PASSWORD_SHARING_INVITATION is a commit only data type so
+  // this method is not called.
+  NOTREACHED();
+}
+
 bool OutgoingPasswordSharingInvitationSyncBridge::SupportsGetClientTag() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;

@@ -62,6 +62,7 @@ class OutgoingPasswordSharingInvitationSyncBridge
       const syncer::EntityData& entity_data) const override;
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
