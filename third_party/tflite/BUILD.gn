@@ -307,7 +307,6 @@ source_set("tflite_kernel_common_headers") {
     "src/tensorflow/lite/kernels/kernel_util.h",
     "src/tensorflow/lite/kernels/op_macros.h",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.h",
-    "src/tensorflow/lite/type_to_tflitetype.h",
   ]
 
   configs += [ ":tflite_flags" ]
@@ -661,39 +660,6 @@ tflite_static_library("tflite_kernels") {
     "//third_party/eigen3:eigen_includes",
   ]
   visibility = [ ":*" ]
-}
-
-if (!is_fuchsia) {
-  tflite_static_library("tflite_op_shim") {
-    sources = [
-      "src/tensorflow/lite/kernels/shim/shape.cc",
-      "src/tensorflow/lite/kernels/shim/tflite_op_shim.cc",
-      "src/tensorflow/lite/kernels/shim/tflite_tensor_view.cc",
-      "src/third_party/xla/xla/tsl/platform/default/logging.cc",
-      "src/third_party/xla/xla/tsl/platform/default/logging.h",
-    ]
-
-    if (is_win) {
-      sources += [ "src/third_party/xla/xla/tsl/platform/windows/env_time.cc" ]
-    } else {
-      sources += [ "src/third_party/xla/xla/tsl/platform/default/env_time.cc" ]
-    }
-
-    deps = [
-      ":tflite_kernel_common_headers",
-      ":tflite_public_headers",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/flatbuffers",
-    ]
-
-    configs_to_add = [
-      ":tflite_config",
-      ":tflite_flags",
-      "//third_party/eigen3:eigen_includes",
-      "//third_party/ml_dtypes:ml_dtypes-includes",
-    ]
-    visibility = [ ":*" ]
-  }
 }
 
 # The two below TFLite logging targets are separate since the Chromium one
@@ -1239,6 +1205,7 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/tools/versioning/gpu_compatibility.h",
     "src/tensorflow/lite/tools/versioning/op_signature.cc",
     "src/tensorflow/lite/tools/versioning/op_signature.h",
+    "src/tensorflow/lite/type_to_tflitetype.h",
     "src/tensorflow/lite/util.cc",
     "src/tensorflow/lite/version.h",
     "src/third_party/xla/xla/tsl/util/stats_calculator.cc",
@@ -1338,11 +1305,6 @@ tflite_static_library("tflite") {
     ":tflite_kernels",
     ":tflite_litert",
   ]
-  if (!is_fuchsia) {
-    # absl::Cord::CopyToArray is not available on fuchsia but is required by
-    # this library.
-    conditional_public_deps += [ ":tflite_op_shim" ]
-  }
 
   public_deps = [
     ":tflite_compiler_utils",
