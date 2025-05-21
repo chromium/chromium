@@ -277,6 +277,9 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
         .AddLoyaltyCard(loyalty_card);
     form_ = test::CreateTestLoyaltyCardFormData();
     test_api(form_).field(0).set_is_focusable(true);
+    // The current URL matches the loyalty card merchant domain.
+    autofill_client_.set_last_committed_primary_main_frame_url(
+        GURL("https://domain.example"));
   }
 
   void OnFormsSeen() {
@@ -1149,7 +1152,10 @@ TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
        PassTheLoyaltyCardsToTheClient) {
   // TODO: crbug.com/404437211 - Test that the loyalty cards are sorted.
-  std::vector<LoyaltyCard> loyalty_cards{test::CreateLoyaltyCard()};
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  std::vector<LoyaltyCard> loyalty_cards{card};
+  autofill_client_.set_last_committed_primary_main_frame_url(
+      card.merchant_domains()[0]);
   test_api(*autofill_client_.GetValuablesDataManager())
       .SetLoyaltyCards(loyalty_cards);
 
@@ -1157,6 +1163,19 @@ TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
               ShowTouchToFillLoyaltyCard(_, ElementsAreArray(loyalty_cards)));
 
   TryToShowTouchToFill(/*expected_success=*/true);
+}
+
+TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
+       TryToShowTouchToFillFailsIfNoMatchingDomains) {
+  autofill_client_.set_last_committed_primary_main_frame_url(
+      GURL("https://non-matching.domain"));
+  std::vector<LoyaltyCard> loyalty_cards{test::CreateLoyaltyCard()};
+  test_api(*autofill_client_.GetValuablesDataManager())
+      .SetLoyaltyCards(loyalty_cards);
+
+  EXPECT_CALL(payments_autofill_client(), ShowTouchToFillLoyaltyCard).Times(0);
+
+  TryToShowTouchToFill(/*expected_success=*/false);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,

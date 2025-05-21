@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
@@ -186,10 +187,28 @@ TouchToFillDelegateAndroidImpl::DryRunForLoyaltyCard() {
     return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
   }
   base::span<const LoyaltyCard> loyalty_cards = vdm->GetLoyaltyCards();
-  return loyalty_cards.empty()
-             ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
-             : DryRunResult(TriggerOutcome::kShown,
-                            base::ToVector(loyalty_cards));
+  if (loyalty_cards.empty()) {
+    return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
+  }
+  const GURL& current_domain =
+      manager_->client().GetLastCommittedPrimaryMainFrameURL();
+  // Returns whether a loyalty card has a related merchant domain that matches
+  // the `current_domain`.
+  const auto HasMatchingMerchantDomain =
+      [&current_domain](const LoyaltyCard& loyalty_card) {
+        return std::ranges::any_of(
+            loyalty_card.merchant_domains(),
+            [&current_domain](const GURL& merchant_url) {
+              return affiliations::IsExtendedPublicSuffixDomainMatch(
+                  merchant_url, current_domain, {});
+            });
+      };
+  // Only show the TTF surface if any loyalty card have a matching merchant
+  // domain.
+  if (std::ranges::any_of(loyalty_cards, HasMatchingMerchantDomain)) {
+    return DryRunResult(TriggerOutcome::kShown, base::ToVector(loyalty_cards));
+  }
+  return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
 }
 
 // TODO(crbug.com/40282650): Remove received FormData
