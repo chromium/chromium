@@ -838,6 +838,16 @@ TEST_P(RemoteTest, PendingReceiverResetWithReason) {
   run_loop.Run();
 }
 
+TEST_P(RemoteTest, PendingReceiverResetWithReasonAfterDisconnect) {
+  Remote<math::Calculator> calc;
+  auto pending_receiver = calc.BindNewPipeAndPassReceiver();
+
+  calc.reset();
+  // Ensure no crashes occur when ResetWithReason is called after the other
+  // side has disconnected.
+  pending_receiver.ResetWithReason(0u, "not-used");
+}
+
 TEST_P(RemoteTest, CallbackIsPassedRemote) {
   Remote<sample::PingTest> remote;
   auto pending_receiver = remote.BindNewPipeAndPassReceiver();
