@@ -3766,14 +3766,17 @@ CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
 scoped_refptr<BackgroundCodeCacheHost>
 DocumentLoader::CreateBackgroundCodeCacheHost() {
   if (!pending_code_cache_host_for_background_) {
-    return nullptr;
+    // If the Document was loaded without a navigation,
+    // `pending_code_cache_host_for_background_` is not set. In that case, get
+    // the CodeCacheHost mojo handle from the frame's BrowserInterfaceBroker
+    return base::MakeRefCounted<BackgroundCodeCacheHost>(CreateCodeCacheHost());
   }
   return base::MakeRefCounted<BackgroundCodeCacheHost>(
       std::move(pending_code_cache_host_for_background_));
 }
 
 mojo::PendingRemote<mojom::blink::CodeCacheHost>
-DocumentLoader::CreateWorkerCodeCacheHost() {
+DocumentLoader::CreateCodeCacheHost() {
   if (GetDisableCodeCacheForTesting())
     return mojo::NullRemote();
   mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_code_cache_host;
