@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconUseLargeFavicon;
 
 import android.content.Context;
@@ -120,7 +119,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                     startTimeMs,
                                     taskFinishedCallback,
                                     mFaviconHelper,
-                                    assumeNonNull(mAuxiliarySearchController),
+                                    mAuxiliarySearchController,
                                     tabs));
         }
     }
@@ -200,9 +199,9 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
             long startTimeMs,
             TaskFinishedCallback taskFinishedCallback,
             FaviconHelper faviconHelper,
-            AuxiliarySearchController auxiliarySearchController,
+            @Nullable AuxiliarySearchController auxiliarySearchController,
             @Nullable List<T> entries) {
-        if (entries == null || entries.isEmpty()) {
+        if (entries == null || entries.isEmpty() || auxiliarySearchController == null) {
             onTaskFinished(taskFinishedCallback);
             return;
         }
