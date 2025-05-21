@@ -171,7 +171,7 @@ PrivacySandboxNotice GetNoticeName(const std::string& name) {
 }  // namespace
 
 //-----------------------------------------------------------------------------
-// First Time Notice V2 Dialog View Browser Tests.
+// Notice Framework Dialog View Browser Tests.
 //-----------------------------------------------------------------------------
 class PrivacySandboxPSNoticeDialogViewBrowserTest : public DialogBrowserTest {
  public:
