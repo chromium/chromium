@@ -489,12 +489,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
 
-  // Fill in the provided list with existing database names.
-  Status GetDatabaseNames(std::vector<std::u16string>* names) override;
-  // Fill in the provided list with existing database names and versions.
-  Status GetDatabaseNamesAndVersions(
-      std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions)
+  base::expected<std::vector<std::u16string>, Status> GetDatabaseNames()
       override;
+  base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>, Status>
+  GetDatabaseNamesAndVersions() override;
 
   base::FilePath GetBlobFileName(int64_t database_id, int64_t key) const;
 

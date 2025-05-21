@@ -45,6 +45,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -1244,15 +1245,11 @@ void BackingStore::InvalidateBlobReferences() {
 Status BackingStore::UpgradeBlobEntriesToV4(
     LevelDBWriteBatch* write_batch,
     std::vector<base::FilePath>* empty_blobs_to_delete) {
-  std::vector<std::u16string> names;
-  Status status = GetDatabaseNames(&names);
-  if (!status.ok()) {
-    return status;
-  }
+  ASSIGN_OR_RETURN(std::vector<std::u16string> names, GetDatabaseNames());
 
   for (const std::u16string& name : names) {
     DatabaseMetadata metadata(name);
-    status = ReadMetadataForDatabaseName(metadata);
+    Status status = ReadMetadataForDatabaseName(metadata);
     if (!metadata.id) {
       // This is a rather odd error message, but it's left as-is for legacy
       // reasons.
@@ -1333,15 +1330,11 @@ Status BackingStore::UpgradeBlobEntriesToV4(
 }
 
 Status BackingStore::ValidateBlobFiles() {
-  std::vector<std::u16string> names;
-  Status status = GetDatabaseNames(&names);
-  if (!status.ok()) {
-    return status;
-  }
+  ASSIGN_OR_RETURN(std::vector<std::u16string> names, GetDatabaseNames());
 
   for (const std::u16string& name : names) {
     DatabaseMetadata metadata(name);
-    status = ReadMetadataForDatabaseName(metadata);
+    Status status = ReadMetadataForDatabaseName(metadata);
     if (!metadata.id) {
       return Status::NotFound(base::StrCat(
           {"Metadata not found for \"%s\".: ", base::UTF16ToUTF8(name)}));
@@ -1609,16 +1602,12 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
 
 Status BackingStore::GetCompleteMetadata(
     std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>>* output) {
-  std::vector<std::u16string> names;
-  Status status = GetDatabaseNames(&names);
-  if (!status.ok()) {
-    return status;
-  }
+  ASSIGN_OR_RETURN(std::vector<std::u16string> names, GetDatabaseNames());
 
   output->reserve(names.size());
   for (const std::u16string& name : names) {
     auto metadata = std::make_unique<DatabaseMetadata>(name);
-    status = ReadMetadataForDatabaseName(*metadata);
+    Status status = ReadMetadataForDatabaseName(*metadata);
     if (!metadata->id) {
       return Status::NotFound(base::StrCat(
           {"Metadata not found for \"%s\".: ", base::UTF16ToUTF8(name)}));
@@ -1629,7 +1618,7 @@ Status BackingStore::GetCompleteMetadata(
     output->emplace_back(std::move(metadata));
   }
 
-  return status;
+  return Status::OK();
 }
 
 // static
@@ -3012,13 +3001,16 @@ Status BackingStore::Transaction::KeyExistsInIndex(
   return InvalidDBKeyStatus();
 }
 
-Status BackingStore::GetDatabaseNames(std::vector<std::u16string>* names) {
-  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
-  Status s = GetDatabaseNamesAndVersions(&names_and_versions);
+base::expected<std::vector<std::u16string>, Status>
+BackingStore::GetDatabaseNames() {
+  ASSIGN_OR_RETURN(
+      std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions,
+      GetDatabaseNamesAndVersions());
+  std::vector<std::u16string> names;
   for (const blink::mojom::IDBNameAndVersionPtr& nav : names_and_versions) {
-    names->push_back(nav->name);
+    names.push_back(nav->name);
   }
-  return s;
+  return names;
 }
 
 uintptr_t BackingStore::GetIdentifierForMemoryDump() {
@@ -3027,11 +3019,11 @@ uintptr_t BackingStore::GetIdentifierForMemoryDump() {
   return reinterpret_cast<uintptr_t>(db()->db());
 }
 
-Status BackingStore::GetDatabaseNamesAndVersions(
-    std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions) {
+base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>, Status>
+BackingStore::GetDatabaseNamesAndVersions() {
   // TODO(dmurph): Get rid of on-demand metadata loading, and store metadata
   // in-memory.
-  DCHECK(names_and_versions->empty());
+  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   const std::string start_key =
       DatabaseNameKey::EncodeMinKeyForOrigin(origin_identifier_);
   const std::string stop_key =
@@ -3074,15 +3066,16 @@ Status BackingStore::GetDatabaseNamesAndVersions(
 
     // Ignore stale metadata from failed initial opens.
     if (database_version != IndexedDBDatabaseMetadata::DEFAULT_VERSION) {
-      names_and_versions->push_back(blink::mojom::IDBNameAndVersion::New(
+      names_and_versions.push_back(blink::mojom::IDBNameAndVersion::New(
           database_name_key.database_name(), database_version));
     }
   }
   if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_DATABASE_NAMES);
+    return base::unexpected(s);
   }
 
-  return s;
+  return names_and_versions;
 }
 
 Status BackingStore::ReadMetadataForDatabaseName(

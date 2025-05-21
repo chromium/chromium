@@ -225,15 +225,19 @@ class BackingStore {
   // Gets the total size of blobs and the database for in-memory backing
   // stores.
   virtual int64_t GetInMemorySize() const = 0;
-  // Fill in the provided list with existing database names.
-  [[nodiscard]] virtual Status GetDatabaseNames(
-      std::vector<std::u16string>* names) = 0;
-  // Fill in the provided list with existing database names and versions.
-  [[nodiscard]] virtual Status GetDatabaseNamesAndVersions(
-      std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions) = 0;
+  // Returns a list of names of existing databases, regardless of whether
+  // they're currently open.
+  [[nodiscard]] virtual base::expected<std::vector<std::u16string>, Status>
+  GetDatabaseNames() = 0;
+  // Returns a list of names of existing databases and their version numbers
+  // (i.e. `IndexedDBDatabaseMetadata::version`), regardless of whether they're
+  // currently open.
+  [[nodiscard]]
+  virtual base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>,
+                         Status> GetDatabaseNamesAndVersions() = 0;
   // Creates a new database in the backing store, or opens an existing one. If
   // pre-existing, the database's metadata will be populated from disk.
-  // Otherwise the version will be set to DEFAULT_VERSION.
+  // Otherwise the version will be initialized to NO_VERSION.
   [[nodiscard]] virtual base::expected<std::unique_ptr<BackingStore::Database>,
                                        Status>
   CreateOrOpenDatabase(const std::u16string& name) = 0;

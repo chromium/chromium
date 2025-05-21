@@ -39,10 +39,10 @@ class BackingStoreImpl : public BackingStore {
   void StartPreCloseTasks(base::OnceClosure on_done) override;
   void StopPreCloseTasks() override;
   int64_t GetInMemorySize() const override;
-  Status GetDatabaseNames(std::vector<std::u16string>* names) override;
-  Status GetDatabaseNamesAndVersions(
-      std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions)
+  base::expected<std::vector<std::u16string>, Status> GetDatabaseNames()
       override;
+  base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>, Status>
+  GetDatabaseNamesAndVersions() override;
   base::expected<std::unique_ptr<BackingStore::Database>, Status>
   CreateOrOpenDatabase(const std::u16string& name) override;
   uintptr_t GetIdentifierForMemoryDump() override;

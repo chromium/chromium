@@ -49,18 +49,25 @@ int64_t BackingStoreImpl::GetInMemorySize() const {
   return 0;
 }
 
-Status BackingStoreImpl::GetDatabaseNames(std::vector<std::u16string>* names) {
+base::expected<std::vector<std::u16string>, Status>
+BackingStoreImpl::GetDatabaseNames() {
+  std::vector<std::u16string> names;
   // TODO(crbug.com/40253999): Support on-disk databases.
   for (const auto& [name, _] : open_connections_) {
-    names->push_back(name);
+    names.push_back(name);
   }
-  return Status::OK();
+  return names;
 }
 
-Status BackingStoreImpl::GetDatabaseNamesAndVersions(
-    std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions) {
-  NOTIMPLEMENTED();
-  return Status::OK();
+base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>, Status>
+BackingStoreImpl::GetDatabaseNamesAndVersions() {
+  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
+  // TODO(crbug.com/40253999): Support on-disk databases.
+  for (const auto& [name, db] : open_connections_) {
+    names_and_versions.push_back(
+        blink::mojom::IDBNameAndVersion::New(name, db->metadata().version));
+  }
+  return names_and_versions;
 }
 
 base::expected<std::unique_ptr<BackingStore::Database>, Status>

@@ -541,26 +541,31 @@ void BucketContext::AddReceiver(
 void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
   Status s;
   DatabaseError error;
-  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   std::tie(s, error, std::ignore) =
       InitBackingStoreIfNeeded(/*create_if_missing=*/false);
   DCHECK_EQ(s.ok(), !!backing_store_);
-  if (s.ok()) {
-    s = backing_store_->GetDatabaseNamesAndVersions(&names_and_versions);
-    if (!s.ok()) {
-      error = DatabaseError(blink::mojom::IDBException::kUnknownError,
-                            "Internal error opening backing store for "
-                            "indexedDB.databases().");
+  if (!s.ok()) {
+    std::move(callback).Run(
+        {}, blink::mojom::IDBError::New(error.code(), error.message()));
+
+    if (s.IsCorruption()) {
+      HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
     }
+    return;
   }
 
+  auto names_and_versions = backing_store_->GetDatabaseNamesAndVersions();
+  if (!names_and_versions.has_value()) {
+    std::move(callback).Run({}, blink::mojom::IDBError::New(
+                                    blink::mojom::IDBException::kUnknownError,
+                                    u"Internal error opening backing store for "
+                                    "indexedDB.databases()."));
+    return;
+  }
   std::move(callback).Run(
-      std::move(names_and_versions),
-      blink::mojom::IDBError::New(error.code(), error.message()));
-
-  if (s.IsCorruption()) {
-    HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
-  }
+      std::move(*names_and_versions),
+      blink::mojom::IDBError::New(blink::mojom::IDBException::kNoError,
+                                  std::u16string()));
 }
 
 void BucketContext::Open(
@@ -684,21 +689,21 @@ void BucketContext::DeleteDatabase(
 
   // Otherwise, verify that a database with the given name exists in the backing
   // store. If not, report success.
-  std::vector<std::u16string> names;
-  Status s = backing_store()->GetDatabaseNames(&names);
-  if (!s.ok()) {
+  base::expected<std::vector<std::u16string>, Status> names =
+      backing_store()->GetDatabaseNames();
+  if (!names.has_value()) {
     std::string error_message =
         "Internal error opening backing store for indexedDB.deleteDatabase.";
     DatabaseError error(blink::mojom::IDBException::kUnknownError,
                         error_message);
     FactoryClient(std::move(factory_client)).OnError(error);
-    if (s.IsCorruption()) {
+    if (names.error().IsCorruption()) {
       HandleBackingStoreCorruption(error_message);
     }
     return;
   }
 
-  if (!base::Contains(names, name)) {
+  if (!base::Contains(*names, name)) {
     FactoryClient(std::move(factory_client)).OnDeleteSuccess(/*version=*/0);
     return;
   }

@@ -1499,11 +1499,11 @@ TEST_F(BackingStoreTest, GetDatabaseNames) {
   // `GetDatabaseNames()`.
   UpdateDatabaseVersion(*db1.value(), 2);
 
-  std::vector<std::u16string> names;
-  Status s = backing_store()->GetDatabaseNames(&names);
-  EXPECT_TRUE(s.ok());
-  ASSERT_EQ(1U, names.size());
-  EXPECT_EQ(u"db1", names[0]);
+  base::expected<std::vector<std::u16string>, Status> names =
+      backing_store()->GetDatabaseNames();
+  EXPECT_TRUE(names.has_value());
+  ASSERT_EQ(1U, names->size());
+  EXPECT_EQ(u"db1", names->at(0));
 }
 
 TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
