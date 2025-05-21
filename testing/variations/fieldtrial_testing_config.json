@@ -17733,6 +17733,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "kPrefetchSchedulerProgressSyncBestEffort": "true"
+                    },
                     "enable_features": [
                         "PrefetchScheduler"
                     ]
