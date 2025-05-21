@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.NON_TRANSFORMING_IBAN_KEYS;
@@ -38,14 +39,18 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
+import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
@@ -191,7 +196,7 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
         }
 
-        sheetItems.add(0, buildHeader(hasOnlyLocalCards(mSuggestions)));
+        sheetItems.add(0, buildHeaderForPayments(hasOnlyLocalCards(mSuggestions)));
         sheetItems.add(buildFooterForCreditCard(shouldShowScanCreditCard));
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
@@ -224,7 +229,7 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
         }
 
-        sheetItems.add(0, buildHeader(/* hasOnlyLocalPaymentMethods= */ true));
+        sheetItems.add(0, buildHeaderForPayments(/* hasOnlyLocalPaymentMethods= */ true));
         sheetItems.add(buildFooterForIban());
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
@@ -248,6 +253,8 @@ class TouchToFillPaymentMethodMediator {
             final PropertyModel model = createLoyaltyCardModel(loyaltyCard);
             sheetItems.add(new ListItem(LOYALTY_CARD, model));
         }
+
+        sheetItems.add(0, buildHeaderForLoyaltyCards());
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
@@ -392,7 +399,7 @@ class TouchToFillPaymentMethodMediator {
                         .build());
     }
 
-    private ListItem buildHeader(boolean hasOnlyLocalPaymentMethods) {
+    private ListItem buildHeaderForPayments(boolean hasOnlyLocalPaymentMethods) {
         return new ListItem(
                 HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
@@ -401,6 +408,24 @@ class TouchToFillPaymentMethodMediator {
                                 hasOnlyLocalPaymentMethods
                                         ? R.drawable.fre_product_logo
                                         : R.drawable.google_pay)
+                        .with(TITLE_ID, R.string.autofill_payment_method_bottom_sheet_title)
+                        .build());
+    }
+
+    private ListItem buildHeaderForLoyaltyCards() {
+        @Nullable
+        final TouchToFillResourceProvider mResourceProvider =
+                ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
+        @DrawableRes
+        final int headerImageId =
+                mResourceProvider == null
+                        ? R.drawable.touch_to_fill_default_header_image
+                        : mResourceProvider.getLoyaltyCardHeaderDrawableId();
+        return new ListItem(
+                HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(IMAGE_DRAWABLE_ID, headerImageId)
+                        .with(TITLE_ID, R.string.autofill_loyalty_card_bottom_sheet_title)
                         .build());
     }
 

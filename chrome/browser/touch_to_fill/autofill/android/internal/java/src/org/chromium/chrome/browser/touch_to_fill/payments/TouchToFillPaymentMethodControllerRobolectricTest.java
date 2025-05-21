@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCardSuggestion;
@@ -36,6 +37,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
@@ -61,23 +64,24 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
+import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillCreditCardOutcome;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillIbanOutcome;
 import org.chromium.components.autofill.AutofillFeatures;
@@ -286,29 +290,32 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     VIRTUAL_CARD.getGUID(),
                     VIRTUAL_CARD.getIsLocal());
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private final TouchToFillPaymentMethodCoordinator mCoordinator;
-    private PropertyModel mTouchToFillPaymentMethodModel;
     private final FakeClock mClock = new FakeClock();
+    private TouchToFillPaymentMethodCoordinator mCoordinator;
+    private PropertyModel mTouchToFillPaymentMethodModel;
     Context mContext;
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TouchToFillPaymentMethodComponent.Delegate mDelegateMock;
     @Mock private BottomSheetFocusHelper mBottomSheetFocusHelper;
     @Mock private AutofillImageFetcher mImageFetcher;
+    @Mock private TouchToFillResourceProvider mResourceProvider;
 
     public TouchToFillPaymentMethodControllerRobolectricTest() {
-        mCoordinator = new TouchToFillPaymentMethodCoordinator();
         mContext = Robolectric.buildActivity(Activity.class).get();
     }
 
     @Before
     public void setUp() {
-        Mockito.when(
-                        mBottomSheetController.requestShowContent(
-                                any(BottomSheetContent.class), anyBoolean()))
+        ServiceLoaderUtil.setInstanceForTesting(
+                TouchToFillResourceProvider.class, mResourceProvider);
+        when(mResourceProvider.getLoyaltyCardHeaderDrawableId())
+                .thenReturn(R.drawable.ic_globe_24dp);
+        when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
+        mCoordinator = new TouchToFillPaymentMethodCoordinator();
         mCoordinator.initialize(
                 mContext,
                 mImageFetcher,
@@ -353,6 +360,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.fre_product_logo));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
 
         Optional<PropertyModel> cardSuggestionModel =
                 getCardSuggestionModel(itemList, VISA_SUGGESTION);
@@ -379,6 +390,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(2));
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.fre_product_logo));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
 
         Optional<PropertyModel> cardSuggestionModel =
                 getCardSuggestionModel(itemList, VISA_SUGGESTION);
@@ -413,6 +428,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(2));
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.google_pay));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
 
         Optional<PropertyModel> cardSuggestionModel =
                 getCardSuggestionModel(itemList, NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION);
@@ -436,6 +455,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(3));
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.google_pay));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
 
         Optional<PropertyModel> cardSuggestionModel =
                 getCardSuggestionModel(itemList, MASTERCARD_SUGGESTION);
@@ -745,6 +768,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(getModelsOfType(itemList, IBAN).size(), is(1));
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.fre_product_logo));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
 
         Optional<PropertyModel> ibanModel = getIbanModelByAutofillName(itemList, LOCAL_IBAN);
         assertTrue(ibanModel.isPresent());
@@ -764,6 +791,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(getModelsOfType(itemList, IBAN).size(), is(2));
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.fre_product_logo));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
 
         Optional<PropertyModel> ibanModel = getIbanModelByAutofillName(itemList, LOCAL_IBAN);
         assertTrue(ibanModel.isPresent());
@@ -836,9 +867,15 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(1));
 
-        PropertyModel loyaltyCardModel = itemList.get(0).model;
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.ic_globe_24dp));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_loyalty_card_bottom_sheet_title));
+
+        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(1));
+        PropertyModel loyaltyCardModel = itemList.get(1).model;
         assertThat(
                 loyaltyCardModel.get(LOYALTY_CARD_NUMBER),
                 is(LOYALTY_CARD_1.getLoyaltyCardNumber()));
@@ -850,15 +887,21 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showLoyaltyCards(List.of(LOYALTY_CARD_1, LOYALTY_CARD_2));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(2));
 
-        PropertyModel loyaltyCardModel1 = itemList.get(0).model;
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.ic_globe_24dp));
+        assertThat(
+                headerModel.get(TITLE_ID), is(R.string.autofill_loyalty_card_bottom_sheet_title));
+
+        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(2));
+        PropertyModel loyaltyCardModel1 = itemList.get(1).model;
         assertThat(
                 loyaltyCardModel1.get(LOYALTY_CARD_NUMBER),
                 is(LOYALTY_CARD_1.getLoyaltyCardNumber()));
         assertThat(loyaltyCardModel1.get(MERCHANT_NAME), is(LOYALTY_CARD_1.getMerchantName()));
 
-        PropertyModel loyaltyCardModel2 = itemList.get(1).model;
+        PropertyModel loyaltyCardModel2 = itemList.get(2).model;
         assertThat(
                 loyaltyCardModel2.get(LOYALTY_CARD_NUMBER),
                 is(LOYALTY_CARD_2.getLoyaltyCardNumber()));

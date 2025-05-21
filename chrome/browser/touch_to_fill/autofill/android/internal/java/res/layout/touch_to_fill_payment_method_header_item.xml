@@ -28,6 +28,5 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
-        android:text="@string/autofill_payment_method_bottom_sheet_title"/>
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
 </LinearLayout>
