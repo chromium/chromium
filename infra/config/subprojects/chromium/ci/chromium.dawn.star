@@ -2825,22 +2825,31 @@ ci.thin_tester(
         # should be running the same test_suites as
         # 'Dawn Win10 x64 Release (NVIDIA)'
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_dawn_telemetry_win_x64_tests",
+            "gpu_dawn_integration_gtests_passthrough_win_x64",
+            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "limited_capacity_bot",
             "win10_nvidia_gtx_1660_experimental",
         ],
+        per_test_modifications = {
+            "gl_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.nvidia.gtx.1660.gl_unittests.filter",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "ToT|Windows|x64|Nvidia",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|x64|Nvidia",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
     execution_timeout = 6 * time.hour,
 )
@@ -3169,22 +3178,31 @@ ci.thin_tester(
         # should be running the same test_suites as 'Dawn Win10 x86 Release
         # (NVIDIA)'.
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_dawn_telemetry_tests_fxc",
+            "gpu_dawn_integration_gtests_passthrough",
+            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "limited_capacity_bot",
             "win10_nvidia_gtx_1660_experimental",
         ],
+        per_test_modifications = {
+            "gl_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.nvidia.gtx.1660.gl_unittests.filter",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "ToT|Windows|x86|Nvidia",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|x86|Nvidia",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 

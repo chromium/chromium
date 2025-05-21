@@ -50,3 +50,7 @@ crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_color
 
 # Test failus due to drop last frame after gpu device is destroyed/lost.
 crbug.com/370694819 wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]
+
+# Crashes due to the upgrade from Win10/old driver -> Win11/new driver for NVIDIA GTX 1660.
+crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Crash ]
+crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Crash ]
