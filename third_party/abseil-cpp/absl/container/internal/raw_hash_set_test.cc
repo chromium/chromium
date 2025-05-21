@@ -423,10 +423,6 @@ TEST(BitMask, LeadingTrailing) {
   EXPECT_EQ((BitMask<uint64_t, 8, 3>(0x8000000000000000).TrailingZeros()), 7);
 }
 
-TEST(Group, EmptyGroup) {
-  for (h2_t h = 0; h != 128; ++h) EXPECT_FALSE(Group{EmptyGroup()}.Match(h));
-}
-
 TEST(Group, Match) {
   if (Group::kWidth == 16) {
     ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
@@ -1184,7 +1180,7 @@ TYPED_TEST(SmallTableResizeTest, InsertIntoSmallTable) {
     t.insert(i);
     ASSERT_EQ(t.size(), i + 1);
     for (int j = 0; j < i + 1; ++j) {
-      EXPECT_TRUE(t.find(j) != t.end());
+      ASSERT_TRUE(t.find(j) != t.end());
       EXPECT_EQ(*t.find(j), j);
     }
   }
@@ -1207,7 +1203,7 @@ TYPED_TEST(SmallTableResizeTest, ResizeGrowSmallTables) {
           t.reserve(target_size);
         }
         for (size_t i = 0; i < source_size; ++i) {
-          EXPECT_TRUE(t.find(static_cast<int>(i)) != t.end());
+          ASSERT_TRUE(t.find(static_cast<int>(i)) != t.end());
           EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));
         }
       }
@@ -1232,7 +1228,7 @@ TYPED_TEST(SmallTableResizeTest, ResizeReduceSmallTables) {
             << "rehash(0) must resize to the minimum capacity";
       }
       for (size_t i = 0; i < inserted_count; ++i) {
-        EXPECT_TRUE(t.find(static_cast<int>(i)) != t.end());
+        ASSERT_TRUE(t.find(static_cast<int>(i)) != t.end());
         EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));
       }
     }
@@ -4267,8 +4263,8 @@ struct ConstUint8Hash {
 // 5. Finally we will catch up and go to overflow codepath.
 TEST(Table, GrowExtremelyLargeTable) {
   constexpr size_t kTargetCapacity =
-#if defined(__wasm__) || defined(__asmjs__)
-      NextCapacity(ProbedItem4Bytes::kMaxNewCapacity);  // OOMs on WASM.
+#if defined(__wasm__) || defined(__asmjs__) || defined(__i386__)
+      NextCapacity(ProbedItem4Bytes::kMaxNewCapacity);  // OOMs on WASM, 32-bit.
 #else
       NextCapacity(ProbedItem8Bytes::kMaxNewCapacity);
 #endif

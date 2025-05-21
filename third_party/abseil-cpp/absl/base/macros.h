@@ -197,9 +197,9 @@ ABSL_NAMESPACE_END
 // While open-source users do not have access to this service, the macro is
 // provided for compatibility, and so that users receive deprecation warnings.
 #if ABSL_HAVE_CPP_ATTRIBUTE(deprecated) && \
-    ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate) && !defined(SWIG)
+    ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
 #define ABSL_DEPRECATE_AND_INLINE() [[deprecated, clang::annotate("inline-me")]]
-#elif ABSL_HAVE_CPP_ATTRIBUTE(deprecated) && !defined(SWIG)
+#elif ABSL_HAVE_CPP_ATTRIBUTE(deprecated)
 #define ABSL_DEPRECATE_AND_INLINE() [[deprecated]]
 #else
 #define ABSL_DEPRECATE_AND_INLINE()

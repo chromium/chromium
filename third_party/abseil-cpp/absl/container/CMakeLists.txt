@@ -583,6 +583,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::container_memory
     absl::common_policy_traits
     absl::meta
   PUBLIC

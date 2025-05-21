@@ -530,6 +530,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":common_policy_traits",
+        ":container_memory",
         "//absl/meta:type_traits",
     ],
 )
