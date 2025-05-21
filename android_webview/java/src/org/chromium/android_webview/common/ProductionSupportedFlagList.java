@@ -841,6 +841,10 @@ public final class ProductionSupportedFlagList {
                 "Do not send TYPE_VIEW_SCROLLED accessibility events on kGestureScrollUpdate acks,"
                         + " instead send them every 100ms when in a scroll gesture."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_DRAIN_PREFETCH_QUEUE_DURING_INIT,
+                "Drain any prefetches that were triggered on the background thread during WebView"
+                        + " initialization."),
+        Flag.baseFeature(
                 CcFeatures.METRICS_TRACING_CALCULATION_REDUCTION,
                 "Reduces Renderer event latency attribution to only during tracing."),
         Flag.baseFeature(BlinkFeatures.STREAMLINE_RENDERER_INIT),

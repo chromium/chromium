@@ -7510,6 +7510,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Profile.Prefetch.QueuedPrefetchExecutionDelay"
+    units="ms" expires_after="2026-05-21">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    The delay between when an application starts a prefetch request on a
+    background and when that prefetch actually executes on the UI thread.
+
+    This is recorded every time WebView sends a prefetch request to the prefetch
+    infrastructure inside of //content, it is not recorded for prefetches that
+    are deemed as duplicate (or error out) and thus never reach //content.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.RegisterResourcePathsAvailable2"
     enum="NullableBoolean" expires_after="2025-10-22">
   <owner>alexmitra@chromium.org</owner>

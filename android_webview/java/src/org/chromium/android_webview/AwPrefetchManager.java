@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import org.chromium.android_webview.AwPrefetchCallback.StatusCode;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.ContentFeatureList;
 
@@ -34,6 +36,9 @@ import java.util.function.Consumer;
 @JNINamespace("android_webview")
 @Lifetime.Profile
 public class AwPrefetchManager {
+
+    private static final String QUEUED_PREFETCH_EXECUTION_DELAY_HISTOGRAM_NAME =
+            "Android.WebView.Profile.Prefetch.QueuedPrefetchExecutionDelay";
     private final long mNativePrefetchManager;
 
     private final Queue<Runnable> mQueuedPrefetchRequests = new ConcurrentLinkedQueue<>();
@@ -135,6 +140,7 @@ public class AwPrefetchManager {
 
     @WorkerThread
     public void startPrefetchRequestAsync(
+            long prefetchApiCallTriggerTimeMs,
             @NonNull String url,
             @Nullable AwPrefetchParameters prefetchParameters,
             @NonNull AwPrefetchCallback callback,
@@ -142,10 +148,19 @@ public class AwPrefetchManager {
             @NonNull Consumer<Integer> prefetchKeyListener) {
         assert !ThreadUtils.runningOnUiThread();
         Runnable startPrefetchRunnable =
-                () ->
-                        prefetchKeyListener.accept(
-                                startPrefetchRequest(
-                                        url, prefetchParameters, callback, callbackExecutor));
+                () -> {
+                    long startDelayMs = SystemClock.uptimeMillis() - prefetchApiCallTriggerTimeMs;
+                    int prefetchKey =
+                            startPrefetchRequest(
+                                    url, prefetchParameters, callback, callbackExecutor);
+                    prefetchKeyListener.accept(prefetchKey);
+
+                    // Log the delay only if the prefetch was actually sent.
+                    if (prefetchKey != AwPrefetchManagerJni.get().getNoPrefetchKey()) {
+                        RecordHistogram.recordTimesHistogram(
+                                QUEUED_PREFETCH_EXECUTION_DELAY_HISTOGRAM_NAME, startDelayMs);
+                    }
+                };
         mQueuedPrefetchRequests.offer(startPrefetchRunnable);
 
         // Atomically check if the prefetch execution is scheduled, and if not, set it to true

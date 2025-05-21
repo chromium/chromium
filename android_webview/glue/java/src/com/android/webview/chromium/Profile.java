@@ -117,6 +117,7 @@ public class Profile {
 
     @WorkerThread
     public void prefetchUrlAsync(
+            long prefetchApiCallTriggerTimeMs,
             String url,
             @Nullable PrefetchParams params,
             Executor callbackExecutor,
@@ -128,6 +129,7 @@ public class Profile {
             mBrowserContext
                     .getPrefetchManager()
                     .startPrefetchRequestAsync(
+                            prefetchApiCallTriggerTimeMs,
                             url,
                             params == null ? null : params.toAwPrefetchParams(),
                             new ProfileWebViewPrefetchCallback(callbackExecutor, resultCallback),

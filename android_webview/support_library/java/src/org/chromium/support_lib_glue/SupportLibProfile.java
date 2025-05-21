@@ -7,6 +7,7 @@ package org.chromium.support_lib_glue;
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
 import android.os.CancellationSignal;
+import android.os.SystemClock;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
@@ -86,7 +87,12 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL);
         prefetchUrlInternal(
-                url, null, cancellationSignal, callbackExecutor, createOperationCallback(callback));
+                SystemClock.uptimeMillis(),
+                url,
+                null,
+                cancellationSignal,
+                callbackExecutor,
+                createOperationCallback(callback));
     }
 
     @Override
@@ -97,6 +103,7 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParams,
             /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL_WITH_PARAMS);
+        long apiCallTriggerTimeMs = SystemClock.uptimeMillis();
         SpeculativeLoadingParametersBoundaryInterface speculativeLoadingParameters =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                         SpeculativeLoadingParametersBoundaryInterface.class,
@@ -108,6 +115,7 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                         .fromSpeculativeLoadingParametersBoundaryInterface(
                                 speculativeLoadingParameters);
         prefetchUrlInternal(
+                apiCallTriggerTimeMs,
                 url,
                 prefetchParams,
                 cancellationSignal,
@@ -116,6 +124,7 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     }
 
     private void prefetchUrlInternal(
+            long apiCallTriggerTimeMs,
             String url,
             @Nullable PrefetchParams prefetchParams,
             @Nullable CancellationSignal cancellationSignal,
@@ -127,14 +136,14 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             setCancelListener(cancellationSignal, prefetchKey);
         } else {
             Consumer<Integer> prefetchKeyListener =
-                    new Consumer<Integer>() {
-                        @Override
-                        public void accept(Integer prefetchKey) {
-                            setCancelListener(cancellationSignal, prefetchKey);
-                        }
-                    };
+                    prefetchKey -> setCancelListener(cancellationSignal, prefetchKey);
             mProfileImpl.prefetchUrlAsync(
-                    url, prefetchParams, callbackExecutor, callback, prefetchKeyListener);
+                    apiCallTriggerTimeMs,
+                    url,
+                    prefetchParams,
+                    callbackExecutor,
+                    callback,
+                    prefetchKeyListener);
         }
     }
 

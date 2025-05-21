@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
@@ -369,7 +370,12 @@ public class AwPrefetchTest extends AwParameterizedTest {
             // The UI thread is currently blocked by uiThreadBlockLatch.await(),
             // so the drain task will sit in its message queue until the latch is released.
             prefetchManager.startPrefetchRequestAsync(
-                    mPrefetchUrl, prefetchParameters, callback, Runnable::run, integer -> {});
+                    SystemClock.uptimeMillis(),
+                    mPrefetchUrl,
+                    prefetchParameters,
+                    callback,
+                    Runnable::run,
+                    integer -> {});
         }
 
         Assert.assertEquals(
@@ -453,7 +459,12 @@ public class AwPrefetchTest extends AwParameterizedTest {
         // Make a prefetch request on the instrumentation thread then release the `AwContents`
         // countdown latch.
         prefetchManager.startPrefetchRequestAsync(
-                mPrefetchUrl, prefetchParameters, callback, Runnable::run, integer -> {});
+                SystemClock.uptimeMillis(),
+                mPrefetchUrl,
+                prefetchParameters,
+                callback,
+                Runnable::run,
+                integer -> {});
         awContentsCreationLatch.countDown();
 
         // Wait for the `AwContents` constructor to complete and the latch to be released.
@@ -472,7 +483,12 @@ public class AwPrefetchTest extends AwParameterizedTest {
         // Make another prefetch request on the instrumentation thread then release the
         // `AwContents#loadUrl` latch.
         prefetchManager.startPrefetchRequestAsync(
-                mPrefetchUrl, prefetchParameters, callback, Runnable::run, integer -> {});
+                SystemClock.uptimeMillis(),
+                mPrefetchUrl,
+                prefetchParameters,
+                callback,
+                Runnable::run,
+                integer -> {});
         loadUrlLatch.countDown();
     }
 
