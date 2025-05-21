@@ -388,7 +388,8 @@ void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
         hcsm_->GetContentSetting(url, url,
                                  ContentSettingsType::NOTIFICATIONS) ==
             ContentSetting::CONTENT_SETTING_ALLOW) {
-      OnPermissionRegranted(url, *revocation_entry);
+      OnPermissionRegranted(url, *revocation_entry,
+                            /*regranted_in_safety_hub=*/false);
     }
   }
 }
@@ -438,28 +439,30 @@ void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
   }
 
   UpdateNotificationPermission(url, ContentSetting::CONTENT_SETTING_ALLOW);
-  OnPermissionRegranted(url, *revocation_entry);
+  OnPermissionRegranted(url, *revocation_entry,
+                        /*regranted_in_safety_hub=*/true);
 }
 
 void DisruptiveNotificationPermissionsManager::OnPermissionRegranted(
     const GURL& url,
-    RevocationEntry revocation_entry) {
+    RevocationEntry revocation_entry,
+    bool regranted_in_safety_hub) {
   revocation_entry.revocation_state = RevocationState::kIgnore;
   // Clear the lifetime so that this won't expire.
   revocation_entry.lifetime = base::TimeDelta();
   ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, revocation_entry);
 
+  std::string uma_metric_prefix = base::StrCat(
+      {"Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.",
+       regranted_in_safety_hub ? "InSafetyHub" : "OutsideSafetyHub", "."});
   base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "DaysSinceProposedRevocation",
+      base::StrCat({uma_metric_prefix, "DaysSinceProposedRevocation"}),
       (clock_->Now() - revocation_entry.timestamp).InDays());
   base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "NewSiteEngagement",
+      base::StrCat({uma_metric_prefix, "NewSiteEngagement"}),
       site_engagement_service_->GetScore(url));
   base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "PreviousNotificationCount",
+      base::StrCat({uma_metric_prefix, "PreviousNotificationCount"}),
       revocation_entry.daily_notification_count);
 }
 

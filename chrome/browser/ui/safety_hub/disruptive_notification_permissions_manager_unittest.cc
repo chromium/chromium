@@ -693,15 +693,15 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "DaysSinceProposedRevocation",
+      "InSafetyHub.DaysSinceProposedRevocation",
       5, 1);
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "NewSiteEngagement",
+      "InSafetyHub.NewSiteEngagement",
       0, 1);
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "PreviousNotificationCount",
+      "InSafetyHub.PreviousNotificationCount",
       3, 1);
 
   manager()->RevokeDisruptiveNotifications();
@@ -999,15 +999,15 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   SetNotificationPermission(url, ContentSetting::CONTENT_SETTING_ALLOW);
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "DaysSinceProposedRevocation",
+      "OutsideSafetyHub.DaysSinceProposedRevocation",
       5, 1);
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "NewSiteEngagement",
+      "OutsideSafetyHub.NewSiteEngagement",
       7, 1);
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "PreviousNotificationCount",
+      "OutsideSafetyHub.PreviousNotificationCount",
       3, 1);
 }
 

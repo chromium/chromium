@@ -264,7 +264,9 @@ class DisruptiveNotificationPermissionsManager
                                     ContentSetting setting_value);
 
   // Ignores this url for future revocation and reports regrant metrics.
-  void OnPermissionRegranted(const GURL& url, RevocationEntry revocation_entry);
+  void OnPermissionRegranted(const GURL& url,
+                             RevocationEntry revocation_entry,
+                             bool regranted_in_safety_hub);
 
   scoped_refptr<HostContentSettingsMap> hcsm_;
 

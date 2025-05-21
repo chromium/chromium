@@ -45,6 +45,12 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/histograms.xml:Profile) -->
 
+<variants name="RegrantType">
+  <variant name="InSafetyHub" summary="Regrant in Safety Hub UI."/>
+  <variant name="OutsideSafetyHub"
+      summary="Regrant outside of Safety Hub UI (e.g. via permission prompt)."/>
+</variants>
+
 <variants name="SafetyHubDashboardModuleType">
   <variant name="AccountPasswords"/>
   <variant name="BrowserState"/>
@@ -918,7 +924,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.DaysSinceProposedRevocation"
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.{RegrantType}.DaysSinceProposedRevocation"
     units="days" expires_after="2026-02-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
@@ -927,10 +933,11 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     notification revocation. Measures how many days passed since the proposed
     revocation.
   </summary>
+  <token key="RegrantType" variants="RegrantType"/>
 </histogram>
 
 <histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.NewSiteEngagement"
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.{RegrantType}.NewSiteEngagement"
     units="days" expires_after="2026-02-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
@@ -939,10 +946,11 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     notification revocation. Measures how many days passed since the proposed
     revocation.
   </summary>
+  <token key="RegrantType" variants="RegrantType"/>
 </histogram>
 
 <histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.PreviousNotificationCount"
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.{RegrantType}.PreviousNotificationCount"
     units="count" expires_after="2026-02-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
@@ -951,6 +959,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     notification revocation. Reports the average daily notification count when
     the revocation was proposed.
   </summary>
+  <token key="RegrantType" variants="RegrantType"/>
 </histogram>
 
 <histogram name="Settings.SafetyHub.EntryPointImpression"
