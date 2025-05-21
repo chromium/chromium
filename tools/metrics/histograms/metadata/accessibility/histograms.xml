@@ -2333,7 +2333,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.MediaApp.PercentageReadingProgression"
-    units="%" expires_after="2025-06-30">
+    units="%" expires_after="2026-06-30">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
