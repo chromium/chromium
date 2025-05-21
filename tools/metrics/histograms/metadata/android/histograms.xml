@@ -1052,6 +1052,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.BackPress.TabClosureType" enum="BackPressTabCloseType"
+    expires_after="2025-10-26">
+  <owner>lazzzis@google.com</owner>
+  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
+  <summary>
+    Record the type of tab closure caused by back press. Record when tab is
+    about to be closed.
+  </summary>
+</histogram>
+
 <histogram name="Android.BindingManger.ConnectionsDroppedDueToMaxSize"
     units="connections" expires_after="2025-11-02">
   <owner>ckitagawa@chromium.org</owner>

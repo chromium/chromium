@@ -25,6 +25,8 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
 import org.chromium.content_public.browser.WebContents;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.function.Predicate;
 
 /**
@@ -35,6 +37,7 @@ import java.util.function.Predicate;
 public class MinimizeAppAndCloseTabBackPressHandler
         implements BackPressHandler, OnSystemNavigationObserver, Destroyable {
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";
+    static final String HISTOGRAM_TAB_CLOSURE = "Android.BackPress.TabClosureType";
     static final String HISTOGRAM_CUSTOM_TAB_SAME_TASK =
             "Android.BackPress.MinimizeAppAndCloseTab.CustomTab.SameTask";
     static final String HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK =
@@ -71,6 +74,24 @@ public class MinimizeAppAndCloseTabBackPressHandler
         int NUM_TYPES = 3;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(TabClosureType)
+    @IntDef({
+        TabClosureType.WITHOUT_MINIMIZATION,
+        TabClosureType.CHROME_MINIMIZATION,
+        TabClosureType.OS_MINIMIZATION,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabClosureType {
+        int WITHOUT_MINIMIZATION = 0;
+        int CHROME_MINIMIZATION = 1;
+        int OS_MINIMIZATION = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:BackPressTabCloseType)
+
     /** Whether the feature of closing tab during minimization is supported. */
     public static boolean supportCloseTabUponMinimization() {
         boolean isAtLeastB =
@@ -101,6 +122,16 @@ public class MinimizeAppAndCloseTabBackPressHandler
                 separateTask ? HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK : HISTOGRAM_CUSTOM_TAB_SAME_TASK,
                 type,
                 MinimizeAppAndCloseTabType.NUM_TYPES);
+    }
+
+    /**
+     * This method records when the tab is closed by the back press.
+     *
+     * @param type The type of the scenario in which the tab is closed.
+     */
+    private static void recordTabClosureType(@TabClosureType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_TAB_CLOSURE, type, TabClosureType.NUM_ENTRIES);
     }
 
     /**
@@ -157,12 +188,14 @@ public class MinimizeAppAndCloseTabBackPressHandler
                     shouldCloseTab
                             ? MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB
                             : MinimizeAppAndCloseTabType.MINIMIZE_APP);
+            if (shouldCloseTab) recordTabClosureType(TabClosureType.CHROME_MINIMIZATION);
             // If system back is enabled, we should let system handle the back press when
             // no tab is about to be closed.
             assert shouldCloseTab || !mUseSystemBack;
             mSendToBackground.onResult(shouldCloseTab ? currentTab : null);
         } else { // shouldCloseTab is always true if minimizeApp is false.
             record(MinimizeAppAndCloseTabType.CLOSE_TAB);
+            recordTabClosureType(TabClosureType.WITHOUT_MINIMIZATION);
             WebContents webContents = currentTab.getWebContents();
             if (webContents != null) webContents.dispatchBeforeUnload(false);
         }
@@ -175,6 +208,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
         Tab currentTab = mActivityTabSupplier.get();
         if (currentTab != null && mMinimizationShouldCloseTab.test(currentTab)) {
             mCloseTabUponMinimization.onResult(currentTab);
+            recordTabClosureType(TabClosureType.OS_MINIMIZATION);
         }
     }
 

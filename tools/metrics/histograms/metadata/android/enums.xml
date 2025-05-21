@@ -770,6 +770,16 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
 </enum>
 
+<!-- LINT.IfChange(BackPressTabCloseType) -->
+
+<enum name="BackPressTabCloseType">
+  <int value="0" label="close without minimization"/>
+  <int value="1" label="close during minimization by chrome"/>
+  <int value="2" label="close during minimization by os"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandler.java:TabClosureType)-->
+
 <enum name="BiometricsAvailability">
   <int value="0" label="Other error"/>
   <int value="1" label="Available"/>

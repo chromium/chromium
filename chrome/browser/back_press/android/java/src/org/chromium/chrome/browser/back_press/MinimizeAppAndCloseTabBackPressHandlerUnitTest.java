@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.TabClosureType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -68,9 +69,14 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @SmallTest
     public void testMinimizeAppAndCloseTab() throws ExecutionException {
         var histogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
-                        MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB)
+                        .expectIntRecord(
+                                "Android.BackPress.TabClosureType",
+                                TabClosureType.CHROME_MINIMIZATION)
+                        .build();
         Mockito.when(mShouldCloseTab.test(mTab)).thenReturn(true);
         Mockito.when(mMinimizationShouldCloseTab.test(mTab)).thenReturn(true);
         Mockito.when(mTab.getLaunchType()).thenReturn(TabLaunchType.FROM_EXTERNAL_APP);
@@ -100,9 +106,14 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @SmallTest
     public void testCloseTab() throws ExecutionException {
         var histogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
-                        MinimizeAppAndCloseTabType.CLOSE_TAB);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
+                                MinimizeAppAndCloseTabType.CLOSE_TAB)
+                        .expectIntRecord(
+                                "Android.BackPress.TabClosureType",
+                                TabClosureType.WITHOUT_MINIMIZATION)
+                        .build();
         Mockito.when(mShouldCloseTab.test(mTab)).thenReturn(true);
         UserDataHost userDataHost = ThreadUtils.runOnUiThreadBlocking(() -> new UserDataHost());
         Mockito.when(mTab.getUserDataHost()).thenReturn(userDataHost);
@@ -164,11 +175,15 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mActivityTabSupplier.set(mTab));
         Assert.assertFalse(mHandler.getHandleBackPressChangedSupplier().get());
 
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.TabClosureType", TabClosureType.OS_MINIMIZATION);
         ThreadUtils.runOnUiThreadBlocking(mHandler::onSystemNavigation);
         verify(
                         mCloseTabUponMinimization,
                         Mockito.description("Tab should be closed during minimizing the app."))
                 .onResult(mTab);
+        histogram.assertExpected();
     }
 
     private void createBackPressHandler() {
