@@ -3,6 +3,9 @@ build --cxxopt=-std=c++17 --host_cxxopt=-std=c++17
 # TODO: ErrorProne's SelfAssertions are violated in protobuf's test
 build --javacopt=-Xep:SelfAssertion:WARN
 
+# This flag works around some issues with Rust linking.
+build --@rules_rust//rust/settings:experimental_use_cc_common_link=True
+
 build:dbg --compilation_mode=dbg
 
 build:opt --compilation_mode=opt
@@ -31,8 +34,6 @@ build:ubsan --copt=-fno-sanitize=nonnull-attribute
 # Important: this flag ensures that we remain compliant with the C++ layering
 # check.
 build --features=layering_check
-
-common --repo_env=BAZEL_NO_APPLE_CPP_TOOLCHAIN=1
 
 common --enable_platform_specific_config
 

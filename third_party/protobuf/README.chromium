@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD-3-Clause
 License File: LICENSE
-Version: 30.2
-CPEPrefix: cpe:/a:google:protobuf:30.2
-Revision: 43e1626812c1b543e56a7bec59dc09eb18248bd2
+Version: 31.0
+CPEPrefix: cpe:/a:google:protobuf:31.0
+Revision: 3d4adad5c4c4e6a6f9f038769b8c90716065b0e4
 Security Critical: yes
 Shipped: yes
 
@@ -19,10 +19,15 @@ Steps used to create the current version (or roll a newer one):
    code .tar.gz). Extract to `third_party/protobuf` (without version suffix),
    i.e. you may `$ mv protobuf-21.12 third_party/protobuf` or similar.
 
-2. Add back chromium's non-upstream files (from this directory):
+2. Remove patches/ directory since Chromium has a different set of patches.
 
-   $ git checkout main BUILD.gn DEPS DIR_METADATA OWNERS README.chromium \
-     gen_extra_chromium_files.py proto_library.gni proto_sources.gni patches/
+   $ rm -r patches/
+
+3. Add back chromium's on-upstream files (from this directory):
+
+   $ git checkout origin/main -- BUILD.gn DEPS DIR_METADATA OWNERS \
+     README.chromium gen_extra_chromium_files.py proto_library.gni \
+     proto_sources.gni patches/
 
    Note: Ideally we wouldn't do this but instead have a
    `third_party/protobuf/src/` subdirectory where upstream code goes directly
@@ -35,9 +40,9 @@ Steps used to create the current version (or roll a newer one):
    Probably worth making a local `git commit` here before applying patches (next
    step).
 
-3. Apply patches in patches/ (see the description below):
+4. Apply patches in patches/ (see the description below):
 
-   $ for patch in patches/*; do patch -s -p1 < $patch; done
+   $ for patch in patches/*.patch; do patch -s -p1 < $patch; done
 
    When a patch fails, it's probably best to check out previous state (from 3)
    for any changes not inside the patches/ folder, fix the patch and then try to
@@ -54,15 +59,26 @@ Steps used to create the current version (or roll a newer one):
 
    Probably worth committing locally here too.
 
-4. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
+5. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
    the same directory as this file.
 
    $ ./gen_extra_chromium_files.py -C ../../out/Default
 
    Add and commit `python/google/protobuf/descriptor_pb2.py` and
-   `python/google/protobuf/compiler/plugin_pb2.py` as well.
+   `python/google/protobuf/compiler/plugin_pb2.py` as well. Because *_pb2.py is
+   in the .gitignore file for this directory, you need to add the files with
+   `-f`.
 
-5. Run:
+   $ git add -f python/google/protobuf/descriptor_pb2.py \
+     python/google/protobuf/compiler/plugin_pb2.py
+
+6. This step requires `bazel`, and not the one from depot_tools, and it is not
+   part of build/install-build-deps.sh in Chromium, so you need to manually
+   install it:
+
+   $ apt install bazel
+
+   Run:
 
    $ cd python/
    $ /usr/bin/bazel build embedded_python_edition_defaults_generate --enable_bzlmod
@@ -71,9 +87,9 @@ Steps used to create the current version (or roll a newer one):
 
    TODO: generalize this and add it to gen_extra_chromium_files.py
 
-6. Update Version, CPEPrefix and Revision in this file.
+7. Update Version, CPEPrefix and Revision in this file.
 
-7. Address breakages.
+8. Address breakages.
 
    The CQ will help you identify problems that need fixing.
 
@@ -82,6 +98,13 @@ Steps used to create the current version (or roll a newer one):
    tweaks like modifying compiler flags or macro defines.
 
    You may need to add new code modifications and diffs in patches/ as well.
+   To do this, make the necessary changes in your current local branch, and then
+   run the following command to create a patch file with the correct paths:
+
+   $ git diff --relative=third_party/protobuf > patches/your.patch
+
+   Remember to also update the patch description below.
+
 
 Notes (hints) for the next roll(er):
 
@@ -199,10 +222,6 @@ Description of the patches:
 
   Modify a compiler diagnostic pragma to work on Windows.
 
-- 0050-remove-unreachable-code.patch
-
-  Remove some unreachable code.
-
 - 0051-export-template-define.patch
 
   Adds some missing export defines to fix Windows component build.
@@ -227,10 +246,3 @@ Description of the patches:
   of forward declarations to work around known issue with protobuf +
   newer abseil version,
   https://github.com/protocolbuffers/protobuf/issues/20331
-
-- 0055-optimize-compile-time.patch
-
-  This backports clang compile speed optimization from upstream.
-  https://github.com/protocolbuffers/protobuf/commit/d8964801b196a65cb9ab26f7c17872993c76b140
-  It mitigates the build time regression https://crbug.com/397550708.
-  It should be possible to remove this patch when rolling out v31.0.

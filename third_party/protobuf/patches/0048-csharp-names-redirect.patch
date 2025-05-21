@@ -1,6 +1,6 @@
 diff --git a/src/google/protobuf/compiler/csharp/csharp_names.h b/src/google/protobuf/compiler/csharp/csharp_names.h
 new file mode 100644
-index 0000000000000..6d55b01a2c2d5
+index 0000000000000..eeb5a83517149
 --- /dev/null
 +++ b/src/google/protobuf/compiler/csharp/csharp_names.h
 @@ -0,0 +1,6 @@

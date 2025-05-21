@@ -319,16 +319,12 @@ std::string IntToString(int32_t value) {
 }
 
 std::string LabelForField(const FieldDescriptor* field) {
-  switch (field->label()) {
-    case FieldDescriptor::LABEL_OPTIONAL:
-      return "optional";
-    case FieldDescriptor::LABEL_REQUIRED:
-      return "required";
-    case FieldDescriptor::LABEL_REPEATED:
-      return "repeated";
-    default:
-      assert(false);
-      return "";
+  if (field->is_required()) {
+    return "required";
+  } else if (field->is_repeated()) {
+    return "repeated";
+  } else {
+    return "optional";
   }
 }
 
@@ -378,10 +374,9 @@ std::string PhpSetterTypeName(const FieldDescriptor* field,
     // accommodate for edge case with multiple types.
     size_t start_pos = type.find('|');
     if (start_pos != std::string::npos) {
-      type.replace(start_pos, 1, ">|array<");
+      type.replace(start_pos, 1, "[]|");
     }
-    type = absl::StrCat("array<", type,
-                        ">|\\Google\\Protobuf\\Internal\\RepeatedField");
+    absl::StrAppend(&type, "[]");
   }
   return type;
 }
@@ -398,9 +393,7 @@ std::string PhpGetterTypeName(const FieldDescriptor* field,
   if (field->is_map()) {
     return "\\Google\\Protobuf\\Internal\\MapField";
   }
-  if (field->is_repeated()) {
-    return "\\Google\\Protobuf\\Internal\\RepeatedField";
-  }
+  std::string type;
   switch (field->type()) {
     case FieldDescriptor::TYPE_INT32:
     case FieldDescriptor::TYPE_UINT32:
@@ -408,29 +401,46 @@ std::string PhpGetterTypeName(const FieldDescriptor* field,
     case FieldDescriptor::TYPE_FIXED32:
     case FieldDescriptor::TYPE_SFIXED32:
     case FieldDescriptor::TYPE_ENUM:
-      return "int";
+      type = "int";
+      break;
     case FieldDescriptor::TYPE_INT64:
     case FieldDescriptor::TYPE_UINT64:
     case FieldDescriptor::TYPE_SINT64:
     case FieldDescriptor::TYPE_FIXED64:
     case FieldDescriptor::TYPE_SFIXED64:
-      return "int|string";
+      type = "int|string";
+      break;
     case FieldDescriptor::TYPE_DOUBLE:
     case FieldDescriptor::TYPE_FLOAT:
-      return "float";
+      type = "float";
+      break;
     case FieldDescriptor::TYPE_BOOL:
-      return "bool";
+      type = "bool";
+      break;
     case FieldDescriptor::TYPE_STRING:
     case FieldDescriptor::TYPE_BYTES:
-      return "string";
+      type = "string";
+      break;
     case FieldDescriptor::TYPE_MESSAGE:
-      return absl::StrCat("\\", FullClassName(field->message_type(), options));
+      type = absl::StrCat("\\", FullClassName(field->message_type(), options));
+      break;
     case FieldDescriptor::TYPE_GROUP:
-      return "null";
+      type = "null";
+      break;
     default:
       assert(false);
-      return "";
+      type = "";
+      break;
   }
+  if (field->is_repeated()) {
+    // accommodate for edge case with multiple types.
+    size_t start_pos = type.find('|');
+    if (start_pos != std::string::npos) {
+      type.replace(start_pos, 1, ">|RepeatedField<");
+    }
+    type = absl::StrCat("RepeatedField<", type, ">");
+  }
+  return type;
 }
 
 std::string PhpGetterTypeName(const FieldDescriptor* field,
@@ -1083,15 +1093,15 @@ void GenerateUseDeclaration(const Options& options, io::Printer* printer) {
   if (!options.is_descriptor) {
     printer->Print(
         "use Google\\Protobuf\\Internal\\GPBType;\n"
-        "use Google\\Protobuf\\Internal\\RepeatedField;\n"
-        "use Google\\Protobuf\\Internal\\GPBUtil;\n\n");
+        "use Google\\Protobuf\\Internal\\GPBUtil;\n"
+        "use Google\\Protobuf\\RepeatedField;\n\n");
   } else {
     printer->Print(
         "use Google\\Protobuf\\Internal\\GPBType;\n"
         "use Google\\Protobuf\\Internal\\GPBWire;\n"
-        "use Google\\Protobuf\\Internal\\RepeatedField;\n"
         "use Google\\Protobuf\\Internal\\InputStream;\n"
-        "use Google\\Protobuf\\Internal\\GPBUtil;\n\n");
+        "use Google\\Protobuf\\Internal\\GPBUtil;\n"
+        "use Google\\Protobuf\\RepeatedField;\n\n");
   }
 }
 
@@ -2049,13 +2059,13 @@ bool Generator::GenerateAll(const std::vector<const FileDescriptor*>& files,
                             std::string* error) const {
   Options options;
 
-  for (const auto& option : absl::StrSplit(parameter, ",", absl::SkipEmpty())) {
+  for (const auto& option : absl::StrSplit(parameter, ',', absl::SkipEmpty())) {
     const std::vector<std::string> option_pair =
-        absl::StrSplit(option, "=", absl::SkipEmpty());
+        absl::StrSplit(option, '=', absl::SkipEmpty());
     if (absl::StartsWith(option_pair[0], "aggregate_metadata")) {
       options.aggregate_metadata = true;
       for (const auto& prefix :
-           absl::StrSplit(option_pair[1], "#", absl::AllowEmpty())) {
+           absl::StrSplit(option_pair[1], '#', absl::AllowEmpty())) {
         options.aggregate_metadata_prefixes.emplace(prefix);
         ABSL_LOG(INFO) << prefix;
       }

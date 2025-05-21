@@ -366,7 +366,8 @@ inline bool IsArenaStringPtr(const FieldDescriptor* field) {
 bool IsProfileDriven(const Options& options);
 
 // Returns true if `field` is unlikely to be present based on PDProto profile.
-bool IsRarelyPresent(const FieldDescriptor* field, const Options& options);
+PROTOC_EXPORT bool IsRarelyPresent(const FieldDescriptor* field,
+                                   const Options& options);
 
 // Returns true if `field` is likely to be present based on PDProto profile.
 bool IsLikelyPresent(const FieldDescriptor* field, const Options& options);
@@ -456,10 +457,11 @@ VerifySimpleType ShouldVerifySimple(const Descriptor* descriptor);
 
 
 // Is the given message being split (go/pdsplit)?
-bool ShouldSplit(const Descriptor* desc, const Options& options);
+PROTOC_EXPORT bool ShouldSplit(const Descriptor* desc, const Options& options);
 
 // Is the given field being split out?
-bool ShouldSplit(const FieldDescriptor* field, const Options& options);
+PROTOC_EXPORT bool ShouldSplit(const FieldDescriptor* field,
+                               const Options& options);
 
 // Should we generate code that force creating an allocation in the constructor
 // of the given message?
@@ -485,12 +487,16 @@ bool HasRepeatedFields(const FileDescriptor* file);
 // does not include extensions, since ctype is ignored for extensions.
 bool HasStringPieceFields(const FileDescriptor* file, const Options& options);
 
+// Does the file have any string/bytes fields?.  This excludes cord and string
+// piece fields.
+bool HasRegularStringFields(const FileDescriptor* file, const Options& options);
+
 // Does the file have any string/bytes fields with ctype=CORD? This does not
 // include extensions, since ctype is ignored for extensions.
 bool HasCordFields(const FileDescriptor* file, const Options& options);
 
 // Does the file have any map fields, necessitating the file to include
-// map_field_inl.h and map.h.
+// map_field.h and map.h.
 bool HasMapFields(const FileDescriptor* file);
 
 // Does this file have any enum type definitions?
@@ -725,6 +731,14 @@ void ListAllFields(const Descriptor* d,
                    std::vector<const FieldDescriptor*>* fields);
 void ListAllFields(const FileDescriptor* d,
                    std::vector<const FieldDescriptor*>* fields);
+
+// Collects all fields from the given descriptor, excluding weak fields and
+// fields in oneofs.
+//
+// Returns the number of weak fields.
+int CollectFieldsExcludingWeakAndOneof(
+    const Descriptor* d, const Options& options,
+    std::vector<const FieldDescriptor*>& fields);
 
 template <bool do_nested_types, class T>
 void ForEachField(const Descriptor* d, T&& func) {

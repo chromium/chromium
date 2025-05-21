@@ -32,6 +32,7 @@
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "google/protobuf/map.h"
 #include "google/protobuf/message_lite.h"
+#include "google/protobuf/micro_string.h"
 #include "google/protobuf/parse_context.h"
 #include "google/protobuf/port.h"
 #include "google/protobuf/repeated_field.h"
@@ -57,10 +58,12 @@ using FieldEntry = TcParseTableBase::FieldEntry;
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef NDEBUG
-void AlignFail(std::integral_constant<size_t, 4>, std::uintptr_t address) {
+[[noreturn]] void AlignFail(std::integral_constant<size_t, 4>,
+                            std::uintptr_t address) {
   ABSL_LOG(FATAL) << "Unaligned (4) access at " << address;
 }
-void AlignFail(std::integral_constant<size_t, 8>, std::uintptr_t address) {
+[[noreturn]] void AlignFail(std::integral_constant<size_t, 8>,
+                            std::uintptr_t address) {
   ABSL_LOG(FATAL) << "Unaligned (8) access at " << address;
 }
 #endif
@@ -884,8 +887,7 @@ PROTOBUF_ALWAYS_INLINE void PrefetchEnumData(uint16_t xform_val,
 PROTOBUF_ALWAYS_INLINE bool EnumIsValidAux(int32_t val, uint16_t xform_val,
                                            TcParseTableBase::FieldAux aux) {
   if (xform_val == field_layout::kTvRange) {
-    auto lo = aux.enum_range.start;
-    return lo <= val && val < (lo + aux.enum_range.length);
+    return aux.enum_range.first <= val && val <= aux.enum_range.last;
   }
   if (PROTOBUF_BUILTIN_CONSTANT_P(xform_val)) {
     return internal::ValidateEnumInlined(val, aux.enum_data);
@@ -921,33 +923,9 @@ PROTOBUF_ALWAYS_INLINE const char* TcParser::SingularVarint(
 template <typename FieldType, typename TagType, bool zigzag>
 PROTOBUF_NOINLINE const char* TcParser::SingularVarBigint(
     PROTOBUF_TC_PARAM_DECL) {
-  // For some reason clang wants to save 5 registers to the stack here,
-  // but we only need four for this code, so save the data we don't need
-  // to the stack.  Happily, saving them this way uses regular store
-  // instructions rather than PUSH/POP, which saves time at the cost of greater
-  // code size, but for this heavily-used piece of code, that's fine.
-  struct Spill {
-    uint64_t field_data;
-    ::google::protobuf::MessageLite* msg;
-    const ::google::protobuf::internal::TcParseTableBase* table;
-    uint64_t hasbits;
-  };
-  Spill spill = {data.data, msg, table, hasbits};
-#if defined(__GNUC__)
-  // This empty asm block convinces the compiler that the contents of spill may
-  // have changed, and thus can't be cached in registers.  It's similar to, but
-  // more optimal than, the effect of declaring it "volatile".
-  asm("" : "+m"(spill));
-#endif
-
   uint64_t tmp;
   PROTOBUF_ASSUME(static_cast<int8_t>(*ptr) < 0);
   ptr = ParseVarint(ptr, &tmp);
-
-  data.data = spill.field_data;
-  msg = spill.msg;
-  table = spill.table;
-  hasbits = spill.hasbits;
 
   if (ABSL_PREDICT_FALSE(ptr == nullptr)) {
     PROTOBUF_MUSTTAIL return Error(PROTOBUF_TC_PARAM_NO_DATA_PASS);
@@ -1766,16 +1744,10 @@ PROTOBUF_NOINLINE const char* TcParser::FastUR2(PROTOBUF_TC_PARAM_DECL) {
 //////////////////////////////////////////////////////////////////////////////
 
 namespace {
-// TODO: revisit the use of inline assembly and consider
-// benchmarking as bts isn't short latency either.
 inline void SetHas(const FieldEntry& entry, MessageLite* msg) {
   auto has_idx = static_cast<uint32_t>(entry.has_idx);
-#if defined(__x86_64__) && defined(__GNUC__)
-  asm("bts %1, %0\n" : "+m"(*reinterpret_cast<char*>(msg)) : "r"(has_idx));
-#else
   auto& hasblock = TcParser::RefAt<uint32_t>(msg, has_idx / 32 * 4);
   hasblock |= uint32_t{1} << (has_idx % 32);
-#endif
 }
 }  // namespace
 
@@ -1809,6 +1781,12 @@ bool TcParser::ChangeOneof(const TcParseTableBase* table,
       case field_layout::kRepAString: {
         auto& field = RefAt<ArenaStringPtr>(msg, current_entry->offset);
         field.Destroy();
+        break;
+      }
+      case field_layout::kRepMString: {
+        if (msg->GetArena() == nullptr) {
+          RefAt<MicroString>(msg, current_entry->offset).Destroy();
+        }
         break;
       }
       case field_layout::kRepCord: {
@@ -2352,6 +2330,14 @@ PROTOBUF_NOINLINE const char* TcParser::MpString(PROTOBUF_TC_PARAM_DECL) {
       break;
     }
 
+    case field_layout::kRepMString: {
+      auto& field = RefAt<MicroString>(base, entry.offset);
+      if (need_init) field.InitDefault();
+      ptr = ctx->ReadMicroString(ptr, field, msg->GetArena());
+      is_valid = MpVerifyUtf8(field.Get(), table, entry, xform_val);
+      break;
+    }
+
 
     case field_layout::kRepCord: {
       absl::Cord* field;
@@ -2771,7 +2757,10 @@ const char* TcParser::ParseOneMapEntry(
           ABSL_DCHECK_EQ(static_cast<int>(type_kind),
                          static_cast<int>(UntypedMapBase::TypeKind::kMessage));
           ABSL_DCHECK_EQ(inner_tag, value_tag);
-          ptr = ctx->ParseMessage(reinterpret_cast<MessageLite*>(obj), ptr);
+          ptr = ctx->ParseLengthDelimitedInlined(ptr, [&](const char* ptr) {
+            return ParseLoop(reinterpret_cast<MessageLite*>(obj), ptr, ctx,
+                             aux[1].table);
+          });
           if (ABSL_PREDICT_FALSE(ptr == nullptr)) return nullptr;
           continue;
         }
@@ -2940,13 +2929,14 @@ std::string TypeCardToString(uint16_t type_card) {
           ABSL_LOG(FATAL) << "Unknown type_card: 0x" << type_card;
       }
 
-      static constexpr const char* kRepNames[] = {"AString", "IString", "Cord",
-                                                  "SPiece", "SString"};
+      static constexpr const char* kRepNames[] = {
+          "AString", "IString", "Cord", "SPiece", "SString", "MString"};
       static_assert((fl::kRepAString >> fl::kRepShift) == 0, "");
       static_assert((fl::kRepIString >> fl::kRepShift) == 1, "");
       static_assert((fl::kRepCord >> fl::kRepShift) == 2, "");
       static_assert((fl::kRepSPiece >> fl::kRepShift) == 3, "");
       static_assert((fl::kRepSString >> fl::kRepShift) == 4, "");
+      static_assert((fl::kRepMString >> fl::kRepShift) == 5, "");
 
       absl::StrAppend(&out, " | ::_fl::kRep", kRepNames[rep_index]);
       break;

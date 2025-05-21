@@ -81,6 +81,7 @@ cc_library(
         "enum.cc",
         "extension.cc",
         "field.cc",
+        "field_chunk.cc",
         "field_generators/cord_field.cc",
         "field_generators/enum_field.cc",
         "field_generators/map_field.cc",
@@ -92,8 +93,8 @@ cc_library(
         "generator.cc",
         "ifndef_guard.cc",
         "message.cc",
+        "message_layout_helper.cc",
         "namespace_printer.cc",
-        "padding_optimizer.cc",
         "parse_function_generator.cc",
         "service.cc",
         "tracker.cc",
@@ -102,6 +103,7 @@ cc_library(
         "enum.h",
         "extension.h",
         "field.h",
+        "field_chunk.h",
         "field_generators/generators.h",
         "file.h",
         "generator.h",
@@ -156,8 +158,12 @@ cc_library(
 proto_library(
     name = "test_bad_identifiers_proto",
     testonly = 1,
-    srcs = ["test_bad_identifiers.proto"],
+    srcs = [
+        "test_bad_identifiers_editions.proto",
+        "test_bad_identifiers_proto2.proto",
+    ],
     strip_import_prefix = "/src",
+    deps = ["//src/google/protobuf:cpp_features_proto"],
 )
 
 cc_proto_library(
@@ -258,6 +264,22 @@ cc_test(
         "//src/google/protobuf/testing",
         "//src/google/protobuf/testing:file",
         "@abseil-cpp//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "field_chunk_test",
+    srcs = ["field_chunk_test.cc"],
+    deps = [
+        ":cpp",
+        "//:protobuf",
+        "//src/google/protobuf",
+        "//src/google/protobuf:cc_test_protos",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/strings:string_view",
+        "@abseil-cpp//absl/types:span",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -423,7 +445,8 @@ filegroup(
 filegroup(
     name = "test_proto_srcs",
     srcs = [
-        "test_bad_identifiers.proto",
+        "test_bad_identifiers_editions.proto",
+        "test_bad_identifiers_proto2.proto",
         "test_large_enum_value.proto",
     ],
     visibility = ["//src/google/protobuf/compiler:__pkg__"],

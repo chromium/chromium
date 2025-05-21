@@ -51,19 +51,14 @@ def _compile_upb_cc_protos(ctx, proto_info, proto_sources):
     srcs = []
     srcs += proto_common.declare_generated_files(
         ctx.actions,
-        extension = ".upb.proto.cc",
+        extension = ".hpb.cc",
         proto_info = proto_info,
     )
 
     hdrs = []
     hdrs += proto_common.declare_generated_files(
         ctx.actions,
-        extension = ".upb.proto.h",
-        proto_info = proto_info,
-    )
-    hdrs += proto_common.declare_generated_files(
-        ctx.actions,
-        extension = ".upb.fwd.h",
+        extension = ".hpb.h",
         proto_info = proto_info,
     )
 
@@ -77,7 +72,7 @@ def _compile_upb_cc_protos(ctx, proto_info, proto_sources):
 
     return GeneratedSrcsInfo(srcs = srcs, hdrs = hdrs)
 
-def _upb_cc_proto_rule_impl(ctx):
+def _hpb_proto_rule_impl(ctx):
     if len(ctx.attr.deps) != 1:
         fail("only one deps dependency allowed.")
     dep = ctx.attr.deps[0]
@@ -140,7 +135,7 @@ def _upb_cc_proto_aspect_impl(target, ctx, cc_provider, file_provider):
 def _upb_cc_proto_library_aspect_impl(target, ctx):
     return _upb_cc_proto_aspect_impl(target, ctx, _UpbCcWrappedCcInfo, _WrappedCcGeneratedSrcsInfo)
 
-_upb_cc_proto_library_aspect = aspect(
+_hpb_proto_library_aspect = aspect(
     attrs = {
         "_ccopts": attr.label(
             default = "//hpb:hpb_proto_library_copts",
@@ -154,7 +149,7 @@ _upb_cc_proto_library_aspect = aspect(
         "_upbprotos": attr.label_list(
             default = [
                 # TODO: Add dependencies for cc runtime (absl/string etc..)
-                "//upb:generated_cpp_support__only_for_generated_code_do_not_use__i_give_permission_to_break_me",
+                "//upb:generated_cpp_support",
                 "//hpb:generated_hpb_support",
                 "@abseil-cpp//absl/log:absl_check",
                 "@abseil-cpp//absl/strings",
@@ -179,13 +174,13 @@ _upb_cc_proto_library_aspect = aspect(
     toolchains = upb_use_cpp_toolchain(),
 )
 
-upb_cc_proto_library = rule(
-    implementation = _upb_cc_proto_rule_impl,
+hpb_proto_library = rule(
+    implementation = _hpb_proto_rule_impl,
     attrs = {
         "deps": attr.label_list(
             aspects = [
                 upb_proto_library_aspect,
-                _upb_cc_proto_library_aspect,
+                _hpb_proto_library_aspect,
             ],
             allow_rules = ["proto_library"],
             providers = [ProtoInfo],
@@ -195,5 +190,3 @@ upb_cc_proto_library = rule(
         ),
     },
 )
-
-hpb_proto_library = upb_cc_proto_library

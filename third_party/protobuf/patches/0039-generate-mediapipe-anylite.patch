@@ -1,10 +1,10 @@
 diff --git a/src/google/protobuf/compiler/cpp/helpers.cc b/src/google/protobuf/compiler/cpp/helpers.cc
-index e6a89222c432f..f515316381b81 100644
+index f994743f5abca..a4eca1a472054 100644
 --- a/src/google/protobuf/compiler/cpp/helpers.cc
 +++ b/src/google/protobuf/compiler/cpp/helpers.cc
-@@ -73,6 +73,14 @@ namespace {
- constexpr absl::string_view kAnyMessageName = "Any";
- constexpr absl::string_view kAnyProtoFile = "google/protobuf/any.proto";
+@@ -117,6 +117,14 @@ MessageKnownNonNullaryMethodsSnakeCase() {
+   return *methods;
+ }
  
 +// TODO(crbug.com/332939935): This is used to allow generating an AnyLite proto
 +// compatible with /third_party/medialite instead of checking in compiled
@@ -17,7 +17,7 @@ index e6a89222c432f..f515316381b81 100644
  static const char* const kKeywordList[] = {
      // clang-format off
      "NULL",
-@@ -1217,11 +1225,13 @@ bool IsStringOrMessage(const FieldDescriptor* field) {
+@@ -1345,11 +1353,13 @@ bool IsStringOrMessage(const FieldDescriptor* field) {
  }
  
  bool IsAnyMessage(const FileDescriptor* descriptor) {
@@ -34,10 +34,10 @@ index e6a89222c432f..f515316381b81 100644
  }
  
 diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
-index 825c685fe43de..1b4b8e6051772 100644
+index 2566bec49c3ce..d5a7de27d06bf 100644
 --- a/src/google/protobuf/compiler/cpp/message.cc
 +++ b/src/google/protobuf/compiler/cpp/message.cc
-@@ -2444,30 +2444,34 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
+@@ -2395,30 +2395,34 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
      return;
    }
    if (IsAnyMessage(descriptor_)) {

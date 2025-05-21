@@ -20,6 +20,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/span.h"
 #include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/options.h"
 #include "google/protobuf/descriptor.h"
@@ -52,8 +53,8 @@ std::vector<const FieldDescriptor*> GetOrderedFields(
 
 ParseFunctionGenerator::ParseFunctionGenerator(
     const Descriptor* descriptor, int max_has_bit_index,
-    const std::vector<int>& has_bit_indices,
-    const std::vector<int>& inlined_string_indices, const Options& options,
+    absl::Span<const int> has_bit_indices,
+    absl::Span<const int> inlined_string_indices, const Options& options,
     MessageSCCAnalyzer* scc_analyzer,
     const absl::flat_hash_map<absl::string_view, std::string>& vars,
     int index_in_file_messages)
@@ -61,14 +62,38 @@ ParseFunctionGenerator::ParseFunctionGenerator(
       scc_analyzer_(scc_analyzer),
       options_(options),
       variables_(vars),
-      inlined_string_indices_(inlined_string_indices),
+      // Copy the absl::Span into a vector owned by the class.
+      inlined_string_indices_(inlined_string_indices.begin(),
+                              inlined_string_indices.end()),
       ordered_fields_(GetOrderedFields(descriptor_)),
       num_hasbits_(max_has_bit_index),
       index_in_file_messages_(index_in_file_messages) {
+  auto fields =
+      BuildFieldOptions(descriptor_, ordered_fields_, options_, scc_analyzer_,
+                        has_bit_indices, inlined_string_indices_);
+  tc_table_info_ = std::make_unique<TailCallTableInfo>(
+      descriptor_,
+      TailCallTableInfo::MessageOptions{
+          /* is_lite */ GetOptimizeFor(descriptor->file(), options_) ==
+              FileOptions::LITE_RUNTIME,
+          /* uses_codegen */ true},
+      fields);
+  SetCommonMessageDataVariables(descriptor_, &variables_);
+  SetUnknownFieldsVariable(descriptor_, options_, &variables_);
+  variables_["classname"] = ClassName(descriptor, false);
+}
+
+std::vector<internal::TailCallTableInfo::FieldOptions>
+ParseFunctionGenerator::BuildFieldOptions(
+    const Descriptor* descriptor,
+    absl::Span<const FieldDescriptor* const> ordered_fields,
+    const Options& options, MessageSCCAnalyzer* scc_analyzer,
+    absl::Span<const int> has_bit_indices,
+    absl::Span<const int> inlined_string_indices) {
   std::vector<TailCallTableInfo::FieldOptions> fields;
-  fields.reserve(ordered_fields_.size());
-  for (size_t i = 0; i < ordered_fields_.size(); ++i) {
-    auto* field = ordered_fields_[i];
+  fields.reserve(ordered_fields.size());
+  for (size_t i = 0; i < ordered_fields.size(); ++i) {
+    auto* field = ordered_fields[i];
     ABSL_CHECK_GE(field->index(), 0);
     size_t index = static_cast<size_t>(field->index());
     fields.push_back({
@@ -76,27 +101,17 @@ ParseFunctionGenerator::ParseFunctionGenerator(
         index < has_bit_indices.size() ? has_bit_indices[index] : -1,
         // When not present, we're not sure how likely "field" is present.
         // Assign a 50% probability to avoid pessimizing it.
-        GetPresenceProbability(field, options_).value_or(0.5f),
-        GetLazyStyle(field, options_, scc_analyzer_),
-        IsStringInlined(field, options_),
-        IsImplicitWeakField(field, options_, scc_analyzer_),
+        GetPresenceProbability(field, options).value_or(0.5f),
+        GetLazyStyle(field, options, scc_analyzer),
+        IsStringInlined(field, options),
+        IsImplicitWeakField(field, options, scc_analyzer),
         /* use_direct_tcparser_table */ true,
-        ShouldSplit(field, options_),
+        ShouldSplit(field, options),
         index < inlined_string_indices.size() ? inlined_string_indices[index]
                                               : -1,
     });
   }
-  tc_table_info_ = std::make_unique<TailCallTableInfo>(
-      descriptor_,
-      TailCallTableInfo::MessageOptions{
-          /* is_lite */ GetOptimizeFor(descriptor->file(), options_) ==
-              FileOptions::LITE_RUNTIME,
-          /* uses_codegen */ true,
-          options_.profile_driven_cluster_aux_subtable},
-      fields);
-  SetCommonMessageDataVariables(descriptor_, &variables_);
-  SetUnknownFieldsVariable(descriptor_, options_, &variables_);
-  variables_["classname"] = ClassName(descriptor, false);
+  return fields;
 }
 
 struct SkipEntry16 {
@@ -122,9 +137,9 @@ struct NumToEntryTable {
 };
 
 static NumToEntryTable MakeNumToEntryTable(
-    const std::vector<const FieldDescriptor*>& field_descriptors);
+    absl::Span<const FieldDescriptor* const> field_descriptors);
 
-static int FieldNameDataSize(const std::vector<uint8_t>& data) {
+static int FieldNameDataSize(absl::Span<const uint8_t> data) {
   // We add a +1 here to allow for a NUL termination character. It makes the
   // codegen nicer.
   return data.empty() ? 0 : static_cast<int>(data.size()) + 1;
@@ -178,7 +193,7 @@ void ParseFunctionGenerator::GenerateDataDefinitions(io::Printer* printer) {
 }
 
 static NumToEntryTable MakeNumToEntryTable(
-    const std::vector<const FieldDescriptor*>& field_descriptors) {
+    absl::Span<const FieldDescriptor* const> field_descriptors) {
   NumToEntryTable num_to_entry_table;
   num_to_entry_table.skipmap32 = static_cast<uint32_t>(-1);
 
@@ -408,10 +423,10 @@ void ParseFunctionGenerator::GenerateTailCallTable(io::Printer* p) {
         case TailCallTableInfo::kEnumRange:
           p->Emit(
               {
-                  {"start", aux_entry.enum_range.start},
-                  {"size", aux_entry.enum_range.size},
+                  {"first", aux_entry.enum_range.first},
+                  {"last", aux_entry.enum_range.last},
               },
-              "{$start$, $size$},\n");
+              "{$first$, $last$},\n");
           break;
         case TailCallTableInfo::kEnumValidator:
           p->Emit({{"name", QualifiedClassName(aux_entry.field->enum_type(),

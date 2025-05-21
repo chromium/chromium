@@ -1,5 +1,5 @@
 diff --git a/src/google/protobuf/generated_message_util.cc b/src/google/protobuf/generated_message_util.cc
-index c073444d6cde8..9457a859eb8c1 100644
+index cb0c341553925..88996754a9278 100644
 --- a/src/google/protobuf/generated_message_util.cc
 +++ b/src/google/protobuf/generated_message_util.cc
 @@ -83,27 +83,17 @@ static void InitWeakDefaults() {
@@ -58,10 +58,10 @@ index 989734e57f5d5..f7e29d6028ebc 100644
    }
  }
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index b800697578986..31f2a7f6d8999 100644
+index edd6d5122598e..22c87f21587aa 100644
 --- a/src/google/protobuf/port_def.inc
 +++ b/src/google/protobuf/port_def.inc
-@@ -573,16 +573,6 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
+@@ -574,16 +574,6 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
  #define PROTOBUF_FINAL final
  #endif
  
@@ -70,7 +70,7 @@ index b800697578986..31f2a7f6d8999 100644
 -#error PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED was previously defined
 -#endif
 -#if defined(__GNUC__) && defined(__clang__) && !defined(__APPLE__) && \
--    !defined(_MSC_VER)
+-    !defined(_MSC_VER) && !defined(_WIN32)
 -#define PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED
 -#endif
 -
@@ -78,6 +78,3 @@ index b800697578986..31f2a7f6d8999 100644
  // TODO: Enable the feature by default and remove this flag.
  #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
  #error PROTOBUF_PREFETCH_PARSE_TABLE was previously defined
--- 
-2.49.0.901.g37484f566f-goog
-

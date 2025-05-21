@@ -44,6 +44,8 @@ class MessageLite;
 
 namespace internal {
 
+PROTOBUF_EXPORT size_t StringSpaceUsedExcludingSelfLong(const std::string& str);
+
 struct MessageTraitsImpl;
 
 template <typename T>
@@ -247,6 +249,14 @@ enum { kCacheAlignment = alignof(max_align_t) };  // do the best we can
 // The maximum byte alignment we support.
 enum { kMaxMessageAlignment = 8 };
 
+inline constexpr bool EnableExperimentalMicroString() {
+#if defined(PROTOBUF_ENABLE_EXPERIMENTAL_MICRO_STRING)
+  return true;
+#else
+  return false;
+#endif
+}
+
 // Returns true if debug hardening for clearing oneof message on arenas is
 // enabled.
 inline constexpr bool DebugHardenClearOneofMessageOnArena() {
@@ -321,6 +331,15 @@ inline constexpr bool IsLazyParsingSupported() {
   // We need 3 bits for pointer tagging in lazy parsing.
   return PtrIsAtLeast8BAligned();
 }
+
+#if defined(ABSL_IS_LITTLE_ENDIAN)
+constexpr bool IsLittleEndian() { return true; }
+#elif defined(ABSL_IS_BIG_ENDIAN)
+constexpr bool IsLittleEndian() { return false; }
+#else
+#error "Only little-endian and big-endian are supported"
+#endif
+constexpr bool IsBigEndian() { return !IsLittleEndian(); }
 
 // Prefetch 5 64-byte cache line starting from 7 cache-lines ahead.
 // Constants are somewhat arbitrary and pretty aggressive, but were
@@ -435,19 +454,16 @@ constexpr T* Launder(T* p) {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-constexpr bool EnableCustomNew() { return true; }
 template <typename T>
 constexpr bool EnableCustomNewFor() {
   return true;
 }
 #elif ABSL_HAVE_BUILTIN(__is_bitwise_cloneable)
-constexpr bool EnableCustomNew() { return true; }
 template <typename T>
 constexpr bool EnableCustomNewFor() {
   return __is_bitwise_cloneable(T);
 }
 #else
-constexpr bool EnableCustomNew() { return false; }
 template <typename T>
 constexpr bool EnableCustomNewFor() {
   return false;
@@ -532,6 +548,19 @@ using GlobalEmptyString = std::conditional_t<
     const GlobalEmptyStringConstexpr, GlobalEmptyStringDynamicInit>;
 
 PROTOBUF_EXPORT extern GlobalEmptyString fixed_address_empty_string;
+
+enum class BoundsCheckMode { kNoEnforcement, kReturnDefault, kAbort };
+
+PROTOBUF_EXPORT constexpr BoundsCheckMode GetBoundsCheckMode() {
+#if defined(PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT)
+  return BoundsCheckMode::kAbort;
+#elif defined(PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_RETURN_DEFAULT)
+  return BoundsCheckMode::kReturnDefault;
+#else
+  return BoundsCheckMode::kNoEnforcement;
+#endif
+}
+
 
 }  // namespace internal
 }  // namespace protobuf

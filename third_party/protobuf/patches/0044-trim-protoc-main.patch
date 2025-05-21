@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/compiler/main.cc b/src/google/protobuf/compiler/main.cc
-index babede8faa8c4..02085bb887478 100644
+index 6ffff719fa3d5..02085bb887478 100644
 --- a/src/google/protobuf/compiler/main.cc
 +++ b/src/google/protobuf/compiler/main.cc
-@@ -8,15 +8,9 @@
+@@ -8,16 +8,9 @@
  #include "absl/log/initialize.h"
  #include "google/protobuf/compiler/command_line_interface.h"
  #include "google/protobuf/compiler/cpp/generator.h"
@@ -15,10 +15,11 @@ index babede8faa8c4..02085bb887478 100644
  #include "google/protobuf/compiler/python/pyi_generator.h"
 -#include "google/protobuf/compiler/ruby/ruby_generator.h"
 -#include "google/protobuf/compiler/rust/generator.h"
+-#include "upb_generator/minitable/generator.h"
  
  #ifdef DISABLE_PROTOC_CONFIG
  #include "google/protobuf/compiler/allowlists/allowlist.h"
-@@ -62,11 +56,6 @@ int ProtobufMain(int argc, char* argv[]) {
+@@ -63,11 +56,6 @@ int ProtobufMain(int argc, char* argv[]) {
    java_generator.set_opensource_runtime(true);
  #endif
  
@@ -30,7 +31,7 @@ index babede8faa8c4..02085bb887478 100644
  
    // Proto2 Python
    python::Generator py_generator;
-@@ -82,30 +71,6 @@ int ProtobufMain(int argc, char* argv[]) {
+@@ -83,35 +71,6 @@ int ProtobufMain(int argc, char* argv[]) {
    cli.RegisterGenerator("--pyi_out", &pyi_generator,
                          "Generate python pyi stub.");
  
@@ -58,6 +59,11 @@ index babede8faa8c4..02085bb887478 100644
 -  rust::RustGenerator rust_generator;
 -  cli.RegisterGenerator("--rust_out", "--rust_opt", &rust_generator,
 -                        "Generate Rust sources.");
+-
+-  // upb minitables
+-  upb::generator::MiniTableGenerator minitable_generator;
+-  cli.RegisterGenerator("--upb_minitable_out", "--upb_minitable_opt",
+-                        &minitable_generator, "Generate upb minitables");
  #ifdef DISABLE_PROTOC_CONFIG
    auto cleanup = internal::DisableAllowlistInternalOnly();
  #endif  // DISABLE_PROTOC_CONFIG

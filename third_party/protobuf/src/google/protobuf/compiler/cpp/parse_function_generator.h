@@ -14,6 +14,7 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/span.h"
 #include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/options.h"
 #include "google/protobuf/descriptor.h"
@@ -31,11 +32,18 @@ class ParseFunctionGenerator {
  public:
   ParseFunctionGenerator(
       const Descriptor* descriptor, int max_has_bit_index,
-      const std::vector<int>& has_bit_indices,
-      const std::vector<int>& inlined_string_indices, const Options& options,
+      absl::Span<const int> has_bit_indices,
+      absl::Span<const int> inlined_string_indices, const Options& options,
       MessageSCCAnalyzer* scc_analyzer,
       const absl::flat_hash_map<absl::string_view, std::string>& vars,
       int index_in_file_messages);
+
+  static std::vector<internal::TailCallTableInfo::FieldOptions>
+  BuildFieldOptions(const Descriptor* descriptor,
+                    absl::Span<const FieldDescriptor* const> ordered_fields,
+                    const Options& options, MessageSCCAnalyzer* scc_analyzer,
+                    absl::Span<const int> has_bit_indices,
+                    absl::Span<const int> inlined_string_indices);
 
   // Emits class-level data member declarations to `printer`:
   void GenerateDataDecls(io::Printer* printer);
@@ -44,6 +52,8 @@ class ParseFunctionGenerator {
   void GenerateDataDefinitions(io::Printer* printer);
 
  private:
+  friend class TailCallTableInfoTest;
+
   class GeneratedOptionProvider;
 
   // Generates the tail-call table definition.

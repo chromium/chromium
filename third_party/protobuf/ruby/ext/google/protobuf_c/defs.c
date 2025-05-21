@@ -156,6 +156,7 @@ static VALUE DescriptorPool_lookup(VALUE _self, VALUE name) {
   const upb_EnumDef* enumdef;
   const upb_FieldDef* fielddef;
   const upb_ServiceDef* servicedef;
+  const upb_FileDef* filedef;
 
   msgdef = upb_DefPool_FindMessageByName(self->symtab, name_str);
   if (msgdef) {
@@ -175,6 +176,11 @@ static VALUE DescriptorPool_lookup(VALUE _self, VALUE name) {
   servicedef = upb_DefPool_FindServiceByName(self->symtab, name_str);
   if (servicedef) {
     return get_servicedef_obj(_self, servicedef);
+  }
+
+  filedef = upb_DefPool_FindFileByName(self->symtab, name_str);
+  if (filedef) {
+    return get_filedef_obj(_self, filedef);
   }
 
   return Qnil;
@@ -794,6 +800,28 @@ static VALUE FieldDescriptor_has_presence(VALUE _self) {
 
 /*
  * call-seq:
+ *     FieldDescriptor.required? => bool
+ *
+ * Returns whether this is a required field.
+ */
+static VALUE FieldDescriptor_is_required(VALUE _self) {
+  FieldDescriptor* self = ruby_to_FieldDescriptor(_self);
+  return upb_FieldDef_IsRequired(self->fielddef) ? Qtrue : Qfalse;
+}
+
+/*
+ * call-seq:
+ *     FieldDescriptor.repeated? => bool
+ *
+ * Returns whether this is a repeated field.
+ */
+static VALUE FieldDescriptor_is_repeated(VALUE _self) {
+  FieldDescriptor* self = ruby_to_FieldDescriptor(_self);
+  return upb_FieldDef_IsRepeated(self->fielddef) ? Qtrue : Qfalse;
+}
+
+/*
+ * call-seq:
  *     FieldDescriptor.is_packed? => bool
  *
  * Returns whether this is a repeated field that uses packed encoding.
@@ -817,6 +845,8 @@ static VALUE FieldDescriptor_json_name(VALUE _self) {
 }
 
 /*
+ * DEPRECATED: Use repeated? or required? instead.
+ *
  * call-seq:
  *     FieldDescriptor.label => label
  *
@@ -1032,6 +1062,8 @@ static void FieldDescriptor_register(VALUE module) {
   rb_define_method(klass, "type", FieldDescriptor__type, 0);
   rb_define_method(klass, "default", FieldDescriptor_default, 0);
   rb_define_method(klass, "has_presence?", FieldDescriptor_has_presence, 0);
+  rb_define_method(klass, "required?", FieldDescriptor_is_required, 0);
+  rb_define_method(klass, "repeated?", FieldDescriptor_is_repeated, 0);
   rb_define_method(klass, "is_packed?", FieldDescriptor_is_packed, 0);
   rb_define_method(klass, "json_name", FieldDescriptor_json_name, 0);
   rb_define_method(klass, "label", FieldDescriptor_label, 0);

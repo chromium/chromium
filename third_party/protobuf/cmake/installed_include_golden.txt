@@ -99,13 +99,13 @@ google/protobuf/json/json.h
 google/protobuf/map.h
 google/protobuf/map_entry.h
 google/protobuf/map_field.h
-google/protobuf/map_field_inl.h
 google/protobuf/map_field_lite.h
 google/protobuf/map_type_handler.h
 google/protobuf/message.h
 google/protobuf/message_lite.h
 google/protobuf/metadata.h
 google/protobuf/metadata_lite.h
+google/protobuf/micro_string.h
 google/protobuf/parse_context.h
 google/protobuf/port.h
 google/protobuf/port_def.inc

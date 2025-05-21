@@ -1188,7 +1188,7 @@ const FieldDescriptor* FindHottestField(
 
 static bool HasRepeatedFields(const Descriptor* descriptor) {
   for (int i = 0; i < descriptor->field_count(); ++i) {
-    if (descriptor->field(i)->label() == FieldDescriptor::LABEL_REPEATED) {
+    if (descriptor->field(i)->is_repeated()) {
       return true;
     }
   }
@@ -1216,6 +1216,26 @@ static bool HasStringPieceFields(const Descriptor* descriptor,
 bool HasStringPieceFields(const FileDescriptor* file, const Options& options) {
   for (int i = 0; i < file->message_type_count(); ++i) {
     if (HasStringPieceFields(file->message_type(i), options)) return true;
+  }
+  return false;
+}
+
+static bool HasRegularStringFields(const Descriptor* descriptor,
+                                   const Options& options) {
+  for (int i = 0; i < descriptor->field_count(); ++i) {
+    if (IsString(descriptor->field(i))) return true;
+  }
+  for (int i = 0; i < descriptor->nested_type_count(); ++i) {
+    if (HasRegularStringFields(descriptor->nested_type(i), options))
+      return true;
+  }
+  return false;
+}
+
+bool HasRegularStringFields(const FileDescriptor* file,
+                            const Options& options) {
+  for (int i = 0; i < file->message_type_count(); ++i) {
+    if (HasRegularStringFields(file->message_type(i), options)) return true;
   }
   return false;
 }
@@ -1779,6 +1799,24 @@ void ListAllFields(const FileDescriptor* d,
   for (int i = 0; i < d->extension_count(); i++) {
     fields->push_back(d->extension(i));
   }
+}
+
+int CollectFieldsExcludingWeakAndOneof(
+    const Descriptor* d, const Options& options,
+    std::vector<const FieldDescriptor*>& fields) {
+  int num_weak_fields = 0;
+  for (auto field : FieldRange(d)) {
+    if (IsWeak(field, options)) {
+      ++num_weak_fields;
+      continue;
+    }
+
+    if (!field->real_containing_oneof()) {
+      fields.push_back(field);
+    }
+  }
+
+  return num_weak_fields;
 }
 
 void ListAllTypesForServices(const FileDescriptor* fd,

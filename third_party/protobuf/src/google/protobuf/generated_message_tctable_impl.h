@@ -134,6 +134,7 @@ enum FieldRep : uint16_t {
   kRepCord     = 2 << kRepShift,  // absl::Cord
   kRepSPiece   = 3 << kRepShift,  // StringPieceField
   kRepSString  = 4 << kRepShift,  // std::string*
+  kRepMString  = 5 << kRepShift,  // MicroString
   // Message types (WT=2 unless otherwise noted):
   kRepMessage  = 0,               // MessageLite*
   kRepGroup    = 1 << kRepShift,  // MessageLite* (WT=3,4)
@@ -252,10 +253,10 @@ enum FieldType : uint16_t {
 }  // namespace field_layout
 
 #ifndef NDEBUG
-PROTOBUF_EXPORT void AlignFail(std::integral_constant<size_t, 4>,
-                               std::uintptr_t address);
-PROTOBUF_EXPORT void AlignFail(std::integral_constant<size_t, 8>,
-                               std::uintptr_t address);
+[[noreturn]] PROTOBUF_EXPORT void AlignFail(std::integral_constant<size_t, 4>,
+                                            std::uintptr_t address);
+[[noreturn]] PROTOBUF_EXPORT void AlignFail(std::integral_constant<size_t, 8>,
+                                            std::uintptr_t address);
 inline void AlignFail(std::integral_constant<size_t, 1>,
                       std::uintptr_t address) {}
 #endif
@@ -720,8 +721,6 @@ class PROTOBUF_EXPORT TcParser final {
                            0)) {
       AlignFail(std::integral_constant<size_t, alignof(T)>(),
                 reinterpret_cast<uintptr_t>(target));
-      // Explicit abort to let compilers know this code-path does not return
-      abort();
     }
 #endif
     return *target;
@@ -738,8 +737,6 @@ class PROTOBUF_EXPORT TcParser final {
                            0)) {
       AlignFail(std::integral_constant<size_t, alignof(T)>(),
                 reinterpret_cast<uintptr_t>(target));
-      // Explicit abort to let compilers know this code-path does not return
-      abort();
     }
 #endif
     return *target;

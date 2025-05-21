@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <iterator>
 #include <limits>
@@ -242,7 +243,7 @@ struct SooRep {
 // We have to specialize several methods in the Cord case to get the memory
 // management right; e.g. swapping when appropriate, etc.
 template <typename Element>
-class RepeatedField final
+class ABSL_ATTRIBUTE_WARN_UNUSED RepeatedField final
     : private internal::RepeatedFieldDestructorSkippableBase<Element> {
   static_assert(
       alignof(Arena) >= alignof(Element),
@@ -541,10 +542,10 @@ class RepeatedField final
   // (previously annotated) memory is released.
   void AnnotateSize(int old_size, int new_size) const {
     if (old_size != new_size) {
-      ABSL_ATTRIBUTE_UNUSED const bool is_soo = this->is_soo();
-      ABSL_ATTRIBUTE_UNUSED const Element* elem = unsafe_elements(is_soo);
+      [[maybe_unused]] const bool is_soo = this->is_soo();
+      [[maybe_unused]] const Element* elem = unsafe_elements(is_soo);
       // ABSL_ANNOTATE_CONTIGUOUS_CONTAINER(elem, elem + Capacity(is_soo),
-      //                                   elem + old_size, elem + new_size);
+      //                                    elem + old_size, elem + new_size);
       if (new_size < old_size) {
         ABSL_ANNOTATE_MEMORY_IS_UNINITIALIZED(
             elem + new_size, (old_size - new_size) * sizeof(Element));
@@ -769,7 +770,7 @@ inline Element* RepeatedField<Element>::AddNAlreadyReserved(int n)
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   const bool is_soo = this->is_soo();
   const int old_size = size(is_soo);
-  ABSL_ATTRIBUTE_UNUSED const int capacity = Capacity(is_soo);
+  [[maybe_unused]] const int capacity = Capacity(is_soo);
   ABSL_DCHECK_GE(capacity - old_size, n) << capacity << ", " << old_size;
   Element* p =
       unsafe_elements(is_soo) + ExchangeCurrentSize(is_soo, old_size + n);
@@ -802,8 +803,13 @@ inline void RepeatedField<Element>::Resize(int new_size, const Element& value) {
 template <typename Element>
 inline const Element& RepeatedField<Element>::Get(int index) const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ABSL_DCHECK_GE(index, 0);
-  ABSL_DCHECK_LT(index, size());
+  if constexpr (internal::GetBoundsCheckMode() ==
+                internal::BoundsCheckMode::kAbort) {
+    internal::RuntimeAssertInBounds(index, size());
+  } else {
+    ABSL_DCHECK_GE(index, 0);
+    ABSL_DCHECK_LT(index, size());
+  }
   return elements(is_soo())[index];
 }
 
@@ -826,8 +832,13 @@ inline Element& RepeatedField<Element>::at(int index)
 template <typename Element>
 inline Element* RepeatedField<Element>::Mutable(int index)
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ABSL_DCHECK_GE(index, 0);
-  ABSL_DCHECK_LT(index, size());
+  if constexpr (internal::GetBoundsCheckMode() ==
+                internal::BoundsCheckMode::kAbort) {
+    internal::RuntimeAssertInBounds(index, size());
+  } else {
+    ABSL_DCHECK_GE(index, 0);
+    ABSL_DCHECK_LT(index, size());
+  }
   return &elements(is_soo())[index];
 }
 
@@ -854,13 +865,13 @@ inline void RepeatedField<Element>::Add(Element value) {
 
   // The below helps the compiler optimize dense loops.
   // Note: we can't call functions in PROTOBUF_ASSUME so use local variables.
-  ABSL_ATTRIBUTE_UNUSED const bool final_is_soo = this->is_soo();
+  [[maybe_unused]] const bool final_is_soo = this->is_soo();
   PROTOBUF_ASSUME(is_soo == final_is_soo);
-  ABSL_ATTRIBUTE_UNUSED const int final_size = size(is_soo);
+  [[maybe_unused]] const int final_size = size(is_soo);
   PROTOBUF_ASSUME(new_size == final_size);
-  ABSL_ATTRIBUTE_UNUSED Element* const final_elements = unsafe_elements(is_soo);
+  [[maybe_unused]] Element* const final_elements = unsafe_elements(is_soo);
   PROTOBUF_ASSUME(elem == final_elements);
-  ABSL_ATTRIBUTE_UNUSED const int final_capacity = Capacity(is_soo);
+  [[maybe_unused]] const int final_capacity = Capacity(is_soo);
   PROTOBUF_ASSUME(capacity == final_capacity);
 }
 
@@ -894,13 +905,13 @@ inline void RepeatedField<Element>::AddForwardIterator(Iter begin, Iter end) {
 
   // The below helps the compiler optimize dense loops.
   // Note: we can't call functions in PROTOBUF_ASSUME so use local variables.
-  ABSL_ATTRIBUTE_UNUSED const bool final_is_soo = this->is_soo();
+  [[maybe_unused]] const bool final_is_soo = this->is_soo();
   PROTOBUF_ASSUME(is_soo == final_is_soo);
-  ABSL_ATTRIBUTE_UNUSED const int final_size = size(is_soo);
+  [[maybe_unused]] const int final_size = size(is_soo);
   PROTOBUF_ASSUME(new_size == final_size);
-  ABSL_ATTRIBUTE_UNUSED Element* const final_elements = unsafe_elements(is_soo);
+  [[maybe_unused]] Element* const final_elements = unsafe_elements(is_soo);
   PROTOBUF_ASSUME(elem == final_elements);
-  ABSL_ATTRIBUTE_UNUSED const int final_capacity = Capacity(is_soo);
+  [[maybe_unused]] const int final_capacity = Capacity(is_soo);
   PROTOBUF_ASSUME(capacity == final_capacity);
 }
 
@@ -1435,6 +1446,28 @@ internal::RepeatedFieldBackInsertIterator<T> RepeatedFieldBackInserter(
     RepeatedField<T>* const mutable_field) {
   return internal::RepeatedFieldBackInsertIterator<T>(mutable_field);
 }
+
+namespace internal {
+template <typename T>
+inline void CheckIndexInBoundsOrAbort(const RepeatedField<T>& field,
+                                      int index) {
+  if (ABSL_PREDICT_FALSE(index < 0 || index >= field.size())) {
+    LogIndexOutOfBoundsAndAbort(index, field.size());
+  }
+}
+
+template <typename T>
+const T& CheckedGetOrAbort(const RepeatedField<T>& field, int index) {
+  CheckIndexInBoundsOrAbort(field, index);
+  return field.Get(index);
+}
+
+template <typename T>
+inline T* CheckedMutableOrAbort(RepeatedField<T>* field, int index) {
+  CheckIndexInBoundsOrAbort(*field, index);
+  return field->Mutable(index);
+}
+}  // namespace internal
 
 
 }  // namespace protobuf

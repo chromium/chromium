@@ -11,10 +11,10 @@ index a17f922b6cba9..69ba4743987ba 100644
  #include "google/protobuf/arena.h"
  #include "google/protobuf/arena_align.h"
 diff --git a/src/google/protobuf/io/coded_stream.cc b/src/google/protobuf/io/coded_stream.cc
-index f8d7b71a156f9..104e4307e6de5 100644
+index b9de939a86e7d..7a951e4e37513 100644
 --- a/src/google/protobuf/io/coded_stream.cc
 +++ b/src/google/protobuf/io/coded_stream.cc
-@@ -32,7 +32,6 @@
+@@ -33,7 +33,6 @@
  #include "absl/log/absl_check.h"
  #include "absl/log/absl_log.h"
  #include "absl/strings/cord.h"
@@ -22,7 +22,7 @@ index f8d7b71a156f9..104e4307e6de5 100644
  #include "absl/strings/string_view.h"
  #include "google/protobuf/arena.h"
  #include "google/protobuf/io/zero_copy_stream.h"
-@@ -255,7 +254,7 @@ bool CodedInputStream::ReadString(std::string* buffer, int size) {
+@@ -256,7 +255,7 @@ bool CodedInputStream::ReadString(std::string* buffer, int size) {
    if (size < 0) return false;  // security: size is often user-supplied
  
    if (BufferSize() >= size) {
@@ -32,18 +32,18 @@ index f8d7b71a156f9..104e4307e6de5 100644
      if (z.second) {
        // Oddly enough, memcpy() requires its first two args to be non-NULL even
 diff --git a/src/google/protobuf/io/zero_copy_stream_impl_lite.cc b/src/google/protobuf/io/zero_copy_stream_impl_lite.cc
-index 15baebe3fa15b..81e14cbc74502 100644
+index ccacd3ea0dba6..e40e0ab5a328c 100644
 --- a/src/google/protobuf/io/zero_copy_stream_impl_lite.cc
 +++ b/src/google/protobuf/io/zero_copy_stream_impl_lite.cc
-@@ -19,7 +19,6 @@
- #include "absl/base/casts.h"
+@@ -24,7 +24,6 @@
  #include "absl/log/absl_check.h"
  #include "absl/strings/cord.h"
+ #include "absl/strings/cord_buffer.h"
 -#include "absl/strings/internal/resize_uninitialized.h"
- 
- // Must be included last
- #include "google/protobuf/port_def.inc"
-@@ -136,8 +135,7 @@ bool StringOutputStream::Next(void** data, int* size) {
+ #include "absl/strings/string_view.h"
+ #include "absl/types/span.h"
+ #include "google/protobuf/io/zero_copy_stream.h"
+@@ -145,8 +144,7 @@ bool StringOutputStream::Next(void** data, int* size) {
    // Avoid integer overflow in returned '*size'.
    new_size = std::min(new_size, old_size + std::numeric_limits<int>::max());
    // Increase the size, also make sure that it is at least kMinimumSize.
@@ -54,18 +54,18 @@ index 15baebe3fa15b..81e14cbc74502 100644
                 kMinimumSize + 0));  // "+ 0" works around GCC4 weirdness.
  
 diff --git a/src/google/protobuf/message_lite.cc b/src/google/protobuf/message_lite.cc
-index 1a2c6bd88bdf0..9652028e07bdb 100644
+index e9545fd0a613a..ce3b54d64a084 100644
 --- a/src/google/protobuf/message_lite.cc
 +++ b/src/google/protobuf/message_lite.cc
-@@ -26,7 +26,6 @@
- #include "absl/log/log.h"
+@@ -28,7 +28,6 @@
+ #include "absl/log/absl_log.h"
  #include "absl/strings/cord.h"
  #include "absl/strings/cord_buffer.h"
 -#include "absl/strings/internal/resize_uninitialized.h"
  #include "absl/strings/str_cat.h"
  #include "absl/strings/string_view.h"
  #include "absl/types/optional.h"
-@@ -584,8 +583,7 @@ bool MessageLite::AppendPartialToString(std::string* output) const {
+@@ -594,8 +593,7 @@ bool MessageLite::AppendPartialToString(std::string* output) const {
      return false;
    }
  
@@ -76,18 +76,18 @@ index 1a2c6bd88bdf0..9652028e07bdb 100644
        reinterpret_cast<uint8_t*>(io::mutable_string_data(output) + old_size);
    SerializeToArrayImpl(*this, start, byte_size);
 diff --git a/src/google/protobuf/parse_context.h b/src/google/protobuf/parse_context.h
-index 22ed8212dfa6d..1f6f72629720a 100644
+index 6b196994e4213..989ff68dfaa93 100644
 --- a/src/google/protobuf/parse_context.h
 +++ b/src/google/protobuf/parse_context.h
-@@ -18,7 +18,6 @@
+@@ -23,7 +23,6 @@
  #include "absl/log/absl_check.h"
  #include "absl/log/absl_log.h"
  #include "absl/strings/cord.h"
 -#include "absl/strings/internal/resize_uninitialized.h"
  #include "absl/strings/string_view.h"
- #include "absl/types/optional.h"
  #include "google/protobuf/arena.h"
-@@ -182,7 +181,7 @@ class PROTOBUF_EXPORT EpsCopyInputStream {
+ #include "google/protobuf/arenastring.h"
+@@ -189,7 +188,7 @@ class PROTOBUF_EXPORT EpsCopyInputStream {
        // However micro-benchmarks regress on string reading cases. So we copy
        // the same logic from the old CodedInputStream ReadString. Note: as of
        // Apr 2021, this is still a significant win over `assign()`.
@@ -97,10 +97,10 @@ index 22ed8212dfa6d..1f6f72629720a 100644
        memcpy(z, ptr, size);
        return ptr + size;
 diff --git a/src/google/protobuf/unknown_field_set.cc b/src/google/protobuf/unknown_field_set.cc
-index 2f33555a16847..05c0c93a47bb2 100644
+index a4af9a6e65364..9c2123182c899 100644
 --- a/src/google/protobuf/unknown_field_set.cc
 +++ b/src/google/protobuf/unknown_field_set.cc
-@@ -17,7 +17,6 @@
+@@ -18,7 +18,6 @@
  
  #include "absl/log/absl_check.h"
  #include "absl/strings/cord.h"

@@ -30,6 +30,7 @@
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
+#include "google/protobuf/test_util.h"
 #include "google/protobuf/test_util2.h"
 #include "google/protobuf/wire_format.h"
 #include "google/protobuf/wire_format_lite.h"
@@ -1437,7 +1438,7 @@ bool WriteMessage(const char* value, T* message, std::string* wire_buffer) {
   message->set_data(value);
   wire_buffer->clear();
   message->AppendToString(wire_buffer);
-  return (wire_buffer->size() > 0);
+  return (!wire_buffer->empty());
 }
 
 template <typename T>

@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
-index bd58a134cbe20..bd5b8cc3818ec 100644
+index d5a7de27d06bf..4f2d677480453 100644
 --- a/src/google/protobuf/compiler/cpp/message.cc
 +++ b/src/google/protobuf/compiler/cpp/message.cc
-@@ -3943,7 +3943,7 @@ void MessageGenerator::GenerateClassData(io::Printer* p) {
+@@ -4046,7 +4046,7 @@ void MessageGenerator::GenerateClassData(io::Printer* p) {
                  constexpr auto arena_bits = $pbi$::EncodePlacementArenaOffsets({
                      $arena_offsets$,
                  });

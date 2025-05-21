@@ -1,9 +1,9 @@
 diff --git a/.gitignore b/.gitignore
-index 5daf9c20e7903..5766401460e4c 100644
+index a54510bef76f7..3bd40f102cf07 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -216,3 +216,6 @@ compile_commands.json
- 
+@@ -220,3 +220,6 @@ compile_commands.json
+
  # Ignore Bzlmod lock file until it is more stable
  MODULE.bazel.lock
 +

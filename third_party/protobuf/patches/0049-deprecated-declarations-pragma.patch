@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
-index e6092b2344b9e..3bda7aef78e53 100644
+index 7731a9405e031..0a7ef114ac449 100644
 --- a/src/google/protobuf/descriptor.cc
 +++ b/src/google/protobuf/descriptor.cc
-@@ -138,12 +138,12 @@ std::string ToJsonName(const absl::string_view input) {
+@@ -156,12 +156,12 @@ std::string ToJsonName(const absl::string_view input) {
  
  template <typename OptionsT>
  bool IsLegacyJsonFieldConflictEnabled(const OptionsT& options) {

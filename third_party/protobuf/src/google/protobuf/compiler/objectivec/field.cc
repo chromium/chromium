@@ -79,19 +79,12 @@ void SetCommonFieldVariables(const FieldDescriptor* descriptor,
   std::vector<std::string> field_flags;
   if (descriptor->is_repeated()) field_flags.push_back("GPBFieldRepeated");
   if (descriptor->is_required()) field_flags.push_back("GPBFieldRequired");
-  if (descriptor->is_optional()) field_flags.push_back("GPBFieldOptional");
   if (descriptor->is_packed()) field_flags.push_back("GPBFieldPacked");
 
   // ObjC custom flags.
   if (descriptor->has_default_value())
     field_flags.push_back("GPBFieldHasDefaultValue");
   if (needs_custom_name) field_flags.push_back("GPBFieldTextFormatNameCustom");
-  if (descriptor->type() == FieldDescriptor::TYPE_ENUM) {
-    field_flags.push_back("GPBFieldHasEnumDescriptor");
-    if (descriptor->enum_type()->is_closed()) {
-      field_flags.push_back("GPBFieldClosedEnum");
-    }
-  }
   // It will clear on a zero value if...
   //  - not repeated/map
   //  - doesn't have presence

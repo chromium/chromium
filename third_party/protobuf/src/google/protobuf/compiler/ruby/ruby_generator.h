@@ -7,9 +7,10 @@
 
 // Generates Ruby code for a given .proto file.
 
-#ifndef GOOGLE_PROTOBUF_COMPILER_RUBY_GENERATOR_H__
-#define GOOGLE_PROTOBUF_COMPILER_RUBY_GENERATOR_H__
+#ifndef GOOGLE_PROTOBUF_COMPILER_RUBY_RUBY_GENERATOR_H__
+#define GOOGLE_PROTOBUF_COMPILER_RUBY_RUBY_GENERATOR_H__
 
+#include <cstdint>
 #include <string>
 
 #include "google/protobuf/compiler/code_generator.h"
@@ -43,4 +44,4 @@ class PROTOC_EXPORT Generator : public CodeGenerator {
 
 #include "google/protobuf/port_undef.inc"
 
-#endif  // GOOGLE_PROTOBUF_COMPILER_RUBY_GENERATOR_H__
+#endif  // GOOGLE_PROTOBUF_COMPILER_RUBY_RUBY_GENERATOR_H__

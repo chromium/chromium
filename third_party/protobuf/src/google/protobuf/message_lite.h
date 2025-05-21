@@ -29,6 +29,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/casts.h"
+#include "absl/base/macros.h"
 #include "absl/log/absl_check.h"
 #include "absl/numeric/bits.h"
 #include "absl/strings/cord.h"
@@ -81,6 +82,8 @@ namespace internal {
 
 namespace v2 {
 class TableDriven;
+class TableDrivenMessage;
+class TableDrivenParse;
 }  // namespace v2
 
 class MessageCreator {
@@ -125,11 +128,11 @@ class MessageCreator {
         func_(func) {}
 
   // Template for testing.
-  template <bool test_call = false, typename MessageLite>
+  template <typename MessageLite>
   MessageLite* New(const MessageLite* prototype_for_func,
                    const MessageLite* prototype_for_copy, Arena* arena) const;
 
-  template <bool test_call = false, typename MessageLite>
+  template <typename MessageLite>
   MessageLite* PlacementNew(const MessageLite* prototype_for_func,
                             const MessageLite* prototype_for_copy, void* mem,
                             Arena* arena) const;
@@ -302,6 +305,7 @@ class WireFormatLite;
 class WeakFieldMap;
 class RustMapHelper;
 
+
 // We compute sizes as size_t but cache them as int.  This function converts a
 // computed size to a cached size.  Since we don't proceed with serialization
 // if the total size was > INT_MAX, it is not important what this function
@@ -329,18 +333,10 @@ inline int ToIntSize(size_t size) {
   return static_cast<int>(size);
 }
 
-#if defined(PROTOBUF_FUTURE_STRING_VIEW_RETURN_TYPE)
-using GetTypeNameReturnType = absl::string_view;
-#else
-using GetTypeNameReturnType = std::string;
-#endif
-
 
 PROTOBUF_EXPORT inline const std::string& GetEmptyStringAlreadyInited() {
   return fixed_address_empty_string.get();
 }
-
-PROTOBUF_EXPORT size_t StringSpaceUsedExcludingSelfLong(const std::string& str);
 
 struct ClassDataFull;
 
@@ -540,7 +536,7 @@ class PROTOBUF_EXPORT MessageLite {
   // Basic Operations ------------------------------------------------
 
   // Get the name of this message type, e.g. "foo.bar.BazProto".
-  internal::GetTypeNameReturnType GetTypeName() const;
+  absl::string_view GetTypeName() const;
 
   // Construct a new instance of the same type.  Ownership is passed to the
   // caller.
@@ -705,7 +701,6 @@ class PROTOBUF_EXPORT MessageLite {
   bool MergePartialFromString(absl::string_view data);
   bool MergePartialFromString(const absl::Cord& data);
 
-
   // Serialization ---------------------------------------------------
   // Methods for serializing in protocol buffer format.  Most of these
   // are just simple wrappers around ByteSize() and SerializeWithCachedSizes().
@@ -828,6 +823,7 @@ class PROTOBUF_EXPORT MessageLite {
 #else
   virtual size_t ByteSizeLong() const = 0;
 #endif  // PROTOBUF_CUSTOM_VTABLE
+
 
   // Legacy ByteSize() API.
   [[deprecated("Please use ByteSizeLong() instead")]] int ByteSize() const {
@@ -1059,6 +1055,8 @@ class PROTOBUF_EXPORT MessageLite {
   friend class internal::WireFormatLite;
   friend class internal::RustMapHelper;
   friend class internal::v2::TableDriven;
+  friend class internal::v2::TableDrivenMessage;
+  friend class internal::v2::TableDrivenParse;
   friend internal::MessageCreator;
 
   template <typename Type>
@@ -1248,19 +1246,15 @@ T* OnShutdownDelete(T* p) {
   return p;
 }
 
-template <bool test_call, typename MessageLite>
+template <typename MessageLite>
 PROTOBUF_ALWAYS_INLINE MessageLite* MessageCreator::PlacementNew(
     const MessageLite* prototype_for_func,
     const MessageLite* prototype_for_copy, void* mem, Arena* arena) const {
   ABSL_DCHECK_EQ(reinterpret_cast<uintptr_t>(mem) % alignment_, 0u);
   const Tag as_tag = tag();
-  // When the feature is not enabled we skip the `as_tag` check since it is
-  // unnecessary. Except for testing, where we want to test the copy logic even
-  // when we can't use it for real messages.
-  constexpr bool kMustBeFunc = !test_call && !internal::EnableCustomNew();
   static_assert(kFunc < 0 && !(kZeroInit < 0) && !(kMemcpy < 0),
                 "Only kFunc must be the only negative value");
-  if (ABSL_PREDICT_FALSE(kMustBeFunc || as_tag < 0)) {
+  if (ABSL_PREDICT_FALSE(static_cast<int8_t>(as_tag) < 0)) {
     PROTOBUF_DEBUG_COUNTER("MessageCreator.Func").Inc();
     return static_cast<MessageLite*>(func_(prototype_for_func, mem, arena));
   }
@@ -1349,15 +1343,15 @@ PROTOBUF_ALWAYS_INLINE MessageLite* MessageCreator::PlacementNew(
   return Launder(reinterpret_cast<MessageLite*>(mem));
 }
 
-template <bool test_call, typename MessageLite>
+template <typename MessageLite>
 PROTOBUF_ALWAYS_INLINE MessageLite* MessageCreator::New(
     const MessageLite* prototype_for_func,
     const MessageLite* prototype_for_copy, Arena* arena) const {
-  return PlacementNew<test_call>(prototype_for_func, prototype_for_copy,
-                                 arena != nullptr
-                                     ? arena->AllocateAligned(allocation_size_)
-                                     : ::operator new(allocation_size_),
-                                 arena);
+  return PlacementNew(prototype_for_func, prototype_for_copy,
+                      arena != nullptr
+                          ? arena->AllocateAligned(allocation_size_)
+                          : ::operator new(allocation_size_),
+                      arena);
 }
 
 }  // namespace internal

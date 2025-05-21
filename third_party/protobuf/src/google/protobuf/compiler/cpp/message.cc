@@ -40,6 +40,7 @@
 #include "google/protobuf/compiler/cpp/enum.h"
 #include "google/protobuf/compiler/cpp/extension.h"
 #include "google/protobuf/compiler/cpp/field.h"
+#include "google/protobuf/compiler/cpp/field_chunk.h"
 #include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/names.h"
 #include "google/protobuf/compiler/cpp/options.h"
@@ -480,50 +481,6 @@ bool HasNonSplitOptionalString(const Descriptor* desc, const Options& options) {
   return false;
 }
 
-struct FieldChunk {
-  FieldChunk(bool has_hasbit, bool is_rarely_present, bool should_split)
-      : has_hasbit(has_hasbit),
-        is_rarely_present(is_rarely_present),
-        should_split(should_split) {}
-
-  bool has_hasbit;
-  bool is_rarely_present;
-  bool should_split;
-
-  std::vector<const FieldDescriptor*> fields;
-};
-
-using ChunkIterator = std::vector<FieldChunk>::const_iterator;
-
-// Breaks down a single chunk of fields into a few chunks that share attributes
-// controlled by "equivalent" predicate. Returns an array of chunks.
-template <typename Predicate>
-std::vector<FieldChunk> CollectFields(
-    const std::vector<const FieldDescriptor*>& fields, const Options& options,
-    const Predicate& equivalent) {
-  std::vector<FieldChunk> chunks;
-  for (auto field : fields) {
-    if (chunks.empty() || !equivalent(chunks.back().fields.back(), field)) {
-      chunks.emplace_back(HasHasbit(field), IsRarelyPresent(field, options),
-                          ShouldSplit(field, options));
-    }
-    chunks.back().fields.push_back(field);
-  }
-  return chunks;
-}
-
-template <typename Predicate>
-ChunkIterator FindNextUnequalChunk(ChunkIterator start, ChunkIterator end,
-                                   const Predicate& equal) {
-  auto it = start;
-  while (++it != end) {
-    if (!equal(*start, *it)) {
-      return it;
-    }
-  }
-  return end;
-}
-
 // Returns true if two chunks may be grouped for hasword check to skip multiple
 // cold fields at once. They have to share the following traits:
 // - whether they have hasbits
@@ -533,40 +490,6 @@ bool MayGroupChunksForHaswordsCheck(const FieldChunk& a, const FieldChunk& b) {
   return a.has_hasbit == b.has_hasbit &&
          a.is_rarely_present == b.is_rarely_present &&
          a.should_split == b.should_split;
-}
-
-// Returns a bit mask based on has_bit index of "fields" that are typically on
-// the same chunk. It is used in a group presence check where _has_bits_ is
-// masked to tell if any thing in "fields" is present.
-uint32_t GenChunkMask(const std::vector<const FieldDescriptor*>& fields,
-                      const std::vector<int>& has_bit_indices) {
-  ABSL_CHECK(!fields.empty());
-  int first_index_offset = has_bit_indices[fields.front()->index()] / 32;
-  uint32_t chunk_mask = 0;
-  for (auto field : fields) {
-    // "index" defines where in the _has_bits_ the field appears.
-    int index = has_bit_indices[field->index()];
-    ABSL_CHECK_EQ(first_index_offset, index / 32);
-    chunk_mask |= static_cast<uint32_t>(1) << (index % 32);
-  }
-  ABSL_CHECK_NE(0u, chunk_mask);
-  return chunk_mask;
-}
-
-// Returns a bit mask based on has_bit index of "fields" in chunks in [it, end).
-// Assumes that all chunks share the same hasbit word.
-uint32_t GenChunkMask(ChunkIterator it, ChunkIterator end,
-                      const std::vector<int>& has_bit_indices) {
-  ABSL_CHECK(it != end);
-
-  int first_index_offset = has_bit_indices[it->fields.front()->index()] / 32;
-  uint32_t chunk_mask = 0;
-  do {
-    ABSL_CHECK_EQ(first_index_offset,
-                  has_bit_indices[it->fields.front()->index()] / 32);
-    chunk_mask |= GenChunkMask(it->fields, has_bit_indices);
-  } while (++it != end);
-  return chunk_mask;
 }
 
 // Return the number of bits set in n, a non-negative integer.
@@ -596,6 +519,9 @@ bool MaybeEmitHaswordsCheck(ChunkIterator it, ChunkIterator end,
     return has_bit_indices[field->index()] / 32;
   };
   auto is_same_hasword = [&](const FieldChunk& a, const FieldChunk& b) {
+    // Empty fields are assumed to have the same haswords.
+    if (a.fields.empty() || b.fields.empty()) return true;
+
     return hasbit_word(a.fields.front()) == hasbit_word(b.fields.front());
   };
 
@@ -607,10 +533,18 @@ bool MaybeEmitHaswordsCheck(ChunkIterator it, ChunkIterator end,
   std::vector<HasWordMask> hasword_masks;
   while (it != end) {
     auto next = FindNextUnequalChunk(it, end, is_same_hasword);
-    hasword_masks.push_back({hasbit_word(it->fields.front()),
-                             GenChunkMask(it, next, has_bit_indices)});
+    for (; it != next; ++it) {
+      if (!it->fields.empty()) {
+        hasword_masks.push_back({hasbit_word(it->fields.front()),
+                                 GenChunkMask(it, next, has_bit_indices)});
+        break;
+      }
+    }
+    // Jump to the next batch instead.
     it = next;
   }
+
+  if (hasword_masks.empty()) return false;
 
   // Emit has_bit check for each has_bit_dword index.
   p->Emit({{"cond",
@@ -674,6 +608,7 @@ std::vector<Sub> ClassVars(const Descriptor* desc, Options opts) {
   return vars;
 }
 
+
 }  // anonymous namespace
 
 // ===================================================================
@@ -690,25 +625,16 @@ MessageGenerator::MessageGenerator(
       scc_analyzer_(scc_analyzer) {
 
   if (!message_layout_helper_) {
-    message_layout_helper_ = std::make_unique<PaddingOptimizer>();
+    message_layout_helper_ = std::make_unique<PaddingOptimizer>(descriptor);
   }
 
   // Compute optimized field order to be used for layout and initialization
   // purposes.
-  for (auto field : FieldRange(descriptor_)) {
-    if (IsWeak(field, options_)) {
-      ++num_weak_fields_;
-      continue;
-    }
-
-    if (!field->real_containing_oneof()) {
-      optimized_order_.push_back(field);
-    }
-  }
-
+  num_weak_fields_ = CollectFieldsExcludingWeakAndOneof(descriptor_, options_,
+                                                        optimized_order_);
   const size_t initial_size = optimized_order_.size();
-  message_layout_helper_->OptimizeLayout(&optimized_order_, options_,
-                                         scc_analyzer_);
+  optimized_order_ = message_layout_helper_->OptimizeLayout(
+      optimized_order_, options_, scc_analyzer_);
   ABSL_CHECK_EQ(initial_size, optimized_order_.size());
 
   // This message has hasbits iff one or more fields need one.
@@ -956,7 +882,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
 
       template <typename _proto_TypeTraits, $pbi$::FieldType _field_type,
                 bool _is_packed,
-                std::enable_if_t<!_proto_TypeTraits::kLifetimeBound, int> = 0>
+                ::std::enable_if_t<!_proto_TypeTraits::kLifetimeBound, int> = 0>
       inline typename _proto_TypeTraits::Singular::ConstType GetExtension(
           const $pbi$::ExtensionIdentifier<$Msg$, _proto_TypeTraits,
                                            _field_type, _is_packed>& id) const {
@@ -967,7 +893,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
 
       template <typename _proto_TypeTraits, $pbi$::FieldType _field_type,
                 bool _is_packed,
-                std::enable_if_t<_proto_TypeTraits::kLifetimeBound, int> = 0>
+                ::std::enable_if_t<_proto_TypeTraits::kLifetimeBound, int> = 0>
       inline typename _proto_TypeTraits::Singular::ConstType GetExtension(
           const $pbi$::ExtensionIdentifier<$Msg$, _proto_TypeTraits,
                                            _field_type, _is_packed>& id) const
@@ -1044,7 +970,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
 
       template <typename _proto_TypeTraits, $pbi$::FieldType _field_type,
                 bool _is_packed,
-                std::enable_if_t<!_proto_TypeTraits::kLifetimeBound, int> = 0>
+                ::std::enable_if_t<!_proto_TypeTraits::kLifetimeBound, int> = 0>
       inline typename _proto_TypeTraits::Repeated::ConstType GetExtension(
           const $pbi$::ExtensionIdentifier<$Msg$, _proto_TypeTraits,
                                            _field_type, _is_packed>& id,
@@ -1056,7 +982,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
 
       template <typename _proto_TypeTraits, $pbi$::FieldType _field_type,
                 bool _is_packed,
-                std::enable_if_t<_proto_TypeTraits::kLifetimeBound, int> = 0>
+                ::std::enable_if_t<_proto_TypeTraits::kLifetimeBound, int> = 0>
       inline typename _proto_TypeTraits::Repeated::ConstType GetExtension(
           const $pbi$::ExtensionIdentifier<$Msg$, _proto_TypeTraits,
                                            _field_type, _is_packed>& id,
@@ -1359,10 +1285,15 @@ class AccessorVerifier {
 
 }  // namespace
 
+template <bool kIsV2>
 void MessageGenerator::EmitCheckAndUpdateByteSizeForField(
     const FieldDescriptor* field, io::Printer* p) const {
   absl::AnyInvocable<void()> emit_body = [&] {
-    field_generators_.get(field).GenerateByteSize(p);
+    const auto& gen = field_generators_.get(field);
+    if constexpr (!kIsV2) {
+      gen.GenerateByteSize(p);
+    } else {
+    }
   };
 
   if (!HasHasbit(field)) {
@@ -1398,32 +1329,67 @@ void MessageGenerator::EmitCheckAndUpdateByteSizeForField(
           )cc");
 }
 
+void MessageGenerator::MaybeEmitUpdateCachedHasbits(
+    const FieldDescriptor* field, io::Printer* p,
+    int& cached_has_word_index) const {
+  if (!HasHasbit(field) || field->options().weak()) return;
+
+  int has_bit_index = has_bit_indices_[field->index()];
+
+  if (cached_has_word_index == (has_bit_index / 32)) return;
+
+  cached_has_word_index = (has_bit_index / 32);
+  p->Emit({{"index", cached_has_word_index}},
+          R"cc(
+            cached_has_bits = this_.$has_bits$[$index$];
+          )cc");
+}
+
+template <bool kIsV2>
 void MessageGenerator::EmitUpdateByteSizeForField(
     const FieldDescriptor* field, io::Printer* p,
     int& cached_has_word_index) const {
   p->Emit(
       {{"comment", [&] { PrintFieldComment(Formatter{p}, field, options_); }},
        {"update_cached_has_bits",
-        [&] {
-          if (!HasHasbit(field) || field->options().weak()) return;
-
-          int has_bit_index = has_bit_indices_[field->index()];
-
-          if (cached_has_word_index == (has_bit_index / 32)) return;
-
-          cached_has_word_index = (has_bit_index / 32);
-          p->Emit({{"index", cached_has_word_index}},
-                  R"cc(
-                    cached_has_bits = this_.$has_bits$[$index$];
-                  )cc");
-        }},
+        [&] { MaybeEmitUpdateCachedHasbits(field, p, cached_has_word_index); }},
        {"check_and_update_byte_size_for_field",
-        [&]() { EmitCheckAndUpdateByteSizeForField(field, p); }}},
+        [&]() { EmitCheckAndUpdateByteSizeForField<kIsV2>(field, p); }}},
       R"cc(
         $comment$;
         $update_cached_has_bits$;
         $check_and_update_byte_size_for_field$;
       )cc");
+}
+
+void MessageGenerator::EmitUpdateByteSizeV2ForNumerics(
+    size_t field_size, io::Printer* p, int& cached_has_word_index,
+    std::vector<const FieldDescriptor*>&& fields) const {
+  if (fields.empty()) return;
+
+  auto v = p->WithVars({{"field_size", field_size}});
+  p->Emit(R"cc(
+    // fixed size numerics: $field_size$
+  )cc");
+  for (const auto* f : fields) {
+    p->Emit({{"full_name", f->full_name()}},
+            R"cc(
+              // $full_name$
+            )cc");
+  }
+
+  p->Emit({{"mask",
+            absl::StrFormat("0x%08xu", GenChunkMask(fields, has_bit_indices_))},
+           {"size", 1 + 4 + field_size},  // tag + field number + payload
+           {"update_cached_has_bits",
+            [&] {
+              MaybeEmitUpdateCachedHasbits(fields.front(), p,
+                                           cached_has_word_index);
+            }}},
+          R"cc(
+            $update_cached_has_bits$;
+            total_size += absl::popcount(cached_has_bits & $mask$) * $size$;
+          )cc");
 }
 
 void MessageGenerator::GenerateFieldAccessorDefinitions(io::Printer* p) {
@@ -1624,8 +1590,8 @@ void MessageGenerator::GenerateImplDefinition(io::Printer* p) {
                       using InternalArenaConstructable_ = void;
                       using DestructorSkippable_ = void;
                     };
-                    static_assert(std::is_trivially_copy_constructible<Split>::value);
-                    static_assert(std::is_trivially_destructible<Split>::value);
+                    static_assert(::std::is_trivially_copy_constructible<Split>::value);
+                    static_assert(::std::is_trivially_destructible<Split>::value);
                     Split* $nonnull$ _split_;
                   )cc");
         }},
@@ -2215,7 +2181,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
 
           inline $classname$(const $classname$& from) : $classname$(nullptr, from) {}
           inline $classname$($classname$&& from) noexcept
-              : $classname$(nullptr, std::move(from)) {}
+              : $classname$(nullptr, ::std::move(from)) {}
           inline $classname$& operator=(const $classname$& from) {
             CopyFrom(from);
             return *this;
@@ -2252,7 +2218,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
           static constexpr int kIndexInFileMessages = $index_in_file_messages$;
           $decl_any_methods$;
           friend void swap($classname$& a, $classname$& b) { a.Swap(&b); }
-          inline void Swap($classname$* $nonnull$ other) {
+          PROTOBUF_NOINLINE void Swap($classname$* $nonnull$ other) {
             if (other == this) return;
             if ($pbi$::CanUseInternalSwap(GetArena(), other->GetArena())) {
               InternalSwap(other);
@@ -2375,29 +2341,14 @@ void MessageGenerator::GenerateInlineMethods(io::Printer* p) {
   }
 }
 
-void MessageGenerator::GenerateSchema(io::Printer* p, int offset,
-                                      int has_offset) {
-  has_offset = !has_bit_indices_.empty() || IsMapEntryMessage(descriptor_)
-                   ? offset + has_offset
-                   : -1;
-  int inlined_string_indices_offset;
-  if (inlined_string_indices_.empty()) {
-    inlined_string_indices_offset = -1;
-  } else {
-    ABSL_DCHECK_NE(has_offset, -1);
-    ABSL_DCHECK(!IsMapEntryMessage(descriptor_));
-    inlined_string_indices_offset = has_offset + has_bit_indices_.size();
-  }
-
+void MessageGenerator::GenerateSchema(io::Printer* p, int offset) {
   auto v = p->WithVars(ClassVars(descriptor_, options_));
   p->Emit(
       {
           {"offset", offset},
-          {"has_offset", has_offset},
-          {"string_offsets", inlined_string_indices_offset},
       },
       R"cc(
-        {$offset$, $has_offset$, $string_offsets$, sizeof($classtype$)},
+        {$offset$, sizeof($classtype$)},
       )cc");
 }
 
@@ -2480,7 +2431,7 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
           p->Emit(
               R"cc(
                 using HasBits =
-                    decltype(std::declval<$classname$>().$has_bits$);
+                    decltype(::std::declval<$classname$>().$has_bits$);
                 static constexpr ::int32_t kHasBitsOffset =
                     8 * PROTOBUF_FIELD_OFFSET($classname$, _impl_._has_bits_);
               )cc");
@@ -2548,6 +2499,7 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
 
     GenerateByteSize(p);
     p->Emit("\n");
+
 
     GenerateClassSpecificMergeImpl(p);
     p->Emit("\n");
@@ -2639,51 +2591,67 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
       )cc");
 }
 
-std::pair<size_t, size_t> MessageGenerator::GenerateOffsets(io::Printer* p) {
+size_t MessageGenerator::GenerateOffsets(io::Printer* p) {
   auto v = p->WithVars(ClassVars(descriptor_, options_));
   auto t = p->WithVars(MakeTrackerCalls(descriptor_, options_));
   Formatter format(p);
 
-  if (!has_bit_indices_.empty() || IsMapEntryMessage(descriptor_)) {
+  int num_generated_indices = 1;
+  const auto make_bitmap = [&](auto... bits) {
+    uint32_t res = 0;
+    int index = 0;
+    ((res |= (static_cast<uint32_t>(bits) << index++)), ...);
+    ((num_generated_indices += bits), ...);
+    return absl::StrCat("0x", absl::Hex(res, absl::kZeroPad3));
+  };
+
+  const bool has_has_bits =
+      !has_bit_indices_.empty() || IsMapEntryMessage(descriptor_);
+  const bool has_extensions = descriptor_->extension_range_count() > 0;
+  const bool has_oneofs = descriptor_->real_oneof_decl_count() > 0;
+  const bool has_weak_fields = num_weak_fields_ > 0;
+  const bool has_inline_strings = !inlined_string_indices_.empty();
+  const bool has_split = ShouldSplit(descriptor_, options_);
+
+  format("$1$, // bitmap\n",
+         // These conditions have to match exactly the order done below
+         make_bitmap(has_has_bits, has_extensions, has_oneofs, has_weak_fields,
+                     has_inline_strings, has_split, has_split, has_has_bits,
+                     has_inline_strings));
+
+  // The order of these offsets has to match the reading of them in
+  // MigrationToReflectionSchema.
+  if (has_has_bits) {
     format("PROTOBUF_FIELD_OFFSET($classtype$, $has_bits$),\n");
-  } else {
-    format("~0u,  // no _has_bits_\n");
   }
-  format("PROTOBUF_FIELD_OFFSET($classtype$, _internal_metadata_),\n");
-  if (descriptor_->extension_range_count() > 0) {
+  if (has_extensions) {
     format("PROTOBUF_FIELD_OFFSET($classtype$, $extensions$),\n");
-  } else {
-    format("~0u,  // no _extensions_\n");
   }
-  if (descriptor_->real_oneof_decl_count() > 0) {
+  if (has_oneofs) {
     format("PROTOBUF_FIELD_OFFSET($classtype$, $oneof_case$[0]),\n");
-  } else {
-    format("~0u,  // no _oneof_case_\n");
   }
-  if (num_weak_fields_ > 0) {
+  if (has_weak_fields) {
     format("PROTOBUF_FIELD_OFFSET($classtype$, $weak_field_map$),\n");
-  } else {
-    format("~0u,  // no _weak_field_map_\n");
   }
-  if (!inlined_string_indices_.empty()) {
+  if (has_inline_strings) {
     format(
         "PROTOBUF_FIELD_OFFSET($classtype$, "
         "$inlined_string_donated_array$),\n");
-  } else {
-    format("~0u,  // no _inlined_string_donated_\n");
   }
-  if (ShouldSplit(descriptor_, options_)) {
+  if (has_split) {
     format(
         "PROTOBUF_FIELD_OFFSET($classtype$, $split$),\n"
         "sizeof($classtype$::Impl_::Split),\n");
-  } else {
-    format(
-        "~0u,  // no _split_\n"
-        "~0u,  // no sizeof(Split)\n");
   }
-  const int kNumGenericOffsets = 8;  // the number of fixed offsets above
-  const size_t offsets = kNumGenericOffsets + descriptor_->field_count() +
+  const size_t offsets = num_generated_indices + descriptor_->field_count() +
                          descriptor_->real_oneof_decl_count();
+  if (has_has_bits) {
+    format("$1$, // hasbit index offset\n", offsets);
+  }
+  if (has_inline_strings) {
+    format("$1$, // inline string index offset\n",
+           offsets + has_bit_indices_.size());
+  }
   size_t entries = offsets;
   for (auto field : FieldRange(descriptor_)) {
     // TODO: We should not have an entry in the offset table for fields
@@ -2710,12 +2678,12 @@ std::pair<size_t, size_t> MessageGenerator::GenerateOffsets(io::Printer* p) {
     // offset.
 
     if (ShouldSplit(field, options_)) {
-      format(" | ::_pbi::kSplitFieldOffsetMask /*split*/");
+      format(" | ::_pbi::kSplitFieldOffsetMask");
     }
     if (IsEagerlyVerifiedLazy(field, options_, scc_analyzer_)) {
-      format(" | 0x1u /*eagerly verified lazy*/");
+      format(" | ::_pbi::kLazyMask");
     } else if (IsStringInlined(field, options_)) {
-      format(" | 0x1u /*inlined*/");
+      format(" | ::_pbi::kInlinedMask");
     }
     format(",\n");
   }
@@ -2751,7 +2719,7 @@ std::pair<size_t, size_t> MessageGenerator::GenerateOffsets(io::Printer* p) {
     }
   }
 
-  return std::make_pair(entries, offsets);
+  return entries;
 }
 
 void MessageGenerator::GenerateZeroInitFields(io::Printer* p) const {
@@ -3831,7 +3799,7 @@ void MessageGenerator::GenerateSwap(io::Printer* p) {
       "void $classname$::InternalSwap($classname$* PROTOBUF_RESTRICT "
       "$nonnull$ other) {\n");
   format.Indent();
-  format("using std::swap;\n");
+  format("using ::std::swap;\n");
   format("$WeakDescriptorSelfPin$");
 
   if (HasGeneratedMethods(descriptor_->file(), options_)) {
@@ -4379,7 +4347,8 @@ void MessageGenerator::GenerateClassSpecificMergeImpl(io::Printer* p) {
 
         if (field->is_repeated()) {
           generator.GenerateMergingCode(p);
-        } else if (field->is_optional() && !HasHasbit(field)) {
+        } else if (!field->is_required() && !field->is_repeated() &&
+                   !HasHasbit(field)) {
           // Merge semantics without true field presence: primitive fields are
           // merged only if non-zero (numeric) or non-empty (string).
           MayEmitMutableIfNonDefaultCheck(
@@ -4660,7 +4629,7 @@ void MessageGenerator::GenerateSerializeOneField(io::Printer* p,
             $body$;
           }
         )cc");
-  } else if (field->is_optional()) {
+  } else if (!field->is_required() && !field->is_repeated()) {
     MayEmitIfNonDefaultCheck(p, "this_.", field, std::move(emit_body),
                              /*with_enclosing_braces_always=*/true);
   } else {
@@ -5144,6 +5113,7 @@ void MessageGenerator::GenerateByteSize(io::Printer* p) {
             return total_size;
           }
         )cc");
+    p->Emit("\n");
     return;
   }
 
@@ -5172,7 +5142,9 @@ void MessageGenerator::GenerateByteSize(io::Printer* p) {
 
   std::vector<FieldChunk> chunks =
       CollectFields(rest, options_, [&](const auto* a, const auto* b) {
-        return a->label() == b->label() && HasByteIndex(a) == HasByteIndex(b) &&
+        return a->is_required() == b->is_required() &&
+               a->is_repeated() == b->is_repeated() &&
+               HasByteIndex(a) == HasByteIndex(b) &&
                IsLikelyPresent(a, options_) == IsLikelyPresent(b, options_) &&
                ShouldSplit(a, options_) == ShouldSplit(b, options_);
       });
@@ -5427,6 +5399,9 @@ void MessageGenerator::GenerateByteSize(io::Printer* p) {
           $handle_unknown_fields$;
         }
       )cc");
+}
+
+void MessageGenerator::GenerateByteSizeV2(io::Printer* p) {
 }
 
 bool MessageGenerator::NeedsIsInitialized() {

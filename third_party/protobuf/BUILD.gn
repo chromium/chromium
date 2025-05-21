@@ -310,7 +310,6 @@ source_set("utf8_range") {
   sources = [
     "third_party/utf8_range/utf8_range.c",
     "third_party/utf8_range/utf8_range.h",
-    "third_party/utf8_range/utf8_validity.cc",
     "third_party/utf8_range/utf8_validity.h",
   ]
 
