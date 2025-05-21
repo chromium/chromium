@@ -272,7 +272,9 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl ^"http://example.org/path^" ^
   -H ^"Content-Type: application/binary^" ^
-  --data-raw ^"^!^@^#^$^%^^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^<^>?^
+  --data-raw ^"^!^@^#^$^%^^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^
+
+^<^>?^
 
 qwer^
 
