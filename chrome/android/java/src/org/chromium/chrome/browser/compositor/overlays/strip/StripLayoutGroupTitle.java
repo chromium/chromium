@@ -208,7 +208,15 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public void getAnchorRect(Rect out) {
-        getPaddedBoundsPx(out);
+        // For the context menu, we should use the unpadded height (so that the anchor rect will
+        // stretch to the bottom of the toolbar), but we should use the padded width (so that the
+        // left edge of the context menu will visually align with the tab group indicator oval).
+        float dpToPx = getDpToPx();
+        out.set(
+                Math.round(getPaddedX() * dpToPx),
+                Math.round(getDrawY() * dpToPx),
+                Math.round((getPaddedX() + getPaddedWidth()) * dpToPx),
+                Math.round((getDrawY() + getHeight()) * dpToPx));
     }
 
     /**

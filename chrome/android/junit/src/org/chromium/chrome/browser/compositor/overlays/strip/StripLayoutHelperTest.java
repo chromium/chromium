@@ -2306,6 +2306,8 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         // NTB is after group indicator and tabs.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.getNewTabButton().setDrawX(TAB_WIDTH_1 + tabs.length * TAB_WIDTH_1);
         setupForGroupContextMenu();
 
@@ -2323,8 +2325,12 @@ public class StripLayoutHelperTest {
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertTrue(view instanceof StripLayoutGroupTitle);
         StripLayoutGroupTitle titleView = (StripLayoutGroupTitle) view;
-        Rect expectedRect = new Rect();
-        titleView.getPaddedBoundsPx(expectedRect);
+        Rect expectedRect =
+                new Rect(
+                        Math.round(titleView.getPaddedX()),
+                        Math.round(titleView.getDrawY()),
+                        Math.round(titleView.getPaddedX() + titleView.getPaddedWidth()),
+                        Math.round(titleView.getDrawY() + titleView.getHeight()));
         Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
     }
