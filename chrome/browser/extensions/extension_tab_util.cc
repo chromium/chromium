@@ -1003,6 +1003,7 @@ tab_groups::TabGroupColorId ExtensionTabUtil::ColorToColorId(
 
   NOTREACHED();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 std::vector<content::WebContents*>
@@ -1016,6 +1017,18 @@ ExtensionTabUtil::GetAllActiveWebContentsForContext(
       include_incognito
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
           : nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  for (TabModel* tab_model : TabModelList::models()) {
+    if (tab_model->GetProfile() == profile ||
+        tab_model->GetProfile() == incognito_profile) {
+      // On Android, not every tab has a WebContents, so check for null.
+      auto* web_contents = tab_model->GetActiveWebContents();
+      if (web_contents) {
+        active_contents.push_back(web_contents);
+      }
+    }
+  }
+#else
   for (Browser* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() == profile ||
         target_browser->profile() == incognito_profile) {
@@ -1024,10 +1037,12 @@ ExtensionTabUtil::GetAllActiveWebContentsForContext(
       active_contents.push_back(target_tab_strip->GetActiveWebContents());
     }
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return active_contents;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ExtensionTabUtil::IsWebContentsInContext(
     content::WebContents* web_contents,

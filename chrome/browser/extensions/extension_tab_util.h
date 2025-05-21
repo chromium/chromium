@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/extensions/window_controller.h"
 
+// TODO(jamescook): Switch most of these guards to ENABLE_EXTENSIONS.
 #if !BUILDFLAG(IS_ANDROID)
 // gn check doesn't understand this conditional, hence the nogncheck directives
 // below.
@@ -268,12 +269,14 @@ class ExtensionTabUtil {
       const tab_groups::TabGroupColorId& color_id);
   static tab_groups::TabGroupColorId ColorToColorId(
       api::tab_groups::Color color);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns all active web contents for the given `browser_context`.
   static std::vector<content::WebContents*> GetAllActiveWebContentsForContext(
       content::BrowserContext* browser_context,
       bool include_incognito);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Determines if the `web_contents` is in `browser_context` or it's OTR
   // BrowserContext if `include_incognito` is true.
   static bool IsWebContentsInContext(content::WebContents* web_contents,

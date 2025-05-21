@@ -19,34 +19,6 @@ static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 
 namespace extensions {
 
-void ChromeExtensionsAPIClient::NotifyWebRequestWithheld(
-    int render_process_id,
-    int render_frame_id,
-    const ExtensionId& extension_id) {
-  // TODO(crbug.com/393179880): Port ExtensionActionRunner to desktop Android
-  // then delete this stub.
-  NOTIMPLEMENTED();
-}
-
-void ChromeExtensionsAPIClient::UpdateActionCount(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    int tab_id,
-    int action_count,
-    bool clear_badge_text) {
-  // TODO(crbug.com/393179880): Port ExtensionActionDispatcher to desktop
-  // Android then delete this stub.
-  NOTIMPLEMENTED();
-}
-
-void ChromeExtensionsAPIClient::ClearActionCount(
-    content::BrowserContext* context,
-    const Extension& extension) {
-  // TODO(crbug.com/393179880): Port ExtensionActionDispatcher to desktop
-  // Android then delete this stub.
-  NOTIMPLEMENTED();
-}
-
 void ChromeExtensionsAPIClient::OpenFileUrl(
     const GURL& file_url,
     content::BrowserContext* browser_context) {
