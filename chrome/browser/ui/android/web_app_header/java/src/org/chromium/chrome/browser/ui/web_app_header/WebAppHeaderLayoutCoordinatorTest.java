@@ -41,6 +41,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -238,6 +239,20 @@ public class WebAppHeaderLayoutCoordinatorTest {
         verifyHeaderContainsNonDraggableAreas(List.of(new Rect(0, 0, 0, 0)));
     }
 
+    private void testDisplayModeUMA(@DisplayMode.EnumType int displayMode) {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("CustomTabs.WebAppHeader.DisplayMode", displayMode)
+                        .build();
+
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(displayMode);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ true);
+        createCoordinator();
+
+        histogramWatcher.assertExpected();
+    }
+
     @Test
     public void testInitNoAppHeaderState_shouldNotInitCoordinator() {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
@@ -386,5 +401,86 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
         mCoordinator.releaseDisabledControlsToken(firstToken);
         verifyControlsEnabledState(false);
+    }
+
+    @Test
+    public void testControlsVisibilityChangeUMA() {
+        // Emulate minimizing window.
+        int flexibleAreaWidth = MIN_HEADER_WIDTH_DP - 1;
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + flexibleAreaWidth + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + flexibleAreaWidth, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ true);
+        createCoordinator();
+
+        mShadowLooper.idle();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("CustomTabs.WebAppHeader.ControlsShownTime")
+                        .expectAnyRecord("CustomTabs.WebAppHeader.ControlsHiddenTime")
+                        .build();
+
+        // Emulate maximizing window.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // Emulate minimizing window.
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + flexibleAreaWidth + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + flexibleAreaWidth, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // Emulate maximizing window.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDisplayModeBrowserUMA() {
+        testDisplayModeUMA(DisplayMode.BROWSER);
+    }
+
+    @Test
+    public void testDisplayModeMinimalUIUMA() {
+        testDisplayModeUMA(DisplayMode.MINIMAL_UI);
+    }
+
+    @Test
+    public void testDisplayModeStandaloneUMA() {
+        testDisplayModeUMA(DisplayMode.STANDALONE);
+    }
+
+    @Test
+    public void testDisplayModeFullscreenUMA() {
+        testDisplayModeUMA(DisplayMode.FULLSCREEN);
+    }
+
+    @Test
+    public void testDisplayModeWindowControlsOverlayUMA() {
+        testDisplayModeUMA(DisplayMode.WINDOW_CONTROLS_OVERLAY);
+    }
+
+    @Test
+    public void testDisplayModeTabbedUMA() {
+        testDisplayModeUMA(DisplayMode.TABBED);
+    }
+
+    @Test
+    public void testDisplayModeBorderlessUMA() {
+        testDisplayModeUMA(DisplayMode.BORDERLESS);
+    }
+
+    @Test
+    public void testDisplayModePiPUMA() {
+        testDisplayModeUMA(DisplayMode.PICTURE_IN_PICTURE);
     }
 }

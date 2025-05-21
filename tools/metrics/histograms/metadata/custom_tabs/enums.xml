@@ -312,6 +312,21 @@ chromium-metrics-reviews@google.com.
       label="Open a history navigation popup after long pressing button."/>
 </enum>
 
+<!-- LINT.IfChange(WebAppHeaderDisplayMode) -->
+
+<enum name="WebAppHeaderDisplayMode">
+  <int value="0" label="browser"/>
+  <int value="1" label="minimalUI"/>
+  <int value="2" label="standalone"/>
+  <int value="3" label="fullscreen"/>
+  <int value="4" label="windowControlsOverlay"/>
+  <int value="5" label="tabbed"/>
+  <int value="6" label="borderless"/>
+  <int value="7" label="pictureInPicture"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/manifest/display_mode.mojom:DisplayMode)-->
+
 <enum name="WebAppReloadButtonEvent">
   <int value="0"
       label="Invalid reload type due to tab switching, e.g. re-parenting."/>

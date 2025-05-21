@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.SystemClock;
 import android.view.ViewStub;
 import android.widget.ImageButton;
 
@@ -14,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.blink.mojom.DisplayMode;
@@ -68,6 +70,7 @@ public class WebAppHeaderLayoutCoordinator
     private final Callback<Integer> mOnUnoccludedWidthCallback;
     private final ObservableSupplierImpl<Boolean> mControlsEnabledSupplier;
     private final TokenHolder mDisabledControlsHolder;
+    private long mLastButtonVisibilityChangeTime;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -104,6 +107,7 @@ public class WebAppHeaderLayoutCoordinator
         mOnUnoccludedWidthCallback = this::onUnoccludedWidthChanged;
         mMinUIControlsMinWidthPx = 0;
         mAppHeaderUnoccludedWidthPx = 0;
+        mLastButtonVisibilityChangeTime = 0;
 
         final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
         if (appHeaderState != null) {
@@ -139,7 +143,8 @@ public class WebAppHeaderLayoutCoordinator
                         this::collectNonDraggableAreas,
                         mThemeColorProvider,
                         headerMinHeight,
-                        headerButtonHeight);
+                        headerButtonHeight,
+                        mDisplayMode);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
         mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);
@@ -183,18 +188,33 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     private void onUnoccludedWidthChanged(int newUnoccludedWidthPx) {
+        boolean wasShowingButtons = mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx;
         mAppHeaderUnoccludedWidthPx = newUnoccludedWidthPx;
-        updateButtonVisibility();
-    }
-
-    private void updateButtonVisibility() {
         boolean showButtons = mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx;
+
+        if (wasShowingButtons == showButtons) return;
+
         if (mReloadButtonCoordinator != null) {
             mReloadButtonCoordinator.setVisibility(showButtons);
         }
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.setVisibility(showButtons);
         }
+        logControlsVisibilityChange(wasShowingButtons);
+    }
+
+    private void logControlsVisibilityChange(boolean wasShowingButtons) {
+        if (mLastButtonVisibilityChangeTime != 0) {
+            long duration = SystemClock.elapsedRealtime() - mLastButtonVisibilityChangeTime;
+            if (wasShowingButtons) {
+                RecordHistogram.recordLongTimesHistogram(
+                        "CustomTabs.WebAppHeader.ControlsShownTime", duration);
+            } else {
+                RecordHistogram.recordLongTimesHistogram(
+                        "CustomTabs.WebAppHeader.ControlsHiddenTime", duration);
+            }
+        }
+        mLastButtonVisibilityChangeTime = SystemClock.elapsedRealtime();
     }
 
     private void updateControlsEnabledState() {
@@ -242,6 +262,8 @@ public class WebAppHeaderLayoutCoordinator
      * called.
      */
     public void destroy() {
+        logControlsVisibilityChange(mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx);
+
         mDesktopWindowStateManager.removeObserver(this);
 
         if (mView != null) {

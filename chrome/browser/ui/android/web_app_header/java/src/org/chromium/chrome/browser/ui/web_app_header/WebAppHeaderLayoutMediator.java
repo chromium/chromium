@@ -11,9 +11,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -55,8 +57,10 @@ class WebAppHeaderLayoutMediator
     private final Callback<Boolean> mScrimVisibilityObserver;
     private @Nullable Callback<Integer> mOnButtonBottomInsetChanged;
     private int mButtonBottomInset;
+    private final @DisplayMode.EnumType int mDisplayMode;
 
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
+    private boolean mIsFirstAppHeaderStateUpdate = true;
 
     /**
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
@@ -79,7 +83,8 @@ class WebAppHeaderLayoutMediator
             Supplier<List<Rect>> nonDraggableAreasSupplier,
             ThemeColorProvider themeColorProvider,
             int webAppHeaderMinHeightFromResources,
-            int headerButtonHeight) {
+            int headerButtonHeight,
+            int displayMode) {
         mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mHeaderDelegate = headerDelegate;
@@ -87,6 +92,7 @@ class WebAppHeaderLayoutMediator
         mTabSupplier = tabSupplier;
         mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
         mHeaderButtonHeight = headerButtonHeight;
+        mDisplayMode = displayMode;
 
         mScrimVisibilityObserver =
                 (isScrimVisible) -> {
@@ -153,6 +159,12 @@ class WebAppHeaderLayoutMediator
                 Math.max(mCurrentHeaderState.getAppHeaderHeight(), getDefaultMinHeight()));
         mModel.set(
                 WebAppHeaderLayoutProperties.IS_VISIBLE, mCurrentHeaderState.isInDesktopWindow());
+
+        if (mIsFirstAppHeaderStateUpdate && mCurrentHeaderState.isInDesktopWindow()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.WebAppHeader.DisplayMode", mDisplayMode, DisplayMode.MAX_VALUE);
+            mIsFirstAppHeaderStateUpdate = false;
+        }
     }
 
     /**

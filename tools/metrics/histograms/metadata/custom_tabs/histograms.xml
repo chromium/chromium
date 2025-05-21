@@ -914,6 +914,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.WebAppHeader.ControlsHiddenTime" units="seconds"
+    expires_after="2026-05-31">
+  <owner>japhet@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records how long PWA controls are hidden due to the window size being too
+    small. Recorded when transitioning hidden to shown, and on destruction.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.WebAppHeader.ControlsShownTime" units="seconds"
+    expires_after="2026-05-31">
+  <owner>japhet@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records how long PWA controls are shown before being hidden due to window
+    size changes. Recorded when transitioning shown to hidden, and on
+    destruction.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.WebAppHeader.DisplayMode"
+    enum="WebAppHeaderDisplayMode" expires_after="2026-05-31">
+  <owner>japhet@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the DisplayMode of the the PWA header when it first becomes visible.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.WebAppHeader.ReloadButtonEvent"
     enum="WebAppReloadButtonEvent" expires_after="2026-05-31">
   <owner>vkorotkevich@google.com</owner>

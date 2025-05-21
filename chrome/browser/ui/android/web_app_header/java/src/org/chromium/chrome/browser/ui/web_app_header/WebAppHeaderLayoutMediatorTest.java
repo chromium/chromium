@@ -32,6 +32,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -97,7 +98,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         mNonDraggableAreasSupplier,
                         mThemeColorProvider,
                         SYS_APP_HEADER_HEIGHT,
-                        HEADER_BUTTON_HEIGHT);
+                        HEADER_BUTTON_HEIGHT,
+                        DisplayMode.MINIMAL_UI);
 
         mShadowLooper.idle();
     }
@@ -176,7 +178,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         mNonDraggableAreasSupplier,
                         mThemeColorProvider,
                         SYS_APP_HEADER_HEIGHT,
-                        HEADER_BUTTON_HEIGHT);
+                        HEADER_BUTTON_HEIGHT,
+                        DisplayMode.MINIMAL_UI);
 
         assertEquals(
                 "Header min height should match app header height",
@@ -224,7 +227,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         mNonDraggableAreasSupplier,
                         mThemeColorProvider,
                         SYS_APP_HEADER_HEIGHT,
-                        HEADER_BUTTON_HEIGHT);
+                        HEADER_BUTTON_HEIGHT,
+                        DisplayMode.MINIMAL_UI);
         assertEquals(
                 "Header paddings should match updated system insets",
                 new Rect(0, 0, 0, 0),
@@ -275,7 +279,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         mNonDraggableAreasSupplier,
                         mThemeColorProvider,
                         SYS_APP_HEADER_HEIGHT,
-                        HEADER_BUTTON_HEIGHT);
+                        HEADER_BUTTON_HEIGHT,
+                        DisplayMode.MINIMAL_UI);
         mShadowLooper.idle();
 
         mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
