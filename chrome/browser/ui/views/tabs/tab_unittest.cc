@@ -890,7 +890,6 @@ TEST_F(TabTest, DiscardIndicatorResponsiveness) {
   };
 
   for (auto const& test_case : test_cases) {
-    controller->SetInactiveTabWidth(test_case.tab_width);
     tab->SetBounds(0, 0, test_case.tab_width, 50);
     EXPECT_EQ(test_case.expected_increased_radius,
               tab_icon->increased_discard_indicator_radius_);

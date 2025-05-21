@@ -48,8 +48,6 @@ TabStripLayoutHelper::TabStripLayoutHelper(
     : controller_(controller),
       get_tabs_callback_(get_tabs_callback),
       active_tab_width_(TabStyle::Get()->GetStandardWidth(/*is_split=*/false)),
-      inactive_tab_width_(
-          TabStyle::Get()->GetStandardWidth(/*is_split=*/false)),
       tab_strip_layout_domain_(LayoutDomain::kInactiveWidthEqualsActiveWidth) {}
 
 TabStripLayoutHelper::~TabStripLayoutHelper() = default;
@@ -436,8 +434,6 @@ void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,
   }
   if (active) {
     active_tab_width_ = tab_width;
-  } else {
-    inactive_tab_width_ = tab_width;
   }
 }
 

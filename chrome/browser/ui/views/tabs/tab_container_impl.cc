@@ -1686,11 +1686,14 @@ bool TabContainerImpl::ShouldTabBeVisible(const Tab* tab) const {
   // We need to check what would happen if the active tab were to move to this
   // tab or before. If animating, we want to use the target bounds in this
   // calculation.
+  const Tab* active_tab =
+      GetTabAtModelIndex(controller_->GetActiveIndex().value());
+  int active_tab_width = active_tab->width();
   if (IsAnimating()) {
     right_edge = bounds_animator_.GetTargetBounds(tab).right();
+    active_tab_width = bounds_animator_.GetTargetBounds(active_tab).width();
   }
-  return (right_edge + layout_helper_->active_tab_width() -
-          layout_helper_->inactive_tab_width()) <= tabstrip_right;
+  return right_edge + active_tab_width - tab->width() <= tabstrip_right;
 }
 
 gfx::Rect TabContainerImpl::GetDropBounds(int drop_index,
