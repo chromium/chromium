@@ -186,8 +186,13 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         loadPreferenceState();
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

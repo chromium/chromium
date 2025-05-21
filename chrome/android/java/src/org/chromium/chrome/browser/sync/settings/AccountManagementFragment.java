@@ -570,4 +570,9 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
             df.dismiss();
         }
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

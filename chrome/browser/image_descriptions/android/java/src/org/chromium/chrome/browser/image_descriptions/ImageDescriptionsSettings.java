@@ -117,4 +117,9 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
     public void setProfile(Profile profile) {
         mProfile = profile;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

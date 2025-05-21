@@ -197,6 +197,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             mShouldShowSnackbar = false;
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::showSignoutSnackbar);
         }
+        updatePreferences();
     }
 
     @Override
@@ -206,12 +207,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updatePreferences();
     }
 
     @Override
@@ -728,5 +723,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private boolean useLegacySettingsOrder() {
         return !ChromeFeatureList.isEnabled(
                 AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

@@ -198,4 +198,9 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
     void setPrefServiceForTesting(PrefService prefs) {
         mPrefService = prefs;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

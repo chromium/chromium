@@ -78,8 +78,8 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         // If view created, update the state for pref values or policy state changes.
         if (mRadioButtons != null) {
             mRadioButtons.setupPreferenceValues(createPreferenceValuesForRadioGroup());
@@ -183,5 +183,10 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
                 isRadioButtonPreferenceEnabled,
                 isNtpOptionVisible,
                 isCustomizedOptionVisible);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

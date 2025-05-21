@@ -966,4 +966,9 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     private boolean isInMultiWindowMode() {
         return MultiWindowUtils.getInstanceCount() > 1;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

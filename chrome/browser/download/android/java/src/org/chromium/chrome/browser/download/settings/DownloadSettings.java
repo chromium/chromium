@@ -101,8 +101,8 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         updateDownloadSettings();
     }
 
@@ -151,5 +151,10 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
 
     public ManagedPreferenceDelegate getLocationPromptEnabledPrefDelegateForTesting() {
         return mLocationPromptEnabledPrefDelegate;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }
