@@ -57,7 +57,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -358,14 +357,13 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 };
 
 void Handle(const AttributionSimulationEvent::StartRequest& event,
-            AttributionManager& manager) {
+            AttributionDataHostManager& data_host_manager) {
   std::optional<RegistrationEligibility> eligibility =
       attribution_reporting::GetRegistrationEligibility(event.eligibility);
   if (!eligibility.has_value()) {
     return;
   }
 
-  auto& data_host_manager = *manager.GetDataHostManager();
   auto suitable_context = AttributionSuitableContext::CreateForTesting(
       event.context_origin, event.fenced, kFrameId,
       /*last_navigation_id=*/kNavigationId);
@@ -390,21 +388,16 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
 }
 
 void Handle(const AttributionSimulationEvent::Response& event,
-            AttributionManager& manager) {
-  manager.GetDataHostManager()->NotifyBackgroundRegistrationData(
+            AttributionDataHostManager& data_host_manager) {
+  data_host_manager.NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId(event.request_id), event.response_headers.get(),
       event.url);
 }
 
 void Handle(const AttributionSimulationEvent::EndRequest& event,
-            AttributionManager& manager) {
-  manager.GetDataHostManager()->NotifyBackgroundRegistrationCompleted(
+            AttributionDataHostManager& data_host_manager) {
+  data_host_manager.NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId(event.request_id));
-}
-
-void Handle(const AttributionSimulationEvent::Navigation& event,
-            AttributionManager& manager) {
-  manager.UpdateLastNavigationTime(base::Time::Now());
 }
 
 void FastForwardUntilReportsConsumed(AttributionManager& manager,
@@ -427,7 +420,6 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
     run_loop.Run();
 
     if (delta.is_negative()) {
-      task_environment.FastForwardBy(base::TimeDelta());
       break;
     }
     task_environment.FastForwardBy(delta);
@@ -455,10 +447,6 @@ RunAttributionInteropSimulation(
       scoped_api_state;
   if (run.config.needs_cross_app_web) {
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
-  }
-
-  if (run.config.needs_delivery_after_new_navigation) {
-    enabled_features.emplace_back(kAttributionReportDeliveryOnNewNavigation);
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -569,7 +557,10 @@ RunAttributionInteropSimulation(
 
   for (const auto& event : run.events) {
     task_environment.FastForwardBy(event.time - base::Time::Now());
-    std::visit([&](const auto& data) { Handle(data, *manager); }, event.data);
+
+    std::visit(
+        [&](const auto& data) { Handle(data, *manager->GetDataHostManager()); },
+        event.data);
   }
 
   FastForwardUntilReportsConsumed(*manager, task_environment);
