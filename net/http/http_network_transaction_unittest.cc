@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/http/http_network_transaction.h"
 
 #include <math.h>  // ceil
@@ -12042,6 +12041,184 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
       url::SchemeHostPort(GURL(kMappedUrl)), NetworkAnonymizationKey()));
   EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
       kMappedSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+}
+
+// Same as NTLMOverHttp2, but with HTTP proxy.
+TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHttpProxy) {
+  HttpAuthNtlmMechanism::ScopedProcSetter proc_setter(
+      MockGetMSTime, MockGenerateRandom, MockGetHostName);
+
+  const char kPacString[] = "PROXY myproxy:70";
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          kPacString, TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.net_log = NetLog::Get();
+
+  const char kUrl[] = "https://server/kids/login.aspx";
+
+  const SpdySessionKey kSpdySessionKey(
+      HostPortPair("server", 443), PRIVACY_MODE_DISABLED,
+      PacResultElementToProxyChain(kPacString), SessionUsage::kDestination,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL(kUrl);
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // First request without credentials.
+  quiche::HttpHeaderBlock request_headers0(
+      spdy_util_.ConstructGetHeaderBlock(kUrl));
+  spdy::SpdySerializedFrame request0(spdy_util_.ConstructSpdyHeaders(
+      1, std::move(request_headers0), LOWEST, true));
+
+  quiche::HttpHeaderBlock response_headers0;
+  response_headers0[spdy::kHttp2StatusHeader] = "401";
+  response_headers0["www-authenticate"] = "NTLM";
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyResponseHeaders(
+      1, std::move(response_headers0), true));
+
+  // Stream 1 is closed.
+  spdy_util_.UpdateWithStreamDestruction(1);
+
+  // GOAWAY is sent.
+  spdy::SpdySerializedFrame go_away(spdy_util_.ConstructSpdyGoAway(
+      /*last_good_stream_id=*/0,
+      MapNetErrorToGoAwayStatus(ERR_HTTP_1_1_REQUIRED),
+      std::string(SpdySession::kHTTP11RequiredErrorMessage)));
+
+  // Generate the NTLM messages based on known test data.
+  std::string negotiate_msg = base::Base64Encode(std::string_view(
+      reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
+      std::size(ntlm::test::kExpectedNegotiateMsg)));
+  std::string challenge_msg = base::Base64Encode(std::string_view(
+      reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
+      std::size(ntlm::test::kChallengeMsgFromSpecV2)));
+  std::string authenticate_msg = base::Base64Encode(std::string_view(
+      reinterpret_cast<const char*>(
+          ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
+      std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
+
+  MockWrite writes0[] = {MockWrite(SYNCHRONOUS, 0,
+                                   "CONNECT server:443 HTTP/1.1\r\n"
+                                   "Host: server:443\r\n"
+                                   "Proxy-Connection: keep-alive\r\n"
+                                   "User-Agent: test-ua\r\n\r\n"),
+                         CreateMockWrite(request0, 2),
+                         CreateMockWrite(go_away, 5)};
+  MockRead reads0[] = {
+      MockRead(SYNCHRONOUS, 1, "HTTP/1.0 200 Connected\r\n\r\n"),
+      CreateMockRead(resp, 3), MockRead(SYNCHRONOUS, ERR_IO_PENDING, 4)};
+
+  // Retry yet again using HTTP/1.1.
+  MockWrite writes1[] = {
+      MockWrite("CONNECT server:443 HTTP/1.1\r\n"
+                "Host: server:443\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
+      MockWrite("GET /kids/login.aspx HTTP/1.1\r\n"
+                "Host: server\r\n"
+                "Connection: keep-alive\r\n"
+                "Authorization: NTLM "),
+      MockWrite(negotiate_msg.c_str()),
+      MockWrite("\r\n\r\n"),
+
+      MockWrite("GET /kids/login.aspx HTTP/1.1\r\n"
+                "Host: server\r\n"
+                "Connection: keep-alive\r\n"
+                "Authorization: NTLM "),
+      MockWrite(authenticate_msg.c_str()),
+      MockWrite("\r\n\r\n"),
+  };
+
+  MockRead reads1[] = {
+      MockRead("HTTP/1.0 200 Connected\r\n\r\n"),
+      MockRead("HTTP/1.1 401 Access Denied\r\n"),
+      MockRead("WWW-Authenticate: NTLM "),
+      MockRead(challenge_msg.c_str()),
+      MockRead("\r\n"),
+      MockRead("Content-Length: 42\r\n"),
+      MockRead("Content-Type: text/html\r\n\r\n"),
+      MockRead("You are not authorized to view this page\r\n"),
+
+      MockRead("HTTP/1.1 200 OK\r\n"),
+      MockRead("Content-Type: text/html; charset=utf-8\r\n"),
+      MockRead("Content-Length: 14\r\n\r\n"),
+      MockRead("Please Login\r\n"),
+  };
+
+  SequencedSocketData data0(reads0, writes0);
+  StaticSocketDataProvider data1(reads1, writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data0);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  SSLSocketDataProvider ssl0(ASYNC, OK);
+  ssl0.next_proto = NextProto::kProtoHTTP2;
+  ssl0.next_protos_expected_in_ssl_config =
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+
+  SSLSocketDataProvider ssl1(ASYNC, OK);
+  // When creating the second connection, only HTTP/1.1 should be allowed.
+  ssl1.next_protos_expected_in_ssl_config =
+      NextProtoVector{NextProto::kProtoHTTP11};
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl0);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  TestCompletionCallback callback1;
+  int rv = trans.Start(&request, callback1.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback1.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(session->spdy_session_pool()->HasAvailableSession(
+      kSpdySessionKey,
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_EQ(1u, response->proxy_chain.length());
+  EXPECT_TRUE(response->proxy_chain.GetProxyServer(0).is_http());
+  EXPECT_TRUE(CheckNTLMServerAuth(response->auth_challenge));
+
+  TestCompletionCallback callback2;
+  rv = trans.RestartWithAuth(
+      AuthCredentials(ntlm::test::kDomainUserCombined, ntlm::test::kPassword),
+      callback2.callback());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback2.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(trans.IsReadyToRestartForAuth());
+
+  TestCompletionCallback callback3;
+  rv = trans.RestartWithAuth(AuthCredentials(), callback3.callback());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback3.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_FALSE(response->auth_challenge.has_value());
+  EXPECT_EQ(14, response->headers->GetContentLength());
+
+  std::string response_data;
+  rv = ReadTransaction(&trans, &response_data);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_EQ("Please Login\r\n", response_data);
+
+  EXPECT_TRUE(data0.AllReadDataConsumed());
+  EXPECT_TRUE(data0.AllWriteDataConsumed());
+  EXPECT_TRUE(data1.AllReadDataConsumed());
+  EXPECT_TRUE(data1.AllWriteDataConsumed());
+
+  EXPECT_TRUE(session->http_server_properties()->RequiresHTTP11(
+      url::SchemeHostPort(request.url), NetworkAnonymizationKey()));
+  EXPECT_FALSE(session->spdy_session_pool()->HasAvailableSession(
+      kSpdySessionKey,
       /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
 }
 

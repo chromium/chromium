@@ -389,8 +389,7 @@ bool HttpStreamFactory::Job::UsingHttpProxyWithoutTunnel() const {
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
   DCHECK(!using_quic_);
 
-  if (proxy_info_.is_direct() &&
-      session_->http_server_properties()->RequiresHTTP11(
+  if (session_->http_server_properties()->RequiresHTTP11(
           url::SchemeHostPort(origin_url_),
           request_info_.network_anonymization_key)) {
     return false;
