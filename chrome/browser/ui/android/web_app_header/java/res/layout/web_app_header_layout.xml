@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:contentDescription="@string/accessibility_toolbar_btn_back"
         android:tooltipText="@string/accessibility_toolbar_btn_back"
         android:visibility="gone"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="start|center_vertical"
         app:tint="@color/default_icon_color_tint_list" />
 
     <org.chromium.ui.widget.ChromeImageButton
@@ -31,6 +31,6 @@ found in the LICENSE file.
         android:contentDescription="@string/accessibility_btn_refresh"
         android:tooltipText="@string/accessibility_btn_refresh"
         android:visibility="gone"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="start|center_vertical"
         app:tint="@color/default_icon_color_tint_list" />
 </org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayout>
