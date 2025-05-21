@@ -663,6 +663,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   };
 
   friend class FormFillerTest;
+  friend class PDFiumDrawSelectionTestBase;
   friend class PDFiumEngineTabbingTest;
   friend class PDFiumEngineTest;
   friend class PDFiumFormFiller;

@@ -440,6 +440,8 @@ if (enable_pdf) {
       "pdf_view_web_plugin_unittest.cc",
       "pdfium/accessibility_unittest.cc",
       "pdfium/findtext_unittest.cc",
+      "pdfium/pdfium_draw_selection_test_base.cc",
+      "pdfium/pdfium_draw_selection_test_base.h",
       "pdfium/pdfium_engine_exports_unittest.cc",
       "pdfium/pdfium_engine_unittest.cc",
       "pdfium/pdfium_form_filler_unittest.cc",

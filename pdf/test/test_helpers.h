@@ -5,6 +5,8 @@
 #ifndef PDF_TEST_TEST_HELPERS_H_
 #define PDF_TEST_TEST_HELPERS_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +42,15 @@ base::FilePath GetTestDataFilePath(const base::FilePath& path);
 // Windows or macOS platforms.
 base::FilePath::StringType GetTestDataPathWithPlatformSuffix(
     std::string_view filename);
+
+// Returns the file path for a reference file located in `sub_directory` within
+// //pdf/test/data with name `test_filename`. Set `use_platform_suffix` to true
+// if the file name includes platform-identifying suffixes. See comments for
+// `GetTestDataPathWithPlatformSuffix()`.
+base::FilePath GetReferenceFilePath(
+    base::FilePath::StringViewType sub_directory,
+    std::string_view test_filename,
+    bool use_platform_suffix);
 
 // Matches `actual_image` against the PNG at the file path `expected_png_file`.
 // The path must be relative to //pdf/test/data.

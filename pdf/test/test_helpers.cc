@@ -4,6 +4,8 @@
 
 #include "pdf/test/test_helpers.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -100,6 +102,18 @@ base::FilePath::StringType GetTestDataPathWithPlatformSuffix(
 #else
   return base::FilePath(filename).value();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+}
+
+base::FilePath GetReferenceFilePath(
+    base::FilePath::StringViewType sub_directory,
+    std::string_view test_filename,
+    bool use_platform_suffix) {
+  if (use_platform_suffix) {
+    return base::FilePath(sub_directory)
+        .Append(GetTestDataPathWithPlatformSuffix(test_filename));
+  }
+
+  return base::FilePath(sub_directory).AppendASCII(test_filename);
 }
 
 testing::AssertionResult MatchesPngFile(
