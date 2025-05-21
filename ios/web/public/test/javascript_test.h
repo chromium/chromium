@@ -19,9 +19,9 @@ class JavascriptTest : public PlatformTest {
   JavascriptTest();
   ~JavascriptTest() override;
 
-  // Loads `html` into `web_view()` and waits for the web view to finish
-  // loading.
-  bool LoadHtml(NSString* html);
+  // Loads the `html` content at `base_url` into `web_view()` and waits for
+  // the web view to finish loading.
+  bool LoadHtml(NSString* html, std::optional<GURL> base_url = std::nullopt);
 
   // Loads `url` into `web_view()` and waits for the web view to finish
   // loading.

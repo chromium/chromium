@@ -110,7 +110,7 @@ function processChildFrameMessage(payload: MessageEvent): void {
       payload.source?.postMessage({
         command: REGISTER_AS_CHILD_FRAME_ACK,
         remoteFrameId: remoteId,
-      });
+      }, {targetOrigin: payload.origin});
     }
   } else if (command === REGISTER_AS_CHILD_FRAME_ACK) {
     const remoteId = payload.data?.remoteFrameId;

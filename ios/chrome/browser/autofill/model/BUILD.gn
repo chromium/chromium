@@ -236,6 +236,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
+    "//ios/testing:embedded_test_server_support",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:javascript_test",
