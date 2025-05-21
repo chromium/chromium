@@ -56,7 +56,7 @@ async def test_browser_create_user_context(websocket):
 
 
 @pytest.mark.asyncio
-async def test_browser_create_user_context_proxy_server(
+async def test_browser_create_user_context_legacy_proxy(
         websocket, http_proxy_server, test_chromedriver_mode):
     if test_chromedriver_mode:
         pytest.xfail(reason="TODO: #3294")
@@ -68,7 +68,7 @@ async def test_browser_create_user_context_proxy_server(
         websocket, {
             "method": "browser.createUserContext",
             "params": {
-                "goog:proxyServer": http_proxy_server.url()
+                "goog:proxyServer": f"http://{http_proxy_server.url()}"
             }
         })
 
@@ -92,6 +92,66 @@ async def test_browser_create_user_context_proxy_server(
         })
 
     assert http_proxy_server.stop()[0] == "http://example.com/"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('no_proxy', [True, False])
+@pytest.mark.parametrize(
+    'capabilities',
+    [{
+        'goog:chromeOptions': {
+            # Required to prevent automatic switch to https.
+            'args': ['--disable-features=HttpsUpgrades']
+        }
+    }],
+    indirect=True)
+async def test_browser_create_user_context_proxy(websocket, http_proxy_server,
+                                                 test_chromedriver_mode,
+                                                 no_proxy):
+    if test_chromedriver_mode:
+        # For whatever reason, in chromedriver, the
+        # `disable-features=HttpsUpgrades` is not respected.
+        pytest.xfail(reason="TODO: #3294")
+
+    example_url = "http://example.com/"
+
+    user_context = await execute_command(
+        websocket, {
+            "method": "browser.createUserContext",
+            "params": {
+                "proxy": {
+                    "proxyType": "manual",
+                    "httpProxy": http_proxy_server.url(),
+                    **({
+                        'noProxy': ['example.com']
+                    } if no_proxy else {})
+                }
+            }
+        })
+
+    browsing_context = await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": "tab",
+                "userContext": user_context["userContext"]
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "wait": "complete",
+                "context": browsing_context["context"]
+            }
+        })
+
+    if no_proxy:
+        assert len(http_proxy_server.stop()) == 0
+    else:
+        assert http_proxy_server.stop()[0] == example_url
 
 
 @pytest.mark.asyncio

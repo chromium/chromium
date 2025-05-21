@@ -41,6 +41,7 @@ class HttpProxyServer():
 
     def url(self):
         """
-        Returns the proxy URL. Available after the `start` call has succeeded.
+        Returns the proxy address without protocol prefix. Available after the
+        `start` call has succeeded.
         """
         return self._url

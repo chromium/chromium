@@ -63,14 +63,38 @@ export class BrowserInstance {
     const profileDir = await mkdtemp(
       path.join(os.tmpdir(), 'web-driver-bidi-server-'),
     );
+
+    // For HttpsFirstBalancedModeAutoEnable, crbug.com/378022921.
+    // HttpsUpgrades is required for testing proxy settings.
+    const disabledFeatures = new Set([
+      'DialMediaRouteProvider',
+      'TrackingProtection3pcd',
+      'HttpsFirstBalancedModeAutoEnable',
+    ]);
+
+    // Add all `disable-features` from chromeArgs to the disabledFeatures set.
+    const disableFeaturesArgStr =
+      chromeOptions.chromeArgs
+        .filter((arg) => arg.startsWith('--disable-features='))
+        .at(0) ?? '';
+    disableFeaturesArgStr
+      .replaceAll('--disable-features=', '')
+      .split(',')
+      .forEach((feature) => disabledFeatures.add(feature));
+
+    // Remove `disable-features` from chromeArgs.
+    chromeOptions.chromeArgs = [
+      ...chromeOptions.chromeArgs.filter(
+        (arg) => !arg.startsWith('--disable-features='),
+      ),
+    ];
+
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
     const chromeArguments = [
       // keep-sorted start
       '--allow-browser-signin=false',
       '--disable-component-update',
       '--disable-default-apps',
-      // For HttpsFirstBalancedModeAutoEnable, crbug.com/378022921.
-      '--disable-features=DialMediaRouteProvider,TrackingProtection3pcd,HttpsFirstBalancedModeAutoEnable',
       '--disable-infobars',
       '--disable-notifications',
       '--disable-popup-blocking',
@@ -80,6 +104,7 @@ export class BrowserInstance {
       '--no-first-run',
       '--password-store=basic',
       '--use-mock-keychain',
+      `--disable-features=${[...disabledFeatures.values()].join(',')}`,
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
       ...(chromeOptions.chromeArgs.includes('--remote-debugging-pipe')

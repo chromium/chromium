@@ -16,9 +16,10 @@
  */
 
 /**
- * @fileoverview `node http-proxy.mjs` starts a new HTTP proxy server on
+ * @fileoverview `node http-proxy.mjs` starts a new HTTP server on
  * localhost:{FREE_PORT}. Upon the start the server prints its URL to stdout.
  * After that it will print a URL per line for each of the requests it proxied.
+ * It does not forward requests, and always provides a predefined response.
  */
 
 import http from 'node:http';
@@ -49,4 +50,4 @@ const proxyServer = http
   })
   .listen();
 
-log(`http://${process.argv[2] || 'localhost'}:${proxyServer.address().port}`);
+log(`${process.argv[2] || 'localhost'}:${proxyServer.address().port}`);

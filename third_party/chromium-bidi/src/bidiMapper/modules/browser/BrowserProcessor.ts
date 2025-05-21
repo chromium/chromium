@@ -18,10 +18,11 @@
 import type Protocol from 'devtools-protocol';
 
 import {
-  type EmptyResult,
   type Browser,
+  type EmptyResult,
   InvalidArgumentException,
   NoSuchUserContextException,
+  type Session,
   UnknownErrorException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
@@ -59,9 +60,16 @@ export class BrowserProcessor {
   async createUserContext(
     params: Record<string, any>,
   ): Promise<Browser.CreateUserContextResult> {
-    if (params['acceptInsecureCerts'] !== undefined) {
+    // `params` is a record to provide legacy `goog:` parameters. Now as the `proxy`
+    // parameter is specified, we should get rid of `goog:proxyServer` and
+    // `goog:proxyBypassList` and make the params of type
+    // `Browser.CreateUserContextParameters`.
+
+    const w3cParams = params as Browser.CreateUserContextParameters;
+
+    if (w3cParams.acceptInsecureCerts !== undefined) {
       if (
-        params['acceptInsecureCerts'] === false &&
+        w3cParams.acceptInsecureCerts === false &&
         this.#mapperOptionsStorage.mapperOptions?.acceptInsecureCerts === true
       )
         // TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3398
@@ -69,14 +77,29 @@ export class BrowserProcessor {
           `Cannot set user context's "acceptInsecureCerts" to false, when a capability "acceptInsecureCerts" is set to true`,
         );
     }
-    const request: Protocol.Target.CreateBrowserContextRequest = {
-      proxyServer: params['goog:proxyServer'] ?? undefined,
-    };
-    const proxyBypassList: string[] | undefined =
-      params['goog:proxyBypassList'] ?? undefined;
-    if (proxyBypassList) {
-      request.proxyBypassList = proxyBypassList.join(',');
+
+    const request: Protocol.Target.CreateBrowserContextRequest = {};
+
+    if (w3cParams.proxy) {
+      const proxyStr = getProxyStr(w3cParams.proxy);
+      if (proxyStr) {
+        request.proxyServer = proxyStr;
+      }
+      if (w3cParams.proxy.noProxy) {
+        request.proxyBypassList = w3cParams.proxy.noProxy.join(',');
+      }
+    } else {
+      // TODO: remove after Puppeteer stops using it.
+      if (params['goog:proxyServer'] !== undefined) {
+        request.proxyServer = params['goog:proxyServer'];
+      }
+      const proxyBypassList: string[] | undefined =
+        params['goog:proxyBypassList'] ?? undefined;
+      if (proxyBypassList) {
+        request.proxyBypassList = proxyBypassList.join(',');
+      }
     }
+
     const context = await this.#browserCdpClient.sendCommand(
       'Target.createBrowserContext',
       request,
@@ -160,4 +183,84 @@ export class BrowserProcessor {
     }
     return {clientWindows: uniqueClientWindows};
   }
+}
+
+/**
+ * Proxy config parse implementation:
+ * https://source.chromium.org/chromium/chromium/src/+/main:net/proxy_resolution/proxy_config.h;drc=743a82d08e59d803c94ee1b8564b8b11dd7b462f;l=107
+ */
+export function getProxyStr(
+  proxyConfig: Session.ProxyConfiguration,
+): string | undefined {
+  if (
+    proxyConfig.proxyType === 'direct' ||
+    proxyConfig.proxyType === 'system'
+  ) {
+    // These types imply that Chrome should use its default behavior (e.g., direct
+    // connection or system-configured proxy). No specific `proxyServer` string is
+    // needed.
+    return undefined;
+  }
+
+  if (proxyConfig.proxyType === 'pac') {
+    throw new InvalidArgumentException(
+      `PAC proxy configuration is not supported per user context`,
+    );
+  }
+
+  if (proxyConfig.proxyType === 'autodetect') {
+    throw new InvalidArgumentException(
+      `Proxy auto-detection is not supported per user context`,
+    );
+  }
+
+  if (proxyConfig.proxyType === 'manual') {
+    const servers: string[] = [];
+
+    // HTTP Proxy
+    if (proxyConfig.httpProxy !== undefined) {
+      // servers.push(proxyConfig.httpProxy);
+      servers.push(`http=${proxyConfig.httpProxy}`);
+    }
+
+    // FTP Proxy
+    if (proxyConfig.ftpProxy !== undefined) {
+      servers.push(`ftp=${proxyConfig.ftpProxy}`);
+    }
+
+    // SSL Proxy (uses 'https' scheme)
+    if (proxyConfig.sslProxy !== undefined) {
+      // servers.push(proxyConfig.sslProxy);
+      servers.push(`https=${proxyConfig.sslProxy}`);
+    }
+
+    // SOCKS Proxy
+    if (proxyConfig.socksProxy !== undefined) {
+      // socksVersion is mandatory and must be a valid integer if socksProxy is
+      // specified.
+      if (
+        proxyConfig.socksVersion === undefined ||
+        typeof proxyConfig.socksVersion !== 'number' ||
+        !Number.isInteger(proxyConfig.socksVersion) ||
+        proxyConfig.socksVersion < 0 ||
+        proxyConfig.socksVersion > 255
+      ) {
+        throw new InvalidArgumentException(
+          `'socksVersion' must be between 0 and 255`,
+        );
+      }
+      servers.push(
+        `socks=socks${proxyConfig.socksVersion}://${proxyConfig.socksProxy}`,
+      );
+    }
+
+    if (servers.length === 0) {
+      // If 'manual' proxyType is chosen but no specific proxy servers (http, ftp, ssl, socks)
+      // are provided, it means no proxy server should be configured.
+      return undefined;
+    }
+    return servers.join(';');
+  }
+  // Unreachable.
+  throw new UnknownErrorException(`Unknown proxy type`);
 }
