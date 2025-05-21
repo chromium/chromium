@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorBridge;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -167,14 +167,14 @@ public class ConsentTextTracker {
      * Records the consent.
      *
      * @param profile The {@link Profile} associated with this consent record.
-     * @param accountId The account for which the consent is valid
+     * @param gaiaId The account for which the consent is valid
      * @param feature {@link ConsentAuditorFeature} that user has consented to
      * @param confirmationView The view that the user clicked when consenting
      * @param consentViews View hierarchies that implement the consent screen
      */
     public void recordConsent(
             Profile profile,
-            CoreAccountId accountId,
+            GaiaId gaiaId,
             @ConsentAuditorFeature int feature,
             TextView confirmationView,
             View... consentViews) {
@@ -194,7 +194,6 @@ public class ConsentTextTracker {
         }
 
         ConsentAuditorBridge.getInstance()
-                .recordConsent(
-                        profile, accountId, feature, consentDescription, consentConfirmation);
+                .recordConsent(profile, gaiaId, feature, consentDescription, consentConfirmation);
     }
 }

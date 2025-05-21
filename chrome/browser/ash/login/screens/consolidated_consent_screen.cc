@@ -408,8 +408,9 @@ void ConsolidatedConsentScreen::RecordConsents(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   // The account may or may not have consented to browser sync.
   DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  const CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::GIVEN);
@@ -424,7 +425,7 @@ void ConsolidatedConsentScreen::RecordConsents(
     play_consent.set_play_terms_of_service_hash(
         base::SHA1HashString(params.tos_content));
   }
-  consent_auditor->RecordArcPlayConsent(account_id, play_consent);
+  consent_auditor->RecordArcPlayConsent(gaia_id, play_consent);
 
   if (params.record_backup_consent) {
     ArcBackupAndRestoreConsent backup_and_restore_consent;
@@ -440,7 +441,7 @@ void ConsolidatedConsentScreen::RecordConsents(
                                               : UserConsentTypes::NOT_GIVEN);
 
     consent_auditor->RecordArcBackupAndRestoreConsent(
-        account_id, backup_and_restore_consent);
+        gaia_id, backup_and_restore_consent);
   }
 
   if (params.record_location_consent) {
@@ -467,7 +468,7 @@ void ConsolidatedConsentScreen::RecordConsents(
                                             ? UserConsentTypes::GIVEN
                                             : UserConsentTypes::NOT_GIVEN);
     consent_auditor->RecordArcGoogleLocationServiceConsent(
-        account_id, location_service_consent);
+        gaia_id, location_service_consent);
   }
 }
 

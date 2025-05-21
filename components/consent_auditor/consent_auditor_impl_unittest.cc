@@ -36,6 +36,9 @@ namespace {
 // Fake product locate for testing.
 constexpr char kCurrentAppLocale[] = "en-US";
 
+// Fake Gaia ID for testing.
+constexpr GaiaId::Literal kGaiaId("testing_gaia_id");
+
 // Fake message ids.
 constexpr std::array<int, 3> kDescriptionMessageIds = {12, 37, 42};
 constexpr int kConfirmationMessageId = 47;
@@ -75,12 +78,6 @@ class FakeConsentSyncBridge : public ConsentSyncBridge {
 
 class ConsentAuditorImplTest : public testing::Test {
  public:
-  // Fake account ID for testing.
-  const CoreAccountId kAccountId;
-
-  ConsentAuditorImplTest()
-      : kAccountId(CoreAccountId::FromGaiaId(GaiaId("testing_account_id"))) {}
-
   void SetUp() override {
     CreateConsentAuditorImpl(std::make_unique<FakeConsentSyncBridge>());
   }
@@ -118,7 +115,7 @@ TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
   for (int id : kDescriptionMessageIds) {
     sync_consent.add_description_grd_ids(id);
   }
-  consent_auditor()->RecordSyncConsent(kAccountId, sync_consent);
+  consent_auditor()->RecordSyncConsent(kGaiaId, sync_consent);
 
   std::vector<UserConsentSpecifics> consents =
       consent_sync_bridge()->GetRecordedUserConsents();
@@ -127,7 +124,7 @@ TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
 
   EXPECT_EQ(now.since_origin().InMicroseconds(),
             consent.client_consent_time_usec());
-  EXPECT_EQ(kAccountId.ToString(), consent.account_id());
+  EXPECT_EQ(kGaiaId.ToString(), consent.obfuscated_gaia_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_TRUE(consent.has_sync_consent());
@@ -149,14 +146,14 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsentRevocation) {
     play_consent.add_description_grd_ids(id);
   }
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
-  consent_auditor()->RecordArcPlayConsent(kAccountId, play_consent);
+  consent_auditor()->RecordArcPlayConsent(kGaiaId, play_consent);
 
   const std::vector<UserConsentSpecifics> consents =
       consent_sync_bridge()->GetRecordedUserConsents();
   ASSERT_EQ(1U, consents.size());
   const UserConsentSpecifics& consent = consents[0];
 
-  EXPECT_EQ(kAccountId.ToString(), consent.account_id());
+  EXPECT_EQ(kGaiaId.ToString(), consent.obfuscated_gaia_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_TRUE(consent.has_arc_play_terms_of_service_consent());
@@ -188,14 +185,14 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsent) {
       reinterpret_cast<const char*>(play_tos_hash), base::kSHA1Length));
   play_consent.set_play_terms_of_service_text_length(7);
 
-  consent_auditor()->RecordArcPlayConsent(kAccountId, play_consent);
+  consent_auditor()->RecordArcPlayConsent(kGaiaId, play_consent);
 
   const std::vector<UserConsentSpecifics> consents =
       consent_sync_bridge()->GetRecordedUserConsents();
   ASSERT_EQ(1U, consents.size());
   const UserConsentSpecifics& consent = consents[0];
 
-  EXPECT_EQ(kAccountId.ToString(), consent.account_id());
+  EXPECT_EQ(kGaiaId.ToString(), consent.obfuscated_gaia_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_TRUE(consent.has_arc_play_terms_of_service_consent());
@@ -237,7 +234,7 @@ TEST_F(ConsentAuditorImplTest, RecordAssistantActivityControlConsent) {
   assistant_consent.set_ui_audit_key(std::string(ui_audit_key, 3));
   assistant_consent.set_setting_type(AssistantActivityControlConsent::ALL);
 
-  consent_auditor()->RecordAssistantActivityControlConsent(kAccountId,
+  consent_auditor()->RecordAssistantActivityControlConsent(kGaiaId,
                                                            assistant_consent);
 
   std::vector<UserConsentSpecifics> consents =
@@ -245,7 +242,7 @@ TEST_F(ConsentAuditorImplTest, RecordAssistantActivityControlConsent) {
   ASSERT_EQ(consents.size(), 1u);
   const UserConsentSpecifics& consent = consents[0];
 
-  EXPECT_EQ(kAccountId.ToString(), consent.account_id());
+  EXPECT_EQ(kGaiaId.ToString(), consent.obfuscated_gaia_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_TRUE(consent.has_assistant_activity_control_consent());

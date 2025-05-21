@@ -124,13 +124,13 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         ConsentAuditorFactory::GetForProfile(profile()));
   }
 
-  CoreAccountId GetAccountId() const {
+  GaiaId GetGaiaId() const {
     auto* identity_manager =
         identity_test_env_profile_adaptor_->identity_test_env()
             ->identity_manager();
     return identity_manager
         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-        .account_id;
+        .gaia;
   }
 
  protected:
@@ -214,7 +214,7 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeRevokesConsent) {
   play_consent.set_consent_flow(
       UserConsentTypes::ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
   EXPECT_CALL(*auditor, RecordArcPlayConsent(
-                            GetAccountId(),
+                            GetGaiaId(),
                             consent_auditor::ArcPlayConsentEq(play_consent)));
 
   ASSERT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));

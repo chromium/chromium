@@ -141,8 +141,10 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
       //            signin::ConsentLevel::kSignin));
       if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         // This class doesn't care about browser sync consent.
-        const CoreAccountId account_id = identity_manager->GetPrimaryAccountId(
-            signin::ConsentLevel::kSignin);
+        const GaiaId gaia_id =
+            identity_manager
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                .gaia;
 
         UserConsentTypes::ArcPlayTermsOfServiceConsent play_consent;
         play_consent.set_status(UserConsentTypes::NOT_GIVEN);
@@ -153,7 +155,7 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
         play_consent.set_consent_flow(
             UserConsentTypes::ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
         ConsentAuditorFactory::GetForProfile(profile_)->RecordArcPlayConsent(
-            account_id, play_consent);
+            gaia_id, play_consent);
       }
     }
   }

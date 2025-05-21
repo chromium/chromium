@@ -21,12 +21,12 @@ namespace consent_auditor {
 namespace {
 
 std::unique_ptr<sync_pb::UserConsentSpecifics> CreateUserConsentSpecifics(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const std::string& locale,
     base::Clock* clock) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       std::make_unique<sync_pb::UserConsentSpecifics>();
-  specifics->set_account_id(account_id.ToString());
+  specifics->set_obfuscated_gaia_id(gaia_id.ToString());
   specifics->set_client_consent_time_usec(
       clock->Now().since_origin().InMicroseconds());
   specifics->set_locale(locale);
@@ -51,10 +51,10 @@ ConsentAuditorImpl::~ConsentAuditorImpl() = default;
 void ConsentAuditorImpl::Shutdown() {}
 
 void ConsentAuditorImpl::RecordArcPlayConsent(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const ArcPlayTermsOfServiceConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
 
   sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent* arc_play_consent =
       specifics->mutable_arc_play_terms_of_service_consent();
@@ -63,10 +63,10 @@ void ConsentAuditorImpl::RecordArcPlayConsent(
 }
 
 void ConsentAuditorImpl::RecordArcGoogleLocationServiceConsent(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const UserConsentTypes::ArcGoogleLocationServiceConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
 
   sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent*
       arc_google_location_service_consent =
@@ -76,10 +76,10 @@ void ConsentAuditorImpl::RecordArcGoogleLocationServiceConsent(
 }
 
 void ConsentAuditorImpl::RecordArcBackupAndRestoreConsent(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const UserConsentTypes::ArcBackupAndRestoreConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
 
   sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent*
       arc_backup_and_restore_consent =
@@ -89,10 +89,10 @@ void ConsentAuditorImpl::RecordArcBackupAndRestoreConsent(
 }
 
 void ConsentAuditorImpl::RecordSyncConsent(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const UserConsentTypes::SyncConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
 
   sync_pb::UserConsentTypes::SyncConsent* sync_consent =
       specifics->mutable_sync_consent();
@@ -101,10 +101,10 @@ void ConsentAuditorImpl::RecordSyncConsent(
 }
 
 void ConsentAuditorImpl::RecordAssistantActivityControlConsent(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
   sync_pb::UserConsentTypes::AssistantActivityControlConsent*
       assistant_consent =
           specifics->mutable_assistant_activity_control_consent();
@@ -114,20 +114,20 @@ void ConsentAuditorImpl::RecordAssistantActivityControlConsent(
 }
 
 void ConsentAuditorImpl::RecordAccountPasswordsConsent(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
   specifics->mutable_account_passwords_consent()->CopyFrom(consent);
 
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
 void ConsentAuditorImpl::RecordRecorderSpeakerLabelConsent(
-    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
     const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
   specifics->mutable_recorder_speaker_label_consent()->CopyFrom(consent);
 
   consent_sync_bridge_->RecordConsent(std::move(specifics));

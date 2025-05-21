@@ -467,7 +467,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   EXPECT_EQ(expected_confirmation_ids,
             consent_auditor()->recorded_confirmation_ids());
 
-  EXPECT_EQ(account_info_.account_id, consent_auditor()->account_id());
+  EXPECT_EQ(account_info_.gaia, consent_auditor()->gaia_id());
 }
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
@@ -505,7 +505,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   EXPECT_EQ(expected_confirmation_ids,
             consent_auditor()->recorded_confirmation_ids());
 
-  EXPECT_EQ(account_info_.account_id, consent_auditor()->account_id());
+  EXPECT_EQ(account_info_.gaia, consent_auditor()->gaia_id());
 }
 
 TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedImmediately) {

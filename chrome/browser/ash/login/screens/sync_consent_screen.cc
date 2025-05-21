@@ -374,9 +374,10 @@ void SyncConsentScreen::RecordConsent(
   consent_auditor::ConsentAuditor* consent_auditor =
       ConsentAuditorFactory::GetForProfile(profile_);
   // The user might not consent to browser sync, so use the "unconsented" ID.
-  const CoreAccountId& google_account_id =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountId(
-          signin::ConsentLevel::kSignin);
+  const GaiaId gaia_id =
+      IdentityManagerFactory::GetForProfile(profile_)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
   // TODO(alemate): Support unified_consent_enabled
   sync_pb::UserConsentTypes::SyncConsent sync_consent;
   sync_consent.set_confirmation_grd_id(consent_confirmation);
@@ -386,7 +387,7 @@ void SyncConsentScreen::RecordConsent(
   sync_consent.set_status(consent_given == CONSENT_GIVEN
                               ? sync_pb::UserConsentTypes::GIVEN
                               : sync_pb::UserConsentTypes::NOT_GIVEN);
-  consent_auditor->RecordSyncConsent(google_account_id, sync_consent);
+  consent_auditor->RecordSyncConsent(gaia_id, sync_consent);
 
   if (test_delegate_) {
     test_delegate_->OnConsentRecordedIds(consent_given, consent_description,

@@ -144,9 +144,10 @@ void ChromeRecorderAppUIDelegate::RecordSpeakerLabelConsent(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  const CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
 
   ConsentAuditorFactory::GetForProfile(profile)
-      ->RecordRecorderSpeakerLabelConsent(account_id, consent);
+      ->RecordRecorderSpeakerLabelConsent(gaia_id, consent);
 }

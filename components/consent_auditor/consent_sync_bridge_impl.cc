@@ -189,8 +189,7 @@ void ConsentSyncBridgeImpl::ResubmitAllData() {
       store_->CreateWriteBatch();
 
   for (const auto& [storage_key, specifics] : store_->in_memory_data()) {
-    // TODO(crbug.com/383089506): rename account_id to obfuscated_gaia_id.
-    if (specifics.account_id() ==
+    if (specifics.obfuscated_gaia_id() ==
         change_processor()->TrackedGaiaId().ToString()) {
       auto specifics_copy = std::make_unique<UserConsentSpecifics>(specifics);
       change_processor()->Put(storage_key,
@@ -206,9 +205,9 @@ void ConsentSyncBridgeImpl::ResubmitAllData() {
 
 void ConsentSyncBridgeImpl::RecordConsent(
     std::unique_ptr<UserConsentSpecifics> specifics) {
-  // TODO(vitaliii): Sanity-check specifics->account_id() against
+  // TODO(vitaliii): Sanity-check specifics->obfuscated_gaia_id() against
   // change_processor()->TrackedAccountId(), maybe DCHECK.
-  DCHECK(!specifics->account_id().empty());
+  DCHECK(!specifics->obfuscated_gaia_id().empty());
   if (store_) {
     RecordConsentImpl(std::move(specifics));
     return;
@@ -235,7 +234,7 @@ void ConsentSyncBridgeImpl::RecordConsentImpl(
       store_->CreateWriteBatch();
   batch->WriteData(storage_key, *specifics);
 
-  if (specifics->account_id() ==
+  if (specifics->obfuscated_gaia_id() ==
       change_processor()->TrackedGaiaId().ToString()) {
     change_processor()->Put(storage_key, MoveToEntityData(std::move(specifics)),
                             batch->GetMetadataChangeList());

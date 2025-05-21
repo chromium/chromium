@@ -214,8 +214,9 @@ void RecordActivityControlConsent(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   // This function doesn't care about browser sync consent.
   DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  const CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
 
   using sync_pb::UserConsentTypes;
   UserConsentTypes::AssistantActivityControlConsent consent;
@@ -225,7 +226,7 @@ void RecordActivityControlConsent(
   consent.set_setting_type(setting_type);
 
   ConsentAuditorFactory::GetForProfile(profile)
-      ->RecordAssistantActivityControlConsent(account_id, consent);
+      ->RecordAssistantActivityControlConsent(gaia_id, consent);
 }
 
 bool IsHotwordDspAvailable() {

@@ -9,7 +9,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace consent_auditor {
 
@@ -50,49 +50,49 @@ class ConsentAuditor : public KeyedService {
   ~ConsentAuditor() override = default;
 
   // Records the ARC Play |consent| for the signed-in GAIA account with the ID
-  // |account_id| (as defined in AccountInfo).
+  // |gaia_id| (as defined in AccountInfo).
   virtual void RecordArcPlayConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent&
           consent) = 0;
 
   // Records the ARC Google Location Service |consent| for the signed-in GAIA
-  // account with the ID |account_id| (as defined in AccountInfo).
+  // account with the ID |gaia_id| (as defined in AccountInfo).
   virtual void RecordArcGoogleLocationServiceConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent&
           consent) = 0;
 
   // Records the ARC Backup and Restore |consent| for the signed-in GAIA
-  // account with the ID |account_id| (as defined in AccountInfo).
+  // account with the ID |gaia_id| (as defined in AccountInfo).
   virtual void RecordArcBackupAndRestoreConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent& consent) = 0;
 
   // Records the Sync |consent| for the signed-in GAIA account with the ID
-  // |account_id| (as defined in AccountInfo).
+  // |gaia_id| (as defined in AccountInfo).
   virtual void RecordSyncConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::SyncConsent& consent) = 0;
 
   // Records the Assistant activity control |consent| for the signed-in GAIA
-  // account with the ID |accounts_id| (as defined in Account Info).
+  // account with the ID |gaia_id| (as defined in Account Info).
   virtual void RecordAssistantActivityControlConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::AssistantActivityControlConsent&
           consent) = 0;
 
   // Records the Recorder app speaker label |consent| for the signed-in GAIA
-  // account with the ID |accounts_id| (as defined in Account Info).
+  // account with the ID |gaia_id| (as defined in Account Info).
   virtual void RecordRecorderSpeakerLabelConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&
           consent) = 0;
 
   // Records the |consent| to download and use passwords from the signed-in GAIA
-  // account with the ID |account_id| (as defined in AccountInfo).
+  // account with the ID |gaia_id| (as defined in AccountInfo).
   virtual void RecordAccountPasswordsConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) = 0;
 
   // Returns the underlying Sync integration point.
