@@ -49,25 +49,6 @@ std::optional<PermissionStatus> PermissionOverrides::Get(
   return current_override->second;
 }
 
-PermissionOverridesMap PermissionOverrides::GetAllForTest(
-    base::optional_ref<const url::Origin> origin) const {
-  PermissionOverridesMap output;
-  if (origin) {
-    for (const auto& [key, status] : overrides_) {
-      if (key.first == origin) {
-        output[key.second] = status;
-      }
-    }
-  }
-  for (const auto& [key, status] : overrides_) {
-    if (key.first == global_overrides_origin_ && !output.contains(key.second)) {
-      output[key.second] = status;
-    }
-  }
-
-  return output;
-}
-
 void PermissionOverrides::Reset(base::optional_ref<const url::Origin> origin) {
   const url::Origin& key_origin =
       origin.has_value() ? *origin : global_overrides_origin_;

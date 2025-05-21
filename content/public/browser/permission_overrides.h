@@ -42,12 +42,6 @@ class CONTENT_EXPORT PermissionOverrides {
       const url::Origin& origin,
       blink::PermissionType permission) const;
 
-  // Get all overrides for particular |origin|, stored in |overrides|
-  // if found. Will return empty overrides if none previously existed. Returns
-  // global overrides when |origin| is nullptr.
-  base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>
-  GetAllForTest(base::optional_ref<const url::Origin> origin) const;
-
   // Resets overrides for |origin|.
   // Null |origin| resets global overrides.
   void Reset(base::optional_ref<const url::Origin> origin);

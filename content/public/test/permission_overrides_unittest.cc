@@ -25,6 +25,20 @@ using url::Origin;
 
 constexpr size_t kPermissionsCount = 37;
 
+// Collects all permission statuses for the given input.
+base::flat_map<blink::PermissionType, PermissionStatus> GetAll(
+    const PermissionOverrides& overrides,
+    const url::Origin& origin) {
+  base::flat_map<blink::PermissionType, PermissionStatus> out;
+  for (const auto& type : blink::GetAllPermissionTypes()) {
+    std::optional<PermissionStatus> status = overrides.Get(origin, type);
+    if (status) {
+      out[type] = status.value();
+    }
+  }
+  return out;
+}
+
 TEST(PermissionOverridesTest, GetOriginNoOverrides) {
   PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
@@ -123,11 +137,10 @@ TEST(PermissionOverridesTest, GetAllOverrides) {
   overrides.Set(url, PermissionType::NOTIFICATIONS, PermissionStatus::DENIED);
   overrides.Set(url, PermissionType::AUDIO_CAPTURE, PermissionStatus::ASK);
 
-  EXPECT_THAT(overrides.GetAllForTest(url),
+  EXPECT_THAT(GetAll(overrides, url),
               testing::Eq(expected_override_for_origin));
-  EXPECT_THAT(
-      overrides.GetAllForTest(Origin::Create(GURL("https://imgur.com/"))),
-      testing::IsEmpty());
+  EXPECT_THAT(GetAll(overrides, Origin::Create(GURL("https://imgur.com/"))),
+              testing::IsEmpty());
 }
 
 TEST(PermissionOverridesTest, SameOriginSameOverrides) {
@@ -264,7 +277,7 @@ TEST(PermissionOverridesTest, GrantPermissions_AllOriginsShadowing) {
     EXPECT_EQ(overrides.Get(origin, GEOLOCATION), DENIED);
     EXPECT_EQ(overrides.Get(origin, AUDIO_CAPTURE), DENIED);
 
-    EXPECT_THAT(overrides.GetAllForTest(origin),
+    EXPECT_THAT(GetAll(overrides, origin),
                 AllOf(IsSupersetOf({
                           std::make_pair(BACKGROUND_SYNC, GRANTED),
                           std::make_pair(BACKGROUND_FETCH, GRANTED),
@@ -273,15 +286,16 @@ TEST(PermissionOverridesTest, GrantPermissions_AllOriginsShadowing) {
                           std::make_pair(AUDIO_CAPTURE, DENIED),
                       }),
                       SizeIs(kPermissionsCount)));
-    EXPECT_THAT(overrides.GetAllForTest(std::nullopt),
-                AllOf(IsSupersetOf({
-                          std::make_pair(BACKGROUND_SYNC, DENIED),
-                          std::make_pair(BACKGROUND_FETCH, DENIED),
-                          std::make_pair(NOTIFICATIONS, DENIED),
-                          std::make_pair(GEOLOCATION, GRANTED),
-                          std::make_pair(AUDIO_CAPTURE, GRANTED),
-                      }),
-                      SizeIs(kPermissionsCount)));
+    EXPECT_THAT(
+        GetAll(overrides, url::Origin::Create(GURL("https://example.com"))),
+        AllOf(IsSupersetOf({
+                  std::make_pair(BACKGROUND_SYNC, DENIED),
+                  std::make_pair(BACKGROUND_FETCH, DENIED),
+                  std::make_pair(NOTIFICATIONS, DENIED),
+                  std::make_pair(GEOLOCATION, GRANTED),
+                  std::make_pair(AUDIO_CAPTURE, GRANTED),
+              }),
+              SizeIs(kPermissionsCount)));
   }
   {
     // For a different origin, only the global overrides take effect.
@@ -294,7 +308,7 @@ TEST(PermissionOverridesTest, GrantPermissions_AllOriginsShadowing) {
     EXPECT_EQ(overrides.Get(origin, GEOLOCATION), GRANTED);
     EXPECT_EQ(overrides.Get(origin, AUDIO_CAPTURE), GRANTED);
 
-    EXPECT_THAT(overrides.GetAllForTest(origin),
+    EXPECT_THAT(GetAll(overrides, origin),
                 AllOf(IsSupersetOf({
                           std::make_pair(BACKGROUND_SYNC, DENIED),
                           std::make_pair(BACKGROUND_FETCH, DENIED),
@@ -326,11 +340,12 @@ TEST(PermissionOverridesTest, SetPermission_AllOriginsNoShadowing) {
     // Global overrides are not shadowed by the single origin's `Set` call.
     EXPECT_EQ(overrides.Get(origin, GEOLOCATION), GRANTED);
 
-    EXPECT_THAT(overrides.GetAllForTest(origin),
+    EXPECT_THAT(GetAll(overrides, origin),
                 UnorderedElementsAre(Pair(GEOLOCATION, GRANTED),
                                      Pair(BACKGROUND_SYNC, GRANTED)));
-    EXPECT_THAT(overrides.GetAllForTest(std::nullopt),
-                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED)));
+    EXPECT_THAT(
+        GetAll(overrides, url::Origin::Create(GURL("https://example.com"))),
+        UnorderedElementsAre(Pair(GEOLOCATION, GRANTED)));
   }
   {
     // For a different origin, only the global overrides take effect.
@@ -339,7 +354,7 @@ TEST(PermissionOverridesTest, SetPermission_AllOriginsNoShadowing) {
     EXPECT_EQ(overrides.Get(origin, BACKGROUND_SYNC), std::nullopt);
 
     EXPECT_EQ(overrides.Get(origin, GEOLOCATION), GRANTED);
-    EXPECT_THAT(overrides.GetAllForTest(origin),
+    EXPECT_THAT(GetAll(overrides, origin),
                 UnorderedElementsAre(Pair(GEOLOCATION, GRANTED)));
   }
 }
