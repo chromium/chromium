@@ -60,7 +60,6 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
         std::make_unique<SupervisedUserURLFilter>(
             pref_service_, std::make_unique<FakeURLFilterDelegate>()),
         std::make_unique<FakePlatformDelegate>());
-    supervised_user_service_->Init();
   }
 
   void TearDown() override {

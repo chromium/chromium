@@ -43,11 +43,6 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
     params.profile_is_supervised = true;
     InitializeExtensionService(std::move(params));
 
-    supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile_.get());
-    CHECK(service);
-    service->Init();
-
     supervised_user_metrics_service_ =
         std::make_unique<supervised_user::SupervisedUserMetricsService>(
             profile()->GetPrefs(),

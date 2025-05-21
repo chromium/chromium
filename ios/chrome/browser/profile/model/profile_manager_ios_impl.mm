@@ -560,7 +560,6 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   // 2. code do not expect them to be null (thus tests cannot be configured
   // to have a null instance).
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
-  SupervisedUserServiceFactory::GetForProfile(profile)->Init();
   ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
 }
 

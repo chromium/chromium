@@ -83,25 +83,7 @@ Custodian::Custodian(const Custodian& other) = default;
 Custodian::~Custodian() = default;
 
 SupervisedUserService::~SupervisedUserService() {
-  DCHECK(!did_init_ || did_shutdown_);
-}
-
-void SupervisedUserService::Init() {
-  DCHECK(!did_init_);
-  did_init_ = true;
-  DCHECK(settings_service_->IsReady());
-
-  pref_change_registrar_.Init(&user_prefs_.get());
-  pref_change_registrar_.Add(
-      prefs::kSupervisedUserId,
-      base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      policy::policy_prefs::kIncognitoModeAvailability,
-      base::BindRepeating(
-          &SupervisedUserService::OnIncognitoModeAvailabilityChanged,
-          base::Unretained(this)));
-  SetActive(IsSubjectToParentalControls(user_prefs_.get()));
+  DCHECK(did_shutdown_);
 }
 
 SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
@@ -127,7 +109,7 @@ std::optional<Custodian> SupervisedUserService::GetSecondCustodian() const {
 bool SupervisedUserService::IsBlockedURL(const GURL& url) const {
   // TODO(b/359161670): prevent access to URL filtering through lifecycle events
   // rather than individually checking active state.
-  if (!active_) {
+  if (!IsSubjectToParentalControls(user_prefs_.get())) {
     return false;
   }
   return GetURLFilter()->GetFilteringBehavior(url).IsBlocked();
@@ -143,6 +125,8 @@ void SupervisedUserService::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
+// Note: unretained is safe, because the utility that binds callbacks is owned
+// by this instance.
 SupervisedUserService::SupervisedUserService(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -156,8 +140,31 @@ SupervisedUserService::SupervisedUserService(
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
+      parental_controls_state_(
+          user_prefs,
+          base::BindRepeating(&SupervisedUserService::OnParentalControlsEnabled,
+                              base::Unretained(this)),
+          base::BindRepeating(
+              &SupervisedUserService::OnParentalControlsDisabled,
+              base::Unretained(this))),
       platform_delegate_(std::move(platform_delegate)),
-      url_filter_(std::move(url_filter)) {}
+      url_filter_(std::move(url_filter)) {
+  CHECK(settings_service_->IsReady())
+      << "Settings service is initialized as part of the PrefService, which is "
+         "a dependency of this service.";
+
+  main_pref_change_registrar_.Init(&user_prefs_.get());
+  main_pref_change_registrar_.Add(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      base::BindRepeating(
+          &SupervisedUserService::OnIncognitoModeAvailabilityChanged,
+          base::Unretained(this)));
+
+  feature_pref_change_registrar_.Init(&user_prefs_.get());
+
+  // Bumps this instance to read the current state of parental controls.
+  parental_controls_state_.Notify();
+}
 
 void SupervisedUserService::SetSettingsServiceActive(bool active) {
   settings_service_->SetActive(active);
@@ -175,94 +182,64 @@ void SupervisedUserService::SetSettingsServiceActive(bool active) {
   }
 }
 
-void SupervisedUserService::SetActive(bool active) {
-  if (active_ == active) {
-    return;
+void SupervisedUserService::OnParentalControlsEnabled() {
+  SetSettingsServiceActive(true);
+  GetURLFilter()->SetURLCheckerClient(
+      std::make_unique<KidsChromeManagementURLCheckerClient>(
+          identity_manager_, url_loader_factory_,
+          platform_delegate_->GetCountryCode(),
+          platform_delegate_->GetChannel()));
+  feature_pref_change_registrar_.Add(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      base::BindRepeating(
+          &SupervisedUserService::OnDefaultFilteringBehaviorChanged,
+          base::Unretained(this)));
+  feature_pref_change_registrar_.Add(
+      prefs::kSupervisedUserSafeSites,
+      base::BindRepeating(&SupervisedUserService::OnSafeSitesSettingChanged,
+                          base::Unretained(this)));
+  feature_pref_change_registrar_.Add(
+      prefs::kSupervisedUserManualHosts,
+      base::BindRepeating(&SupervisedUserService::UpdateManualHosts,
+                          base::Unretained(this)));
+  feature_pref_change_registrar_.Add(
+      prefs::kSupervisedUserManualURLs,
+      base::BindRepeating(&SupervisedUserService::UpdateManualURLs,
+                          base::Unretained(this)));
+  for (const char* pref : kCustodianInfoPrefs) {
+    feature_pref_change_registrar_.Add(
+        pref,
+        base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
+                            base::Unretained(this)));
   }
-  active_ = active;
 
-  // If-else branches should work in Li-Fo manner.
-  if (active_) {
-    // 1. Activate the subservice.
-    SetSettingsServiceActive(active_);
+  remote_web_approvals_manager_.AddApprovalRequestCreator(
+      std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
+                                                     url_loader_factory_));
 
-    // 2. Initialize SafeSites URL checker.
-    GetURLFilter()->SetURLCheckerClient(
-        std::make_unique<KidsChromeManagementURLCheckerClient>(
-            identity_manager_, url_loader_factory_,
-            platform_delegate_->GetCountryCode(),
-            platform_delegate_->GetChannel()));
+  OnDefaultFilteringBehaviorChanged();
+  OnSafeSitesSettingChanged();
+  UpdateManualHosts();
+  UpdateManualURLs();
+  GetURLFilter()->SetFilterInitialized(true);
+}
 
-    // 3. Start observing prefs.
-    pref_change_registrar_.Add(
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-        base::BindRepeating(
-            &SupervisedUserService::OnDefaultFilteringBehaviorChanged,
-            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        prefs::kSupervisedUserSafeSites,
-        base::BindRepeating(&SupervisedUserService::OnSafeSitesSettingChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        prefs::kSupervisedUserManualHosts,
-        base::BindRepeating(&SupervisedUserService::UpdateManualHosts,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        prefs::kSupervisedUserManualURLs,
-        base::BindRepeating(&SupervisedUserService::UpdateManualURLs,
-                            base::Unretained(this)));
-    for (const char* pref : kCustodianInfoPrefs) {
-      pref_change_registrar_.Add(
-          pref,
-          base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
-                              base::Unretained(this)));
-    }
-
-    // 4. Initialize approvals.
-    remote_web_approvals_manager_.AddApprovalRequestCreator(
-        std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
-                                                       url_loader_factory_));
-
-    // 5. Initialize the filter.
-    OnDefaultFilteringBehaviorChanged();
-    OnSafeSitesSettingChanged();
-    UpdateManualHosts();
-    UpdateManualURLs();
-    GetURLFilter()->SetFilterInitialized(true);
-  } else {
-    // 5. Destroy filter.
-    url_filter_->Clear();
-    for (SupervisedUserServiceObserver& observer : observer_list_) {
-      observer.OnURLFilterChanged();
-    }
-
-    // 4. Destroy approvals.
-    remote_web_approvals_manager_.ClearApprovalRequestsCreators();
-
-    // 3. Stop observing prefs.
-    pref_change_registrar_.Remove(
-        prefs::kDefaultSupervisedUserFilteringBehavior);
-    pref_change_registrar_.Remove(prefs::kSupervisedUserSafeSites);
-    pref_change_registrar_.Remove(prefs::kSupervisedUserManualHosts);
-    pref_change_registrar_.Remove(prefs::kSupervisedUserManualURLs);
-    for (const char* pref : kCustodianInfoPrefs) {
-      pref_change_registrar_.Remove(pref);
-    }
-
-    // 2. SafeSites URL checker is gone with filter from 5.
-    // 1. Shut down settings.
-    SetSettingsServiceActive(active_);
+void SupervisedUserService::OnParentalControlsDisabled() {
+  // Keep order of this method logically reverse to the
+  // `OnParentalControlsEnabled` method.
+  url_filter_->Clear();
+  for (SupervisedUserServiceObserver& observer : observer_list_) {
+    observer.OnURLFilterChanged();
   }
+  remote_web_approvals_manager_.ClearApprovalRequestsCreators();
+  feature_pref_change_registrar_.RemoveAll();
+  SetSettingsServiceActive(false);
 }
 
 void SupervisedUserService::OnCustodianInfoChanged() {
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnCustodianInfoChanged();
   }
-}
-
-void SupervisedUserService::OnSupervisedUserIdChanged() {
-  SetActive(IsSubjectToParentalControls(user_prefs_.get()));
 }
 
 void SupervisedUserService::OnIncognitoModeAvailabilityChanged() {
@@ -308,15 +285,18 @@ void SupervisedUserService::UpdateManualURLs() {
 }
 
 void SupervisedUserService::Shutdown() {
-  if (!did_init_) {
-    return;
-  }
   DCHECK(!did_shutdown_);
   did_shutdown_ = true;
   if (IsSubjectToParentalControls(user_prefs_.get())) {
     base::RecordAction(UserMetricsAction("ManagedUsers_QuitBrowser"));
   }
-  SetActive(false);
+
+  main_pref_change_registrar_.RemoveAll();
+  feature_pref_change_registrar_.RemoveAll();
+  remote_web_approvals_manager_.ClearApprovalRequestsCreators();
+  url_filter_->Clear();
+
+  observer_list_.Notify(&SupervisedUserServiceObserver::OnURLFilterChanged);
 }
 
 }  // namespace supervised_user

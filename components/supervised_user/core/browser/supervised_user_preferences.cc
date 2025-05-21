@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -236,6 +237,40 @@ void DisableSearchContentFilters(PrefService& pref_service) {
   CheckEligibilityForContentFilters(pref_service);
   // Reset the setting to default.
   pref_service.ClearPref(policy::policy_prefs::kForceGoogleSafeSearch);
+}
+
+ParentalControlsState::ParentalControlsState(
+    PrefService& service,
+    base::RepeatingClosure on_parental_controls_enabled,
+    base::RepeatingClosure on_parental_controls_disabled)
+    : pref_service_(service),
+      value_(IsSubjectToParentalControls(service)),
+      on_parental_controls_enabled_(on_parental_controls_enabled),
+      on_parental_controls_disabled_(on_parental_controls_disabled) {
+  registrar_.Init(&service);
+  // base::Unretained is safe, because `this` owns `registrar_`.
+  registrar_.Add(
+      prefs::kSupervisedUserId,
+      base::BindRepeating(&ParentalControlsState::OnSupervisedUserIdChanged,
+                          base::Unretained(this)));
+}
+ParentalControlsState::~ParentalControlsState() = default;
+
+void ParentalControlsState::OnSupervisedUserIdChanged() {
+  bool new_value = IsSubjectToParentalControls(pref_service_.get());
+  if (new_value == value_) {
+    return;
+  }
+  value_ = new_value;
+  Notify();
+}
+
+void ParentalControlsState::Notify() {
+  if (value_) {
+    on_parental_controls_enabled_.Run();
+  } else {
+    on_parental_controls_disabled_.Run();
+  }
 }
 
 }  // namespace supervised_user

@@ -72,9 +72,6 @@ class ClassifyUrlNavigationThrottleTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    // In unit tests, the service is not automatically initialized but is
-    // required to ensure proper flow of preference values.
-    SupervisedUserServiceFactory::GetForProfile(profile())->Init();
     EnableParentalControls(*profile()->GetPrefs());
   }
 

@@ -21,6 +21,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_users.h"
@@ -105,9 +106,6 @@ class SupervisedUserService : public KeyedService {
     return remote_web_approvals_manager_;
   }
 
-  // Initializes this object.
-  void Init();
-
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
@@ -149,13 +147,12 @@ class SupervisedUserService : public KeyedService {
           platform_delegate);
 
  private:
-  void SetActive(bool active);
-
   void SetSettingsServiceActive(bool active);
 
   void OnCustodianInfoChanged();
 
-  void OnSupervisedUserIdChanged();
+  void OnParentalControlsEnabled();
+  void OnParentalControlsDisabled();
 
   void OnDefaultFilteringBehaviorChanged();
 
@@ -181,14 +178,18 @@ class SupervisedUserService : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  bool active_ = false;
+  // Manages the status of parental controls and notifies this instance when the
+  // state changes.
+  ParentalControlsState parental_controls_state_;
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 
-  PrefChangeRegistrar pref_change_registrar_;
-
-  // True only when |Init()| method has been called.
-  bool did_init_ = false;
+  // Registrar for core prefs that drive this service.
+  PrefChangeRegistrar main_pref_change_registrar_;
+  // Registrar for prefs that configure features offered by this service. It is
+  // only observing changes when the user is subject to family link parental
+  // controls.
+  PrefChangeRegistrar feature_pref_change_registrar_;
 
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;

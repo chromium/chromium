@@ -82,7 +82,6 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         std::make_unique<SupervisedUserURLFilter>(
             syncable_pref_service_, std::make_unique<FakeURLFilterDelegate>()),
         std::make_unique<FakePlatformDelegate>());
-    service_->Init();
 
     SupervisedUserMetricsService::RegisterProfilePrefs(
         syncable_pref_service_.registry());

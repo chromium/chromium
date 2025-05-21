@@ -1241,7 +1241,6 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
     // Set up custodians (parents) for the child.
     supervised_user_test_util::AddCustodians(browser()->profile());
 
-    GetSupervisedUserService()->Init();
     // Set the pref to allow the child to request extension install.
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);

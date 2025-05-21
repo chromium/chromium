@@ -1491,7 +1491,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   // extension::ManagementPolicy) and InitProfileUserPrefs (for setting the
   // initializing the supervised flag if necessary).
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
-  SupervisedUserServiceFactory::GetForProfile(profile)->Init();
   ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // After the ManagementPolicy has been set, update it for the Supervised User

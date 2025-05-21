@@ -18,13 +18,11 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -82,12 +80,6 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     j_feedback_source_ = CreateJavaObjectForTesting();
-    supervised_user_service_ =
-        SupervisedUserServiceFactory::GetForProfile(profile_.get());
-
-    // In unit tests, the service is not automatically initialized but is
-    // required to ensure proper flow of preference values.
-    supervised_user_service_->Init();
   }
 
  protected:
@@ -123,8 +115,6 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
   }
 
   kidsmanagement::FamilyRole role_;
-  raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
-
  private:
   // Creates a Java instance of FamilyInfoFeedbackSource.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObjectForTesting() {

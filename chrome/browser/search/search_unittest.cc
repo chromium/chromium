@@ -19,7 +19,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -27,9 +26,6 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -361,8 +357,6 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
 }
 
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
-  // Initialize the Supervised user service, so it will allow to be enabled.
-  SupervisedUserServiceFactory::GetForProfile(profile())->Init();
   // Enable supervision, otherwise the URL filter won't be checked.
   profile()->SetIsSupervisedProfile();
   // Block access to foo.com in the URL filter.
