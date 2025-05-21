@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
@@ -53,10 +55,12 @@ using ::autofill::test::CreateFieldPrediction;
 using ::autofill::test::CreateTestFormField;
 using ::autofill::test::EqualsPrediction;
 using ::base::ASCIIToUTF16;
+using ::base::test::EqualsProto;
 using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
@@ -76,45 +80,52 @@ struct ManualOverride {
   const std::vector<FieldType> field_types;
 };
 
-// TODO(crbug.com/406066782): Add deep comparison for descriptive error
-// messages.
-Matcher<AutofillUploadContents> SerializesSameAs(
-    const AutofillUploadContents& expected) {
-  std::string expected_string;
-  CHECK(expected.SerializeToString(&expected_string));
-  return ResultOf(
-      [](const auto& actual) {
-        std::string actual_string;
-        CHECK(actual.SerializeToString(&actual_string));
-        return actual_string;
-      },
-      Eq(expected_string));
-}
-
-// TODO(crbug.com/406066782): Add deep comparison for descriptive error
-// messages.
-Matcher<AutofillPageQueryRequest> SerializesSameAs(
+// Matcher that does a deep comparison of the AutofillPageQueryRequest protobuf.
+// It explicitly compares each proto field using Property matchers to
+// provide descriptive error messages in case of a mismatch.
+// `serializes_same_as_matcher` at the end is used to check the fields that were
+// accidentally missed.
+Matcher<AutofillPageQueryRequest> SerializesAndDeepEquals(
     const AutofillPageQueryRequest& expected) {
+  auto form_matcher = [](const AutofillPageQueryRequest_Form& expected_form) {
+    return AllOf(
+        Property("signature", &AutofillPageQueryRequest_Form::signature,
+                 expected_form.signature()),
+        Property("fields", &AutofillPageQueryRequest_Form::fields,
+                 ElementsAreArray(base::ToVector(
+                     expected_form.fields(),
+                     EqualsProto<AutofillPageQueryRequest_Form_Field>))),
+        Property("alternative_signature",
+                 &AutofillPageQueryRequest_Form::alternative_signature,
+                 expected_form.alternative_signature()));
+  };
+
   std::string expected_string;
   CHECK(expected.SerializeToString(&expected_string));
-  return ResultOf(
+  auto serializes_same_as_matcher = ResultOf(
       [](const auto& actual) {
         std::string actual_string;
         CHECK(actual.SerializeToString(&actual_string));
         return actual_string;
       },
       Eq(expected_string));
+
+  return AllOf(Property("forms", &AutofillPageQueryRequest::forms,
+                        ElementsAreArray(
+                            base::ToVector(expected.forms(), form_matcher))),
+               Property("experiments", &AutofillPageQueryRequest::experiments,
+                        ElementsAreArray(base::ToVector(expected.experiments(),
+                                                        Eq<int64_t>))),
+               serializes_same_as_matcher);
 }
 
-// Matches `AutofillUploadContents` that are equivalent to `expected`, ignoring
-// data that is only set if there is RandomizedEncoder.
-//
-// TODO(crbug.com/406066782): This matcher should not exist. It was only
-// introduced to make test cases work that do not populate the metadata.
-// Once SerializesSameAs() produces useful error messages, it should be easy to
-// adjust the tests and remove WithoutMetadataSerializesSameAs().
-Matcher<AutofillUploadContents> WithoutMetadataSerializesSameAs(
-    AutofillUploadContents expected) {
+// Matcher that does a deep comparison of the AutofillUploadContents protobuf.
+// It explicitly compares each proto field using Property matchers to
+// provide descriptive error messages in case of a mismatch.
+// `serializes_same_as_matcher` at the end is used to check the fields that were
+// accidentally missed.
+Matcher<AutofillUploadContents> SerializesAndDeepEquals(
+    const AutofillUploadContents& expected) {
   auto strip_metadata = [](AutofillUploadContents upload_content) {
     upload_content.clear_language();
     upload_content.clear_randomized_form_metadata();
@@ -123,7 +134,62 @@ Matcher<AutofillUploadContents> WithoutMetadataSerializesSameAs(
     }
     return upload_content;
   };
-  return ResultOf(strip_metadata, SerializesSameAs(strip_metadata(expected)));
+
+#define PROPERTY_EQ(property)                                   \
+  Property(#property, &AutofillUploadContents::Field::property, \
+           expected.property())
+  auto field_matcher = [](const AutofillUploadContents::Field& expected) {
+    return AllOf(
+        PROPERTY_EQ(signature), PROPERTY_EQ(name), PROPERTY_EQ(autocomplete),
+        PROPERTY_EQ(type), PROPERTY_EQ(generation_type),
+        PROPERTY_EQ(css_classes), PROPERTY_EQ(properties_mask), PROPERTY_EQ(id),
+        PROPERTY_EQ(generated_password_changed), PROPERTY_EQ(vote_type),
+        PROPERTY_EQ(initial_value_hash), PROPERTY_EQ(single_username_vote_type),
+        PROPERTY_EQ(is_most_recent_single_username_candidate),
+        PROPERTY_EQ(initial_value_changed),
+        Property("autofill_type", &AutofillUploadContents::Field::autofill_type,
+                 ElementsAreArray(
+                     base::ToVector(expected.autofill_type(), Eq<int32_t>))),
+        Property("format_string", &AutofillUploadContents::Field::format_string,
+                 ElementsAreArray(base::ToVector(expected.format_string(),
+                                                 EqualsProto<FormatString>))));
+#undef PROPERTY_EQ
+  };
+
+  AutofillUploadContents stripped_metadata = strip_metadata(expected);
+  std::string expected_string;
+  CHECK(stripped_metadata.SerializeToString(&expected_string));
+  auto serializes_same_as_matcher = ResultOf(
+      [](const auto& actual) {
+        std::string actual_string;
+        CHECK(actual.SerializeToString(&actual_string));
+        return actual_string;
+      },
+      Eq(expected_string));
+
+#define PROPERTY_EQ(property) \
+  Property(#property, &AutofillUploadContents::property, expected.property())
+  return AllOf(
+      PROPERTY_EQ(client_version), PROPERTY_EQ(form_signature),
+      PROPERTY_EQ(secondary_form_signature), PROPERTY_EQ(autofill_used),
+      PROPERTY_EQ(data_present), PROPERTY_EQ(action_signature),
+      PROPERTY_EQ(login_form_signature), PROPERTY_EQ(submission),
+      PROPERTY_EQ(form_name), PROPERTY_EQ(passwords_revealed),
+      PROPERTY_EQ(password_has_letter),
+      PROPERTY_EQ(password_has_special_symbol), PROPERTY_EQ(password_length),
+      PROPERTY_EQ(password_special_symbol), PROPERTY_EQ(submission_event),
+      PROPERTY_EQ(has_form_tag), PROPERTY_EQ(last_address_form_submitted),
+      PROPERTY_EQ(second_last_address_form_submitted),
+      PROPERTY_EQ(last_credit_card_form_submitted),
+      Property("field_data", &AutofillUploadContents::field_data,
+               ElementsAreArray(
+                   base::ToVector(expected.field_data(), field_matcher))),
+      Property("button_title", &AutofillUploadContents::button_title,
+               ElementsAreArray(base::ToVector(
+                   expected.button_title(),
+                   EqualsProto<AutofillUploadContents_ButtonTitle>))),
+      ResultOf(strip_metadata, serializes_same_as_matcher));
+#undef PROPERTY_EQ
 }
 
 std::string SerializeAndEncode(const AutofillQueryResponse& response) {
@@ -293,7 +359,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   options.submission_event = SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // Add 2 address fields - this should be still a valid form.
   for (size_t i = 0; i < 2; ++i) {
@@ -328,7 +394,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::FillUploadField(upload.mutable_field_data(6), 509334676U, 31U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // Add 300 address fields - now the form is invalid, as it has too many
   // fields.
@@ -394,7 +460,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   options.observed_submission = true;
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(SerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // With encoder.
   options.encoder = RandomizedEncoder(
@@ -402,7 +468,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       /*anonymous_url_collection_is_enabled=*/true);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
@@ -469,7 +535,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
   // TODO(crbug.com/396325496): Also allow forms with empty
   // `available_field_types`.
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -577,7 +643,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   upload_password_field->set_generated_password_changed(true);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
@@ -666,7 +732,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   options.observed_submission = true;
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -727,7 +793,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   options.observed_submission = false;
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
@@ -784,7 +850,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
   options.observed_submission = true;
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 // Tests that when the form is the result of flattening multiple forms into one,
@@ -897,12 +963,11 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                                    CREDIT_CARD_VERIFICATION_CODE};
   options.observed_submission = true;
 
-  EXPECT_THAT(
-      EncodeUploadRequest(*form_structure, options),
-      UnorderedElementsAre(WithoutMetadataSerializesSameAs(upload_main),
-                           WithoutMetadataSerializesSameAs(upload_name_exp),
-                           WithoutMetadataSerializesSameAs(upload_number),
-                           WithoutMetadataSerializesSameAs(upload_cvc)));
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
+              UnorderedElementsAre(SerializesAndDeepEquals(upload_main),
+                                   SerializesAndDeepEquals(upload_name_exp),
+                                   SerializesAndDeepEquals(upload_number),
+                                   SerializesAndDeepEquals(upload_cvc)));
 }
 
 // Check that we compute the "datapresent" string correctly for the given
@@ -955,7 +1020,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   options.observed_submission = true;
 
   EXPECT_THAT(EncodeUploadRequest(form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // Only a few types available.
   // datapresent should be "1540000240" == trimmed(0x1540000240000000) ==
@@ -975,7 +1040,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   upload.set_data_present("1540000240");
 
   EXPECT_THAT(EncodeUploadRequest(form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // All supported non-credit card types available.
   // datapresent should be "1f7e000378000008" == trimmed(0x1f7e000378000008) ==
@@ -1022,7 +1087,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   upload.set_data_present("1f7e000378000008");
 
   EXPECT_THAT(EncodeUploadRequest(form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // All supported credit card types available.
   // datapresent should be "0000000000001fc0" == trimmed(0x0000000000001fc0) ==
@@ -1047,7 +1112,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   upload.set_data_present("0000000000001fc0");
 
   EXPECT_THAT(EncodeUploadRequest(form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // All supported types available.
   // datapresent should be "1f7e000378001fc8" == trimmed(0x1f7e000378001fc8) ==
@@ -1108,7 +1173,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   upload.set_data_present("1f7e000378001fc8");
 
   EXPECT_THAT(EncodeUploadRequest(form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
@@ -1178,7 +1243,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   test::FillUploadField(upload.add_field_data(), 509334676U, 30U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // Match third field as both first and last.
   possible_field_types[2].insert(NAME_FIRST);
@@ -1191,7 +1256,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   upload.mutable_field_data(2)->mutable_autofill_type()->SwapElements(0, 1);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // Match last field as both address home line 1 and 2.
   possible_field_types[3].insert(ADDRESS_HOME_LINE2);
@@ -1203,7 +1268,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   test::FillUploadField(upload.mutable_field_data(3), 509334676U, 31U);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 
   // Replace the address line 2 prediction by company name.
   possible_field_types[3].clear();
@@ -1217,7 +1282,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   upload.mutable_field_data(3)->set_autofill_type(1, 60);
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
-              ElementsAre(WithoutMetadataSerializesSameAs(upload)));
+              ElementsAre(SerializesAndDeepEquals(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_PasswordsRevealed) {
@@ -1962,7 +2027,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   auto [encoded_query, encoded_signatures] =
       EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures, expected_signatures);
-  EXPECT_THAT(encoded_query, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query, SerializesAndDeepEquals(query));
 
   // Add the same form, only one will be encoded, so
   // EncodeAutofillPageQueryRequest() should return the same data.
@@ -1973,7 +2038,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   auto [encoded_query2, encoded_signatures2] =
       EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures2, expected_signatures2);
-  EXPECT_THAT(encoded_query2, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query2, SerializesAndDeepEquals(query));
 
   // Add 5 address fields - this should be still a valid form.
   FormSignature form_signature3(2608858059775241169UL);
@@ -2015,7 +2080,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   auto [encoded_query3, encoded_signatures3] =
       EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures3, expected_signatures3);
-  EXPECT_THAT(encoded_query3, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query3, SerializesAndDeepEquals(query));
 
   // |form_structures4| will have the same signature as |form_structure3|.
   test_api(form).field(-1).set_name(u"address123456789");
@@ -2028,7 +2093,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   auto [encoded_query4, encoded_signatures4] =
       EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures4, expected_signatures4);
-  EXPECT_THAT(encoded_query4, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query4, SerializesAndDeepEquals(query));
 
   FormData malformed_form(form);
   // Add 300 address fields - the form is not valid anymore, but previous ones
@@ -2048,7 +2113,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   auto [encoded_query5, encoded_signatures5] =
       EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures5, expected_signatures5);
-  EXPECT_THAT(encoded_query5, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query5, SerializesAndDeepEquals(query));
 
   // Check that we fail if there are only bad form(s).
   std::vector<raw_ptr<const FormStructure, VectorExperimental>> bad_forms;
@@ -2091,7 +2156,7 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
       EncodeAutofillPageQueryRequest(forms);
   ASSERT_EQ(1U, encoded_signatures.size());
   EXPECT_EQ(kExpectedSignature, encoded_signatures.front());
-  EXPECT_THAT(encoded_query, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query, SerializesAndDeepEquals(query));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -2128,7 +2193,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   auto [encoded_query, encoded_signatures] =
       EncodeAutofillPageQueryRequest(forms);
   ASSERT_TRUE(!encoded_signatures.empty());
-  EXPECT_THAT(encoded_query, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query, SerializesAndDeepEquals(query));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -2173,7 +2238,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   auto [encoded_query, encoded_signatures] =
       EncodeAutofillPageQueryRequest(forms);
   ASSERT_TRUE(!encoded_signatures.empty());
-  EXPECT_THAT(encoded_query, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query, SerializesAndDeepEquals(query));
 }
 
 // One name is missing from one field.
@@ -2215,7 +2280,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       EncodeAutofillPageQueryRequest(forms);
   ASSERT_EQ(1U, encoded_signatures.size());
   EXPECT_EQ(kExpectedSignature, encoded_signatures.front());
-  EXPECT_THAT(encoded_query, SerializesSameAs(query));
+  EXPECT_THAT(encoded_query, SerializesAndDeepEquals(query));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
