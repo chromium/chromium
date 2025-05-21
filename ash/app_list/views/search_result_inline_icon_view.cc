@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/app_list/app_list_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
@@ -30,8 +29,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kBorderThickness = 1;
-constexpr float kFocusRingCornerRadius = 6.0f;
 constexpr float kContentCornerRadius = 12.0f;
 constexpr int kLeftRightMargin = 6;
 constexpr int kIconSize = 14;
@@ -62,20 +59,15 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
 
   ui::ImageModel icon_model;
-  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
-    icon_model = ui::ImageModel::FromVectorIcon(
-        *icon_, use_modified_styling_
-                    ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface);
+  icon_model = ui::ImageModel::FromVectorIcon(
+      *icon_, use_modified_styling_
+                  ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                  : cros_tokens::kCrosSysOnSurface);
 
-    icon_image_->SetBackground(views::CreateRoundedRectBackground(
-        use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                              : cros_tokens::kCrosSysSurface,
-        kContentCornerRadius));
-  } else {
-    icon_model =
-        ui::ImageModel::FromVectorIcon(*icon_, cros_tokens::kColorProminent);
-  }
+  icon_image_->SetBackground(views::CreateRoundedRectBackground(
+      use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                            : cros_tokens::kCrosSysSurface,
+      kContentCornerRadius));
   icon_image_->SetImage(icon_model);
   icon_image_->SetImageSize(gfx::Size(kIconSize, kIconSize));
   icon_image_->SetVisible(true);
@@ -101,17 +93,13 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
   label_->SetText(text);
   label_->SetVisible(true);
 
-  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
-    label_->SetEnabledColor(use_modified_styling_
-                                ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                                : cros_tokens::kCrosSysOnSurface);
-    label_->SetBackground(views::CreateRoundedRectBackground(
-        use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                              : cros_tokens::kCrosSysSurface,
-        kContentCornerRadius));
-  } else {
-    label_->SetEnabledColor(cros_tokens::kCrosSysPrimary);
-  }
+  label_->SetEnabledColor(use_modified_styling_
+                              ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                              : cros_tokens::kCrosSysOnSurface);
+  label_->SetBackground(views::CreateRoundedRectBackground(
+      use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                            : cros_tokens::kCrosSysSurface,
+      kContentCornerRadius));
 
   int label_left_right_margin =
       std::max(kLeftRightMargin, (kLabelMinEdgeLength - label_->width()) / 2);
@@ -127,19 +115,6 @@ void SearchResultInlineIconView::SetTooltipTextForImageView(
 }
 
 void SearchResultInlineIconView::OnPaint(gfx::Canvas* canvas) {
-  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
-    return;
-  }
-
-  cc::PaintFlags paint_flags;
-  paint_flags.setAntiAlias(true);
-  paint_flags.setColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
-  paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  paint_flags.setStrokeWidth(kBorderThickness);
-  gfx::Rect bounds = GetContentsBounds();
-  bounds.Inset(gfx::Insets(kBorderThickness));
-  canvas->DrawRoundRect(bounds, kFocusRingCornerRadius, paint_flags);
 }
 
 BEGIN_METADATA(SearchResultInlineIconView)

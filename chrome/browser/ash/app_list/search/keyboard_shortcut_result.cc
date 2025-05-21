@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/accelerators/keyboard_code_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
@@ -600,12 +599,8 @@ KeyboardShortcutResult::~KeyboardShortcutResult() = default;
 void KeyboardShortcutResult::Open(int event_flags) {
   // Pass the action and category of the selected shortcuts to the app so that
   // the same shortcuts will be displayed in the app.
-  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
-    chrome::ShowShortcutCustomizationApp(profile_, accelerator_action_,
-                                         accelerator_category_);
-  } else {
-    chrome::ShowShortcutCustomizationApp(profile_);
-  }
+  chrome::ShowShortcutCustomizationApp(profile_, accelerator_action_,
+                                       accelerator_category_);
 }
 
 void KeyboardShortcutResult::UpdateIcon() {

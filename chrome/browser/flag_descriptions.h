@@ -1041,9 +1041,6 @@ extern const char kEnablePrintingMarginsAndScale[];
 extern const char kEnablePrintingMarginsAndScaleDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-extern const char kEnableSearchCustomizableShortcutsInLauncherName[];
-extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
-
 extern const char kEnableSuspendStateMachineName[];
 extern const char kEnableSuspendStateMachineDescription[];
 

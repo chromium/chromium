@@ -1636,11 +1636,6 @@ const char kEnableCanvasNoiseDescription[] =
     "Enable noising pixels when the contents of a canvas are read back by a "
     "script.";
 
-const char kEnableSearchCustomizableShortcutsInLauncherName[] =
-    "Enable search for customizable shortcuts in launcher";
-const char kEnableSearchCustomizableShortcutsInLauncherDescription[] =
-    "Enable searching for customizable shortcuts in launcher.";
-
 const char kEnableSuspendStateMachineName[] = "Enable suspend state machine";
 const char kEnableSuspendStateMachineDescription[] =
     "Enables a fix for the suspend keyboard shortcut to more consistently "

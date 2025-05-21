@@ -8234,12 +8234,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOAuthIppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableOAuthIpp)},
 
-    {"enable-search-customizable-shortcuts-in-launcher",
-     flag_descriptions::kEnableSearchCustomizableShortcutsInLauncherName,
-     flag_descriptions::kEnableSearchCustomizableShortcutsInLauncherDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSearchCustomizableShortcutsInLauncher)},
-
     {"enable-suspend-state-machine",
      flag_descriptions::kEnableSuspendStateMachineName,
      flag_descriptions::kEnableSuspendStateMachineDescription, kOsCrOS,

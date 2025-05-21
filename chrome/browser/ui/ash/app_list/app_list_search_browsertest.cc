@@ -107,12 +107,6 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   }
 };
 
-class AppListSearchWithCustomizableShortcutsBrowserTest
-    : public AppListSearchBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kSearchCustomizableShortcutsInLauncher};
-};
-
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
   const std::string app_id = ash::kOsSettingsAppId;
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
@@ -171,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenShortcutsApp) {
 }
 
 // Flaky. See http://crbug.com/324930012.
-IN_PROC_BROWSER_TEST_F(AppListSearchWithCustomizableShortcutsBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
                        DISABLED_OpenShortcutsAppFromShortcut) {
   // Launch the app from the Launcher via searching for a shortcut
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
