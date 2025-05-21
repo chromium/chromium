@@ -58,7 +58,7 @@ static jlong JNI_PaymentFeatureMap_GetNativeMap(JNIEnv* env) {
 // Android only features.
 BASE_FEATURE(kAndroidPaymentIntentsOmitDeprecatedParameters,
              "AndroidPaymentIntentsOmitDeprecatedParameters",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGooglePayViaAndroidIntents,
              "GooglePayViaAndroidIntents",
              base::FEATURE_DISABLED_BY_DEFAULT);
