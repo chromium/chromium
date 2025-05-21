@@ -99,8 +99,8 @@ bool GetAppOutputInternal(
 
   const ElapsedTimer timer;
 
+  bool process_exited = false;
   do {
-    bool process_exited = false;
     {
       // It is okay to allow this process to wait on the launched process as a
       // process launched with GetAppOutput*() shouldn't wait back on the
@@ -108,7 +108,7 @@ bool GetAppOutputInternal(
       internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
       ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                               BlockingType::MAY_BLOCK);
-      process_exited = process.WaitForExitWithTimeout(Seconds(1), nullptr);
+      process_exited = process.WaitForExitWithTimeout(Seconds(1), exit_code);
     }
 
     // Read output from the child process's pipe for STDOUT
@@ -150,13 +150,11 @@ bool GetAppOutputInternal(
     still_waiting({});
   } while (timer.Elapsed() < timeout);
 
-  TerminationStatus status = GetTerminationStatus(process.Handle(), exit_code);
   if (final_status) {
-    *final_status = status;
+    *final_status = process_exited ? TERMINATION_STATUS_NORMAL_TERMINATION
+                                   : TERMINATION_STATUS_STILL_RUNNING;
   }
-  return status != TERMINATION_STATUS_PROCESS_CRASHED &&
-         status != TERMINATION_STATUS_STILL_RUNNING &&
-         status != TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  return process_exited;
 }
 
 Process LaunchElevatedProcess(const CommandLine& cmdline,
@@ -490,7 +488,8 @@ bool GetAppOutput(const CommandLine& cl, std::string* output) {
 bool GetAppOutputAndError(const CommandLine& cl, std::string* output) {
   int exit_code;
   return GetAppOutputInternal(cl.GetCommandLineString(), true, output,
-                              &exit_code);
+                              &exit_code) &&
+         !exit_code;
 }
 
 bool GetAppOutputWithExitCode(const CommandLine& cl,
@@ -515,7 +514,7 @@ bool GetAppOutputWithExitCodeAndTimeout(
 
 bool GetAppOutput(CommandLine::StringViewType cl, std::string* output) {
   int exit_code;
-  return GetAppOutputInternal(cl, false, output, &exit_code);
+  return GetAppOutputInternal(cl, false, output, &exit_code) && !exit_code;
 }
 
 void RaiseProcessToHighPriority() {
