@@ -1414,7 +1414,7 @@ void OnListFamilyMembersResponse(
 
 - (void)teardownUI {
   // The UI should be stopped before the models they observe are stopped.
-  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
+  [self stopSigninCoordinatorWithCompletionAnimated:NO fromExternalTrigger:NO];
   DCHECK(!self.signinCoordinator)
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
 
@@ -1727,7 +1727,7 @@ void OnListFamilyMembersResponse(
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
-  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
+  [self stopSigninCoordinatorWithCompletionAnimated:NO fromExternalTrigger:NO];
   self.signinCoordinator = [SigninCoordinator
       upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
                                                               .viewController
@@ -2086,7 +2086,7 @@ using UserFeedbackDataCallback =
     return;
   }
   Browser* mainBrowser = self.mainInterface.browser;
-  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
+  [self stopSigninCoordinatorWithCompletionAnimated:NO fromExternalTrigger:NO];
   self.signinCoordinator =
       [SigninCoordinator signinCoordinatorWithCommand:command
                                               browser:mainBrowser
@@ -2135,7 +2135,7 @@ using UserFeedbackDataCallback =
   };
   ChangeProfileContinuationProvider provider =
       base::BindRepeating(&CreateChangeProfileOpensURLContinuation, url);
-  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
+  [self stopSigninCoordinatorWithCompletionAnimated:NO fromExternalTrigger:NO];
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
@@ -3798,7 +3798,8 @@ using UserFeedbackDataCallback =
     // to be closed first.
     // If signinCoordinator is already dismissing, completion execution will
     // happen when it is done animating.
-    [self stopSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
+    [self stopSigninCoordinatorWithCompletionAnimated:animated
+                                  fromExternalTrigger:YES];
     UIViewController* presentingViewController =
         self.settingsNavigationController.presentingViewController;
     if (presentingViewController) {
@@ -3812,15 +3813,17 @@ using UserFeedbackDataCallback =
   } else {
     // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.
-    [self stopSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
+    [self stopSigninCoordinatorWithCompletionAnimated:animated
+                                  fromExternalTrigger:YES];
     resetAndDismiss();
   }
 }
 
 // Stops the sign-in coordinator actions and dismisses its views either
-// with or without animation.
-- (void)stopSigninCoordinatorAnimated:(BOOL)animated
-                  fromExternalTrigger:(BOOL)external {
+// with or without animation. Executes its signinCompletion. It’s expected to be
+// not already executed.
+- (void)stopSigninCoordinatorWithCompletionAnimated:(BOOL)animated
+                                fromExternalTrigger:(BOOL)external {
   if (!self.signinCoordinator) {
     return;
   }
@@ -4395,7 +4398,8 @@ using UserFeedbackDataCallback =
     (PolicyWatcherBrowserAgent*)policyWatcher {
 
   if (self.signinCoordinator) {
-    [self stopSigninCoordinatorAnimated:YES fromExternalTrigger:YES];
+    [self stopSigninCoordinatorWithCompletionAnimated:YES
+                                  fromExternalTrigger:YES];
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
     policyWatcher->SignInUIDismissed();
