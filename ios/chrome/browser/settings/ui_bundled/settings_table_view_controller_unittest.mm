@@ -26,6 +26,7 @@
 #import "components/variations/service/variations_service_client.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -188,6 +189,7 @@ class SettingsTableViewControllerTest
 
     // Prepare mocks for PushNotificationClient dependency
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));

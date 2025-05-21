@@ -14,6 +14,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -61,6 +62,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
                 web::BrowserState, password_manager::TestPasswordStore>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
 
     NSArray<Protocol*>* command_protocols = @[
       @protocol(ApplicationCommands), @protocol(BrowserCommands),
