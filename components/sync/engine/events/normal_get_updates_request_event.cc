@@ -19,7 +19,6 @@ NormalGetUpdatesRequestEvent::NormalGetUpdatesRequestEvent(
                                    nudge_tracker.GetNudgedTypes(),
                                    nudge_tracker.GetNotifiedTypes(),
                                    nudge_tracker.GetRefreshRequestedTypes(),
-                                   nudge_tracker.IsRetryRequired(),
                                    request) {}
 
 NormalGetUpdatesRequestEvent::NormalGetUpdatesRequestEvent(
@@ -27,19 +26,17 @@ NormalGetUpdatesRequestEvent::NormalGetUpdatesRequestEvent(
     DataTypeSet nudged_types,
     DataTypeSet notified_types,
     DataTypeSet refresh_requested_types,
-    bool is_retry,
     sync_pb::ClientToServerMessage request)
     : timestamp_(timestamp),
       nudged_types_(nudged_types),
       notified_types_(notified_types),
       refresh_requested_types_(refresh_requested_types),
-      is_retry_(is_retry),
       request_(request) {}
 
 std::unique_ptr<ProtocolEvent> NormalGetUpdatesRequestEvent::Clone() const {
   return std::make_unique<NormalGetUpdatesRequestEvent>(
       timestamp_, nudged_types_, notified_types_, refresh_requested_types_,
-      is_retry_, request_);
+      request_);
 }
 
 NormalGetUpdatesRequestEvent::~NormalGetUpdatesRequestEvent() = default;
@@ -79,13 +76,6 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
     details.append(base::StringPrintf(
         "Refresh requested types: %s",
         DataTypeSetToDebugString(refresh_requested_types_).c_str()));
-  }
-
-  if (is_retry_) {
-    if (!details.empty()) {
-      details.append("\n");
-    }
-    details.append(base::StringPrintf("Is retry: True"));
   }
 
   return details;

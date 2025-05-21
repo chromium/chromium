@@ -284,60 +284,6 @@ TEST_F(GetUpdatesProcessorTest, PollTest) {
   EXPECT_EQ(enabled_types(), progress_types);
 }
 
-TEST_F(GetUpdatesProcessorTest, RetryTest) {
-  NudgeTracker nudge_tracker;
-
-  // Schedule a retry.
-  base::TimeTicks t1 = kTestStartTime;
-  nudge_tracker.SetNextRetryTime(t1);
-
-  // Get the nudge tracker to think the retry is due.
-  nudge_tracker.SetSyncCycleStartTime(t1 + base::Seconds(1));
-
-  sync_pb::ClientToServerMessage message;
-  NormalGetUpdatesDelegate normal_delegate(nudge_tracker);
-  std::unique_ptr<GetUpdatesProcessor> processor(
-      BuildGetUpdatesProcessor(normal_delegate));
-  processor->PrepareGetUpdates(enabled_types(), &message);
-
-  const sync_pb::GetUpdatesMessage& gu_msg = message.get_updates();
-  EXPECT_EQ(sync_pb::SyncEnums::RETRY, gu_msg.get_updates_origin());
-  EXPECT_TRUE(gu_msg.is_retry());
-
-  DataTypeSet progress_types;
-  for (int i = 0; i < gu_msg.from_progress_marker_size(); ++i) {
-    DataType type = GetDataTypeFromSpecificsFieldNumber(
-        gu_msg.from_progress_marker(i).data_type_id());
-    progress_types.Put(type);
-  }
-  EXPECT_EQ(enabled_types(), progress_types);
-}
-
-TEST_F(GetUpdatesProcessorTest, NudgeWithRetryTest) {
-  NudgeTracker nudge_tracker;
-
-  // Schedule a retry.
-  base::TimeTicks t1 = kTestStartTime;
-  nudge_tracker.SetNextRetryTime(t1);
-
-  // Get the nudge tracker to think the retry is due.
-  nudge_tracker.SetSyncCycleStartTime(t1 + base::Seconds(1));
-
-  // Record a local change, too.
-  nudge_tracker.RecordLocalChange(BOOKMARKS, false);
-
-  sync_pb::ClientToServerMessage message;
-  NormalGetUpdatesDelegate normal_delegate(nudge_tracker);
-  std::unique_ptr<GetUpdatesProcessor> processor(
-      BuildGetUpdatesProcessor(normal_delegate));
-  processor->PrepareGetUpdates(enabled_types(), &message);
-
-  const sync_pb::GetUpdatesMessage& gu_msg = message.get_updates();
-  EXPECT_NE(sync_pb::SyncEnums::RETRY, gu_msg.get_updates_origin());
-
-  EXPECT_TRUE(gu_msg.is_retry());
-}
-
 // Verify that a bogus response message is detected.
 TEST_F(GetUpdatesProcessorTest, InvalidResponse) {
   sync_pb::GetUpdatesResponse gu_response;

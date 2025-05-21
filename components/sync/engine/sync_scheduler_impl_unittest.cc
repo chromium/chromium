@@ -87,13 +87,6 @@ ACTION_P(SimulatePollIntervalUpdate, new_poll) {
   cycle->delegate()->OnReceivedPollIntervalUpdate(new_poll);
 }
 
-ACTION_P(SimulateGuRetryDelayCommand, delay) {
-  SyncCycle* cycle = arg0;
-  cycle->mutable_status_controller()->set_last_download_updates_result(
-      SyncerError::Success());
-  cycle->delegate()->OnReceivedGuRetryDelay(delay);
-}
-
 void SimulateGetEncryptionKeyFailed(DataTypeSet requsted_types,
                                     sync_pb::SyncEnums::GetUpdatesOrigin origin,
                                     SyncCycle* cycle) {
@@ -374,11 +367,6 @@ class SyncSchedulerImplTest : public testing::Test {
 
   bool IsAnyTypeBlocked() {
     return scheduler_->nudge_tracker_.IsAnyTypeBlocked();
-  }
-
-  base::TimeDelta GetRetryTimerDelay() {
-    EXPECT_TRUE(scheduler_->retry_timer_.IsRunning());
-    return scheduler_->retry_timer_.GetCurrentDelay();
   }
 
   static std::unique_ptr<SyncInvalidation> BuildInvalidation(
@@ -1668,87 +1656,6 @@ TEST_F(SyncSchedulerImplTest, PollAfterAuthError) {
   scheduler()->OnCredentialsUpdated();
   connection()->SetServerResponse(HttpResponse::ForSuccessForTest());
   RunLoop();
-  StopSyncScheduler();
-}
-
-TEST_F(SyncSchedulerImplTest, SuccessfulRetry) {
-  StartSyncScheduler(base::Time());
-
-  base::TimeDelta delay = base::Milliseconds(10);
-  scheduler()->OnReceivedGuRetryDelay(delay);
-  EXPECT_EQ(delay, GetRetryTimerDelay());
-
-  SyncShareTimes times;
-  EXPECT_CALL(*syncer(), NormalSyncShare)
-      .WillOnce(
-          DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times, true)));
-
-  // Run to wait for retrying.
-  RunLoop();
-
-  StopSyncScheduler();
-}
-
-TEST_F(SyncSchedulerImplTest, FailedRetry) {
-  UseMockDelayProvider();
-  EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(base::Milliseconds(10)));
-
-  StartSyncScheduler(base::Time());
-
-  base::TimeDelta delay = base::Milliseconds(10);
-  scheduler()->OnReceivedGuRetryDelay(delay);
-
-  SyncShareTimes times;
-  EXPECT_CALL(*syncer(), NormalSyncShare)
-      .WillOnce(DoAll(Invoke(SimulateDownloadUpdatesFailed),
-                      RecordSyncShare(&times, false)));
-
-  // Run to wait for retrying.
-  RunLoop();
-
-  EXPECT_TRUE(scheduler()->IsGlobalBackoff());
-  EXPECT_CALL(*syncer(), NormalSyncShare)
-      .WillOnce(
-          DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times, true)));
-
-  // Run to wait for second retrying.
-  RunLoop();
-
-  StopSyncScheduler();
-}
-
-ACTION_P2(VerifyRetryTimerDelay, scheduler_test, expected_delay) {
-  EXPECT_EQ(expected_delay, scheduler_test->GetRetryTimerDelay());
-}
-
-TEST_F(SyncSchedulerImplTest, ReceiveNewRetryDelay) {
-  StartSyncScheduler(base::Time());
-
-  base::TimeDelta delay1 = base::Milliseconds(100);
-  base::TimeDelta delay2 = base::Milliseconds(200);
-
-  scheduler()->ScheduleLocalNudge(THEMES);
-  scheduler()->OnReceivedGuRetryDelay(delay1);
-  EXPECT_EQ(delay1, GetRetryTimerDelay());
-
-  SyncShareTimes times;
-  EXPECT_CALL(*syncer(), NormalSyncShare)
-      .WillOnce(DoAll(WithoutArgs(VerifyRetryTimerDelay(this, delay1)),
-                      WithArg<2>(SimulateGuRetryDelayCommand(delay2)),
-                      RecordSyncShare(&times, true)));
-
-  // Run nudge GU.
-  RunLoop();
-  EXPECT_EQ(delay2, GetRetryTimerDelay());
-
-  EXPECT_CALL(*syncer(), NormalSyncShare)
-      .WillOnce(
-          DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times, true)));
-
-  // Run to wait for retrying.
-  RunLoop();
-
   StopSyncScheduler();
 }
 

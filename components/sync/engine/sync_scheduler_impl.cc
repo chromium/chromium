@@ -169,8 +169,6 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
 
     AdjustPolling(UPDATE_INTERVAL);  // Will kick start poll timer if needed.
 
-    // Update our current time before checking IsRetryRequired().
-    nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
     if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes()) &&
         CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
       TrySyncCycleJob(RespectGlobalBackoff(true));
@@ -600,8 +598,6 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl(
     RespectGlobalBackoff respect_backoff) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
-
   if (mode_ == CONFIGURATION_MODE) {
     if (pending_configure_params_) {
       SDVLOG(2) << "Found pending configure job";
@@ -635,10 +631,6 @@ void SyncSchedulerImpl::PollTimerCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!syncer_->IsSyncing());
 
-  TrySyncCycleJob(RespectGlobalBackoff(true));
-}
-
-void SyncSchedulerImpl::RetryTimerCallback() {
   TrySyncCycleJob(RespectGlobalBackoff(true));
 }
 
@@ -820,14 +812,6 @@ void SyncSchedulerImpl::OnSyncProtocolError(
       observer.OnActionableProtocolError(sync_protocol_error);
     }
   }
-}
-
-void SyncSchedulerImpl::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  nudge_tracker_.SetNextRetryTime(TimeTicks::Now() + delay);
-  retry_timer_.Start(FROM_HERE, delay, this,
-                     &SyncSchedulerImpl::RetryTimerCallback);
 }
 
 void SyncSchedulerImpl::OnReceivedMigrationRequest(DataTypeSet types) {

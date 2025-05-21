@@ -27,41 +27,6 @@ using sync_pb::CommitResponse_EntryResponse;
 
 namespace syncer {
 
-namespace {
-
-class MockSyncScheduler : public FakeSyncScheduler {
- public:
-  MockSyncScheduler() = default;
-  ~MockSyncScheduler() override = default;
-
-  MOCK_METHOD(void,
-              OnReceivedGuRetryDelay,
-              (const base::TimeDelta&),
-              (override));
-};
-
-ClientToServerResponse DefaultGetUpdatesResponse() {
-  ClientToServerResponse response;
-  response.set_store_birthday("birthday");
-  response.set_error_code(sync_pb::SyncEnums::SUCCESS);
-  return response;
-}
-
-ClientToServerMessage DefaultGetUpdatesRequest() {
-  ClientToServerMessage msg;
-  SyncerProtoUtil::SetProtocolVersion(&msg);
-  msg.set_share("required");
-  msg.set_message_contents(ClientToServerMessage::GET_UPDATES);
-  msg.set_store_birthday("birthday");
-  msg.mutable_bag_of_chips();
-  msg.set_api_key("api_key");
-  msg.mutable_client_status();
-
-  return msg;
-}
-
-}  // namespace
-
 // Builds a ClientToServerResponse with some data type ids, including
 // invalid ones.  GetTypesToMigrate() should return only the valid
 // data types.
@@ -255,31 +220,6 @@ TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
   EXPECT_EQ(2, histogram_tester.GetBucketCount(
                    "Sync.PostedClientToServerMessage",
                    /*sample=*/ClientToServerMessage::GET_UPDATES));
-}
-
-TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
-  ClientToServerResponse response_to_return = DefaultGetUpdatesResponse();
-  response_to_return.mutable_client_command()->set_gu_retry_delay_seconds(900);
-  FakeConnectionManager dcm(response_to_return);
-
-  testing::NiceMock<MockSyncScheduler> mock_sync_scheduler;
-  EXPECT_CALL(mock_sync_scheduler, OnReceivedGuRetryDelay(base::Seconds(900)));
-
-  SyncCycleContext context(&dcm,
-                           /*extensions_activity=*/nullptr,
-                           /*listeners=*/{},
-                           /*debug_info_getter=*/nullptr,
-                           /*data_type_registry=*/nullptr, "cache_guid",
-                           "birthday",
-                           /*bag_of_chips=*/"", base::Seconds(100));
-  SyncCycle cycle(&context, &mock_sync_scheduler);
-
-  ClientToServerResponse response;
-  DataTypeSet partial_failure_data_types;
-  SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
-      DefaultGetUpdatesRequest(), &response, &cycle,
-      &partial_failure_data_types);
-  EXPECT_EQ(error.type(), SyncerError::Type::kSuccess);
 }
 
 }  // namespace syncer

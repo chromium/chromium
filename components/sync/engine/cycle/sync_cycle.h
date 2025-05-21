@@ -69,9 +69,6 @@ class SyncCycle {
     virtual void OnSyncProtocolError(
         const SyncProtocolError& sync_protocol_error) = 0;
 
-    // Called when server wants to schedule a retry GU.
-    virtual void OnReceivedGuRetryDelay(const base::TimeDelta& delay) = 0;
-
     // Called when server requests a migration.
     virtual void OnReceivedMigrationRequest(DataTypeSet types) = 0;
 

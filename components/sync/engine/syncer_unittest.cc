@@ -118,7 +118,6 @@ class SyncerTest : public testing::Test,
     }
   }
 
-  void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override {}
   void OnReceivedMigrationRequest(DataTypeSet types) override {}
   void OnReceivedQuotaParamsForExtensionTypes(
       std::optional<int> max_tokens,

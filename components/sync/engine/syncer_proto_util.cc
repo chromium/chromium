@@ -201,13 +201,6 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
     }
   }
 
-  if (command.has_gu_retry_delay_seconds()) {
-    // TODO(crbug.com/40252048): The server no longer supports retry GU this
-    // field. Clean up client-side code.
-    cycle->delegate()->OnReceivedGuRetryDelay(
-        base::Seconds(command.gu_retry_delay_seconds()));
-  }
-
   if (command.custom_nudge_delays_size() > 0) {
     std::map<DataType, base::TimeDelta> delay_map;
     for (int i = 0; i < command.custom_nudge_delays_size(); ++i) {
