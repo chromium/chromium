@@ -452,6 +452,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
+    VerifyEndSession();
     browser_context_ = nullptr;
     boca_app_handler_.reset();
     web_ui_.reset();
@@ -519,6 +520,35 @@ class BocaAppPageHandlerTest : public testing::Test {
     boca_app_handler_.get()->GetUserPref(pref, get_pref_future.GetCallback());
 
     EXPECT_EQ(get_pref_future.Get(), value);
+  }
+
+  void VerifyEndSession() {
+    if (!is_producer_) {
+      return;
+    }
+    EXPECT_CALL(*session_manager(), GetCurrentSession())
+        .WillOnce(Return(&session));
+    EXPECT_CALL(*session_manager(),
+                UpdateCurrentSession(_, /*dispatch_event=*/true))
+        .Times(1);
+
+    // Page handler callback.
+    base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                          google_apis::ApiErrorCode>>
+        future;
+    ::boca::UserIdentity teacher;
+    teacher.set_gaia_id(kGaiaId.ToString());
+    UpdateSessionRequest request(nullptr, kTestUrlBase, teacher,
+                                 session.session_id(), future.GetCallback());
+    EXPECT_CALL(*session_client_impl(), UpdateSession(_))
+        .WillOnce(WithArg<0>(
+            // Unique pointer have ownership issue, have to do manual deep copy
+            // here instead of using SaveArg.
+            Invoke([&](auto request) {
+              ASSERT_EQ(kGaiaId.ToString(), request->teacher().gaia_id());
+              ASSERT_EQ(::boca::Session::PAST, *request->session_state());
+              request->callback().Run(std::make_unique<::boca::Session>());
+            })));
   }
 
   MockSessionClientImpl* session_client_impl() { return &session_client_impl_; }

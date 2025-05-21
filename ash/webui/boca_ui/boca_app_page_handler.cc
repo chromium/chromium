@@ -294,6 +294,15 @@ BocaAppHandler::~BocaAppHandler() {
     GetSessionManager()->NotifySessionCaptionProducerEvents(caption_config);
   }
   GetSessionManager()->RemoveObserver(this);
+  if (!is_producer_ || BocaAppClient::Get()->HasApp()) {
+    // Always try end session when handler destructed, but do not proceed if
+    // there is still app instance. Find App won't return the window is already
+    // scheduled to close.
+    return;
+  }
+  // Best effort end session. Not handling response, if update failed,
+  // persistent notification will stay.
+  EndSession(base::BindOnce([](std::optional<mojom::UpdateSessionError>) {}));
 }
 
 void BocaAppHandler::AuthenticateWebview(AuthenticateWebviewCallback callback) {

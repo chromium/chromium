@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -144,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
-                       ShouldEndSessionWhenAppClose) {
+                       ShouldEndSessionWhenLastAppWindowClose) {
   LaunchAndWait();
   base::test::TestFuture<void> future;
   boca_session_manager()->set_end_session_callback_for_testing(
@@ -153,6 +154,27 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
       ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
   boca_app_browser->window()->Close();
   EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(boca_session_manager()->end_session_callback_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
+                       ShouldNotEndSessionWhenStillAppWindowOpen) {
+  LaunchAndWait();
+
+  base::test::TestFuture<void> future;
+  boca_session_manager()->set_end_session_callback_for_testing(
+      future.GetCallback());
+  Browser* const boca_app_browser =
+      ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
+
+  // Trigger reload which will cause page handler to be recreated.
+  ui_test_utils::NavigateToURLWithDisposition(
+      boca_app_browser, GURL(ash::boca::kChromeBocaAppUntrustedIndexURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+
+  // Callback never executed.
+  EXPECT_TRUE(boca_session_manager()->end_session_callback_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
