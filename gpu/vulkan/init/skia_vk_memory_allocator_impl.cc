@@ -56,6 +56,9 @@ class SkiaVulkanMemoryAllocator : public skgpu::VulkanMemoryAllocator {
       // If the caller asked for lazy allocation then they already set up the
       // VkImage for it so we must require the lazy property.
       info.requiredFlags |= VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT;
+      // Make the transient allocation a dedicated allocation for tracking
+      // memory separately.
+      info.flags |= VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     }
 
     if (kProtected_AllocationPropertyFlag & flags) {
@@ -112,6 +115,9 @@ class SkiaVulkanMemoryAllocator : public skgpu::VulkanMemoryAllocator {
     if ((kLazyAllocation_AllocationPropertyFlag & flags) &&
         BufferUsage::kGpuOnly == usage) {
       info.preferredFlags |= VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT;
+      // Make the transient allocation a dedicated allocation for tracking
+      // memory separately.
+      info.flags |= VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     }
 
     if (kPersistentlyMapped_AllocationPropertyFlag & flags) {
