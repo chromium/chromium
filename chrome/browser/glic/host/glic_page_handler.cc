@@ -424,9 +424,23 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->CloseUI();
   }
 
-  void AttachPanel() override { glic_service_->AttachPanel(); }
+  void AttachPanel() override {
+    if (GlicWindowController::AlwaysDetached()) {
+      receiver_.ReportBadMessage(
+          "AttachPanel cannot be called when always detached mode is enabled.");
+      return;
+    }
+    glic_service_->AttachPanel();
+  }
 
-  void DetachPanel() override { glic_service_->DetachPanel(); }
+  void DetachPanel() override {
+    if (GlicWindowController::AlwaysDetached()) {
+      receiver_.ReportBadMessage(
+          "DetachPanel cannot be called when always detached mode is enabled.");
+      return;
+    }
+    glic_service_->DetachPanel();
+  }
 
   void ShowProfilePicker() override {
     glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
@@ -548,6 +562,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void SetClosedCaptioningSetting(
       bool enabled,
       SetClosedCaptioningSettingCallback callback) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicClosedCaptioning)) {
+      receiver_.ReportBadMessage(
+          "Client should not be able to call SetClosedCaptioningSetting "
+          "without the GlicClosedCaptioning feature enabled.");
+      return;
+    }
     pref_service_->SetBoolean(prefs::kGlicClosedCaptioningEnabled, enabled);
     if (enabled) {
       base::RecordAction(
@@ -639,7 +659,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void ScrollTo(mojom::ScrollToParamsPtr params,
                 ScrollToCallback callback) override {
     if (!base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
-      mojo::ReportBadMessage(
+      receiver_.ReportBadMessage(
           "Client should not be able to call ScrollTo without the GlicScrollTo "
           "feature enabled.");
       return;
@@ -662,7 +682,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (type != ContentSettingsType::MEDIASTREAM_MIC &&
         type != ContentSettingsType::GEOLOCATION) {
       // This will terminate the render process.
-      mojo::ReportBadMessage(
+      receiver_.ReportBadMessage(
           "OpenOsPermissionSettingsMenu received for unsupported "
           "OS permission.");
       return;
@@ -754,7 +774,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       GetZeroStateSuggestionsForFocusedTabCallback callback) override {
     if (!base::FeatureList::IsEnabled(
             contextual_cueing::kGlicZeroStateSuggestions)) {
-      mojo::ReportBadMessage(
+      receiver_.ReportBadMessage(
           "Client should not call "
           "GetZeroStateSuggestionsForFocusedTab "
           "without the GlicZeroStateSuggestions feature enabled.");
@@ -972,6 +992,8 @@ void GlicPageHandler::ResizeWidget(const gfx::Size& size,
 }
 
 void GlicPageHandler::EnableDragResize(bool enabled) {
+  // features::kGlicUserResize is not checked here because the WebUI page
+  // invokes this method when it is disabled, too (when its state changes).
   GetGlicService()->window_controller().EnableDragResize(enabled);
 }
 
