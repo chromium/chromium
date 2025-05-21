@@ -117,7 +117,7 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
 
   virtual std::string GetExtensionPageContent() const { return "<p>page</p>"; }
 
-  virtual void LoadServiceWorkerExtension() {
+  void LoadServiceWorkerExtension() {
     // Load a basic extension with a service worker and wait for the worker to
     // start running.
     static constexpr char kManifest[] =
@@ -815,9 +815,7 @@ class ServiceWorkerSubScopeWorkerTrackingBrowserTest
     return R"(<script src="/page.js"></script>)";
   }
 
-  void LoadServiceWorkerExtension() override {
-    ServiceWorkerIdTrackingBrowserTest::LoadServiceWorkerExtension();
-
+  void LoadSubScopeServiceWorker() {
     // Code for a service worker that will be registered for a sub-scope
     // of the extension root scope. This service worker is not allowed
     // access to extension APIs, as it's not listed in the manifest.
@@ -825,13 +823,8 @@ class ServiceWorkerSubScopeWorkerTrackingBrowserTest
       base::ScopedAllowBlockingForTesting allow_blocking;
       base::CreateDirectory(test_extension_dir()->UnpackedPath().Append(
           FILE_PATH_LITERAL("subscope")));
-      // NOTE: `setInterval` is used to keep the service worker alive
-      // for the duration of the test, preventing it from being stopped
-      // prematurely, which could lead to test flakiness.
-      // See crbug.com/417430921.
       test_extension_dir()->WriteFile(FILE_PATH_LITERAL("subscope/sw.js"), R"(
           console.log("subscope service worker");
-          setInterval(() => { console.log("keepalive"); }, 1000);
       )");
     }
 
@@ -841,12 +834,19 @@ class ServiceWorkerSubScopeWorkerTrackingBrowserTest
         navigator.serviceWorker.register("subscope/sw.js").then(function() {
           // Wait until the service worker is active.
           return navigator.serviceWorker.ready;
-        }).then(function(r) {
-          console.log("registration successful");
         }).catch(function(err) {
           console.log("registration error: " + err.message);
         });
     )");
+
+    // Open the extension page, which will cause the sub-scope service
+    // worker to start. We wait for its registration here.
+    content::ServiceWorkerContext* sw_context =
+        GetServiceWorkerContext(profile());
+    service_worker_test_utils::TestServiceWorkerContextObserver
+        registration_observer(sw_context);
+    OpenExtensionTab();
+    registration_observer.WaitForRegistrationStored();
   }
 };
 
@@ -857,17 +857,12 @@ class ServiceWorkerSubScopeWorkerTrackingBrowserTest
 // crbug.com/395536907.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerSubScopeWorkerTrackingBrowserTest,
                        StoppingSubScopeWorkerDoesNotAffectExtensionWorker) {
-  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtensionAndOpenExtensionTab());
-
-  // Wait for a console message that confirms the service worker for
-  // the sub-scope has been registered. Note that we can't use
-  // ExtensionTestMessageListener here since extension APIs are not
-  // available.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern("registration successful");
-  ASSERT_TRUE(console_observer.Wait());
+  // Load the extension service worker. This method will wait for its
+  // registration to be stored and the service worker to be running.
+  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
+  // Load the sub-scope service worker and open the extension tab.
+  // This method will wait for the registration to be stored.
+  ASSERT_NO_FATAL_FAILURE(LoadSubScopeServiceWorker());
 
   // Confirm that we are tracking the main extension service worker.
   std::optional<WorkerId> extension_service_worker_id =
