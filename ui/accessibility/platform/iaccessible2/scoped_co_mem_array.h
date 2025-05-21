@@ -7,8 +7,10 @@
 
 #include <objbase.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -17,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/process/memory.h"
 #include "base/win/windows_types.h"
 
 struct IA2TextSelection;
@@ -35,6 +38,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) ScopedCoMemArray {
  public:
   ScopedCoMemArray() = default;
 
+  // Constructs an instance from the contents of `data`.
+  explicit ScopedCoMemArray(std::vector<T>&& data);
+
   ScopedCoMemArray(const ScopedCoMemArray&) = delete;
   ScopedCoMemArray& operator=(const ScopedCoMemArray&) = delete;
 
@@ -51,6 +57,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) ScopedCoMemArray {
   ~ScopedCoMemArray() { Reset(nullptr, 0); }
 
   LONG size() const { return size_; }
+  const T* data() const { return mem_ptr_; }
+  T* data() { return mem_ptr_; }
 
   base::span<const T> as_span() const {
     // SAFETY: mem_ptr_ and size_ originate from accessibility COM calls.
@@ -81,6 +89,21 @@ class COMPONENT_EXPORT(AX_PLATFORM) ScopedCoMemArray {
   RAW_PTR_EXCLUSION T* mem_ptr_ = nullptr;
   LONG size_ = 0;
 };
+
+template <typename T>
+ScopedCoMemArray<T>::ScopedCoMemArray(std::vector<T>&& data)
+    : mem_ptr_(reinterpret_cast<T*>(::CoTaskMemAlloc(data.size() * sizeof(T)))),
+      size_(base::checked_cast<LONG>(data.size())) {
+  if (!mem_ptr_) {
+    base::TerminateBecauseOutOfMemory(data.size() * sizeof(T));
+  }
+  // SAFETY: mem_ptr_ is sized based on the contents of `data`.
+  std::ranges::move(
+      data,
+      UNSAFE_BUFFERS(base::span(mem_ptr_, base::checked_cast<size_t>(size_)))
+          .begin());
+  data.clear();
+}
 
 // Release the references to the two IAccessibleText pointers in each element.
 template <>

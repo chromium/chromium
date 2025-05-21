@@ -15,7 +15,7 @@
     Microsoft::WRL::ComPtr<ia2_interface> obj;                                \
     HRESULT hr = IA2QueryInterface<ia2_interface>(target.Get(), &obj);        \
     if (hr == S_OK)                                                           \
-      return AXOptionalObject({obj});                                         \
+      return AXOptionalObject({std::move(obj)});                              \
     if (hr == E_NOINTERFACE)                                                  \
       return AXOptionalObject::Error(interface_name + " is not implemented"); \
     return AXOptionalObject::Error("Unexpected error when querying " +        \
@@ -161,7 +161,7 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeFor(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForAXElement(
-    IAccessibleComPtr target,
+    const IAccessibleComPtr& target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "role") {
     return GetRole(target);
@@ -207,7 +207,7 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForAXElement(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2(
-    IA2ComPtr target,
+    const IA2ComPtr& target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "role")
     return GetIA2Role(target);
@@ -228,13 +228,13 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Hypertext(
-    IA2HypertextComPtr target,
+    const IA2HypertextComPtr& target,
     const AXPropertyNode& property_node) const {
   return AXOptionalObject::Error();
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Table(
-    IA2TableComPtr target,
+    const IA2TableComPtr& target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "selectedColumns") {
     return GetSelectedColumns(target);
@@ -244,7 +244,7 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Table(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2TableCell(
-    IA2TableCellComPtr target,
+    const IA2TableCellComPtr& target,
     const AXPropertyNode& property_node) const {
   return AXOptionalObject::Error();
 
@@ -256,7 +256,7 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2TableCell(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2TextSelectionContainer(
-    IA2TextSelectionContainerComPtr target,
+    const IA2TextSelectionContainerComPtr& target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "selections") {
     return GetSelections(target);
@@ -270,13 +270,13 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2TextSelectionContainer(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Text(
-    IA2TextComPtr target,
+    const IA2TextComPtr& target,
     const AXPropertyNode& property_node) const {
   return AXOptionalObject::Error();
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Value(
-    IA2ValueComPtr target,
+    const IA2ValueComPtr& target,
     const AXPropertyNode& property_node) const {
   return AXOptionalObject::Error();
 
@@ -287,7 +287,7 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Value(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::GetRole(
-    IAccessibleComPtr target) const {
+    const IAccessibleComPtr& target) const {
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   base::win::ScopedVariant ia_role_variant;
   if (SUCCEEDED(target->get_accRole(variant_self, ia_role_variant.Receive()))) {
@@ -298,7 +298,7 @@ AXOptionalObject AXCallStatementInvokerWin::GetRole(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::GetName(
-    IAccessibleComPtr target) const {
+    const IAccessibleComPtr& target) const {
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   base::win::ScopedBstr name;
   auto result = target->get_accName(variant_self, name.Receive());
@@ -311,7 +311,7 @@ AXOptionalObject AXCallStatementInvokerWin::GetName(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::GetDescription(
-    IAccessibleComPtr target) const {
+    const IAccessibleComPtr& target) const {
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   base::win::ScopedBstr desc;
   auto result = target->get_accDescription(variant_self, desc.Receive());
@@ -323,8 +323,9 @@ AXOptionalObject AXCallStatementInvokerWin::GetDescription(
   return AXOptionalObject::Error();
 }
 
-AXOptionalObject AXCallStatementInvokerWin::HasState(IAccessibleComPtr target,
-                                                     std::string state) const {
+AXOptionalObject AXCallStatementInvokerWin::HasState(
+    const IAccessibleComPtr& target,
+    std::string state) const {
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   int32_t ia_state = 0;
   base::win::ScopedVariant ia_state_variant;
@@ -345,7 +346,7 @@ AXOptionalObject AXCallStatementInvokerWin::HasState(IAccessibleComPtr target,
 }
 
 AXOptionalObject AXCallStatementInvokerWin::QueryInterface(
-    IAccessibleComPtr target,
+    const IAccessibleComPtr& target,
     std::string interface_name) const {
   DEFINE_IA2_QI_ENTRY(IAccessible2)
   DEFINE_IA2_QI_ENTRY(IAccessibleHypertext)
@@ -360,7 +361,8 @@ AXOptionalObject AXCallStatementInvokerWin::QueryInterface(
 }
 #undef DEFINE_IA2_QI_ENTRY
 
-AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
+AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(
+    const IA2ComPtr& target) const {
   LONG role = 0;
   if (SUCCEEDED(target->role(&role)))
     return AXOptionalObject(
@@ -370,7 +372,7 @@ AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
 }
 
 AXOptionalObject AXCallStatementInvokerWin::GetIA2Attribute(
-    IA2ComPtr target,
+    const IA2ComPtr& target,
     const AXPropertyNode& property_node) const {
   CHECK_ARGS_1(property_node)
 
@@ -383,7 +385,7 @@ AXOptionalObject AXCallStatementInvokerWin::GetIA2Attribute(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::HasIA2State(
-    IA2ComPtr target,
+    const IA2ComPtr& target,
     const AXPropertyNode& property_node) const {
   CHECK_ARGS_1(property_node)
   std::string state = property_node.arguments[0].name_or_value;
@@ -404,7 +406,7 @@ AXOptionalObject AXCallStatementInvokerWin::HasIA2State(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::GetSelectedColumns(
-    const IA2TableComPtr target) const {
+    const IA2TableComPtr& target) const {
   ScopedCoMemArray<LONG> columns;
   if (target->get_selectedColumns(INT_MAX, columns.Receive(),
                                   columns.ReceiveSize()) == S_OK) {
@@ -414,7 +416,7 @@ AXOptionalObject AXCallStatementInvokerWin::GetSelectedColumns(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::GetSelections(
-    IA2TextSelectionContainerComPtr target) const {
+    const IA2TextSelectionContainerComPtr& target) const {
   ScopedCoMemArray<IA2TextSelection> selections;
   if (target->get_selections(selections.Receive(), selections.ReceiveSize()) ==
       S_OK) {
@@ -424,11 +426,11 @@ AXOptionalObject AXCallStatementInvokerWin::GetSelections(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::SetSelections(
-    const IA2TextSelectionContainerComPtr target,
+    const IA2TextSelectionContainerComPtr& target,
     const AXPropertyNode& property_node) const {
   CHECK_ARGS_1(property_node)
 
-  std::vector<IA2TextSelection> selections =
+  ScopedCoMemArray<IA2TextSelection> selections =
       PropertyNodeToIA2TextSelectionArray(property_node.arguments[0]);
 
   if (target->setSelections(selections.size(), selections.data()) == S_OK) {
@@ -494,7 +496,7 @@ AXCallStatementInvokerWin::PropertyNodeToIA2TextSelection(
   return {std::move(text_selection)};
 }
 
-std::vector<IA2TextSelection>
+ScopedCoMemArray<IA2TextSelection>
 AXCallStatementInvokerWin::PropertyNodeToIA2TextSelectionArray(
     const AXPropertyNode& node) const {
   if (!node.IsArray()) {
@@ -510,7 +512,7 @@ AXCallStatementInvokerWin::PropertyNodeToIA2TextSelectionArray(
     }
     array.push_back(std::move(*item));
   }
-  return array;
+  return ScopedCoMemArray<IA2TextSelection>(std::move(array));
 }
 
 }  // namespace ui
