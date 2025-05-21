@@ -137,7 +137,7 @@ class BackingStore {
                                            const blink::IndexedDBKey& key,
                                            IndexedDBValue* record) = 0;
     // When successful, returns the identifier for the newly stored record.
-    [[nodiscard]] virtual base::expected<RecordIdentifier, Status> PutRecord(
+    [[nodiscard]] virtual StatusOr<RecordIdentifier> PutRecord(
         int64_t object_store_id,
         const blink::IndexedDBKey& key,
         IndexedDBValue value) = 0;
@@ -154,8 +154,7 @@ class BackingStore {
     // Returns the `RecordIdentifier` for the record if the primary key exists
     // in the given object store. Returns `Status` on error. Returns nullopt if
     // no record exists with the given key.
-    [[nodiscard]] virtual base::expected<std::optional<RecordIdentifier>,
-                                         Status>
+    [[nodiscard]] virtual StatusOr<std::optional<RecordIdentifier>>
     KeyExistsInObjectStore(int64_t object_store_id,
                            const blink::IndexedDBKey& key) = 0;
     [[nodiscard]] virtual Status PutIndexDataForRecord(
@@ -174,20 +173,20 @@ class BackingStore {
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
         bool* exists) = 0;
-    virtual base::expected<std::unique_ptr<Cursor>, Status>
-    OpenObjectStoreKeyCursor(int64_t object_store_id,
-                             const blink::IndexedDBKeyRange& key_range,
-                             blink::mojom::IDBCursorDirection) = 0;
-    virtual base::expected<std::unique_ptr<Cursor>, Status>
-    OpenObjectStoreCursor(int64_t object_store_id,
-                          const blink::IndexedDBKeyRange& key_range,
-                          blink::mojom::IDBCursorDirection) = 0;
-    virtual base::expected<std::unique_ptr<Cursor>, Status> OpenIndexKeyCursor(
+    virtual StatusOr<std::unique_ptr<Cursor>> OpenObjectStoreKeyCursor(
+        int64_t object_store_id,
+        const blink::IndexedDBKeyRange& key_range,
+        blink::mojom::IDBCursorDirection) = 0;
+    virtual StatusOr<std::unique_ptr<Cursor>> OpenObjectStoreCursor(
+        int64_t object_store_id,
+        const blink::IndexedDBKeyRange& key_range,
+        blink::mojom::IDBCursorDirection) = 0;
+    virtual StatusOr<std::unique_ptr<Cursor>> OpenIndexKeyCursor(
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection) = 0;
-    virtual base::expected<std::unique_ptr<Cursor>, Status> OpenIndexCursor(
+    virtual StatusOr<std::unique_ptr<Cursor>> OpenIndexCursor(
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
@@ -229,19 +228,18 @@ class BackingStore {
   virtual int64_t GetInMemorySize() const = 0;
   // Returns a list of names of existing databases, regardless of whether
   // they're currently open.
-  [[nodiscard]] virtual base::expected<std::vector<std::u16string>, Status>
+  [[nodiscard]] virtual StatusOr<std::vector<std::u16string>>
   GetDatabaseNames() = 0;
   // Returns a list of names of existing databases and their version numbers
   // (i.e. `IndexedDBDatabaseMetadata::version`), regardless of whether they're
   // currently open.
   [[nodiscard]]
-  virtual base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>,
-                         Status> GetDatabaseNamesAndVersions() = 0;
+  virtual StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
+  GetDatabaseNamesAndVersions() = 0;
   // Creates a new database in the backing store, or opens an existing one. If
   // pre-existing, the database's metadata will be populated from disk.
   // Otherwise the version will be initialized to NO_VERSION.
-  [[nodiscard]] virtual base::expected<std::unique_ptr<BackingStore::Database>,
-                                       Status>
+  [[nodiscard]] virtual StatusOr<std::unique_ptr<BackingStore::Database>>
   CreateOrOpenDatabase(const std::u16string& name) = 0;
 
   virtual uintptr_t GetIdentifierForMemoryDump() = 0;

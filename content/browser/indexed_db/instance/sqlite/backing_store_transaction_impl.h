@@ -60,7 +60,7 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
   Status GetRecord(int64_t object_store_id,
                    const blink::IndexedDBKey& key,
                    IndexedDBValue* record) override;
-  base::expected<BackingStore::RecordIdentifier, Status> PutRecord(
+  StatusOr<BackingStore::RecordIdentifier> PutRecord(
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       IndexedDBValue value) override;
@@ -71,7 +71,7 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
   Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t object_store_id,
                                               int64_t new_state,
                                               bool check_current) override;
-  base::expected<std::optional<BackingStore::RecordIdentifier>, Status>
+  StatusOr<std::optional<BackingStore::RecordIdentifier>>
   KeyExistsInObjectStore(int64_t object_store_id,
                          const blink::IndexedDBKey& key) override;
   Status PutIndexDataForRecord(
@@ -90,20 +90,20 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
       bool* exists) override;
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
-  OpenObjectStoreKeyCursor(int64_t object_store_id,
-                           const blink::IndexedDBKeyRange& key_range,
-                           blink::mojom::IDBCursorDirection) override;
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
-  OpenObjectStoreCursor(int64_t object_store_id,
-                        const blink::IndexedDBKeyRange& key_range,
-                        blink::mojom::IDBCursorDirection) override;
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
-  OpenIndexKeyCursor(int64_t object_store_id,
-                     int64_t index_id,
-                     const blink::IndexedDBKeyRange& key_range,
-                     blink::mojom::IDBCursorDirection) override;
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status> OpenIndexCursor(
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenObjectStoreKeyCursor(
+      int64_t object_store_id,
+      const blink::IndexedDBKeyRange& key_range,
+      blink::mojom::IDBCursorDirection) override;
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenObjectStoreCursor(
+      int64_t object_store_id,
+      const blink::IndexedDBKeyRange& key_range,
+      blink::mojom::IDBCursorDirection) override;
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenIndexKeyCursor(
+      int64_t object_store_id,
+      int64_t index_id,
+      const blink::IndexedDBKeyRange& key_range,
+      blink::mojom::IDBCursorDirection) override;
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenIndexCursor(
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,

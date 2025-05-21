@@ -107,10 +107,10 @@ Status BackingStoreTransactionImpl::GetRecord(int64_t object_store_id,
   return Status::OK();
 }
 
-base::expected<BackingStore::RecordIdentifier, Status>
-BackingStoreTransactionImpl::PutRecord(int64_t object_store_id,
-                                       const blink::IndexedDBKey& key,
-                                       IndexedDBValue value) {
+StatusOr<BackingStore::RecordIdentifier> BackingStoreTransactionImpl::PutRecord(
+    int64_t object_store_id,
+    const blink::IndexedDBKey& key,
+    IndexedDBValue value) {
   NOTIMPLEMENTED();
   return base::unexpected(Status::InvalidArgument("not implemented"));
 }
@@ -137,7 +137,7 @@ Status BackingStoreTransactionImpl::MaybeUpdateKeyGeneratorCurrentNumber(
   return Status::OK();
 }
 
-base::expected<std::optional<BackingStore::RecordIdentifier>, Status>
+StatusOr<std::optional<BackingStore::RecordIdentifier>>
 BackingStoreTransactionImpl::KeyExistsInObjectStore(
     int64_t object_store_id,
     const blink::IndexedDBKey& key) {
@@ -173,7 +173,7 @@ Status BackingStoreTransactionImpl::KeyExistsInIndex(
   return Status::OK();
 }
 
-base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<BackingStore::Cursor>>
 BackingStoreTransactionImpl::OpenObjectStoreKeyCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
@@ -182,7 +182,7 @@ BackingStoreTransactionImpl::OpenObjectStoreKeyCursor(
   return nullptr;
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStoreTransactionImpl::OpenObjectStoreCursor(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range,
@@ -191,7 +191,7 @@ BackingStoreTransactionImpl::OpenObjectStoreCursor(
   return nullptr;
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStoreTransactionImpl::OpenIndexKeyCursor(
     int64_t object_store_id,
     int64_t index_id,
@@ -201,7 +201,7 @@ BackingStoreTransactionImpl::OpenIndexKeyCursor(
   return nullptr;
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStoreTransactionImpl::OpenIndexCursor(
     int64_t object_store_id,
     int64_t index_id,

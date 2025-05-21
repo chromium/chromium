@@ -354,8 +354,7 @@ Status Database::GetOperation(int64_t object_store_id,
   if (key_range.IsOnlyKey()) {
     key = std::move(key_range).TakeOnlyKey();
   } else {
-    base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
-        backing_store_cursor;
+    StatusOr<std::unique_ptr<BackingStore::Cursor>> backing_store_cursor;
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // ObjectStore Retrieval Operation
       if (cursor_type == CursorType::kKeyOnly) {
@@ -583,7 +582,7 @@ Status Database::GetAllOperation(
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
 
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status> cursor;
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> cursor;
 
   if (result_type == blink::mojom::IDBGetAllResultType::Keys) {
     // Retrieving keys
@@ -786,8 +785,7 @@ Status Database::OpenCursorOperation(
     transaction->AddPreemptiveEvent();
   }
 
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
-      backing_store_cursor;
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> backing_store_cursor;
   if (params->index_id == IndexedDBIndexMetadata::kInvalidId) {
     if (params->cursor_type == CursorType::kKeyOnly) {
       DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
@@ -866,8 +864,7 @@ Status Database::CountOperation(
     return Status::InvalidArgument("Invalid object_store_id and/or index_id.");
   }
 
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
-      backing_store_cursor;
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> backing_store_cursor;
   if (index_id == IndexedDBIndexMetadata::kInvalidId) {
     backing_store_cursor =
         transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(

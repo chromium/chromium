@@ -1636,7 +1636,7 @@ void BackingStore::HandleCorruption(
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Database>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Database>>
 BackingStore::CreateOrOpenDatabase(const std::u16string& name) {
   DatabaseMetadata metadata(name);
   Status s = ReadMetadataForDatabaseName(metadata);
@@ -2215,10 +2215,10 @@ int64_t BackingStore::GetInMemorySize() const {
   return blob_size + level_db_size;
 }
 
-base::expected<BackingStore::RecordIdentifier, Status>
-BackingStore::Transaction::PutRecord(int64_t object_store_id,
-                                     const IndexedDBKey& key,
-                                     IndexedDBValue value) {
+StatusOr<BackingStore::RecordIdentifier> BackingStore::Transaction::PutRecord(
+    int64_t object_store_id,
+    const IndexedDBKey& key,
+    IndexedDBValue value) {
   TRACE_EVENT0("IndexedDB", "BackingStore::PutRecord");
   if (!KeyPrefix::ValidIds(database_id(), object_store_id)) {
     return base::unexpected(InvalidDBKeyStatus());
@@ -2466,7 +2466,7 @@ Status BackingStore::Transaction::MaybeUpdateKeyGeneratorCurrentNumber(
   return PutInt(transaction(), key_generator_current_number_key, new_number);
 }
 
-base::expected<std::optional<BackingStore::RecordIdentifier>, Status>
+StatusOr<std::optional<BackingStore::RecordIdentifier>>
 BackingStore::Transaction::KeyExistsInObjectStore(int64_t object_store_id,
                                                   const IndexedDBKey& key) {
   TRACE_EVENT0("IndexedDB", "BackingStore::KeyExistsInObjectStore");
@@ -2988,8 +2988,7 @@ Status BackingStore::Transaction::KeyExistsInIndex(
   return InvalidDBKeyStatus();
 }
 
-base::expected<std::vector<std::u16string>, Status>
-BackingStore::GetDatabaseNames() {
+StatusOr<std::vector<std::u16string>> BackingStore::GetDatabaseNames() {
   ASSIGN_OR_RETURN(
       std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions,
       GetDatabaseNamesAndVersions());
@@ -3006,7 +3005,7 @@ uintptr_t BackingStore::GetIdentifierForMemoryDump() {
   return reinterpret_cast<uintptr_t>(db()->db());
 }
 
-base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>, Status>
+StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
 BackingStore::GetDatabaseNamesAndVersions() {
   // TODO(dmurph): Get rid of on-demand metadata loading, and store metadata
   // in-memory.
@@ -3863,7 +3862,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   return s->ok();
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStore::Transaction::OpenObjectStoreCursor(
     int64_t object_store_id,
     const IndexedDBKeyRange& range,
@@ -3887,7 +3886,7 @@ BackingStore::Transaction::OpenObjectStoreCursor(
       AsWeakPtr(), database_id(), cursor_options));
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStore::Transaction::OpenObjectStoreKeyCursor(
     int64_t object_store_id,
     const IndexedDBKeyRange& range,
@@ -3911,7 +3910,7 @@ BackingStore::Transaction::OpenObjectStoreKeyCursor(
       AsWeakPtr(), database_id(), cursor_options));
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStore::Transaction::OpenIndexKeyCursor(
     int64_t object_store_id,
     int64_t index_id,
@@ -3933,7 +3932,7 @@ BackingStore::Transaction::OpenIndexKeyCursor(
       AsWeakPtr(), database_id(), cursor_options));
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStore::Transaction::OpenIndexCursor(
     int64_t object_store_id,
     int64_t index_id,
@@ -4206,7 +4205,7 @@ void BackingStore::Transaction::PartitionBlobsToRemove(
   }
 }
 
-base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStore::Transaction::PrepareCursor(std::unique_ptr<Cursor> cursor) {
   Status s;
   if (cursor->FirstSeek(&s)) {

@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/notimplemented.h"
+#include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
@@ -49,8 +50,7 @@ int64_t BackingStoreImpl::GetInMemorySize() const {
   return 0;
 }
 
-base::expected<std::vector<std::u16string>, Status>
-BackingStoreImpl::GetDatabaseNames() {
+StatusOr<std::vector<std::u16string>> BackingStoreImpl::GetDatabaseNames() {
   std::vector<std::u16string> names;
   // TODO(crbug.com/40253999): Support on-disk databases.
   for (const auto& [name, _] : open_connections_) {
@@ -59,7 +59,7 @@ BackingStoreImpl::GetDatabaseNames() {
   return names;
 }
 
-base::expected<std::vector<blink::mojom::IDBNameAndVersionPtr>, Status>
+StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
 BackingStoreImpl::GetDatabaseNamesAndVersions() {
   std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
   // TODO(crbug.com/40253999): Support on-disk databases.
@@ -70,16 +70,13 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
   return names_and_versions;
 }
 
-base::expected<std::unique_ptr<BackingStore::Database>, Status>
+StatusOr<std::unique_ptr<BackingStore::Database>>
 BackingStoreImpl::CreateOrOpenDatabase(const std::u16string& name) {
   auto it = open_connections_.find(name);
   if (it == open_connections_.end()) {
-    base::expected<std::unique_ptr<DatabaseConnection>, Status> db =
-        DatabaseConnection::Open(name, data_path_);
-    if (!db.has_value()) {
-      return base::unexpected(db.error());
-    }
-    it = open_connections_.emplace(name, std::move(db.value())).first;
+    ASSIGN_OR_RETURN(std::unique_ptr<DatabaseConnection> db,
+                     DatabaseConnection::Open(name, data_path_));
+    it = open_connections_.emplace(name, std::move(db)).first;
   }
   return std::make_unique<BackingStoreDatabaseImpl>(it->second->GetWeakPtr());
 }

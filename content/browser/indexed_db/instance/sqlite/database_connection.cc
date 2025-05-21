@@ -152,9 +152,9 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
 }  // namespace
 
 // static
-base::expected<std::unique_ptr<DatabaseConnection>, Status>
-DatabaseConnection::Open(const std::u16string& name,
-                         const base::FilePath& file_path) {
+StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
+    const std::u16string& name,
+    const base::FilePath& file_path) {
   // TODO(crbug.com/40253999): Create new tag(s) for metrics.
   constexpr sql::Database::Tag kSqlTag = "Test";
   auto db = std::make_unique<sql::Database>(

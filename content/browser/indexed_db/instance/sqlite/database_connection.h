@@ -35,7 +35,7 @@ class DatabaseConnection {
  public:
   // Opens the SQL database for the IndexedDB database with `name` at
   // `file_path`, creating it if it doesn't exist.
-  static base::expected<std::unique_ptr<DatabaseConnection>, Status> Open(
+  static StatusOr<std::unique_ptr<DatabaseConnection>> Open(
       const std::u16string& name,
       const base::FilePath& file_path);
 
