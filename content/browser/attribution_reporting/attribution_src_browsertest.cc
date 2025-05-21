@@ -1753,6 +1753,8 @@ IN_PROC_BROWSER_TEST_P(
 
   SimulateGestureScrollSequence(web_contents(), gfx::Point(100, 100),
                                 gfx::Vector2dF(0, 15));
+  RunUntilInputProcessed(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
 
   GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
   EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
