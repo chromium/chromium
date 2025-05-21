@@ -34,15 +34,13 @@ class Label;
 class MenuRunner;
 }  // namespace views
 
-namespace {
-class CaptionBubbleEventObserver;
-}
-
 namespace translate {
 class TranslateUILanguagesManager;
 }
 
 namespace captions {
+
+class CaptionBubbleEventObserver;
 class CaptionBubbleFrameView;
 class CaptionBubbleLabel;
 class LanguageTextButton;

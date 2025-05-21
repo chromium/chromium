@@ -45,6 +45,7 @@ if (!is_android && !is_ios) {
         "views/caption_bubble_controller_views.h",
         "views/caption_bubble_model.cc",
         "views/caption_bubble_model.h",
+        "views/format_constants.h",
       ]
 
       public_deps = [ "//ui/base/mojom:ui_base_types" ]
