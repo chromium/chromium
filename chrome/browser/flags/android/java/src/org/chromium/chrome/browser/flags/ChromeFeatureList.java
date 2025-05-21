@@ -25,8 +25,9 @@ import java.util.Map;
 /**
  * A list of feature flags exposed to Java.
  *
- * <p>This class lists flags exposed to Java as String constants. They should match
- * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc.
+ * <p>This class lists flags exposed to Java as String constants. The String value of each feature
+ * name must exactly match the corresponding C++ feature name string |kFeaturesExposedToJava| in
+ * chrome/browser/flags/android/chrome_feature_list.cc.
  *
  * <p>This class also provides convenience methods to access values of flags and their field trial
  * parameters through {@link ChromeFeatureMap}.
