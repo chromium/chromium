@@ -46,6 +46,9 @@ BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr NoticeId kTestNoticeId = {PrivacySandboxNotice::kThreeAdsApisNotice,
                                     kDesktopNewTab};
 
+constexpr NoticeId kTestNoticeId2 = {PrivacySandboxNotice::kMeasurementNotice,
+                                     kDesktopNewTab};
+
 constexpr NoticeId kTestConsentId = {PrivacySandboxNotice::kTopicsConsentNotice,
                                      kClankBrApp};
 
@@ -64,21 +67,21 @@ class PrivacySandboxNoticeModelTest : public testing::Test {};
 TEST_F(PrivacySandboxNoticeModelTest, InitializeNotice) {
   Notice notice(kTestNoticeId);
   Consent consent(kTestConsentId);
-  EXPECT_EQ(notice.GetNoticeId(), kTestNoticeId);
+  EXPECT_EQ(notice.notice_id(), kTestNoticeId);
   EXPECT_EQ(notice.GetNoticeType(), kNotice);
 }
 
 TEST_F(PrivacySandboxNoticeModelTest, InitializeConsent) {
   Consent consent(kTestConsentId);
-  EXPECT_EQ(consent.GetNoticeId(), kTestConsentId);
+  EXPECT_EQ(consent.notice_id(), kTestConsentId);
   EXPECT_EQ(consent.GetNoticeType(), kConsent);
 }
 
 TEST_F(PrivacySandboxNoticeModelTest, SetAndGetFeature) {
   Notice notice(kTestNoticeId);
-  EXPECT_EQ(notice.GetFeature(), nullptr);
+  EXPECT_EQ(notice.feature(), nullptr);
   notice.SetFeature(&kTestFeatureA);
-  EXPECT_EQ(notice.GetFeature(), &kTestFeatureA);
+  EXPECT_EQ(notice.feature(), &kTestFeatureA);
 }
 
 TEST_F(PrivacySandboxNoticeModelTest, GetStorageName) {
@@ -308,6 +311,136 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeFulfillmentParamTest,
                          PrivacySandboxNoticeFulfillmentParamTest,
                          testing::ValuesIn(GetFulfillmentTestParams()));
 
+// Test fixture for Notice::CanFulfillAllTargetApis tests
+class PrivacySandboxNoticeCanFulfillAllTargetApisTest : public testing::Test {
+ protected:
+  NoticeApi* CreateApiWithEligibility(EligibilityLevel level) {
+    auto api = std::make_unique<NoticeApi>();
+    api->SetEligibilityCallback(
+        base::BindRepeating([](EligibilityLevel lvl) { return lvl; }, level));
+    owned_apis_.push_back(std::move(api));
+    return owned_apis_.back().get();
+  }
+
+ private:
+  std::vector<std::unique_ptr<NoticeApi>> owned_apis_;
+};
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Notice_NoTargetApis_ReturnsTrue) {
+  Notice notice(kTestNoticeId);
+  EXPECT_TRUE(notice.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Notice_TargetsOnlyNoticeEligibleApis_ReturnsTrue) {
+  Notice notice(kTestNoticeId);
+  ASSERT_EQ(notice.GetNoticeType(), NoticeType::kNotice);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kEligibleNotice),
+      CreateApiWithEligibility(EligibilityLevel::kEligibleNotice)};
+  notice.SetTargetApis(target_apis);
+
+  EXPECT_TRUE(notice.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Notice_TargetsConsentEligibleApi_ReturnsFalse) {
+  Notice notice(kTestNoticeId);
+  ASSERT_EQ(notice.GetNoticeType(), NoticeType::kNotice);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kEligibleConsent)};
+  notice.SetTargetApis(target_apis);
+
+  EXPECT_FALSE(notice.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Notice_TargetsMixedEligibilityWithConsentMismatch_ReturnsFalse) {
+  Notice notice(kTestNoticeId);
+  ASSERT_EQ(notice.GetNoticeType(), NoticeType::kNotice);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kEligibleNotice),
+      CreateApiWithEligibility(EligibilityLevel::kEligibleConsent)  // Mismatch
+  };
+  notice.SetTargetApis(target_apis);
+
+  EXPECT_FALSE(notice.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Notice_TargetsNotEligibleApi_ReturnsFalse) {
+  Notice notice(kTestNoticeId);
+  ASSERT_EQ(notice.GetNoticeType(), NoticeType::kNotice);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kNotEligible)};
+  notice.SetTargetApis(target_apis);
+
+  EXPECT_FALSE(notice.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Consent_NoTargetApis_ReturnsTrue) {
+  Consent consent(kTestConsentId);
+  EXPECT_TRUE(consent.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Consent_TargetsOnlyConsentEligibleApis_ReturnsTrue) {
+  Consent consent(kTestConsentId);
+  ASSERT_EQ(consent.GetNoticeType(), NoticeType::kConsent);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kEligibleConsent),
+      CreateApiWithEligibility(EligibilityLevel::kEligibleConsent)};
+  consent.SetTargetApis(target_apis);
+
+  EXPECT_TRUE(consent.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Consent_TargetsNoticeEligibleApi_ReturnsFalse) {
+  Consent consent(kTestConsentId);
+  ASSERT_EQ(consent.GetNoticeType(), NoticeType::kConsent);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kEligibleNotice)  // Mismatch
+  };
+  consent.SetTargetApis(target_apis);
+
+  EXPECT_FALSE(consent.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Consent_TargetsMixedEligibilityWithNoticeMismatch_ReturnsFalse) {
+  Consent consent(kTestConsentId);
+  ASSERT_EQ(consent.GetNoticeType(), NoticeType::kConsent);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kEligibleConsent),
+      CreateApiWithEligibility(EligibilityLevel::kEligibleNotice)  // Mismatch
+  };
+  consent.SetTargetApis(target_apis);
+
+  EXPECT_FALSE(consent.CanFulfillAllTargetApis());
+}
+
+TEST_F(PrivacySandboxNoticeCanFulfillAllTargetApisTest,
+       Consent_TargetsNotEligibleApi_ReturnsFalse) {
+  Consent consent(kTestConsentId);
+  ASSERT_EQ(consent.GetNoticeType(), NoticeType::kConsent);
+
+  std::vector<NoticeApi*> target_apis = {
+      CreateApiWithEligibility(EligibilityLevel::kNotEligible)};
+  consent.SetTargetApis(target_apis);
+
+  EXPECT_FALSE(consent.CanFulfillAllTargetApis());
+}
+
 //-----------------------------------------------------------------------------
 // NoticeApi Tests
 //-----------------------------------------------------------------------------
@@ -322,7 +455,8 @@ class PrivacySandboxNoticeApiTest : public testing::Test {
   }
 
   NoticeApi api_;
-  std::unique_ptr<Notice> notice_ = std::make_unique<Notice>(kTestNoticeId);
+  std::unique_ptr<Notice> notice1_ = std::make_unique<Notice>(kTestNoticeId);
+  std::unique_ptr<Notice> notice2_ = std::make_unique<Notice>(kTestNoticeId2);
   std::unique_ptr<Consent> consent_ = std::make_unique<Consent>(kTestConsentId);
   StrictMock<MockCallback<base::RepeatingCallback<EligibilityLevel()>>>
       mock_eligibility_callback_;
@@ -387,11 +521,11 @@ TEST_F(PrivacySandboxNoticeApiTest, IsEnabledFeatureNotSet) {
 
 TEST_F(PrivacySandboxNoticeApiTest, CanBeFulfilledByAndGetLinkedNotices) {
   EXPECT_THAT(api_.linked_notices(), IsEmpty());
-  api_.CanBeFulfilledBy(notice_.get());
-  EXPECT_THAT(api_.linked_notices(), ElementsAre(notice_.get()));
-  api_.CanBeFulfilledBy(consent_.get());
+  api_.SetFulfilledBy(notice1_.get());
+  EXPECT_THAT(api_.linked_notices(), ElementsAre(notice1_.get()));
+  api_.SetFulfilledBy(consent_.get());
   EXPECT_THAT(api_.linked_notices(),
-              ElementsAre(notice_.get(), consent_.get()));
+              ElementsAre(notice1_.get(), consent_.get()));
 }
 
 TEST_F(PrivacySandboxNoticeApiTest, IsFulfilledNoLinkedNotices) {
@@ -404,35 +538,35 @@ TEST_F(PrivacySandboxNoticeApiTest, IsFulfilledNoLinkedNotices) {
 TEST_F(PrivacySandboxNoticeApiTest, IsFulfilledNotEligible) {
   EXPECT_CALL(mock_eligibility_callback_, Run()).WillOnce(Return(kNotEligible));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(notice_.get());
+  api_.SetFulfilledBy(notice1_.get());
   EXPECT_FALSE(api_.IsFulfilled());
 }
 
 TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleNoticeWithUnfulfilledNotice) {
-  notice_->SetFeature(&kTestFeatureA);
+  notice1_->SetFeature(&kTestFeatureA);
   EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
       .WillOnce(Return(std::nullopt));
-  notice_->RefreshFulfillmentStatus(mock_storage_);
+  notice1_->RefreshFulfillmentStatus(mock_storage_);
 
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleNotice));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(notice_.get());
+  api_.SetFulfilledBy(notice1_.get());
   EXPECT_FALSE(api_.IsFulfilled());
 }
 
 TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleNoticeWithFulfilledNotice) {
-  notice_->SetFeature(&kTestFeatureA);
+  notice1_->SetFeature(&kTestFeatureA);
   EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
       .WillOnce(Return(CreateStorageData(kAck)));
-  notice_->RefreshFulfillmentStatus(mock_storage_);
+  notice1_->RefreshFulfillmentStatus(mock_storage_);
 
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleNotice));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(notice_.get());
+  api_.SetFulfilledBy(notice1_.get());
   EXPECT_TRUE(api_.IsFulfilled());
 }
 
@@ -446,7 +580,7 @@ TEST_F(PrivacySandboxNoticeApiTest,
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleConsent));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(consent_.get());
+  api_.SetFulfilledBy(consent_.get());
   EXPECT_FALSE(api_.IsFulfilled());
 }
 
@@ -460,21 +594,21 @@ TEST_F(PrivacySandboxNoticeApiTest,
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleConsent));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(consent_.get());
+  api_.SetFulfilledBy(consent_.get());
   EXPECT_TRUE(api_.IsFulfilled());
 }
 
 TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleConsentWithOnlyNoticeLinked) {
-  notice_->SetFeature(&kTestFeatureA);
+  notice1_->SetFeature(&kTestFeatureA);
   EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
       .WillOnce(Return(CreateStorageData(kAck)));
-  notice_->RefreshFulfillmentStatus(mock_storage_);
+  notice1_->RefreshFulfillmentStatus(mock_storage_);
 
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleConsent));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(notice_.get());
+  api_.SetFulfilledBy(notice1_.get());
   EXPECT_FALSE(api_.IsFulfilled());
 }
 
@@ -485,16 +619,16 @@ TEST_F(PrivacySandboxNoticeApiTest,
       .WillOnce(Return(std::nullopt));
   consent_->RefreshFulfillmentStatus(mock_storage_);
 
-  notice_->SetFeature(&kTestFeatureA);
+  notice1_->SetFeature(&kTestFeatureA);
   EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
       .WillOnce(Return(std::nullopt));
-  notice_->RefreshFulfillmentStatus(mock_storage_);
+  notice1_->RefreshFulfillmentStatus(mock_storage_);
 
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleNotice));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(consent_.get());
-  api_.CanBeFulfilledBy(notice_.get());
+  api_.SetFulfilledBy(consent_.get());
+  api_.SetFulfilledBy(notice1_.get());
   EXPECT_FALSE(api_.IsFulfilled());
 }
 
@@ -505,22 +639,22 @@ TEST_F(PrivacySandboxNoticeApiTest,
       .WillOnce(Return(CreateStorageData(kOptIn)));
   consent_->RefreshFulfillmentStatus(mock_storage_);
 
-  notice_->SetFeature(&kTestFeatureA);
+  notice1_->SetFeature(&kTestFeatureA);
 
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleNotice));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(consent_.get());
-  api_.CanBeFulfilledBy(notice_.get());
+  api_.SetFulfilledBy(consent_.get());
+  api_.SetFulfilledBy(notice1_.get());
   EXPECT_TRUE(api_.IsFulfilled());
 }
 
 TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleConsentWithMixedNoticesConsentFulfilled) {
-  notice_->SetFeature(&kTestFeatureA);
+  notice1_->SetFeature(&kTestFeatureA);
   EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
       .WillOnce(Return(CreateStorageData(kAck)));
-  notice_->RefreshFulfillmentStatus(mock_storage_);
+  notice1_->RefreshFulfillmentStatus(mock_storage_);
 
   consent_->SetFeature(&kTestFeatureB);
   EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureB.name)))
@@ -530,8 +664,35 @@ TEST_F(PrivacySandboxNoticeApiTest,
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleConsent));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  api_.CanBeFulfilledBy(notice_.get());
-  api_.CanBeFulfilledBy(consent_.get());
+  api_.SetFulfilledBy(notice1_.get());
+  api_.SetFulfilledBy(consent_.get());
+  EXPECT_TRUE(api_.IsFulfilled());
+}
+
+TEST_F(PrivacySandboxNoticeApiTest,
+       IsFulfilledEligibleNoticeWithMultipleNoticesSecondFulfilled) {
+  // notice1 (unfulfilled)
+  notice1_->SetFeature(&kTestFeatureA);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+      .WillOnce(Return(std::nullopt));
+  notice1_->RefreshFulfillmentStatus(mock_storage_);
+  ASSERT_FALSE(notice1_->was_fulfilled());
+
+  // notice2 (fulfilled)
+  notice2_->SetFeature(&kTestFeatureB);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureB.name)))
+      .WillOnce(Return(CreateStorageData(kAck)));
+  notice2_->RefreshFulfillmentStatus(mock_storage_);
+  ASSERT_TRUE(notice2_->was_fulfilled());
+
+  EXPECT_CALL(mock_eligibility_callback_, Run())
+      .WillOnce(Return(kEligibleNotice));
+  api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
+
+  // Link notices: unfulfilled first, then fulfilled.
+  api_.SetFulfilledBy(notice1_.get());
+  api_.SetFulfilledBy(notice2_.get());
+
   EXPECT_TRUE(api_.IsFulfilled());
 }
 

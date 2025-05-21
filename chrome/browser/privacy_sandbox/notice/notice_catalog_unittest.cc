@@ -57,7 +57,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, UniqueFeaturesPerNoticeInstance) {
   std::set<const base::Feature*> features_seen;
   for (const Notice* notice : catalog_.GetNotices()) {
     ASSERT_NE(notice, nullptr);
-    const base::Feature* feature = notice->GetFeature();
+    const base::Feature* feature = notice->feature();
     ASSERT_NE(feature, nullptr);
     EXPECT_TRUE(features_seen.insert(feature).second);
   }
@@ -99,14 +99,17 @@ TEST_F(PrivacySandboxNoticeCatalogTest, UniqueViewGroupPerSurfaceType) {
     }
 
     auto& view_groups_for_surface =
-        view_groups_per_surface[notice->GetNoticeId().second];
+        view_groups_per_surface[notice->notice_id().second];
 
     EXPECT_TRUE(view_groups_for_surface.insert({group, order}).second)
         << "Duplicate view group (" << static_cast<int>(group) << ", " << order
         << ") for surface type "
-        << static_cast<int>(notice->GetNoticeId().second);
+        << static_cast<int>(notice->notice_id().second);
   }
 }
+
+// TODO(boujane) Add a test to ensure notices in the same group
+// don't have duplicate targets.
 
 // All APIs must be covered by at least one Notice.
 TEST_F(PrivacySandboxNoticeCatalogTest, AllApisAreTargetedByAtLeastOneNotice) {
@@ -182,7 +185,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest,
 
   // Verify the notice was found.
   ASSERT_NE(notice_from_get_notice, nullptr);
-  EXPECT_EQ(notice_from_get_notice->GetNoticeId(), id);
+  EXPECT_EQ(notice_from_get_notice->notice_id(), id);
 
   // Verify that GetNotice returns an object that's also in GetNotices.
   EXPECT_THAT(catalog_.GetNotices(), Contains(notice_from_get_notice));
@@ -207,7 +210,7 @@ TEST_P(PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
   EXPECT_THAT(catalog_.GetNotices(),
               Contains(Truly([notice_enum_to_find](Notice* notice) {
                 return notice &&
-                       notice->GetNoticeId().first == notice_enum_to_find;
+                       notice->notice_id().first == notice_enum_to_find;
               })))
       << "Notice enum value " << notice_enum_to_find
       << " was not found in the NoticeCatalog's list.";

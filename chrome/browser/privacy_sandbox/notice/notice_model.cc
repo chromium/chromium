@@ -14,7 +14,7 @@ using notice::mojom::PrivacySandboxNoticeEvent;
 NoticeApi::NoticeApi() = default;
 NoticeApi::~NoticeApi() = default;
 
-void NoticeApi::CanBeFulfilledBy(Notice* notice) {
+void NoticeApi::SetFulfilledBy(Notice* notice) {
   linked_notices_.emplace_back(notice);
 }
 
@@ -58,7 +58,9 @@ bool NoticeApi::IsFulfilled() {
         notice->GetNoticeType() == NoticeType::kNotice) {
       continue;
     }
-    return notice->was_fulfilled();
+    if (notice->was_fulfilled()) {
+      return true;
+    };
   }
   return false;
 }
@@ -82,7 +84,7 @@ Notice* Notice::SetTargetApis(const std::vector<NoticeApi*>& apis) {
   std::transform(apis.begin(), apis.end(), std::back_inserter(target_apis_),
                  std::identity());
   for (NoticeApi* api : apis) {
-    api->CanBeFulfilledBy(this);
+    api->SetFulfilledBy(this);
   }
   return this;
 }
@@ -92,17 +94,9 @@ Notice* Notice::SetViewGroup(std::pair<NoticeViewGroup, int> view_group) {
   return this;
 }
 
-NoticeId Notice::GetNoticeId() const {
-  return notice_id_;
-}
-
-const base::Feature* Notice::GetFeature() const {
-  return feature_;
-}
-
 const char* Notice::GetStorageName() const {
-  CHECK(feature_);
-  return feature_->name;
+  CHECK(feature());
+  return feature()->name;
 }
 
 void Notice::RefreshFulfillmentStatus(NoticeStorage& storage) {
@@ -122,6 +116,24 @@ void Notice::RefreshFulfillmentStatus(NoticeStorage& storage) {
     }
   }
   was_fulfilled_ = false;
+}
+
+bool Notice::CanFulfillAllTargetApis() {
+  // TODO(crbug.com/417727236) Add caching here: We shouldn't recompute this
+  // every time.
+  for (NoticeApi* api : target_apis()) {
+    auto eligibility = api->GetEligibilityLevel();
+    if (eligibility == EligibilityLevel::kEligibleConsent &&
+        GetNoticeType() == NoticeType::kConsent) {
+      continue;
+    }
+    if (eligibility == EligibilityLevel::kEligibleNotice &&
+        GetNoticeType() == NoticeType::kNotice) {
+      continue;
+    }
+    return false;
+  }
+  return true;
 }
 
 std::optional<bool> Notice::EvaluateNoticeEvent(
@@ -166,6 +178,10 @@ void Notice::UpdateTargetApiResults(PrivacySandboxNoticeEvent event) {
   for (NoticeApi* api : target_apis()) {
     api->UpdateResult(*result);
   }
+}
+
+bool Notice::IsEnabled() const {
+  return feature() && base::FeatureList::IsEnabled(*feature());
 }
 
 NoticeType Notice::GetNoticeType() {
