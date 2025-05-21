@@ -57,11 +57,13 @@ Exception BleV2Socket::Close() {
   return {Exception::kSuccess};
 }
 
-::nearby::api::ble_v2::BlePeripheral* BleV2Socket::GetRemotePeripheral() {
-  // Left deliberately unimplemented.
+::nearby::api::ble_v2::BlePeripheral::UniqueId
+BleV2Socket::GetRemotePeripheralId() {
+  // Although this appears to be implemented, this is incorrect and only left
+  // in this state for overriding and testing purposes.
   auto device_info = bluetooth::mojom::DeviceInfo::New();
   peripheral_ = std::make_unique<BleV2RemotePeripheral>(std::move(device_info));
-  return peripheral_.get();
+  return peripheral_->GetUniqueId();
 }
 
 // =================BleV2ServerSocket=================

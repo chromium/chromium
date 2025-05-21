@@ -507,11 +507,24 @@ std::unique_ptr<api::ble_v2::GattServer> BleV2Medium::StartGattServer(
 }
 
 std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
-    api::ble_v2::BlePeripheral& peripheral,
+    api::ble_v2::BlePeripheral::UniqueId peripheral_id,
     api::ble_v2::TxPowerLevel tx_power_level,
     api::ble_v2::ClientGattConnectionCallback callback) {
   if (!features::IsNearbyBleV2Enabled()) {
     VLOG(1) << __func__ << ": BleV2 is disabled.";
+    return nullptr;
+  }
+
+  auto it = std::find_if(discovered_ble_peripherals_map_.begin(),
+                         discovered_ble_peripherals_map_.end(),
+                         [&peripheral_id](const auto& address_device_pair) {
+                           return address_device_pair.second.GetUniqueId() ==
+                                  peripheral_id;
+                         });
+
+  if (it == discovered_ble_peripherals_map_.end()) {
+    LOG(WARNING) << __func__
+                 << ": no match for device at peripheral_id=" << peripheral_id;
     return nullptr;
   }
 
@@ -521,7 +534,7 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BleV2Medium::DoConnectToGattServer,
-                     base::Unretained(this), &device, peripheral.GetAddress(),
+                     base::Unretained(this), &device, it->second.GetAddress(),
                      &connect_to_gatt_server_waitable_event));
   base::ScopedAllowBaseSyncPrimitives allow_wait;
   connect_to_gatt_server_waitable_event.Wait();
@@ -559,7 +572,7 @@ std::unique_ptr<api::ble_v2::BleServerSocket> BleV2Medium::OpenServerSocket(
 std::unique_ptr<api::ble_v2::BleSocket> BleV2Medium::Connect(
     const std::string& service_id,
     api::ble_v2::TxPowerLevel tx_power_level,
-    api::ble_v2::BlePeripheral& peripheral,
+    api::ble_v2::BlePeripheral::UniqueId peripheral_id,
     CancellationFlag* cancellation_flag) {
   NOTIMPLEMENTED();
   return nullptr;
@@ -578,24 +591,6 @@ bool BleV2Medium::IsExtendedAdvertisementsAvailable() {
   bluetooth::mojom::AdapterInfoPtr info;
   bool success = adapter_->GetInfo(&info);
   return success && info->extended_advertisement_support;
-}
-
-bool BleV2Medium::GetRemotePeripheral(api::ble_v2::BlePeripheral::UniqueId id,
-                                      GetRemotePeripheralCallback callback) {
-  auto it =
-      std::find_if(discovered_ble_peripherals_map_.begin(),
-                   discovered_ble_peripherals_map_.end(),
-                   [&](const auto& address_device_pair) {
-                     return address_device_pair.second.GetUniqueId() == id;
-                   });
-
-  if (it == discovered_ble_peripherals_map_.end()) {
-    LOG(WARNING) << __func__ << ": no match for device at id = " << id;
-    return false;
-  }
-
-  std::move(callback)(it->second);
-  return true;
 }
 
 void BleV2Medium::PresentChanged(bool present) {
@@ -687,7 +682,7 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
 
       if (scanning_callback_iter->second.advertisement_found_cb) {
         scanning_callback_iter->second.advertisement_found_cb(
-            *ble_peripheral, advertisement_data);
+            ble_peripheral->GetUniqueId(), advertisement_data);
       }
     }
   }

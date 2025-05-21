@@ -142,6 +142,7 @@ source_set("connections_implementation") {
     ":nearby_defines",
   ]
   sources = [
+    "src/connections/implementation/awdl_bwu_handler.cc",
     "src/connections/implementation/awdl_endpoint_channel.cc",
     "src/connections/implementation/base_bwu_handler.cc",
     "src/connections/implementation/base_endpoint_channel.cc",
@@ -182,6 +183,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/wifi_lan_service_info.cc",
   ]
   public = [
+    "src/connections/implementation/awdl_bwu_handler.h",
     "src/connections/implementation/awdl_endpoint_channel.h",
     "src/connections/implementation/base_bwu_handler.h",
     "src/connections/implementation/base_endpoint_channel.h",
