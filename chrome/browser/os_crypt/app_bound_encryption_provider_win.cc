@@ -75,7 +75,7 @@ std::optional<KeyProvider::KeyError> DetermineErrorType(HRESULT error,
 namespace features {
 BASE_FEATURE(kAppBoundEncryptionKeyV3,
              "AppBoundEncryptionKeyV3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRegenerateKeyForCatastrophicFailures,
              "RegenerateKeyForCatastrophicFailures",
