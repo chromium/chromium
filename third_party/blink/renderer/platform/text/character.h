@@ -145,6 +145,7 @@ class PLATFORM_EXPORT Character {
     return IsInRange(character, kLeftSingleQuotationMarkCharacter, 0x301F) ||
            IsInRange(character, 0xFF08, 0xFF60);
   }
+  static bool MayNeedEastAsianSpacing(UChar32);
 
   // Collapsible white space characters defined in CSS:
   // https://drafts.csswg.org/css-text-3/#collapsible-white-space
@@ -315,6 +316,14 @@ inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
   return ch == kIdeographicSpaceCharacter ||
          (IsBlockHalfwidthAndFullwidthForms(ch) &&
           EastAsianWidth(ch) == UEastAsianWidth::U_EA_FULLWIDTH);
+}
+
+inline bool Character::MayNeedEastAsianSpacing(UChar32 ch) {
+  // `EastAsianSpacingType::kWide` may need the spacing.
+  // U+2000-206F General Punctuation has rather popular characters, such as ZWSP
+  // and curly quotation marks. Exclude the largest range of non-`kWide` that
+  // include them.
+  return ch >= 0x02C7 && !IsInRange(ch, 0x1200, 0x3004);
 }
 
 }  // namespace blink

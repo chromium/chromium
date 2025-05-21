@@ -50,6 +50,11 @@ TEST(CharacterTest, Derived) {
     EXPECT_EQ(Character::IsEastAsianWidthFullwidth(ch),
               eaw == UEastAsianWidth::U_EA_FULLWIDTH);
 
+    if (!Character::MayNeedEastAsianSpacing(ch)) {
+      EastAsianSpacingType type = Character::GetEastAsianSpacingType(ch);
+      DCHECK_NE(type, EastAsianSpacingType::kWide);
+    }
+
     if (!Character::MaybeHanKerningOpenOrCloseFast(ch)) {
       DCHECK(!Character::MaybeHanKerningOpenSlow(ch));
       DCHECK(!Character::MaybeHanKerningCloseSlow(ch));
