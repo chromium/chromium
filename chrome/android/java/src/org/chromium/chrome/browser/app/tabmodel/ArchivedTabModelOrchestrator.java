@@ -66,9 +66,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implements Destroyable {
     public static final String ARCHIVED_TAB_SELECTOR_UNIQUE_TAG = "archived";
-    // Time delay on running declutter passes to allow the local sync db and remote sync service to
-    // synchronize, ensuring local {@link SavedTabGroup}s have the most up-to-date information.
-    public static final long LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY = 5000;
 
     /** Observer for the ArchivedTabModelOrchestrator class. */
     public interface Observer {
@@ -276,19 +273,15 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     public void registerTabModelOrchestrator(TabbedModeTabModelOrchestrator orchestrator) {
         mActivityTabModelOrchestrators.add(orchestrator);
         if (mTabArchiveSettings.getArchiveEnabled()) {
-            // To account for the local tab group sync database synchronizing with the sync service
-            // on startup, a delay must be included when initiating a declutter pass that involves
-            // archiving tab groups. Unfortunately, there is no particular synchronization step that
-            // can be waited on, so the indicated delay is the best that can be done.
-            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-                // TODO(crbug.com/410035913): Find a better step to wait on rather than a set delay.
-                PostTask.postDelayedTask(
-                        TaskTraits.UI_DEFAULT,
-                        () -> doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator)),
-                        LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY);
-            } else {
-                doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
-            }
+            // There is some delay while the local tab group sync databases synchronizes with the
+            // sync service on startup. Archiving is done on startup, although it's loaded as a
+            // deferred task which is only started after the regular tab model is already
+            // initialized. This is done to prevent any noticeable lag when archiving tabs. There
+            // is the chance that tab groups are archived while in the midst of being deleted. This
+            // is much more of an edge case than adding a set delay at startup, and is already
+            // handled by observer events in the relevant UI which mirror the behavior in the tab
+            // groups pane.
+            doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
         } else {
             rescueArchivedTabs(orchestrator);
         }

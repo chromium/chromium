@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import static org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TIMESTAMP;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
@@ -596,17 +595,13 @@ public class TabArchiverImpl implements TabArchiver {
         long lastActiveTabTimestamp = 0L;
         for (int i = 0; i < model.getCount(); i++) {
             Tab tab = model.getTabAt(i);
-            // Skip the active tab or any tab navigated to during the sync db synchronization delay
-            // when making last active determinations for user inactivity.
-            // TODO(crbug.com/410035913): Update this logic when the delay dependency is removed.
-            long preSyncDelayBaseline =
-                    mClock.currentTimeMillis() - LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY;
-            long tabLastNavigationTimestamp = tab.getLastNavigationCommittedTimestampMillis();
-            if (TabModelUtils.getCurrentTabId(model) == tab.getId()
-                    || tabLastNavigationTimestamp > preSyncDelayBaseline) {
+            if (TabModelUtils.getCurrentTabId(model) == tab.getId()) {
                 continue;
             }
-            lastActiveTabTimestamp = Math.max(lastActiveTabTimestamp, tabLastNavigationTimestamp);
+            lastActiveTabTimestamp =
+                    Math.max(
+                            lastActiveTabTimestamp,
+                            tab.getLastNavigationCommittedTimestampMillis());
         }
 
         // If the last active tab's navigation timestamp is within the target hours (they exceed
