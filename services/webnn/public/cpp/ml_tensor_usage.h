@@ -19,8 +19,11 @@ enum class MLTensorUsageFlags {
   // This tensor can be used with writeTensor().
   kWrite,
 
+  // This tensor can be used with constant().
+  kGraphConstant,
+
   kMinValue = kWebGpuInterop,
-  kMaxValue = kWrite,
+  kMaxValue = kGraphConstant,
 };
 
 using MLTensorUsage = base::EnumSet<MLTensorUsageFlags,

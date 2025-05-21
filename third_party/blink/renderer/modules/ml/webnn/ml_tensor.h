@@ -60,6 +60,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   bool exportableToGPU() const;
   bool readable() const;
   bool writable() const;
+  bool constant() const;
 
   void destroy();
 

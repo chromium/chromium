@@ -16,6 +16,9 @@ struct TensorUsage {
   bool read;
   // This tensor can be used with writeTensor().
   bool write;
+  // This tensor is only allowed to be used as a graph constant.
+  // A graph constant cannot be modified after it is created.
+  bool graph_constant;
 };
 
 // Description of the WebNNTensor to create.

@@ -130,6 +130,14 @@ void WebNNGraphImpl::Dispatch(
     if (!input_tensor.has_value()) {
       return;
     }
+
+    // Input MLTensor is always dispatchable, which isn’t allowed when used as
+    // a graph constant.
+    if (input_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
+      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
     name_to_input_tensors.emplace_back(name, input_tensor.as_ptr());
   }
   base::flat_map<std::string_view, WebNNTensorImpl*> name_to_input_tensor_map(
@@ -152,6 +160,14 @@ void WebNNGraphImpl::Dispatch(
     if (!output_tensor.has_value()) {
       return;
     }
+
+    // Output MLTensor is always dispatchable, which isn’t allowed when used as
+    // a graph constant.
+    if (output_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
+      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
     name_to_output_tensors.emplace_back(name, output_tensor.as_ptr());
   }
 

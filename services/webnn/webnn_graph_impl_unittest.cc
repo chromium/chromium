@@ -123,6 +123,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       base::flat_map<
           OperandId,
           std::unique_ptr<WebNNConstantOperand>> /*constant_operands*/,
+      base::flat_map<OperandId, WebNNTensorImpl*> /*constant_tensor_operands*/,
       CreateGraphImplCallback callback) override {
     FakeWebNNGraphImpl::CreateAndBuild(std::move(receiver), this, *graph_info,
                                        std::move(compute_resource_info),
@@ -177,7 +178,7 @@ CreateTensorSuccess CreateWebNNTensor(
       mojom::TensorInfo::New(
           OperandDescriptor::UnsafeCreateForTesting(data_type, shape),
           MLTensorUsage()),
-      create_tensor_future.GetCallback());
+      mojo_base::BigBuffer(0), create_tensor_future.GetCallback());
   mojom::CreateTensorResultPtr create_tensor_result =
       create_tensor_future.Take();
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor;

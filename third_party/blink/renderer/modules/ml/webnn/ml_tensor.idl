@@ -13,6 +13,7 @@
   readonly attribute boolean exportableToGPU;
   readonly attribute boolean readable;
   readonly attribute boolean writable;
+  readonly attribute boolean constant;
 
   void destroy();
 };

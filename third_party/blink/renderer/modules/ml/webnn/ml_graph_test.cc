@@ -501,6 +501,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
   }
 
   void CreateTensor(blink_mojom::TensorInfoPtr tensor_info,
+                    mojo_base::BigBuffer tensor_data,
                     CreateTensorCallback callback) override {
     mojo::PendingAssociatedRemote<blink_mojom::WebNNTensor> blink_remote;
     auto blink_receiver = blink_remote.InitWithNewEndpointAndPassReceiver();

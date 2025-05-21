@@ -86,6 +86,7 @@ void WebNNContextImpl::CreateGraphBuilder(
 
 void WebNNContextImpl::CreateTensor(
     mojom::TensorInfoPtr tensor_info,
+    mojo_base::BigBuffer tensor_data,
     mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -94,22 +95,52 @@ void WebNNContextImpl::CreateTensor(
     return;
   }
 
+  if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
+    const base::expected<OperandDescriptor, std::string> validated_descriptor =
+        webnn::OperandDescriptor::Create(
+            properties_, tensor_info->descriptor.data_type(),
+            tensor_info->descriptor.shape(), "WebNNGraphConstant");
+    if (!validated_descriptor.has_value()) {
+      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
+    if (!properties_.data_type_limits.constant.Has(
+            validated_descriptor->data_type())) {
+      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
+    if (tensor_data.size() != validated_descriptor->PackedByteLength()) {
+      receiver_.ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+  }
+
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  CreateTensorImpl(
-      std::move(receiver), std::move(tensor_info),
-      base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl, AsWeakPtr(),
-                     std::move(callback), std::move(remote)));
+  CreateTensorImpl(std::move(receiver), std::move(tensor_info),
+                   base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
+                                  AsWeakPtr(), std::move(callback),
+                                  std::move(remote), std::move(tensor_data)));
 }
 
 void WebNNContextImpl::DidCreateWebNNTensorImpl(
     mojom::WebNNContext::CreateTensorCallback callback,
     mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
+    mojo_base::BigBuffer tensor_data,
     base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
         mojom::CreateTensorResult::NewError(std::move(result.error())));
     return;
+  }
+
+  // Write the specified values into the tensor. If `tensor_data` is empty,
+  // the tensor should be left initialized to zero. The `tensor_data` size
+  // should of been already validated in CreateTensor().
+  if (tensor_data.size() > 0) {
+    result.value()->WriteTensorImpl(std::move(tensor_data));
   }
 
   auto success = mojom::CreateTensorSuccess::New(std::move(remote),

@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -1471,8 +1472,16 @@ blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
           webnn::OperandId operand_id = AddOperand(
               *graph_info,
               mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
-          graph_info->constant_operand_ids_to_handles.insert(
-              operand_id.value(), operand->AsConstantOperand()->handle());
+          // Build the map of constant operands for this graph with the id.
+          MLConstantOperand const* constant_operand =
+              operand->AsConstantOperand();
+          if (constant_operand->tensor()) {
+            graph_info->id_to_constant_tensor_operand_map.insert(
+                operand_id.value(), constant_operand->tensor()->handle());
+          } else {
+            graph_info->constant_operand_ids_to_handles.insert(
+                operand_id.value(), operand->AsConstantOperand()->handle());
+          }
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
@@ -1727,6 +1736,33 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   remote_->CreatePendingConstant(constant->handle(), data_type,
                                  std::move(constant_data));
   return constant;
+}
+
+MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
+                                    MLTensor* tensor,
+                                    ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+
+  if (tensor->context() != ml_context_) {
+    exception_state.ThrowTypeError(
+        "The tensor wasn't created with this context.");
+    return nullptr;
+  }
+
+  if (!tensor->IsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Tensor has been destroyed or context is lost.");
+    return nullptr;
+  }
+
+  if (!tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
+    exception_state.ThrowTypeError(
+        "Tensor was not created by createConstantTensor.");
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<MLConstantOperand>(this, tensor);
 }
 
 MLOperand* MLGraphBuilder::argMin(MLOperand* input,

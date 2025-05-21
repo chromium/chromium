@@ -193,6 +193,11 @@ void MLGraph::Dispatch(webnn::ScopedTrace scoped_trace,
       return;
     }
 
+    if (input_tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
+      exception_state.ThrowTypeError("Invalid input tensor usage");
+      return;
+    }
+
     mojo_inputs.insert(name, input_tensor->handle());
   }
 
@@ -201,6 +206,11 @@ void MLGraph::Dispatch(webnn::ScopedTrace scoped_trace,
     if (!output_tensor->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Invalid output tensor state");
+      return;
+    }
+
+    if (output_tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
+      exception_state.ThrowTypeError("Invalid output tensor usage");
       return;
     }
 

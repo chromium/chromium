@@ -80,6 +80,8 @@ class GraphImplDml final : public WebNNGraphImpl {
       mojom::GraphInfoPtr& graph_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
+      const base::flat_map<OperandId, WebNNTensorImpl*>&
+          constant_tensor_operands,
       GraphBuilderDml& graph_builder,
       absl::flat_hash_map<OperandId, uint32_t>& constant_id_to_input_index_map,
       GraphBufferBindingInfo& graph_buffer_binding_info);
@@ -98,6 +100,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       WebNNContextImpl::CreateGraphImplCallback callback,
       bool disable_dml_meta_commands_for_gpu);
 
@@ -229,6 +232,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
           compilation_result);
 

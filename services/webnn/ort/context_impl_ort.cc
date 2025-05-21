@@ -186,6 +186,7 @@ void ContextImplOrt::CreateGraphImpl(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
+    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
     CreateGraphImplCallback callback) {
   // TODO(crbug.com/416535744): Implement GraphImpl for ORT backend.
   NOTIMPLEMENTED();

@@ -43,17 +43,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
     return weak_factory_.GetWeakPtr();
   }
 
+  bool IsValidWithDescriptor(const OperandDescriptor& descriptor) const;
+
+  // This method will be called by `WriteTensor()` after the write info is
+  // validated. A backend subclass should implement this method to write data
+  // to a platform specific buffer.
+  virtual void WriteTensorImpl(mojo_base::BigBuffer src_buffer) = 0;
+
  protected:
   // This method will be called by `ReadTensor()` after the read info is
   // validated. A backend subclass should implement this method to read data
   // from a platform specific buffer.
   virtual void ReadTensorImpl(
       mojom::WebNNTensor::ReadTensorCallback callback) = 0;
-
-  // This method will be called by `WriteTensor()` after the write info is
-  // validated. A backend subclass should implement this method to write data
-  // to a platform specific buffer.
-  virtual void WriteTensorImpl(mojo_base::BigBuffer src_buffer) = 0;
 
   // WebNNContextImpl owns this object.
   const raw_ptr<WebNNContextImpl> context_;

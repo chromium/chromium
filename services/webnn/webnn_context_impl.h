@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -104,6 +105,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       CreateGraphImplCallback callback) = 0;
 
   // Pass ownership of a newly-created `graph_impl` to this context.
@@ -141,6 +143,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver)
       override;
   void CreateTensor(mojom::TensorInfoPtr tensor_info,
+                    mojo_base::BigBuffer tensor_data,
                     CreateTensorCallback callback) override;
 
   // This method will be called by `CreateTensor()` after the tensor info is
@@ -154,6 +157,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void DidCreateWebNNTensorImpl(
       CreateTensorCallback callback,
       mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
+      mojo_base::BigBuffer tensor_data,
       base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -14,6 +14,7 @@
 namespace blink {
 
 class MLGraphBuilder;
+class MLTensor;
 
 // Represents an `MLOperand` created from the `MLGraphBuilder.constant()`
 // method. See https://www.w3.org/TR/webnn/#api-mlgraphbuilder-constant.
@@ -26,6 +27,9 @@ class MODULES_EXPORT MLConstantOperand final : public MLOperand {
   MLConstantOperand(MLGraphBuilder* builder,
                     webnn::OperandDescriptor descriptor);
 
+  // Similar to above but uses a tensor for weight data.
+  MLConstantOperand(MLGraphBuilder* builder, MLTensor* tensor);
+
   MLConstantOperand(const MLConstantOperand&) = delete;
   MLConstantOperand& operator=(const MLConstantOperand&) = delete;
 
@@ -35,9 +39,13 @@ class MODULES_EXPORT MLConstantOperand final : public MLOperand {
 
   const WebNNPendingConstantToken& handle() const { return handle_; }
 
+  const MLTensor* tensor() const { return tensor_; }
+
  private:
   // Identifies this constant operand in the WebNN service.
   const WebNNPendingConstantToken handle_;
+
+  Member<MLTensor> tensor_;
 };
 
 }  // namespace blink
