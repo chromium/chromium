@@ -97,9 +97,6 @@ cr-action-menu::part(dialog) {
 .item-hidden-true {
   visibility: hidden;
 }
-.item-invisible-true {
-  color: transparent;
-}
 
 .language-menu-button {
   font-size: 13px;

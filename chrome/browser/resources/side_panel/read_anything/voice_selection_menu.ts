@@ -164,7 +164,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     requestAnimationFrame(() => {
       this.fire(ToolbarEvent.VOICE_MENU_OPEN);
       const selectedItem =
-          menu.querySelector<HTMLElement>('.item-invisible-false');
+          menu.querySelector<HTMLElement>('.item-hidden-false.check-mark');
       selectedItem?.scrollIntoViewIfNeeded();
     });
   }

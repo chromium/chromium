@@ -40,7 +40,7 @@ export function getHtml(this: VoiceSelectionMenuElement) {
                 @click="${this.onVoiceSelectClick_}">
               <span class="voice-name">
                 <cr-icon id="check-mark"
-                    class="item-invisible-${!voice.selected} check-mark"
+                    class="item-hidden-${!voice.selected} check-mark"
                     icon="read-anything-20:check-mark">
                 </cr-icon>
                 ${voice.title}
