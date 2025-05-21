@@ -728,6 +728,9 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
                 "If enabled, not perceptible binding put processes to the background cpu cgroup"),
         Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_WITH_ADVANCED_CHECKS,
+                "Enables PartitionAlloc with advanced safety checks"),
+        Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE,
                 "Enables PartitionAlloc's FreeFlags::kSchedulerLoopQuarantine"),
         Flag.baseFeature(
