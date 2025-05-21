@@ -34,10 +34,12 @@
   <cr-input value="[[entry.key]]"
      label="$i18n{japaneseDictionaryReading}"
      type="text"
+     aria-description="[[i18nEntryDescription_()]]"
      on-change="saveReading_"></cr-input>
   <cr-input value="[[entry.value]]"
      label="$i18n{japaneseDictionaryWord}"
      type="text"
+     aria-description="[[i18nEntryDescription_()]]"
      on-change="saveWord_"></cr-input>
   <div class="category-div" >
     <label id="categoryLabel" class="cr-form-field-label category-label">
@@ -48,7 +50,8 @@
       The option values needs to corresponds to the int value of the mojo enum JpPosType.
     -->
     <select id="posDropdownMenu" class="md-select" on-change="onOptionChanged_"
-       aria-labelledby="categoryLabel">
+       aria-labelledby="categoryLabel"
+       aria-description="[[i18nEntryDescription_()]]">
        <template is="dom-repeat" items="[[posTypeOptions_]]">
          <option value="[[item.value]]"
             selected="[[isSelectedOption_(item.value)]]">
@@ -60,10 +63,12 @@
   <cr-input value="[[entry.comment]]"
      label="$i18n{japaneseDictionaryComment}"
      type="text"
+     aria-description="[[i18nEntryDescription_()]]"
      on-change="saveComment_"></cr-input>
   <cr-icon-button class="delete-icon no-overlap"
      iron-icon="cr:close"
      on-click="deleteEntry_"
+     aria-description="[[i18nEntryDescription_()]]"
      title="DeleteEntry"></cr-icon-button>
 </div>
 
