@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -361,6 +362,26 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   }
   result.set_card_info_retrieval_enrollment_state(enrollment_state);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCardBenefitsSourceSync)) {
+    std::string benefit_source;
+    switch (card.card_benefit_source()) {
+      case sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN:
+        benefit_source = "";
+        break;
+      case sync_pb::WalletMaskedCreditCard::SOURCE_AMEX:
+        benefit_source = std::string(kAmexCardBenefitSource);
+        break;
+      case sync_pb::WalletMaskedCreditCard::SOURCE_BMO:
+        benefit_source = std::string(kBmoCardBenefitSource);
+        break;
+      case sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS:
+        benefit_source = std::string(kCurinosCardBenefitSource);
+        break;
+    }
+    result.set_benefit_source(benefit_source);
+  }
+
   return result;
 }
 
@@ -583,6 +604,20 @@ void SetAutofillWalletSpecificsFromServerCard(
       break;
   }
   wallet_card->set_card_info_retrieval_enrollment_state(enrollment_state);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCardBenefitsSourceSync)) {
+    sync_pb::WalletMaskedCreditCard::CardBenefitSource benefit_source =
+        sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN;
+    if (card.benefit_source() == kAmexCardBenefitSource) {
+      benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_AMEX;
+    } else if (card.benefit_source() == kBmoCardBenefitSource) {
+      benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_BMO;
+    } else if (card.benefit_source() == kCurinosCardBenefitSource) {
+      benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS;
+    }
+    wallet_card->set_card_benefit_source(benefit_source);
+  }
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(

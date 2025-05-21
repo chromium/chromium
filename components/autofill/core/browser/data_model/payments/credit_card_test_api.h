@@ -26,6 +26,10 @@ class CreditCardTestApi {
     credit_card_->network_ = std::string(network);
   }
 
+  // TODO(crbug.com/416338314): Remove direct benefit source getter from this
+  // test api once `kAutofillEnableCardBenefitsSourceSync` is removed.
+  const std::string& benefit_source() { return credit_card_->benefit_source_; }
+
  private:
   const raw_ref<CreditCard> credit_card_;
 };
