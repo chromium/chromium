@@ -17,7 +17,7 @@ js_files = [
   "dino_game/dimensions.ts",
   "dino_game/distance_meter.ts",
   "dino_game/generated_sound_fx.ts",
-  "dino_game/game_over_panel.js",
+  "dino_game/game_over_panel.ts",
   "dino_game/horizon_line.ts",
   "dino_game/horizon.js",
   "dino_game/sprite_position.ts",

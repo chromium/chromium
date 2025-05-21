@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {BackgroundElConfig, BackgroundElSpriteConfig} from './background_el.js';
+import type {AltGameEndConfig, AltGameModePanelDimensions} from './game_over_panel.js';
 import type {HorizonLineConfig} from './horizon_line.js';
 import type {SpritePosition} from './sprite_position.js';
 import type {AltGameModeSpriteConfig as AltTrexSpriteDefinition} from './trex.js';
@@ -87,7 +88,8 @@ export interface SpriteDefinition {
   };
   backgroundElConfig: BackgroundElConfig;
   lines: HorizonLineConfig[];
-  altGameOverTextConfig: {[key: string]: number|boolean};
+  altGameOverTextConfig: AltGameModePanelDimensions;
+  altGameEndConfig?: AltGameEndConfig;
 }
 
 interface SpriteDefinitionByType {
@@ -220,12 +222,12 @@ export const spriteDefinitionByType: SpriteDefinitionByType = {
       {sourceX: 2, sourceY: 52, width: 600, height: 12, yPos: 127},
     ],
     altGameOverTextConfig: {
-      TEXT_X: 32,
-      TEXT_Y: 0,
-      TEXT_WIDTH: 246,
-      TEXT_HEIGHT: 17,
-      FLASH_DURATION: 1500,
-      FLASHING: false,
+      textX: 32,
+      textY: 0,
+      textWidth: 246,
+      textHeight: 17,
+      flashDuration: 1500,
+      flashing: false,
     },
   },
 };
