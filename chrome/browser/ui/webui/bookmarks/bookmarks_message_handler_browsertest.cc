@@ -20,6 +20,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -222,6 +223,24 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
   Profile* otr_profile =
       original_profile->GetPrimaryOTRProfile(/*create_if_needed*/ true);
   ResetWithProfile(otr_profile);
+  EXPECT_FALSE(SendCanUploadBookmarkToAccountStorage(id_string));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
+                       CanNotUploadInSigninPending) {
+  // Add a bookmark that can be uploaded.
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  const bookmarks::BookmarkNode* node = model->AddURL(
+      model->other_node(), 0, std::u16string(), GURL("http://test.com"));
+  const std::string id_string = base::NumberToString(node->id());
+  ASSERT_TRUE(SendCanUploadBookmarkToAccountStorage(id_string));
+
+  // Set Signin Pending state.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(browser()->profile()));
+
   EXPECT_FALSE(SendCanUploadBookmarkToAccountStorage(id_string));
 }
 

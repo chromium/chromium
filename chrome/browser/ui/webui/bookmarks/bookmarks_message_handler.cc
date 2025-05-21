@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
@@ -165,6 +167,8 @@ void BookmarksMessageHandler::RegisterMessages() {
 
 void BookmarksMessageHandler::OnJavascriptAllowed() {
   Profile* profile = Profile::FromWebUI(web_ui());
+  CHECK(!profile->IsGuestSession(),
+        base::NotFatalUntil(base::NotFatalUntil::M140));
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       policy::policy_prefs::kIncognitoModeAvailability,
@@ -248,6 +252,14 @@ bool BookmarksMessageHandler::CanUploadBookmarkToAccountStorage(
   // Incognito profile should not show the upload button. The action is
   // possible, but it should not be promoted.
   if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Identity manager should always be valid since Incognito and Guest mode are
+  // filtered out above.
+  // Only signed in users may see the upload button.
+  if (signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
+          profile)) != signin_util::SignedInState::kSignedIn) {
     return false;
   }
 
