@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -2815,13 +2816,13 @@ void WebNNGraphBuilderImpl::DidCreateGraph(
       &WebNNGraphBuilderImpl::DestroySelf, weak_factory_.GetWeakPtr()));
 
   if (!result.has_value()) {
-    std::move(callback).Run(
-        mojom::CreateGraphResult::NewError(std::move(result.error())));
+    std::move(callback).Run(base::unexpected(std::move(result.error())));
     return;
   }
 
-  std::move(callback).Run(
-      mojom::CreateGraphResult::NewGraphRemote(std::move(remote)));
+  auto success = mojom::CreateGraphSuccess::New(std::move(remote),
+                                                result.value()->devices());
+  std::move(callback).Run(std::move(success));
 
   context_->TakeGraph(*std::move(result),
                       base::PassKey<WebNNGraphBuilderImpl>());

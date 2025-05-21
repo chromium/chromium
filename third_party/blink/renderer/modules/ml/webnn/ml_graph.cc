@@ -7,6 +7,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -118,11 +119,13 @@ MLGraph::MLGraph(ExecutionContext* execution_context,
                      pending_graph_remote,
                  NamedOperandDescriptors input_constraints,
                  NamedOperandDescriptors output_constraints,
+                 Vector<V8MLDeviceType> devices,
                  base::PassKey<MLGraphBuilder> /*pass_key*/)
     : input_constraints_(std::move(input_constraints)),
       output_constraints_(std::move(output_constraints)),
       ml_context_(context),
-      remote_graph_(execution_context) {
+      remote_graph_(execution_context),
+      devices_(std::move(devices)) {
   // Bind the end point of `WebNNGraph` mojo interface in the blink side.
   remote_graph_.Bind(
       std::move(pending_graph_remote),
@@ -143,6 +146,10 @@ void MLGraph::destroy() {
   if (remote_graph_.is_bound()) {
     OnConnectionError();
   }
+}
+
+Vector<V8MLDeviceType> MLGraph::devices() const {
+  return devices_;
 }
 
 const MLGraph::NamedOperandDescriptors& MLGraph::GetInputConstraints() const {

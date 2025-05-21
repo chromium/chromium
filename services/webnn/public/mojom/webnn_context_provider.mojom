@@ -7,30 +7,12 @@ module webnn.mojom;
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_context.mojom";
 import "services/webnn/public/mojom/webnn_context_properties.mojom";
+import "services/webnn/public/mojom/webnn_device.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents options of creating `WebNNContext` interface.
 struct CreateContextOptions {
-  enum Device {
-    // Provides the broadest compatibility and usability across all client
-    // devices with varying degrees of performance.
-    kCpu,
-    // Provides the broadest range of achievable performance across graphics
-    // hardware platforms from consumer devices to professional workstations.
-    kGpu,
-    // NPU (neural processing unit) is a class of specialized hardware
-    // accelerator designed to accelerate artificial intelligence and machine
-    // learning applications. Unlike more general-purpose devices such as the
-    // GPU and CPU, an NPU supports a limited finite set of operations and may
-    // not have programmability support. The fallback behavior is being
-    // discussed by WG at:
-    // https://github.com/webmachinelearning/webnn/issues/623.
-    // This Enum value is introduced for testing purpose that will inform
-    // the WG.
-    kNpu,
-  };
-
   enum PowerPreference {
     // Let the user agent select the most suitable behavior.
     kDefault,

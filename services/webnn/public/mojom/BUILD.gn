@@ -23,6 +23,7 @@ mojom_component("mojom") {
     "webnn_context.mojom",
     "webnn_context_properties.mojom",
     "webnn_context_provider.mojom",
+    "webnn_device.mojom",
     "webnn_error.mojom",
     "webnn_graph.mojom",
     "webnn_graph_builder.mojom",

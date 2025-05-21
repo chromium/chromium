@@ -21,15 +21,15 @@ namespace blink {
 
 namespace {
 
-webnn::mojom::blink::CreateContextOptions::Device ConvertBlinkDeviceTypeToMojo(
+webnn::mojom::blink::Device ConvertBlinkDeviceTypeToMojo(
     const V8MLDeviceType& device_type_blink) {
   switch (device_type_blink.AsEnum()) {
     case V8MLDeviceType::Enum::kCpu:
-      return webnn::mojom::blink::CreateContextOptions::Device::kCpu;
+      return webnn::mojom::blink::Device::kCpu;
     case V8MLDeviceType::Enum::kGpu:
-      return webnn::mojom::blink::CreateContextOptions::Device::kGpu;
+      return webnn::mojom::blink::Device::kGpu;
     case V8MLDeviceType::Enum::kNpu:
-      return webnn::mojom::blink::CreateContextOptions::Device::kNpu;
+      return webnn::mojom::blink::Device::kNpu;
   }
 }
 

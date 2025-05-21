@@ -6,15 +6,16 @@ module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/webnn_context_properties.mojom";
+import "services/webnn/public/mojom/webnn_device.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
-// Represents the return value of `CreateGraph()`. Let it be `graph_remote` if
-// the graph was successfully created and `error` otherwise.
-union CreateGraphResult {
-  pending_associated_remote<WebNNGraph>? graph_remote;
-  Error error;
+// On `CreateGraph` success, returns the remote graph and the devices that
+// will be used on dispatch.
+struct CreateGraphSuccess {
+  pending_associated_remote<WebNNGraph> graph_remote;
+  array<Device> devices;
 };
 
 // Represents the `MLGraphBuilder` in the WebIDL definition. Hosted in the GPU
@@ -41,7 +42,7 @@ interface WebNNGraphBuilder {
   //
   // This method may be called at most once. Any subsequent messages on this
   // interface are signs of a misbehaving renderer.
-  CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
+  CreateGraph(GraphInfo graph_info) => result<CreateGraphSuccess, Error>;
 
   // Check whether `graph_info` is a valid graph given `context_properties`.
   IsValidGraphForTesting(ContextProperties context_properties,

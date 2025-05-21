@@ -181,7 +181,7 @@ WebNNTensorImplBackendTest::CreateWebNNContext() {
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote_->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kGpu,
+          mojom::Device::kGpu,
           mojom::CreateContextOptions::PowerPreference::kDefault),
       create_context_future.GetCallback());
   auto create_context_result = create_context_future.Take();

@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -306,15 +307,15 @@ GraphImplTflite::CreateAndBuild(
       ComputeResources::Create(context, std::move(result.buffer),
                                std::move(result.buffer_data), constant_operands,
                                result.graph_requires_fp32_precision));
-
+  // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));
-  return base::WrapUnique(
-      new GraphImplTflite(std::move(receiver), std::move(compute_resource_info),
-                          std::move(result.input_name_to_index),
-                          std::move(result.output_name_to_index),
-                          std::move(compute_resources_state), context));
+  return base::WrapUnique(new GraphImplTflite(
+      std::move(receiver), std::move(compute_resource_info),
+      std::move(result.input_name_to_index),
+      std::move(result.output_name_to_index),
+      std::move(compute_resources_state), context, /*devices=*/{}));
 }
 
 GraphImplTflite::~GraphImplTflite() = default;
@@ -326,10 +327,12 @@ GraphImplTflite::GraphImplTflite(
     base::flat_map<std::string, int> output_name_to_index,
     scoped_refptr<QueueableResourceState<ComputeResources>>
         compute_resources_state,
-    ContextImplTflite* context)
+    ContextImplTflite* context,
+    std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
                      context,
-                     std::move(compute_resource_info)),
+                     std::move(compute_resource_info),
+                     std::move(devices)),
       compute_resources_state_(std::move(compute_resources_state)),
       input_name_to_index_(std::move(input_name_to_index)),
       output_name_to_index_(std::move(output_name_to_index)) {}

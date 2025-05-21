@@ -193,7 +193,8 @@ class GraphImplDml final : public WebNNGraphImpl {
                Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
                ComputeResourceInfo compute_resource_info,
                GraphBufferBindingInfo graph_buffer_binding_info,
-               std::unique_ptr<GraphResources> graph_resources);
+               std::unique_ptr<GraphResources> graph_resources,
+               std::vector<mojom::Device> devices);
 
   // The method compiles all DML operators into an IDMLCompiledOperator
   // which can be dispatched to GPU. Since IDMLDevice1::CompileGraph called in

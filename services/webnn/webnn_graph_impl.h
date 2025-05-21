@@ -57,7 +57,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   // context.
   WebNNGraphImpl(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                  WebNNContextImpl* context,
-                 ComputeResourceInfo compute_resource_info);
+                 ComputeResourceInfo compute_resource_info,
+                 std::vector<mojom::Device> devices);
 
   WebNNGraphImpl(const WebNNGraphImpl&) = delete;
   WebNNGraphImpl& operator=(const WebNNGraphImpl&) = delete;
@@ -68,6 +69,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   }
 
   WebNNContextImpl* context() const { return context_.get(); }
+
+  const std::vector<mojom::Device>& devices() { return devices_; }
 
  private:
   void OnConnectionError();
@@ -93,6 +96,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   const raw_ptr<WebNNContextImpl> context_;
 
   mojo::AssociatedReceiver<mojom::WebNNGraph> receiver_;
+  const std::vector<mojom::Device> devices_;
 };
 
 }  // namespace webnn

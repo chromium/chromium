@@ -7,7 +7,7 @@
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_session_options_config_keys.h"
 
@@ -15,10 +15,10 @@ namespace webnn::ort {
 
 // static
 base::expected<scoped_refptr<SessionOptions>, mojom::ErrorPtr>
-SessionOptions::Create(mojom::CreateContextOptions::Device device_type) {
+SessionOptions::Create(mojom::Device device_type) {
   ScopedTrace scoped_trace("SessionOptions::Create");
 
-  if (device_type != mojom::CreateContextOptions::Device::kCpu) {
+  if (device_type != mojom::Device::kCpu) {
     return base::unexpected(mojom::Error::New(
         mojom::Error::Code::kNotSupportedError,
         "The ONNX Runtime backend only supports CPU device type currently."));

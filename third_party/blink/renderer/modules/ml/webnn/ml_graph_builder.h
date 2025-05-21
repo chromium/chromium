@@ -522,7 +522,8 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
       ScriptPromiseResolver<blink::MLGraph>* resolver,
       std::pair<MLGraph::NamedOperandDescriptors,
                 MLGraph::NamedOperandDescriptors> input_and_output_constraints,
-      webnn::mojom::blink::CreateGraphResultPtr result);
+      base::expected<webnn::mojom::blink::CreateGraphSuccessPtr,
+                     webnn::mojom::blink::ErrorPtr> result);
 
   // Check whether the graph builder is in an invalid state when the
   // `has_built_` is true or the `remote_` is unbound due to context lost. It

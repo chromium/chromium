@@ -10,6 +10,7 @@
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -47,6 +48,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
               pending_graph_remote,
           NamedOperandDescriptors input_constraints,
           NamedOperandDescriptors output_constraints,
+          Vector<V8MLDeviceType> devices,
           base::PassKey<MLGraphBuilder> pass_key);
 
   MLGraph(const MLGraph&) = delete;
@@ -58,6 +60,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   // ml_graph.idl
   void destroy();
+  Vector<V8MLDeviceType> devices() const;
 
   const NamedOperandDescriptors& GetInputConstraints() const;
   const NamedOperandDescriptors& GetOutputConstraints() const;
@@ -89,6 +92,9 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // The `WebNNGraph` is a compiled graph that can be executed by the hardware
   // accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
+
+  // Devices that will be used when dispatching the graph.
+  Vector<V8MLDeviceType> devices_;
 };
 
 }  // namespace blink

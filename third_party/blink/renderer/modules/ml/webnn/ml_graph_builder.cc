@@ -24,7 +24,9 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_error.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
@@ -3279,7 +3281,8 @@ void MLGraphBuilder::DidCreateWebNNGraph(
     ScriptPromiseResolver<blink::MLGraph>* resolver,
     std::pair<MLGraph::NamedOperandDescriptors,
               MLGraph::NamedOperandDescriptors> input_and_output_constraints,
-    blink_mojom::CreateGraphResultPtr result) {
+    base::expected<blink_mojom::CreateGraphSuccessPtr, blink_mojom::ErrorPtr>
+        result) {
   CHECK(has_built_);
 
   pending_resolver_.Clear();
@@ -3289,19 +3292,34 @@ void MLGraphBuilder::DidCreateWebNNGraph(
     return;
   }
 
-  if (result->is_error()) {
-    const auto& create_graph_error = result->get_error();
+  if (!result.has_value()) {
+    const auto& create_graph_error = result.error();
     resolver->RejectWithDOMException(
         WebNNErrorCodeToDOMExceptionCode(create_graph_error->code),
         create_graph_error->message);
     return;
   }
 
+  auto& success = result.value();
+  Vector<V8MLDeviceType> devices;
+  for (const auto& device : success->devices) {
+    switch (device) {
+      case blink_mojom::Device::kCpu:
+        devices.push_back(V8MLDeviceType::Enum::kCpu);
+        break;
+      case blink_mojom::Device::kGpu:
+        devices.push_back(V8MLDeviceType::Enum::kGpu);
+        break;
+      case blink_mojom::Device::kNpu:
+        devices.push_back(V8MLDeviceType::Enum::kNpu);
+        break;
+    }
+  }
   auto* graph = MakeGarbageCollected<MLGraph>(
       resolver->GetExecutionContext(), ml_context_,
-      std::move(result->get_graph_remote()),
+      std::move(success->graph_remote),
       std::move(input_and_output_constraints.first),
-      std::move(input_and_output_constraints.second),
+      std::move(input_and_output_constraints.second), std::move(devices),
       base::PassKey<MLGraphBuilder>());
   ml_context_->OnGraphCreated(graph);
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/webnn/public/mojom/webnn_device.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
@@ -461,8 +462,9 @@ class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
         std::make_unique<FakeWebNNGraph>(*helper_),
         blink_remote.InitWithNewEndpointAndPassReceiver());
 
-    std::move(callback).Run(blink_mojom::CreateGraphResult::NewGraphRemote(
-        std::move(blink_remote)));
+    auto success = blink_mojom::CreateGraphSuccess::New(
+        std::move(blink_remote), WTF::Vector<blink_mojom::Device>());
+    std::move(callback).Run(std::move(success));
   }
 
   void CreatePendingConstant(const WebNNPendingConstantToken& constant_handle,

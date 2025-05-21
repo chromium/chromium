@@ -55,7 +55,8 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
       ComputeResourceInfo compute_resource_info)
       : WebNNGraphImpl(std::move(receiver),
                        context,
-                       std::move(compute_resource_info)) {}
+                       std::move(compute_resource_info),
+                       /*devices=*/{}) {}
   ~FakeWebNNGraphImpl() override = default;
 
  private:
@@ -202,11 +203,13 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraph) {
 
   mojom::GraphInfoPtr graph_info = BuildSimpleGraphInfo(graph_builder_remote());
 
-  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
   graph_builder_remote()->CreateGraph(std::move(graph_info),
                                       create_graph_future.GetCallback());
-  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
-  EXPECT_TRUE(create_graph_result->is_graph_remote());
+  auto create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result.has_value());
 
   // The remote should disconnect shortly after the future resolves since the
   // `WebNNGraphBuilder` is destroyed shortly after firing its `CreateGraph()`
@@ -218,7 +221,9 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraph) {
 TEST_F(WebNNGraphBuilderImplTest, CreateGraphTwice) {
   mojom::GraphInfoPtr graph_info = BuildSimpleGraphInfo(graph_builder_remote());
 
-  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
   graph_builder_remote()->CreateGraph(CloneGraphInfoForTesting(*graph_info),
                                       create_graph_future.GetCallback());
 
@@ -243,17 +248,21 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraphWithConstant) {
                      /*max_value=*/7.0);
   EXPECT_TRUE(builder.IsValidGraphForTesting(GetContextPropertiesForTesting()));
 
-  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
   graph_builder_remote()->CreateGraph(builder.TakeGraphInfo(),
                                       create_graph_future.GetCallback());
-  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
-  EXPECT_TRUE(create_graph_result->is_graph_remote());
+  auto create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result.has_value());
 }
 
 TEST_F(WebNNGraphBuilderImplTest, CreatePendingConstantOnBuiltGraph) {
   mojom::GraphInfoPtr graph_info = BuildSimpleGraphInfo(graph_builder_remote());
 
-  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
   graph_builder_remote()->CreateGraph(CloneGraphInfoForTesting(*graph_info),
                                       create_graph_future.GetCallback());
 

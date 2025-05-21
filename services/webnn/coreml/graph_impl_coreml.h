@@ -94,7 +94,8 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
 
   GraphImplCoreml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                   ContextImplCoreml* context,
-                  std::unique_ptr<Params> params);
+                  std::unique_ptr<Params> params,
+                  std::vector<mojom::Device> devices);
 
   static MLFeatureValue* CreateMultiArrayFeatureValueFromBytes(
       MLMultiArrayConstraint* multi_array_constraint,

@@ -57,16 +57,16 @@ enum class DeviceTypeUma {
   kMaxValue = kNpu,
 };
 
-void RecordDeviceType(const mojom::CreateContextOptions::Device device) {
+void RecordDeviceType(const mojom::Device device) {
   DeviceTypeUma uma_value;
   switch (device) {
-    case mojom::CreateContextOptions::Device::kCpu:
+    case mojom::Device::kCpu:
       uma_value = DeviceTypeUma::kCpu;
       break;
-    case mojom::CreateContextOptions::Device::kGpu:
+    case mojom::Device::kGpu:
       uma_value = DeviceTypeUma::kGpu;
       break;
-    case mojom::CreateContextOptions::Device::kNpu:
+    case mojom::Device::kNpu:
       uma_value = DeviceTypeUma::kNpu;
       break;
   }

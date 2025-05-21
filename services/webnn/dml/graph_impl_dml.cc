@@ -69,7 +69,6 @@ BASE_FEATURE(kApplyGraphFusion,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 using Microsoft::WRL::ComPtr;
-using mojom::CreateGraphResult;
 using mojom::Operand;
 using mojom::OperandPtr;
 using mojom::Operation;
@@ -5927,10 +5926,12 @@ GraphImplDml::GraphImplDml(
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
-    std::unique_ptr<GraphResources> graph_resources)
+    std::unique_ptr<GraphResources> graph_resources,
+    std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
                      context,
-                     std::move(compute_resource_info)),
+                     std::move(compute_resource_info),
+                     std::move(devices)),
       persistent_resource_(std::move(persistent_resource)),
       adapter_(std::move(adapter)),
       context_(context),
@@ -6264,12 +6265,14 @@ void GraphImplDml::CreateWebNNGraphImpl(
     return;
   }
 
+  // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   // The receiver bound to GraphImplDml.
   std::move(callback).Run(base::WrapUnique(new GraphImplDml(
       std::move(receiver), std::move(adapter), context.get(),
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
-      std::move(graph_buffer_binding_info), std::move(graph_resources))));
+      std::move(graph_buffer_binding_info), std::move(graph_resources),
+      /*devices=*/{})));
 }
 
 // static

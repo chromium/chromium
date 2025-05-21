@@ -492,15 +492,15 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
 
   MLModelConfiguration* configuration = [[MLModelConfiguration alloc] init];
   switch (context_options->device) {
-    case mojom::CreateContextOptions::Device::kCpu:
+    case mojom::Device::kCpu:
       configuration.computeUnits = MLComputeUnitsCPUOnly;
       break;
-    case mojom::CreateContextOptions::Device::kGpu:
+    case mojom::Device::kGpu:
       // TODO: crbug.com/344935458 - Switch to MLComputeUnitsCPUAndGPU
       // when we figure out how to fix the crashes.
       configuration.computeUnits = MLComputeUnitsAll;
       break;
-    case mojom::CreateContextOptions::Device::kNpu:
+    case mojom::Device::kNpu:
       configuration.computeUnits = MLComputeUnitsAll;
       break;
   }
@@ -544,9 +544,10 @@ void GraphImplCoreml::DidCreateAndBuild(
   context->AssertCalledOnValidSequence();
 #endif
 
+  // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   std::move(callback).Run(base::WrapUnique(new GraphImplCoreml(
       std::move(receiver), static_cast<ContextImplCoreml*>(context.get()),
-      *std::move(result))));
+      *std::move(result), /*devices=*/{})));
 }
 
 // static
@@ -572,10 +573,12 @@ MLFeatureValue* GraphImplCoreml::CreateMultiArrayFeatureValueFromBytes(
 GraphImplCoreml::GraphImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ContextImplCoreml* context,
-    std::unique_ptr<Params> params)
+    std::unique_ptr<Params> params,
+    std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
                      context,
-                     std::move(params->compute_resource_info)),
+                     std::move(params->compute_resource_info),
+                     std::move(devices)),
       compute_resources_(base::MakeRefCounted<ComputeResources>(
           std::move(params->coreml_name_to_operand_name),
           params->ml_model)) {}

@@ -9,7 +9,8 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/ort/scoped_ort_types.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_device.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
 namespace webnn::ort {
@@ -22,7 +23,7 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
   // only CPU is supported by the default CPU EP.
   // It may fail when appending a particular EP to the session options.
   static base::expected<scoped_refptr<SessionOptions>, mojom::ErrorPtr> Create(
-      mojom::CreateContextOptions::Device device_type);
+      mojom::Device device_type);
 
   SessionOptions(base::PassKey<SessionOptions>,
                  ScopedOrtSessionOptions session_options);

@@ -74,7 +74,7 @@ mojo_base::BigBuffer GenerateBytes(uint32_t seed, size_t byte_size) {
 }
 
 void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
-                webnn::mojom::CreateContextOptions::Device device,
+                webnn::mojom::Device device,
                 uint32_t seed) {
   mojo::Remote<webnn::mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<webnn::mojom::WebNNContext> webnn_context_remote;
@@ -108,11 +108,12 @@ void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
   webnn_context_remote->CreateGraphBuilder(
       webnn_graph_builder_remote.BindNewEndpointAndPassReceiver());
 
-  base::test::TestFuture<webnn::mojom::CreateGraphResultPtr>
+  base::test::TestFuture<base::expected<webnn::mojom::CreateGraphSuccessPtr,
+                                        webnn::mojom::ErrorPtr>>
       create_graph_future;
   webnn_graph_builder_remote.set_disconnect_handler(
       base::BindLambdaForTesting([&] {
-        create_graph_future.SetValue(webnn::mojom::CreateGraphResult::NewError(
+        create_graph_future.SetValue(base::unexpected(
             webnn::mojom::Error::New(webnn::mojom::Error::Code::kUnknownError,
                                      "Failed to create graph.")));
       }));
@@ -121,12 +122,11 @@ void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
   mojolpm::FromProto(graph_info_proto, graph_info);
   webnn_graph_builder_remote->CreateGraph(std::move(graph_info),
                                           create_graph_future.GetCallback());
-  webnn::mojom::CreateGraphResultPtr create_graph_result =
-      create_graph_future.Take();
-  if (create_graph_result->is_error()) {
+  auto create_graph_result = create_graph_future.Take();
+  if (!create_graph_result.has_value()) {
     return;
   }
-  webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
+  webnn_graph_remote.Bind(std::move(create_graph_result.value()->graph_remote));
 
   // Get graph_info again for tensor operations.
   graph_info = webnn::mojom::GraphInfo::New();
@@ -235,7 +235,7 @@ class WebnnGraphLPMFuzzer {
     ++action_index_;
     const auto& create_graph = action.create_graph();
 
-    webnn::mojom::CreateContextOptions::Device device;
+    webnn::mojom::Device device;
     mojolpm::FromProto(action.device(), device);
     BuildGraph(create_graph.graph_info(), device,
                testcase_->seed_for_input_data());

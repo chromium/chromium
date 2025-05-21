@@ -73,10 +73,10 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
   }
 
   switch (options.device) {
-    case mojom::CreateContextOptions::Device::kCpu:
+    case mojom::Device::kCpu:
       return false;
-    case mojom::CreateContextOptions::Device::kGpu:
-    case mojom::CreateContextOptions::Device::kNpu:
+    case mojom::Device::kGpu:
+    case mojom::Device::kNpu:
       return true;
   }
 }
@@ -102,9 +102,9 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
   base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
       adapter_creation_result;
   switch (options->device) {
-    case mojom::CreateContextOptions::Device::kCpu:
+    case mojom::Device::kCpu:
       NOTREACHED();
-    case mojom::CreateContextOptions::Device::kGpu: {
+    case mojom::Device::kGpu: {
       ComPtr<IDXGIAdapter> dxgi_adapter;
       if (shared_context_state) {
         ComPtr<ID3D11Device> d3d11_device =
@@ -128,7 +128,7 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
           GetDmlGpuAdapter(dxgi_adapter.Get(), gpu_feature_info);
       break;
     }
-    case mojom::CreateContextOptions::Device::kNpu:
+    case mojom::Device::kNpu:
       adapter_creation_result =
           Adapter::GetNpuInstance(gpu_feature_info, gpu_info);
       break;

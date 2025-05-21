@@ -89,7 +89,7 @@ TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kCpu,
+          mojom::Device::kCpu,
           mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
@@ -110,7 +110,7 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kGpu,
+          mojom::Device::kGpu,
           mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
@@ -131,7 +131,7 @@ TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kNpu,
+          mojom::Device::kNpu,
           mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
@@ -152,7 +152,7 @@ TEST_F(WebNNContextProviderImplTest, GpuFeatureStatusDisabled) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kNpu,
+          mojom::Device::kNpu,
           mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();

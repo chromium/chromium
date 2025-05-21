@@ -90,10 +90,12 @@ WebNNGraphImpl::ComputeResourceInfo::~ComputeResourceInfo() = default;
 WebNNGraphImpl::WebNNGraphImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     WebNNContextImpl* context,
-    ComputeResourceInfo compute_resource_info)
+    ComputeResourceInfo compute_resource_info,
+    std::vector<mojom::Device> devices)
     : compute_resource_info_(std::move(compute_resource_info)),
       context_(context),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this, std::move(receiver)),
+      devices_(std::move(devices)) {
   CHECK(context_);
 #if DCHECK_IS_ON()
   context_->AssertCalledOnValidSequence();

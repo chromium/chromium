@@ -1089,7 +1089,7 @@ base::expected<std::unique_ptr<GraphBuilderCoreml::Result>, mojom::ErrorPtr>
 GraphBuilderCoreml::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
-    mojom::CreateContextOptions::Device device,
+    mojom::Device device,
     const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     const base::FilePath& working_directory) {
@@ -1404,7 +1404,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
 GraphBuilderCoreml::GraphBuilderCoreml(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
-    mojom::CreateContextOptions::Device device,
+    mojom::Device device,
     const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     base::FilePath ml_package_dir,
@@ -2041,7 +2041,7 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
   // Rank of 5 causes crashes when not targeting `MLComputeUnitsCPUOnly`, see
   // crbug.com/391566721, so reshape to 4 to perform batch norm, then reshape
   // back.
-  if (device_ != mojom::CreateContextOptions::Device::kCpu &&
+  if (device_ != mojom::Device::kCpu &&
       input_operand_info.dimensions.size() == 5) {
     std::array<uint32_t, 4> flattened_dims{
         input_operand_info.dimensions[0], input_operand_info.dimensions[1],
@@ -3973,7 +3973,7 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
         return (a + 1) != b;
       }) == operation.axes.end();
   if (!is_consecutive) {
-    if (device_ == mojom::CreateContextOptions::Device::kCpu) {
+    if (device_ == mojom::Device::kCpu) {
       return NewNotSupportedError(
           "Axes must be consecutive for layerNormalization on cpu.");
     }
