@@ -26,12 +26,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -85,6 +87,7 @@ public class DseNewTabUrlManagerUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void testIsNewTabSearchEngineUrlAndroidIgnoredForNonEeaCountry() {
         assertFalse(
                 ChromeSharedPreferences.getInstance()

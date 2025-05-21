@@ -72,6 +72,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -378,6 +379,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
     public void testWithEeaCountryOnlyEnabled() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
