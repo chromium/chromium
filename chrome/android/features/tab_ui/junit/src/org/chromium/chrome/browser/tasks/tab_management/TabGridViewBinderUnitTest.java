@@ -67,8 +67,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
-import org.chromium.components.browser_ui.util.OnPeripheralClickListener;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Junit Tests for {@link TabGridViewBinder}. */

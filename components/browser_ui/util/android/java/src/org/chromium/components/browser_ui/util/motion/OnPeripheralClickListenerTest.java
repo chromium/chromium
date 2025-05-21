@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.util;
+package org.chromium.components.browser_ui.util.motion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,10 +11,7 @@ import static org.junit.Assert.assertTrue;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.SystemClock;
-import android.view.InputDevice;
 import android.view.MotionEvent;
-import android.view.MotionEvent.PointerCoords;
-import android.view.MotionEvent.PointerProperties;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
@@ -30,8 +27,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.util.OnPeripheralClickListener.OnPeripheralClickRunnable;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener.OnPeripheralClickRunnable;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 @NullMarked
@@ -59,24 +55,16 @@ public class OnPeripheralClickListenerTest {
                     long downMotionTime = SystemClock.uptimeMillis();
                     boolean downMotionHandled =
                             testView.dispatchTouchEvent(
-                                    createMotionEvent(
+                                    MotionEventTestUtils.createTouchMotionEvent(
                                             downMotionTime,
                                             /* eventTime= */ downMotionTime,
-                                            MotionEvent.ACTION_DOWN,
-                                            /* x= */ 0,
-                                            /* y= */ 0,
-                                            InputDevice.SOURCE_TOUCHSCREEN,
-                                            MotionEvent.TOOL_TYPE_FINGER));
+                                            MotionEvent.ACTION_DOWN));
                     boolean upMotionHandled =
                             testView.dispatchTouchEvent(
-                                    createMotionEvent(
+                                    MotionEventTestUtils.createTouchMotionEvent(
                                             downMotionTime,
                                             /* eventTime= */ downMotionTime + 50,
-                                            MotionEvent.ACTION_UP,
-                                            /* x= */ 0,
-                                            /* y= */ 0,
-                                            InputDevice.SOURCE_TOUCHSCREEN,
-                                            MotionEvent.TOOL_TYPE_FINGER));
+                                            MotionEvent.ACTION_UP));
 
                     // Assert:
                     // (1) OnPeripheralClickListener shouldn't handle any MotionEvent that wasn't
@@ -104,24 +92,16 @@ public class OnPeripheralClickListenerTest {
                     long downMotionTime = SystemClock.uptimeMillis();
                     boolean downMotionHandled =
                             testView.dispatchTouchEvent(
-                                    createMotionEvent(
+                                    MotionEventTestUtils.createMouseMotionEvent(
                                             downMotionTime,
                                             /* eventTime= */ downMotionTime,
-                                            MotionEvent.ACTION_DOWN,
-                                            /* x= */ 0,
-                                            /* y= */ 0,
-                                            InputDevice.SOURCE_MOUSE,
-                                            MotionEvent.TOOL_TYPE_MOUSE));
+                                            MotionEvent.ACTION_DOWN));
                     boolean upMotionHandled =
                             testView.dispatchTouchEvent(
-                                    createMotionEvent(
+                                    MotionEventTestUtils.createMouseMotionEvent(
                                             downMotionTime,
                                             /* eventTime= */ downMotionTime + 50,
-                                            MotionEvent.ACTION_UP,
-                                            /* x= */ 0,
-                                            /* y= */ 0,
-                                            InputDevice.SOURCE_MOUSE,
-                                            MotionEvent.TOOL_TYPE_MOUSE));
+                                            MotionEvent.ACTION_UP));
 
                     // Assert:
                     // (1) OnPeripheralClickListener should handle MotionEvents that were
@@ -147,38 +127,6 @@ public class OnPeripheralClickListenerTest {
                                         LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)));
 
         return textView;
-    }
-
-    /**
-     * Creates a {@link MotionEvent}.
-     *
-     * <p>All parameters are for {@link MotionEvent#obtain}.
-     */
-    private static MotionEvent createMotionEvent(
-            long downTime, long eventTime, int action, float x, float y, int source, int toolType) {
-        PointerProperties pointerProperties = new MotionEvent.PointerProperties();
-        pointerProperties.id = 0;
-        pointerProperties.toolType = toolType;
-
-        PointerCoords pointerCoords = new PointerCoords();
-        pointerCoords.x = x;
-        pointerCoords.y = y;
-
-        return MotionEvent.obtain(
-                downTime,
-                eventTime,
-                action,
-                /* pointerCount= */ 1,
-                new PointerProperties[] {pointerProperties},
-                new PointerCoords[] {pointerCoords},
-                /* metaState= */ 0,
-                /* buttonState= */ 0,
-                /* xPrecision= */ 1.0f,
-                /* yPrecision= */ 1.0f,
-                /* deviceId= */ 0,
-                /* edgeFlags= */ 0,
-                source,
-                /* flags= */ 0);
     }
 
     private static final class TestOnPeripheralClickRunnable implements OnPeripheralClickRunnable {

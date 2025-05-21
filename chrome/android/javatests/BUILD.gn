@@ -269,6 +269,7 @@ android_library("chrome_test_java_helper") {
     "//components/browser_ui/sms/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
+    "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//components/browsing_data/content/android:java",

@@ -16,8 +16,6 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.MotionEvent;
-import android.view.MotionEvent.PointerCoords;
-import android.view.MotionEvent.PointerProperties;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -33,6 +31,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -59,24 +58,20 @@ public class TouchTrackingListViewTest {
                     // "single tap up" gesture.
                     testOnInterceptTouchEvent(
                             touchTrackingListView,
-                            createMotionEvent(
+                            MotionEventTestUtils.createMouseMotionEvent(
                                     motionDownTime,
                                     /* eventTime= */ motionDownTime,
                                     MotionEvent.ACTION_DOWN,
                                     centerPoint.x,
-                                    centerPoint.y,
-                                    InputDevice.SOURCE_MOUSE,
-                                    MotionEvent.TOOL_TYPE_MOUSE));
+                                    centerPoint.y));
                     testOnInterceptTouchEvent(
                             touchTrackingListView,
-                            createMotionEvent(
+                            MotionEventTestUtils.createMouseMotionEvent(
                                     motionDownTime,
                                     /* eventTime= */ motionDownTime + 50,
                                     MotionEvent.ACTION_UP,
                                     centerPoint.x,
-                                    centerPoint.y,
-                                    InputDevice.SOURCE_MOUSE,
-                                    MotionEvent.TOOL_TYPE_MOUSE));
+                                    centerPoint.y));
 
                     // Assert
                     MotionEventInfo touchInfo = touchTrackingListView.getLastSingleTapUp();
@@ -102,14 +97,12 @@ public class TouchTrackingListViewTest {
                     // A single ACTION_DOWN event shouldn't complete any gesture.
                     testOnInterceptTouchEvent(
                             touchTrackingListView,
-                            createMotionEvent(
+                            MotionEventTestUtils.createMouseMotionEvent(
                                     motionDownTime,
                                     /* eventTime= */ motionDownTime,
                                     MotionEvent.ACTION_DOWN,
                                     centerPoint.x,
-                                    centerPoint.y,
-                                    InputDevice.SOURCE_MOUSE,
-                                    MotionEvent.TOOL_TYPE_MOUSE));
+                                    centerPoint.y));
 
                     // Assert
                     assertNull(touchTrackingListView.getLastSingleTapUp());
@@ -186,37 +179,5 @@ public class TouchTrackingListViewTest {
             TouchTrackingListView touchTrackingListView, MotionEvent motionEvent) {
         boolean eventIntercepted = touchTrackingListView.onInterceptTouchEvent(motionEvent);
         assertFalse("TouchTrackingListView should never intercept touch events.", eventIntercepted);
-    }
-
-    /**
-     * Creates a {@link MotionEvent} for testing.
-     *
-     * <p>All parameters are for {@link MotionEvent#obtain}.
-     */
-    private static MotionEvent createMotionEvent(
-            long downTime, long eventTime, int action, float x, float y, int source, int toolType) {
-        PointerProperties pointerProperties = new PointerProperties();
-        pointerProperties.id = 0;
-        pointerProperties.toolType = toolType;
-
-        PointerCoords pointerCoords = new PointerCoords();
-        pointerCoords.x = x;
-        pointerCoords.y = y;
-
-        return MotionEvent.obtain(
-                downTime,
-                eventTime,
-                action,
-                /* pointerCount= */ 1,
-                new PointerProperties[] {pointerProperties},
-                new PointerCoords[] {pointerCoords},
-                /* metaState= */ 0,
-                /* buttonState= */ 0,
-                /* xPrecision= */ 1.0f,
-                /* yPrecision= */ 1.0f,
-                /* deviceId= */ 0,
-                /* edgeFlags= */ 0,
-                source,
-                /* flags= */ 0);
     }
 }

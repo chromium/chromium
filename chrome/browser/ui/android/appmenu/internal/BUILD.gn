@@ -83,6 +83,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/util/android:java",
+    "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/test/android:content_java_test_support",

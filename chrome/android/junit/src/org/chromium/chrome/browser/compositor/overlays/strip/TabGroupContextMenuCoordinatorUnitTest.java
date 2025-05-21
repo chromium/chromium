@@ -58,9 +58,8 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.collaboration.CollaborationService;
@@ -358,13 +357,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createTouchMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createTouchMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testItemClicked_CloseOrDeleteGroup(
                 R.id.close_tab_group,
@@ -379,13 +375,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createMouseMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testItemClicked_CloseOrDeleteGroup(
                 R.id.close_tab_group,
@@ -410,13 +403,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createTouchMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createTouchMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testItemClicked_CloseOrDeleteGroup(
                 R.id.delete_tab_group,
@@ -431,13 +421,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createMouseMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testItemClicked_CloseOrDeleteGroup(
                 R.id.delete_tab_group,

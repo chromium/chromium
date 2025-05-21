@@ -20,7 +20,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
-import org.chromium.components.browser_ui.util.OnPeripheralClickListener;
+import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;

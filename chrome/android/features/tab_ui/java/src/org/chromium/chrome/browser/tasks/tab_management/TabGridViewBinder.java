@@ -39,8 +39,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.util.OnPeripheralClickListener;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageView;

@@ -120,7 +120,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.collaboration.CollaborationService;
@@ -1511,13 +1511,10 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createTouchMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createTouchMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testDialogToolbarMenu_CloseOrDeleteGroup(
                 R.id.close_tab_group,
@@ -1532,13 +1529,10 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createMouseMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testDialogToolbarMenu_CloseOrDeleteGroup(
                 R.id.close_tab_group,
@@ -1563,13 +1557,10 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createTouchMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createTouchMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testDialogToolbarMenu_CloseOrDeleteGroup(
                 R.id.delete_tab_group,
@@ -1584,13 +1575,10 @@ public class TabGridDialogMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createMouseMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testDialogToolbarMenu_CloseOrDeleteGroup(
                 R.id.delete_tab_group,

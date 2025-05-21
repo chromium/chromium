@@ -153,7 +153,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Shopping
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
@@ -1076,13 +1076,10 @@ public class TabListMediatorUnitTest {
                 .run(
                         mItemView2,
                         mModelList.get(1).model.get(TabProperties.TAB_ID),
-                        MotionEventInfo.fromMotionEvent(
-                                TabUiTestHelper.createMouseMotionEvent(
-                                        /* downTime= */ SystemClock.uptimeMillis(),
-                                        /* eventTime= */ SystemClock.uptimeMillis() + 200,
-                                        MotionEvent.ACTION_UP,
-                                        /* x= */ 0,
-                                        /* y= */ 0)));
+                        MotionEventTestUtils.createMouseMotionInfo(
+                                /* downTime= */ SystemClock.uptimeMillis(),
+                                /* eventTime= */ SystemClock.uptimeMillis() + 200,
+                                MotionEvent.ACTION_UP));
 
         verify(mTabRemover)
                 .closeTabs(
@@ -4320,13 +4317,10 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createTouchMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createTouchMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testOnMenuItemClickedCallback_CloseOrDeleteGroupInTabSwitcher(
                 R.id.close_tab_group,
@@ -4340,13 +4334,10 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createMouseMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testOnMenuItemClickedCallback_CloseOrDeleteGroupInTabSwitcher(
                 R.id.close_tab_group,
@@ -4369,13 +4360,10 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createTouchMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createTouchMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testOnMenuItemClickedCallback_CloseOrDeleteGroupInTabSwitcher(
                 R.id.delete_tab_group,
@@ -4389,13 +4377,10 @@ public class TabListMediatorUnitTest {
         long downMotionTime = SystemClock.uptimeMillis();
         FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
         listViewTouchTracker.setLastSingleTapUpInfo(
-                MotionEventInfo.fromMotionEvent(
-                        TabUiTestHelper.createMouseMotionEvent(
-                                downMotionTime,
-                                /* eventTime= */ downMotionTime + 50,
-                                MotionEvent.ACTION_UP,
-                                /* x= */ 0,
-                                /* y= */ 0)));
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
 
         testOnMenuItemClickedCallback_CloseOrDeleteGroupInTabSwitcher(
                 R.id.delete_tab_group,

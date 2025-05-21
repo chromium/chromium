@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.util;
+package org.chromium.components.browser_ui.util.motion;
 
 import android.annotation.SuppressLint;
 import android.view.GestureDetector;
@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.util.MotionEventUtils;
 
 /**

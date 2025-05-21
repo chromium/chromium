@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -674,19 +675,13 @@ public class TabListViewHolderTest {
         // MotionEvents to simulate a click.
         long motionDownTime = SystemClock.uptimeMillis();
         gridActionButton.dispatchTouchEvent(
-                TabUiTestHelper.createMouseMotionEvent(
-                        motionDownTime,
-                        /* eventTime= */ motionDownTime,
-                        MotionEvent.ACTION_DOWN,
-                        /* x= */ 0.0f,
-                        /* y= */ 0.0f));
+                MotionEventTestUtils.createMouseMotionEvent(
+                        motionDownTime, /* eventTime= */ motionDownTime, MotionEvent.ACTION_DOWN));
         gridActionButton.dispatchTouchEvent(
-                TabUiTestHelper.createMouseMotionEvent(
+                MotionEventTestUtils.createMouseMotionEvent(
                         motionDownTime,
                         /* eventTime= */ motionDownTime + 200,
-                        MotionEvent.ACTION_UP,
-                        /* x= */ 0.0f,
-                        /* y= */ 0.0f));
+                        MotionEvent.ACTION_UP));
 
         // Assert
         Assert.assertTrue(mCloseClicked.get());

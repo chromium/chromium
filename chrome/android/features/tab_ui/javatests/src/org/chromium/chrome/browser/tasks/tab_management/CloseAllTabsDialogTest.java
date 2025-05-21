@@ -18,10 +18,7 @@ import static org.junit.Assert.assertThat;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.SystemClock;
-import android.view.InputDevice;
 import android.view.MotionEvent;
-import android.view.MotionEvent.PointerCoords;
-import android.view.MotionEvent.PointerProperties;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.LargeTest;
@@ -51,6 +48,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
@@ -183,31 +181,8 @@ public class CloseAllTabsDialogTest {
      */
     private static MotionEventInfo createClickTriggeringMotionFromMouse() {
         long downTime = SystemClock.uptimeMillis();
-
-        PointerProperties pointerProperties = new MotionEvent.PointerProperties();
-        pointerProperties.id = 0;
-        pointerProperties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
-
-        PointerCoords pointerCoords = new PointerCoords();
-        pointerCoords.x = 0;
-        pointerCoords.y = 0;
-
-        return MotionEventInfo.fromMotionEvent(
-                MotionEvent.obtain(
-                        downTime,
-                        downTime + 50,
-                        MotionEvent.ACTION_UP,
-                        /* pointerCount= */ 1,
-                        new PointerProperties[] {pointerProperties},
-                        new PointerCoords[] {pointerCoords},
-                        /* metaState= */ 0,
-                        /* buttonState= */ 0,
-                        /* xPrecision= */ 1.0f,
-                        /* yPrecision= */ 1.0f,
-                        /* deviceId= */ 0,
-                        /* edgeFlags= */ 0,
-                        InputDevice.SOURCE_MOUSE,
-                        /* flags= */ 0));
+        return MotionEventTestUtils.createMouseMotionInfo(
+                downTime, /* eventTime= */ downTime + 50, MotionEvent.ACTION_UP);
     }
 
     /**
