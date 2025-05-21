@@ -13,6 +13,7 @@ from check_gnrt_config import (
     _GetExtraKvForCrateName,
     CheckExplicitAllowUnsafeForAllCrates,
     CheckMultiversionCrates,
+    CheckNonapplicableGnrtConfigEntries,
 )
 
 
@@ -77,6 +78,30 @@ class CheckMultiversionCratesTests(unittest.TestCase):
         self.assertTrue("foo@1.2.3, foo@4.5.6" in msg)
         self.assertTrue("[crate.foo.extra_kv]" in msg)
         self.assertTrue("multiversion_cleanup_bug = " in msg)
+
+
+class CheckNonapplicableGnrtConfigEntriesTests(unittest.TestCase):
+
+    def testNoProblems(self):
+        crate_ids = set(["foo@1.2.3"])
+        gnrt_config = {"crate": {"foo": {"bar": 123}}}
+        self.assertEqual(
+            "", CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config))
+
+    def testProblem(self):
+        crate_ids = set()
+        gnrt_config = {"crate": {"foo": {"bar": 123}}}
+        msg = CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config)
+        self.assertTrue("foo" in msg)
+        self.assertTrue("gnrt_config.toml" in msg)
+
+    def testPlaceholderCrate(self):
+        crate_id = crate_utils.GetPlaceholderCrateIdForTesting()
+        crate_name = crate_utils.ConvertCrateIdToCrateName(crate_id)
+        crate_ids = set([crate_id])
+        gnrt_config = {"crate": {crate_name: {"bar": 123}}}
+        msg = CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config)
+        self.assertTrue(msg != "")
 
 
 class GetExtraKvForCrateNameTests(unittest.TestCase):

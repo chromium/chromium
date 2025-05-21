@@ -24,17 +24,24 @@ import toml
 
 import crate_utils
 
-CRATES_DIR = os.path.normpath(os.path.dirname(__file__))
-GNRT_CONFIG_PATH = os.path.join(CRATES_DIR, 'gnrt_config.toml')
+GNRT_CONFIG_RELATIVE_PATH = "third_party/rust/chromium_crates_io/gnrt_config.toml"
+GNRT_CONFIG_PATH = os.path.join(crate_utils.CHROMIUM_DIR,
+                                GNRT_CONFIG_RELATIVE_PATH)
 
 
-def _GetCrateConfigForCrateName(crate_name, gnrt_config):
+def _GetCratesConfigDict(gnrt_config):
     if gnrt_config and isinstance(gnrt_config, dict):
         crates = gnrt_config.get("crate")
         if crates and isinstance(crates, dict):
-            crate_cfg = crates.get(crate_name)
-            if crate_cfg and isinstance(crate_cfg, dict):
-                return crate_cfg
+            return crates
+    return dict()
+
+
+def _GetCrateConfigForCrateName(crate_name, gnrt_config):
+    crates = _GetCratesConfigDict(gnrt_config)
+    crate_cfg = crates.get(crate_name)
+    if crate_cfg and isinstance(crate_cfg, dict):
+        return crate_cfg
     return dict()
 
 
@@ -44,6 +51,31 @@ def _GetExtraKvForCrateName(crate_name, gnrt_config):
     if extra_kv and isinstance(extra_kv, dict):
         return extra_kv
     return dict()
+
+
+def CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config):
+    """Checks that each crate entry in `gnrt_config.toml` corresponds
+       to an actual depedency of `chromium_crates_io/Cargo.toml`.
+
+       Returns an error message if a problem is detected.
+       Returns an empty string if there are no problems.
+    """
+    non_placeholder_crate_ids = filter(
+        lambda crate_id: not crate_utils.IsPlaceholderCrate(crate_id),
+        crate_ids)
+    real_crate_names = set(
+        map(crate_utils.ConvertCrateIdToCrateName, non_placeholder_crate_ids))
+
+    crates_cfg_dict = _GetCratesConfigDict(gnrt_config)
+    configured_crate_names = set(crates_cfg_dict.keys())
+
+    nonapplicable_config_entries = configured_crate_names - real_crate_names
+    if nonapplicable_config_entries:
+        return (f"Some entries in `{GNRT_CONFIG_RELATIVE_PATH}` are not "
+                "needed, because they don't apply to actual crates: "
+                f'{", ".join(sorted(nonapplicable_config_entries))}')
+
+    return ""
 
 
 def CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config):
@@ -80,6 +112,7 @@ def CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config):
         ]
 
     return "\n".join(result)
+
 
 def CheckMultiversionCrates(crate_ids, gnrt_config):
     """Checks that a bug tracks each crate with multiple versions.
@@ -153,12 +186,9 @@ def main():
             success = False
             print(result)
 
-    RunChecks(CheckMultiversionCrates)
     RunChecks(CheckExplicitAllowUnsafeForAllCrates)
-
-    # TODO(https://crbug.com/399935219): RunChecks(CheckNonapplicableGnrtConfigEntries).
-    # Move the useless-entry-in-gnrt_config check from `gnrt` into this script.
-    # Consider also adding CheckNonapplicablePatches.
+    RunChecks(CheckMultiversionCrates)
+    RunChecks(CheckNonapplicableGnrtConfigEntries)
 
     if success:
         return 0

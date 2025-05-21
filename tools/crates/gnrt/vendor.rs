@@ -65,19 +65,6 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
     // lock file.
     remove_checksums_from_lock(paths.third_party_cargo_root)?;
 
-    {
-        let package_names = graph.packages().map(|p| p.name().to_string()).collect::<HashSet<_>>();
-        for name in config.per_crate_config.keys() {
-            if !package_names.contains(name) {
-                return Err(format_err!(
-                    "Config found for crate {name}, but it is not a dependency, in {file}",
-                    name = name,
-                    file = config_file_path.display()
-                ));
-            }
-        }
-    }
-
     // Download missing dirs, remove the rest.
     let vendor_dir = paths.third_party_cargo_root.join("vendor");
     create_dirs_if_needed(&vendor_dir).context("creating vendor dir")?;
