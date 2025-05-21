@@ -3069,13 +3069,26 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // the first navigation in a new SiteInstance.
   bool is_new_site_instance = true;
 
+  bool renderer_initialization_delayed = false;
   if (new_instance == current_instance) {
     is_new_site_instance = false;
+    // Keep track of how often we warm up a spare process before the current
+    // destination process has been initialized.
+    // TODO(crbug.com/418667086): Fix this so that the current process starts
+    // first.
+    if ((!new_instance->HasProcess() ||
+         !new_instance->GetProcess()->IsReady()) &&
+        !SpareRenderProcessHostManagerImpl::Get().HasSpareRenderer()) {
+      renderer_initialization_delayed = true;
+    }
     // If we're navigating to the same site instance, we won't need to use the
     // current spare RenderProcessHost.
     RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
         new_instance.get());
   }
+  base::UmaHistogramBoolean(
+      "Navigation.DelayedCurrentProcessInitByLaunchingSpareFirst",
+      renderer_initialization_delayed);
 
   // Double-check that the new SiteInstance is associated with the right
   // BrowserContext.
