@@ -6,7 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_layout.h"
+#include "pdf/pdfium/pdfium_draw_selection_test_base.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
@@ -15,6 +17,8 @@
 
 using testing::_;
 using testing::InSequence;
+using testing::NiceMock;
+using testing::Return;
 
 namespace chrome_pdf {
 
@@ -31,6 +35,9 @@ class FindTextTestClient : public TestClient {
   // PDFiumEngineClient:
   MOCK_METHOD(void, NotifyNumberOfFindResultsChanged, (int, bool), (override));
   MOCK_METHOD(void, NotifySelectedFindResultChanged, (int, bool), (override));
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,
                                                const std::u16string& haystack,
@@ -224,6 +231,80 @@ TEST_P(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 }
 
+using FindTextDrawSelectionTest = PDFiumDrawSelectionTestBase;
+
+TEST_P(FindTextDrawSelectionTest, DrawFindResult) {
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Update the plugin size so that all the text is visible.
+  engine->PluginSizeUpdated({500, 500});
+
+  constexpr int kPageIndex = 0;
+  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+
+  engine->StartFind(u"o", /*case_sensitive=*/false);
+  EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  // TODO(crbug.com/410777432): Should be empty.
+  EXPECT_EQ("o", engine->GetSelectedText());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_0.png");
+
+  EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  // TODO(crbug.com/410777432): Should be empty.
+  EXPECT_EQ("o", engine->GetSelectedText());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_1.png");
+
+  SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
+               /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
+
+  EXPECT_EQ("e", engine->GetSelectedText());
+  // TODO(crbug.com/410777432): Both the find result and the text selection
+  // should be highlighted.
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_selection_1.png");
+}
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+TEST_P(FindTextDrawSelectionTest, DrawFindResultInAnnotationMode) {
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_CALL(client, IsInAnnotationMode()).WillRepeatedly(Return(true));
+
+  // Update the plugin size so that all the text is visible.
+  engine->PluginSizeUpdated({500, 500});
+
+  constexpr int kPageIndex = 0;
+  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+
+  engine->StartFind(u"o", /*case_sensitive=*/false);
+  EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  // TODO(crbug.com/410777432): Should be empty.
+  EXPECT_EQ("o", engine->GetSelectedText());
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_draw_find_result_0.png");
+
+  // Set selected text. It should not be highlighted while in annotation mode.
+  SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
+               /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
+
+  EXPECT_EQ("e", engine->GetSelectedText());
+  // TODO(crbug.com/410777432): Only the find result should be highlighted.
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, kPageIndex, "hello_world_selection_1.png");
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 INSTANTIATE_TEST_SUITE_P(All, FindTextTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, FindTextDrawSelectionTest, testing::Bool());
 
 }  // namespace chrome_pdf
