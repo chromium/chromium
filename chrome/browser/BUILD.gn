@@ -3407,6 +3407,7 @@ static_library("browser") {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
       "//chrome/browser/translate/android",
       "//chrome/browser/translate/android:jni_headers",
+      "//chrome/browser/ui/android/hats:impl",
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/digital_credentials",
@@ -3572,6 +3573,8 @@ static_library("browser") {
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # //c/b/translate/chrome_translate_client gets modularized.
       "//chrome/browser/android:tabs_impl",
+
+      "//chrome/browser/ui/android/hats:impl",
     ]
 
     if (safe_browsing_mode == 2) {

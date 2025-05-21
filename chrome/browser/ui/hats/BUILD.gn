@@ -60,7 +60,6 @@ source_set("impl") {
     "//chrome/browser/prefs",
     "//chrome/browser/privacy_sandbox/incognito:incognito_features",
     "//chrome/browser/profiles",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/safety_hub",
     "//chrome/common",
     "//chrome/common:channel_info",
@@ -92,7 +91,15 @@ source_set("impl") {
     "//components/version_info",
     "//components/version_info:channel",
     "//net",
+
+    # `hats` includes some headers not componentized from //c/b/ui:ui, including
+    # performance_controls_hats_service.h, performance_controls_hats_service_factory.h,
+    # and site_settings_helper.h ... but without a circular dependency.
+    "//chrome/browser/ui",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/hats:hats" ]
+  }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

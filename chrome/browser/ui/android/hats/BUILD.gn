@@ -99,3 +99,83 @@ android_library("unit_device_javatests") {
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/hats/SurveyConfig.java" ]
 }
+
+source_set("hats") {
+  sources = [
+    "hats_service_android.h",
+    "survey_client_android.h",
+    "survey_config_android.h",
+    "survey_ui_delegate_android.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/hats",
+    "//components/messages/android",
+    "//components/messages/android:message_enums_java",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "hats_service_android.cc",
+    "survey_client_android.cc",
+    "survey_config_android.cc",
+    "survey_ui_delegate_android.cc",
+  ]
+  deps = [
+    ":hats",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/hats:jni_headers",
+    "//chrome/browser/ui/android/hats/internal:jni_headers",
+    "//components/messages/android",
+    "//components/resources:android_resources",
+    "//content/public/browser",
+    "//ui/android",
+    "//ui/base",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "survey_client_android_unittest.cc" ]
+  deps = [
+    ":hats",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/hats/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//ui/android",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "hats_service_android_browsertest.cc",
+    "survey_client_android_browsertest.cc",
+  ]
+  deps = [
+    ":hats",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/hats/test:test_support",
+    "//chrome/browser/ui/hats",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui_android",
+    "//components/messages/android",
+    "//components/messages/android/test:test_support_cpp",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//net/android:net_java_test_support_enums_srcjar",
+  ]
+}

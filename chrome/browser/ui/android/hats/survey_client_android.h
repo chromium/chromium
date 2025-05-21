@@ -12,12 +12,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
+
+class Profile;
 
 namespace ui {
 class WindowAndroid;
