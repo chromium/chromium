@@ -2796,8 +2796,8 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win10.20h2 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
-[ Mac12 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
+crbug.com/419216929 [ Win10.20h2 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
+crbug.com/419216929 [ Mac12 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/419199715 [ Win11 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
 crbug.com/419199715 [ Win11-arm64 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
 crbug.com/419199715 [ Win10.20h2 ] external/wpt/css/filter-effects/zero-width-filter.html [ Failure ]
