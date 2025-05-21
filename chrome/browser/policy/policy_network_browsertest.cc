@@ -433,8 +433,8 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest,
             kEarlyDataNotAcceptedTitle);
 }
 
-// TODO(crbug.com/418717917): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/418717917, crbug.com/419211957): Flaky on Windows and Android.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_TLS13EarlyDataPolicyEnable DISABLED_TLS13EarlyDataPolicyEnable
 #else
 #define MAYBE_TLS13EarlyDataPolicyEnable TLS13EarlyDataPolicyEnable
