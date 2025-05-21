@@ -510,3 +510,25 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.assertDictEqual(sent_data['failureReason'], {
             'primaryErrorMessage': (poi * 340) + '...',
         })
+
+    def test_test_id_structures(self):
+        tr = test_results.TestResult(test_name='foo/bar/baz.html')
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['testIdStructured']['fineName'], 'foo/bar')
+        self.assertTrue(
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+        self.assertIsNone(sent_data['testIdStructured']['coarseName'])
+
+        tr = test_results.TestResult(test_name='/baz.html')
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['testIdStructured']['fineName'], '')
+        self.assertTrue(
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+        self.assertIsNone(sent_data['testIdStructured']['coarseName'])
+
+        tr = test_results.TestResult(test_name='baz.html')
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['testIdStructured']['fineName'], '/')
+        self.assertTrue(
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+        self.assertIsNone(sent_data['testIdStructured']['coarseName'])

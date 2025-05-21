@@ -270,6 +270,20 @@ class TestResultSink:
                 },
             },
         }
+
+        test_split = result.test_name.rsplit('/', 1)
+        if test_split:
+            # Source comes from:
+            # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
+            fine_name = test_split[0] if len(test_split) > 1 else '/'
+            case_name = test_split[1] if len(test_split) > 1 else test_split[0]
+            struct_test_dict = {
+                'coarseName': None,  # Not used for webtests.
+                'fineName': fine_name,
+                'caseNameComponents': [case_name],
+            }
+            r['testIdStructured'] = struct_test_dict
+
         if summaries:
             r['summaryHtml'] = '\n'.join(summaries)
 
