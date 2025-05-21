@@ -728,6 +728,8 @@ class GraphBuilderTflite final {
       const mojom::Reshape& reshape);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Slice& slice);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Softmax& softmax);
   std::optional<base::FixedArray<TensorInfo>> CanFuseQuantizeAndGetOutput(
       const mojom::Split& split);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
