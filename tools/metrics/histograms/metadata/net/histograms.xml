@@ -1793,8 +1793,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.HasValidCnameRecords" enum="BooleanSuccess"
-    expires_after="2025-10-12">
-  <owner>ciaramcmullin@google.com</owner>
+    expires_after="2026-05-20">
+  <owner>aakallam@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
     Records whether valid CNAME aliases records were found and added to results
@@ -3634,8 +3634,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction.ResetConnectionAndResendRequestTime"
-    units="ms" expires_after="2025-10-26">
-  <owner>ciaramcmullin@google.com</owner>
+    units="ms" expires_after="2026-05-20">
+  <owner>awillia@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The time taken for resetting the connection and request headers, and
@@ -3821,8 +3821,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicChromiumClientStream.Http3DatagramDroppedOnWriteConnectUdpPayload"
-    enum="BooleanSuccess" expires_after="2025-10-05">
-  <owner>ciaramcmullin@google.com</owner>
+    enum="BooleanSuccess" expires_after="2026-05-20">
+  <owner>aakallam@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Records whether an HTTP Datagram was dropped when trying to send a UDP
@@ -4237,8 +4237,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicProxyDatagramClientSocket.MaxQueueSizeReached"
-    enum="BooleanSuccess" expires_after="2025-10-05">
-  <owner>ciaramcmullin@google.com</owner>
+    enum="BooleanSuccess" expires_after="2026-05-20">
+  <owner>aakallam@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Records whether queue is at maximum capacity when an HTTP/3 datagram arrives
