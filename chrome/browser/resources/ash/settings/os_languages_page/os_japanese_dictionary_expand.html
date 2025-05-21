@@ -39,7 +39,22 @@
     padding-block: 22px;
   }
 
+  #status-message {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
 </style>
+<!-- hidden element used by screen reader to make announcements -->
+<div aria-live="polite" aria-atomic="true" id="status-message">
+  [[statusMessage_]]
+</div>
 <div class="cr-row bottom-border">
   <cr-expand-button expanded="{{expanded_}}">
     [[dict.name]]

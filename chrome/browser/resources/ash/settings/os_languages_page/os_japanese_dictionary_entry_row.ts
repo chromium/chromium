@@ -148,6 +148,7 @@ class OsJapaneseDictionaryEntryRowElement extends I18nMixin
 
   private async deleteEntry_(): Promise<void> {
     if (this.locallyAdded) {
+      this.dispatchEntryDeletedEvent_();
       // Clear this local entry by just syncing to mozc dictionary.
       // This will cause a UI refresh.
       this.dispatchSavedEvent_();
@@ -159,6 +160,7 @@ class OsJapaneseDictionaryEntryRowElement extends I18nMixin
              .deleteJapaneseDictionaryEntry(this.dictId, this.index))
             .status.success;
     if (dictionarySaved) {
+      this.dispatchEntryDeletedEvent_();
       this.dispatchSavedEvent_();
     }
   }
@@ -202,6 +204,12 @@ class OsJapaneseDictionaryEntryRowElement extends I18nMixin
     this.dispatchEvent(
         new CustomEvent('dictionary-saved', {bubbles: true, composed: true}));
   }
+
+  private dispatchEntryDeletedEvent_(): void {
+    this.dispatchEvent(new CustomEvent(
+        'dictionary-entry-deleted', {bubbles: true, composed: true}));
+  }
+
 
   private i18nEntryDescription_(): string {
     // +1 to the index so that it starts at "1" instead of 0.

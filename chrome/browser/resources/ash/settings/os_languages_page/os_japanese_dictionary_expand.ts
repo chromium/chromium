@@ -48,7 +48,15 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
       showingDeleteDialog_: {
         type: Boolean,
       },
+      statusMessage_: {
+        type: String,
+      },
     };
+  }
+
+  override ready(): void {
+    super.ready();
+    this.addEventListener('dictionary-entry-deleted', this.onEntryDelete_);
   }
 
   // The Japanese Dictionary that this component displays information on.
@@ -62,6 +70,16 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
   private expanded_ = false;
 
   private showingDeleteDialog_ = false;
+
+  // Used for chromevox announcements.
+  private statusMessage_ = '';
+
+  private onEntryDelete_(): void {
+    this.statusMessage_ = '';
+    afterNextRender(this, () => {
+      this.statusMessage_ = this.i18n('japaneseDictionaryEntryDeleted');
+    });
+  }
 
   // Adds a new entry locally to create an entry-row component.
   private addEntry_(): void {

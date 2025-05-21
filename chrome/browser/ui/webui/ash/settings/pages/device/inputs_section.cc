@@ -505,6 +505,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NAME},
       {"japaneseDictionaryEntryPosition",
        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ENTRY_POSITION},
+      {"japaneseDictionaryEntryDeleted",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ENTRY_DELETED},
       {"japaneseDictionaryDeleteEntry",
        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_DELETE_ENTRY},
       {"japaneseDictionaryNewEntry",
