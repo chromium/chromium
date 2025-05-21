@@ -219,7 +219,7 @@ source_set("tab_group_sync_bridge") {
     "//chrome/browser/sync/test/integration:*",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_group_impl",
-    "//chrome/test:browser_tests",
+    "//chrome/test:*",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/test/app:test_support",
   ]

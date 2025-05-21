@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("sync_integration_tests.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
 } else {
@@ -42,33 +43,7 @@ source_set("sync_integration_tests_impl") {
     "//components/version_info",
   ]
 
-  sources = [
-    "single_client_autofill_profile_sync_test.cc",
-    "single_client_bookmarks_sync_test.cc",
-    "single_client_collaboration_group_sync_test.cc",
-    "single_client_contact_info_sync_test.cc",
-    "single_client_custom_passphrase_sync_test.cc",
-    "single_client_device_info_sync_test.cc",
-    "single_client_history_delete_directives_sync_test.cc",
-    "single_client_history_sync_test.cc",
-    "single_client_offer_sync_test.cc",
-    "single_client_plus_address_setting_sync_test.cc",
-    "single_client_plus_address_sync_test.cc",
-    "single_client_preferences_sync_test.cc",
-    "single_client_reading_list_sync_test.cc",
-    "single_client_shared_tab_group_data_sync_test.cc",
-    "single_client_standalone_transport_sync_test.cc",
-    "single_client_sync_invalidations_test.cc",
-    "sync_exponential_backoff_test.cc",
-
-    # TODO(crbug.com/393119606): After enough of the implementation is ready
-    # (CL #N), add integration tests. Careful, sync_integration_tests runs in CQ
-    # but android_sync_integration_tests do not.
-
-    # TODO(crbug.com/397767033): After enough of the implementation is ready
-    # (CL #N), add integration tests. Careful, sync_integration_tests runs in CQ
-    # but android_sync_integration_tests do not.
-  ]
+  sources = sync_integration_tests_sources
 
   data = [ "//chrome/test/data/sync/" ]
 
@@ -100,102 +75,6 @@ source_set("sync_integration_tests_impl") {
       "$root_gen_dir/components/dev_ui_components_resources.pak",
     ]
   } else {  # !is_android
-    sources += [
-      "apps_sync_test_base.cc",
-      "apps_sync_test_base.h",
-      "enable_disable_test.cc",
-      "local_sync_test.cc",
-      "migration_test.cc",
-      "password_manager_sync_test.cc",
-      "single_client_app_settings_sync_test.cc",
-      "single_client_common_sync_test.cc",
-      "single_client_dictionary_sync_test.cc",
-      "single_client_extension_apps_sync_test.cc",
-      "single_client_extensions_sync_test.cc",
-      "single_client_incoming_password_sharing_invitation_test.cc",
-      "single_client_nigori_sync_test.cc",
-      "single_client_outgoing_password_sharing_invitation_test.cc",
-      "single_client_password_sharing_policy_test.cc",
-      "single_client_passwords_sync_test.cc",
-      "single_client_polling_sync_test.cc",
-      "single_client_product_specifications_sync_test.cc",
-      "single_client_saved_tab_groups_sync_test.cc",
-      "single_client_search_engines_sync_test.cc",
-      "single_client_secondary_account_sync_test.cc",
-      "single_client_send_tab_to_self_sync_test.cc",
-      "single_client_sessions_sync_test.cc",
-      "single_client_sharing_message_sync_test.cc",
-      "single_client_themes_sync_test.cc",
-      "single_client_user_consents_sync_test.cc",
-      "single_client_user_events_sync_test.cc",
-      "single_client_valuables_sync_test.cc",
-      "single_client_wallet_credential_sync_test.cc",
-      "single_client_wallet_sync_test.cc",
-      "single_client_web_apps_sync_generated_icon_fix_sync_test.cc",
-      "single_client_web_apps_sync_test.cc",
-      "single_client_webauthn_credentials_sync_test.cc",
-      "sync_auth_test.cc",
-      "sync_errors_test.cc",
-      "web_apps_sync_test_base.cc",
-      "web_apps_sync_test_base.h",
-
-      # Tests with two clients can't run on Android.
-      "two_client_app_settings_sync_test.cc",
-      "two_client_autocomplete_sync_test.cc",
-      "two_client_autofill_sync_test.cc",
-      "two_client_bookmarks_sync_test.cc",
-      "two_client_contact_info_sync_test.cc",
-      "two_client_custom_passphrase_sync_test.cc",
-      "two_client_dictionary_sync_test.cc",
-      "two_client_extension_apps_sync_test.cc",
-      "two_client_extension_settings_sync_test.cc",
-      "two_client_extensions_sync_test.cc",
-      "two_client_history_sync_test.cc",
-      "two_client_passwords_sync_test.cc",
-      "two_client_power_bookmarks_sync_test.cc",
-      "two_client_preferences_sync_test.cc",
-      "two_client_search_engines_sync_test.cc",
-      "two_client_send_tab_to_self_sync_test.cc",
-      "two_client_sessions_sync_test.cc",
-      "two_client_shared_tab_group_data_sync_test.cc",
-      "two_client_themes_sync_test.cc",
-      "two_client_user_events_sync_test.cc",
-      "two_client_wallet_credential_sync_test.cc",
-      "two_client_wallet_sync_test.cc",
-      "two_client_web_apps_bmo_sync_test.cc",
-      "two_client_web_apps_generated_icon_fix_test.cc",
-      "two_client_web_apps_integration_test.cc",
-      "two_client_web_apps_integration_test_base.cc",
-      "two_client_web_apps_integration_test_base.h",
-      "two_client_web_apps_sync_test.cc",
-      "two_client_webauthn_credentials_sync_test.cc",
-    ]
-    if (is_win || is_mac || is_linux) {
-      sources += [ "two_client_web_apps_integration_test_mac_win_linux.cc" ]
-    }
-
-    if (is_win || is_linux) {
-      sources += [ "two_client_web_apps_integration_test_win_linux.cc" ]
-    }
-
-    if (is_mac) {
-      sources += [ "two_client_web_apps_integration_test_mac.cc" ]
-    }
-
-    if (is_win) {
-      sources += [ "two_client_web_apps_integration_test_win.cc" ]
-    }
-
-    if (is_chromeos) {
-      sources += [ "two_client_web_apps_integration_test_cros.cc" ]
-    }
-
-    if (!is_chromeos) {
-      sources += [
-        "select_type_and_migrate_local_data_items_when_active_sync_test.cc",
-      ]
-    }
-
     deps += [
       "//chrome:packed_resources",
       "//chrome:resources",
@@ -255,12 +134,6 @@ source_set("sync_integration_tests_impl") {
     }
 
     if (is_mac) {
-      # Dictionary sync is disabled on Mac.
-      sources -= [
-        "single_client_dictionary_sync_test.cc",
-        "two_client_dictionary_sync_test.cc",
-      ]
-
       data_deps += [
         "//chrome",
         "//chrome:chrome_framework",

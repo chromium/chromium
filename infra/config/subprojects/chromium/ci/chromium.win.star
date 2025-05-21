@@ -461,14 +461,11 @@ ci.builder(
                     shards = 4,
                 ),
             ),
-            # TODO(crbug.com/419089901): Re-enable after the suite works.
-            #"sync_integration_tests": targets.mixin(
-            #    swarming = targets.swarming(
-            #        shards = 3,
-            #    ),
-            #),
-            "sync_integration_tests": targets.remove(
-                reason = "Having infra failure (crbug.com/419089901)",
+            "sync_integration_tests": targets.mixin(
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
             ),
             "sync_integration_tests_no_field_trial": targets.remove(
                 reason = "Having infra failure (crbug.com/419179070)",
