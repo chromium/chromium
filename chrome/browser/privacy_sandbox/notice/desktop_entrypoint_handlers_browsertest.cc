@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
+
 #include "base/test/mock_callback.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_desktop_view_manager.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -68,6 +71,41 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
   for (size_t i = 0; i < urls_to_open.size(); ++i) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls_to_open[i]));
   }
+
+  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
+                       NoPromptInNonNormalBrowser) {
+  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
+      .Times(0);
+
+  NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
+                        ui::PAGE_TRANSITION_FIRST);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+
+  ui_test_utils::NavigateToURL(&params);
+
+  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
+                       NoPromptInSmallBrowser) {
+  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
+      .Times(0);
+
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 50, 50));
+
+// Resizing does not work on Mac because of minimum window height. Ensure the
+// minimum height is still > 100, then skip test.
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(browser()->window()->GetBounds().height() > 100);
+  GTEST_SKIP();
+#endif
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISettingsURL)));
 
   Mock::VerifyAndClearExpectations(mock_view_manager_.get());
 }

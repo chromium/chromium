@@ -96,6 +96,7 @@ if (!is_android) {
       "//chrome/common",
       "//components/privacy_sandbox:features",
       "//components/tabs:public",
+      "//components/web_modal:web_modal",
       "//content/public/browser",
     ]
   }
