@@ -2651,6 +2651,14 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Go to Inner 2");
 
+  // According to a comment in `browser_test_utils.h`, which landed in
+  // crrev.com/c/6427062, "Input event to a page may not work right after a page
+  // load. See `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround."
+  // This workaround is being attempted in order to eliminate some test
+  // flakiness in which `PressTabAndWaitForFocusChange` is called exactly once
+  // and then times out.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
   // Keep pressing Tab until we get to the "Go to Inner 2" link in the
   // inner iframe.
   while (GetNameOfFocusedNode() != "Go to Inner 2") {
