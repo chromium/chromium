@@ -456,6 +456,7 @@ export namespace Browser {
   export const CreateUserContextParametersSchema = z.lazy(() =>
     z.object({
       acceptInsecureCerts: z.boolean().optional(),
+      proxy: Session.ProxyConfigurationSchema.optional(),
     }),
   );
 }

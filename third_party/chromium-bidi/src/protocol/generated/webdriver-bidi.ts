@@ -341,6 +341,7 @@ export namespace Browser {
 export namespace Browser {
   export type CreateUserContextParameters = {
     acceptInsecureCerts?: boolean;
+    proxy?: Session.ProxyConfiguration;
   };
 }
 export namespace Browser {
