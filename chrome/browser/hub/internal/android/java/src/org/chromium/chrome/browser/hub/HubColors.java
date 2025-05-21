@@ -92,19 +92,11 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme, boolean isGtsUpdateEnabled) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                if (isGtsUpdateEnabled) {
-                    return SemanticColorUtils.getDefaultIconColor(context);
-                } else {
-                    return SemanticColorUtils.getDefaultIconColorAccent1(context);
-                }
+                return SurfaceColorUpdateUtils.getHubPaneSwitcherSelectedIconColor(
+                        context, /* isIncognito= */ false, isGtsUpdateEnabled);
             case HubColorScheme.INCOGNITO:
-                if (isGtsUpdateEnabled) {
-                    return ContextCompat.getColor(context, R.color.default_icon_color_light);
-                } else {
-                    return ContextCompat.getColor(
-                            context, R.color.default_control_color_active_dark);
-                }
-
+                return SurfaceColorUpdateUtils.getHubPaneSwitcherSelectedIconColor(
+                        context, /* isIncognito= */ true, isGtsUpdateEnabled);
             default:
                 assert false;
                 return Color.TRANSPARENT;
@@ -116,10 +108,11 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getColorSurfaceBright(context);
+                return SurfaceColorUpdateUtils.geTabItemSelectorColor(
+                        context, /* isIncognito= */ false);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(
-                        context, R.color.pane_switcher_selected_tab_incognito);
+                return SurfaceColorUpdateUtils.geTabItemSelectorColor(
+                        context, /* isIncognito= */ true);
             default:
                 assert false;
                 return Color.TRANSPARENT;
@@ -195,9 +188,11 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getColorSurfaceContainer(context);
+                return SurfaceColorUpdateUtils.getPaneSwitcherBackgroundColor(
+                        context, /* isIncognito= */ false);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.pane_switcher_background_incognito);
+                return SurfaceColorUpdateUtils.getPaneSwitcherBackgroundColor(
+                        context, /* isIncognito= */ true);
             default:
                 assert false;
                 return Color.TRANSPARENT;

@@ -203,6 +203,12 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSecondaryContainer, context);
     }
 
+    /** Returns the semantic color values that correspond to colorSecondaryContainer. */
+    public static @ColorInt int getColorSecondaryContainer(Context context) {
+        return resolve(R.attr.colorSecondaryContainer, context);
+    }
+
+    /** Returns the semantic color values that correspond to colorOnSecondaryContainer. */
     public static @ColorInt int getColorOnSecondaryContainer(Context context) {
         return resolve(R.attr.colorOnSecondaryContainer, context);
     }

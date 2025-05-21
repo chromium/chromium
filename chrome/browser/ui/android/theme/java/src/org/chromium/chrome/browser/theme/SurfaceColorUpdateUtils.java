@@ -216,4 +216,78 @@ public class SurfaceColorUpdateUtils {
                         context, R.color.gm3_baseline_surface_container_highest_dark)
                 : defaultBackground;
     }
+
+    /**
+     * Returns the background color for the hub pane switcher based on the enabled flag and
+     * incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     */
+    public static @ColorInt int getPaneSwitcherBackgroundColor(
+            Context context, boolean isIncognito) {
+        if (useNewGtsSurfaceColor()) {
+            return isIncognito
+                    ? ContextCompat.getColor(context, R.color.pane_switcher_background_incognito_v2)
+                    : SemanticColorUtils.getColorSurface(context);
+        }
+
+        return isIncognito
+                ? ContextCompat.getColor(context, R.color.pane_switcher_background_incognito)
+                : SemanticColorUtils.getColorSurfaceContainer(context);
+    }
+
+    /**
+     * Returns the color selected tab item selector should use, based on the enabled flag and
+     * incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     */
+    public static @ColorInt int geTabItemSelectorColor(Context context, boolean isIncognito) {
+        if (useNewGtsSurfaceColor()) {
+            return isIncognito
+                    ? ContextCompat.getColor(
+                            context, R.color.pane_switcher_selected_tab_incognito_v2)
+                    : SemanticColorUtils.getColorSecondaryContainer(context);
+        }
+
+        return isIncognito
+                ? ContextCompat.getColor(context, R.color.pane_switcher_selected_tab_incognito)
+                : SemanticColorUtils.getColorSurfaceBright(context);
+    }
+
+    /**
+     * Returns the color selected icons in hub pane switcher, based on the enabled flag and
+     * incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param isGtsUpdateEnabled Whether GTS display update is enforced or not.
+     */
+    public static @ColorInt int getHubPaneSwitcherSelectedIconColor(
+            Context context, boolean isIncognito, boolean isGtsUpdateEnabled) {
+        if (isGtsUpdateEnabled) {
+            if (useNewGtsSurfaceColor()) {
+                @ColorInt
+                int defaultColor =
+                        ColorUtils.inNightMode(context)
+                                ? SemanticColorUtils.getColorOnSurface(context)
+                                : SemanticColorUtils.getColorOnSecondaryContainer(context);
+
+                return isIncognito
+                        ? ContextCompat.getColor(
+                                context, R.color.pane_switcher_selected_tab_icon_color_incognito)
+                        : defaultColor;
+            }
+
+            return isIncognito
+                    ? ContextCompat.getColor(context, R.color.default_icon_color_light)
+                    : SemanticColorUtils.getDefaultIconColor(context);
+        }
+
+        return isIncognito
+                ? ContextCompat.getColor(context, R.color.default_control_color_active_dark)
+                : SemanticColorUtils.getDefaultIconColorAccent1(context);
+    }
 }
