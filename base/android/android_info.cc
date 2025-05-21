@@ -25,39 +25,6 @@ namespace base::android::android_info {
 
 namespace {
 
-struct AndroidInfo {
-  const std::string device;
-
-  const std::string manufacturer;
-
-  const std::string model;
-
-  const std::string brand;
-
-  const std::string android_build_id;
-
-  const std::string build_type;
-
-  const std::string board;
-
-  const std::string android_build_fp;
-
-  int sdk_int;
-
-  bool is_debug_android;
-
-  const std::string version_incremental;
-
-  const std::string hardware;
-
-  const std::string codename;
-
-  // Available only on android S+. For S-, this method returns empty string.
-  const std::string soc_manufacturer;
-
-  const std::string abi_name;
-};
-
 static std::optional<AndroidInfo>& get_holder() {
   static base::NoDestructor<std::optional<AndroidInfo>> holder;
   return *holder;
@@ -72,6 +39,47 @@ const AndroidInfo& get_android_info() {
 }
 
 }  // namespace
+
+AndroidInfo::AndroidInfo(const std::string& device,
+                         const std::string& manufacturer,
+                         const std::string& model,
+                         const std::string& brand,
+                         const std::string& android_build_id,
+                         const std::string& build_type,
+                         const std::string& board,
+                         const std::string& android_build_fp,
+                         int sdk_int,
+                         bool is_debug_android,
+                         const std::string& version_incremental,
+                         const std::string& hardware,
+                         const std::string& codename,
+                         const std::string& soc_manufacturer,
+                         const std::string& abi_name,
+                         const std::string& security_patch)
+    : device(device),
+      manufacturer(manufacturer),
+      model(model),
+      brand(brand),
+      android_build_id(android_build_id),
+      build_type(build_type),
+      board(board),
+      android_build_fp(android_build_fp),
+      sdk_int(sdk_int),
+      is_debug_android(is_debug_android),
+      version_incremental(version_incremental),
+      hardware(hardware),
+      codename(codename),
+      soc_manufacturer(soc_manufacturer),
+      abi_name(abi_name),
+      security_patch(security_patch) {}
+
+AndroidInfo::AndroidInfo(const AndroidInfo& android_info) = default;
+AndroidInfo::~AndroidInfo() = default;
+
+void SetAndroidInfoForTesting(const AndroidInfo& android_info) {
+  std::optional<AndroidInfo>& holder = get_holder();
+  holder.emplace(android_info);
+}
 
 static void JNI_AndroidInfo_FillFields(JNIEnv* env,
                                        std::string& brand,
@@ -88,25 +96,15 @@ static void JNI_AndroidInfo_FillFields(JNIEnv* env,
                                        std::string& socManufacturer,
                                        std::string& supportedAbis,
                                        jint sdkInt,
-                                       jboolean isDebugAndroid) {
+                                       jboolean isDebugAndroid,
+                                       std::string& securityPatch) {
   std::optional<AndroidInfo>& holder = get_holder();
   DCHECK(!holder.has_value());
-  holder.emplace(
-      AndroidInfo{.device = device,
-                  .manufacturer = manufacturer,
-                  .model = model,
-                  .brand = brand,
-                  .android_build_id = buildId,
-                  .build_type = type,
-                  .board = board,
-                  .android_build_fp = androidBuildFingerprint,
-                  .sdk_int = sdkInt,
-                  .is_debug_android = static_cast<bool>(isDebugAndroid),
-                  .version_incremental = versionIncremental,
-                  .hardware = hardware,
-                  .codename = codeName,
-                  .soc_manufacturer = socManufacturer,
-                  .abi_name = supportedAbis});
+  holder.emplace(AndroidInfo(device, manufacturer, model, brand, buildId, type,
+                             board, androidBuildFingerprint, sdkInt,
+                             static_cast<bool>(isDebugAndroid),
+                             versionIncremental, hardware, codeName,
+                             socManufacturer, supportedAbis, securityPatch));
 }
 
 const std::string& device() {
@@ -168,6 +166,10 @@ const std::string& soc_manufacturer() {
 
 const std::string& abi_name() {
   return get_android_info().abi_name;
+}
+
+const std::string& security_patch() {
+  return get_android_info().security_patch;
 }
 
 }  // namespace base::android::android_info

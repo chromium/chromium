@@ -74,7 +74,7 @@ class InputTransferHandlerTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(input::features::kInputOnViz);
 
-    if (!input::IsTransferInputToVizSupported()) {
+    if (!input::InputUtils::IsTransferInputToVizSupported()) {
       GTEST_SKIP()
           << "The class is only used when transfer input to viz is supported.";
     }

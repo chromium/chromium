@@ -65,7 +65,8 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
       shell()->web_contents()->GetRenderWidgetHostView());
   ASSERT_NE(view, nullptr);
   auto* input_transfer_handler = view->GetInputTransferHandlerForTesting();
-  ASSERT_EQ(!!input_transfer_handler, input::IsTransferInputToVizSupported());
+  ASSERT_EQ(!!input_transfer_handler,
+            input::InputUtils::IsTransferInputToVizSupported());
   if (!input_transfer_handler) {
     return;
   }
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
   EXPECT_EQ(result.value()[1].size(), 1u);
   const std::string slice_count = result.value()[1][0];
   const std::string expected_count =
-      input::IsTransferInputToVizSupported() ? "1" : "0";
+      input::InputUtils::IsTransferInputToVizSupported() ? "1" : "0";
   EXPECT_EQ(slice_count, expected_count);
 }
 

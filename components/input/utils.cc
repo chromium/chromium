@@ -4,11 +4,14 @@
 
 #include "components/input/utils.h"
 
+#include <string>
+
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "components/input/android/jni_headers/InputUtils_jni.h"
 #include "components/input/features.h"
 #endif
@@ -19,21 +22,58 @@ using blink::WebInputEvent;
 using blink::mojom::InputEventResultState;
 using perfetto::protos::pbzero::ChromeLatencyInfo2;
 
+namespace {
+
 #if BUILDFLAG(IS_ANDROID)
-jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
-  return IsTransferInputToVizSupported();
+// Check whether the fix for `CVE-2025-0097` is present, which went in Feb 2025
+// security update: https://source.android.com/docs/security/bulletin/2025-02-01
+static bool HasSecurityUpdate() {
+  base::Time min_security_patch_date;
+  CHECK(base::Time::FromString("2025-02-05", &min_security_patch_date));
+
+  base::Time security_patch;
+  CHECK(base::Time::FromString(
+      base::android::android_info::security_patch().c_str(), &security_patch));
+
+  return security_patch >= min_security_patch_date;
 }
 #endif
 
-bool IsTransferInputToVizSupported() {
+}  // namespace
+
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(input::features::kInputOnViz) &&
-      (base::android::BuildInfo::GetInstance()->sdk_int() >=
-       base::android::SdkVersion::SDK_VERSION_V)) {
-    return true;
-  }
+bool InputUtils::initialized_ = false;
+bool InputUtils::has_security_update_ = false;
+
+jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
+  return InputUtils::IsTransferInputToVizSupported();
+}
 #endif
+
+// static
+bool InputUtils::IsTransferInputToVizSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  // Thread safety: In normal operation (GPU out of process) only a single
+  // thread per process calls this function. In the --in-process-gpu or
+  // --single-process case two threads technically could race to initialize
+  // however the HasSecurityUpdate will resolve to the same value and thus the
+  // data race is benign (behaviour of the program remains unchanged just
+  // potentially wasted effort).
+  if (!initialized_) {
+    has_security_update_ = HasSecurityUpdate();
+    initialized_ = true;
+  }
+  const bool is_at_least_v =
+      base::android::android_info::sdk_int() >=
+      base::android::android_info::SdkVersion::SDK_VERSION_V;
+  // Enable on user debug builds to have test coverage on older Android 15 bots.
+  return is_at_least_v &&
+         (has_security_update_ ||
+          base::android::android_info::is_debug_android()) &&
+         base::FeatureList::IsEnabled(input::features::kInputOnViz);
+#else
   return false;
+#endif
 }
 
 ChromeLatencyInfo2::InputType InputEventTypeToProto(

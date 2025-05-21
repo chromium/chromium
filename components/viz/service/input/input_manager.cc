@@ -196,7 +196,7 @@ void InputManager::OnCreateCompositorFrameSink(
   }
 
   DCHECK(render_input_router_config->rir_client.is_valid());
-  DCHECK(input::IsTransferInputToVizSupported() && !is_root);
+  DCHECK(input::InputUtils::IsTransferInputToVizSupported() && !is_root);
 
   const base::UnguessableToken grouping_id =
       render_input_router_config->grouping_id;

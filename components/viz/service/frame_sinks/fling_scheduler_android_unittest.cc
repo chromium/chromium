@@ -152,7 +152,7 @@ class FlingSchedulerTest : public testing::Test,
 
   bool InputManagerExists() { return GetInputManager(); }
   bool ExpectedInputManagerCreation() {
-    return input::IsTransferInputToVizSupported();
+    return input::InputUtils::IsTransferInputToVizSupported();
   }
 
   InputManager* GetInputManager() {

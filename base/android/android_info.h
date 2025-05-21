@@ -11,6 +11,62 @@
 
 namespace base::android::android_info {
 
+struct BASE_EXPORT AndroidInfo {
+  AndroidInfo(const std::string& device,
+              const std::string& manufacturer,
+              const std::string& model,
+              const std::string& brand,
+              const std::string& android_build_id,
+              const std::string& build_type,
+              const std::string& board,
+              const std::string& android_build_fp,
+              int sdk_int,
+              bool is_debug_android,
+              const std::string& version_incremental,
+              const std::string& hardware,
+              const std::string& codename,
+              const std::string& soc_manufacturer,
+              const std::string& abi_name,
+              const std::string& security_patch);
+  AndroidInfo(const AndroidInfo& android_info);
+  ~AndroidInfo();
+
+  const std::string device;
+
+  const std::string manufacturer;
+
+  const std::string model;
+
+  const std::string brand;
+
+  const std::string android_build_id;
+
+  const std::string build_type;
+
+  const std::string board;
+
+  const std::string android_build_fp;
+
+  int sdk_int;
+
+  bool is_debug_android;
+
+  const std::string version_incremental;
+
+  const std::string hardware;
+
+  const std::string codename;
+
+  // Available only on android S+. For S-, this method returns empty string.
+  const std::string soc_manufacturer;
+
+  const std::string abi_name;
+
+  const std::string security_patch;
+};
+
+BASE_EXPORT void SetAndroidInfoForTesting(const AndroidInfo& android_info);
+
 // This enumeration maps to the values returned by AndroidInfo::sdk_int(),
 // indicating the Android release associated with a given SDK version.
 enum SdkVersion {
@@ -55,7 +111,7 @@ const std::string& android_build_fp();
 
 BASE_EXPORT int sdk_int();
 
-bool is_debug_android();
+BASE_EXPORT bool is_debug_android();
 
 const std::string& version_incremental();
 
@@ -67,6 +123,8 @@ const std::string& codename();
 const std::string& soc_manufacturer();
 
 const std::string& abi_name();
+
+BASE_EXPORT const std::string& security_patch();
 
 }  // namespace base::android::android_info
 

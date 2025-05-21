@@ -207,7 +207,7 @@ TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {
 }
 
 TEST_F(FrameSinkManagerTest, InputManagerCreation) {
-  ASSERT_FALSE(input::IsTransferInputToVizSupported());
+  ASSERT_FALSE(input::InputUtils::IsTransferInputToVizSupported());
 
   manager_->RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
@@ -1086,7 +1086,7 @@ class AndroidFrameSinkManagerTest : public FrameSinkManagerTest,
   }
 
   bool ExpectedInputManagerCreation() {
-    return input::IsTransferInputToVizSupported();
+    return input::InputUtils::IsTransferInputToVizSupported();
   }
 
   bool IsRenderInputRouterSupportChildFrame(const FrameSinkId& frame_sink_id) {
@@ -1151,7 +1151,7 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
   // "client_id", "sink_id"}, {"<num>", "<boolean>" "<clientId>", "<sinkId>"}}.
   EXPECT_EQ(result.value().size(), 2u);
   EXPECT_EQ(result.value()[1].size(), 4u);
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     // Checks if `InputManger::OnCreateCompositorFrameSink` was called for
     // kFrameSinkIdA.
     EXPECT_THAT(
@@ -1178,7 +1178,7 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
   auto result2 = ttp.RunQuery(query2);
   EXPECT_TRUE(result2.has_value());
 
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     EXPECT_THAT(result2.value(),
                 testing::ElementsAre(
                     testing::ElementsAre("cnt", "client_id", "sink_id"),
@@ -1235,7 +1235,7 @@ TEST_P(AndroidFrameSinkManagerTest,
   // "client_id", "sink_id"}, {"<num>", "<boolean>" "<clientId>", "<sinkId>"}}.
   EXPECT_EQ(result.value().size(), 2u);
   EXPECT_EQ(result.value()[1].size(), 4u);
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     EXPECT_THAT(
         result.value(),
         testing::ElementsAre(
@@ -1250,7 +1250,8 @@ TEST_P(AndroidFrameSinkManagerTest,
 }
 
 TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleDiffWebContents) {
-  const bool expected_creation = input::IsTransferInputToVizSupported();
+  const bool expected_creation =
+      input::InputUtils::IsTransferInputToVizSupported();
   manager_->RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   base::UnguessableToken grouping_id_1 = base::UnguessableToken::Create();
@@ -1294,7 +1295,8 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleDiffWebContents) {
 }
 
 TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleSameWebContents) {
-  const bool expected_creation = input::IsTransferInputToVizSupported();
+  const bool expected_creation =
+      input::InputUtils::IsTransferInputToVizSupported();
   manager_->RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   base::UnguessableToken grouping_id = base::UnguessableToken::Create();
@@ -1340,7 +1342,8 @@ TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("viz, input");
 
-  const bool expected_creation = input::IsTransferInputToVizSupported();
+  const bool expected_creation =
+      input::InputUtils::IsTransferInputToVizSupported();
   manager_->RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
   base::UnguessableToken grouping_id = base::UnguessableToken::Create();
@@ -1380,7 +1383,7 @@ TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
 
   // `result.value()` would look something like this: {{"name"},
   // {"<name1>"}, {"<name2>"}, {"<name3>"}, {"<name4>"}}.
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     EXPECT_EQ(result.value().size(), 5u);
     EXPECT_EQ(result.value()[1].size(), 1u);
 
@@ -1442,7 +1445,7 @@ TEST_P(AndroidFrameSinkManagerTest, VizRenderInputRouterSupportBaseLifecycle) {
 
   // `result.value()` would look something like this: {{"name"},
   // {"<name1>"}, {"<name2>"}, {"<name3>"}, {"<name4>"}}.
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     EXPECT_THAT(
         result.value(),
         testing::ElementsAre(
@@ -1459,7 +1462,8 @@ TEST_P(AndroidFrameSinkManagerTest, VizRenderInputRouterSupportBaseLifecycle) {
 }
 
 TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
-  const bool expected_creation = input::IsTransferInputToVizSupported();
+  const bool expected_creation =
+      input::InputUtils::IsTransferInputToVizSupported();
 
   if (!expected_creation) {
     return;
@@ -1574,7 +1578,8 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
 }
 
 TEST_P(AndroidFrameSinkManagerTest, EmbeddedRenderInputRouters) {
-  const bool expected_creation = input::IsTransferInputToVizSupported();
+  const bool expected_creation =
+      input::InputUtils::IsTransferInputToVizSupported();
 
   if (!expected_creation) {
     return;
@@ -1670,7 +1675,8 @@ TEST_P(AndroidFrameSinkManagerTest, EmbeddedRenderInputRouters) {
 }
 
 TEST_P(AndroidFrameSinkManagerTest, ReconstructsRenderInputRouterSupports) {
-  const bool expected_creation = input::IsTransferInputToVizSupported();
+  const bool expected_creation =
+      input::InputUtils::IsTransferInputToVizSupported();
 
   if (!expected_creation) {
     return;

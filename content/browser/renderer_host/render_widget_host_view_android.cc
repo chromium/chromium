@@ -694,7 +694,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
 
   host()->render_frame_metadata_provider()->AddObserver(this);
 
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     input_transfer_handler_ =
         std::make_unique<InputTransferHandlerAndroid>(this);
     host()->AddInputEventObserver(&input_transfer_handler_->GetInputObserver());

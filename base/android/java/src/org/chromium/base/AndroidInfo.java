@@ -45,7 +45,8 @@ public final class AndroidInfo {
                                 : "",
                         /* supportedAbis= */ TextUtils.join(", ", Build.SUPPORTED_ABIS),
                         /* sdkInt= */ Build.VERSION.SDK_INT,
-                        /* isDebugAndroid= */ isDebugAndroid());
+                        /* isDebugAndroid= */ isDebugAndroid(),
+                        /* securityPatch= */ Build.VERSION.SECURITY_PATCH);
     }
 
     /* Truncated version of Build.FINGERPRINT (for crash reporting). */
@@ -84,6 +85,7 @@ public final class AndroidInfo {
                 @JniType("std::string") String socManufacturer,
                 @JniType("std::string") String supportedAbis,
                 int sdkInt,
-                boolean isDebugAndroid);
+                boolean isDebugAndroid,
+                @JniType("std::string") String securityPatch);
     }
 }

@@ -47,7 +47,7 @@ InputTransferHandlerAndroid::InputTransferHandlerAndroid(
       jni_delegate_(std::make_unique<JniDelegateImpl>()),
       input_observer_(*this) {
   CHECK(client_);
-  CHECK(input::IsTransferInputToVizSupported());
+  CHECK(input::InputUtils::IsTransferInputToVizSupported());
 }
 
 InputTransferHandlerAndroid::InputTransferHandlerAndroid()

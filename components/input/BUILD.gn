@@ -199,7 +199,10 @@ source_set("unit_tests") {
     "//ui/events/blink:blink",
   ]
   if (is_android) {
-    sources += [ "web_input_event_builders_android_unittest.cc" ]
+    sources += [
+      "utils_unittest.cc",
+      "web_input_event_builders_android_unittest.cc",
+    ]
   }
   if (is_mac) {
     sources += [

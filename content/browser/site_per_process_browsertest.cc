@@ -11675,7 +11675,7 @@ class AndroidInputBrowserTest : public SitePerProcessBrowserTest {
 // InputVizard enabled.
 IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, CheckForceEnableZoomValue) {
   // Return early if transferring input to Viz isn't supported.
-  if (!input::IsTransferInputToVizSupported()) {
+  if (!input::InputUtils::IsTransferInputToVizSupported()) {
     return;
   }
 
@@ -11790,11 +11790,12 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
   ASSERT_TRUE(result.has_value());
 
   // `result.value()` would look something like this: {{"cnt"}, {"<num>"}}.
-  EXPECT_THAT(result.value(),
-              testing::ElementsAre(
-                  testing::ElementsAre("cnt"),
-                  testing::ElementsAre(
-                      input::IsTransferInputToVizSupported() ? "1" : "0")));
+  EXPECT_THAT(
+      result.value(),
+      testing::ElementsAre(
+          testing::ElementsAre("cnt"),
+          testing::ElementsAre(
+              input::InputUtils::IsTransferInputToVizSupported() ? "1" : "0")));
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,

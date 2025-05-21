@@ -94,7 +94,7 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
 
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     input_manager_ = std::make_unique<InputManager>(this);
   }
 }
@@ -160,7 +160,7 @@ void FrameSinkManagerImpl::SetLocalClient(
 
 void FrameSinkManagerImpl::SetInputManagerForTesting(
     std::unique_ptr<InputManager> input_manager) {
-  if (!input::IsTransferInputToVizSupported()) {
+  if (!input::InputUtils::IsTransferInputToVizSupported()) {
     return;
   }
 
@@ -1083,7 +1083,7 @@ void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
 
 void FrameSinkManagerImpl::MaybeEraseHitTestQuery(
     const FrameSinkId& frame_sink_id) {
-  if (!input::IsTransferInputToVizSupported()) {
+  if (!input::InputUtils::IsTransferInputToVizSupported()) {
     return;
   }
   display_hit_test_query_.erase(frame_sink_id);
@@ -1091,7 +1091,7 @@ void FrameSinkManagerImpl::MaybeEraseHitTestQuery(
 
 void FrameSinkManagerImpl::MaybeAddHitTestQuery(
     const FrameSinkId& frame_sink_id) {
-  if (!input::IsTransferInputToVizSupported()) {
+  if (!input::InputUtils::IsTransferInputToVizSupported()) {
     return;
   }
   auto it = support_map_.find(frame_sink_id);

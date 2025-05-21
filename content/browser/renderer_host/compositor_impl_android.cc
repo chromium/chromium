@@ -801,7 +801,7 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   root_params->gpu_compositing = true;
   root_params->renderer_settings = renderer_settings;
   root_params->refresh_rate = root_window_->GetRefreshRate();
-  if (input::IsTransferInputToVizSupported()) {
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
     root_params->create_input_receiver = true;
   }
 

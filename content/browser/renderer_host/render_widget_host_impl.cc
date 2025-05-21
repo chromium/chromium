@@ -3618,7 +3618,7 @@ void RenderWidgetHostImpl::CreateFrameSink(
          bool force_enable_zoom, base::UnguessableToken grouping_id,
          const viz::FrameSinkId& frame_sink_id) {
         input::mojom::RenderInputRouterConfigPtr config;
-        if (input::IsTransferInputToVizSupported()) {
+        if (input::InputUtils::IsTransferInputToVizSupported()) {
           config = input::mojom::RenderInputRouterConfig::New();
           config->rir_client = std::move(viz_rir_client_remote);
           config->grouping_id = grouping_id;
