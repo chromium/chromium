@@ -364,18 +364,14 @@ bool CanonicalizeScheme(std::optional<std::u16string_view> input,
 //
 // The 8-bit version requires UTF-8 encoding.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeUserInfo(const char* username_source,
-                          const Component& username,
-                          const char* password_source,
-                          const Component& password,
+bool CanonicalizeUserInfo(std::optional<std::string_view> username,
+                          std::optional<std::string_view> password,
                           CanonOutput* output,
                           Component* out_username,
                           Component* out_password);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeUserInfo(const char16_t* username_source,
-                          const Component& username,
-                          const char16_t* password_source,
-                          const Component& password,
+bool CanonicalizeUserInfo(std::optional<std::u16string_view> username,
+                          std::optional<std::u16string_view> password,
                           CanonOutput* output,
                           Component* out_username,
                           Component* out_password);

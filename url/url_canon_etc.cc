@@ -183,14 +183,13 @@ bool DoScheme(std::optional<std::basic_string_view<CHAR>> input,
 // canonicalizing a single source string), but may be different when
 // replacing components.
 template <typename CHAR, typename UCHAR>
-bool DoUserInfo(const CHAR* username_spec,
-                const Component& username,
-                const CHAR* password_spec,
-                const Component& password,
+bool DoUserInfo(std::optional<std::basic_string_view<CHAR>> username,
+                std::optional<std::basic_string_view<CHAR>> password,
                 CanonOutput* output,
                 Component* out_username,
                 Component* out_password) {
-  if (username.is_empty() && password.is_empty()) {
+  if ((!username.has_value() || username->empty()) &&
+      (!password.has_value() || password->empty())) {
     // Common case: no user info. We strip empty username/passwords.
     *out_username = Component();
     *out_password = Component();
@@ -199,24 +198,18 @@ bool DoUserInfo(const CHAR* username_spec,
 
   // Write the username.
   out_username->begin = output->length();
-  if (username.is_nonempty()) {
+  if (username.has_value() && !username->empty()) {
     // This will escape characters not valid for the username.
-    AppendStringOfType(
-        std::basic_string_view<CHAR>(&username_spec[username.begin],
-                                     static_cast<size_t>(username.len)),
-        CHAR_USERINFO, output);
+    AppendStringOfType(username.value(), CHAR_USERINFO, output);
   }
   out_username->len = output->length() - out_username->begin;
 
   // When there is a password, we need the separator. Note that we strip
   // empty but specified passwords.
-  if (password.is_nonempty()) {
+  if (password.has_value() && !password->empty()) {
     output->push_back(':');
     out_password->begin = output->length();
-    AppendStringOfType(
-        std::basic_string_view<CHAR>(&password_spec[password.begin],
-                                     static_cast<size_t>(password.len)),
-        CHAR_USERINFO, output);
+    AppendStringOfType(password.value(), CHAR_USERINFO, output);
     out_password->len = output->length() - out_password->begin;
   } else {
     *out_password = Component();
@@ -377,27 +370,21 @@ bool CanonicalizeScheme(std::optional<std::u16string_view> input,
   return DoScheme<char16_t, char16_t>(input, output, out_scheme);
 }
 
-bool CanonicalizeUserInfo(const char* username_source,
-                          const Component& username,
-                          const char* password_source,
-                          const Component& password,
+bool CanonicalizeUserInfo(std::optional<std::string_view> username,
+                          std::optional<std::string_view> password,
                           CanonOutput* output,
                           Component* out_username,
                           Component* out_password) {
-  return DoUserInfo<char, unsigned char>(username_source, username,
-                                         password_source, password, output,
+  return DoUserInfo<char, unsigned char>(username, password, output,
                                          out_username, out_password);
 }
 
-bool CanonicalizeUserInfo(const char16_t* username_source,
-                          const Component& username,
-                          const char16_t* password_source,
-                          const Component& password,
+bool CanonicalizeUserInfo(std::optional<std::u16string_view> username,
+                          std::optional<std::u16string_view> password,
                           CanonOutput* output,
                           Component* out_username,
                           Component* out_password) {
-  return DoUserInfo<char16_t, char16_t>(username_source, username,
-                                        password_source, password, output,
+  return DoUserInfo<char16_t, char16_t>(username, password, output,
                                         out_username, out_password);
 }
 

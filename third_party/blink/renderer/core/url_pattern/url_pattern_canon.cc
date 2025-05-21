@@ -97,8 +97,7 @@ void CanonicalizeUsernameAndPassword(const String& username,
     StringUTF8Adaptor username_utf8(username);
     StringUTF8Adaptor password_utf8(password);
     result = url::CanonicalizeUserInfo(
-        username_utf8.data(), url::Component(0, username_utf8.size()),
-        password_utf8.data(), url::Component(0, password_utf8.size()),
+        username_utf8.AsStringView(), password_utf8.AsStringView(),
         &canon_output, &username_component, &password_component);
 
   } else {
@@ -106,10 +105,9 @@ void CanonicalizeUsernameAndPassword(const String& username,
     String password16(password);
     username16.Ensure16Bit();
     password16.Ensure16Bit();
-    result = url::CanonicalizeUserInfo(
-        username16.Characters16(), url::Component(0, username16.length()),
-        password16.Characters16(), url::Component(0, password16.length()),
-        &canon_output, &username_component, &password_component);
+    result = url::CanonicalizeUserInfo(username16.View16(), password16.View16(),
+                                       &canon_output, &username_component,
+                                       &password_component);
   }
 
   if (!result) {

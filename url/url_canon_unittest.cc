@@ -1310,9 +1310,10 @@ TEST_F(URLCanonTest, UserInfo) {
     std::string out_str;
     StdStringCanonOutput output1(&out_str);
 
-    bool success = CanonicalizeUserInfo(user_info_case.input, parsed.username,
-                                        user_info_case.input, parsed.password,
-                                        &output1, &out_user, &out_pass);
+    bool success = CanonicalizeUserInfo(
+        parsed.username.maybe_as_string_view_on(user_info_case.input),
+        parsed.password.maybe_as_string_view_on(user_info_case.input), &output1,
+        &out_user, &out_pass);
     output1.Complete();
 
     EXPECT_EQ(user_info_case.expected_success, success);
@@ -1326,13 +1327,10 @@ TEST_F(URLCanonTest, UserInfo) {
     out_str.clear();
     StdStringCanonOutput output2(&out_str);
     std::u16string wide_input(base::UTF8ToUTF16(user_info_case.input));
-    success = CanonicalizeUserInfo(wide_input.c_str(),
-                                   parsed.username,
-                                   wide_input.c_str(),
-                                   parsed.password,
-                                   &output2,
-                                   &out_user,
-                                   &out_pass);
+    success = CanonicalizeUserInfo(
+        parsed.username.maybe_as_string_view_on(wide_input.c_str()),
+        parsed.password.maybe_as_string_view_on(wide_input.c_str()), &output2,
+        &out_user, &out_pass);
     output2.Complete();
 
     EXPECT_EQ(user_info_case.expected_success, success);

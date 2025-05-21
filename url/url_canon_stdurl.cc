@@ -55,8 +55,9 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
     // User info: the canonicalizer will handle the : and @.
     if (scheme_supports_user_info) {
       success &= CanonicalizeUserInfo(
-          source.username, parsed.username, source.password, parsed.password,
-          output, &new_parsed->username, &new_parsed->password);
+          parsed.username.maybe_as_string_view_on(source.username),
+          parsed.password.maybe_as_string_view_on(source.password), output,
+          &new_parsed->username, &new_parsed->password);
     } else {
       new_parsed->username.reset();
       new_parsed->password.reset();

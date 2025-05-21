@@ -69,10 +69,9 @@ base::expected<std::string, absl::Status> UsernameEncodeCallback(
   url::Component username_component;
   url::Component password_component;
 
-  bool result = url::CanonicalizeUserInfo(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      "", url::Component(0, 0), &canon_output, &username_component,
-      &password_component);
+  bool result =
+      url::CanonicalizeUserInfo(input, std::string_view(), &canon_output,
+                                &username_component, &password_component);
 
   if (!result) {
     return base::unexpected(absl::InvalidArgumentError(
@@ -92,10 +91,9 @@ base::expected<std::string, absl::Status> PasswordEncodeCallback(
   url::Component username_component;
   url::Component password_component;
 
-  bool result = url::CanonicalizeUserInfo(
-      "", url::Component(0, 0), input.data(),
-      url::Component(0, base::checked_cast<int>(input.size())), &canon_output,
-      &username_component, &password_component);
+  bool result =
+      url::CanonicalizeUserInfo(std::string_view(), input, &canon_output,
+                                &username_component, &password_component);
 
   if (!result) {
     return base::unexpected(absl::InvalidArgumentError(
