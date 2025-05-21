@@ -13,11 +13,13 @@ import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.gesturenav.NavigationHandler.GestureAction;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class responsible for pushing updates to gesture navigation view. */
+@NullMarked
 class GestureNavigationViewBinder {
     /**
      * view binder that associates a view with a model.

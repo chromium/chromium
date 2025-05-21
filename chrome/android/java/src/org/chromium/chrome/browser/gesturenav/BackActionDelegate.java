@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.gesturenav;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Delegates actions when back navigation gesture is made. */
+@NullMarked
 public interface BackActionDelegate {
     /** Type of actions triggered by back navigation gesture. */
     @Retention(RetentionPolicy.SOURCE)

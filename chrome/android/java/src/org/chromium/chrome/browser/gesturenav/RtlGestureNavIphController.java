@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -21,6 +24,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * A controller triggering the Iph Dialog when conditions are satisfied.
@@ -30,6 +34,7 @@ import org.chromium.content_public.browser.NavigationHandle;
  * <p>Second arm: when user tries to navigate back/forward but there is nothing in the corresponding
  * history stack; i.e. fail to navigate back/forward because of empty stack.
  */
+@NullMarked
 public class RtlGestureNavIphController implements Destroyable {
 
     private class RtlGestureNavTabObserver extends ActivityTabTabObserver {
@@ -103,6 +108,7 @@ public class RtlGestureNavIphController implements Destroyable {
             Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
             if (tracker.shouldTriggerHelpUi(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)) {
                 show();
+                assumeNonNull(mRtlGestureNavTabObserver);
                 mRtlGestureNavTabObserver.destroy();
                 mRtlGestureNavTabObserver = null;
             }
@@ -111,10 +117,13 @@ public class RtlGestureNavIphController implements Destroyable {
 
     private void show() {
         Tab tab = mActivityTabProvider.get();
+        assumeNonNull(tab);
+        ModalDialogManager modalDialogManager = tab.getWindowAndroid().getModalDialogManager();
+        assumeNonNull(modalDialogManager);
         RtlGestureNavIphDialog dialog =
                 new RtlGestureNavIphDialog(
                         tab.getContext(),
-                        tab.getWindowAndroid().getModalDialogManager(),
+                        modalDialogManager,
                         () -> {
                             Tracker tracker =
                                     TrackerFactory.getTrackerForProfile(mProfileSupplier.get());

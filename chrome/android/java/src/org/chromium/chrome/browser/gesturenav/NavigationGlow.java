@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.gesturenav;
 
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Shows overscroll-like glow on the right edge when forward navigation reaches the end. */
+@NullMarked
 abstract class NavigationGlow {
     protected final ViewGroup mParentView;
 

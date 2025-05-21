@@ -9,6 +9,8 @@ import android.view.View;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.base.WindowAndroid;
@@ -16,6 +18,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 /** {@link SceneOverlayLayer} implementation for gesture navigation overscroll effect. */
 @JNINamespace("android")
+@NullMarked
 class OverscrollSceneLayer extends SceneOverlayLayer {
     private final View mParentView;
 
@@ -116,7 +119,7 @@ class OverscrollSceneLayer extends SceneOverlayLayer {
         boolean update(
                 long nativeOverscrollSceneLayer,
                 OverscrollSceneLayer caller,
-                ResourceManager resourceManager,
+                @Nullable ResourceManager resourceManager,
                 float accumulatedScroll,
                 float delta);
 

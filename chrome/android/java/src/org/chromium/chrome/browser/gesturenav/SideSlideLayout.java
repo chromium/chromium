@@ -17,6 +17,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.ui.animation.EmptyAnimationListener;
@@ -31,6 +33,7 @@ import org.chromium.ui.interpolators.Interpolators;
  * org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout} and modified accordingly to
  * support horizontal gesture.
  */
+@NullMarked
 public class SideSlideLayout extends ViewGroup {
     /**
      * Classes that wish to be notified when the swipe gesture correctly triggers navigation should
@@ -82,8 +85,8 @@ public class SideSlideLayout extends ViewGroup {
     // overscroll is bigger than a certain threshold.
     private float mMaxOverscroll;
 
-    private OnNavigateListener mListener;
-    private OnResetListener mResetListener;
+    private @Nullable OnNavigateListener mListener;
+    private @Nullable OnResetListener mResetListener;
 
     // Flag indicating that the navigation will be activated.
     private boolean mNavigating;
@@ -101,7 +104,7 @@ public class SideSlideLayout extends ViewGroup {
     private int mFrom;
     private int mOriginalOffset;
 
-    private AnimationSet mHidingAnimation;
+    private @Nullable AnimationSet mHidingAnimation;
     private int mAnimationViewWidth;
 
     private boolean mIsForward;

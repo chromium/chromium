@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.gesturenav;
 
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Coordinator of controlling overscroll glow effect. */
+@NullMarked
 public class OverscrollGlowCoordinator {
 
     // {@link NavigationGlow} object for rendered pages.

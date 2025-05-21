@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -19,6 +21,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 
 /** A set of helper functions related to gesture navigation. */
+@NullMarked
 public class GestureNavigationUtils {
 
     /**
@@ -71,6 +74,7 @@ public class GestureNavigationUtils {
         if (webContents == null) return false;
         NavigationHistory navigationHistory =
                 webContents.getNavigationController().getNavigationHistory();
+        assumeNonNull(navigationHistory);
         NavigationEntry entry =
                 navigationHistory.getEntryAtIndex(
                         navigationHistory.getCurrentEntryIndex() + (forward ? 1 : -1));

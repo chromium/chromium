@@ -11,10 +11,10 @@ import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.IphDialogView;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -24,6 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog of educating users on how to navigate by gesture in RTL mode. */
+@NullMarked
 public class RtlGestureNavIphDialog {
 
     private final IphDialogView mIphDialogView;
@@ -101,13 +102,13 @@ public class RtlGestureNavIphDialog {
         mIphDialogView.addOnAttachStateChangeListener(
                 new OnAttachStateChangeListener() {
                     @Override
-                    public void onViewAttachedToWindow(@NonNull View v) {
+                    public void onViewAttachedToWindow(View v) {
                         mIphDialogView.startIphAnimation();
                         mIphDialogView.removeOnAttachStateChangeListener(this);
                     }
 
                     @Override
-                    public void onViewDetachedFromWindow(@NonNull View v) {}
+                    public void onViewDetachedFromWindow(View v) {}
                 });
     }
 
