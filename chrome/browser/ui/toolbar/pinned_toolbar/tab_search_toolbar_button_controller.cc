@@ -57,6 +57,19 @@ void TabSearchToolbarButtonController::OnBubbleDestroying() {
       base::Seconds(1));
 }
 
+void TabSearchToolbarButtonController::UpdateForWebUITabStrip() {
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
+      browser_view_->toolbar()->pinned_toolbar_actions_container();
+  if (pinned_toolbar_actions_container) {
+    actions::ActionItem* tab_search_action =
+        pinned_toolbar_actions_container->GetActionItemFor(kActionTabSearch);
+    if (tab_search_action) {
+      // Do not make tab search button available if webui tab strip is enabled.
+      tab_search_action->SetVisible(!browser_view_->webui_tab_strip());
+    }
+  }
+}
+
 void TabSearchToolbarButtonController::MaybeHideActionEphemerallyInToolbar() {
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();

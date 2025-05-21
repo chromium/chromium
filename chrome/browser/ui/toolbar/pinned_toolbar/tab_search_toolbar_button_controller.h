@@ -25,6 +25,8 @@ class TabSearchToolbarButtonController : public TabSearchBubbleHost::Observer {
   void OnBubbleInitializing() override;
   void OnBubbleDestroying() override;
 
+  void UpdateForWebUITabStrip();
+
  private:
   void MaybeHideActionEphemerallyInToolbar();
 

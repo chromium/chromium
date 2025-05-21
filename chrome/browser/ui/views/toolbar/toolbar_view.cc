@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
@@ -599,6 +600,13 @@ void ToolbarView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 
 void ToolbarView::UpdateForWebUITabStrip() {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  TabSearchToolbarButtonController* tab_search_toolbar_button_controller =
+      browser_->browser_window_features()
+          ->tab_search_toolbar_button_controller();
+  if (tab_search_toolbar_button_controller) {
+    tab_search_toolbar_button_controller->UpdateForWebUITabStrip();
+  }
+
   if (!new_tab_button_) {
     return;
   }
