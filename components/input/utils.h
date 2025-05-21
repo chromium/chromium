@@ -6,6 +6,7 @@
 #define COMPONENTS_INPUT_UTILS_H_
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -19,9 +20,11 @@ class COMPONENT_EXPORT(INPUT) InputUtils {
   // only on Android V+ which contain security fix for `CVE-2025-0097`.
   static bool IsTransferInputToVizSupported();
 #if BUILDFLAG(IS_ANDROID)
-  static void ResetInitializedForTesting() { initialized_ = false; }
-
  private:
+  FRIEND_TEST_ALL_PREFIXES(UtilsTest,
+                           InputToVizNotSupportedOnOlderSecurityPatchLevel);
+  static bool HasSecurityUpdate(const std::string& security_patch);
+
   // Checks if other static member variables has been initialized.
   static bool initialized_;
 

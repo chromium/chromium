@@ -29,26 +29,7 @@ TEST_F(UtilsTest, InputToVizNotSupportedOnOlderSecurityPatchLevel) {
   };
 
   for (const auto& [date, expectation] : security_patches) {
-    base::android::android_info::AndroidInfo android_info(
-        /* device= */ base::EmptyString(),
-        /* manufacturer= */ base::EmptyString(),
-        /* model= */ base::EmptyString(),
-        /* brand= */ base::EmptyString(),
-        /* android_build_id= */ base::EmptyString(),
-        /* build_type= */ base::EmptyString(),
-        /* board= */ base::EmptyString(),
-        /* android_build_fp= */ base::EmptyString(),
-        /* sdk_int= */ base::android::android_info::SdkVersion::SDK_VERSION_V,
-        /* is_debug_android= */ false,
-        /* version_incremental= */ base::EmptyString(),
-        /* hardware= */ base::EmptyString(),
-        /* codename= */ base::EmptyString(),
-        /* soc_manufacturer= */ base::EmptyString(),
-        /* abi_name= */ base::EmptyString(),
-        /* security_patch= */ date.data());
-    base::android::android_info::SetAndroidInfoForTesting(android_info);
-    InputUtils::ResetInitializedForTesting();
-    EXPECT_EQ(InputUtils::IsTransferInputToVizSupported(), expectation);
+    EXPECT_EQ(InputUtils::HasSecurityUpdate(date), expectation);
   }
 }
 

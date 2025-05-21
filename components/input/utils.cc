@@ -22,31 +22,25 @@ using blink::WebInputEvent;
 using blink::mojom::InputEventResultState;
 using perfetto::protos::pbzero::ChromeLatencyInfo2;
 
-namespace {
-
-#if BUILDFLAG(IS_ANDROID)
-// Check whether the fix for `CVE-2025-0097` is present, which went in Feb 2025
-// security update: https://source.android.com/docs/security/bulletin/2025-02-01
-static bool HasSecurityUpdate() {
-  base::Time min_security_patch_date;
-  CHECK(base::Time::FromString("2025-02-05", &min_security_patch_date));
-
-  base::Time security_patch;
-  CHECK(base::Time::FromString(
-      base::android::android_info::security_patch().c_str(), &security_patch));
-
-  return security_patch >= min_security_patch_date;
-}
-#endif
-
-}  // namespace
-
 #if BUILDFLAG(IS_ANDROID)
 bool InputUtils::initialized_ = false;
 bool InputUtils::has_security_update_ = false;
 
 jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
   return InputUtils::IsTransferInputToVizSupported();
+}
+
+// Check whether the fix for `CVE-2025-0097` is present, which went in Feb 2025
+// security update: https://source.android.com/docs/security/bulletin/2025-02-01
+// static
+bool InputUtils::HasSecurityUpdate(const std::string& security_patch) {
+  base::Time min_security_patch_date;
+  CHECK(base::Time::FromString("2025-02-05", &min_security_patch_date));
+
+  base::Time security_patch_date;
+  CHECK(base::Time::FromString(security_patch.c_str(), &security_patch_date));
+
+  return security_patch_date >= min_security_patch_date;
 }
 #endif
 
@@ -60,7 +54,8 @@ bool InputUtils::IsTransferInputToVizSupported() {
   // data race is benign (behaviour of the program remains unchanged just
   // potentially wasted effort).
   if (!initialized_) {
-    has_security_update_ = HasSecurityUpdate();
+    has_security_update_ =
+        HasSecurityUpdate(base::android::android_info::security_patch());
     initialized_ = true;
   }
   const bool is_at_least_v =
