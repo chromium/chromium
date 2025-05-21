@@ -1057,14 +1057,19 @@ export class PowerBookmarksListElement extends PolymerElement implements
     const priceTrackingEligible =
         !!this.bookmarksService_.getAvailableProductInfo(event.detail.bookmark);
     const bookmark = event.detail.bookmark;
+    const target = event.detail.event.target as HTMLElement;
     if (event.detail.event.button === 0) {
-      this.$.contextMenu.showAt(
-          event.detail.event, [bookmark], priceTracked, priceTrackingEligible,
-          this.onContextMenuShown_.bind(this, bookmark));
+      this.bookmarksApi_.isActiveTabInSplit().then((isSplit: boolean) => {
+        this.$.contextMenu.showAt(
+            target, [bookmark], priceTracked, priceTrackingEligible, isSplit,
+            this.onContextMenuShown_.bind(this, bookmark));
+      });
     } else {
-      this.$.contextMenu.showAtPosition(
-          event.detail.event, [bookmark], priceTracked, priceTrackingEligible,
-          this.onContextMenuShown_.bind(this, bookmark));
+      this.bookmarksApi_.isActiveTabInSplit().then((isSplit: boolean) => {
+        this.$.contextMenu.showAtPosition(
+            event.detail.event, [bookmark], priceTracked, priceTrackingEligible,
+            isSplit, this.onContextMenuShown_.bind(this, bookmark));
+      });
     }
   }
 
@@ -1205,8 +1210,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
   private onBulkEditMenuClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.$.contextMenu.showAt(
-        event, this.getSelectedBookmarksList_(), false, false);
+    const target = event.target as HTMLElement;
+    this.bookmarksApi_.isActiveTabInSplit().then((isSplit: boolean) => {
+      this.$.contextMenu.showAt(
+          target, this.getSelectedBookmarksList_(), false, false, isSplit);
+    });
   }
 
   private onSortTypeClicked_(event: DomRepeatEvent<SortOption>) {

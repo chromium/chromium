@@ -68,6 +68,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       },
       priceTracked_: Boolean,
       priceTrackingEligible_: Boolean,
+      isInSplitView_: Boolean,
     };
   }
 
@@ -78,14 +79,16 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
   declare private bookmarks_: BookmarksTreeNode[];
   declare private priceTracked_: boolean;
   declare private priceTrackingEligible_: boolean;
+  declare private isInSplitView_: boolean;
 
   showAt(
-      event: MouseEvent, bookmarks: BookmarksTreeNode[], priceTracked: boolean,
-      priceTrackingEligible: boolean, onShown: Function = () => {}) {
+      target: HTMLElement, bookmarks: BookmarksTreeNode[],
+      priceTracked: boolean, priceTrackingEligible: boolean,
+      isInSplitView: boolean, onShown: Function = () => {}) {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;
-    const target = event.target as HTMLElement;
+    this.isInSplitView_ = isInSplitView;
     afterNextRender(this, () => {
       this.$.menu.showAt(target);
       onShown();
@@ -94,10 +97,12 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
   showAtPosition(
       event: MouseEvent, bookmarks: BookmarksTreeNode[], priceTracked: boolean,
-      priceTrackingEligible: boolean, onShown: Function = () => {}) {
+      priceTrackingEligible: boolean, isInSplitView: boolean,
+      onShown: Function = () => {}) {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;
+    this.isInSplitView_ = isInSplitView;
     const menuMargin = 20;
     const doc = document.scrollingElement!;
     const minX = doc.scrollLeft + menuMargin;
@@ -163,6 +168,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       menuItems.push({
         id: MenuItemId.OPEN_SPLIT_VIEW,
         label: loadTimeData.getString('menuOpenSplitView'),
+        disabled: this.isInSplitView_,
       });
     }
 
