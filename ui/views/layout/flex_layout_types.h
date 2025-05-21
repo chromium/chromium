@@ -61,7 +61,7 @@ enum class MinimumFlexSizeRule {
 // there is extra size available for that view to occupy.
 enum class MaximumFlexSizeRule {
   kPreferred,       // Don't resize above preferred size.
-  kScaleToMaximum,  // Allow resize up to the maximum size.
+  kScaleToMaximum,  // Allow resize up to the child view's `GetMaximumSize()`.
   kUnbounded        // Allow resize to arbitrary size.
 };
 
