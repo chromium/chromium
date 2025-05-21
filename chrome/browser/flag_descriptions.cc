@@ -2049,6 +2049,10 @@ const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";
 
+const char kFedCmIframeOriginName[] = "FedCmIframeOrigin";
+const char kFedCmIframeOriginDescription[] =
+    "Allows showing iframe origins in the FedCM UI, if requested by the IDP.";
+
 const char kFedCmMetricsEndpointName[] = "FedCmMetricsEndpoint";
 const char kFedCmMetricsEndpointDescription[] =
     "Allows the FedCM API to send performance measurement to the metrics "

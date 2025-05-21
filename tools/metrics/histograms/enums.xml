@@ -13120,6 +13120,7 @@ from previous Chrome versions.
   <int value="-353182790" label="ConsistentOmniboxGeolocation:disabled"/>
   <int value="-353180213" label="DevicePosture:disabled"/>
   <int value="-352731236" label="DIPS:enabled"/>
+  <int value="-352377362" label="FedCmIframeOrigin:disabled"/>
   <int value="-352196997" label="CCTGoogleBottomBar:enabled"/>
   <int value="-351830087" label="AssistantConsentSimplifiedText:enabled"/>
   <int value="-351744276"
@@ -13869,6 +13870,7 @@ from previous Chrome versions.
   <int value="-74964571" label="EcheCustomWidget:enabled"/>
   <int value="-74808314" label="WebRtcWgcRequireBorder:enabled"/>
   <int value="-73282711" label="EnableAppListSearchAutocomplete:enabled"/>
+  <int value="-73203893" label="FedCmIframeOrigin:enabled"/>
   <int value="-72904030" label="ChromeRefresh2023:enabled"/>
   <int value="-72691146" label="SafetyHubFollowup:disabled"/>
   <int value="-72590181" label="DrawCutoutEdgeToEdge:enabled"/>

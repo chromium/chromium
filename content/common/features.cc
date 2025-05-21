@@ -190,13 +190,6 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// For cross-site iframes, sends the top-level origin to the IDP and parses
-// an optional returned boolean indicating whether it is part of the same
-// client to allow for UI decisions based on the boolean.
-BASE_FEATURE(kFedCmIframeOrigin,
-             "FedCmIframeOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether to support the newer syntax for the "Use Other Account"
 // and account labels features.
 BASE_FEATURE(kFedCmUseOtherAccountAndLabelsNewSyntax,

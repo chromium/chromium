@@ -1180,6 +1180,9 @@ extern const char kFedCmDelegationDescription[];
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];
 
+extern const char kFedCmIframeOriginName[];
+extern const char kFedCmIframeOriginDescription[];
+
 extern const char kFedCmLightweightModeName[];
 extern const char kFedCmLightweightModeDescription[];
 

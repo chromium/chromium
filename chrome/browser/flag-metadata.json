@@ -4835,6 +4835,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "fedcm-iframe-origin",
+    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "fedcm-lightweight-mode",
     "owners": ["ekovac@google.com", "web-identity-eng@google.com"],
     "expiry_milestone": 140
