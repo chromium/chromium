@@ -4429,7 +4429,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3965" label="TapDelayEnabled"/>
   <int value="3966" label="V8URLPattern_CompareComponent_Method"/>
   <int value="3967" label="EarlyHintsPreload"/>
-  <int value="3968" label="ClientHintsUAReduced"/>
+  <int value="3968" label="OBSOLETE_ClientHintsUAReduced"/>
   <int value="3969" label="SpeculationRulesPrerender"/>
   <int value="3970" label="OBSOLETE_ExecCommandWithTrustedTypes"/>
   <int value="3971" label="OBSOLETE_CSSSelectorPseudoHasInSnapshotProfile"/>
@@ -4619,7 +4619,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4146" label="FrameNameContainsBrace"/>
   <int value="4147" label="FrameNameContainsNewline"/>
   <int value="4148" label="AbortSignalThrowIfAborted"/>
-  <int value="4149" label="ClientHintsUAFull"/>
+  <int value="4149" label="OBSOLETE_ClientHintsUAFull"/>
   <int value="4150" label="PrivateNetworkAccessWithinWorker"/>
   <int value="4151" label="ClientHintsUAWoW64"/>
   <int value="4152" label="FetchSetCookieInRequestGuardedHeaders"/>
