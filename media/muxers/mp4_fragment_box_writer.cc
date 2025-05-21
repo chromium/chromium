@@ -389,7 +389,7 @@ Mp4FragmentRandomAccessOffsetBoxBoxWriter::
 void Mp4FragmentRandomAccessOffsetBoxBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_MFRO, /*flags=*/0, /*version=*/1);
+  writer.StartFullBox(mp4::FOURCC_MFRO, /*flags=*/0, /*version=*/0);
 
   // `size` property of the `mfro` box is the total size of the `mfra` box.
   writer.WriteU32(writer.size() + 4);
