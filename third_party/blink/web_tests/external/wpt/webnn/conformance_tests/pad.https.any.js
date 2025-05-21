@@ -28,11 +28,8 @@
 //     optional MLPadOptions options = {});
 
 
-const getPadPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
+const getPadPrecisionTolerance = () => {
+  return {metricType: 'ULP', value: 0};
 };
 
 const padTests = [
@@ -673,6 +670,364 @@ const padTests = [
             22.76361846923828
           ],
           'descriptor': {shape: [1, 7, 7, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+
+  // float16 tests
+  {
+    'name': 'pad float16 1D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [9], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1]},
+          {'endingPadding': [1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75, 0
+          ],
+          'descriptor': {shape: [11], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 1D tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [9], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1]},
+          {'endingPadding': [1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75, 0
+          ],
+          'descriptor': {shape: [11], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 0,         0,          0,        0,
+            0, 22.765625, -21.171875, -91.6875, 0,
+            0, 16.859375, 60.5,       -70.5625, 0,
+            0, -60.65625, -47.875,    68.75,    0,
+            0, 0,         0,          0,        0
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [1, 3, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1, 1]},
+          {'endingPadding': [1, 1, 1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         22.765625, -21.171875, -91.6875, 0, 0,
+            16.859375, 60.5,      -70.5625,   0,        0, -60.65625,
+            -47.875,   68.75,     0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0,          0,        0, 0,
+            0,         0,         0
+          ],
+          'descriptor': {shape: [3, 5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [0, 1, 1, 1]},
+          {'endingPadding': [0, 1, 1, 1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 0,         0, 0, 0,        0, 0, 0,         0, 0, 0,          0,
+            0, 0,         0, 0, 0,        0, 0, 22.765625, 0, 0, -21.171875, 0,
+            0, -91.6875,  0, 0, 0,        0, 0, 0,         0, 0, 16.859375,  0,
+            0, 60.5,      0, 0, -70.5625, 0, 0, 0,         0, 0, 0,          0,
+            0, -60.65625, 0, 0, -47.875,  0, 0, 68.75,     0, 0, 0,          0,
+            0, 0,         0, 0, 0,        0, 0, 0,         0, 0, 0,          0,
+            0, 0,         0
+          ],
+          'descriptor': {shape: [1, 5, 5, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [1, 3, 3, 1, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [0, 1, 1, 0, 1]},
+          {'endingPadding': [0, 1, 1, 0, 1]}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 0,         0, 0, 0,        0, 0, 0,         0, 0, 0,          0,
+            0, 0,         0, 0, 0,        0, 0, 22.765625, 0, 0, -21.171875, 0,
+            0, -91.6875,  0, 0, 0,        0, 0, 0,         0, 0, 16.859375,  0,
+            0, 60.5,      0, 0, -70.5625, 0, 0, 0,         0, 0, 0,          0,
+            0, -60.65625, 0, 0, -47.875,  0, 0, 68.75,     0, 0, 0,          0,
+            0, 0,         0, 0, 0,        0, 0, 0,         0, 0, 0,          0,
+            0, 0,         0
+          ],
+          'descriptor': {shape: [1, 5, 5, 1, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 2D tensor explicit options.mode=\'constant\'',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}, {'options': {'mode': 'constant'}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            0, 0,         0,          0,        0,
+            0, 22.765625, -21.171875, -91.6875, 0,
+            0, 16.859375, 60.5,       -70.5625, 0,
+            0, -60.65625, -47.875,    68.75,    0,
+            0, 0,         0,          0,        0
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 2D tensor options.value default constant mode',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [1, 1]},
+          {'endingPadding': [1, 1]}, {'options': {'value': 1}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            1, 1,         1,          1,        1,
+            1, 22.765625, -21.171875, -91.6875, 1,
+            1, 16.859375, 60.5,       -70.5625, 1,
+            1, -60.65625, -47.875,    68.75,    1,
+            1, 1,         1,          1,        1
+          ],
+          'descriptor': {shape: [5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 4D tensor options.mode=\'edge\'',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [0, 2, 2, 0]},
+          {'endingPadding': [0, 2, 2, 0]}, {'options': {'mode': 'edge'}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            22.765625, 22.765625, 22.765625, -21.171875, -91.6875,   -91.6875,
+            -91.6875,  22.765625, 22.765625, 22.765625,  -21.171875, -91.6875,
+            -91.6875,  -91.6875,  22.765625, 22.765625,  22.765625,  -21.171875,
+            -91.6875,  -91.6875,  -91.6875,  16.859375,  16.859375,  16.859375,
+            60.5,      -70.5625,  -70.5625,  -70.5625,   -60.65625,  -60.65625,
+            -60.65625, -47.875,   68.75,     68.75,      68.75,      -60.65625,
+            -60.65625, -60.65625, -47.875,   68.75,      68.75,      68.75,
+            -60.65625, -60.65625, -60.65625, -47.875,    68.75,      68.75,
+            68.75
+          ],
+          'descriptor': {shape: [1, 7, 7, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'pad float16 4D tensor options.mode=\'reflection\'',
+    'graph': {
+      'inputs': {
+        'padInput': {
+          'data': [
+            22.765625, -21.171875, -91.6875, 16.859375, 60.5, -70.5625,
+            -60.65625, -47.875, 68.75
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'pad',
+        'arguments': [
+          {'input': 'padInput'}, {'beginningPadding': [0, 2, 2, 0]},
+          {'endingPadding': [0, 2, 2, 0]}, {'options': {'mode': 'reflection'}}
+        ],
+        'outputs': 'padOutput'
+      }],
+      'expectedOutputs': {
+        'padOutput': {
+          'data': [
+            68.75,     -47.875,    -60.65625, -47.875,    68.75,     -47.875,
+            -60.65625, -70.5625,   60.5,      16.859375,  60.5,      -70.5625,
+            60.5,      16.859375,  -91.6875,  -21.171875, 22.765625, -21.171875,
+            -91.6875,  -21.171875, 22.765625, -70.5625,   60.5,      16.859375,
+            60.5,      -70.5625,   60.5,      16.859375,  68.75,     -47.875,
+            -60.65625, -47.875,    68.75,     -47.875,    -60.65625, -70.5625,
+            60.5,      16.859375,  60.5,      -70.5625,   60.5,      16.859375,
+            -91.6875,  -21.171875, 22.765625, -21.171875, -91.6875,  -21.171875,
+            22.765625
+          ],
+          'descriptor': {shape: [1, 7, 7, 1], dataType: 'float16'}
         }
       }
     }
