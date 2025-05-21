@@ -49,6 +49,7 @@
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -145,14 +146,7 @@ void FloatingWorkspaceService::ScheduleShowingNetworkScreen() {
 }
 
 void FloatingWorkspaceService::InitiateSigninTask() {
-  if (should_run_restore_) {
-    FloatingWorkspaceDialog::ShowDefaultScreen();
-  }
-  if (!floating_workspace_util::IsInternetConnected()) {
-    if (should_run_restore_) {
-      ScheduleShowingNetworkScreen();
-    }
-  } else {
+  if (floating_workspace_util::IsInternetConnected()) {
     syncer::LocalDeviceInfoProviderImpl* local_device_info_provider =
         static_cast<syncer::LocalDeviceInfoProviderImpl*>(
             device_info_sync_service_->GetLocalDeviceInfoProvider());
@@ -163,14 +157,14 @@ void FloatingWorkspaceService::InitiateSigninTask() {
                 &FloatingWorkspaceService::OnLocalDeviceInfoProviderReady,
                 weak_pointer_factory_.GetWeakPtr()));
   }
+
   if (should_run_restore_) {
-    // We need to run restore and we've started showing the startup UI
-    // above. It might be that all relevant Sync state changes came before
-    // this method (e.g. often happens in wake-up flow while we are on
-    // the lock screen), so we trigger `OnStateChanged` here manually to
-    // make sure that we process current Sync states at least once. Otherwise we
-    // might show the startup UI for a long time (until the next Sync update)
-    // even though all needed data is already available.
+    // It is possible that all relevant Sync state changes happened before
+    // this method was called (e.g. it often happens in the wake-up flow while
+    // we are on the lock screen), so we trigger `OnStateChanged` here manually
+    // to make sure that we process current Sync states at least once and update
+    // the UI if needed. Otherwise we would wait for the next Sync update even
+    // though all needed data is already available.
     OnStateChanged(sync_service_);
   }
 }
@@ -276,7 +270,7 @@ void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
 }
 
 void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
-  OnNetworkStateOrSyncServiceStateChanged();
+  UpdateUiStateIfNeeded();
   // Prematurely return when sync feature is not active.
   if (!sync_service_->IsSyncFeatureActive()) {
     return;
@@ -296,9 +290,6 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
   }
   syncer::SyncService::DataTypeDownloadStatus workspace_download_status =
       sync_service_->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK);
-  bool is_new_workspace_status =
-      download_status_cache_ != workspace_download_status;
-  download_status_cache_ = workspace_download_status;
   switch (workspace_download_status) {
     case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates: {
       // Floating Workspace Service needs to wait until workspace desks are
@@ -329,17 +320,7 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
       break;
     }
     case syncer::SyncService::DataTypeDownloadStatus::kError: {
-      if (!is_new_workspace_status) {
-        // Don'h handle the error repeatedly.
-        break;
-      }
-      // If Sync is not expected to deliver the data, do nothing.
-      if (!should_run_restore_) {
-        break;
-      }
-      // There is nothing in particular the user can do to resolve a Sync error
-      // - show a generic error UI.
-      FloatingWorkspaceDialog::ShowErrorScreen();
+      // Nothing to do here: error UI is shown from `UpdateUiStateIfNeeded()`.
       break;
     }
   }
@@ -394,32 +375,55 @@ void FloatingWorkspaceService::LaunchWhenAppCacheIsReady() {
 
 void FloatingWorkspaceService::DefaultNetworkChanged(
     const NetworkState* network) {
-  OnNetworkStateOrSyncServiceStateChanged();
+  UpdateUiStateIfNeeded();
 }
 
 void FloatingWorkspaceService::NetworkConnectionStateChanged(
     const NetworkState* network) {
-  OnNetworkStateOrSyncServiceStateChanged();
+  UpdateUiStateIfNeeded();
 }
 
-void FloatingWorkspaceService::OnNetworkStateOrSyncServiceStateChanged() {
-  // If the restore should not run, then there's no need to show any UI and it
-  // is expected to be closed elsewhere.
+void FloatingWorkspaceService::UpdateUiStateIfNeeded() {
   if (!should_run_restore_) {
+    // If the restore should not run, then there's no need to show any UI and it
+    // is expected to be closed elsewhere.
     return;
   }
+
+  if (!session_manager::SessionManager::Get()
+           ->IsUserSessionStartUpTaskCompleted()) {
+    // Our UI should only be shown once user sessions has properly started. The
+    // service might still be active on the lock screen or during transition
+    // from the login screen to user session, so we must check for it
+    // explicitly.
+    return;
+  }
+
   // In the calls below there is no need to double check if UI is already shown
   // - the dialog is smart enough to recognize when there is no change.
   if (!floating_workspace_util::IsInternetConnected()) {
-    ScheduleShowingNetworkScreen();
-  } else if (sync_service_ && !sync_service_->IsSyncFeatureActive()) {
-    // If Sync is not active, show a generic error UI.
-    // TODO(crbug.com/411121762): write a test for this code path.
-    FloatingWorkspaceDialog::ShowErrorScreen();
-  } else {
-    // We are online and Sync is active: show the default UI state.
     FloatingWorkspaceDialog::ShowDefaultScreen();
+    ScheduleShowingNetworkScreen();
+    return;
   }
+  if (!sync_service_) {
+    FloatingWorkspaceDialog::ShowErrorScreen();
+    return;
+  }
+  if (!sync_service_->IsSyncFeatureActive()) {
+    FloatingWorkspaceDialog::ShowErrorScreen();
+    return;
+  }
+  syncer::SyncService::DataTypeDownloadStatus workspace_download_status =
+      sync_service_->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK);
+  if (workspace_download_status ==
+      syncer::SyncService::DataTypeDownloadStatus::kError) {
+    FloatingWorkspaceDialog::ShowErrorScreen();
+    return;
+  }
+
+  // We are online and Sync is active: show the default UI state.
+  FloatingWorkspaceDialog::ShowDefaultScreen();
 }
 
 void FloatingWorkspaceService::SuspendImminent(
@@ -1075,6 +1079,15 @@ void FloatingWorkspaceService::OnActiveUserSessionChanged(
         SyncServiceFactory::GetForProfile(profile_),
         DeskSyncServiceFactory::GetForProfile(profile_),
         DeviceInfoSyncServiceFactory::GetForProfile(profile_));
+  }
+}
+
+void FloatingWorkspaceService::OnFirstSessionReady() {
+  // It's important that we wait for "first session ready" and not just for the
+  // session state to become `session_manager::SessionState::ACTIVE` - the
+  // latter happens earlier and by that time we can't yet show our modal dialog.
+  if (should_run_restore_) {
+    OnStateChanged(sync_service_);
   }
 }
 
