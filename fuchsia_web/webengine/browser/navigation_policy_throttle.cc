@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/browser/navigation_policy_throttle.h"
 
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "fuchsia_web/webengine/browser/navigation_controller_impl.h"
 #include "fuchsia_web/webengine/browser/navigation_policy_handler.h"
 
@@ -29,11 +30,9 @@ fuchsia::web::RequestedNavigation ToRequestedNavigation(
 }  // namespace
 
 NavigationPolicyThrottle::NavigationPolicyThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     NavigationPolicyHandler* policy_handler)
-    : NavigationThrottle(handle),
-      policy_handler_(policy_handler),
-      navigation_handle_(handle) {
+    : NavigationThrottle(registry), policy_handler_(policy_handler) {
   if (policy_handler->is_provider_connected()) {
     policy_handler_->RegisterNavigationThrottle(this);
   } else {
@@ -119,13 +118,13 @@ NavigationPolicyThrottle::HandleNavigationPhase(
         content::NavigationThrottle::CANCEL);
   }
 
-  if (!policy_handler_->ShouldEvaluateNavigation(navigation_handle_, phase)) {
+  if (!policy_handler_->ShouldEvaluateNavigation(navigation_handle(), phase)) {
     return content::NavigationThrottle::ThrottleCheckResult(
         content::NavigationThrottle::PROCEED);
   }
 
   policy_handler_->EvaluateRequestedNavigation(
-      ToRequestedNavigation(navigation_handle_, phase),
+      ToRequestedNavigation(navigation_handle(), phase),
       [weak_this = weak_factory_.GetWeakPtr()](auto decision) {
         if (weak_this) {
           weak_this->OnRequestedNavigationEvaluated(std::move(decision));

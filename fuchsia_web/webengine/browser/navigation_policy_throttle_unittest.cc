@@ -9,6 +9,7 @@
 
 #include "base/test/task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "fuchsia_web/webengine/browser/fake_navigation_policy_provider.h"
 #include "fuchsia_web/webengine/browser/navigation_policy_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +90,10 @@ TEST_F(NavigationPolicyThrottleTest, WillStartRequest_MainFrame) {
   navigation_handle.set_is_same_document(true);
 
   policy_provider()->set_should_abort_navigation(true);
-  NavigationPolicyThrottle throttle(&navigation_handle, policy_handler_.get());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  NavigationPolicyThrottle throttle(registry, policy_handler_.get());
   auto result = throttle.WillStartRequest();
   EXPECT_EQ(content::NavigationThrottle::DEFER, result);
 
@@ -119,7 +123,10 @@ TEST_F(NavigationPolicyThrottleTest, WillStartRequest_SubFrame) {
   navigation_handle.set_is_same_document(false);
 
   policy_provider()->set_should_abort_navigation(true);
-  NavigationPolicyThrottle throttle(&navigation_handle, policy_handler_.get());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  NavigationPolicyThrottle throttle(registry,policy_handler_.get());
   auto result = throttle.WillStartRequest();
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED, result);
@@ -132,7 +139,10 @@ TEST_F(NavigationPolicyThrottleTest, WillRedirectRequest) {
   navigation_handle.set_is_same_document(false);
 
   policy_provider()->set_should_abort_navigation(true);
-  NavigationPolicyThrottle throttle(&navigation_handle, policy_handler_.get());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  NavigationPolicyThrottle throttle(registry, policy_handler_.get());
   auto result = throttle.WillRedirectRequest();
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED, result);
@@ -146,7 +156,10 @@ TEST_F(NavigationPolicyThrottleTest, WillFailRequest) {
   navigation_handle.set_is_same_document(true);
 
   policy_provider()->set_should_abort_navigation(false);
-  NavigationPolicyThrottle throttle(&navigation_handle, policy_handler_.get());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  NavigationPolicyThrottle throttle(registry, policy_handler_.get());
   auto result = throttle.WillFailRequest();
   EXPECT_EQ(content::NavigationThrottle::DEFER, result);
 
@@ -165,7 +178,10 @@ TEST_F(NavigationPolicyThrottleTest, WillProcessResponse) {
   navigation_handle.set_is_same_document(true);
 
   policy_provider()->set_should_abort_navigation(false);
-  NavigationPolicyThrottle throttle(&navigation_handle, policy_handler_.get());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  NavigationPolicyThrottle throttle(registry, policy_handler_.get());
   auto result = throttle.WillProcessResponse();
   EXPECT_EQ(content::NavigationThrottle::DEFER, result);
 

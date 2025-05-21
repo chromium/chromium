@@ -318,7 +318,7 @@ void WebEngineContentBrowserClient::CreateThrottlesForNavigation(
   // indicating an interest in navigations.
   if (frame_impl->navigation_policy_handler()) {
     registry.AddThrottle(std::make_unique<NavigationPolicyThrottle>(
-        &navigation_handle, frame_impl->navigation_policy_handler()));
+        registry, frame_impl->navigation_policy_handler()));
   }
 
   const std::optional<std::string>& explicit_sites_filter_error_page =
