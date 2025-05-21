@@ -224,6 +224,20 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertTrue([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                  @"Failed to enable kDemographicMetricsReporting.");
 
+  const int success =
+      static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
+  ConditionBlock condition = ^{
+    NSError* error = [MetricsAppInterface
+        expectUniqueSampleWithCount:1
+                          forBucket:success
+                       forHistogram:@"UMA.UserDemographics.Status"];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForActionTimeout, condition),
+             @"iOS First Run failed to upload metric");
+
   [MetricsAppInterface buildAndStoreUMALog];
   GREYAssertTrue([MetricsAppInterface hasUnsentUMALogs],
                  @"The UKM service should have unsent logs.");
@@ -231,9 +245,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertTrue([MetricsAppInterface UMALogHasBirthYear:birthYear_
                                                   gender:kTestGender],
                  @"The report should contain the specified user demographics");
-
-  const int success =
-      static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
 
   // Expect 2 counts because in the iOS First Run, the MetricsService is started
   // quicker, which causes two metrics log uploads to happen by this point.
