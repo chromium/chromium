@@ -1538,8 +1538,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     This records how many times a request was deferred due to a Device Bound
     Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is
-    logged once for most network requests that can add a cookie header; requests
-    that attempt to refresh but fail are omitted.
+    logged once for each round trip of a network requests that can add a cookie
+    header; requests that attempt to refresh but fail are omitted.
   </summary>
 </histogram>
 
@@ -1550,8 +1550,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     This records whether a request was deferred due to a Device Bound Session
     (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) and the reason
-    for that decision. This is logged once for most network requests that can
-    add a cookie header; requests that attempt to refresh but fail are omitted.
+    for that decision. This is logged once for each round trip of most network
+    requests that can add a cookie header; requests that attempt to refresh but
+    fail are omitted.
   </summary>
 </histogram>
 
@@ -1562,9 +1563,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     This records the duration of each time a request is deferred due to a Device
     Bound Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
-    This is logged every time a network request is deferred. Under normal
-    operations, a small fraction of network requests are deferred at most once.
-    See also Net.DeviceBoundSessions.TotalRequestDeferredDuration.
+    This is logged every time one round trip of a network request is deferred.
+    Under normal operations, a small fraction of network requests are deferred
+    at most once. See also Net.DeviceBoundSessions.TotalRequestDeferredDuration.
   </summary>
 </histogram>
 
