@@ -152,6 +152,7 @@ source_set("impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/resources/glic:resources",
     "//chrome/browser/resources/glic/fre:resources",
     "//chrome/browser/themes:themes",

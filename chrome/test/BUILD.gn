@@ -149,6 +149,7 @@ static_library("test_support") {
   deps = [
     "//chrome/browser:global_features",
     "//chrome/browser/background:background",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui:ui_features",
@@ -2250,6 +2251,7 @@ if (!is_android) {
       "//chrome/browser/privacy_sandbox:browser_tests",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/promos:utils",
       "//chrome/browser/reading_list",
@@ -6644,6 +6646,7 @@ test("unit_tests") {
     "//chrome/browser/privacy_sandbox:unit_tests",
     "//chrome/browser/privacy_sandbox/incognito:unit_tests",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles/keep_alive",
 
     # TODO(413315837): Remove this dep when privacy_sandbox_service_impl_unittest.cc
     # gets build off of c/b/privacy_sandbox/BUILD.gn.
@@ -11029,6 +11032,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
       "//chrome/browser/privacy_sandbox:interactive_ui_tests",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui/views/new_tab_footer:new_tab_footer",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
 

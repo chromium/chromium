@@ -476,6 +476,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_list",

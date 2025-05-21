@@ -370,6 +370,7 @@ if (!is_chromeos) {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/resources/signin:resources",
       "//chrome/browser/resources/signin/profile_picker:resources",
       "//chrome/browser/search/background",

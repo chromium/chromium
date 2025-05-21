@@ -8,7 +8,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
-assert(!is_android, "Android shouldn't use anything in //chrome/web_applications")
+assert(!is_android,
+       "Android shouldn't use anything in //chrome/web_applications")
 
 source_set("web_applications") {
   sources = [
@@ -513,6 +514,7 @@ source_set("web_applications") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/shortcuts",
     "//chrome/browser/sync:factories",
     "//chrome/browser/task_manager",
@@ -1012,6 +1014,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/shortcuts:shortcuts",
     "//chrome/common",
     "//chrome/common:chrome_features",

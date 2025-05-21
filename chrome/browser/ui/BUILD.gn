@@ -4965,6 +4965,7 @@ static_library("ui") {
       "//chrome/browser:main_extra_parts",
       "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps:icon_standardizer",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/promos:utils",
       "//chrome/browser/ui/actions:actions",
       "//chrome/browser/ui/actions:actions_headers",

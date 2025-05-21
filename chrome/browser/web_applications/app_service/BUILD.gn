@@ -28,6 +28,7 @@ source_set("app_service") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//components/content_settings/core/browser",

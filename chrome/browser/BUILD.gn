@@ -1312,10 +1312,6 @@ static_library("browser") {
     "profiles/force_youtube_safety_mode_policy_handler.h",
     "profiles/incognito_mode_policy_handler.cc",
     "profiles/incognito_mode_policy_handler.h",
-    "profiles/keep_alive/profile_keep_alive_types.cc",
-    "profiles/keep_alive/profile_keep_alive_types.h",
-    "profiles/keep_alive/scoped_profile_keep_alive.cc",
-    "profiles/keep_alive/scoped_profile_keep_alive.h",
     "profiles/off_the_record_profile_impl.cc",
     "profiles/off_the_record_profile_impl.h",
     "profiles/profile_avatar_downloader.cc",
@@ -1829,6 +1825,9 @@ static_library("browser") {
     # TODO(crbug.com/40110173): Eliminate usages of browser.h from Media Router.
     "//chrome/browser/media/router",
 
+    # TODO(crbug.com/419304389): Remove once c/b/profile get fully modularized.
+    "//chrome/browser/profiles/keep_alive:impl",
+
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
 
@@ -1980,6 +1979,8 @@ static_library("browser") {
     "//chrome/browser/profiles:profiles",
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/profiles/keep_alive:impl",
     "//chrome/browser/profiling_host",
     "//chrome/browser/promos:utils",
     "//chrome/browser/reading_list",

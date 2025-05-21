@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("keep_alive") {
+  sources = [
+    "profile_keep_alive_types.h",
+    "scoped_profile_keep_alive.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("impl") {
+  sources = [
+    "profile_keep_alive_types.cc",
+    "scoped_profile_keep_alive.cc",
+  ]
+
+  deps = [
+    ":keep_alive",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+}
