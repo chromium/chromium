@@ -1545,7 +1545,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_webkit_webkit_java") {
-    aar_path = "../androidx/cipd/libs/androidx_webkit_webkit/webkit-1.14.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_webkit_webkit/webkit-1.15.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_webkit_webkit/androidx_webkit_webkit.info"
     enable_bytecode_checks = false
     deps = [
@@ -1592,6 +1592,24 @@ if (!limit_android_deps) {
       ":androidx_window_window_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_java") {
+    aar_path = "cipd/libs/androidx_xr_runtime_runtime/runtime-1.0.0-alpha04.aar"
+    info_path = "committed/libs/androidx_xr_runtime_runtime/androidx_xr_runtime_runtime.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_core_core_java",
+      ":androidx_lifecycle_lifecycle_common_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
+      "//third_party/android_deps:com_google_ar_impress_java",
+      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -3556,25 +3574,6 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_xr_runtime_runtime_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_java") {
-    aar_path = "cipd/libs/androidx_xr_runtime_runtime/runtime-1.0.0-alpha04.aar"
-    info_path = "committed/libs/androidx_xr_runtime_runtime/androidx_xr_runtime_runtime.info"
-    enable_bytecode_checks = false
-
-    deps = [
-      ":androidx_annotation_annotation_java",
-      ":androidx_core_core_java",
-      ":androidx_lifecycle_lifecycle_common_java",
-      ":androidx_lifecycle_lifecycle_runtime_java",
-      "//third_party/android_deps:com_google_ar_impress_java",
-      "//third_party/android_deps:guava_android_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
