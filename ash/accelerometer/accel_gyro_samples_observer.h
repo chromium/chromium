@@ -6,6 +6,8 @@
 #define ASH_ACCELEROMETER_ACCEL_GYRO_SAMPLES_OBSERVER_H_
 
 #include <stdint.h>
+
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -93,7 +95,7 @@ class ASH_EXPORT AccelGyroSamplesObserver
   std::vector<std::string> iio_channel_ids_;
   // Channel indices (of accel_x, accel_y, and accel_z respectively) to
   // enable.
-  int32_t channel_indices_[kNumberOfAxes];
+  std::array<int32_t, kNumberOfAxes> channel_indices_;
 
   mojo::Receiver<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
       receiver_{this};
