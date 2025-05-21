@@ -25,8 +25,6 @@ class WebGLTransformFeedback;
 class WebGLUniformLocation;
 class WebGLVertexArrayObject;
 
-class Element;
-
 class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
  public:
   void DestroyContext() override;
@@ -174,15 +172,6 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   MaybeShared<DOMArrayBufferView>,
                   int64_t);
-
-  void texElement2D(ScriptState* script_state,
-                    GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
 
   void texSubImage2D(GLenum,
                      GLint,
@@ -1101,10 +1090,6 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   GLint unpack_skip_images_;
 
  private:
-  bool IsDrawElementEligible(Element* element,
-                             GLenum target,
-                             ExceptionState& exception_state);
-
   void RecordInternalFormatParameter(GLenum internalformat,
                                      GLint* values,
                                      GLint length);

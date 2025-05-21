@@ -11924,6 +11924,7 @@ interface WebGLRenderingContext
     method stencilMaskSeparate
     method stencilOp
     method stencilOpSeparate
+    method texElement2D
     method texImage2D
     method texParameterf
     method texParameteri

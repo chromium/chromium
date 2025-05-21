@@ -75,6 +75,8 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
@@ -127,6 +129,8 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/image_extractor.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
@@ -6602,6 +6606,122 @@ void WebGLRenderingContextBase::texParameteri(GLenum target,
                                               GLenum pname,
                                               GLint param) {
   TexParameter(target, pname, 0, param, false);
+}
+
+bool WebGLRenderingContextBase::IsDrawElementEligible(
+    Element* element,
+    GLenum target,
+    ExceptionState& exception_state) {
+  if (isContextLost()) {
+    return false;
+  }
+  if (!canvas()) {
+    return false;
+  }
+  if (!ValidateTexture2DBinding("texImage2D", target, true)) {
+    return false;
+  }
+
+  if (element->parentElement() != canvas()) {
+    exception_state.ThrowTypeError(
+        "Only immediate children of the <canvas> element can be passed to "
+        "texElement2D().");
+    return false;
+  }
+
+  if (!canvas()->layoutSubtree()) {
+    exception_state.ThrowTypeError(
+        "<canvas> elements without layoutsubtree do not support "
+        "drawElement().");
+  }
+
+  if (!element->GetLayoutObject()) {
+    exception_state.ThrowTypeError(
+        "The canvas and element used with texElement2D() must have been laid "
+        "out. Detached canvases are not supported, nor canvas or children "
+        "that "
+        "are `display: none`.");
+    return false;
+  }
+
+  // TODO(crbug.com/413728246): Maybe we can support canvas element.
+  if (IsA<HTMLCanvasElement>(element)) {
+    exception_state.ThrowTypeError(
+        "<canvas> children of a <canvas> cannot be passed to "
+        "texElement2D().");
+    return false;
+  }
+
+  return true;
+}
+
+void WebGLRenderingContextBase::texElement2D(ScriptState* script_state,
+                                             GLenum target,
+                                             GLint level,
+                                             GLint internalformat,
+                                             GLenum format,
+                                             GLenum type,
+                                             Element* element,
+                                             ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  if (!IsDrawElementEligible(element, target, exception_state)) {
+    return;
+  }
+
+  canvas()->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kCanvasDrawElement);
+
+  // Canvas could have been removed after the layout update.
+  if (!canvas()) {
+    return;
+  }
+
+  LayoutBox* layout_box = element->GetLayoutBox();
+  PaintLayer* layer = layout_box->EnclosingLayer();
+
+  auto box_rect = gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->Size()));
+  OverriddenCullRectScope cull_rect_scope(*layer, CullRect(box_rect),
+                                          /*disable_expansion*/ true);
+  PaintRecordBuilder builder;
+
+  PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
+  paint_layer_painter.Paint(builder.Context(), PaintFlag::kPlacedElement);
+
+  PropertyTreeState tree_state = layer->GetLayoutObject()
+                                     .FirstFragment()
+                                     .LocalBorderBoxProperties()
+                                     .Unalias();
+
+  SkSurfaceProps surface_props;
+
+  int width = box_rect.width();
+  int height = box_rect.height();
+
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(
+      SkImageInfo::MakeN32Premul(width, height), &surface_props);
+  if (!surface) {
+    return;
+  }
+
+  // TODO(crbug.com/416733209): Update clip offset if there's visual overflow.
+  SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
+  builder.EndRecording(skia_paint_canvas, tree_state);
+
+  scoped_refptr<Image> image_for_render =
+      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+
+  TexImageParams params = {
+      .source_type = kSourceImageBitmap,
+      .function_id = kTexImage2D,
+      .target = target,
+      .level = level,
+      .internalformat = internalformat,
+      .format = format,
+      .type = type,
+  };
+  GetCurrentUnpackState(params);
+
+  DrawElementImage(image_for_render, params, exception_state);
 }
 
 void WebGLRenderingContextBase::texSubImage2D(

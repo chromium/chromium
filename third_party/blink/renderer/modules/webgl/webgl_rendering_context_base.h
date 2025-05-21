@@ -75,6 +75,7 @@ class AcceleratedStaticBitmapImage;
 class CanvasResourceProvider;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
+class Element;
 class ExceptionState;
 class HTMLCanvasElement;
 class HTMLImageElement;
@@ -417,6 +418,15 @@ class MODULES_EXPORT WebGLRenderingContextBase
                   GLenum type,
                   ImageBitmap*,
                   ExceptionState&);
+
+  void texElement2D(ScriptState* script_state,
+                    GLenum target,
+                    GLint level,
+                    GLint internalformat,
+                    GLenum format,
+                    GLenum type,
+                    Element* element,
+                    ExceptionState& exception_state);
 
   void texParameterf(GLenum target, GLenum pname, GLfloat param);
   void texParameteri(GLenum target, GLenum pname, GLint param);
@@ -1973,6 +1983,13 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // PushFrameNoCopy will try and export the content of the DrawingBuffer as a
   // ExtenralCanvasResource.
   bool PushFrameNoCopy();
+
+  // Returns true if the given element can be used in a texElement2D call.
+  // Return false and adds relevant exceptions to `exception_state` if that's
+  // not the case.
+  bool IsDrawElementEligible(Element* element,
+                             GLenum target,
+                             ExceptionState& exception_state);
 
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;
