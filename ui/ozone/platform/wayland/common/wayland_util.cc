@@ -406,6 +406,7 @@ void RecordConnectionMetrics(wl_display* display) {
         {"cosmic", WaylandCompositor::kCosmic},
         {"dwl", WaylandCompositor::kDwl},
         {"gamescope", WaylandCompositor::kGamescope},
+        {"gnome", WaylandCompositor::kMutter},
         {"hyprland", WaylandCompositor::kHyprland},
         {"kwin", WaylandCompositor::kKWin},
         {"labwc", WaylandCompositor::kLabwc},
