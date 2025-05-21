@@ -8164,6 +8164,86 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
+                       PageContentTypeHistograms) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  base::HistogramTester histogram_tester;
+
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Setup fake text in the OCR response. Included 4 words on the DOM, and 1
+  // not, to make a similarity score of 0.8. Also include some random characters
+  // to make sure they are ignored.
+  auto* fake_controller =
+      static_cast<LensSearchControllerFake*>(GetLensSearchController());
+  fake_controller->SetOcrResponseWords(
+      {"The.", "   below   - ", " ,are] ", "RANDOM", "\n\n\nCharacters.\n"});
+
+  // Open the overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ByDocumentType.Html.Invoked",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.AnnotatedPageContent."
+      "ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Html."
+      "ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByPageContentType.AnnotatedPageContent.DocumentSize2",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByPageContentType.Html.DocumentSize2",
+      /*expected_count=*/1);
+
+  // Verify UKM metrics were recorded.
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kWasShownName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kAnnotatedPageContent));
+
+  // This histogram is async so run until it is recorded.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Lens.Overlay.OcrDomSimilarity",
+                                           80) == 1;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
                        PageNotContextEligibleError) {
   base::HistogramTester histogram_tester;
   WaitForPaint(kDocumentWithNonAsciiCharacters);

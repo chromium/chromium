@@ -1827,6 +1827,8 @@ void LensOverlayController::InitializeOverlay(
                      pending_region_bitmap_);
     pending_region_bitmap_.reset();
   }
+
+  TryCalculateAndRecordOcrDomSimilarity();
 }
 
 void LensOverlayController::InitializeOverlayUI(
@@ -1848,7 +1850,7 @@ void LensOverlayController::InitializeOverlayUI(
   lens_session_metrics_logger->OnInitialPageContentRetrieved(
       /*page_content_type=*/init_data.page_contents_.empty()
           ? lens::MimeType::kUnknown
-          : init_data.page_contents_.front().content_type_);
+          : init_data.primary_content_type_);
 
   page_->ShouldShowContextualSearchBox(should_show_csb);
 
@@ -2623,20 +2625,21 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 
 void LensOverlayController::RecordDocumentMetrics(
     std::optional<uint32_t> page_count) {
-  // Use the first lens::PageContent as it is the most important PDF/Webpage.
-  // TODO(crbug.com/398304347): Ideally all lens::PageContent sizes should be
-  // recorded.
-  auto content_type =
-      initialization_data_->page_contents_.empty()
-          ? lens::MimeType::kUnknown
-          : initialization_data_->page_contents_.front().content_type_;
-  auto page_content_bytes_size =
-      initialization_data_->page_contents_.empty()
-          ? 0
-          : initialization_data_->page_contents_.front().bytes_.size();
-  lens::RecordDocumentSizeBytes(content_type, page_content_bytes_size);
+  // Record the document size bytes for each lens::PageContent. If there are no
+  // page contents, then we will record 0.
+  std::set<lens::MimeType> retrieved_content_types;
+  if (!initialization_data_ || initialization_data_->page_contents_.empty()) {
+    lens::RecordDocumentSizeBytes(lens::MimeType::kUnknown, 0);
+  } else {
+    for (const auto& page_content : initialization_data_->page_contents_) {
+      lens::RecordDocumentSizeBytes(page_content.content_type_,
+                                    page_content.bytes_.size());
+      retrieved_content_types.insert(page_content.content_type_);
+    }
+  }
 
-  if (page_count.has_value() && content_type == lens::MimeType::kPdf) {
+  if (page_count.has_value() &&
+      initialization_data_->primary_content_type_ == lens::MimeType::kPdf) {
     lens::RecordPdfPageCount(page_count.value());
     return;
   }
@@ -2645,13 +2648,14 @@ void LensOverlayController::RecordDocumentMetrics(
   // TODO(crbug.com/398304347): Remove these once both the innerHtml and
   // innerText metrics are recorded as part of the content data.
   auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
-  if (content_type == lens::MimeType::kHtml) {
+  if (!retrieved_content_types.contains(lens::MimeType::kPlainText)) {
     // Fetch the innerText to log the size.
     content_extraction::GetInnerText(
         *render_frame_host, /*node_id=*/std::nullopt,
         base::BindOnce(&LensOverlayController::RecordInnerTextSize,
                        weak_factory_.GetWeakPtr()));
-  } else if (content_type == lens::MimeType::kPlainText) {
+  }
+  if (!retrieved_content_types.contains(lens::MimeType::kHtml)) {
     // Fetch the innerHtml bytes to log the size.
     content_extraction::GetInnerHtml(
         *render_frame_host,
