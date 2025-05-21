@@ -51,6 +51,7 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_types.h"
+#include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -6283,14 +6284,13 @@ void GraphImplDml::CreateWebNNGraphImpl(
     return;
   }
 
-  // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   // The receiver bound to GraphImplDml.
   std::move(callback).Run(base::WrapUnique(new GraphImplDml(
       std::move(receiver), std::move(adapter), context.get(),
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
       std::move(graph_buffer_binding_info), std::move(graph_resources),
-      /*devices=*/{})));
+      {adapter->IsNPU() ? mojom::Device::kNpu : mojom::Device::kGpu})));
 }
 
 // static
