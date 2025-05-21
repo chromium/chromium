@@ -3360,6 +3360,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.NumberOfContextsToOpen" enum="ContextsToOpen"
+    expires_after="2025-12-31">
+  <owner>fedegermi@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Logs the number of times we receive one or more than one url context to
+    open. This is done by checking how many UIOpenURLContext are passed to
+    sceneState:hasPendingURLs:.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Omaha.HoursSinceLastSuccess" units="hours"
     expires_after="2025-10-15">
   <owner>rohitrao@google.com</owner>

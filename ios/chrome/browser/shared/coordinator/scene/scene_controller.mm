@@ -252,6 +252,19 @@ enum class TabSwitcherDismissalMode { NONE, NORMAL, INCOGNITO };
 const char kMultiWindowOpenInNewWindowHistogram[] =
     "IOS.MultiWindow.OpenInNewWindow";
 
+// Histogram key used to log the number of contexts to open that the app
+// received.
+const char kContextsToOpen[] = "IOS.NumberOfContextsToOpen";
+
+// Enum for IOS.NumberOfContextsToOpen histogram.
+// Keep in sync with "ContextsToOpen" in tools/metrics/histograms/enums.xml.
+enum class ContextsToOpen {
+  kNoContexts = 0,
+  kOneContext = 1,
+  kMoreThanOneContext = 2,
+  kMaxValue = kMoreThanOneContext,
+};
+
 // TODO(crbug.com/40788009): Use the Authentication Service sign-in status API
 // instead of this when available.
 bool IsSigninForcedByPolicy() {
@@ -834,8 +847,13 @@ void OnListFamilyMembersResponse(
 
 - (void)handleURLContextsToOpen {
   if (self.sceneState.URLContextsToOpen.count == 0) {
+    base::UmaHistogramEnumeration(kContextsToOpen, ContextsToOpen::kNoContexts);
     return;
   }
+  ContextsToOpen contextInfo = self.sceneState.URLContextsToOpen.count == 1
+                                   ? ContextsToOpen::kOneContext
+                                   : ContextsToOpen::kMoreThanOneContext;
+  base::UmaHistogramEnumeration(kContextsToOpen, contextInfo);
 
   NSSet<UIOpenURLContext*>* contexts = self.sceneState.URLContextsToOpen;
   self.sceneState.URLContextsToOpen = nil;

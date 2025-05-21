@@ -2763,6 +2763,12 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextMenuUma.Action) -->
 
+<enum name="ContextsToOpen">
+  <int value="0" label="No contexts"/>
+  <int value="1" label="One context"/>
+  <int value="2" label="More than one context"/>
+</enum>
+
 <!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
 
 <enum name="ConversionCreateAggregatableReportStatus">
