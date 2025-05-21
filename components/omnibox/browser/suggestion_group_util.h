@@ -28,6 +28,9 @@ inline constexpr int kOpenTabMatchZeroSuggestRelevance = 1500;
 // ensure they appear above the remote zero-prefix suggestions which have
 // relevance scores between 550-1400.
 inline constexpr int kContextualActionZeroSuggestRelevance = 1500;
+// However, when on SRP, the action needs to be sorted below other matches in
+// the DesktopSRPZpsSection so a lower relevance is used to avoid conflict.
+inline constexpr int kContextualActionZeroSuggestRelevanceLow = 410;
 // Remote zero-prefix suggestions are assigned a default relevance of 1400 when
 // not explicitly specified by the server, ensuring consistency with their usual
 // relevance scores.

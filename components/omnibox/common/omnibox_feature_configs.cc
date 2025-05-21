@@ -140,6 +140,10 @@ bool ContextualSearch::IsContextualSearchEnabled() const {
   return contextual_zps_limit > 0;
 }
 
+bool ContextualSearch::IsEnabledWithPrefetch() const {
+  return IsContextualSearchEnabled() && zero_suggest_synchronous_matches_only;
+}
+
 BASE_FEATURE(MiaZPS::kOmniboxMiaZPS,
              "OmniboxMiaZPS",
              base::FEATURE_DISABLED_BY_DEFAULT);

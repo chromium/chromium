@@ -1843,15 +1843,15 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
   scoped_config.Get().enabled = true;
   scoped_config.Get().max_search_suggestions = 4;
   scoped_config.Get().max_url_suggestions = 4;
-  auto test = [](ACMatches matches, std::vector<int> expected_relevances,
-                 bool trends_has_default_side_type = true) {
+  auto test = [](size_t action_count, ACMatches matches,
+                 std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
     group_configs[omnibox::GROUP_MOST_VISITED];
     group_configs[omnibox::GROUP_PREVIOUS_SEARCH_RELATED];
     // Max 8 suggestions, with an upper limit of 4 search suggestions.
-    sections.push_back(
-        std::make_unique<DesktopSRPZpsSection>(group_configs, 8u, 4u, 4u));
+    sections.push_back(std::make_unique<DesktopSRPZpsSection>(
+        group_configs, 8u + action_count, 4u, 4u, action_count));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1859,43 +1859,83 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
     SCOPED_TRACE(
         "Given 12 srp zps matches, the group should respect the search "
         "suggestion limit");
-    test(
-        {
-            CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-            CreateMatch(99, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-            CreateMatch(98, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-            CreateMatch(97, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-            CreateMatch(96, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-            CreateMatch(95, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-            CreateMatch(94, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(93, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(92, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(91, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(89, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(88, omnibox::GROUP_MOST_VISITED),
-        },
-        {100, 99, 98, 97, 94, 93, 92, 91});
+    test(0,
+         {
+             CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(99, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(98, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(97, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(96, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(95, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(94, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(93, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(92, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(91, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(89, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(88, omnibox::GROUP_MOST_VISITED),
+         },
+         {100, 99, 98, 97, 94, 93, 92, 91});
   }
   {
     SCOPED_TRACE(
         "Given 12 srp zps matches, the group should respect the url suggestion "
         "limit");
-    test(
-        {
-            CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(98, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(97, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(96, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(95, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(94, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(93, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(92, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(91, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(90, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(89, omnibox::GROUP_MOST_VISITED),
-        },
-        {100, 99, 98, 97, 96});
+    test(0,
+         {
+             CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(98, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(97, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(96, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(95, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(94, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(93, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(92, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(91, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(90, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(89, omnibox::GROUP_MOST_VISITED),
+         },
+         {100, 99, 98, 97, 96});
+  }
+  {
+    SCOPED_TRACE("Contextual search action is excluded when disabled.");
+    test(0,
+         {
+             CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(99, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(98, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(97, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(96, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(95, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(94, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(93, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(92, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(91, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(89, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(88, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(87, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+         },
+         {100, 99, 98, 97, 94, 93, 92, 91});
+  }
+  {
+    SCOPED_TRACE("Contextual search action is included when enabled.");
+    test(1,
+         {
+             CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(99, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(98, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(97, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(96, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(95, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+             CreateMatch(94, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(93, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(92, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(91, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(89, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(88, omnibox::GROUP_MOST_VISITED),
+             CreateMatch(87, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+         },
+         {100, 99, 98, 97, 94, 93, 92, 91, 87});
   }
 }
 

@@ -458,6 +458,10 @@ void AutocompleteResult::SortAndCull(
             std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_desktop) {
+      const size_t contextual_zps_limit =
+          omnibox_feature_configs::ContextualSearch::Get().contextual_zps_limit;
+      const size_t contextual_action_limit =
+          contextual_zps_limit > 0u ? 1u : 0u;
       if (omnibox::IsLensSearchbox(page_classification)) {
         switch (page_classification) {
           case OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
@@ -519,8 +523,9 @@ void AutocompleteResult::SortAndCull(
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(std::make_unique<DesktopSRPZpsSection>(
-            suggestion_groups_map_, max_suggestions, max_search_suggestions,
-            max_url_suggestions));
+            suggestion_groups_map_, max_suggestions + contextual_action_limit,
+            max_search_suggestions, max_url_suggestions,
+            contextual_action_limit));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {
@@ -530,14 +535,9 @@ void AutocompleteResult::SortAndCull(
         }
 #endif
       } else {
-        const size_t contextual_zps_limit =
-            omnibox_feature_configs::ContextualSearch::Get()
-                .contextual_zps_limit;
         // Make space for the extra action when there is any contextual search
         // budget. It needs to be included above any contextual search matches
         // but does not count against their limit.
-        const size_t contextual_action_limit =
-            contextual_zps_limit > 0u ? 1u : 0u;
         sections.push_back(std::make_unique<DesktopWebURLZpsSection>(
             suggestion_groups_map_, max_url_suggestions));
         sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(

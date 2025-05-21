@@ -216,7 +216,8 @@ class DesktopSRPZpsSection : public ZpsSection {
   explicit DesktopSRPZpsSection(omnibox::GroupConfigMap& group_configs,
                                 size_t max_suggestions,
                                 size_t search_limit,
-                                size_t url_limit);
+                                size_t url_limit,
+                                size_t contextual_action_limit);
 };
 
 // Section expressing the Desktop URL ZPS limits and grouping for the Web.

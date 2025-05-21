@@ -747,7 +747,9 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
           input.current_page_classification()) &&
       !omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
-           .MostVisitedPrefetchingEnabled()) {
+           .MostVisitedPrefetchingEnabled() &&
+      !omnibox_feature_configs::ContextualSearch::Get()
+           .IsEnabledWithPrefetch()) {
     return;
   }
   for (auto provider : providers_) {

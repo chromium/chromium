@@ -512,7 +512,8 @@ DesktopSRPZpsSection::DesktopSRPZpsSection(
     omnibox::GroupConfigMap& group_configs,
     size_t max_suggestions,
     size_t search_limit,
-    size_t url_limit)
+    size_t url_limit,
+    size_t contextual_action_limit)
     : ZpsSection(
           max_suggestions,
           {
@@ -526,8 +527,16 @@ DesktopSRPZpsSection::DesktopSRPZpsSection(
                     {
                         {omnibox::GROUP_MOST_VISITED, url_limit},
                     }),
+#if 1
+              Group(contextual_action_limit,
+                    {
+                        {omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION,
+                         contextual_action_limit},
+                    }),
+#endif
           },
-          group_configs) {}
+          group_configs) {
+}
 
 DesktopWebURLZpsSection::DesktopWebURLZpsSection(
     omnibox::GroupConfigMap& group_configs,

@@ -129,6 +129,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_info/core/features.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -666,7 +667,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   UMABrowsingActivityObserver::TabHelper::CreateForWebContents(web_contents);
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
-  if (OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabled()) {
+  if (OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabled() ||
+      omnibox_feature_configs::ContextualSearch::Get()
+          .IsEnabledWithPrefetch()) {
     ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);
   }
 #endif  // BUILDFLAG(IS_ANDROID)

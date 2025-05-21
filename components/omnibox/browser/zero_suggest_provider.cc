@@ -459,7 +459,9 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::StartPrefetch");
 
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
-          input.current_page_classification())) {
+          input.current_page_classification()) &&
+      !omnibox_feature_configs::ContextualSearch::Get()
+           .IsEnabledWithPrefetch()) {
     return;
   }
 
@@ -560,7 +562,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   // Do not start a request if async requests are disallowed.
   if (input.omit_asynchronous_matches() ||
       omnibox_feature_configs::ContextualSearch::Get()
-          .zero_suggest_synchronous_matches_only) {
+          .IsEnabledWithPrefetch()) {
     return;
   }
 

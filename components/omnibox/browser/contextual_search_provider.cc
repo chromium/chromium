@@ -98,15 +98,16 @@ void ContextualSearchProvider::Start(
   const auto [input, starter_pack_engine] = AdjustInputForStarterPackKeyword(
       autocomplete_input, client()->GetTemplateURLService());
   if (!starter_pack_engine) {
-    // Only surface the action matches that help the user find their way into
-    // the '@page' scope. Requirements: web, non-SRP, non-NTP, with empty input.
-    // TODO(crbug.com/406276335): Move and condition on zero suggest response to
-    //  the ZeroSuggestProvider so it can inhibit the ad actions for some pages.
-    if (omnibox::IsOtherWebPage(input.current_page_classification()) &&
-        input.current_url().SchemeIsHTTPOrHTTPS() &&
+    // Only surface the action match that helps the user find their way to Lens.
+    // Requirements: web or SRP, non-NTP, with empty input, and local files are
+    // allowed but not other local schemes.
+    if ((omnibox::IsOtherWebPage(input.current_page_classification()) ||
+         omnibox::IsSearchResultsPage(input.current_page_classification())) &&
+        (input.current_url().SchemeIsHTTPOrHTTPS() ||
+         input.current_url().SchemeIs(url::kFileScheme)) &&
         (input.IsZeroSuggest() ||
          input.type() == metrics::OmniboxInputType::EMPTY) &&
-       client()->IsLensEnabled()) {
+        client()->IsLensEnabled()) {
       AddPageSearchActionMatches(input);
     }
     return;
@@ -304,8 +305,14 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
 void ContextualSearchProvider::AddPageSearchActionMatches(
     const AutocompleteInput& input) {
   // These matches are effectively pedals that don't require any query matching.
-  AutocompleteMatch match(this, omnibox::kContextualActionZeroSuggestRelevance,
-                          false, AutocompleteMatchType::PEDAL);
+  // Relevance depends on the page class, and selecting an appropriate score is
+  // necessary to avoid downstream conflicts in grouping framework sort order.
+  AutocompleteMatch match(
+      this,
+      omnibox::IsSearchResultsPage(input.current_page_classification())
+          ? omnibox::kContextualActionZeroSuggestRelevanceLow
+          : omnibox::kContextualActionZeroSuggestRelevance,
+      false, AutocompleteMatchType::PEDAL);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
   match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
@@ -314,9 +321,13 @@ void ContextualSearchProvider::AddPageSearchActionMatches(
   match.takeover_action =
       base::MakeRefCounted<ContextualSearchOpenLensAction>();
   match.contents = base::UTF8ToUTF16(input.current_url().host());
-  match.contents_class = {{0, ACMatchClassification::DIM}};
+  if (!match.contents.empty()) {
+    match.contents_class = {{0, ACMatchClassification::DIM}};
+  }
   match.description = match.takeover_action->GetLabelStrings().hint;
-  match.description_class = {{0, ACMatchClassification::NONE}};
+  if (!match.description.empty()) {
+    match.description_class = {{0, ACMatchClassification::NONE}};
+  }
   matches_.push_back(match);
 }
 

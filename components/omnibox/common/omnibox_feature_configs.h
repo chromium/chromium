@@ -147,6 +147,10 @@ struct ContextualSearch : Config<ContextualSearch> {
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
 
+  // Whether to enable prefetching to support this feature's synchronous
+  // match production requirement.
+  bool IsEnabledWithPrefetch() const;
+
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;
 
