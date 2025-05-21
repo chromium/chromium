@@ -10,8 +10,11 @@ load("//lib/targets.star", "targets")
 luci.bucket(
     name = "webrtc",
     constraints = luci.bucket_constraints(
-        pools = ["luci.webrtc.ci"],
-        service_accounts = ["webrtc-ci-builder@chops-service-accounts.iam.gserviceaccount.com"],
+        pools = ["luci.chromium.webrtc"],
+        service_accounts = [
+            "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "webrtc-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+        ],
     ),
     bindings = [
         luci.binding(
@@ -35,6 +38,10 @@ luci.bucket(
         ),
         luci.binding(
             roles = "role/scheduler.owner",
+            groups = "project-webrtc-admins",
+        ),
+        luci.binding(
+            roles = "role/swarming.poolUser",
             groups = "project-webrtc-admins",
         ),
         luci.binding(

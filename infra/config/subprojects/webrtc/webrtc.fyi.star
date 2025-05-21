@@ -11,8 +11,11 @@ load("//lib/xcode.star", "xcode")
 luci.bucket(
     name = "webrtc.fyi",
     constraints = luci.bucket_constraints(
-        pools = ["luci.webrtc.ci"],
-        service_accounts = ["webrtc-ci-builder@chops-service-accounts.iam.gserviceaccount.com"],
+        pools = ["luci.chromium.webrtc.fyi"],
+        service_accounts = [
+            "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "webrtc-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+        ],
     ),
     bindings = [
         luci.binding(
@@ -39,10 +42,37 @@ luci.bucket(
             groups = "project-webrtc-admins",
         ),
         luci.binding(
+            roles = "role/swarming.poolUser",
+            groups = "project-webrtc-admins",
+        ),
+        luci.binding(
             roles = "role/swarming.taskTriggerer",
             groups = "project-webrtc-admins",
         ),
     ],
+)
+
+# Define the shadow bucket of `webrtc.fyi`.
+luci.bucket(
+    name = "webrtc.fyi.shadow",
+    shadows = "webrtc.fyi",
+    # Only the builds with allowed pool and service account can be created
+    # in this bucket.
+    constraints = luci.bucket_constraints(
+        pools = ["luci.chromium.webrtc.fyi"],
+        service_accounts = [
+            "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "webrtc-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+        ],
+    ),
+    bindings = [
+        # for led permissions.
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "project-webrtc-led-users",
+        ),
+    ],
+    dynamic = True,
 )
 
 luci.gitiles_poller(
