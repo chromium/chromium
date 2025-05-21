@@ -51,37 +51,50 @@ class FixedRectCropAction(BaseCropAction):
           rectangle
       x2: An int specifying the x coordinate of the bottom right corner of the
           crop rectangle. Can be None to explicitly specify the right side of
-          the image, although clamping will be performed regardless.
+          the image, although clamping will be performed regardless. Can be
+          negative to specify an offset relative to the right edge.
       y2: An int specifying the y coordinate of the bottom right corner of the
           crop rectangle. Can be None to explicitly specify the bottom of the
-          image, although clamping will be performed regardless.
+          image, although clamping will be performed regardless. Can be
+          negative to specify an offset relative to the bottom.
     """
     assert x1 >= 0
     assert y1 >= 0
-    assert x2 is None or x2 > x1
-    assert y2 is None or y2 > y1
+    assert x2 is None or x2 > x1 or x2 < 0
+    assert y2 is None or y2 > y1 or y2 < 0
     self._x1 = x1
     self._y1 = y1
     self._x2 = x2
     self._y2 = y2
 
+  # pylint: disable=too-many-locals
   def CropScreenshot(self, screenshot: ct.Screenshot, dpr: float,
                      device_type: str, os_name: str) -> ct.Screenshot:
     del device_type, os_name  # unused
     start_x = int(self._x1 * dpr)
     start_y = int(self._y1 * dpr)
 
+    image_width = image_util.Width(screenshot)
+    image_height = image_util.Height(screenshot)
+
     # When actually clamping the value, it's possible we'll catch the
     # scrollbar, so account for its width in the clamp.
-    max_x = image_util.Width(screenshot) - FixedRectCropAction.SCROLLBAR_WIDTH
-    max_y = image_util.Height(screenshot)
+    max_x = image_width - FixedRectCropAction.SCROLLBAR_WIDTH
+    max_y = image_height
 
     if self._x2 is None:
       end_x = max_x
+    elif self._x2 < 0:
+      tentative_x = max(start_x + 1, int(self._x2 * dpr) + image_width)
+      end_x = min(tentative_x, max_x)
     else:
       end_x = min(int(self._x2 * dpr), max_x)
+
     if self._y2 is None:
       end_y = max_y
+    elif self._y2 < 0:
+      tentative_y = max(start_y + 1, int(self._y2 * dpr) + image_height)
+      end_y = min(tentative_y, max_y)
     else:
       end_y = min(int(self._y2 * dpr), max_y)
 
@@ -89,6 +102,7 @@ class FixedRectCropAction(BaseCropAction):
     crop_height = end_y - start_y
     return image_util.Crop(screenshot, start_x, start_y, crop_width,
                            crop_height)
+  # pylint: enable=too-many-locals
 
 
 class NonWhiteContentCropAction(BaseCropAction):

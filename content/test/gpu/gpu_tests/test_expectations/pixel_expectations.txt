@@ -280,6 +280,10 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 # on these devices.
 crbug.com/1372155 [ android android-sm-a137f ] Pixel_WebGLFloat [ Skip ]
 
+# Meet Effects tests are only supported on desktop platforms.
+[ android ] Pixel_MeetEffects* [ Skip ]
+[ fuchsia ] Pixel_MeetEffects* [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -341,6 +345,9 @@ crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
 
+# Currently has flaky test setup hangs on Mac.
+crbug.com/286989320 [ mac ] Pixel_MeetEffects* [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -383,6 +390,11 @@ crbug.com/403252788 [ mac angle-metal asan graphite-enabled intel-0x3e9b passthr
 # Flakily hits heartbeat timeout, context restoration likely just slow on these
 # devices
 crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLContextRestored [ Slow ]
+
+# Meet effects tests currently take a while to actually start, which can cause
+# the initial heartbeat message to be delayed significantly.
+crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Slow ]
+crbug.com/286989320 [ win ] Pixel_MeetEffects* [ Slow ]
 
 ###################
 # Failures/Flakes #
@@ -444,6 +456,9 @@ crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_
 
 # ChromeOS failures
 crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer-skia-gl ] Pixel_RenderPasses [ Failure ]
+
+# Times out on ChromeOS devices even when marked as Slow.
+crbug.com/286989320 [ chromeos ] Pixel_MeetEffects* [ Failure ]
 
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]

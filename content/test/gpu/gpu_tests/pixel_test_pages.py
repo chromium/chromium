@@ -6,6 +6,7 @@
 # pylint: disable=too-many-lines
 
 from collections.abc import Callable
+from datetime import date
 from enum import Enum
 import json
 import logging
@@ -1757,4 +1758,41 @@ class PixelTestPages():
             base_name + '_VP8_1Frame',
             crop_action=ca.NoOpCropAction(),
         ),
+    ]
+
+  @staticmethod
+  def MeetEffectsPages(base_name: str) -> list[PixelTestPage]:
+    video_path = os.path.join(gpu_path_util.MEET_EFFECTS_VIDEO_DIR,
+                              'effects-normal-light.y4m')
+    video_args = [
+        '--auto-accept-camera-and-microphone-capture',
+        '--use-fake-device-for-media-stream',
+        f'--use-file-for-fake-video-capture={video_path}'
+    ]
+    # The video is rather large on the page, which can cause a horizontal
+    # scrollbar to appear along the bottom. So, crop that first.
+    standard_crop = ca.NonWhiteContentCropAction(
+        ca.FixedRectCropAction(0, 60, None, -20))
+    # Run the tests on CI for a while to see how stable they are with
+    # fuzzy matching enabled.
+    grace_period_end = date(2025, 7, 1)
+    return [
+        PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=359',
+                      f'{base_name}_MeetEffectsCatOnHead',
+                      crop_action=standard_crop,
+                      browser_args=video_args,
+                      matching_algorithm=ROUNDING_ERROR_ALGO,
+                      grace_period_end=grace_period_end),
+        PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=539',
+                      f'{base_name}_MeetEffectsRainbowWig',
+                      crop_action=standard_crop,
+                      browser_args=video_args,
+                      matching_algorithm=ROUNDING_ERROR_ALGO,
+                      grace_period_end=grace_period_end),
+        PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=530',
+                      f'{base_name}_MeetEffectsTruckerHat',
+                      crop_action=standard_crop,
+                      browser_args=video_args,
+                      matching_algorithm=ROUNDING_ERROR_ALGO,
+                      grace_period_end=grace_period_end),
     ]

@@ -1058,6 +1058,28 @@ deps = {
     'dep_type': 'cipd',
   },
 
+  'src/content/test/data/gpu/meet_effects_videos': {
+    'packages': [
+      {
+        'package': 'chromium/testing/meet-effects-videos',
+        'version': 'version:1.0',
+      }
+    ],
+    'dep_type': 'cipd',
+  },
+  'src/content/test/data/gpu/meet_effects': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-telemetry',
+    'objects': [
+      {
+        'object_name': 'meet-gpu-tests/750908933.tar.gz',
+        'sha256sum': '687f07f3963ca30339aae16bd053357a1d632db67dc744539f43bf9c83b137e5',
+        'size_bytes': 192267405,
+        'generation': 1747334995545331,
+      },
+    ],
+  },
+
   # We don't know target_cpu at deps time. At least until there's a universal
   # binary of httpd-php, pull both intel and arm versions in DEPS and then pick
   # the right one at runtime.

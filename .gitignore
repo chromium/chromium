@@ -213,6 +213,8 @@ vs-chromium-project.txt
 /content/test/data/gpu/gpu_reference/
 /content/test/data/gpu/mediapipe/
 /content/test/data/gpu/mediapipe_zip/mediapipe_chromium_tests.zip
+/content/test/data/gpu/meet_effects/
+/content/test/data/gpu/meet_effects_videos/
 /content/test/data/layout_tests/
 /content/test/data/plugin/
 /content/test/gpu/.webgpu_typescript/
