@@ -5,17 +5,6 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
-blink_modules_sources("canvas_proxy_headers") {
-  sources = [
-    "htmlcanvas/v8_rendering_context.h",
-    "offscreencanvas/v8_offscreen_rendering_context.h",
-  ]
-
-  if (is_win) {
-    arflags = [ "/llvmlibempty" ]
-  }
-}
-
 blink_modules_sources("canvas") {
   sources = [
     "canvas2d/base_rendering_context_2d.cc",
@@ -72,8 +61,6 @@ blink_modules_sources("canvas") {
     "testing/canvas_test_utils.cc",
   ]
 
-  public_deps =
-      [ "//third_party/blink/renderer/modules/canvas:canvas_proxy_headers" ]
   deps = [
     "//third_party/blink/renderer/modules/webcodecs",
     "//third_party/blink/renderer/modules/webgpu",

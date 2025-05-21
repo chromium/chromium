@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_offscreen_rendering_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_rendering_context.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
-#include "third_party/blink/renderer/modules/canvas/htmlcanvas/v8_rendering_context.h"
-#include "third_party/blink/renderer/modules/canvas/offscreencanvas/v8_offscreen_rendering_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"

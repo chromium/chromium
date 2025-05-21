@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/modules/canvas/htmlcanvas/v8_rendering_context.h"
-#include "third_party/blink/renderer/modules/canvas/offscreencanvas/v8_offscreen_rendering_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_offscreen_rendering_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/ext_clip_control.h"
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_float.h"
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_half_float.h"

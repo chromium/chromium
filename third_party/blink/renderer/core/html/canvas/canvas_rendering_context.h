@@ -79,10 +79,8 @@ class ExecutionContext;
 class ImageBitmap;
 class ScriptState;
 class StaticBitmapImage;
-using V8RenderingContext = class
-    V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext;
-using V8OffscreenRenderingContext = class
-    V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext;
+class V8RenderingContext;
+class V8OffscreenRenderingContext;
 class WebGraphicsContext3DVideoFramePool;
 
 class CORE_EXPORT CanvasRenderingContext
