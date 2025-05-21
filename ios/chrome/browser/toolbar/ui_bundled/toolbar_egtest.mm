@@ -325,8 +325,8 @@ void WaitForEmpyOmnibox() {
 }
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
-// TODO(crbug.com/362621166): Test is flaky.
-- (void)DISABLED_testTypeJavaScriptIntoOmnibox {
+- (void)testTypeJavaScriptIntoOmnibox {
+  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGreyUI
@@ -335,18 +335,12 @@ void WaitForEmpyOmnibox() {
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(@"JS Alert Text")]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       @"JS Alert Text")];
 
-  bool alertVisible = base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, condition);
-  GREYAssertTrue(alertVisible, @"JavaScript alert didn't appear");
+  // Close the opened tab to remove the javascript alert.
+  [ChromeEarlGrey closeCurrentTab];
 }
 
 // Loads WebUI page, types JavaScript into Omnibox and verifies that alert is
