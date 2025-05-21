@@ -575,6 +575,7 @@ chromium-metrics-reviews@google.com.
   <int value="-2103246641" label="chrome://signin-internals/"/>
   <int value="-2087891836" label="chrome://debug-webuis-disabled/"/>
   <int value="-2086395469" label="chrome://dlp-internals/"/>
+  <int value="-2084645929" label="chrome://infobar-internals/"/>
   <int value="-2069349961" label="chrome://history-clusters-internals/"/>
   <int value="-2061366287" label="chrome://dev-ui-loader/"/>
   <int value="-2034706497" label="chrome://net-internals/"/>

@@ -96,6 +96,8 @@
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
+#include "chrome/browser/ui/webui/infobar_internals/infobar_internals.mojom.h"
+#include "chrome/browser/ui/webui/infobar_internals/infobar_internals_ui.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
@@ -549,6 +551,9 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
                                            HistoryUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<
+      infobar_internals::mojom::PageHandlerFactory, InfoBarInternalsUI>(map);
 
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(

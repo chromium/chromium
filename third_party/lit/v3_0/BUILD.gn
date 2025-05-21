@@ -38,6 +38,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/family_link_user_internals:build_ts",
     "//chrome/browser/resources/feedback:build_ts",
     "//chrome/browser/resources/history:build_ts",
+    "//chrome/browser/resources/infobar_internals:build_ts",
     "//chrome/browser/resources/intro:build_ts",
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",

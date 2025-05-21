@@ -142,6 +142,9 @@ inline constexpr char kChromeUIHistorySyncedTabs[] = "/syncedTabs";
 inline constexpr char kChromeUIHistoryURL[] = "chrome://history/";
 inline constexpr char16_t kChromeUIHistoryURL16[] = u"chrome://history/";
 inline constexpr char kChromeUIIdentityInternalsHost[] = "identity-internals";
+inline constexpr char kChromeUIInfobarInternalsHost[] = "infobar-internals";
+inline constexpr char kChromeUIInfobarInternalsURL[] =
+    "chrome://infobar-internals/";
 inline constexpr char kChromeUIImageHost[] = "image";
 inline constexpr char kChromeUIImageURL[] = "chrome://image/";
 inline constexpr char kChromeUIInspectHost[] = "inspect";
