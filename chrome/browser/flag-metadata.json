@@ -8111,6 +8111,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "reading-list-enable-sync-transport-mode-upon-sign-in",
+    "owners": [ "mmrashad@google.com", "rsult@google.com", "uno-desktop@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "realbox-secondary-zero-suggest",
     "owners": [ "mahmadi@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120

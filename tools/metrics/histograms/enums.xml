@@ -13539,6 +13539,8 @@ from previous Chrome versions.
   <int value="-200792853" label="UnifiedPasswordManagerAndroid:disabled"/>
   <int value="-200160012" label="RelatedSearchesUi:disabled"/>
   <int value="-199690952" label="PageInfoV2:enabled"/>
+  <int value="-199443830"
+      label="ReadingListEnableSyncTransportModeUponSignIn:enabled"/>
   <int value="-198725896" label="AlmanacGameMigration:enabled"/>
   <int value="-198595821"
       label="EnterpriseSecurityEventReportingOnAndroid:enabled"/>
@@ -16636,6 +16638,8 @@ from previous Chrome versions.
   <int value="979915681" label="LocalPrinterObserving:disabled"/>
   <int value="980396200" label="enable-new-korean-ime"/>
   <int value="981099951" label="GameDashboardGamePWAs:enabled"/>
+  <int value="981425756"
+      label="ReadingListEnableSyncTransportModeUponSignIn:disabled"/>
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>

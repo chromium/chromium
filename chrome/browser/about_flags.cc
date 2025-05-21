@@ -11120,6 +11120,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncEnableBookmarksInTransportModeDescription,
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kSyncEnableBookmarksInTransportMode)},
+    {"reading-list-enable-sync-transport-mode-upon-sign-in",
+     flag_descriptions::kReadingListEnableSyncTransportModeUponSignInName,
+     flag_descriptions::
+         kReadingListEnableSyncTransportModeUponSignInDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(syncer::kReadingListEnableSyncTransportModeUponSignIn)},
 #endif
 
     {"visited-url-ranking-service-domain-deduplication",

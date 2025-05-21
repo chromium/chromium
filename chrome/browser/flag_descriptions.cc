@@ -8352,6 +8352,11 @@ const char kSyncEnableBookmarksInTransportModeName[] =
 const char kSyncEnableBookmarksInTransportModeDescription[] =
     "Enables account bookmarks for signed-in non-syncing users";
 
+const char kReadingListEnableSyncTransportModeUponSignInName[] =
+    "Enable reading list in transport mode";
+const char kReadingListEnableSyncTransportModeUponSignInDescription[] =
+    "Enables account reading list for signed-in non-syncing users";
+
 const char kEnableGenericOidcAuthProfileManagementName[] =
     "Enable generic OIDC profile management";
 const char kEnableGenericOidcAuthProfileManagementDescription[] =
