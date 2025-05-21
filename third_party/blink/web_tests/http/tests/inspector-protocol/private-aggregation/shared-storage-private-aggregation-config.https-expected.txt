@@ -8,7 +8,8 @@ Events: [
         ownerSite : https://127.0.0.1
         params : {
             scriptSourceUrl : https://127.0.0.1:8443/inspector-protocol/shared-storage-private-aggregation/resources/shared-storage-module.js
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -20,13 +21,15 @@ Events: [
         ownerSite : https://127.0.0.1
         params : {
             keepAlive : true
+            operationId : 0
             operationName : contribute-to-histogram
             privateAggregationConfig : {
                 filteringIdMaxBytes : 8
                 maxContributions : 20
             }
             serializedData : <string>
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -38,6 +41,7 @@ Events: [
         ownerSite : https://127.0.0.1
         params : {
             keepAlive : false
+            operationId : 1
             operationName : contribute-to-histogram
             privateAggregationConfig : {
                 aggregationCoordinatorOrigin : https://127.0.0.1:8443
@@ -58,7 +62,8 @@ Events: [
                 }
             ]
             urnUuid : <string>
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }

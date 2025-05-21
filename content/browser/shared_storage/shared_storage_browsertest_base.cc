@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -64,6 +65,11 @@ namespace {
 
 std::string TimeDeltaToString(base::TimeDelta delta) {
   return base::StrCat({base::NumberToString(delta.InMilliseconds()), "ms"});
+}
+
+int GetSampleCountForHistogram(std::string_view histogram_name) {
+  auto* histogram = base::StatisticsRecorder::FindHistogram(histogram_name);
+  return histogram ? histogram->SnapshotSamples()->TotalCount() : 0;
 }
 
 }  // namespace
@@ -543,6 +549,37 @@ void SharedStorageBrowserTestBase::WaitForHistograms(
     const std::vector<std::string>& histogram_names) {
   for (const auto& name : histogram_names) {
     WaitForHistogram(name);
+  }
+}
+
+// static
+void SharedStorageBrowserTestBase::WaitForHistogramWithCount(
+    std::string_view histogram_name,
+    int count) {
+  if (GetSampleCountForHistogram(histogram_name) >= count) {
+    return;
+  }
+
+  base::RunLoop run_loop;
+  auto histogram_observer =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          histogram_name,
+          base::BindLambdaForTesting([&](std::string_view histogram_name,
+                                         uint64_t name_hash,
+                                         base::HistogramBase::Sample32 sample) {
+            if (GetSampleCountForHistogram(histogram_name) >= count) {
+              run_loop.Quit();
+            }
+          }));
+  run_loop.Run();
+}
+
+// static
+void SharedStorageBrowserTestBase::WaitForHistogramsWithCounts(
+    const std::vector<std::tuple<std::string_view, int>>&
+        histogram_names_and_counts) {
+  for (auto [name, count] : histogram_names_and_counts) {
+    WaitForHistogramWithCount(name, count);
   }
 }
 

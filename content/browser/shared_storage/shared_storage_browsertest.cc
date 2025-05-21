@@ -225,6 +225,11 @@ class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
   }
   ~TestSharedStorageDevToolsClient() override { DetachProtocolClient(); }
 
+  void set_expected_notification_method(
+      const std::string& expected_notification_method) {
+    expected_notification_method_ = expected_notification_method;
+  }
+
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {
     std::string_view message_str(reinterpret_cast<const char*>(message.data()),
@@ -268,7 +273,7 @@ class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
   }
 
  private:
-  std::string expected_notification_method_ = "Storage.sharedStorageAccessed";
+  std::string expected_notification_method_;
   std::vector<base::Value::Dict> params_for_notifications_with_expected_method_;
 };
 
@@ -9802,8 +9807,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         MainFrameId(), origin_str}});
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
-                       TwoWindows_DevToolsNotificationsFilteredByMainFrame) {
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    TwoWindows_DevToolsAccessNotificationsFilteredByMainFrame) {
   GURL url1 = https_server()->GetURL("a.test", kPageWithBlankIframePath);
   GURL url2 = https_server()->GetURL("b.test", kPageWithBlankIframePath);
   GURL iframe_url1 = https_server()->GetURL("c.test", kSimplePagePath);
@@ -9812,12 +9818,15 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   RenderFrameHost* main_rfh1 = PrimaryFrameTreeNodeRoot()->current_frame_host();
   TestSharedStorageDevToolsClient main_frame_devtools_client1(main_rfh1);
+  std::string expected_method = "Storage.sharedStorageAccessed";
+  main_frame_devtools_client1.set_expected_notification_method(expected_method);
 
   EXPECT_TRUE(
       NavigateIframeToURL(shell()->web_contents(), "test_iframe", iframe_url1));
   RenderFrameHost* iframe1 =
       PrimaryFrameTreeNodeRoot()->child_at(0)->current_frame_host();
   TestSharedStorageDevToolsClient iframe_devtools_client1(iframe1);
+  iframe_devtools_client1.set_expected_notification_method(expected_method);
 
   EXPECT_TRUE(ExecJs(iframe1, "sharedStorage.delete('key0')"));
 
@@ -9828,6 +9837,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   RenderFrameHost* main_rfh2 =
       PrimaryFrameTreeNodeRootFromShell(shell2)->current_frame_host();
   TestSharedStorageDevToolsClient main_frame_devtools_client2(main_rfh2);
+  main_frame_devtools_client2.set_expected_notification_method(expected_method);
 
   EXPECT_TRUE(
       NavigateIframeToURL(shell2->web_contents(), "test_iframe", iframe_url2));
@@ -9835,6 +9845,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                  ->child_at(0)
                                  ->current_frame_host();
   TestSharedStorageDevToolsClient iframe_devtools_client2(iframe2);
+  iframe_devtools_client2.set_expected_notification_method(expected_method);
 
   EXPECT_TRUE(ExecJs(iframe2, "sharedStorage.set('key2', 'value2')"));
 
@@ -9854,8 +9865,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                            /*expected_total_host_count=*/2u);
 
   std::vector<std::string> selected_key_paths(
-      {"method", "ownerSite", "params.operationName", "params.ignoreIfPresent",
-       "params.key", "params.value", "params.workletId", "scope"});
+      {"method", "ownerSite", "params.operationId", "params.operationName",
+       "params.ignoreIfPresent", "params.key", "params.value",
+       "params.workletOrdinal", "scope"});
   std::vector<std::map<std::string, std::string>>
       selected_params_observed_main1 =
           main_frame_devtools_client1
@@ -9876,24 +9888,25 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       selected_params_observed_main1[1],
       ElementsAre(Pair("method", "addModule"),
                   Pair("ownerSite", "https://a.test"),
-                  Pair("params.workletId", "0"), Pair("scope", "window")));
+                  Pair("params.workletOrdinal", "0"), Pair("scope", "window")));
   EXPECT_THAT(
       selected_params_observed_main1[2],
       ElementsAre(Pair("method", "run"), Pair("ownerSite", "https://a.test"),
+                  Pair("params.operationId", "0"),
                   Pair("params.operationName", "test-operation"),
-                  Pair("params.workletId", "0"), Pair("scope", "window")));
+                  Pair("params.workletOrdinal", "0"), Pair("scope", "window")));
   EXPECT_THAT(
       selected_params_observed_main1[3],
       ElementsAre(Pair("method", "set"), Pair("ownerSite", "https://a.test"),
                   Pair("params.ignoreIfPresent", "false"),
                   Pair("params.key", "key0"), Pair("params.value", "value0"),
-                  Pair("params.workletId", "0"),
+                  Pair("params.workletOrdinal", "0"),
                   Pair("scope", "sharedStorageWorklet")));
   EXPECT_THAT(
       selected_params_observed_main1[4],
       ElementsAre(Pair("method", "append"), Pair("ownerSite", "https://a.test"),
                   Pair("params.key", "key0"), Pair("params.value", "value1"),
-                  Pair("params.workletId", "0"),
+                  Pair("params.workletOrdinal", "0"),
                   Pair("scope", "sharedStorageWorklet")));
 
   std::vector<std::map<std::string, std::string>>
@@ -9918,22 +9931,183 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       selected_params_observed_main2[1],
       ElementsAre(Pair("method", "createWorklet"),
                   Pair("ownerSite", "https://b.test"),
-                  Pair("params.workletId", "1"), Pair("scope", "window")));
+                  Pair("params.workletOrdinal", "1"), Pair("scope", "window")));
   EXPECT_THAT(
       selected_params_observed_main2[2],
       ElementsAre(Pair("method", "run"), Pair("ownerSite", "https://b.test"),
+                  Pair("params.operationId", "0"),
                   Pair("params.operationName", "test-operation"),
-                  Pair("params.workletId", "1"), Pair("scope", "window")));
+                  Pair("params.workletOrdinal", "1"), Pair("scope", "window")));
   EXPECT_THAT(
       selected_params_observed_main2[3],
       ElementsAre(Pair("method", "delete"), Pair("ownerSite", "https://b.test"),
-                  Pair("params.key", "key1"), Pair("params.workletId", "1"),
+                  Pair("params.key", "key1"),
+                  Pair("params.workletOrdinal", "1"),
                   Pair("scope", "sharedStorageWorklet")));
   EXPECT_THAT(
       selected_params_observed_main2[4],
       ElementsAre(Pair("method", "clear"), Pair("ownerSite", "https://b.test"),
-                  Pair("params.workletId", "1"),
+                  Pair("params.workletOrdinal", "1"),
                   Pair("scope", "sharedStorageWorklet")));
+
+  ASSERT_EQ(IsLocalRoot(iframe1), IsLocalRoot(iframe2));
+
+  if (!IsLocalRoot(iframe1)) {
+    // In this case, `iframe_devtools_client1` and `iframe_devtools_client2` are
+    // actually attached to their respective main frame hosts. They will have
+    // received the same notifications as above.
+    return;
+  }
+
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_iframe1 =
+          iframe_devtools_client1
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  selected_key_paths);
+
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_iframe2 =
+          iframe_devtools_client2
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  std::move(selected_key_paths));
+
+  // Neither `iframe_devtools_client1` nor `iframe_devtools_client2` receives
+  // any shared storage notifications. The notifications for the subframes'
+  // events were received by their respective main frame clients above.
+  EXPECT_TRUE(selected_params_observed_iframe1.empty())
+      << SerializeVectorOfMapOfStrings(selected_params_observed_iframe1);
+  EXPECT_TRUE(selected_params_observed_iframe2.empty())
+      << SerializeVectorOfMapOfStrings(selected_params_observed_iframe2);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    TwoWindows_DevToolsOperationFinishedNotificationsFilteredByMainFrame) {
+  GURL url1 = https_server()->GetURL("a.test", kPageWithBlankIframePath);
+  GURL url2 = https_server()->GetURL("b.test", kPageWithBlankIframePath);
+  GURL iframe_url1 = https_server()->GetURL("c.test", kSimplePagePath);
+  GURL iframe_url2 = https_server()->GetURL("d.test", kSimplePagePath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  RenderFrameHost* main_rfh1 = PrimaryFrameTreeNodeRoot()->current_frame_host();
+  TestSharedStorageDevToolsClient main_frame_devtools_client1(main_rfh1);
+  std::string expected_method =
+      "Storage.sharedStorageWorkletOperationExecutionFinished";
+  main_frame_devtools_client1.set_expected_notification_method(expected_method);
+
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell()->web_contents(), "test_iframe", iframe_url1));
+  RenderFrameHost* iframe1 =
+      PrimaryFrameTreeNodeRoot()->child_at(0)->current_frame_host();
+  TestSharedStorageDevToolsClient iframe_devtools_client1(iframe1);
+  iframe_devtools_client1.set_expected_notification_method(expected_method);
+
+  EXPECT_TRUE(ExecJs(iframe1, R"(
+      sharedStorage.createWorklet('shared_storage/simple_module.js')
+        .then((worklet) => worklet.run("test-operation", {keepAlive: true}));
+  )"));
+
+  Shell* shell2 = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), url2, nullptr, gfx::Size());
+  ASSERT_TRUE(WaitForLoadStop(shell2->web_contents()));
+
+  RenderFrameHost* main_rfh2 =
+      PrimaryFrameTreeNodeRootFromShell(shell2)->current_frame_host();
+  TestSharedStorageDevToolsClient main_frame_devtools_client2(main_rfh2);
+  main_frame_devtools_client2.set_expected_notification_method(expected_method);
+
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell2->web_contents(), "test_iframe", iframe_url2));
+  RenderFrameHost* iframe2 = PrimaryFrameTreeNodeRootFromShell(shell2)
+                                 ->child_at(0)
+                                 ->current_frame_host();
+  TestSharedStorageDevToolsClient iframe_devtools_client2(iframe2);
+  iframe_devtools_client2.set_expected_notification_method(expected_method);
+
+  EXPECT_TRUE(ExecJs(iframe2, R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js')
+        .then(() => sharedStorage.selectURL("test-url-selection-operation",
+                                            [{url: 'fenced_frames/title0.html'},
+                                            {url: 'fenced_frames/title1.html'}],
+                                            {keepAlive: true}));
+  )"));
+
+  EXPECT_TRUE(ExecJs(main_rfh1, R"(
+      sharedStorage.createWorklet('shared_storage/simple_module.js')
+        .then((worklet) => worklet.selectURL("test-url-selection-operation",
+                                            [{url: 'fenced_frames/title0.html'},
+                                            {url: 'fenced_frames/title1.html'}],
+                                            {keepAlive: true}));
+  )"));
+
+  GURL out_script_url;
+  ExecuteScriptInWorkletUsingCreateWorklet(main_rfh2, R"(
+      sharedStorage.clear();
+    )",
+                                           &out_script_url,
+                                           /*expected_total_host_count=*/4u);
+
+  // Ensure that execution of all 4 operations has finished.
+  WaitForHistogramsWithCounts(
+      {std::make_tuple(kTimingRunExecutedInWorkletHistogram, 2),
+       std::make_tuple(kTimingSelectUrlExecutedInWorkletHistogram, 2)});
+
+  std::vector<std::string> selected_key_paths(
+      {"method", "operationId", "ownerOrigin"});
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_main1 =
+          main_frame_devtools_client1
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  selected_key_paths);
+
+  std::string main_origin_str1 = url::Origin::Create(url1).Serialize();
+  std::string main_origin_str2 = url::Origin::Create(url2).Serialize();
+  std::string iframe_origin_str1 = url::Origin::Create(iframe_url1).Serialize();
+  std::string iframe_origin_str2 = url::Origin::Create(iframe_url2).Serialize();
+
+  // `main_frame_devtools_client1` receives the expected shared storage
+  // notifications for `shell()`, including any notifications from subframes of
+  // this main frame, but no further "Storage.sharedStorageAccessed"
+  // notifications. In particular, it does not receive those from `shell2`.
+  ASSERT_EQ(selected_params_observed_main1.size(), 2u)
+      << SerializeVectorOfMapOfStrings(selected_params_observed_main1);
+  if (selected_params_observed_main1[0]["ownerOrigin"] != iframe_origin_str1) {
+    // The order in which the operations finish executing is nondeterministic.
+    // If necessary, swap to put the iframe's results first.
+    std::swap(selected_params_observed_main1[0],
+              selected_params_observed_main1[1]);
+  }
+  EXPECT_THAT(selected_params_observed_main1[0],
+              ElementsAre(Pair("method", "run"), Pair("operationId", "0"),
+                          Pair("ownerOrigin", iframe_origin_str1)));
+  EXPECT_THAT(selected_params_observed_main1[1],
+              ElementsAre(Pair("method", "selectURL"), Pair("operationId", "0"),
+                          Pair("ownerOrigin", main_origin_str1)));
+
+  std::vector<std::map<std::string, std::string>>
+      selected_params_observed_main2 =
+          main_frame_devtools_client2
+              .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+                  selected_key_paths);
+
+  // `main_frame_devtools_client2` receives the expected shared storage
+  // notifications for `shell2`, including any notifications from subframes of
+  // this main frame, but no further "Storage.sharedStorageAccessed"
+  // notifications. In particular, it does not receive those from `shell()`.
+  ASSERT_EQ(selected_params_observed_main2.size(), 2u)
+      << SerializeVectorOfMapOfStrings(selected_params_observed_main2);
+  if (selected_params_observed_main2[0]["ownerOrigin"] != iframe_origin_str2) {
+    // The order in which the operations finish executing is nondeterministic.
+    // If necessary, swap to put the iframe's results first.
+    std::swap(selected_params_observed_main2[0],
+              selected_params_observed_main2[1]);
+  }
+  EXPECT_THAT(selected_params_observed_main2[0],
+              ElementsAre(Pair("method", "selectURL"), Pair("operationId", "0"),
+                          Pair("ownerOrigin", iframe_origin_str2)));
+  EXPECT_THAT(selected_params_observed_main2[1],
+              ElementsAre(Pair("method", "run"), Pair("operationId", "0"),
+                          Pair("ownerOrigin", main_origin_str2)));
 
   ASSERT_EQ(IsLocalRoot(iframe1), IsLocalRoot(iframe2));
 

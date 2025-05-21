@@ -24,7 +24,8 @@
 
   async function getSharedStorageEvents(testRunner, events) {
     testRunner.log(events, 'Events: ', [
-      'accessTime', 'mainFrameId', 'urnUuid', 'workletId', 'serializedData'
+      'accessTime', 'mainFrameId', 'urnUuid', 'workletOrdinal',
+      'workletTargetId', 'serializedData'
     ]);
   }
 

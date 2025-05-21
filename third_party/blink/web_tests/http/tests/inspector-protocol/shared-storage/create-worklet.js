@@ -47,7 +47,8 @@
       await dp.Storage.getSharedStorageEntries({ownerOrigin: baseOrigin});
   testRunner.log(entriesResult.result?.entries, 'Entries:');
   testRunner.log(events, 'Events: ', [
-    'accessTime', 'mainFrameId', 'urnUuid', 'workletId', 'serializedData'
+    'accessTime', 'mainFrameId', 'urnUuid', 'workletOrdinal', 'workletTargetId',
+    'serializedData'
   ]);
 
   // Clean up shared storage.

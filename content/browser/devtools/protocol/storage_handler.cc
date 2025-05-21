@@ -1473,6 +1473,46 @@ std::string GetFrameTokenFromGlobalRenderFrameHostId(
   return rfh ? rfh->devtools_frame_token().ToString() : std::string();
 }
 
+const char* GetSharedStorageAccessMethodEnum(
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
+        method) {
+  using AccessMethod =
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
+  switch (method) {
+    case AccessMethod::kAddModule:
+      return Storage::SharedStorageAccessMethodEnum::AddModule;
+    case AccessMethod::kCreateWorklet:
+      return Storage::SharedStorageAccessMethodEnum::CreateWorklet;
+    case AccessMethod::kSelectURL:
+      return Storage::SharedStorageAccessMethodEnum::SelectURL;
+    case AccessMethod::kRun:
+      return Storage::SharedStorageAccessMethodEnum::Run;
+    case AccessMethod::kBatchUpdate:
+      return Storage::SharedStorageAccessMethodEnum::BatchUpdate;
+    case AccessMethod::kSet:
+      return Storage::SharedStorageAccessMethodEnum::Set;
+    case AccessMethod::kAppend:
+      return Storage::SharedStorageAccessMethodEnum::Append;
+    case AccessMethod::kDelete:
+      return Storage::SharedStorageAccessMethodEnum::Delete;
+    case AccessMethod::kClear:
+      return Storage::SharedStorageAccessMethodEnum::Clear;
+    case AccessMethod::kGet:
+      return Storage::SharedStorageAccessMethodEnum::Get;
+    case AccessMethod::kKeys:
+      return Storage::SharedStorageAccessMethodEnum::Keys;
+    case AccessMethod::kValues:
+      return Storage::SharedStorageAccessMethodEnum::Values;
+    case AccessMethod::kEntries:
+      return Storage::SharedStorageAccessMethodEnum::Entries;
+    case AccessMethod::kLength:
+      return Storage::SharedStorageAccessMethodEnum::Length;
+    case AccessMethod::kRemainingBudget:
+      return Storage::SharedStorageAccessMethodEnum::RemainingBudget;
+  };
+  NOTREACHED();
+}
+
 }  // namespace
 
 void StorageHandler::OnSharedStorageAccessed(
@@ -1486,8 +1526,7 @@ void StorageHandler::OnSharedStorageAccessed(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using AccessScope = blink::SharedStorageAccessScope;
-  using AccessMethod =
-      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
+
   std::string scope_enum;
   switch (scope) {
     case AccessScope::kWindow:
@@ -1505,55 +1544,6 @@ void StorageHandler::OnSharedStorageAccessed(
       break;
   };
 
-  std::string method_enum;
-  switch (method) {
-    case AccessMethod::kAddModule:
-      method_enum = Storage::SharedStorageAccessMethodEnum::AddModule;
-      break;
-    case AccessMethod::kCreateWorklet:
-      method_enum = Storage::SharedStorageAccessMethodEnum::CreateWorklet;
-      break;
-    case AccessMethod::kSelectURL:
-      method_enum = Storage::SharedStorageAccessMethodEnum::SelectURL;
-      break;
-    case AccessMethod::kRun:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Run;
-      break;
-    case AccessMethod::kBatchUpdate:
-      method_enum = Storage::SharedStorageAccessMethodEnum::BatchUpdate;
-      break;
-    case AccessMethod::kSet:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Set;
-      break;
-    case AccessMethod::kAppend:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Append;
-      break;
-    case AccessMethod::kDelete:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Delete;
-      break;
-    case AccessMethod::kClear:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Clear;
-      break;
-    case AccessMethod::kGet:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Get;
-      break;
-    case AccessMethod::kKeys:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Keys;
-      break;
-    case AccessMethod::kValues:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Values;
-      break;
-    case AccessMethod::kEntries:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Entries;
-      break;
-    case AccessMethod::kLength:
-      method_enum = Storage::SharedStorageAccessMethodEnum::Length;
-      break;
-    case AccessMethod::kRemainingBudget:
-      method_enum = Storage::SharedStorageAccessMethodEnum::RemainingBudget;
-      break;
-  };
-
   auto protocol_params =
       protocol::Storage::SharedStorageAccessParams::Create().Build();
 
@@ -1565,6 +1555,9 @@ void StorageHandler::OnSharedStorageAccessed(
   }
   if (params.operation_name) {
     protocol_params->SetOperationName(*params.operation_name);
+  }
+  if (params.operation_id) {
+    protocol_params->SetOperationId(base::NumberToString(*params.operation_id));
   }
   if (params.keep_alive) {
     protocol_params->SetKeepAlive(*params.keep_alive);
@@ -1585,8 +1578,11 @@ void StorageHandler::OnSharedStorageAccessed(
     protocol_params->SetIgnoreIfPresent(*params.ignore_if_present);
   }
   if (params.worklet_ordinal_id) {
-    protocol_params->SetWorkletId(
-        base::NumberToString(*params.worklet_ordinal_id));
+    protocol_params->SetWorkletOrdinal(*params.worklet_ordinal_id);
+  }
+  if (!params.worklet_devtools_token.is_empty()) {
+    protocol_params->SetWorkletTargetId(
+        params.worklet_devtools_token.ToString());
   }
   if (params.with_lock) {
     protocol_params->SetWithLock(*params.with_lock);
@@ -1653,7 +1649,8 @@ void StorageHandler::OnSharedStorageAccessed(
   }
 
   frontend_->SharedStorageAccessed(
-      access_time.InSecondsFSinceUnixEpoch(), scope_enum, method_enum,
+      access_time.InSecondsFSinceUnixEpoch(), scope_enum,
+      GetSharedStorageAccessMethodEnum(method),
       GetFrameTokenFromGlobalRenderFrameHostId(main_frame_id), owner_origin,
       net::SchemefulSite(GURL(owner_origin)).Serialize(),
       std::move(protocol_params));
@@ -1676,10 +1673,11 @@ void StorageHandler::OnSharedStorageWorkletOperationExecutionFinished(
     const std::string& owner_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/401011862): Add a new
-  // `sharedStorageWorkletOperationExecutionFinished` event to the DevTools
-  // Protocol. Call the generated code here to send an event notification to
-  // DevTools Frontend.
+  frontend_->SharedStorageWorkletOperationExecutionFinished(
+      finished_time.InSecondsFSinceUnixEpoch(), execution_time.InMicroseconds(),
+      GetSharedStorageAccessMethodEnum(method),
+      base::NumberToString(operation_id), worklet_devtools_token.ToString(),
+      GetFrameTokenFromGlobalRenderFrameHostId(main_frame_id), owner_origin);
 }
 
 DispatchResponse StorageHandler::SetStorageBucketTracking(

@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -154,6 +155,11 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   static void WaitForHistogram(const std::string& histogram_name);
   static void WaitForHistograms(
       const std::vector<std::string>& histogram_names);
+  static void WaitForHistogramWithCount(std::string_view histogram_name,
+                                        int count);
+  static void WaitForHistogramsWithCounts(
+      const std::vector<std::tuple<std::string_view, int>>&
+          histogram_names_and_counts);
 
   static constexpr double kBudgetAllowed = 5.0;
   static constexpr int kStalenessThresholdDays = 1;

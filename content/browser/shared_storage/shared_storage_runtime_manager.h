@@ -78,6 +78,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
     virtual void OnSharedStorageSelectUrlConfigPopulated(
         const std::optional<FencedFrameConfig>& config) = 0;
 
+    // TODO(crbug.com/401011862): Remove `worklet_ordinal_id` parameter.
     virtual void OnSharedStorageWorkletOperationExecutionFinished(
         base::Time finished_time,
         base::TimeDelta execution_time,
@@ -122,6 +123,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
 
+  // TODO(crbug.com/401011862): Remove `worklet_ordinal_id` parameter.
   void NotifyWorkletOperationExecutionFinished(
       base::TimeDelta execution_time,
       SharedStorageObserverInterface::AccessMethod method,

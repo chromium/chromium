@@ -55,7 +55,8 @@
   events.push((await dp.Storage.onceSharedStorageAccessed()).params);
 
   testRunner.log(events, 'Events: ', [
-    'accessTime', 'mainFrameId', 'urnUuid', 'workletId', 'serializedData'
+    'accessTime', 'mainFrameId', 'urnUuid', 'workletOrdinal', 'workletTargetId',
+    'serializedData'
   ]);
 
   testRunner.completeTest();

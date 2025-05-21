@@ -31,7 +31,8 @@ Events: [
         params : {
             dataOrigin : context-origin
             scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/shared-storage-module.js
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -43,12 +44,14 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             keepAlive : false
+            operationId : 0
             operationName : set-operation
             privateAggregationConfig : {
                 filteringIdMaxBytes : 1
             }
             serializedData : <string>
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -62,7 +65,8 @@ Events: [
             ignoreIfPresent : false
             key : key-set-from-worklet
             value : value
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }

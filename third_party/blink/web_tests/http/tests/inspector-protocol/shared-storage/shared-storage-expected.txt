@@ -121,7 +121,8 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/shared-storage-module.js
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -133,12 +134,14 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             keepAlive : true
+            operationId : 0
             operationName : test-operation
             privateAggregationConfig : {
                 filteringIdMaxBytes : 1
             }
             serializedData : <string>
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -152,7 +155,8 @@ Events: [
             ignoreIfPresent : false
             key : key0-set-from-worklet
             value : value0
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -166,7 +170,8 @@ Events: [
             ignoreIfPresent : false
             key : key1-set-from-worklet
             value : value1
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -180,7 +185,8 @@ Events: [
             ignoreIfPresent : true
             key : key2-set-from-worklet
             value : value2
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -193,7 +199,8 @@ Events: [
         params : {
             key : key1-set-from-worklet
             value : value1
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -205,7 +212,8 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             key : key2-set-from-worklet
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -216,7 +224,8 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -227,7 +236,8 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -238,7 +248,8 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -249,7 +260,8 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -261,6 +273,7 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             keepAlive : true
+            operationId : 1
             operationName : test-url-selection-operation
             privateAggregationConfig : {
                 filteringIdMaxBytes : 1
@@ -279,7 +292,8 @@ Events: [
                 }
             ]
             urnUuid : <string>
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -291,7 +305,8 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             key : key0-set-from-worklet
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -303,7 +318,8 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             key : key0-set-from-document
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
@@ -315,12 +331,14 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             keepAlive : false
+            operationId : 2
             operationName : clear-operation
             privateAggregationConfig : {
                 filteringIdMaxBytes : 1
             }
             serializedData : <string>
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : window
     }
@@ -331,7 +349,8 @@ Events: [
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            workletId : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
         }
         scope : sharedStorageWorklet
     }
