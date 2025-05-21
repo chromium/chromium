@@ -48,7 +48,11 @@ bool LoadD3DXLibrary(const base::FilePath& module_path,
   return true;
 }
 
-bool LoadD3DCompiler() {
+bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
+#if BUILDFLAG(USE_STATIC_ANGLE)
+  NOTREACHED();
+#else
+
   base::FilePath module_path;
   if (!base::PathService::Get(base::DIR_MODULE, &module_path))
     return false;
@@ -56,15 +60,9 @@ bool LoadD3DCompiler() {
   // Attempt to load the D3DX shader compiler using an absolute path. This is to
   // ensure that we load the versions of these DLLs that we ship. If that fails,
   // load the OS version.
-  return LoadD3DXLibrary(module_path, kD3DCompiler);
-}
+  LoadD3DXLibrary(module_path, kD3DCompiler);
 
-#if !BUILDFLAG(USE_STATIC_ANGLE)
-bool InitializeStaticEGLInternalFromLibrary() {
-  base::FilePath gles_path;
-  if (!base::PathService::Get(base::DIR_MODULE, &gles_path)) {
-    return false;
-  }
+  base::FilePath gles_path = module_path;
 
   // Load libglesv2.dll before libegl.dll because the latter is dependent on
   // the former and if there is another version of libglesv2.dll in the dll
@@ -110,22 +108,20 @@ bool InitializeStaticEGLInternalFromLibrary() {
   AddGLNativeLibrary(gles_library);
 
   return true;
+#endif
 }
-#endif  // !BUILFDLAG(USE_STATIC_ANGLE)
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
-  DCHECK(implementation.gl == kGLImplementationEGLANGLE);
-
-  if (!LoadD3DCompiler()) {
-    return false;
-  }
-
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  if (!InitializeStaticANGLEEGL()) {
+  if (implementation.gl == kGLImplementationEGLANGLE) {
+    // Use ANGLE if it is requested and it is statically linked
+    if (!InitializeStaticANGLEEGL())
+      return false;
+  } else if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
     return false;
   }
 #else
-  if (!InitializeStaticEGLInternalFromLibrary()) {
+  if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
     return false;
   }
 #endif  // !BUILDFLAG(USE_STATIC_ANGLE)

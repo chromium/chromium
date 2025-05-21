@@ -6,17 +6,14 @@
 
 #include <EGL/egl.h>
 
-extern "C" {
-// The ANGLE internal eglGetProcAddress
-EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY
-EGL_GetProcAddress(const char* procname);
-}
-
 namespace gl {
 namespace init {
 
 bool InitializeStaticANGLEEGL() {
-  SetGLGetProcAddressProc(&EGL_GetProcAddress);
+#pragma push_macro("eglGetProcAddress")
+#undef eglGetProcAddress
+  SetGLGetProcAddressProc(&eglGetProcAddress);
+#pragma pop_macro("eglGetProcAddress")
   return true;
 }
 

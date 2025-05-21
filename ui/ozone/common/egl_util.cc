@@ -17,13 +17,6 @@
 #include <stdlib.h>
 #endif
 
-#if BUILDFLAG(USE_STATIC_ANGLE)
-extern "C" {
-// The ANGLE internal eglGetProcAddress
-EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY
-EGL_GetProcAddress(const char* procname);
-#endif  // BUILDFLAG(USE_STATIC_ANGLE)
-}
 namespace ui {
 namespace {
 
@@ -38,12 +31,10 @@ const base::FilePath::CharType kDefaultEglSoname[] =
 const base::FilePath::CharType kDefaultGlesSoname[] =
     FILE_PATH_LITERAL("libGLESv2.so.2");
 #endif
-#if !BUILDFLAG(USE_STATIC_ANGLE)
 const base::FilePath::CharType kAngleEglSoname[] =
     FILE_PATH_LITERAL("libEGL.so");
 const base::FilePath::CharType kAngleGlesSoname[] =
     FILE_PATH_LITERAL("libGLESv2.so");
-#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
 
 bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
                           const base::FilePath& gles_library_path) {
@@ -142,10 +133,6 @@ bool LoadDefaultEGLGLES2Bindings(
   base::FilePath egl_path;
 
   if (implementation.gl == gl::kGLImplementationEGLANGLE) {
-#if BUILDFLAG(USE_STATIC_ANGLE)
-    gl::SetGLGetProcAddressProc(&EGL_GetProcAddress);
-    return true;
-#else
     base::FilePath module_path;
 #if !BUILDFLAG(IS_FUCHSIA)
     if (!base::PathService::Get(base::DIR_MODULE, &module_path))
@@ -154,7 +141,6 @@ bool LoadDefaultEGLGLES2Bindings(
 
     glesv2_path = module_path.Append(kAngleGlesSoname);
     egl_path = module_path.Append(kAngleEglSoname);
-#endif  // BUILDFLAG(USE_STATIC_ANGLE)
   } else {
     glesv2_path = base::FilePath(kDefaultGlesSoname);
     egl_path = base::FilePath(kDefaultEglSoname);

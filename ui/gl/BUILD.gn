@@ -198,12 +198,10 @@ component("gl") {
 
   if (use_ozone) {
     if (!is_fuchsia) {
-      if (!use_static_angle) {
-        data_deps += [
-          "//third_party/angle:libEGL",
-          "//third_party/angle:libGLESv2",
-        ]
-      }
+      data_deps += [
+        "//third_party/angle:libEGL",
+        "//third_party/angle:libGLESv2",
+      ]
       if (angle_shared_libvulkan && !is_chromeos) {
         data_deps += [ "//third_party/vulkan-loader/src:libvulkan" ]
       }
@@ -225,12 +223,10 @@ component("gl") {
       "//ui/gfx/linux:gpu_memory_buffer_support_x11",
     ]
 
-    if (!use_static_angle) {
-      data_deps += [
-        "//third_party/angle:libEGL",
-        "//third_party/angle:libGLESv2",
-      ]
-    }
+    data_deps += [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
     if (angle_shared_libvulkan && !is_chromeos) {
       data_deps += [ "//third_party/vulkan-loader/src:libvulkan" ]
     }
@@ -294,15 +290,11 @@ component("gl") {
     ]
 
     data_deps += [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
       "//third_party/swiftshader/src/Vulkan:icd_file",
       "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
     ]
-    if (!use_static_angle) {
-      data_deps += [
-        "//third_party/angle:libEGL",
-        "//third_party/angle:libGLESv2",
-      ]
-    }
     if (angle_shared_libvulkan && !is_chromeos) {
       data_deps += [ "//third_party/vulkan-loader/src:libvulkan" ]
     }
@@ -335,13 +327,11 @@ component("gl") {
       "Quartz.framework",
     ]
 
-    data_deps += [ "//third_party/mesa_headers" ]
-    if (!use_static_angle) {
-      data_deps += [
-        "//third_party/angle:libEGL",
-        "//third_party/angle:libGLESv2",
-      ]
-    }
+    data_deps += [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+      "//third_party/mesa_headers",
+    ]
     if (enable_swiftshader) {
       data_deps += [
         "//third_party/swiftshader/src/Vulkan:icd_file",
@@ -408,18 +398,16 @@ if (is_mac) {
   # "shared_library" target types it will try to link things into
   # Chromium Framework when we want to keep the ANGLE and SwiftShader
   # libraries separate instead.
-  if (!use_static_angle) {
-    copy("angle_library_copy") {
-      sources = [
-        "$root_out_dir/libEGL.dylib",
-        "$root_out_dir/libGLESv2.dylib",
-      ]
-      outputs = [ "$root_out_dir/egl_intermediates/{{source_file_part}}" ]
-      deps = [
-        "//third_party/angle:libEGL",
-        "//third_party/angle:libGLESv2",
-      ]
-    }
+  copy("angle_library_copy") {
+    sources = [
+      "$root_out_dir/libEGL.dylib",
+      "$root_out_dir/libGLESv2.dylib",
+    ]
+    outputs = [ "$root_out_dir/egl_intermediates/{{source_file_part}}" ]
+    deps = [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
   }
 
   if (enable_swiftshader) {

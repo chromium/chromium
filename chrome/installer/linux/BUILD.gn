@@ -36,14 +36,10 @@ packaging_files_executables = [
   "$root_out_dir/chrome_sandbox",
 ]
 
-packaging_files_shlibs = []
-
-if (!use_static_angle) {
-  packaging_files_shlibs += [
-    "$root_out_dir/libEGL.so",
-    "$root_out_dir/libGLESv2.so",
-  ]
-}
+packaging_files_shlibs = [
+  "$root_out_dir/libEGL.so",
+  "$root_out_dir/libGLESv2.so",
+]
 
 if (bundle_widevine_cdm) {
   packaging_files_shlibs +=
@@ -366,6 +362,8 @@ group("installer_deps") {
     ":strip_chrome_crashpad_handler",
     ":strip_chrome_management_service",
     ":strip_chrome_sandbox",
+    ":strip_libEGL_shlib",
+    ":strip_libGLESv2_shlib",
     ":theme_files",
     "//chrome",
     "//chrome:packed_resources",
@@ -374,17 +372,11 @@ group("installer_deps") {
     "//components/crash/core/app:chrome_crashpad_handler",
     "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
     "//sandbox/linux:chrome_sandbox",
+    "//third_party/angle:libEGL",
+    "//third_party/angle:libGLESv2",
   ]
   if (bundle_widevine_cdm) {
     public_deps += [ "//third_party/widevine/cdm" ]
-  }
-  if (!use_static_angle) {
-    public_deps += [
-      ":strip_libEGL_shlib",
-      ":strip_libGLESv2_shlib",
-      "//third_party/angle:libEGL",
-      "//third_party/angle:libGLESv2",
-    ]
   }
   if (angle_shared_libvulkan && !is_chromeos) {
     public_deps += [
