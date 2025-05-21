@@ -26,9 +26,7 @@
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
     UIViewController* base_view_controller)
-    : BrowserUserData(browser),
-      base_view_controller_(base_view_controller),
-      browser_(browser) {
+    : BrowserUserData(browser), base_view_controller_(base_view_controller) {
   installation_observer_ =
       std::make_unique<WebStateDependencyInstallationObserver>(
           browser->GetWebStateList(), this);

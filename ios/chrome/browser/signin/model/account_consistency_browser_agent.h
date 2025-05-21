@@ -68,7 +68,6 @@ class AccountConsistencyBrowserAgent
   UIViewController* base_view_controller_;
   id<ApplicationCommands> application_handler_;
   id<SettingsCommands> settings_handler_;
-  raw_ptr<Browser> browser_;
 
   // Bridge object to act as the delegate.
   ManageAccountsDelegateBridge* bridge_;
