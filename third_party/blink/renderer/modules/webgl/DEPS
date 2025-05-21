@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/notimplemented.h",
     "+device/vr/buildflags/buildflags.h",
     "+device/vr/public/mojom/vr_service.mojom-blink.h",
     "+device/vr/public/mojom/vr_service.mojom-blink-forward.h",
