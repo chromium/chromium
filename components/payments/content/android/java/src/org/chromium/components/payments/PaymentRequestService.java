@@ -1103,6 +1103,7 @@ public class PaymentRequestService
      */
     private void sendCanMakePaymentResponseToRenderer(boolean response) {
         if (mClient == null) return;
+        Log.i(TAG, "Can make payment: \"%b\".", response);
         mClient.onCanMakePayment(
                 response
                         ? CanMakePaymentQueryResult.CAN_MAKE_PAYMENT
@@ -1146,13 +1147,16 @@ public class PaymentRequestService
         int result;
         if (HasEnrolledInstrumentQuery.canQuery(
                 mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
+            Log.i(TAG, "Has enrolled instrument: \"%b\".", response);
             result =
                     response
                             ? HasEnrolledInstrumentQueryResult.HAS_ENROLLED_INSTRUMENT
                             : HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT;
         } else if (shouldEnforceHasEnrolledInstrumentQueryQuota()) {
+            Log.i(TAG, "Has enrolled instrument: No quota.");
             result = HasEnrolledInstrumentQueryResult.QUERY_QUOTA_EXCEEDED;
         } else {
+            Log.i(TAG, "Has enrolled instrument: \"%b\".", response);
             result =
                     response
                             ? HasEnrolledInstrumentQueryResult.WARNING_HAS_ENROLLED_INSTRUMENT
@@ -1555,6 +1559,7 @@ public class PaymentRequestService
 
     /** The component part of the {@link PaymentRequest#canMakePayment} implementation. */
     /* package */ void canMakePayment() {
+        Log.i(TAG, "Check can make payment.");
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onCanMakePaymentCalled();
         }
@@ -1568,6 +1573,7 @@ public class PaymentRequestService
 
     /** The component part of the {@link PaymentRequest#hasEnrolledInstrument} implementation. */
     /* package */ void hasEnrolledInstrument() {
+        Log.i(TAG, "Check has enrolled instrument.");
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onHasEnrolledInstrumentCalled();
         }
