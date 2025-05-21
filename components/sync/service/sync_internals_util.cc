@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
@@ -682,6 +683,14 @@ base::Value::Dict ConstructAboutInformation(
 
   about_info.Set("unrecoverable_error_detected",
                  base::Value(service->HasUnrecoverableError()));
+
+  // Sync-the-feature should not be enabled on mobile platforms, where the
+  // sync-to-signin migration is completed.
+  const bool allow_enabling_sync_the_feature =
+      !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+
+  about_info.Set("allow_enabling_sync_the_feature",
+                 base::Value(allow_enabling_sync_the_feature));
 
   if (service->HasUnrecoverableError()) {
     std::string unrecoverable_error_message =

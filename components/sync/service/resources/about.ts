@@ -42,12 +42,15 @@ interface AboutInfo {
 
   unrecoverable_error_detected: boolean;
   unrecoverable_error_message?: string;
+
+  allow_enabling_sync_the_feature: boolean;
 }
 
 export let aboutInfo: AboutInfo = {
   details: [],
   actionable_error_detected: false,
   unrecoverable_error_detected: false,
+  allow_enabling_sync_the_feature: false,
 };
 
 // Snapshot of the previous aboutInfo, used for highlighting rows that changed.
@@ -101,7 +104,8 @@ function getAboutInfoHtml() {
       </div>
     `)}
 
-    <div id="request-start-stop-wrapper">
+    <div id="request-start-stop-wrapper"
+        ?hidden="${!aboutInfo.allow_enabling_sync_the_feature}">
       <button id="request-start" @click="${requestStart}">
         Enable Sync-The-Feature
       </button>
@@ -144,16 +148,14 @@ function getAboutInfoHtml() {
       </table>
     </div>
 
-    ${aboutInfo.unrecoverable_error_detected ? html`
-      <div class="section">
+    <div class="section"
+        ?hidden="${!aboutInfo.unrecoverable_error_detected}">
         <p>
           <span class="err">${aboutInfo.unrecoverable_error_message}</span>
         </p>
-      </div>
-    ` : ''}
+    </div>
 
-    ${aboutInfo.actionable_error_detected ? html`
-      <div class="section">
+    <div class="section" ?hidden="${!aboutInfo.actionable_error_detected}">
         <p>
           <h2>Actionable Error</h2>
           <table id="actionableError">
@@ -165,8 +167,7 @@ function getAboutInfoHtml() {
             `)}
           </table>
         </p>
-      </div>
-    ` : ''}
+    </div>
 
     `;
   // clang-format on
