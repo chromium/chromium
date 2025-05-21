@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/property_set_css_style_declaration.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/bit_field.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -93,7 +94,7 @@ class CORE_EXPORT CSSPropertyValueSet
   bool IsPropertyImplicit(CSSPropertyID) const;
 
   CSSParserMode CssParserMode() const {
-    return static_cast<CSSParserMode>(css_parser_mode_);
+    return static_cast<CSSParserMode>(bits_.get<CSSParserModeField>());
   }
 
   MutableCSSPropertyValueSet* MutableCopy() const;
@@ -104,8 +105,10 @@ class CORE_EXPORT CSSPropertyValueSet
 
   String AsText() const;
 
-  bool IsMutable() const { return is_mutable_; }
-  bool ContainsCursorHand() const { return contains_cursor_hand_; }
+  bool IsMutable() const { return bits_.get<IsMutableField>(); }
+  bool ContainsCursorHand() const {
+    return bits_.get<ContainsCursorHandField>();
+  }
 
   // Computes a hash of the contents of this property value set
   // (cached after first call). Note that hash equality may have
@@ -164,30 +167,40 @@ class CORE_EXPORT CSSPropertyValueSet
   static constexpr unsigned kMaxArraySize = (1 << 25) - 1;
 
   explicit CSSPropertyValueSet(CSSParserMode css_parser_mode)
-      : array_size_(0),
-        css_parser_mode_(css_parser_mode),
-        is_mutable_(true),
-        contains_cursor_hand_(false) {}
+      : bits_(ArraySizeField::encode(0) |
+              CSSParserModeField::encode(css_parser_mode) |
+              IsMutableField::encode(true) |
+              ContainsCursorHandField::encode(false)) {}
 
   CSSPropertyValueSet(CSSParserMode css_parser_mode,
                       unsigned immutable_array_size,
                       bool contains_cursor_hand)
       // Avoid min()/max() from std here in the header, because that would
       // require inclusion of <algorithm>, which is slow to compile.
-      : array_size_((immutable_array_size < unsigned(kMaxArraySize))
-                        ? immutable_array_size
-                        : unsigned(kMaxArraySize)),
-        css_parser_mode_(css_parser_mode),
-        is_mutable_(false),
-        contains_cursor_hand_(contains_cursor_hand) {}
+      : bits_(ArraySizeField::encode((immutable_array_size < kMaxArraySize)
+                                         ? immutable_array_size
+                                         : kMaxArraySize) |
+              CSSParserModeField::encode(css_parser_mode) |
+              IsMutableField::encode(false) |
+              ContainsCursorHandField::encode(contains_cursor_hand)) {}
 
   unsigned ComputeHash() const;
 
-  const uint32_t array_size_ : 25;  // Only for immutable sets.
-  const uint32_t css_parser_mode_ : 4;
-  const uint32_t is_mutable_ : 1;
-  const uint32_t contains_cursor_hand_ : 1;
-  uint32_t may_have_logical_properties_ : 1 = false;  // Only for mutable sets.
+  // Trace() branches on is_mutable_,
+  // other member functions modify may_have_logical_properties_,
+  // and these could happen concurrently. This trips up TSan,
+  // even though the race is benign, so use an atomic read
+  // instead of C++ bitfields.
+  using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
+  using ArraySizeField =
+      BitField::DefineFirstValue<uint32_t, 25>;  // Only for immutable sets.
+  using CSSParserModeField = ArraySizeField::DefineNextValue<uint32_t, 4>;
+  using IsMutableField = CSSParserModeField::DefineNextValue<bool, 1>;
+  using ContainsCursorHandField = IsMutableField::DefineNextValue<bool, 1>;
+  using MayHaveLogicalPropertiesField =
+      ContainsCursorHandField::DefineNextValue<bool,
+                                               1>;  // Only for mutable sets.
+  BitField bits_;
 
   // EmptyValue() means “not computed yet”. DeletedValue() means “invalid”
   // (see GetHash()).
@@ -215,7 +228,7 @@ class CORE_EXPORT alignas(CSSPropertyName) ImmutableCSSPropertyValueSet
       CSSParserMode,
       bool contains_cursor_hand = false);
 
-  unsigned PropertyCount() const { return array_size_; }
+  unsigned PropertyCount() const { return bits_.get<ArraySizeField>(); }
 
   base::span<const CSSPropertyValue> Properties() const;
 
@@ -234,18 +247,18 @@ inline const CSSPropertyValue* ImmutableCSSPropertyValueSet::ArrayBase() const {
       "ValueArray may be improperly aligned");
   // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet through
   // Create(), we guarantee that the array will exist where we expect it.
-  CHECK_GT(array_size_, 0u);
+  CHECK_GT(bits_.get<ArraySizeField>(), 0u);
   return UNSAFE_BUFFERS(reinterpret_cast<const CSSPropertyValue*>(this + 1));
 }
 
 inline base::span<const CSSPropertyValue>
 ImmutableCSSPropertyValueSet::Properties() const {
-  if (array_size_ == 0) {
+  if (bits_.get<ArraySizeField>() == 0) {
     return base::span<CSSPropertyValue>();
   }
   // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet through
   // Create(), we guarantee that the array will have the size we expect.
-  return UNSAFE_BUFFERS(base::span(ArrayBase(), array_size_));
+  return UNSAFE_BUFFERS(base::span(ArrayBase(), bits_.get<ArraySizeField>()));
 }
 
 template <>
@@ -425,7 +438,7 @@ inline unsigned CSSPropertyValueSet::PropertyCount() const {
           DynamicTo<MutableCSSPropertyValueSet>(this)) {
     return mutable_property_set->property_vector_.size();
   }
-  return array_size_;
+  return bits_.get<ArraySizeField>();
 }
 
 inline bool CSSPropertyValueSet::IsEmpty() const {

@@ -105,8 +105,9 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
   property_vector_.ReserveInitialCapacity(properties.size());
   for (const CSSPropertyValue& property : properties) {
     property_vector_.UncheckedAppend(property);
-    may_have_logical_properties_ |=
-        kLogicalGroupProperties.Has(property.PropertyID());
+    bits_.set<MayHaveLogicalPropertiesField>(
+        bits_.get<MayHaveLogicalPropertiesField>() ||
+        kLogicalGroupProperties.Has(property.PropertyID()));
   }
 }
 
@@ -118,13 +119,14 @@ ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     : CSSPropertyValueSet(css_parser_mode,
                           properties.size(),
                           contains_query_hand) {
-  if (array_size_ > 0) {
+  const unsigned array_size = bits_.get<ArraySizeField>();
+  if (array_size > 0) {
     // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet
     // through Create(), we guarantee that the arrays will have storage where we
     // expect.
     UNSAFE_BUFFERS(base::span<CSSPropertyValue> array(
-        const_cast<CSSPropertyValue*>(ArrayBase()), array_size_));
-    for (unsigned i = 0; i < array_size_; ++i) {
+        const_cast<CSSPropertyValue*>(ArrayBase()), array_size));
+    for (unsigned i = 0; i < array_size; ++i) {
       new (&array[i]) CSSPropertyValue(properties[i]);
     }
   }
@@ -178,7 +180,7 @@ template <typename T>
 int ImmutableCSSPropertyValueSet::FindPropertyIndex(const T& property) const {
   uint16_t id = GetConvertedCSSPropertyID(property);
   const base::span<const CSSPropertyValue> properties = Properties();
-  for (size_t n = array_size_; n; --n) {
+  for (size_t n = bits_.get<ArraySizeField>(); n; --n) {
     if (IsPropertyMatch(properties[n - 1], id, property)) {
       return static_cast<int>(n - 1);
     }
@@ -207,15 +209,18 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
   if (auto* other_mutable_property_set =
           DynamicTo<MutableCSSPropertyValueSet>(other)) {
     property_vector_ = other_mutable_property_set->property_vector_;
-    may_have_logical_properties_ =
-        other_mutable_property_set->may_have_logical_properties_;
+    bits_.set<MayHaveLogicalPropertiesField>(
+        other_mutable_property_set->bits_.get<MayHaveLogicalPropertiesField>());
   } else {
     property_vector_.ReserveInitialCapacity(other.PropertyCount());
+    bool may_have_logical_properties =
+        bits_.get<MayHaveLogicalPropertiesField>();
     for (const CSSPropertyValue& property : other.Properties()) {
       property_vector_.UncheckedAppend(CSSPropertyValue(property));
-      may_have_logical_properties_ |=
+      may_have_logical_properties |=
           kLogicalGroupProperties.Has(property.PropertyID());
     }
+    bits_.set<MayHaveLogicalPropertiesField>(may_have_logical_properties);
   }
 }
 
@@ -296,7 +301,7 @@ const CSSValue* CSSPropertyValueSet::GetPropertyCSSValueWithHint(
 }
 
 void CSSPropertyValueSet::Trace(Visitor* visitor) const {
-  if (is_mutable_) {
+  if (bits_.get_concurrently<IsMutableField>()) {
     To<MutableCSSPropertyValueSet>(this)->TraceAfterDispatch(visitor);
   } else {
     To<ImmutableCSSPropertyValueSet>(this)->TraceAfterDispatch(visitor);
@@ -304,7 +309,7 @@ void CSSPropertyValueSet::Trace(Visitor* visitor) const {
 }
 
 void CSSPropertyValueSet::FinalizeGarbageCollectedObject() {
-  if (is_mutable_) {
+  if (bits_.get_concurrently<IsMutableField>()) {
     To<MutableCSSPropertyValueSet>(this)->~MutableCSSPropertyValueSet();
   } else {
     To<ImmutableCSSPropertyValueSet>(this)->~ImmutableCSSPropertyValueSet();
@@ -503,7 +508,7 @@ MutableCSSPropertyValueSet::FindInsertionPointForID(CSSPropertyID property_id) {
   if (to_replace == nullptr) {
     return nullptr;
   }
-  if (may_have_logical_properties_) {
+  if (bits_.get<MayHaveLogicalPropertiesField>()) {
     const CSSProperty& prop = CSSProperty::Get(property_id);
     if (prop.IsInLogicalPropertyGroup()) {
       DCHECK(property_vector_.Contains(*to_replace));
@@ -541,7 +546,9 @@ MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyValue property) {
     InvalidateHashIfComputed();
     return kModifiedExisting;
   } else {
-    may_have_logical_properties_ |= kLogicalGroupProperties.Has(id);
+    bits_.set<MayHaveLogicalPropertiesField>(
+        bits_.get<MayHaveLogicalPropertiesField>() ||
+        kLogicalGroupProperties.Has(id));
   }
   property_vector_.push_back(std::move(property));
   InvalidateHashIfComputed();
@@ -557,7 +564,9 @@ void MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyID property_id,
   if (to_replace) {
     *to_replace = CSSPropertyValue(CSSPropertyName(property_id), value);
   } else {
-    may_have_logical_properties_ |= kLogicalGroupProperties.Has(property_id);
+    bits_.set<MayHaveLogicalPropertiesField>(
+        bits_.get<MayHaveLogicalPropertiesField>() ||
+        kLogicalGroupProperties.Has(property_id));
     property_vector_.emplace_back(CSSPropertyName(property_id), value);
   }
   InvalidateHashIfComputed();
@@ -635,7 +644,7 @@ bool CSSPropertyValueSet::HasFailedOrCanceledSubresources() const {
 void MutableCSSPropertyValueSet::Clear() {
   property_vector_.clear();
   InvalidateHashIfComputed();
-  may_have_logical_properties_ = false;
+  bits_.set<MayHaveLogicalPropertiesField>(false);
 }
 
 inline bool ContainsId(const base::span<const CSSProperty* const>& set,
