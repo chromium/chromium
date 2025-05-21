@@ -46,9 +46,7 @@ bool MustCreateRealizedWebState(
 }  // namespace
 
 TabInsertionBrowserAgent::TabInsertionBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {
-  DCHECK(browser_);
-}
+    : BrowserUserData(browser) {}
 
 TabInsertionBrowserAgent::~TabInsertionBrowserAgent() = default;
 

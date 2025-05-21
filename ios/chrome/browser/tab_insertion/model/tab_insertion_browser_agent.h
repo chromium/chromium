@@ -95,8 +95,6 @@ class TabInsertionBrowserAgent
   friend class BrowserUserData<TabInsertionBrowserAgent>;
 
   explicit TabInsertionBrowserAgent(Browser* browser);
-
-  raw_ptr<Browser> browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TAB_INSERTION_MODEL_TAB_INSERTION_BROWSER_AGENT_H_
