@@ -104,10 +104,9 @@ Status FakeTransaction::DeleteRange(int64_t object_store_id,
   return wrapped_transaction_->DeleteRange(object_store_id, key_range);
 }
 
-Status FakeTransaction::GetKeyGeneratorCurrentNumber(int64_t object_store_id,
-                                                     int64_t* current_number) {
-  return wrapped_transaction_->GetKeyGeneratorCurrentNumber(object_store_id,
-                                                            current_number);
+StatusOr<int64_t> FakeTransaction::GetKeyGeneratorCurrentNumber(
+    int64_t object_store_id) {
+  return wrapped_transaction_->GetKeyGeneratorCurrentNumber(object_store_id);
 }
 
 Status FakeTransaction::MaybeUpdateKeyGeneratorCurrentNumber(

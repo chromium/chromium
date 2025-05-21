@@ -1086,15 +1086,15 @@ void Transaction::OnSchedulingPriorityUpdated(int new_priority) {
 
 blink::IndexedDBKey Transaction::GenerateAutoIncrementKey(
     int64_t object_store_id) {
+  ASSIGN_OR_RETURN(
+      int64_t current_number,
+      BackingStoreTransaction()->GetKeyGeneratorCurrentNumber(object_store_id),
+      [](auto) {
+        LOG(ERROR) << "Failed to GetKeyGeneratorCurrentNumber";
+        return blink::IndexedDBKey();
+      });
   // Maximum integer uniquely representable as ECMAScript number.
   const int64_t max_generator_value = 9007199254740992LL;
-  int64_t current_number;
-  Status s = BackingStoreTransaction()->GetKeyGeneratorCurrentNumber(
-      object_store_id, &current_number);
-  if (!s.ok()) {
-    LOG(ERROR) << "Failed to GetKeyGeneratorCurrentNumber";
-    return {};
-  }
   if (current_number < 0 || current_number > max_generator_value) {
     return {};
   }

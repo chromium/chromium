@@ -144,9 +144,8 @@ class BackingStore {
     [[nodiscard]] virtual Status DeleteRange(
         int64_t object_store_id,
         const blink::IndexedDBKeyRange&) = 0;
-    [[nodiscard]] virtual Status GetKeyGeneratorCurrentNumber(
-        int64_t object_store_id,
-        int64_t* current_number) = 0;
+    [[nodiscard]] virtual StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
+        int64_t object_store_id) = 0;
     [[nodiscard]] virtual Status MaybeUpdateKeyGeneratorCurrentNumber(
         int64_t object_store_id,
         int64_t new_state,

@@ -122,11 +122,10 @@ Status BackingStoreTransactionImpl::DeleteRange(
   return Status::OK();
 }
 
-Status BackingStoreTransactionImpl::GetKeyGeneratorCurrentNumber(
-    int64_t object_store_id,
-    int64_t* current_number) {
+StatusOr<int64_t> BackingStoreTransactionImpl::GetKeyGeneratorCurrentNumber(
+    int64_t object_store_id) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return base::unexpected(Status::InvalidArgument("not implemented"));
 }
 
 Status BackingStoreTransactionImpl::MaybeUpdateKeyGeneratorCurrentNumber(

@@ -2363,11 +2363,10 @@ Status BackingStore::Transaction::DeleteRange(
   return s;
 }
 
-Status BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
-    int64_t object_store_id,
-    int64_t* key_generator_current_number) {
+StatusOr<int64_t> BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
+    int64_t object_store_id) {
   if (!KeyPrefix::ValidIds(database_id(), object_store_id)) {
-    return InvalidDBKeyStatus();
+    return base::unexpected(InvalidDBKeyStatus());
   }
   TransactionalLevelDBTransaction* leveldb_transaction = transaction();
 
@@ -2376,7 +2375,6 @@ Status BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
           database_id(), object_store_id,
           ObjectStoreMetaDataKey::KEY_GENERATOR_CURRENT_NUMBER);
 
-  *key_generator_current_number = -1;
   std::string data;
 
   bool found = false;
@@ -2384,15 +2382,16 @@ Status BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
                                     &found));
   if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
-    return s;
+    return base::unexpected(s);
   }
   if (found && !data.empty()) {
+    int64_t key_generator_current_number = -1;
     std::string_view slice(data);
-    if (!DecodeInt(&slice, key_generator_current_number) || !slice.empty()) {
+    if (!DecodeInt(&slice, &key_generator_current_number) || !slice.empty()) {
       INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
-      return InternalInconsistencyStatus();
+      return base::unexpected(InternalInconsistencyStatus());
     }
-    return s;
+    return key_generator_current_number;
   }
 
   // Previously, the key generator state was not stored explicitly
@@ -2409,7 +2408,7 @@ Status BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
   std::tie(it, s) = CreateIteratorAndGetStatus(*leveldb_transaction);
   if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
-    return s;
+    return base::unexpected(s);
   }
   int64_t max_numeric_key = 0;
 
@@ -2420,7 +2419,7 @@ Status BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
     ObjectStoreDataKey data_key;
     if (!ObjectStoreDataKey::Decode(&slice, &data_key) || !slice.empty()) {
       INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
-      return InternalInconsistencyStatus();
+      return base::unexpected(InternalInconsistencyStatus());
     }
     std::unique_ptr<IndexedDBKey> user_key = data_key.user_key();
     if (user_key->type() == blink::mojom::IDBKeyType::Number) {
@@ -2431,13 +2430,11 @@ Status BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
     }
   }
 
-  if (s.ok()) {
-    *key_generator_current_number = max_numeric_key + 1;
-  } else {
+  if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
+    return base::unexpected(s);
   }
-
-  return s;
+  return max_numeric_key + 1;
 }
 
 Status BackingStore::Transaction::MaybeUpdateKeyGeneratorCurrentNumber(
@@ -2449,13 +2446,10 @@ Status BackingStore::Transaction::MaybeUpdateKeyGeneratorCurrentNumber(
   }
 
   if (check_current) {
-    int64_t current_number;
-    Status s = GetKeyGeneratorCurrentNumber(object_store_id, &current_number);
-    if (!s.ok()) {
-      return s;
-    }
+    ASSIGN_OR_RETURN(int64_t current_number,
+                     GetKeyGeneratorCurrentNumber(object_store_id));
     if (new_number <= current_number) {
-      return s;
+      return Status::OK();
     }
   }
 

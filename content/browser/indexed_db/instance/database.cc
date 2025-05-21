@@ -932,20 +932,21 @@ Status Database::GetKeyGeneratorCurrentNumberOperation(
     return Status::InvalidArgument("Invalid object_store_id.");
   }
 
-  int64_t current_number;
-  Status s =
+  ASSIGN_OR_RETURN(
+      int64_t current_number,
       transaction->BackingStoreTransaction()->GetKeyGeneratorCurrentNumber(
-          object_store_id, &current_number);
-  if (!s.ok()) {
-    std::move(callback).Run(
-        -1,
-        CreateIDBErrorPtr(blink::mojom::IDBException::kDataError,
-                          "Failed to get the current number of key generator.",
-                          transaction));
-    return s;
-  }
+          object_store_id),
+      [&callback, transaction](const Status& status) {
+        std::move(callback).Run(
+            -1, CreateIDBErrorPtr(
+                    blink::mojom::IDBException::kDataError,
+                    "Failed to get the current number of key generator.",
+                    transaction));
+        return status;
+      });
+
   std::move(callback).Run(current_number, nullptr);
-  return s;
+  return Status::OK();
 }
 
 Status Database::ClearOperation(

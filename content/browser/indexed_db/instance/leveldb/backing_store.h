@@ -181,8 +181,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     Status ClearObjectStore(int64_t object_store_id) override;
     Status DeleteRange(int64_t object_store_id,
                        const blink::IndexedDBKeyRange&) override;
-    Status GetKeyGeneratorCurrentNumber(int64_t object_store_id,
-                                        int64_t* current_number) override;
+    StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
+        int64_t object_store_id) override;
     Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t object_store_id,
                                                 int64_t new_state,
                                                 bool check_current) override;
