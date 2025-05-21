@@ -248,6 +248,14 @@ std::string SendTabToSelfBridge::GetStorageKey(
   return entity_data.specifics.send_tab_to_self().guid();
 }
 
+bool SendTabToSelfBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_send_tab_to_self());
+  sync_pb::SendTabToSelfSpecifics specifics =
+      entity_data.specifics.send_tab_to_self();
+  return !specifics.guid().empty() && GURL(specifics.url()).is_valid();
+}
+
 void SendTabToSelfBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK(store_);
