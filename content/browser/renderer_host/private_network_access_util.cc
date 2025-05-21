@@ -171,13 +171,15 @@ Policy ApplyFeatureStateToPolicy(FeatureState feature_state, Policy policy) {
 Policy DerivePrivateNetworkRequestPolicy(
     AddressSpace ip_address_space,
     bool is_web_secure_context,
-    RequestContext private_network_request_context,
-    bool local_network_access_checks_enabled) {
+    RequestContext private_network_request_context) {
   // Disable PNA checks entirely when running with `--disable-web-security`.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity)) {
     return Policy::kAllow;
   }
+
+  bool local_network_access_checks_enabled = base::FeatureList::IsEnabled(
+      network::features::kLocalNetworkAccessChecks);
 
   FeatureState feature_state =
       FeatureStateForContext(private_network_request_context);
@@ -202,25 +204,6 @@ Policy DerivePrivateNetworkRequestPolicy(
   return DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
                                            policies.is_web_secure_context,
                                            private_network_request_context);
-}
-
-Policy DerivePrivateNetworkRequestPolicy(
-    AddressSpace ip_address_space,
-    bool is_web_secure_context,
-    RequestContext private_network_request_context) {
-  return DerivePrivateNetworkRequestPolicy(
-      ip_address_space, is_web_secure_context, private_network_request_context,
-      base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecks));
-}
-
-Policy DerivePrivateNetworkRequestPolicy(
-    const PolicyContainerPolicies& policies,
-    RequestContext private_network_request_context,
-    bool local_network_access_checks_enabled) {
-  return DerivePrivateNetworkRequestPolicy(
-      policies.ip_address_space, policies.is_web_secure_context,
-      private_network_request_context, local_network_access_checks_enabled);
 }
 
 network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
@@ -309,6 +292,8 @@ AddressSpace CalculateIPAddressSpace(
   return IPAddressSpaceForSpecialScheme(url, client);
 }
 
+// TODO(crbug.com/395895368): rename to be more clear about functionality (as
+// its not overriding block with warn, but the other way around).
 network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
     network::mojom::PrivateNetworkRequestPolicy policy) {
   switch (policy) {
@@ -316,6 +301,8 @@ network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
       return network::mojom::PrivateNetworkRequestPolicy::kBlock;
     case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
       return network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
+      return network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
     default:
       return policy;
   }

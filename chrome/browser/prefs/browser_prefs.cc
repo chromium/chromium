@@ -2298,7 +2298,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#endif
+
+  // TODO(crbug.com/400455013): Add LNA support on Android
+  registry->RegisterBooleanPref(
+      prefs::kManagedLocalNetworkAccessRestrictionsEnabled, false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kVirtualKeyboardResizesLayoutByDefault,

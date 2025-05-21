@@ -8425,13 +8425,9 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   if (policy_override ==
       ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
           kBlockInsteadOfWarn) {
-    // Overrides to block instead of warn depend on PNA policy calculations
-    // without LNA being involved until after M136. Look up what the policy
-    // would have been if LNA was off and use that policy to compute the
-    // override's impact.
     private_network_request_policy_ =
         OverrideBlockWithWarn(DerivePrivateNetworkRequestPolicy(
-            policies, PrivateNetworkRequestContext::kSubresource, false));
+            policies, PrivateNetworkRequestContext::kSubresource));
   }
 }
 

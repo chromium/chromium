@@ -4271,6 +4271,12 @@ inline constexpr char kSharedWorkerBlobURLFixEnabled[] =
 // top-level, cross-site and swaps BrowsingContextGroup is allowed or not.
 inline constexpr char kClearWindowNameForNewBrowsingContextGroup[] =
     "profile.content_settings.clear_window_name_for_new_browsing_context_group";
+
+// Boolean indicating whether Local Network Access restrictions should be forced
+// on regardless of defaults.
+inline constexpr char kManagedLocalNetworkAccessRestrictionsEnabled[] =
+    "managed_local_network_access_restrictions_enabled";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

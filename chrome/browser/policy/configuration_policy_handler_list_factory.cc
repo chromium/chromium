@@ -2324,6 +2324,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCACertificateManagementAllowed,
     prefs::kCACertificateManagementAllowed,
     base::Value::Type::INTEGER },
+  // TODO(crbug.com/400455013): Add LNA support on Android
+  { key::kLocalNetworkAccessRestrictionsEnabled,
+    prefs::kManagedLocalNetworkAccessRestrictionsEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   { key::kCAPlatformIntegrationEnabled,
@@ -2380,7 +2384,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kNTPFooterManagementNoticeEnabled,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
 };
 // clang-format on
 
