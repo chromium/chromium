@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/notimplemented.h"
+#include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
 #include "sql/transaction.h"
@@ -106,13 +107,12 @@ Status BackingStoreTransactionImpl::GetRecord(int64_t object_store_id,
   return Status::OK();
 }
 
-Status BackingStoreTransactionImpl::PutRecord(
-    int64_t object_store_id,
-    const blink::IndexedDBKey& key,
-    IndexedDBValue* value,
-    BackingStore::RecordIdentifier* record) {
+base::expected<BackingStore::RecordIdentifier, Status>
+BackingStoreTransactionImpl::PutRecord(int64_t object_store_id,
+                                       const blink::IndexedDBKey& key,
+                                       IndexedDBValue value) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return base::unexpected(Status::InvalidArgument("not implemented"));
 }
 
 Status BackingStoreTransactionImpl::DeleteRange(
@@ -137,13 +137,12 @@ Status BackingStoreTransactionImpl::MaybeUpdateKeyGeneratorCurrentNumber(
   return Status::OK();
 }
 
-Status BackingStoreTransactionImpl::KeyExistsInObjectStore(
+base::expected<std::optional<BackingStore::RecordIdentifier>, Status>
+BackingStoreTransactionImpl::KeyExistsInObjectStore(
     int64_t object_store_id,
-    const blink::IndexedDBKey& key,
-    BackingStore::RecordIdentifier* found_record_identifier,
-    bool* found) {
+    const blink::IndexedDBKey& key) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return base::unexpected(Status::InvalidArgument("not impl"));
 }
 
 Status BackingStoreTransactionImpl::PutIndexDataForRecord(

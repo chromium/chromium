@@ -45,10 +45,10 @@ class FakeTransaction : public BackingStore::Transaction {
   Status GetRecord(int64_t object_store_id,
                    const blink::IndexedDBKey& key,
                    IndexedDBValue* record) override;
-  Status PutRecord(int64_t object_store_id,
-                   const blink::IndexedDBKey& key,
-                   IndexedDBValue* value,
-                   BackingStore::RecordIdentifier* record) override;
+  base::expected<BackingStore::RecordIdentifier, Status> PutRecord(
+      int64_t object_store_id,
+      const blink::IndexedDBKey& key,
+      IndexedDBValue value) override;
   Status DeleteRange(int64_t object_store_id,
                      const blink::IndexedDBKeyRange&) override;
   Status GetKeyGeneratorCurrentNumber(int64_t object_store_id,
@@ -56,11 +56,9 @@ class FakeTransaction : public BackingStore::Transaction {
   Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t object_store_id,
                                               int64_t new_state,
                                               bool check_current) override;
-  Status KeyExistsInObjectStore(
-      int64_t object_store_id,
-      const blink::IndexedDBKey& key,
-      BackingStore::RecordIdentifier* found_record_identifier,
-      bool* found) override;
+  base::expected<std::optional<BackingStore::RecordIdentifier>, Status>
+  KeyExistsInObjectStore(int64_t object_store_id,
+                         const blink::IndexedDBKey& key) override;
   Status PutIndexDataForRecord(
       int64_t object_store_id,
       int64_t index_id,

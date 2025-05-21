@@ -2215,14 +2215,13 @@ int64_t BackingStore::GetInMemorySize() const {
   return blob_size + level_db_size;
 }
 
-Status BackingStore::Transaction::PutRecord(
-    int64_t object_store_id,
-    const IndexedDBKey& key,
-    IndexedDBValue* value,
-    RecordIdentifier* record_identifier) {
+base::expected<BackingStore::RecordIdentifier, Status>
+BackingStore::Transaction::PutRecord(int64_t object_store_id,
+                                     const IndexedDBKey& key,
+                                     IndexedDBValue value) {
   TRACE_EVENT0("IndexedDB", "BackingStore::PutRecord");
   if (!KeyPrefix::ValidIds(database_id(), object_store_id)) {
-    return InvalidDBKeyStatus();
+    return base::unexpected(InvalidDBKeyStatus());
   }
   DCHECK(key.IsValid());
 
@@ -2231,7 +2230,7 @@ Status BackingStore::Transaction::PutRecord(
   Status s = GetNewVersionNumber(leveldb_transaction, database_id(),
                                  object_store_id, &version);
   if (!s.ok()) {
-    return s;
+    return base::unexpected(s);
   }
   DCHECK_GE(version, 0);
   const std::string object_store_data_key =
@@ -2239,16 +2238,16 @@ Status BackingStore::Transaction::PutRecord(
 
   std::string v;
   EncodeVarInt(version, &v);
-  v.append(value->bits.begin(), value->bits.end());
+  v.append(value.bits.begin(), value.bits.end());
 
   s = leveldb_transaction->Put(object_store_data_key, &v);
   if (!s.ok()) {
-    return s;
+    return base::unexpected(s);
   }
   s = PutExternalObjectsIfNeeded(object_store_data_key,
-                                 &value->external_objects);
+                                 &value.external_objects);
   if (!s.ok()) {
-    return s;
+    return base::unexpected(s);
   }
 
   const std::string exists_entry_key =
@@ -2257,11 +2256,10 @@ Status BackingStore::Transaction::PutRecord(
   EncodeInt(version, &version_encoded);
   s = leveldb_transaction->Put(exists_entry_key, &version_encoded);
   if (!s.ok()) {
-    return s;
+    return base::unexpected(s);
   }
 
-  *record_identifier = CreateRecordIdentifier(key, version);
-  return s;
+  return CreateRecordIdentifier(key, version);
 }
 
 Status BackingStore::Transaction::ClearObjectStore(int64_t object_store_id) {
@@ -2468,41 +2466,38 @@ Status BackingStore::Transaction::MaybeUpdateKeyGeneratorCurrentNumber(
   return PutInt(transaction(), key_generator_current_number_key, new_number);
 }
 
-Status BackingStore::Transaction::KeyExistsInObjectStore(
-    int64_t object_store_id,
-    const IndexedDBKey& key,
-    RecordIdentifier* found_record_identifier,
-    bool* found) {
+base::expected<std::optional<BackingStore::RecordIdentifier>, Status>
+BackingStore::Transaction::KeyExistsInObjectStore(int64_t object_store_id,
+                                                  const IndexedDBKey& key) {
   TRACE_EVENT0("IndexedDB", "BackingStore::KeyExistsInObjectStore");
   if (!KeyPrefix::ValidIds(database_id(), object_store_id)) {
-    return InvalidDBKeyStatus();
+    return base::unexpected(InvalidDBKeyStatus());
   }
-  *found = false;
   const std::string leveldb_key =
       ObjectStoreDataKey::Encode(database_id(), object_store_id, key);
   std::string data;
 
-  Status s(transaction()->Get(leveldb_key, &data, found));
+  bool found = false;
+  Status s = transaction()->Get(leveldb_key, &data, &found);
   if (!s.ok()) {
     INTERNAL_READ_ERROR(KEY_EXISTS_IN_OBJECT_STORE);
-    return s;
+    return base::unexpected(s);
   }
-  if (!*found) {
-    return Status::OK();
+  if (!found) {
+    return std::nullopt;
   }
   if (data.empty()) {
     INTERNAL_READ_ERROR(KEY_EXISTS_IN_OBJECT_STORE);
-    return InternalInconsistencyStatus();
+    return base::unexpected(InternalInconsistencyStatus());
   }
 
   int64_t version;
   std::string_view slice(data);
   if (!DecodeVarInt(&slice, &version)) {
-    return InternalInconsistencyStatus();
+    return base::unexpected(InternalInconsistencyStatus());
   }
 
-  *found_record_identifier = CreateRecordIdentifier(key, version);
-  return s;
+  return CreateRecordIdentifier(key, version);
 }
 
 void BackingStore::ReportBlobUnused(int64_t database_id, int64_t blob_number) {

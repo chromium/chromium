@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "content/browser/indexed_db/indexed_db_value.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
@@ -90,11 +91,12 @@ Status FakeTransaction::GetRecord(int64_t object_store_id,
   return wrapped_transaction_->GetRecord(object_store_id, key, record);
 }
 
-Status FakeTransaction::PutRecord(int64_t object_store_id,
-                                  const blink::IndexedDBKey& key,
-                                  IndexedDBValue* value,
-                                  BackingStore::RecordIdentifier* record) {
-  return wrapped_transaction_->PutRecord(object_store_id, key, value, record);
+base::expected<BackingStore::RecordIdentifier, Status>
+FakeTransaction::PutRecord(int64_t object_store_id,
+                           const blink::IndexedDBKey& key,
+                           IndexedDBValue value) {
+  return wrapped_transaction_->PutRecord(object_store_id, key,
+                                         std::move(value));
 }
 
 Status FakeTransaction::DeleteRange(int64_t object_store_id,
@@ -116,13 +118,10 @@ Status FakeTransaction::MaybeUpdateKeyGeneratorCurrentNumber(
       object_store_id, new_state, check_current);
 }
 
-Status FakeTransaction::KeyExistsInObjectStore(
-    int64_t object_store_id,
-    const blink::IndexedDBKey& key,
-    BackingStore::RecordIdentifier* found_record_identifier,
-    bool* found) {
-  return wrapped_transaction_->KeyExistsInObjectStore(
-      object_store_id, key, found_record_identifier, found);
+base::expected<std::optional<BackingStore::RecordIdentifier>, Status>
+FakeTransaction::KeyExistsInObjectStore(int64_t object_store_id,
+                                        const blink::IndexedDBKey& key) {
+  return wrapped_transaction_->KeyExistsInObjectStore(object_store_id, key);
 }
 
 Status FakeTransaction::PutIndexDataForRecord(

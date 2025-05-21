@@ -30,6 +30,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -726,14 +727,11 @@ Status Database::SetIndexKeysOperation(
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
-  BackingStore::RecordIdentifier record_identifier;
-  bool found = false;
-  Status s = transaction->BackingStoreTransaction()->KeyExistsInObjectStore(
-      object_store_id, primary_key, &record_identifier, &found);
-  if (!s.ok()) {
-    return s;
-  }
-  if (!found) {
+  ASSIGN_OR_RETURN(
+      std::optional<BackingStore::RecordIdentifier> found_record,
+      transaction->BackingStoreTransaction()->KeyExistsInObjectStore(
+          object_store_id, primary_key));
+  if (!found_record) {
     return transaction->Abort(
         DatabaseError(blink::mojom::IDBException::kUnknownError,
                       "Internal error setting index keys for object store."));
@@ -760,9 +758,8 @@ Status Database::SetIndexKeysOperation(
   }
 
   for (const auto& writer : index_writers) {
-    s = writer->WriteIndexKeys(record_identifier,
-                               transaction->BackingStoreTransaction(),
-                               object_store_id);
+    Status s = writer->WriteIndexKeys(
+        *found_record, transaction->BackingStoreTransaction(), object_store_id);
     if (!s.ok()) {
       return s;
     }

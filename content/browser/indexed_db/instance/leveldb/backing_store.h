@@ -175,10 +175,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     Status GetRecord(int64_t object_store_id,
                      const blink::IndexedDBKey& key,
                      IndexedDBValue* record) override;
-    Status PutRecord(int64_t object_store_id,
-                     const blink::IndexedDBKey& key,
-                     IndexedDBValue* value,
-                     RecordIdentifier* record) override;
+    base::expected<RecordIdentifier, Status> PutRecord(
+        int64_t object_store_id,
+        const blink::IndexedDBKey& key,
+        IndexedDBValue value) override;
     Status ClearObjectStore(int64_t object_store_id) override;
     Status DeleteRange(int64_t object_store_id,
                        const blink::IndexedDBKeyRange&) override;
@@ -187,10 +187,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t object_store_id,
                                                 int64_t new_state,
                                                 bool check_current) override;
-    Status KeyExistsInObjectStore(int64_t object_store_id,
-                                  const blink::IndexedDBKey& key,
-                                  RecordIdentifier* found_record_identifier,
-                                  bool* found) override;
+    base::expected<std::optional<RecordIdentifier>, Status>
+    KeyExistsInObjectStore(int64_t object_store_id,
+                           const blink::IndexedDBKey& key) override;
     Status PutIndexDataForRecord(int64_t object_store_id,
                                  int64_t index_id,
                                  const blink::IndexedDBKey& key,

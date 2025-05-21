@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-shared.h"
@@ -545,15 +546,12 @@ Status Transaction::DoPut(int64_t object_store_id,
     return Status::InvalidArgument("Invalid key");
   }
 
-  BackingStore::RecordIdentifier record_identifier;
   if (put_mode == blink::mojom::IDBPutMode::AddOnly) {
-    bool found = false;
-    Status found_status = BackingStoreTransaction()->KeyExistsInObjectStore(
-        object_store_id, key, &record_identifier, &found);
-    if (!found_status.ok()) {
-      return found_status;
-    }
-    if (found) {
+    ASSIGN_OR_RETURN(
+        std::optional<BackingStore::RecordIdentifier> preexisting_record,
+        BackingStoreTransaction()->KeyExistsInObjectStore(object_store_id,
+                                                          key));
+    if (preexisting_record) {
       on_put_error(std::move(callback),
                    blink::mojom::IDBException::kConstraintError,
                    u"Key already exists in the object store.");
@@ -581,19 +579,15 @@ Status Transaction::DoPut(int64_t object_store_id,
 
   // Before this point, don't do any mutation. After this point, rollback the
   // transaction in case of error.
-  {
-    Status s = BackingStoreTransaction()->PutRecord(object_store_id, key,
-                                                    &value, &record_identifier);
-    if (!s.ok()) {
-      return s;
-    }
-  }
+  ASSIGN_OR_RETURN(BackingStore::RecordIdentifier new_record,
+                   BackingStoreTransaction()->PutRecord(object_store_id, key,
+                                                        std::move(value)));
 
   {
     TRACE_EVENT1("IndexedDB", "Database::PutOperation.UpdateIndexes", "txn.id",
                  id());
     for (const auto& writer : index_writers) {
-      writer->WriteIndexKeys(record_identifier, BackingStoreTransaction(),
+      writer->WriteIndexKeys(new_record, BackingStoreTransaction(),
                              object_store_id);
     }
   }

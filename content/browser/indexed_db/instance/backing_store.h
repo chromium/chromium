@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -135,10 +136,11 @@ class BackingStore {
     [[nodiscard]] virtual Status GetRecord(int64_t object_store_id,
                                            const blink::IndexedDBKey& key,
                                            IndexedDBValue* record) = 0;
-    [[nodiscard]] virtual Status PutRecord(int64_t object_store_id,
-                                           const blink::IndexedDBKey& key,
-                                           IndexedDBValue* value,
-                                           RecordIdentifier* record) = 0;
+    // When successful, returns the identifier for the newly stored record.
+    [[nodiscard]] virtual base::expected<RecordIdentifier, Status> PutRecord(
+        int64_t object_store_id,
+        const blink::IndexedDBKey& key,
+        IndexedDBValue value) = 0;
     [[nodiscard]] virtual Status DeleteRange(
         int64_t object_store_id,
         const blink::IndexedDBKeyRange&) = 0;
@@ -149,11 +151,13 @@ class BackingStore {
         int64_t object_store_id,
         int64_t new_state,
         bool check_current) = 0;
-    [[nodiscard]] virtual Status KeyExistsInObjectStore(
-        int64_t object_store_id,
-        const blink::IndexedDBKey& key,
-        RecordIdentifier* found_record_identifier,
-        bool* found) = 0;
+    // Returns the `RecordIdentifier` for the record if the primary key exists
+    // in the given object store. Returns `Status` on error. Returns nullopt if
+    // no record exists with the given key.
+    [[nodiscard]] virtual base::expected<std::optional<RecordIdentifier>,
+                                         Status>
+    KeyExistsInObjectStore(int64_t object_store_id,
+                           const blink::IndexedDBKey& key) = 0;
     [[nodiscard]] virtual Status PutIndexDataForRecord(
         int64_t object_store_id,
         int64_t index_id,
