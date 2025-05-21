@@ -108,6 +108,9 @@ class BoxBorderPainter {
   void DrawCurvedDoubleBoxSide(Color) const;
   void DrawCurvedRidgeGrooveBoxSide(BoxSide, Color, EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
+  bool ClipBorderSidePolygonCloseToEdgesIfNeeded(BoxSide,
+                                                 MiterType miter1,
+                                                 MiterType miter2) const;
   gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
 
   void ClipContouredRect(const ContouredRect&) const;

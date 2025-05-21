@@ -818,6 +818,137 @@ void FindIntersection(const gfx::PointF& p1,
   intersection.set_y(p1.y() + param * py_length);
 }
 
+using Corner = ContouredRect::Corner;
+
+struct CornerInfo {
+  Corner outer;
+  Corner inner;
+  // The outer corner of the inner border, if it was not adjusted for curvature.
+  gfx::PointF unadjusted_inner_edge;
+};
+
+void ClipOutHalfCornerWithMiter(GraphicsContext& context,
+                                const CornerInfo& corner_info,
+                                const CornerInfo& next_corner_info,
+                                AntiAliasingMode antialias_mode) {
+  // Find the relevant miter intersection. It's a point on the line that starts
+  // from the outer point of the corner and extends through the inner edge. It
+  // should generally overlap with one of the inner corners, but cannot be
+  // shorter than the edge.
+  gfx::PointF miter_intersection = corner_info.unadjusted_inner_edge;
+  gfx::PointF center_point = corner_info.inner.Center();
+
+  auto distance_from_outer = [&](const gfx::PointF& point) {
+    return (point - corner_info.outer.Outer()).Length();
+  };
+
+  if (!corner_info.inner.IsZero()) {
+    FindIntersection(corner_info.inner.Center(), corner_info.inner.End(),
+                     corner_info.outer.Outer(),
+                     corner_info.unadjusted_inner_edge, miter_intersection);
+    gfx::PointF other_miter_intersection;
+    FindIntersection(corner_info.inner.Center(), corner_info.inner.Start(),
+                     corner_info.outer.Outer(),
+                     corner_info.unadjusted_inner_edge,
+                     other_miter_intersection);
+    if (distance_from_outer(other_miter_intersection) >
+        distance_from_outer(miter_intersection)) {
+      miter_intersection = other_miter_intersection;
+    }
+
+    if (distance_from_outer(corner_info.unadjusted_inner_edge) >
+        distance_from_outer(miter_intersection)) {
+      miter_intersection = corner_info.unadjusted_inner_edge;
+    }
+  }
+
+  // When the corners intersect, the miter intersection and center point
+  // should not go beyond the non-sliced corner.
+  if (corner_info.inner.Intersects(next_corner_info.inner)) {
+    gfx::PointF next_miter_intersection;
+    FindIntersection(next_corner_info.inner.Center(),
+                     next_corner_info.inner.End(), corner_info.outer.Outer(),
+                     corner_info.unadjusted_inner_edge,
+                     next_miter_intersection);
+    if (distance_from_outer(next_miter_intersection) <
+        distance_from_outer(miter_intersection)) {
+      miter_intersection = corner_info.unadjusted_inner_edge;
+      FindIntersection(next_corner_info.inner.Center(),
+                       next_corner_info.inner.End(), corner_info.inner.Start(),
+                       corner_info.inner.Center(), center_point);
+    }
+  }
+
+  // Clip a path that cuts out the part of the corner that should not be
+  // rendered with the current side's color.
+  context.ClipPath(PathBuilder()
+                       .MoveTo(corner_info.outer.Outer())
+                       .LineTo(miter_intersection)
+                       .LineTo(center_point)
+                       .LineTo(corner_info.inner.Start())
+                       .LineTo(corner_info.outer.Start())
+                       .Close()
+                       .Finalize()
+                       .GetSkPath(),
+                   antialias_mode, SkClipOp::kDifference);
+}
+
+bool HasIntersectingCorners(const CornerInfo& first_corner,
+                            const CornerInfo& second_corner,
+                            const CornerInfo& opposite_corner,
+                            const CornerInfo& previous_corner) {
+  return first_corner.inner.Intersects(second_corner.inner) ||
+         first_corner.inner.Intersects(opposite_corner.inner) ||
+         first_corner.inner.Intersects(previous_corner.inner) ||
+         second_corner.inner.Intersects(opposite_corner.inner) ||
+         second_corner.inner.Intersects(previous_corner.inner);
+}
+
+bool ClipBorderSidePolygonFromCornersIfNeeded(
+    GraphicsContext& context,
+    const CornerInfo& first_corner,
+    const CornerInfo& second_corner,
+    const CornerInfo& opposite_corner,
+    const CornerInfo& previous_corner,
+    AntiAliasingMode first_antialias,
+    AntiAliasingMode second_antialias,
+    const gfx::Vector2dF& width_vector) {
+  // Only use this type of complex clipping if one of the corners of this side
+  // overlaps with any other corner.
+  if (!HasIntersectingCorners(first_corner, second_corner, opposite_corner,
+                              previous_corner)) {
+    return false;
+  }
+
+  // Clip the full side, including the two full corners, to avoid overlapping
+  // with the other sides.
+  context.ClipPath(PathBuilder()
+                       .SetWindRule(WindRule::RULE_NONZERO)
+                       .MoveTo(first_corner.outer.Outer())
+                       .LineTo(first_corner.outer.Start())
+                       .AddCorner(first_corner.inner)
+                       .LineTo(first_corner.outer.End() + width_vector)
+                       .LineTo(second_corner.outer.Start() + width_vector)
+                       .AddCorner(second_corner.inner)
+                       .LineTo(second_corner.outer.End())
+                       .LineTo(second_corner.outer.Outer())
+                       .Close()
+                       .Finalize()
+                       .GetSkPath(),
+                   kAntiAliased);
+
+  // Clip two paths, one with the first full corner and the second corner
+  // clipped at the miter, and the opposite one.
+  CornerInfo second_corner_reversed{second_corner.outer.Reverse(),
+                                    second_corner.inner.Reverse(),
+                                    second_corner.unadjusted_inner_edge};
+  ClipOutHalfCornerWithMiter(context, first_corner, second_corner_reversed,
+                             first_antialias);
+  ClipOutHalfCornerWithMiter(context, second_corner_reversed, first_corner,
+                             second_antialias);
+  return true;
+}
+
 }  // anonymous namespace
 
 // Holds edges grouped by opacity and sorted in paint order.
@@ -1639,10 +1770,80 @@ gfx::Rect BoxBorderPainter::CalculateSideRectIncludingInner(
   return side_rect;
 }
 
+// This algorithm clips as follows:
+// The path of the side, including the full two corners, is clipped first, to
+// avoid including overlapping opposite corners. Then, each of the half corners
+// that should be excluded because of the miter is clipped out. If the corners
+// overlap each other, this might leave an ambiguous area, not explicitly part
+// of any side. By clipping out areas that are definitely part of the adjacent
+// side, those ambiguous areas would be part of both sides.
+bool BoxBorderPainter::ClipBorderSidePolygonCloseToEdgesIfNeeded(
+    BoxSide side,
+    MiterType first_miter,
+    MiterType second_miter) const {
+  if (!is_rounded_ || outer_.IsConvex()) {
+    return false;
+  }
+  const AntiAliasingMode antialias_top_or_left =
+      first_miter == MiterType::kSoftMiter ? kAntiAliased : kNotAntiAliased;
+  const AntiAliasingMode antialias_right_or_bottom =
+      second_miter == MiterType::kSoftMiter ? kAntiAliased : kNotAntiAliased;
+  const CornerInfo top_left_corner_info{
+      .outer = outer_.TopLeftCorner(),
+      .inner = inner_.TopLeftCorner(),
+      .unadjusted_inner_edge = inner_.Rect().origin()};
+
+  const CornerInfo top_right_corner_info{
+      .outer = outer_.TopRightCorner(),
+      .inner = inner_.TopRightCorner(),
+      .unadjusted_inner_edge = inner_.Rect().top_right()};
+
+  const CornerInfo bottom_right_corner_info{
+      .outer = outer_.BottomRightCorner(),
+      .inner = inner_.BottomRightCorner(),
+      .unadjusted_inner_edge = inner_.Rect().bottom_right()};
+
+  const CornerInfo bottom_left_corner_info{
+      .outer = outer_.BottomLeftCorner(),
+      .inner = inner_.BottomLeftCorner(),
+      .unadjusted_inner_edge = inner_.Rect().bottom_left()};
+  switch (side) {
+    case BoxSide::kTop:
+      return ClipBorderSidePolygonFromCornersIfNeeded(
+          context_, top_left_corner_info, top_right_corner_info,
+          bottom_right_corner_info, bottom_left_corner_info,
+          antialias_top_or_left, antialias_right_or_bottom,
+          gfx::Vector2dF(0, inner_.Rect().y() - outer_.Rect().y()));
+    case BoxSide::kRight:
+      return ClipBorderSidePolygonFromCornersIfNeeded(
+          context_, top_right_corner_info, bottom_right_corner_info,
+          bottom_left_corner_info, top_left_corner_info, antialias_top_or_left,
+          antialias_right_or_bottom,
+          gfx::Vector2dF(inner_.Rect().right() - outer_.Rect().right(), 0));
+    case BoxSide::kBottom:
+      return ClipBorderSidePolygonFromCornersIfNeeded(
+          context_, bottom_right_corner_info, bottom_left_corner_info,
+          top_left_corner_info, top_right_corner_info,
+          antialias_right_or_bottom, antialias_top_or_left,
+          gfx::Vector2dF(0, inner_.Rect().bottom() - outer_.Rect().bottom()));
+    case BoxSide::kLeft:
+      return ClipBorderSidePolygonFromCornersIfNeeded(
+          context_, bottom_left_corner_info, top_left_corner_info,
+          top_right_corner_info, bottom_right_corner_info,
+          antialias_right_or_bottom, antialias_top_or_left,
+          gfx::Vector2dF(inner_.Rect().x() - outer_.Rect().x(), 0));
+  }
+}
+
 void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                                              MiterType first_miter,
                                              MiterType second_miter) const {
   DCHECK(first_miter != kNoMiter || second_miter != kNoMiter);
+
+  if (ClipBorderSidePolygonCloseToEdgesIfNeeded(side, first_miter,
+                                                second_miter)) {
+    return;
+  }
 
   // The boundary of the edge for fill.
   gfx::PointF edge_quad[4];

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -24,7 +25,6 @@ class Vector2dF;
 namespace blink {
 
 class AffineTransform;
-class ContouredRect;
 class FloatRoundedRect;
 
 // A helper for building immutable Paths.
@@ -111,6 +111,7 @@ class PLATFORM_EXPORT PathBuilder {
   PathBuilder& AddRect(const gfx::PointF& origin, const gfx::PointF& opposite);
   PathBuilder& AddRoundedRect(const FloatRoundedRect&, bool clockwise = true);
   PathBuilder& AddContouredRect(const ContouredRect&);
+  PathBuilder& AddCorner(const ContouredRect::Corner&);
   PathBuilder& AddEllipse(const gfx::PointF& p,
                           float radius_x,
                           float radius_y,

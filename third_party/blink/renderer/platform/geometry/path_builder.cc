@@ -233,6 +233,12 @@ PathBuilder& PathBuilder::AddRoundedRect(const FloatRoundedRect& rect,
   return *this;
 }
 
+PathBuilder& PathBuilder::AddCorner(const ContouredRect::Corner& corner) {
+  AddCurvedCorner(builder_, corner);
+  current_path_.reset();
+  return *this;
+}
+
 PathBuilder& PathBuilder::AddContouredRect(
     const ContouredRect& contoured_rect) {
   const FloatRoundedRect& target_rect = contoured_rect.AsRoundedRect();
