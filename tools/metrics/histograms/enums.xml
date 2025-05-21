@@ -2767,6 +2767,8 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="No contexts"/>
   <int value="1" label="One context"/>
   <int value="2" label="More than one context"/>
+  <int value="3"
+      label="More than one context requiring a potential account change"/>
 </enum>
 
 <!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->

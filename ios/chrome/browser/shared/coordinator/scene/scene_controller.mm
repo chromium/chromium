@@ -262,7 +262,8 @@ enum class ContextsToOpen {
   kNoContexts = 0,
   kOneContext = 1,
   kMoreThanOneContext = 2,
-  kMaxValue = kMoreThanOneContext,
+  kMoreThanOneContextWithAccountChange = 3,
+  kMaxValue = kMoreThanOneContextWithAccountChange,
 };
 
 // TODO(crbug.com/40788009): Use the Authentication Service sign-in status API
@@ -856,6 +857,15 @@ void OnListFamilyMembersResponse(
   base::UmaHistogramEnumeration(kContextsToOpen, contextInfo);
 
   NSSet<UIOpenURLContext*>* contexts = self.sceneState.URLContextsToOpen;
+  if ([self multipleAccountSwitchesRequired:contexts]) {
+    // If more than one context require a potental account change only open the
+    // first context and discard the others to avoid looping between acocunt
+    // changes.
+    NSEnumerator<UIOpenURLContext*>* enumerator = [contexts objectEnumerator];
+    contexts = [NSSet setWithObject:[enumerator nextObject]];
+    base::UmaHistogramEnumeration(
+        kContextsToOpen, ContextsToOpen::kMoreThanOneContextWithAccountChange);
+  }
   self.sceneState.URLContextsToOpen = nil;
 
   if (IsWidgetsForMultiprofileEnabled()) {
@@ -894,6 +904,23 @@ void OnListFamilyMembersResponse(
   }
 
   [self openURLContexts:contexts];
+}
+
+- (BOOL)multipleAccountSwitchesRequired:(NSSet<UIOpenURLContext*>*)URLContexts {
+  if (URLContexts.count == 1) {
+    return NO;
+  }
+
+  // Store the number of URLs that may require an account change.
+  int accountChanges = 0;
+  for (UIOpenURLContext* context : URLContexts) {
+    std::string newGaia;
+    if (net::GetValueForKeyInQuery(net::GURLWithNSURL(context.URL), "gaia_id",
+                                   &newGaia)) {
+      accountChanges++;
+    }
+  }
+  return accountChanges > 1 ? YES : NO;
 }
 
 - (WidgetContext*)findContextRequiringAccountChange:
