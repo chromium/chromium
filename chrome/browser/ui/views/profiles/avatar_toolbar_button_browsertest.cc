@@ -1459,6 +1459,10 @@ const HistorySyncOptinExpansionPillOptionTestCase kHistorySyncOptinTestCases[] =
             "see-tabs-from-other-devices",
             IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES,
         },
+        {
+            "browse-across-devices-new-profile-menu-promo-variant",
+            IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES,
+        },
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -77,7 +77,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kProfileManagementLabel = 20,
     kSigninReauthButton = 21,
     kAutofillSettingsButton = 22,
-    kMaxValue = kAutofillSettingsButton,
+    kHistorySyncOptInButton = 23,
+    kMaxValue = kHistorySyncOptInButton,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileMenuActionableItem)
 
@@ -161,7 +162,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& text,
       base::RepeatingClosure action,
       const gfx::VectorIcon& icon = gfx::VectorIcon::EmptyIcon(),
-      float icon_to_image_ratio = 1.0f);
+      float icon_to_image_ratio = 1.0f,
+      std::optional<ui::ColorId> background_color = std::nullopt,
+      bool add_vertical_margin = false);
   void SetProfileManagementHeading(const std::u16string& heading);
   void AddAvailableProfile(const ui::ImageModel& image_model,
                            const std::u16string& name,

@@ -74,8 +74,9 @@ struct ProfileMenuViewPixelTestParam {
   bool use_multiple_profiles = false;
   bool account_image_available = true;
 
-  // Extra feature flags.
-  base::flat_map<base::test::FeatureRef, bool> extra_features_state_;
+  // Features and parameters that are enabled in addition to the features
+  // enabled by default.
+  std::vector<base::test::FeatureRefAndParams> extra_features_and_params;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -203,27 +204,47 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param = {.test_suffix = "Guest"},
         .profile_type_param = ProfileTypePixelTestParam::kGuest,
-        .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
-                                   true}},
+        .extra_features_and_params =
+            {{switches::kEnableImprovedGuestProfileMenu, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "Guest_Dark",
                              .use_dark_theme = true},
         .profile_type_param = ProfileTypePixelTestParam::kGuest,
-        .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
-                                   true}},
+        .extra_features_and_params =
+            {{switches::kEnableImprovedGuestProfileMenu, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "Incognito"},
         .profile_type_param = ProfileTypePixelTestParam::kIncognito,
-        .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
-                                   true}},
+        .extra_features_and_params =
+            {{switches::kEnableImprovedGuestProfileMenu, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "HistorySyncOptinExperiment"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .extra_features_state_ =
-            {{switches::kEnableHistorySyncOptinExpansionPill, true}},
+        .extra_features_and_params =
+            {{switches::kEnableHistorySyncOptinExpansionPill, {}}},
+    },
+    {
+        .pixel_test_param = {.test_suffix =
+                                 "HistorySyncOptinExperimentNewPromoVariant"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .extra_features_and_params =
+            {{switches::kEnableHistorySyncOptinExpansionPill,
+              {{"history-sync-optin-expansion-pill-option",
+                "browse-across-devices-new-profile-menu-promo-variant"}}}},
+    },
+    {
+        .pixel_test_param =
+            {.test_suffix =
+                 "HistorySyncOptinExperimentNewPromoVariant_DarkTheme",
+             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .extra_features_and_params =
+            {{switches::kEnableHistorySyncOptinExpansionPill,
+              {{"history-sync-optin-expansion-pill-option",
+                "browse-across-devices-new-profile-menu-promo-variant"}}}},
     },
 };
 
@@ -235,16 +256,25 @@ class ProfileMenuViewPixelTest
  public:
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
-    base::flat_map<base::test::FeatureRef, bool> features_state = {
-        {features::kEnterpriseProfileBadgingForMenu, true},
-        {features::kEnterpriseProfileBadgingPolicies, true},
-        // False by default but may be overridden by `extra_features_state_`.
-        {switches::kEnableImprovedGuestProfileMenu, false},
-        {switches::kEnableHistorySyncOptinExpansionPill, false}};
-    for (const auto& [feature, state] : GetParam().extra_features_state_) {
-      features_state[feature] = state;
+    // Disabled by default but may be overridden by `extra_features_and_params`.
+    base::flat_set<base::test::FeatureRef> disabled_features = {
+        switches::kEnableImprovedGuestProfileMenu,
+        switches::kEnableHistorySyncOptinExpansionPill};
+    for (const auto& [feature, _] : GetParam().extra_features_and_params) {
+      disabled_features.erase(feature.get());
     }
-    feature_list_.InitWithFeatureStates(std::move(features_state));
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
+        {features::kEnterpriseProfileBadgingForMenu, {}},
+        {features::kEnterpriseProfileBadgingPolicies, {}}};
+    std::move(GetParam().extra_features_and_params.begin(),
+              GetParam().extra_features_and_params.end(),
+              std::back_inserter(enabled_features_and_params));
+
+    feature_list_.InitWithFeaturesAndParameters(
+        std::move(enabled_features_and_params),
+        std::vector<base::test::FeatureRef>(disabled_features.begin(),
+                                            disabled_features.end()));
 
     // The Profile menu view seems not to be resizied properly on changes which
     // causes the view to go out of bounds. This should not happen and needs to

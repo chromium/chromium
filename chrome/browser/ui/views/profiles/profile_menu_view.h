@@ -95,6 +95,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // Helper methods for building the menu.
   void SetMenuTitleForAccessibility();
   void BuildGuestIdentity();
+  void BuildHistorySyncOptInButton();
   void BuildAutofillSettingsButton();
   void BuildCustomizeProfileButton();
   void MaybeBuildChromeAccountSettingsButton();

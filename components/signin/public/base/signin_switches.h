@@ -113,6 +113,7 @@ enum class HistorySyncOptinExpansionPillOption {
   kBrowseAcrossDevices,
   kSyncHistory,
   kSeeTabsFromOtherDevices,
+  kBrowseAcrossDevicesNewProfileMenuPromoVariant,
 };
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

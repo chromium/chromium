@@ -79,10 +79,13 @@ constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>::Option
          "browse-across-devices"},
         {HistorySyncOptinExpansionPillOption::kSyncHistory, "sync-history"},
         {HistorySyncOptinExpansionPillOption::kSeeTabsFromOtherDevices,
-         "see-tabs-from-other-devices"}};
+         "see-tabs-from-other-devices"},
+        {HistorySyncOptinExpansionPillOption::
+             kBrowseAcrossDevicesNewProfileMenuPromoVariant,
+         "browse-across-devices-new-profile-menu-promo-variant"}};
 
 // Determines the experiment arm of the History Sync Opt-in expansion pill
-// (different text options).
+// (different text options for the pill and the profile menu promo variant).
 //
 // It is no-op unless "EnableHistorySyncOptin" is enabled.
 constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>

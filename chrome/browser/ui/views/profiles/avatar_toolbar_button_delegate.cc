@@ -1728,6 +1728,8 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
         case switches::HistorySyncOptinExpansionPillOption::
             kBrowseAcrossDevices:
+        case switches::HistorySyncOptinExpansionPillOption::
+            kBrowseAcrossDevicesNewProfileMenuPromoVariant:
           text = l10n_util::GetStringUTF16(
               IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES);
           break;

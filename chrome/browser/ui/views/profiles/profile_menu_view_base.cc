@@ -104,6 +104,12 @@ constexpr int kMinimumScrollableContentHeight = 40;
 // the menu items.
 constexpr int kMenuEdgeMargin = 16;
 
+// Empty space between the rounded rectangle (outside) and menu edge.
+constexpr int kIdentityContainerMargin = 12;
+
+// The height of the button(s) with a colored background.
+constexpr int kButtonBackgroundVerticalSize = 36;
+
 constexpr char kProfileMenuClickedActionableItemHistogram[] =
     "Profile.Menu.ClickedActionableItem";
 constexpr char kProfileMenuClickedActionableItemSupervisedHistogram[] =
@@ -283,6 +289,52 @@ void BuildProfileTitleAndSubtitle(Browser* browser,
   }
 }
 
+// TODO(crbug.com/419058908): Remove this class once
+// `views::CreateRoundedRectBackground` supports passing arbitrary insets.
+class RoundedRectBackground : public views::Background {
+ public:
+  RoundedRectBackground(ui::ColorVariant color,
+                        float radius,
+                        gfx::Insets insets)
+      : radii_(gfx::RoundedCornersF(radius)), insets_(insets) {
+    SetColor(color);
+  }
+
+  RoundedRectBackground(const RoundedRectBackground&) = delete;
+  RoundedRectBackground& operator=(const RoundedRectBackground&) = delete;
+
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    gfx::Rect rect(view->GetLocalBounds());
+    rect.Inset(insets_);
+    SkPath path;
+    SkScalar radii[8] = {radii_.upper_left(),  radii_.upper_left(),
+                         radii_.upper_right(), radii_.upper_right(),
+                         radii_.lower_right(), radii_.lower_right(),
+                         radii_.lower_left(),  radii_.lower_left()};
+    path.addRoundRect(gfx::RectToSkRect(rect), radii);
+
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
+    canvas->DrawPath(path, flags);
+  }
+
+  std::optional<gfx::RoundedCornersF> GetRoundedCornerRadii() const override {
+    return radii_;
+  }
+
+  void OnViewThemeChanged(views::View* view) override {
+    if (color().IsSemantic()) {
+      view->SchedulePaint();
+    }
+  }
+
+ private:
+  const gfx::RoundedCornersF radii_;
+  const gfx::Insets insets_;
+};
+
 }  // namespace
 
 ProfileMenuViewBase::IdentitySectionParams::IdentitySectionParams() = default;
@@ -427,10 +479,6 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
 void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
     IdentitySectionParams params) {
-  // Empty space between the rounded rectangle (outside) and menu edge.
-  constexpr int kIdentityContainerMargin = 12;
-
-  constexpr int kHeaderVerticalSize = 36;
   constexpr int kHeaderImageSize = 16;
   constexpr int kIdentityContainerHorizontalPadding = 24;
   constexpr int kAvatarTopMargin = 24;
@@ -443,7 +491,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // represent empty space:
   //
   // Optional header:
-  //     HoverButton: (size: kHeaderVerticalSize)
+  //     HoverButton: (size: kButtonBackgroundVerticalSize)
   //     Horizontal Separator
   // [kAvatarTopMargin]
   // Image: Avatar (size: kIdentityInfoImageSize)
@@ -494,8 +542,9 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
             GetCircularSizedImage(params.header_image, kHeaderImageSize)),
         params.header_string, std::u16string(), nullptr, true, std::u16string(),
         kManagementHeaderIconLabelSpacing);
-    hover_button->SetPreferredSize(gfx::Size(
-        kMenuWidth - 2 * kIdentityContainerMargin, kHeaderVerticalSize));
+    hover_button->SetPreferredSize(
+        gfx::Size(kMenuWidth - 2 * kIdentityContainerMargin,
+                  kButtonBackgroundVerticalSize));
     hover_button->SetIconHorizontalMargins(0, 0);
     hover_button->title()->SetTextStyle(views::style::STYLE_BODY_5);
 
@@ -593,10 +642,13 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .Build());
 }
 
-void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
-                                           base::RepeatingClosure action,
-                                           const gfx::VectorIcon& icon,
-                                           float icon_to_image_ratio) {
+void ProfileMenuViewBase::AddFeatureButton(
+    const std::u16string& text,
+    base::RepeatingClosure action,
+    const gfx::VectorIcon& icon,
+    float icon_to_image_ratio,
+    std::optional<ui::ColorId> background_color,
+    bool add_vertical_margin) {
   // Initialize layout if this is the first time a button is added.
   if (!features_container_->GetLayoutManager()) {
     features_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -609,11 +661,34 @@ void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
         std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio);
   }
 
-  features_container_->AddChildView(std::make_unique<HoverButton>(
+  auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                           base::Unretained(this), std::move(action)),
       std::move(icon_view), text, /*subtitle=*/std::u16string(),
-      /*secondary_view=*/nullptr, /*add_vertical_label_spacing=*/false));
+      /*secondary_view=*/nullptr, /*add_vertical_label_spacing=*/false);
+  if (background_color.has_value()) {
+    constexpr int background_corner_radius = 8;
+    button->SetBackground(std::make_unique<RoundedRectBackground>(
+        *background_color, background_corner_radius,
+        gfx::Insets::VH(0, kIdentityContainerMargin)));
+    // Button with a background should have a larger size to fit the background.
+    button->SetPreferredSize(
+        gfx::Size(kMenuWidth, kButtonBackgroundVerticalSize));
+  }
+  if (add_vertical_margin) {
+    auto margin = gfx::Insets().set_bottom(kDefaultMargin);
+    // Set the top margin only if there is a previous button with no background
+    // (to ensure proper spacing between buttons).
+    if (features_container_->children().size() > 0) {
+      auto* previous_button = views::AsViewClass<HoverButton>(
+          features_container_->children().back());
+      if (previous_button && !previous_button->background()) {
+        margin.set_top(kDefaultMargin);
+      }
+    }
+    button->SetProperty(views::kMarginsKey, std::move(margin));
+  }
+  features_container_->AddChildView(std::move(button));
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
