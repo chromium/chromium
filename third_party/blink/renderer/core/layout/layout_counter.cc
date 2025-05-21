@@ -47,7 +47,8 @@ namespace blink {
 
 namespace {
 
-String GenerateCounterText(const CounterStyle* counter_style, int value) {
+String CounterTextFromStyleAndValue(const CounterStyle* counter_style,
+                                    int value) {
   if (!counter_style) {
     return g_empty_string;
   }
@@ -78,18 +79,24 @@ void LayoutCounter::WillBeDestroyed() {
   LayoutText::WillBeDestroyed();
 }
 
-String LayoutCounter::UpdateCounter(Vector<int> counter_values) {
-  NOT_DESTROYED();
-  const CounterStyle* counter_style = NullableCounterStyle();
-  String text = GenerateCounterText(counter_style, counter_values.front());
-  if (!counter_->Separator().IsNull()) {
+String LayoutCounter::GenerateCounterText(Vector<int> counter_values,
+                                          const CounterStyle* counter_style,
+                                          const AtomicString& separator) {
+  String text =
+      CounterTextFromStyleAndValue(counter_style, counter_values.front());
+  if (!separator.IsNull()) {
     for (wtf_size_t i = 1u; i < counter_values.size(); ++i) {
-      text = GenerateCounterText(counter_style, counter_values[i]) +
-             counter_->Separator() + text;
+      text = CounterTextFromStyleAndValue(counter_style, counter_values[i]) +
+             separator + text;
     }
   }
-  SetTextIfNeeded(text);
   return text;
+}
+
+void LayoutCounter::UpdateCounter(Vector<int> counter_values) {
+  NOT_DESTROYED();
+  SetTextIfNeeded(
+      GenerateCounterText(counter_values, NullableCounterStyle(), Separator()));
 }
 
 const CounterStyle* LayoutCounter::NullableCounterStyle() const {

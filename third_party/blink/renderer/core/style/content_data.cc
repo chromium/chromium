@@ -113,6 +113,24 @@ void CounterContentData::Trace(Visitor* visitor) const {
   ContentData::Trace(visitor);
 }
 
+LayoutObject* AltCounterContentData::CreateLayoutObject(
+    LayoutObject& owner) const {
+  NOTREACHED();
+}
+
+void AltCounterContentData::UpdateText(
+    CountersAttachmentContext& context,
+    const StyleEngine& style_engine,
+    const LayoutObject& content_generating_object) {
+  Vector<int> counter_values = context.GetCounterValues(
+      content_generating_object, Identifier(), Separator().IsNull());
+  const CounterStyle& counter_style =
+      style_engine.FindCounterStyleAcrossScopes(ListStyle(), GetTreeScope());
+  String text = LayoutCounter::GenerateCounterText(std::move(counter_values),
+                                                   &counter_style, Separator());
+  SetText(std::move(text));
+}
+
 LayoutObject* QuoteContentData::CreateLayoutObject(LayoutObject& owner) const {
   LayoutObject* layout_object =
       MakeGarbageCollected<LayoutQuote>(owner, quote_);

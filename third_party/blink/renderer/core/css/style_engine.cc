@@ -821,21 +821,14 @@ void UpdateLayoutCounters(const LayoutObject& layout_object,
 }
 
 // Look at the content data of `layout_object` for potential counter() or
-// counters() in alt text and update them. As they aren't represented by
-// LayountCounter, create one in place to do calculations.
-void UpdateAltCounters(LayoutObject& layout_object,
+// counters() in alt text and update them.
+void UpdateAltCounters(const StyleEngine& style_engine,
+                       LayoutObject& layout_object,
                        CountersAttachmentContext& context) {
   for (ContentData* content = layout_object.StyleRef().GetContentData();
        content; content = content->Next()) {
     if (auto* alt_counter_data = DynamicTo<AltCounterContentData>(content)) {
-      LayoutObject* child = alt_counter_data->CreateLayoutObject(layout_object);
-      auto* layout_counter = DynamicTo<LayoutCounter>(child);
-      Vector<int> counter_values =
-          context.GetCounterValues(layout_object, layout_counter->Identifier(),
-                                   layout_counter->Separator().IsNull());
-      String text = layout_counter->UpdateCounter(std::move(counter_values));
-      alt_counter_data->SetText(std::move(text));
-      child->Destroy();
+      alt_counter_data->UpdateText(context, style_engine, layout_object);
     }
   }
 }
@@ -862,7 +855,7 @@ void StyleEngine::UpdateCounters(const Element& element,
     }
     if (element.GetComputedStyle() &&
         !element.GetComputedStyle()->ContentBehavesAsNormal()) {
-      UpdateAltCounters(*layout_object, context);
+      UpdateAltCounters(*this, *layout_object, context);
       UpdateLayoutCounters(*layout_object, context);
     }
   }

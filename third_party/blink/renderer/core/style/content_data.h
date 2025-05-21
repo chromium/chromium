@@ -40,6 +40,8 @@ namespace blink {
 
 class LayoutObject;
 class TreeScope;
+class StyleEngine;
+class CountersAttachmentContext;
 
 class ContentData : public GarbageCollected<ContentData> {
  public:
@@ -313,12 +315,18 @@ class AltCounterContentData : public CounterContentData {
  public:
   bool IsAltCounter() const override { return true; }
 
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
+
   const String& GetText() const { return counter_value_text_; }
-  void SetText(const String& text) { counter_value_text_ = text; }
+  void UpdateText(CountersAttachmentContext& context,
+                  const StyleEngine& style_engine,
+                  const LayoutObject& content_generating_object);
 
   String DebugString() const override { return "<alt-counter>"; }
 
  private:
+  void SetText(const String& text) { counter_value_text_ = text; }
+
   ContentData* CloneInternal() const override {
     auto* data = MakeGarbageCollected<AltCounterContentData>(counter_data_);
     data->SetText(GetText());

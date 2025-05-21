@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -45,9 +46,13 @@ class LayoutCounter : public LayoutText {
     return counter_->Identifier();
   }
 
-  // Generates, sets and returns counter text based on computed counter values
+  // Generates and returns counter text based on computed counter values
   // and list separators.
-  String UpdateCounter(Vector<int> counter_values);
+  static String GenerateCounterText(Vector<int> counter_values,
+                                    const CounterStyle* counter_style,
+                                    const AtomicString& separator);
+  // Calls GenerateCounterText to update counter text.
+  void UpdateCounter(Vector<int> counter_values);
 
   // Returns true if <counter-style> is "disclosure-open" or
   // "disclosure-closed".
