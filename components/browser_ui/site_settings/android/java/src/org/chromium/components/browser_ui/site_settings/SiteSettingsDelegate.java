@@ -178,22 +178,6 @@ public interface SiteSettingsDelegate {
     boolean shouldShowTrackingProtectionUi();
 
     /**
-     * @return true if the IP Protection UI should be displayed in User Bypass.
-     */
-    boolean shouldDisplayIpProtection();
-
-    /***
-     * @return true if the Fingerprinting Protection UI should be displayed in User
-     *         Bypass.
-     */
-    boolean shouldDisplayFingerprintingProtection();
-
-    /**
-     * @return whether the 100% 3PCD Tracking Protection with ACT features UI should be shown.
-     */
-    boolean shouldShowTrackingProtectionActFeaturesUi();
-
-    /**
      * @return whether all 3pcs should be blocked in incognito.
      */
     boolean isAlwaysBlock3pcsIncognitoEnabled();
