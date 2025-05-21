@@ -215,6 +215,15 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract boolean isSessionRestoreInProgress();
 
+    /**
+     * Opens a tab programmatically
+     *
+     * @param url URL to show.
+     * @param index Index for the tab, it will ignore if it is invalid.
+     */
+    @CalledByNative
+    protected abstract void openTabProgrammatically(GURL url, int index);
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

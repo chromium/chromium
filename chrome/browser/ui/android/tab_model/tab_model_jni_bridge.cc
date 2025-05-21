@@ -238,8 +238,10 @@ void TabModelJniBridge::CloseTabsNavigatedInTimeWindow(
 }
 
 void TabModelJniBridge::OpenTab(const GURL& url, int index) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
+  Java_TabModelJniBridge_openTabProgrammatically(env, jobj, jurl, index);
 }
 
 void TabModelJniBridge::DiscardTab(int index) {

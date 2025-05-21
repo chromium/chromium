@@ -1093,6 +1093,19 @@ public class TabModelImpl extends TabModelJniBridge {
         getTabCreator(false).launchNtp();
     }
 
+    @Override
+    public void openTabProgrammatically(GURL url, int index) {
+        LoadUrlParams loadParams = new LoadUrlParams(url);
+
+        // TODO(crbug.com/415351293): Change tab launch type to allow the specified insertion index.
+        getTabCreator()
+                .createNewTab(
+                        loadParams,
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                        /* parent= */ null,
+                        index);
+    }
+
     @VisibleForTesting
     List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
         List<Tab> tabList = new ArrayList<>();

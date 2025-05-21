@@ -286,6 +286,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         return false;
     }
 
+    @Override
+    protected void openTabProgrammatically(GURL url, int index) {}
+
     // TabGroupModelFilter overrides.
 
     @Override

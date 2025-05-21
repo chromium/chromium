@@ -36,6 +36,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.url.GURL;
 
 /** Tests for {@link TabModelImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -199,6 +200,29 @@ public class TabModelImplTest {
                     assertEquals(1, tabModel.getCount());
 
                     assertTrue(tab1.isDestroyed());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenTabProgrammatically() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelImpl tabModel =
+                            (TabModelImpl)
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getTabModelSelector()
+                                            .getModel(false);
+                    assertEquals(1, tabModel.getCount());
+
+                    GURL url = new GURL("https://www.chromium.org");
+                    tabModel.openTabProgrammatically(url, 0);
+                    assertEquals(2, tabModel.getCount());
+
+                    Tab tab1 = tabModel.getTabAt(1);
+                    assertNotNull(tab1);
+                    assertEquals(url, tab1.getUrl());
                 });
     }
 }
