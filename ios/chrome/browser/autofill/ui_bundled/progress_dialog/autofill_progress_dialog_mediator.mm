@@ -17,15 +17,10 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace {
-// The delay between showing the confirmation and dismissing the progress
-// dialog.
-constexpr base::TimeDelta kConfirmationDismissDelay = base::Seconds(1);
-}  // namespace
 
 AutofillProgressDialogMediator::AutofillProgressDialogMediator(
     autofill::AutofillProgressDialogControllerImpl* model_controller,
@@ -64,7 +59,8 @@ void AutofillProgressDialogMediator::Dismiss(
                      weak_ptr_factory_.GetWeakPtr());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, std::move(closure), kConfirmationDismissDelay);
+      FROM_HERE, std::move(closure),
+      autofill_ui_constants::kProgressDialogConfirmationDismissDelay);
 }
 
 void AutofillProgressDialogMediator::InvalidateControllerForCallbacks() {
