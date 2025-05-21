@@ -23,7 +23,7 @@ const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
 }  // anonymous namespace
 
 SnapshotBrowserAgent::SnapshotBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {
+    : BrowserUserData(browser) {
   browser->AddObserver(this);
   browser->GetWebStateList()->AddObserver(this);
 }
@@ -36,7 +36,6 @@ void SnapshotBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser, browser_);
   browser->GetWebStateList()->RemoveObserver(this);
   browser->RemoveObserver(this);
-  browser_ = nullptr;
   [snapshot_storage_ shutdown];
 }
 
