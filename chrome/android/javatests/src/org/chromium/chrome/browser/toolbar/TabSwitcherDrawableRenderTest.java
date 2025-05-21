@@ -126,6 +126,7 @@ public class TabSwitcherDrawableRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisabledTest(message = "https://crbug.com/419257653")
     public void testTabSwitcherDrawable_newTabPageIncognito() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
 
