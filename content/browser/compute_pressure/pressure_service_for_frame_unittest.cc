@@ -257,6 +257,36 @@ TEST_F(PressureServiceForFrameTest, AddClientTwice) {
   EXPECT_FALSE(pressure_service->IsManagerReceiverBoundForTesting());
 }
 
+TEST_F(PressureServiceForFrameTest, AddClientTwiceFailsAndAddClient) {
+  FakePressureClient client1;
+  ASSERT_EQ(AddPressureClient(&client1, PressureSource::kCpu),
+            device::mojom::PressureManagerAddClientResult::kOk);
+
+  // Simulate the renderer calling AddClient twice for the same PressureSource
+  // and wait for PressureServiceBase to reject the call.
+  FakePressureClient client2;
+  mojo::test::BadMessageObserver bad_message_observer;
+  pressure_manager_->AddClient(
+      PressureSource::kCpu, client2.receiver().BindNewEndpointAndPassRemote(),
+      base::DoNothing());
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "PressureClientImpl is already connected.");
+
+  auto* pressure_service =
+      PressureServiceForFrame::GetOrCreateForCurrentDocument(
+          contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(pressure_service->IsManagerReceiverBoundForTesting());
+
+  // Reconnect WebPressureManager.
+  SetPressureServiceForFrame();
+
+  // Add new client to verify that interfaces are functional.
+  FakePressureClient client3;
+  ASSERT_EQ(AddPressureClient(&client3, PressureSource::kCpu),
+            device::mojom::PressureManagerAddClientResult::kOk);
+}
+
 TEST_F(PressureServiceForFrameTest, DisconnectFromBlink) {
   FakePressureClient client;
   ASSERT_EQ(AddPressureClient(&client, PressureSource::kCpu),

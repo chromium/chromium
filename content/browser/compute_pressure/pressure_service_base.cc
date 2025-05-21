@@ -172,6 +172,9 @@ void PressureServiceBase::AddClient(
   if (pressure_client.is_client_associated_remote_bound()) {
     manager_receiver_.ReportBadMessage(
         "PressureClientImpl is already connected.");
+    // manager_receiver_.ReportBadMessage() will reset `manager_receiver_` and
+    // so clean up as if the pipe had been disconnected.
+    OnPressureManagerDisconnected();
     return;
   }
 
