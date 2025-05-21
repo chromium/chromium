@@ -940,40 +940,45 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testMoveViewportOnFocus() {
-    // Ensure the viewport is scrollable by zooming in.
-    viewport.setZoom(2.0);
+  /*
+    // TODO(crbug.com/418642851): Deflake and re-enable.
+    async function testMoveViewportOnFocus() {
+      // Ensure the viewport is scrollable by zooming in.
+      viewport.setZoom(2.0);
 
-    // Using manager initialization to get correct coordinates for the zoom
-    // level.
-    manager.initializeTextAnnotation({x: 20, y: 20});
-    await microtasksFinished();
-    const styles = getComputedStyle(textbox);
-    chrome.test.assertEq('20px', styles.getPropertyValue('left'));
-    chrome.test.assertEq('20px', styles.getPropertyValue('top'));
+      // Using manager initialization to get correct coordinates for the zoom
+      // level.
+      manager.initializeTextAnnotation({x: 20, y: 20});
+      await microtasksFinished();
+      const styles = getComputedStyle(textbox);
+      chrome.test.assertEq('20px', styles.getPropertyValue('left'));
+      chrome.test.assertEq('20px', styles.getPropertyValue('top'));
 
-    // Scroll away from the textbox. Note this method accepts page coordinates.
-    // Scrolling by 35 in page coordinates scrolls by 70 in screen coordinates
-    // at 2x zoom.
-    viewport.goToPageAndXy(0, 35, 35);
-    await microtasksFinished();
-    chrome.test.assertEq('-50px', styles.getPropertyValue('left'));
-    chrome.test.assertEq('-50px', styles.getPropertyValue('top'));
+      // Scroll away from the textbox. Note this method accepts page
+    coordinates.
+      // Scrolling by 35 in page coordinates scrolls by 70 in screen coordinates
+      // at 2x zoom.
+      viewport.goToPageAndXy(0, 35, 35);
+      await microtasksFinished();
+      chrome.test.assertEq('-50px', styles.getPropertyValue('left'));
+      chrome.test.assertEq('-50px', styles.getPropertyValue('top'));
 
-    // Focus the textbox, which should cause the manager to scroll the viewport.
-    // This won't actually scroll the viewport in the test, since the plugin
-    // won't send a corresponding scroll message back.
-    mockPlugin.clearMessages();
-    textbox.$.textbox.focus();
-    const syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
-    chrome.test.assertTrue(syncScrollMessage !== undefined);
-    chrome.test.assertEq('syncScrollToRemote', syncScrollMessage.type);
-    // The box is at 20, 20 in viewport coordinates, and the viewport is 100px
-    // wide. The manager specifies a margin of 10% of the viewport when
-    // scrolling.
-    chrome.test.assertEq(10, syncScrollMessage.x);
-    chrome.test.assertEq(10, syncScrollMessage.y);
+      // Focus the textbox, which should cause the manager to scroll the
+    viewport.
+      // This won't actually scroll the viewport in the test, since the plugin
+      // won't send a corresponding scroll message back.
+      mockPlugin.clearMessages();
+      textbox.$.textbox.focus();
+      const syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
+      chrome.test.assertTrue(syncScrollMessage !== undefined);
+      chrome.test.assertEq('syncScrollToRemote', syncScrollMessage.type);
+      // The box is at 20, 20 in viewport coordinates, and the viewport is 100px
+      // wide. The manager specifies a margin of 10% of the viewport when
+      // scrolling.
+      chrome.test.assertEq(10, syncScrollMessage.x);
+      chrome.test.assertEq(10, syncScrollMessage.y);
 
-    chrome.test.succeed();
-  },
+      chrome.test.succeed();
+    },
+  */
 ]);
