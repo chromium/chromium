@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -155,6 +156,7 @@ class AILanguageModel::PromptState
   void AppendAndGenerate(
       mojo::PendingRemote<on_device_model::mojom::Session> session,
       base::OnceClosure callback) {
+    start_ = base::TimeTicks::Now();
     callback_ = std::move(callback);
     safety_checker_->RunRequestChecks(
         CreateStringMessage(*input_),
@@ -211,6 +213,11 @@ class AILanguageModel::PromptState
 
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override {
+    base::UmaHistogramCounts10000("AI.Session.LanguageModel.ContextTokens",
+                                  tokens_processed);
+    base::UmaHistogramMediumTimes("AI.Session.LanguageModel.ContextTime",
+                                  base::TimeTicks::Now() - start_);
+    generate_start_ = base::TimeTicks::Now();
     context_receiver_.reset();
     token_count_ = tokens_processed;
     if (mode_ == Mode::kAppendOnly) {
@@ -221,6 +228,11 @@ class AILanguageModel::PromptState
 
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override {
+    if (full_response_.empty()) {
+      base::UmaHistogramMediumTimes(
+          "AI.Session.LanguageModel.FirstResponseTime",
+          base::TimeTicks::Now() - start_);
+    }
     output_tokens_++;
     full_response_ += chunk->text;
 
@@ -292,6 +304,11 @@ class AILanguageModel::PromptState
       return;
     }
     token_count_ += summary->output_token_count;
+    base::UmaHistogramMediumTimes(
+        "AI.Session.LanguageModel.ResponseCompleteTime",
+        base::TimeTicks::Now() - generate_start_);
+    base::UmaHistogramCounts10000("AI.Session.LanguageModel.ResponseTokens",
+                                  summary->output_token_count);
     std::move(callback_).Run();
     // `this` may be deleted.
   }
@@ -340,6 +357,9 @@ class AILanguageModel::PromptState
   uint32_t unchecked_output_tokens_ = 0;
 
   Mode mode_;
+
+  base::TimeTicks start_;
+  base::TimeTicks generate_start_;
 
   base::WeakPtrFactory<PromptState> weak_factory_{this};
 };
@@ -424,7 +444,11 @@ AILanguageModel::AILanguageModel(
       optimization_guide::SafetyConfig(model_client_->safety_config()));
 }
 
-AILanguageModel::~AILanguageModel() = default;
+AILanguageModel::~AILanguageModel() {
+  // If the initial session has been reset, the session crashed.
+  base::UmaHistogramBoolean("AI.Session.LanguageModel.Crashed",
+                            !initial_session_);
+}
 
 // static
 PromptApiMetadata AILanguageModel::ParseMetadata(

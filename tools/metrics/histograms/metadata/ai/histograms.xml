@@ -47,6 +47,50 @@ chromium-metrics-reviews@google.com.
   <variant name="Writer" summary="AI writer session"/>
 </variants>
 
+<histogram name="AI.Session.{SessionType}.ContextTime" units="ms"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the time it takes to process prompt input. This is recorded each
+    time a prompt is added.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.ContextTokens" units="tokens"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the size of the prompt in tokens. This is recorded each time a
+    prompt is added.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.Crashed" enum="BooleanYesNo"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Records whether the model crashed while a session was active. Recorded each
+    time a session is destroyed.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.FirstResponseTime" units="ms"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the time it takes until the first tokens of the response are
+    received. This is recorded each time the model gives a response.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
     expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
@@ -91,6 +135,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the final response status for each prompt request. This is recorded
     each time when the stream completes or encounters errors.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.ResponseCompleteTime" units="ms"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the time it takes until the full response is complete. This is
+    recorded each time the model gives a response.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.ResponseTokens" units="tokens"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the number of tokens in the completed response. This is recorded
+    each time the model gives a response.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>
