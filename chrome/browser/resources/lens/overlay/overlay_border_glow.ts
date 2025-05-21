@@ -4,6 +4,7 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {GLIF_HEX_COLORS} from './color_utils.js';
 import {getCss} from './overlay_border_glow.css.js';
 import {getHtml} from './overlay_border_glow.html.js';
 
@@ -29,8 +30,24 @@ export class OverlayBorderGlowElement extends CrLitElement {
     };
   }
 
+  // Whether the border glow is fading out.
+  private accessor isFadingOut: boolean = false;
+  // Whether the border glow is fading in.
+  private accessor isFadingIn: boolean = false;
+
   static override get styles() {
     return getCss();
+  }
+
+
+  protected getGradientColorStyles(): string {
+    const styles: string[] = [
+      `--gradient-blue: ${GLIF_HEX_COLORS.blue}`,
+      `--gradient-red: ${GLIF_HEX_COLORS.red}`,
+      `--gradient-yellow: ${GLIF_HEX_COLORS.yellow}`,
+      `--gradient-green: ${GLIF_HEX_COLORS.green}`,
+    ];
+    return styles.join(';');
   }
 
   handleGestureStart() {
@@ -47,9 +64,6 @@ export class OverlayBorderGlowElement extends CrLitElement {
   override render() {
     return getHtml.bind(this)();
   }
-
-  protected accessor isFadingOut: boolean = false;
-  protected accessor isFadingIn: boolean = false;
 }
 
 declare global {

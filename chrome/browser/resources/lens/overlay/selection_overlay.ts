@@ -796,6 +796,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.getTextSelectionLayer().onSelectionStart();
     if (this.enableBorderGlow) {
       this.getOverlayBorderGlow().handleGestureStart();
+      this.$.regionSelectionLayer.handleGestureStart();
     }
 
     if (this.$.postSelectionRenderer.handleGestureStart(this.currentGesture)) {

@@ -8,6 +8,7 @@ import type {OverlayBorderGlowElement} from './overlay_border_glow.js';
 
 export function getHtml(this: OverlayBorderGlowElement) {
   return html`<div id="borderGlowContainer">
-    <div id="gradientColorLayer"></div>
+    <div .style="${
+      this.getGradientColorStyles()}" id="gradientColorLayer"></div>
   </div>`;
 }

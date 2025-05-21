@@ -7,7 +7,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
-import {getFallbackTheme, getShaderLayerColorHexes} from './color_utils.js';
+import {getFallbackTheme, getShaderLayerColorHexes, GLIF_HEX_COLORS} from './color_utils.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
@@ -52,6 +52,11 @@ export class RegionSelectionElement extends PolymerElement {
 
   static get properties() {
     return {
+      borderGlowEnabled: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false,
+      },
       canvasHeight: Number,
       canvasWidth: Number,
       canvasPhysicalHeight: Number,
@@ -67,11 +72,6 @@ export class RegionSelectionElement extends PolymerElement {
         value: false,
       },
       screenshotDataUri: String,
-      scrimEnabled: {
-        reflectToAttribute: true,
-        type: Boolean,
-        value: false,
-      },
       shaderLayerColorHexes: {
         type: Array,
         computed: 'computeShaderLayerColorHexes_(theme)',
@@ -84,6 +84,8 @@ export class RegionSelectionElement extends PolymerElement {
     };
   }
 
+  // Whether the border glow is enabled. This is a replacement for the shimmer.
+  declare private borderGlowEnabled: boolean;
   declare private canvasHeight: number;
   declare private canvasWidth: number;
   declare private canvasPhysicalHeight: number;
@@ -95,8 +97,6 @@ export class RegionSelectionElement extends PolymerElement {
   private context: CanvasRenderingContext2D;
   // The data URI of the current overlay screenshot.
   declare private screenshotDataUri: string;
-  // Whether the scrim is enabled.
-  declare private scrimEnabled: boolean;
   // Shader hex colors.
   declare private shaderLayerColorHexes: string[];
   // The overlay theme.
@@ -107,6 +107,8 @@ export class RegionSelectionElement extends PolymerElement {
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  private readonly gradientRegionStrokeEnabled: boolean =
+      loadTimeData.getBoolean('enableGradientRegionStroke');
   // The tap region dimensions are the height and width that the region should
   // have when the user taps instead of drag.
   private readonly tapRegionHeight: number =
@@ -133,17 +135,18 @@ export class RegionSelectionElement extends PolymerElement {
     return getShaderLayerColorHexes(this.theme);
   }
 
+  handleGestureStart() {
+    this.isSelecting = true;
+    this.hasSelected = false;
+  }
+
   // Handles a drag gesture by drawing a bounded box on the canvas.
   handleGestureDrag(event: GestureEvent) {
     this.clearCanvas();
-    this.isSelecting = true;
     this.renderBoundingBox(event);
   }
 
   handleGestureEnd(event: GestureEvent): boolean {
-    this.isSelecting = false;
-    this.hasSelected = true;
-
     // Issue the Lens request.
     const isClick = event.state === GestureState.STARTING;
     this.browserProxy.handler.issueLensRegionRequest(
@@ -167,12 +170,17 @@ export class RegionSelectionElement extends PolymerElement {
     }));
 
     this.clearCanvas();
+
+    this.hasSelected = true;
+    this.isSelecting = false;
     return true;
   }
 
   cancelGesture() {
-    this.isSelecting = false;
     this.clearCanvas();
+
+    this.isSelecting = false;
+    this.hasSelected = false;
   }
 
   setCanvasSizeTo(width: number, height: number) {
@@ -207,24 +215,39 @@ export class RegionSelectionElement extends PolymerElement {
     const top = Math.min(relativeDragStart.y, relativeDragEnd.y);
     const right = Math.max(relativeDragStart.x, relativeDragEnd.x);
     const bottom = Math.max(relativeDragStart.y, relativeDragEnd.y);
+    const centerX = (left + right) / 2;
+    const centerY = (top + bottom) / 2;
 
     // Get the vertical and horizontal directions of the drag.
     const isDraggingDown = relativeDragEnd.y > relativeDragStart.y;
     const isDraggingRight = relativeDragEnd.x > relativeDragStart.x;
 
-    this.context.lineWidth = 3;
-    const gradient = this.context.createLinearGradient(
-        left,
-        bottom,
-        right,
-        top,
-    );
-    gradient.addColorStop(0, this.shaderLayerColorHexes[0]);
-    gradient.addColorStop(0.5, this.shaderLayerColorHexes[1]);
-    gradient.addColorStop(1, this.shaderLayerColorHexes[2]);
+    let gradient;
+    if (this.gradientRegionStrokeEnabled) {
+      gradient = this.context.createConicGradient(0, centerX, centerY);
+      gradient.addColorStop(0, GLIF_HEX_COLORS.blue);
+      gradient.addColorStop(0.45, GLIF_HEX_COLORS.blue);
+      gradient.addColorStop(0.6, GLIF_HEX_COLORS.red);
+      gradient.addColorStop(0.76, GLIF_HEX_COLORS.yellow);
+      gradient.addColorStop(0.92, GLIF_HEX_COLORS.green);
+    } else {
+      gradient = this.context.createLinearGradient(
+          left,
+          bottom,
+          right,
+          top,
+      );
+      gradient.addColorStop(0, this.shaderLayerColorHexes[0]);
+      gradient.addColorStop(0.5, this.shaderLayerColorHexes[1]);
+      gradient.addColorStop(1, this.shaderLayerColorHexes[2]);
+    }
+
+    const strokeWidth = 3;
+    this.context.lineWidth = strokeWidth;
     this.context.strokeStyle = gradient;
 
-    // Draw the path for the region bounding box.
+    // Step 1: Define the path for the main clipping region (the 'hole' in the
+    // scrim)
     this.context.beginPath();
     // The corner corresponding to the user's cursor should have 0 radius.
     const radii = [
@@ -235,15 +258,43 @@ export class RegionSelectionElement extends PolymerElement {
     ];
     this.context.roundRect(left, top, width, height, radii);
 
-    // Draw the highlight image clipped to the path.
+    // Step 2: Save the context and apply the clip. This clip ensures
+    // the image and stroke are only drawn within this bounded region.
     this.context.save();
     this.context.clip();
+
+    // Step 3: Draw the highlight image. It will be clipped to the path.
     this.context.drawImage(
         this.$.highlightImgCanvas, 0, 0, this.canvasWidth, this.canvasHeight);
-    this.context.restore();
 
-    // Stroke the path on top of the image.
-    this.context.stroke();
+    // Step 4: Draw the stroke
+    if (this.gradientRegionStrokeEnabled) {
+      // Draw the stroke *inside* the clipped region.
+      // To achieve this, we create a new path slightly inset from the clip
+      // boundary.
+      this.context.beginPath();
+      const inset = strokeWidth / 2;
+
+      const strokeRectLeft = left + inset;
+      const strokeRectTop = top + inset;
+      const strokeRectWidth = width - (inset * 2);
+      const strokeRectHeight = height - (inset * 2);
+
+      // Adjust radii for the stroke path to keep it visually consistent
+      const strokeRadii = radii.map(r => Math.max(0, r - inset));
+
+      this.context.roundRect(
+          strokeRectLeft, strokeRectTop, strokeRectWidth, strokeRectHeight,
+          strokeRadii);
+      // Stroke this new path. Since the clip is active,
+      // this stroke will be confined to the original clip region.
+      this.context.stroke();
+      this.context.restore();
+    } else {
+      this.context.restore();
+      // Stroke the path on top of the image.
+      this.context.stroke();
+    }
 
     // Focus the shimmer on the new manually selected region.
     focusShimmerOnRegion(
@@ -278,8 +329,8 @@ export class RegionSelectionElement extends PolymerElement {
 
   /**
    * @returns a mojo CenterRotatedBox corresponding to the gesture provided,
-   *          normalized to the selection overlay dimensions. The gesture is
-   *          expected to be a drag.
+   * normalized to the selection overlay dimensions. The gesture is
+   * expected to be a drag.
    */
   private getNormalizedCenterRotatedBoxFromDrag(gesture: GestureEvent):
       CenterRotatedBox {

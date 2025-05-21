@@ -243,6 +243,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableBorderGlow",
       lens::features::GetVisualSelectionUpdatesEnableBorderGlow());
+  html_source->AddBoolean(
+      "enableGradientRegionStroke",
+      lens::features::GetVisualSelectionUpdatesEnableGradientRegionStroke());
   html_source->AddBoolean("autoFocusSearchbox",
                           lens::features::ShouldAutoFocusSearchbox());
   html_source->AddBoolean("cornerSlidersEnabled",

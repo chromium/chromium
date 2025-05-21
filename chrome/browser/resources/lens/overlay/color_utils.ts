@@ -83,6 +83,21 @@ export function getShaderLayerColorRgbas(theme: OverlayTheme): string[] {
   ];
 }
 
+export interface GlifColorHexObject {
+  blue: string;
+  red: string;
+  yellow: string;
+  green: string;
+}
+
+// Object mapping the Glif colors to their corresponding hex values.
+export const GLIF_HEX_COLORS: GlifColorHexObject = {
+  'blue': '#3186ff',
+  'red': '#ff4641',
+  'yellow': '#ffd314',
+  'green': '#34a853',
+};
+
 // Returns a new rgba string using the rgb values from |rgba| and the alpha
 // value provided.
 export function modifyRgbaTransparency(rgba: string, alpha: number): string {

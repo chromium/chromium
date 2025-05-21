@@ -8,35 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --gradient-blue: #3186ff;
-  --gradient-green: #34a853;
   --gradient-mask-opacity-middle-val: 0;
-  --gradient-red: #ff4641;
-  --gradient-yellow: #ffd314;
-}
-
-@property --gradient-blue {
-  inherits: false;
-  initial-value: #3186ff;
-  syntax: '<color>';
-}
-
-@property --gradient-green {
-  inherits: false;
-  initial-value: #34a853;
-  syntax: '<color>';
-}
-
-@property --gradient-yellow {
-  inherits: false;
-  initial-value: #ffd314;
-  syntax: '<color>';
-}
-
-@property --gradient-red {
-  inherits: false;
-  initial-value: #ff4641;
-  syntax: '<color>';
 }
 
 @property --gradient-mask-opacity-middle-val {
