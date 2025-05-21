@@ -793,6 +793,7 @@ public class LocationBarTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "https://crbug.com/419252458")
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_incognito() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
