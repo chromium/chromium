@@ -472,6 +472,17 @@ BASE_EXPORT bool GetAppOutput(CommandLine::StringViewType cl,
 //   successive calls to effectively produce the full `output` from the `cl`
 //   process.
 // * an optional `final_status` `TerminationStatus` value on function return.
+//
+// Returns `true` if the application runs and exits. If this is the case the
+// exit code of the application is available in `*exit_code`, and `final_status`
+// will be `TERMINATION_STATUS_NORMAL_TERMINATION`.
+//
+// Returns `false` under the following conditions:
+// * If the application does not exist, `final_status` will be
+// `TERMINATION_STATUS_LAUNCH_FAILED`.
+// * If the application does not terminate within `timeout`, `final_status` will
+// be `TERMINATION_STATUS_STILL_RUNNING`.
+//
 // Note that the expected use cases for this function do not expect `cl` to
 // produce a lot of output. This function will not work optimally with lots of
 // output from the `cl` process, since it waits a second each time between
