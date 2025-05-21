@@ -12,10 +12,6 @@ BASE_FEATURE(kEnableCrdAdminRemoteAccessV2,
              "EnableCrdAdminRemoteAccessV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableCrdFileTransferForKiosk,
-             "EnableCrdFileTransferForKiosk",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableCrdSharedSessionToUnattendedDevice,
              "EnableCrdSharedSessionToUnattendedDevice",
              base::FEATURE_ENABLED_BY_DEFAULT);

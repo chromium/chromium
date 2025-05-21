@@ -50,7 +50,6 @@ using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kAutoApproveEnterpriseSharedSessions;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
-using remoting::features::kEnableCrdFileTransferForKiosk;
 using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 using test::TestSessionType;
 
@@ -900,9 +899,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
-       ShouldAllowFileTransferForKioskSessionsWhenFeatureIsEnabled) {
-  EnableFeature(kEnableCrdFileTransferForKiosk);
-
+       ShouldAllowFileTransferForKioskSessions) {
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
@@ -916,24 +913,6 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
   EXPECT_EQ(delegate().session_parameters().allow_file_transfer,
             supports_file_transfer);
-}
-
-TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
-       ShouldNotAllowFileTransferForAnySessionWhenFeatureIsNotEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableCrdFileTransferForKiosk);
-
-  TestSessionType user_session_type = GetParam();
-  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
-                                  SessionTypeToString(user_session_type)));
-  if (!SupportsRemoteSupport(user_session_type)) {
-    return;
-  }
-
-  StartSessionOfType(user_session_type);
-  RunJobAndWaitForResult();
-
-  EXPECT_EQ(delegate().session_parameters().allow_file_transfer, false);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -1234,7 +1213,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-       ShouldNeverAllowFileTransferForRemoteAccessWhenFeatureIsEnabled) {
+       ShouldNeverAllowFileTransferForRemoteAccess) {
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
@@ -1242,7 +1221,6 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
 
-  EnableFeature(kEnableCrdFileTransferForKiosk);
   StartSessionOfType(user_session_type);
   AddActiveManagedNetwork();
   RunJobAndWaitForResult(

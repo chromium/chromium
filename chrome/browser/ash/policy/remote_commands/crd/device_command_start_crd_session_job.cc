@@ -486,9 +486,7 @@ bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldAllowFileTransfer() const {
-  return IsKioskSession(GetCurrentUserSessionType()) &&
-         base::FeatureList::IsEnabled(
-             remoting::features::kEnableCrdFileTransferForKiosk);
+  return IsKioskSession(GetCurrentUserSessionType());
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldAutoAcceptSession(
