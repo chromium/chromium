@@ -1669,13 +1669,13 @@ CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream& stream,
 
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream& stream,
                                         const CSSParserContext& context) {
-  if (stream.Peek().GetType() != kIdentToken) {
+  // Note that the ident() function can currently bypass the double-dash
+  // requirement of <dashed-ident>.
+  // https://github.com/w3c/csswg-drafts/issues/12206
+  if (stream.Peek().GetType() == kIdentToken &&
+      !stream.Peek().Value().ToString().StartsWith(kTwoDashes)) {
     return nullptr;
   }
-  if (!stream.Peek().Value().ToString().StartsWith(kTwoDashes)) {
-    return nullptr;
-  }
-
   return ConsumeCustomIdent(stream, context);
 }
 
