@@ -56,9 +56,6 @@ class TabHelperUnitTest : public ExtensionServiceTestWithInstall {
   raw_ptr<PermissionsManager> permissions_manager_ = nullptr;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/393179880): Enable this test when SitePermissionsHelper is
-// ported to desktop Android.
 TEST_F(TabHelperUnitTest, ReloadRequired_BlockAllExtensions) {
   static constexpr char kManifest[] =
       R"({
@@ -92,7 +89,6 @@ TEST_F(TabHelperUnitTest, ReloadRequired_BlockAllExtensions) {
   web_contents_tester()->NavigateAndCommit(other_url);
   EXPECT_FALSE(tab_helper()->IsReloadRequired());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(TabHelperUnitTest, ReloadRequired_CustomizeByExtension) {
   static constexpr char kManifest[] =

@@ -4,14 +4,15 @@
 
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -23,6 +24,12 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/permissions_manager_waiter.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_action_runner.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -38,11 +45,9 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
       const std::vector<std::string>& host_permissions,
       const std::vector<std::string>& permissions = {});
 
-  // Adds a new tab with `url` to the tab strip, and returns the WebContents
-  // associated with it.
+  // Adds a new tab with `url` to the simulated tab strip, and returns the
+  // WebContents associated with it.
   content::WebContents* AddTab(const GURL& url);
-
-  Browser* browser();
 
   SitePermissionsHelper* permissions_helper() {
     return permissions_helper_.get();
@@ -54,9 +59,8 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
   void TearDown() override;
 
  private:
-  // The browser and accompaying window.
-  std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestBrowserWindow> browser_window_;
+  // A simulated tab strip that just owns WebContents.
+  std::vector<std::unique_ptr<content::WebContents>> tabs_;
 
   // Site permissions helper being tested.
   std::unique_ptr<SitePermissionsHelper> permissions_helper_;
@@ -89,25 +93,14 @@ content::WebContents* SitePermissionsHelperUnitTest::AddTab(const GURL& url) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* raw_contents = web_contents.get();
+  TabHelper::CreateForWebContents(raw_contents);
 
-  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  tabs_.push_back(std::move(web_contents));
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(raw_contents, url);
   EXPECT_EQ(url, raw_contents->GetLastCommittedURL());
 
   return raw_contents;
-}
-
-Browser* SitePermissionsHelperUnitTest::browser() {
-  if (!browser_) {
-    Browser::CreateParams params(profile(), true);
-    browser_window_ = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window_.get();
-    browser_.reset(Browser::Create(params));
-  }
-  return browser_.get();
 }
 
 void SitePermissionsHelperUnitTest::SetUp() {
@@ -119,12 +112,10 @@ void SitePermissionsHelperUnitTest::SetUp() {
 }
 
 void SitePermissionsHelperUnitTest::TearDown() {
-  // Remove any tabs in the tab strip; else the test crashes.
-  if (browser_) {
-    while (!browser_->tab_strip_model()->empty()) {
-      browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
-    }
-  }
+  // Delete the WebContents in the simulated tab strip.
+  tabs_.clear();
+  permissions_manager_ = nullptr;
+  permissions_helper_.reset();
 
   ExtensionServiceTestBase::TearDown();
 }
@@ -282,6 +273,9 @@ TEST_F(SitePermissionsHelperUnitTest,
             SiteInteraction::kNone);
 }
 
+// TODO(crbug.com/393179880): Port these tests to desktop Android after
+// ExtensionActionRunner is ported.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that updating site access only applies to the specified extensions for
 // the current site.
 TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
@@ -461,5 +455,6 @@ TEST_F(SitePermissionsHelperWithUserHostControlsUnitTest,
       extension->permissions_data()->GetPageAccess(
           non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

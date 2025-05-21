@@ -7,6 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -19,8 +22,6 @@ class Extension;
 
 // A helper class responsible for providing the permissions data to models used
 // in the Extensions toolbar (e.g: ExtensionContextMenuModel).
-// TODO(crbug.com/393179880): Port this class to desktop Android, then enable
-// the code in TabHelper::SetReloadRequired() and TabHelperUnitTest.
 class SitePermissionsHelper {
  public:
   // The interaction of the extension with the site. This is independent

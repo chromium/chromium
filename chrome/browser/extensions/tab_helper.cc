@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/common/buildflags.h"
@@ -39,7 +40,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -105,8 +105,9 @@ TabHelper::TabHelper(content::WebContents* web_contents)
     registry->MonitorWebContentsForRuleEvaluation(this->web_contents());
   });
 
-  ExtensionWebContentsObserver::GetForWebContents(web_contents)->dispatcher()->
-      set_delegate(this);
+  ExtensionWebContentsObserver::GetForWebContents(web_contents)
+      ->dispatcher()
+      ->set_delegate(this);
 
   registry_observation_.Observe(
       ExtensionRegistry::Get(web_contents->GetBrowserContext()));
@@ -127,11 +128,8 @@ void TabHelper::SetReloadRequired(
       NOTREACHED();
     }
     case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       // A reload is required if any extension that had site access will lose
       // it.
-      // TODO(crbug.com/393179880): Port SitePermissionsHelper to desktop
-      // Android.
       content::WebContents* web_contents = GetVisibleWebContents();
       SitePermissionsHelper permissions_helper(profile_);
       const ExtensionSet& extensions =
@@ -143,9 +141,6 @@ void TabHelper::SetReloadRequired(
                                                          web_contents) ==
                    SitePermissionsHelper::SiteInteraction::kGranted;
           });
-#else
-      NOTIMPLEMENTED_LOG_ONCE();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
       break;
     }
     case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
@@ -190,8 +185,9 @@ void TabHelper::InvokeForContentRulesRegistries(const Func& func) {
           RulesRegistryService::Get(profile_->GetOriginalProfile());
       DCHECK_NE(rules_registry_service,
                 original_profile_rules_registry_service);
-      if (original_profile_rules_registry_service)
+      if (original_profile_rules_registry_service) {
         func(original_profile_rules_registry_service->content_rules_registry());
+      }
     }
   }
 }
@@ -209,8 +205,8 @@ void TabHelper::DidFinishNavigation(
 
   InvokeForContentRulesRegistries(
       [this, navigation_handle](ContentRulesRegistry* registry) {
-    registry->DidFinishNavigation(web_contents(), navigation_handle);
-  });
+        registry->DidFinishNavigation(web_contents(), navigation_handle);
+      });
 
   content::BrowserContext* context = web_contents()->GetBrowserContext();
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);

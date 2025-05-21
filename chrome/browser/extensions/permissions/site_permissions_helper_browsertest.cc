@@ -35,6 +35,8 @@ using UserSiteAccess = PermissionsManager::UserSiteAccess;
 
 }  // namespace
 
+// TODO(crbug.com/393179880): Port this to desktop Android after
+// ExtensionActionRunner is ported.
 class SitePermissionsHelperBrowserTest : public ExtensionBrowserTest {
  public:
   SitePermissionsHelperBrowserTest() = default;

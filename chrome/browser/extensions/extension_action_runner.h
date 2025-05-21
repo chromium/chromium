@@ -39,6 +39,8 @@ class Extension;
 
 // The provider for ExtensionActions corresponding to scripts which are actively
 // running or need permission.
+// TODO(crbug.com/393179880): Port this to desktop Android, then update
+// SitePermissionsHelperUnitTest and SitePermissionsHelperBrowserTest.
 class ExtensionActionRunner : public content::WebContentsObserver,
                               public ExtensionRegistryObserver {
  public:
