@@ -295,4 +295,17 @@ TEST_F(HoverButtonTest, SetIconHorizontalMargins) {
   EXPECT_EQ(margins->right(), 4);
 }
 
+TEST_F(HoverButtonTest, AddExtraAccessibleText) {
+  std::unique_ptr<views::View> primary_icon = CreateIcon();
+  auto button = std::make_unique<HoverButton>(
+      views::Button::PressedCallback(), std::move(primary_icon), u"Title");
+  button->AddExtraAccessibleText(u"A11y text");
+
+  views::IgnoreMissingWidgetForTestingScopedSetter ignore_missing_widget(
+      button->GetViewAccessibility());
+  button->SetSize(gfx::Size(kButtonWidth, 40));
+
+  EXPECT_EQ(GetAccessibleName(*button), u"Title\nA11y text");
+}
+
 #endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)

@@ -18186,6 +18186,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT_MULTI_IDP" desc="Title of the button that lets the user log in to a different account of a given origin.">
       Use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> account
     </message>
+    <message name="IDS_ACCOUNT_SELECTION_OPENS_IN_NEW_TAB" desc="Accessibility suffix string to tell the user that this button opens in a new tab." is_accessibility_with_no_ui="true">
+      Opens in a new tab
+    </message>
     <message name="IDS_ACCOUNT_SELECTION_BACK" desc="Title of the button that lets the user go back to a previous sheet.">
       Back
     </message>

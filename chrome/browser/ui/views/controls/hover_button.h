@@ -107,6 +107,10 @@ class HoverButton : public views::LabelButton {
   // Set the text context and style of the footer.
   void SetFooterTextStyle(int text_context, views::style::TextStyle text_style);
 
+  // Adds a11y text to the button, which will be read out when the button is
+  // focused.
+  void AddExtraAccessibleText(const std::u16string& text);
+
   void SetIconHorizontalMargins(int left, int right);
 
   PressedCallback& callback(base::PassKey<HoverButtonController>) {
@@ -155,6 +159,8 @@ class HoverButton : public views::LabelButton {
   raw_ptr<views::Label> footer_ = nullptr;
   raw_ptr<views::View> icon_view_ = nullptr;
   raw_ptr<views::View> secondary_view_ = nullptr;
+
+  std::u16string additional_accessible_text_;
 
   std::vector<base::CallbackListSubscription> text_changed_subscriptions_;
 

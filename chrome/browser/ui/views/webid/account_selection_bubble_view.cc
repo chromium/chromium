@@ -308,7 +308,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
                           base::Unretained(owner_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE), this, idp_metadata,
-      /*extra_accessible_text=*/std::nullopt);
+      /*extra_accessible_text=*/u"Opens in a new tab");
   row->AddChildView(std::move(button));
   AddChildView(std::move(row));
 
@@ -717,6 +717,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateMultiIdpLoginRow(
       /*horizontal=*/kLeftRightPadding)));
   button->SetIconHorizontalMargins(kMultiIdpIconLeftMargin,
                                    kMultiIdpIconRightMargin);
+  button->AddExtraAccessibleText(
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_OPENS_IN_NEW_TAB));
   return button;
 }
 
@@ -734,6 +736,8 @@ AccountSelectionBubbleView::CreateSingleIdpUseOtherAccountButton(
                           idp_metadata.idp_login_url),
       std::move(icon_view), title);
   button->SetIconHorizontalMargins(icon_margin, icon_margin);
+  button->AddExtraAccessibleText(
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_OPENS_IN_NEW_TAB));
   return button;
 }
 

@@ -316,6 +316,10 @@ void HoverButton::SetFooterTextStyle(int text_content,
   PreferredSizeChanged();
 }
 
+void HoverButton::AddExtraAccessibleText(const std::u16string& text) {
+  additional_accessible_text_ = text;
+}
+
 void HoverButton::SetIconHorizontalMargins(int left, int right) {
   int vertical_spacing = GetVerticalSpacing();
   icon_wrapper_->SetProperty(
@@ -330,6 +334,9 @@ void HoverButton::UpdateTooltipAndAccessibleName() {
   }
   if (footer_) {
     texts.push_back(footer_->GetText());
+  }
+  if (!additional_accessible_text_.empty()) {
+    texts.push_back(additional_accessible_text_);
   }
   const std::u16string accessible_name = base::JoinString(texts, u"\n");
 
