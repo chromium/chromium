@@ -53,7 +53,7 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         new DetailScreenCoordinator(context, detailScreenView, mModel, mBottomSheetController);
 
         ViewFlipper viewFlipperView =
-                (ViewFlipper) rootView.findViewById(R.id.fast_checkout_bottom_sheet_view_flipper);
+                rootView.findViewById(R.id.fast_checkout_bottom_sheet_view_flipper);
         mModel.addObserver(
                 (source, propertyKey) -> {
                     if (FastCheckoutProperties.CURRENT_SCREEN == propertyKey) {

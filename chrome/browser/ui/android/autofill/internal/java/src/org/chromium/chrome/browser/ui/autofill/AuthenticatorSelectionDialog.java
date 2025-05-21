@@ -134,10 +134,9 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                 mAuthenticatorSelectionDialogView.findViewById(R.id.title_with_icon_stub);
         title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
         title_view_stub.inflate();
-        TextView titleView = (TextView) mAuthenticatorSelectionDialogView.findViewById(R.id.title);
+        TextView titleView = mAuthenticatorSelectionDialogView.findViewById(R.id.title);
         titleView.setText(title);
-        ImageView iconView =
-                (ImageView) mAuthenticatorSelectionDialogView.findViewById(R.id.title_icon);
+        ImageView iconView = mAuthenticatorSelectionDialogView.findViewById(R.id.title_icon);
         iconView.setImageResource(R.drawable.google_pay);
 
         mAuthenticatorSelectionDialogContentsView =
@@ -148,9 +147,7 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
         mProgressBarOverlayView.setVisibility(View.GONE);
         // Set up the recycler view.
         mAuthenticationOptionsRecyclerView =
-                (RecyclerView)
-                        mAuthenticatorSelectionDialogView.findViewById(
-                                R.id.authenticator_options_view);
+                mAuthenticatorSelectionDialogView.findViewById(R.id.authenticator_options_view);
         mAuthenticatorOptionsAdapter =
                 new AuthenticatorOptionsAdapter(mContext, authenticatorOptions, this);
         mAuthenticationOptionsRecyclerView.setAdapter(mAuthenticatorOptionsAdapter);

@@ -289,7 +289,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             sizingPadding.bottom = originalPadding.bottom;
         }
 
-        mListView = (ListView) contentView.findViewById(R.id.app_menu_list);
+        mListView = contentView.findViewById(R.id.app_menu_list);
 
         int footerHeight = inflateFooter(footerResourceId, contentView, menuWidth);
         int headerHeight = inflateHeader(headerResourceId, contentView, menuWidth);
@@ -732,7 +732,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             return 0;
         }
 
-        ViewStub footerStub = (ViewStub) contentView.findViewById(R.id.app_menu_footer_stub);
+        ViewStub footerStub = contentView.findViewById(R.id.app_menu_footer_stub);
         footerStub.setLayoutResource(footerResourceId);
         mFooterView = footerStub.inflate();
 

@@ -69,22 +69,22 @@ public class ManagementView extends ScrollView {
     public void onFinishInflate() {
         super.onFinishInflate();
 
-        mManagementContainer = (LinearLayout) findViewById(R.id.management_container);
-        mTitle = (TextView) findViewById(R.id.title_text);
-        mDescription = (TextView) findViewById(R.id.description_text);
-        mLearnMore = (TextView) findViewById(R.id.learn_more);
-        mBrowserReporting = (TextView) findViewById(R.id.browser_reporting);
-        mBrowserReportingExplanation = (TextView) findViewById(R.id.browser_reporting_explanation);
-        mReportUsername = (TextView) findViewById(R.id.report_username);
-        mReportVersion = (TextView) findViewById(R.id.report_version);
-        mProfileReportingExplanation = (TextView) findViewById(R.id.profile_reporting_explanation);
-        mProfileReportDetails = (TextView) findViewById(R.id.profile_report_details);
-        mReportLegacyTech = (TextView) findViewById(R.id.report_legacy_tech);
+        mManagementContainer = findViewById(R.id.management_container);
+        mTitle = findViewById(R.id.title_text);
+        mDescription = findViewById(R.id.description_text);
+        mLearnMore = findViewById(R.id.learn_more);
+        mBrowserReporting = findViewById(R.id.browser_reporting);
+        mBrowserReportingExplanation = findViewById(R.id.browser_reporting_explanation);
+        mReportUsername = findViewById(R.id.report_username);
+        mReportVersion = findViewById(R.id.report_version);
+        mProfileReportingExplanation = findViewById(R.id.profile_reporting_explanation);
+        mProfileReportDetails = findViewById(R.id.profile_report_details);
+        mReportLegacyTech = findViewById(R.id.report_legacy_tech);
 
-        mThreatProtectionTitle = (TextView) findViewById(R.id.threat_protection_title);
-        mThreatProtectionDescription = (TextView) findViewById(R.id.threat_protection_description);
+        mThreatProtectionTitle = findViewById(R.id.threat_protection_title);
+        mThreatProtectionDescription = findViewById(R.id.threat_protection_description);
 
-        mThreatProtectionMore = (CheckedTextView) findViewById(R.id.threat_protection_more);
+        mThreatProtectionMore = findViewById(R.id.threat_protection_more);
         mThreatProtectionMore.setCompoundDrawablesWithIntrinsicBounds(
                 /* left= */ null,
                 /* top= */ null,
@@ -97,13 +97,12 @@ public class ManagementView extends ScrollView {
                     adjustView();
                 });
 
-        mThreatProtectionSecurityEvent =
-                (TextView) findViewById(R.id.threat_protection_security_event);
+        mThreatProtectionSecurityEvent = findViewById(R.id.threat_protection_security_event);
         mThreatProtectionSecurityEventDescription =
-                (TextView) findViewById(R.id.threat_protection_security_event_description);
-        mThreatProtectionPageVisited = (TextView) findViewById(R.id.threat_protection_page_visited);
+                findViewById(R.id.threat_protection_security_event_description);
+        mThreatProtectionPageVisited = findViewById(R.id.threat_protection_page_visited);
         mThreatProtectionPageVisitedDescription =
-                (TextView) findViewById(R.id.threat_protection_page_visited_description);
+                findViewById(R.id.threat_protection_page_visited_description);
 
         // Set default management status
         mIsBrowserManaged = false;

@@ -23,7 +23,7 @@ class InstanceSwitcherItemViewBinder {
                     .setImageDrawable(model.get(InstanceSwitcherItemProperties.FAVICON));
 
         } else if (InstanceSwitcherItemProperties.TITLE == propertyKey) {
-            TextView titleView = (TextView) view.findViewById(R.id.title);
+            TextView titleView = view.findViewById(R.id.title);
             String text = model.get(InstanceSwitcherItemProperties.TITLE);
             if (text != null) {
                 titleView.setText(text);
@@ -32,7 +32,7 @@ class InstanceSwitcherItemViewBinder {
             }
 
         } else if (InstanceSwitcherItemProperties.DESC == propertyKey) {
-            TextView descView = (TextView) view.findViewById(R.id.desc);
+            TextView descView = view.findViewById(R.id.desc);
             String text = model.get(InstanceSwitcherItemProperties.DESC);
             if (text != null) {
                 descView.setText(text);

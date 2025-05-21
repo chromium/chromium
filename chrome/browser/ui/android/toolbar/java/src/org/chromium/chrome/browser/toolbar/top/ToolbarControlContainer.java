@@ -159,8 +159,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     @Initializer
     public void initWithToolbar(int toolbarLayoutId) {
         try (TraceEvent te = TraceEvent.scoped("ToolbarControlContainer.initWithToolbar")) {
-            mToolbarContainer =
-                    (ToolbarViewResourceFrameLayout) findViewById(R.id.toolbar_container);
+            mToolbarContainer = findViewById(R.id.toolbar_container);
             ViewStub toolbarStub = findViewById(R.id.toolbar_stub);
             toolbarStub.setLayoutResource(toolbarLayoutId);
             toolbarStub.inflate();

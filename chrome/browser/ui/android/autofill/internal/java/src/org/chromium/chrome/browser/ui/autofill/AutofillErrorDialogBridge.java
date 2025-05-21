@@ -89,9 +89,9 @@ public class AutofillErrorDialogBridge {
         ViewStub title_view_stub = errorDialogContentView.findViewById(R.id.title_with_icon_stub);
         title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
         title_view_stub.inflate();
-        TextView titleView = (TextView) errorDialogContentView.findViewById(R.id.title);
+        TextView titleView = errorDialogContentView.findViewById(R.id.title);
         titleView.setText(title);
-        ImageView iconView = (ImageView) errorDialogContentView.findViewById(R.id.title_icon);
+        ImageView iconView = errorDialogContentView.findViewById(R.id.title_icon);
         iconView.setImageResource(R.drawable.google_pay);
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

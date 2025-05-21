@@ -105,12 +105,12 @@ public class OtpVerificationDialogTest {
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
         // Verify that the error message is shown.
-        TextView errorMessageTextView = (TextView) view.findViewById(R.id.otp_error_message);
+        TextView errorMessageTextView = view.findViewById(R.id.otp_error_message);
         assertThat(errorMessageTextView.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(errorMessageTextView.getText()).isEqualTo(ERROR_MESSAGE);
 
         // Verify that editing the error test, hides the error message.
-        EditText otpInputEditText = (EditText) view.findViewById(R.id.otp_input);
+        EditText otpInputEditText = view.findViewById(R.id.otp_input);
         otpInputEditText.setText("123");
         assertThat(errorMessageTextView.getVisibility()).isEqualTo(View.GONE);
     }
@@ -121,7 +121,7 @@ public class OtpVerificationDialogTest {
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
-        EditText otpInputEditText = (EditText) view.findViewById(R.id.otp_input);
+        EditText otpInputEditText = view.findViewById(R.id.otp_input);
 
         // Verify that the positive button is disabled for input length < otpLength.
         otpInputEditText.setText("123");
@@ -141,7 +141,7 @@ public class OtpVerificationDialogTest {
         mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        EditText otpInputEditText = (EditText) view.findViewById(R.id.otp_input);
+        EditText otpInputEditText = view.findViewById(R.id.otp_input);
         otpInputEditText.setText(VALID_OTP);
 
         mModalDialogManager.clickPositiveButton();
@@ -168,7 +168,7 @@ public class OtpVerificationDialogTest {
         mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        TextView otpResendMessageTextView = (TextView) view.findViewById(R.id.otp_resend_message);
+        TextView otpResendMessageTextView = view.findViewById(R.id.otp_resend_message);
         SpannableString otpResendMessage = (SpannableString) otpResendMessageTextView.getText();
         ClickableSpan getNewCodeSpan =
                 otpResendMessage.getSpans(0, otpResendMessage.length(), ClickableSpan.class)[0];
@@ -199,14 +199,14 @@ public class OtpVerificationDialogTest {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
         // Verify that the title set by custom view is correct.
-        TextView title = (TextView) customView.findViewById(R.id.title);
+        TextView title = customView.findViewById(R.id.title);
         assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(title.getText())
                 .isEqualTo(
                         mResources.getString(R.string.autofill_card_unmask_otp_input_dialog_title));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
+        ImageView title_icon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,

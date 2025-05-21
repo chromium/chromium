@@ -62,7 +62,7 @@ class AppMenuItemViewBinder {
             }
         } else if (key == AppMenuItemProperties.ICON) {
             Drawable icon = model.get(AppMenuItemProperties.ICON);
-            ChromeImageView imageView = (ChromeImageView) view.findViewById(R.id.menu_item_icon);
+            ChromeImageView imageView = view.findViewById(R.id.menu_item_icon);
 
             @ColorRes int colorResId = model.get(AppMenuItemProperties.ICON_COLOR_RES);
             if (colorResId == 0) {

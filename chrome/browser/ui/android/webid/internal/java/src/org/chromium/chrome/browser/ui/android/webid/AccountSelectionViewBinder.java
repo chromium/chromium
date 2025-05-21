@@ -887,7 +887,7 @@ class AccountSelectionViewBinder {
                             model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
                                     ? R.dimen.account_selection_active_mode_sheet_icon_size
                                     : R.dimen.account_selection_sheet_icon_size);
-            ImageView headerIconView = (ImageView) view.findViewById(R.id.header_icon);
+            ImageView headerIconView = view.findViewById(R.id.header_icon);
             if (shouldCircleCrop) {
                 Drawable croppedBrandIcon =
                         createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
@@ -906,8 +906,8 @@ class AccountSelectionViewBinder {
             if (model.get(HeaderProperties.RP_MODE) == RpMode.PASSIVE) return;
 
             Bitmap brandIcon = model.get(HeaderProperties.RP_BRAND_ICON);
-            ImageView headerIconView = (ImageView) view.findViewById(R.id.header_rp_icon);
-            ImageView arrowRangeIcon = (ImageView) view.findViewById(R.id.arrow_range_icon);
+            ImageView headerIconView = view.findViewById(R.id.header_rp_icon);
+            ImageView arrowRangeIcon = view.findViewById(R.id.arrow_range_icon);
             if (brandIcon != null) {
                 int iconSize =
                         resources.getDimensionPixelSize(

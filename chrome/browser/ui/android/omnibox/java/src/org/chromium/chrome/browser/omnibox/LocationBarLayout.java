@@ -87,7 +87,7 @@ public class LocationBarLayout extends FrameLayout {
         mUrlBar = findViewById(R.id.url_bar);
         mMicButton = findViewById(R.id.mic_button);
         mLensButton = findViewById(R.id.lens_camera_button);
-        mUrlActionContainer = (LinearLayout) findViewById(R.id.url_action_container);
+        mUrlActionContainer = findViewById(R.id.url_action_container);
         mStatusViewLeftSpace = findViewById(R.id.location_bar_status_view_left_space);
         mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
         mMinimumUrlBarWidthPx =

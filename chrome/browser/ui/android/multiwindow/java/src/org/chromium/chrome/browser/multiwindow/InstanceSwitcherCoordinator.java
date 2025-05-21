@@ -198,7 +198,7 @@ public class InstanceSwitcherCoordinator {
 
             mDialogView =
                     LayoutInflater.from(context).inflate(R.layout.instance_switcher_dialog, null);
-            ListView listView = (ListView) mDialogView.findViewById(R.id.list_view);
+            ListView listView = mDialogView.findViewById(R.id.list_view);
             listView.setAdapter(adapter);
         }
     }
@@ -419,20 +419,20 @@ public class InstanceSwitcherCoordinator {
         Resources res = mContext.getResources();
         String title = res.getString(R.string.instance_switcher_close_confirm_header);
         ((TextView) dialog.findViewById(R.id.title)).setText(title);
-        TextView messageView = (TextView) dialog.findViewById(R.id.message);
+        TextView messageView = dialog.findViewById(R.id.message);
         messageView.setText(mUiUtils.getConfirmationMessage(item));
 
-        TextView positiveButton = (TextView) dialog.findViewById(R.id.positive_button);
+        TextView positiveButton = dialog.findViewById(R.id.positive_button);
         positiveButton.setText(res.getString(R.string.close));
         positiveButton.setOnClickListener(
                 v -> {
                     assert mItemToDelete != null;
-                    CheckBox skipConfirm = (CheckBox) dialog.findViewById(R.id.no_more_check);
+                    CheckBox skipConfirm = dialog.findViewById(R.id.no_more_check);
                     if (skipConfirm.isChecked()) setSkipCloseConfirmation();
                     dialog.dismiss();
                     removeInstance(mItemToDelete);
                 });
-        TextView negativeButton = (TextView) dialog.findViewById(R.id.negative_button);
+        TextView negativeButton = dialog.findViewById(R.id.negative_button);
         negativeButton.setText(res.getString(R.string.cancel));
         negativeButton.setOnClickListener(
                 v -> {

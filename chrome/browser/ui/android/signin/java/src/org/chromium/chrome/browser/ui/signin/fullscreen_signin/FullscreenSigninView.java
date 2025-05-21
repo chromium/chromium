@@ -57,7 +57,7 @@ public class FullscreenSigninView extends RelativeLayout {
         mFooter = findViewById(R.id.signin_fre_footer);
         mSigninProgressSpinner = findViewById(R.id.fre_signin_progress_spinner);
         mSigninProgressText = findViewById(R.id.fre_signin_progress_text);
-        mPrivacyDisclaimer = (TextView) findViewById(R.id.privacy_disclaimer);
+        mPrivacyDisclaimer = findViewById(R.id.privacy_disclaimer);
     }
 
     View getBrowserManagedHeaderView() {

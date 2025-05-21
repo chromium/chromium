@@ -114,7 +114,7 @@ public class AuthenticatorSelectionDialogTest {
         forceAuthenticatorOptionsViewLayout(model);
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
         RecyclerView authenticatorOptionsView =
-                (RecyclerView) customView.findViewById(R.id.authenticator_options_view);
+                customView.findViewById(R.id.authenticator_options_view);
         assertThat(authenticatorOptionsView.getAdapter().getItemCount()).isEqualTo(1);
         // Verify that radio button is not shown for a single authenticator option and instead the
         // icon image is shown.
@@ -292,13 +292,13 @@ public class AuthenticatorSelectionDialogTest {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
         // Verify that the title set by custom view is correct.
-        TextView title = (TextView) customView.findViewById(R.id.title);
+        TextView title = customView.findViewById(R.id.title);
         assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(title.getText())
                 .isEqualTo(mResources.getString(R.string.autofill_card_unmask_verification_title));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
+        ImageView title_icon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
@@ -325,7 +325,7 @@ public class AuthenticatorSelectionDialogTest {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
         // Verify that the title set by custom view is correct.
-        TextView title = (TextView) customView.findViewById(R.id.title);
+        TextView title = customView.findViewById(R.id.title);
         assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(title.getText())
                 .isEqualTo(
@@ -334,7 +334,7 @@ public class AuthenticatorSelectionDialogTest {
                                         .autofill_card_auth_selection_dialog_title_multiple_options));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
+        ImageView title_icon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
@@ -363,7 +363,7 @@ public class AuthenticatorSelectionDialogTest {
             PropertyModel model, int position) {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
         RecyclerView authenticatorOptionsView =
-                (RecyclerView) customView.findViewById(R.id.authenticator_options_view);
+                customView.findViewById(R.id.authenticator_options_view);
         return (AuthenticatorOptionViewHolder)
                 authenticatorOptionsView.findViewHolderForAdapterPosition(position);
     }
@@ -380,7 +380,7 @@ public class AuthenticatorSelectionDialogTest {
     private void forceAuthenticatorOptionsViewLayout(PropertyModel model) {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
         RecyclerView authenticatorOptionsView =
-                (RecyclerView) customView.findViewById(R.id.authenticator_options_view);
+                customView.findViewById(R.id.authenticator_options_view);
         authenticatorOptionsView.measure(0, 0);
         authenticatorOptionsView.layout(0, 0, 100, 1000);
     }
