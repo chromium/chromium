@@ -166,6 +166,10 @@
   // UI.
   DCHECK(_presentingSceneState);
 
+  // The UI will be blocked until the user completes the first run flow, so
+  // inform the ProfileState this is going to happen.
+  [self.profileState willBlockProfileInitialisationForUI];
+
   id<BrowserProvider> presentingInterface =
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   Browser* browser = presentingInterface.browser;

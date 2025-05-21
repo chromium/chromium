@@ -98,6 +98,11 @@ class ProfileIOS;
 // the stage is already ProfileInitStage::kFinal.
 - (void)queueTransitionToNextInitStage;
 
+// Invoke this method if you are part of the ProfileInitStage initialisation
+// and you are going to block the transition until the user performs some UI
+// interaction.
+- (void)willBlockProfileInitialisationForUI;
+
 @end
 
 #endif  // IOS_CHROME_APP_PROFILE_PROFILE_STATE_H_

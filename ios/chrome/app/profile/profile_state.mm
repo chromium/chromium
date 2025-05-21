@@ -255,6 +255,14 @@
   }
 }
 
+- (void)willBlockProfileInitialisationForUI {
+  DCHECK_GE(_initStage, ProfileInitStage::kPrepareUI);
+  DCHECK_LT(_initStage, ProfileInitStage::kFinal);
+  for (SceneState* sceneState in _connectedSceneStates) {
+    [sceneState.animator cancelAnimation];
+  }
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState

@@ -1742,7 +1742,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
   // Wait for the profile to complete its initialisation.
   [animator waitForSceneState:sceneState
-             toReachInitStage:ProfileInitStage::kUIReady
+             toReachInitStage:ProfileInitStage::kNormalUI
                  continuation:std::move(continuation)];
 }
 

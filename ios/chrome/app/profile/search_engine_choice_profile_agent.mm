@@ -180,6 +180,10 @@ enum class SkipScreenDecision {
     return;
   }
 
+  // The UI will be blocked until the user picks a search engine, so inform
+  // the ProfileState this is going to happen.
+  [self.profileState willBlockProfileInitialisationForUI];
+
   // Present the screen.
   _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
   _searchEngineChoiceUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);

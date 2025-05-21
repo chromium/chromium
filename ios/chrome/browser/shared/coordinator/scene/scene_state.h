@@ -20,6 +20,18 @@
 @class SceneController;
 @class SceneState;
 
+// During profile switching, it is possible that an animation is displayed
+// over the SceneState until the transition is complete. In that case the
+// object responsible should implement this protocol to allow cancellation
+// of the animation if the Profile initialisation needs to present wait for
+// the user to interact with some mandatory interactive step.
+@protocol SceneStateAnimator
+
+// Cancel any in progress animation.
+- (void)cancelAnimation;
+
+@end
+
 // Scene agents are objects owned by a scene state and providing some
 // scene-scoped function. They can be driven by SceneStateObserver events.
 @protocol SceneAgent <NSObject>
@@ -41,6 +53,9 @@
 
 // The profile state for profile that owns this scene.
 @property(nonatomic, weak) ProfileState* profileState;
+
+// The SceneStateAnimator instance.
+@property(nonatomic, weak) id<SceneStateAnimator> animator;
 
 // The current activation level.
 @property(nonatomic, assign) SceneActivationLevel activationLevel;
