@@ -151,7 +151,16 @@ TEST_F(CSSPropertyTest, InternalFontSizeDeltaNotWebExposed) {
       CSSProperty::Get(CSSPropertyID::kInternalFontSizeDelta).IsWebExposed());
 }
 
-TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
+class VisitedPropertiesCanParseValues
+    : public CSSPropertyTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(CSSPropertyTest,
+                         VisitedPropertiesCanParseValues,
+                         ::testing::Bool());
+
+TEST_P(VisitedPropertiesCanParseValues, ParsesAllProperties) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(GetParam());
   const ComputedStyle& initial_style =
       GetDocument().GetStyleResolver().InitialStyle();
 
@@ -178,9 +187,30 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
     const CSSValue* parsed_visited_value = css_test_helpers::ParseLonghand(
         GetDocument(), *visited, initial_value->CssText());
 
-    // The properties should have identical parsing behavior.
-    EXPECT_TRUE(
-        base::ValuesEquivalent(parsed_regular_value, parsed_visited_value));
+    // Special handling for 'column-rule-color' when gap decorations are
+    // enabled. In this case, the regular property returns a `CSSValueList` with
+    // a single value, while the visited property returns a single `CSSValue`.
+    // This discrepancy arises because visited styles are not applied to
+    // 'column-rule-color' when multiple values are used. To ensure accurate
+    // comparison, we extract the sole value from the regular property's list
+    // and compare it directly with the visited value.
+    //
+    // TODO(crbug.com/357648037): Remove this check once the visited
+    // partitioning work is done.
+    if (GetParam() && property_id == CSSPropertyID::kColumnRuleColor) {
+      EXPECT_TRUE(parsed_regular_value->IsValueList());
+      const CSSValueList* parsed_regular_value_list =
+          DynamicTo<CSSValueList>(parsed_regular_value);
+      EXPECT_EQ(parsed_regular_value_list->length(), 1);
+      const CSSValue* parsed_regular_color =
+          &parsed_regular_value_list->Item(0);
+      EXPECT_TRUE(
+          base::ValuesEquivalent(parsed_regular_color, parsed_visited_value));
+    } else {
+      // The properties should have identical parsing behavior.
+      EXPECT_TRUE(
+          base::ValuesEquivalent(parsed_regular_value, parsed_visited_value));
+    }
 
     num_visited++;
   }
