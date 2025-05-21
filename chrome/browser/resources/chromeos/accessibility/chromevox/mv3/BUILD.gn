@@ -259,7 +259,6 @@ run_jsbundler("copied_files") {
   ]
 
   sources = [
-    "background/background.html",
     "earcons/chromevox_loaded.ogg",
     "earcons/chromevox_loading.ogg",
     "earcons/control.wav",
