@@ -3255,6 +3255,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.MediaFoundationService.{KeySystem}.HardwareSecure.GetCdmCapability"
+    units="ms" expires_after="2026-01-15">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The time spent to get CdmCapability for {KeySystem}. The value will be
+    reported once per CDM instance for hw security in MediaFoundationService.
+  </summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
 <histogram name="Media.EME.MojoCdm.ConnectionError"
     enum="BooleanConnectionError" expires_after="2026-01-15">
   <owner>xhwang@chromium.org</owner>

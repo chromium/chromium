@@ -347,6 +347,8 @@ CdmCapabilityOrStatus GetCdmCapability(
   DVLOG(2) << __func__ << ": key_system=" << key_system
            << ", is_hw_secure=" << is_hw_secure;
 
+  const auto start_time = base::TimeTicks::Now();
+
   // For hardware secure decryption, even when IsTypeSupportedInternal() says
   // it's supported, CDM creation could fail immediately. Therefore, create a
   // dummy CDM instance to detect this case.
@@ -476,6 +478,11 @@ CdmCapabilityOrStatus GetCdmCapability(
   // IsTypeSupported does not support session type yet. So just use temporary
   // session which is required by EME spec.
   capability.session_types.insert(CdmSessionType::kTemporary);
+
+  auto uma_name = "Media.EME.MediaFoundationService." +
+                  GetKeySystemNameForUMA(key_system, is_hw_secure) +
+                  ".GetCdmCapability";
+  base::UmaHistogramTimes(uma_name, base::TimeTicks::Now() - start_time);
 
   return std::move(capability);
 }
