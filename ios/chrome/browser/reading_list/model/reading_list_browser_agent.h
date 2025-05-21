@@ -57,9 +57,6 @@ class ReadingListBrowserAgent
   // Reading List.
   MDCSnackbarMessageAction* CreateViewAction();
 
-  // The browser associated with this agent.
-  raw_ptr<Browser> browser_;
-
   // Create weak pointers to ensure that the callback bound to the object is
   // canceled when the object is destroyed.
   base::WeakPtrFactory<ReadingListBrowserAgent> weak_ptr_factory_{this};

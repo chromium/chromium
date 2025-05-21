@@ -34,9 +34,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 ReadingListBrowserAgent::ReadingListBrowserAgent(Browser* browser)
-    : BrowserUserData(browser) {
-  browser_ = browser;
-}
+    : BrowserUserData(browser) {}
 
 ReadingListBrowserAgent::~ReadingListBrowserAgent() {}
 
