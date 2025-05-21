@@ -317,19 +317,19 @@
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
         Third-party cookies limited
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_RESUME_PROTECTIONS_LABEL" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL" desc="" translateable="false">
         Resume tracking protections
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL" desc="" translateable="false">
         Pause tracking protections
       </message>
-       <message name="IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION" desc="" translateable="false">
+       <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION" desc="" translateable="false">
         Try pausing tracking protections on this site, which can help site features work as expected.
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION" desc="" translateable="false">
         Protections are paused until all Incognito windows are closed.
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_TITLE" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE" desc="" translateable="false">
         Tracking protections are paused on this site
       </message>
       <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL" desc="" translateable="false">

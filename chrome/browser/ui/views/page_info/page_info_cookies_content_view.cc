@@ -312,13 +312,13 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
       title_text = l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
       description =
-          IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION;
+          IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION;
       break;
     case CookieControlsState::kPausedTp:
       title_text = l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_TITLE);
+          IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE);
       description =
-          IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION;
+          IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION;
       break;
     default:
       NOTREACHED();
@@ -353,8 +353,8 @@ void PageInfoCookiesContentView::SetTrackingProtectionButtonLabel(
     CookieControlsState controls_state) {
   auto label = l10n_util::GetStringUTF16(
       controls_state == CookieControlsState::kPausedTp
-          ? IDS_TRACKING_PROTECTION_BUBBLE_RESUME_PROTECTIONS_LABEL
-          : IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL);
+          ? IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL
+          : IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL);
   tracking_protection_button_->SetText(label);
   tracking_protection_button_->GetViewAccessibility().SetName(label);
 }
@@ -490,7 +490,7 @@ void PageInfoCookiesContentView::OnTrackingProtectionButtonPressed() {
   bool pause_protections =
       tracking_protection_button_->GetText() ==
       l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL);
+          IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL);
   presenter_->OnTrackingProtectionButtonPressed(pause_protections);
   third_party_cookies_container_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, true);

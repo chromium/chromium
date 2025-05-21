@@ -877,13 +877,14 @@ TEST_F(PageInfoCookiesContentViewTrackingProtectionBubbleTest,
   EXPECT_FALSE(third_party_cookies_row()->GetVisible());
   EXPECT_EQ(tracking_protections_button()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL));
+                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL));
   EXPECT_EQ(
       third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE));
-  EXPECT_EQ(third_party_cookies_description()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
+  EXPECT_EQ(
+      third_party_cookies_description()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
   EXPECT_EQ(
       third_party_cookies_description_label()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION));
@@ -903,13 +904,14 @@ TEST_F(
   EXPECT_FALSE(third_party_cookies_row()->GetVisible());
   EXPECT_EQ(tracking_protections_button()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL));
+                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL));
   EXPECT_EQ(
       third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE));
-  EXPECT_EQ(third_party_cookies_description()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
+  EXPECT_EQ(
+      third_party_cookies_description()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
   EXPECT_EQ(
       third_party_cookies_description_label()->GetText(),
       l10n_util::GetStringUTF16(
@@ -930,13 +932,14 @@ TEST_F(
   EXPECT_FALSE(third_party_cookies_row()->GetVisible());
   EXPECT_EQ(tracking_protections_button()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL));
+                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL));
   EXPECT_EQ(
       third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE));
-  EXPECT_EQ(third_party_cookies_description()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
+  EXPECT_EQ(
+      third_party_cookies_description()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
   EXPECT_EQ(
       third_party_cookies_description_label()->GetText(),
       l10n_util::GetStringUTF16(
@@ -957,13 +960,14 @@ TEST_F(
   EXPECT_FALSE(third_party_cookies_row()->GetVisible());
   EXPECT_EQ(tracking_protections_button()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL));
+                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL));
   EXPECT_EQ(
       third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE));
-  EXPECT_EQ(third_party_cookies_description()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
+  EXPECT_EQ(
+      third_party_cookies_description()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION));
   EXPECT_EQ(third_party_cookies_description_label()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION));
@@ -982,11 +986,12 @@ TEST_F(PageInfoCookiesContentViewTrackingProtectionBubbleTest,
   EXPECT_FALSE(third_party_cookies_description_label()->GetVisible());
   EXPECT_EQ(tracking_protections_button()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_RESUME_PROTECTIONS_LABEL));
+                IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL));
   EXPECT_EQ(third_party_cookies_title()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_TITLE));
-  EXPECT_EQ(third_party_cookies_description()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION));
+                IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_TITLE));
+  EXPECT_EQ(
+      third_party_cookies_description()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION));
 }

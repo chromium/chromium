@@ -1823,7 +1823,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_THAT(tracking_protections_button->GetText(),
               l10n_util::GetStringUTF16(
-                  IDS_TRACKING_PROTECTION_BUBBLE_RESUME_PROTECTIONS_LABEL));
+                  IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL));
   EXPECT_EQ(
       host_content_settings_map()->GetContentSetting(
           GURL(), GURL(kUrl), ContentSettingsType::TRACKING_PROTECTION, &info),
@@ -1834,7 +1834,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_THAT(tracking_protections_button->GetText(),
               l10n_util::GetStringUTF16(
-                  IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL));
+                  IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL));
   EXPECT_EQ(
       host_content_settings_map()->GetContentSetting(
           GURL(), GURL(kUrl), ContentSettingsType::TRACKING_PROTECTION, &info),
