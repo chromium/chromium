@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
-#include "base/strings/strcat.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/sd_jwt.h"
@@ -28,18 +27,6 @@ bool IsRequestingDefaultPermissions(const std::vector<std::string>& fields) {
 }
 
 }  // namespace
-
-std::string ComputeUrlEncodedTokenPostDataForIssuers(
-    const std::string& account_id,
-    const sdjwt::Jwk& holder_key,
-    const std::string& format) {
-  return base::StrCat(
-      {"account_id=", base::EscapeUrlEncodedData(account_id, /*use_plus=*/true),
-       "&holder_key=",
-       base::EscapeUrlEncodedData(*holder_key.Serialize(),
-                                  /*use_plus=*/true),
-       "&format=", base::EscapeUrlEncodedData(format, /*use_plus=*/true)});
-}
 
 std::string ComputeUrlEncodedTokenPostData(
     RenderFrameHost& render_frame_host,

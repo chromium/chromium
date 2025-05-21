@@ -1407,8 +1407,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     endpoint = idp_info.endpoints.issuance;
     federated_sdjwt_handler_ = std::make_unique<FederatedSdJwtHandler>(
         idp_info.provider, render_frame_host(), this);
-    query = ComputeUrlEncodedTokenPostDataForIssuers(
-        account_id, federated_sdjwt_handler_->GetPublicKey(), "vc+sd-jwt");
+    query = federated_sdjwt_handler_->ComputeUrlEncodedTokenPostDataForIssuers(
+        account_id);
   } else {
     endpoint = idp_info.endpoints.token;
     query = ComputeUrlEncodedTokenPostData(

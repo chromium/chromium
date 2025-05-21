@@ -17,12 +17,6 @@ namespace content {
 
 // This file contains functions that compute URLs that are used in FedCM.
 
-// Computes the URL-encoded POST data for the token endpoint for issuers.
-std::string ComputeUrlEncodedTokenPostDataForIssuers(
-    const std::string& account_id,
-    const sdjwt::Jwk& holder_key,
-    const std::string& format);
-
 // Computes the URL-encoded POST data for the token endpoint.
 std::string ComputeUrlEncodedTokenPostData(
     RenderFrameHost& render_frame_host,

@@ -27,11 +27,13 @@ class FederatedSdJwtHandler {
       FederatedAuthRequestImpl* federated_auth_request_impl);
   ~FederatedSdJwtHandler();
 
+  std::string ComputeUrlEncodedTokenPostDataForIssuers(
+      const std::string& account_id);
+
   void ProcessSdJwt(const std::string& token);
 
-  sdjwt::Jwk GetPublicKey() const;
-
  private:
+  sdjwt::Jwk GetPublicKey() const;
   void OnDisclosureParsed(base::RepeatingClosure cb,
                           const std::string& json,
                           data_decoder::DataDecoder::ValueOrError result);

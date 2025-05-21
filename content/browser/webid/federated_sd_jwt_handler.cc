@@ -11,6 +11,8 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
@@ -54,6 +56,16 @@ FederatedSdJwtHandler::FederatedSdJwtHandler(
 }
 
 FederatedSdJwtHandler::~FederatedSdJwtHandler() {}
+
+std::string FederatedSdJwtHandler::ComputeUrlEncodedTokenPostDataForIssuers(
+    const std::string& account_id) {
+  return base::StrCat(
+      {"account_id=", base::EscapeUrlEncodedData(account_id, /*use_plus=*/true),
+       "&holder_key=",
+       base::EscapeUrlEncodedData(*GetPublicKey().Serialize(),
+                                  /*use_plus=*/true),
+       "&format=", base::EscapeUrlEncodedData("vc+sd-jwt", /*use_plus=*/true)});
+}
 
 void FederatedSdJwtHandler::ProcessSdJwt(const std::string& token) {
   // Checked previously.
