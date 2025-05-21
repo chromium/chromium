@@ -187,11 +187,12 @@ void TipsNotificationClient::HandleNotificationInteraction(
   CHECK(browser);
   id<ApplicationCommands> application_handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  auto showUICallback = base::CallbackToBlock(
+      base::BindOnce(&TipsNotificationClient::ShowUIForNotificationType,
+                     weak_ptr_factory_.GetWeakPtr(), type, browser));
   [application_handler
-      prepareToPresentModal:
-          base::CallbackToBlock(
-              base::BindOnce(&TipsNotificationClient::ShowUIForNotificationType,
-                             weak_ptr_factory_.GetWeakPtr(), type, browser))];
+      prepareToPresentModalWithSnackbarDismissal:NO
+                                      completion:showUICallback];
 
   // If a relavent feature is enabled and the user hasn't yet opted-in, and the
   // current auth status is "authorized", interacting with a notification (which

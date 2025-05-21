@@ -240,9 +240,12 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
       showSnackbarWithMessage:self.confirmationMessage
                    buttonText:buttonText
                 messageAction:^{
-                  [weakApplicationHandler prepareToPresentModal:^{
-                    [weakSettingsHandler showNotificationsSettings];
-                  }];
+                  [weakApplicationHandler
+                      prepareToPresentModalWithSnackbarDismissal:YES
+                                                      completion:^{
+                                                        [weakSettingsHandler
+                                                            showNotificationsSettings];
+                                                      }];
                 }
              completionAction:nil];
 }

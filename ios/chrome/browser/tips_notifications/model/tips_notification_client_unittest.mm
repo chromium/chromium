@@ -53,7 +53,8 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 @end
 
 @implementation PrepareToPresentModalStub
-- (void)prepareToPresentModal:(ProceduralBlock)completion {
+- (void)prepareToPresentModalWithSnackbarDismissal:(BOOL)dismissSnackbars
+                                        completion:(ProceduralBlock)completion {
   completion();
 }
 @end
@@ -193,8 +194,8 @@ class TipsNotificationClientTest : public PlatformTest {
         kTipsNotificationsSentPref, bits);
   }
 
-  // Stubs the `prepareToPresentModal:` method from `ApplicationCommands` so
-  // that it immediately calls the completion block.
+  // Stubs the `-prepareToPresentModalWithSnackbarDismissal:` method from
+  // `ApplicationCommands` so that it immediately calls the completion block.
   void StubPrepareToPresentModal() {
     prepare_to_present_modal_stub_ = [[PrepareToPresentModalStub alloc] init];
     [browser_->GetCommandDispatcher()

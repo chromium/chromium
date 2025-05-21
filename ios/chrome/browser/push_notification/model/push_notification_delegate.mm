@@ -1179,10 +1179,14 @@ void ProcessIncomingNotification(
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   __block base::OnceClosure completion2 = std::move(completion);
-  [applicationHandler prepareToPresentModal:^{
-    [settingsHandler showNotificationsSettingsAndHighlightClient:clientID];
-    std::move(completion2).Run();
-  }];
+  [applicationHandler
+      prepareToPresentModalWithSnackbarDismissal:YES
+                                      completion:^{
+                                        [settingsHandler
+                                            showNotificationsSettingsAndHighlightClient:
+                                                clientID];
+                                        std::move(completion2).Run();
+                                      }];
 }
 
 // Returns the client to handle the given `notification`. The client can be

@@ -541,13 +541,15 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
   if ([interacted_notification_metadata_ count]) {
     Browser* browser = GetActiveForegroundBrowser();
 
+    auto showUICallback = base::CallbackToBlock(base::BindOnce(
+        &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
+        weak_ptr_factory_.GetWeakPtr(), interacted_notification_metadata_,
+        browser->AsWeakPtr()));
+
     if (browser) {
       [HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands)
-          prepareToPresentModal:
-              base::CallbackToBlock(base::BindOnce(
-                  &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
-                  weak_ptr_factory_.GetWeakPtr(),
-                  interacted_notification_metadata_, browser->AsWeakPtr()))];
+          prepareToPresentModalWithSnackbarDismissal:NO
+                                          completion:showUICallback];
     }
   }
 

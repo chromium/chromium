@@ -2314,7 +2314,8 @@ using UserFeedbackDataCallback =
   }
 }
 
-- (void)prepareToPresentModal:(ProceduralBlock)completion {
+- (void)prepareToPresentModalWithSnackbarDismissal:(BOOL)dismissSnackbars
+                                        completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock ensureNTP = ^{
     [weakSelf ensureNTP];
@@ -2328,7 +2329,9 @@ using UserFeedbackDataCallback =
                    }];
     return;
   }
-  [self dismissModalDialogsWithCompletion:ensureNTP];
+  [self dismissModalDialogsWithCompletion:ensureNTP
+                           dismissOmnibox:YES
+                         dismissSnackbars:dismissSnackbars];
 }
 
 // Returns YES if the current Tab is available to present a view controller.
@@ -3344,8 +3347,18 @@ using UserFeedbackDataCallback =
   [self activateBVCAndMakeCurrentBVCPrimary];
 }
 
+// Helper method to call `-dismissModalDialogsWithCompletion:` with default
+// snackbar dismissal behavior.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
+  [self dismissModalDialogsWithCompletion:completion
+                           dismissOmnibox:dismissOmnibox
+                         dismissSnackbars:YES];
+}
+
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+                         dismissSnackbars:(BOOL)dismissSnackbars {
   // Disconnected scenes should no-op, since browser objects may not exist.
   // See crbug.com/371847600.
   if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
@@ -3362,10 +3375,12 @@ using UserFeedbackDataCallback =
   // they are not visible.
   ios::provider::HideModalViewStack();
 
-  // Dismiss all snackbars.
-  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-      self.mainInterface.browser->GetCommandDispatcher(), SnackbarCommands);
-  [snackbarHandler dismissAllSnackbars];
+  // Conditionally dismiss all snackbars.
+  if (dismissSnackbars) {
+    id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+        self.mainInterface.browser->GetCommandDispatcher(), SnackbarCommands);
+    [snackbarHandler dismissAllSnackbars];
+  }
 
   // Exit fullscreen mode for web page when we re-enter app through external
   // intents.

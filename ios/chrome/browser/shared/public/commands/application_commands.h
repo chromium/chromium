@@ -155,9 +155,12 @@ enum class TabGridOpeningMode {
 // Open a new window with `userActivity`
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity;
 
-// Closes all open modals and ensures that a non-incognito NTP tab is open. If
+// Closes all open modals. If `dismissSnackbars` is YES, also dismisses
+// all snackbars. Ensures that a non-incognito NTP tab is open. If
 // incognito is forced, then it will ensure an incognito NTP tab is open.
-- (void)prepareToPresentModal:(ProceduralBlock)completion;
+// The `completion` block is called once all these preparations are complete.
+- (void)prepareToPresentModalWithSnackbarDismissal:(BOOL)dismissSnackbars
+                                        completion:(ProceduralBlock)completion;
 
 // Opens a debug menu for AI prototyping.
 - (void)openAIMenu;

@@ -3970,9 +3970,11 @@ enum class ToolbarKind {
 - (void)presentLensIconBubble {
   __weak NewTabPageCoordinator* weakNTPCoordinator = _NTPCoordinator;
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      prepareToPresentModal:^{
-        [weakNTPCoordinator presentLensIconBubble];
-      }];
+      prepareToPresentModalWithSnackbarDismissal:YES
+                                      completion:^{
+                                        [weakNTPCoordinator
+                                            presentLensIconBubble];
+                                      }];
 }
 
 - (void)presentFeedSwipeFirstRunBubble {
