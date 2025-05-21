@@ -1237,6 +1237,10 @@ class CONTENT_EXPORT InterestGroupAuction
   const blink::AuctionConfig::MaybePromiseJson* GetBuyerTKVSignals(
       const url::Origin& buyer) const;
 
+  // Gets the `seller-tkv-signals` in `config` to provide more contextual data
+  // during scoring ads process.
+  base::optional_ref<const std::string> GetSellerTKVSignals() const;
+
   // -----------------------------------
   // Methods not associated with a phase
   // -----------------------------------

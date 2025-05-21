@@ -4899,6 +4899,20 @@ InterestGroupAuction::GetBuyerTKVSignals(const url::Origin& owner) const {
   return &it->second;
 }
 
+base::optional_ref<const std::string>
+InterestGroupAuction::GetSellerTKVSignals() const {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv2ContextualData)) {
+    return std::nullopt;
+  }
+
+  const auto& seller_tkv_signals =
+      config_->non_shared_params.seller_tkv_signals;
+
+  CHECK(!seller_tkv_signals.is_promise());
+  return seller_tkv_signals.value();
+}
+
 std::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(
     const blink::AuctionConfig& config,
     const url::Origin& buyer) {
@@ -5793,7 +5807,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
                 bid->interest_group->owner,
                 bid->bid_state->bidder->joining_origin, bid->ad_descriptor.url,
                 bid->GetAdComponentUrls(), std::move(additional_params),
-                /*seller_tkv_signals=*/std::nullopt, partition_id);
+                GetSellerTKVSignals(), partition_id);
     cache_key = auction_worklet::mojom::TrustedSignalsCacheKey::New(
         cache_handle->compression_group_token(), partition_id);
   }
