@@ -238,7 +238,15 @@ bool IsVulkanV1EnabledForMali(const GPUInfo& gpu_info) {
 }
 
 // Everything that passed 2022 deQP tests.
-bool IsVulkanV2EnabledForMali(const GPUInfo& gpu_info) {
+bool IsVulkanV2EnabledForMali(
+    const GPUInfo& gpu_info,
+    const VulkanPhysicalDeviceProperties& device_properties) {
+  // Mali-G57 have problems initializing Vulkan even with 2022 deQP tests
+  // passed, devices that init successfully show performance regression.
+  if (base::StartsWith(device_properties.device_name, "Mali-G57")) {
+    return false;
+  }
+
   // For V2 we MediaTek is allowed.
   return ShouldBypassMediatekBlock(gpu_info);
 }
@@ -524,7 +532,7 @@ bool CheckVulkanCompatibilities(
     }
 
     return IsVulkanV1EnabledForMali(gpu_info) ||
-           IsVulkanV2EnabledForMali(gpu_info);
+           IsVulkanV2EnabledForMali(gpu_info, device_properties);
   }
 
   if (device_properties.vendor_id == kVendorQualcomm) {
