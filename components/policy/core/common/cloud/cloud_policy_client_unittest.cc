@@ -2627,6 +2627,36 @@ TEST_P(CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
   EXPECT_EQ(1u, events->GetList().size());
 }
 
+TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNoResponse) {
+  RegisterClient();
+
+  ExpectAndCaptureJSONJob(/*response=*/"");
+
+  base::test::TestFuture<CloudPolicyClient::Result> result_future;
+
+  client_->UploadSecurityEventReport(/*include_device_info=*/false,
+                                     MakeDefaultRealtimeReport(),
+                                     result_future.GetCallback());
+
+  const CloudPolicyClient::Result result = result_future.Get();
+  EXPECT_TRUE(result.IsSuccess());
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
+      job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
+
+  std::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
+  ASSERT_TRUE(payload);
+  const base::Value::Dict& payload_dict = payload->GetDict();
+
+  ASSERT_FALSE(policy::GetDeviceName().empty());
+  EXPECT_EQ(version_info::GetVersionNumber(),
+            *payload_dict.FindStringByDottedPath(
+                ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+                    GetChromeVersionPath()));
+}
+
 class CloudPolicyClientUploadSecurityEventTest
     : public CloudPolicyClientTest,
       public testing::WithParamInterface<bool> {
@@ -3348,6 +3378,20 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
             client_->last_dm_status());
+}
+
+TEST_F(CloudPolicyClientTest, ResultCopyAssignment) {
+  CloudPolicyClient::Result result1 =
+      CloudPolicyClient::Result(DM_STATUS_SUCCESS, 400, base::Value::Dict());
+  CloudPolicyClient::Result result2 =
+      CloudPolicyClient::Result(DM_STATUS_REQUEST_FAILED);
+
+  result2 = result1;
+
+  ASSERT_TRUE(result2.IsSuccess());
+  EXPECT_EQ(DM_STATUS_SUCCESS, result2.GetDMServerError());
+  EXPECT_EQ(400, result2.GetNetError());
+  EXPECT_EQ(result1.GetResponse(), result2.GetResponse());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

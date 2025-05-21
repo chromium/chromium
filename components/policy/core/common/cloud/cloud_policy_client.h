@@ -131,7 +131,11 @@ class POLICY_EXPORT CloudPolicyClient {
    public:
     explicit Result(DeviceManagementStatus);
     explicit Result(DeviceManagementStatus, int);
+    explicit Result(DeviceManagementStatus, int, base::Value::Dict);
     explicit Result(NotRegistered);
+
+    Result(const Result& other);
+    Result& operator=(const Result& other);
 
     bool IsSuccess() const;
     bool IsClientNotRegisteredError() const;
@@ -139,14 +143,17 @@ class POLICY_EXPORT CloudPolicyClient {
 
     DeviceManagementStatus GetDMServerError() const;
     int GetNetError() const;
-
     bool operator==(const Result& other) const {
-      return this->result_ == other.result_ && net_error_ == other.net_error_;
+      return this->result_ == other.result_ && net_error_ == other.net_error_ &&
+             response_ == other.response_;
     }
+
+    const base::Value::Dict& GetResponse() const;
 
    private:
     std::variant<NotRegistered, DeviceManagementStatus> result_;
     int net_error_ = 0;
+    base::Value::Dict response_;
   };
 
   // A callback which receives the operations result.

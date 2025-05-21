@@ -79,6 +79,9 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
                                    const ReportingSettings& settings,
                                    base::Value::Dict event);
 
+  base::Value::Dict ReportErrorDetails(
+      const policy::CloudPolicyClient::Result& upload_result);
+
   // Report safe browsing events that have occurred in the past but has not yet
   // been reported. This is currently used for browser crash events, which are
   // polled at a fixed time interval. Declared as virtual for tests.

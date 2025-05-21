@@ -316,6 +316,17 @@ bool RealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
   return IncludeDeviceInfo(Profile::FromBrowserContext(context_), per_profile);
 }
 
+base::Value::Dict RealtimeReportingClient::ReportErrorDetails(
+    const policy::CloudPolicyClient::Result& upload_result) {
+  base::Value::Dict event_wrapper = base::Value::Dict();
+  event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
+  if (!upload_result.IsSuccess()) {
+    event_wrapper.Set("error_code", upload_result.GetNetError());
+    event_wrapper.Set("error_message", upload_result.GetResponse().Clone());
+  }
+  return event_wrapper;
+}
+
 void RealtimeReportingClient::UploadCallbackDeprecated(
     base::Value::Dict event_wrapper,
     bool per_profile,
@@ -334,7 +345,8 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
             BuildDeviceDictionary(client->dm_token(), client->client_id()));
   }
 #endif
-  event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
+  base::Value::Dict error_details = ReportErrorDetails(upload_result);
+  event_wrapper.Merge(std::move(error_details));
 
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
       std::move(event_wrapper));
@@ -355,7 +367,8 @@ void RealtimeReportingClient::UploadCallback(
     EnterpriseReportingEventType eventType,
     policy::CloudPolicyClient::Result upload_result) {
   base::Value::Dict event_wrapper = base::Value::Dict();
-  event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
+  base::Value::Dict error_details = ReportErrorDetails(upload_result);
+  event_wrapper.Merge(std::move(error_details));
   event_wrapper.Set("upload_request",
                     base::EscapeNonASCII(request.SerializeAsString()));
   event_wrapper.Set("event_type", static_cast<int>(eventType));
@@ -400,7 +413,9 @@ void RealtimeReportingClient::RemoveDmTokenFromRejectedSet(
 void RealtimeReportingClient::OnClientError(policy::CloudPolicyClient* client) {
   base::Value::Dict error_value;
   error_value.Set("error",
-                  "An event got an error status and hasn't been reported");
+                  "An event got an error status and hasn't been reported. Find "
+                  "details below in error_message and error_code.");
+
   error_value.Set("status", client->last_dm_status());
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
       error_value);
