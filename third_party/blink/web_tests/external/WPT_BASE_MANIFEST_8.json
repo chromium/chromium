@@ -410231,6 +410231,10 @@
      "122d12ba1cc1a1bb44a71d29b9111269842cb92c",
      []
     ],
+    "roles-minimum.tentative-expected.txt": [
+     "24cbf65c0fae051c583c03d2e47c522b01bac077",
+     []
+    ],
     "roles.tentative-expected.txt": [
      "94c90f2226600f311a9fa62ccc86b26684380bb1",
      []
@@ -426404,14 +426408,6 @@
       "a572f55e66dbce825d399f61c4a2dfa34df9b4ca",
       []
      ]
-    },
-    "smoke": {
-     "tentative": {
-      "almost-soft-navigation-expected.txt": [
-       "36456e16370b5ac50a176307e7e831a27135fe84",
-       []
-      ]
-     }
     }
    },
    "speculation-rules": {
@@ -520389,7 +520385,7 @@
       ]
      ],
      "keyword-sizes-on-flex-item-001.html": [
-      "04c4bddbbd19c3a2942e56d54dba9a3f4a3dd44e",
+      "15df71eae2af42c7b31c9ca0937eab79233b9b8e",
       [
        null,
        {}
@@ -520721,49 +520717,49 @@
        ]
       ],
       "stretch-alias-block-size-001.tentative.html": [
-       "a300b664d65e83af7ec2b64d2f0c47a92828a7b6",
+       "f3ae7afd35f0680b4dada1c519ee27fc2ad8f3de",
        [
         null,
         {}
        ]
       ],
       "stretch-alias-inline-size-001.tentative.html": [
-       "a2b6fea70a4a7f1b3c59c1cfa7558003c6707aed",
+       "ca05307d2238253bdb2555f9b8ffa64f2d172e3c",
        [
         null,
         {}
        ]
       ],
       "stretch-alias-max-block-size-001.tentative.html": [
-       "31257c7647fadfd0b61d85555de1c25395375968",
+       "15d34247629e1f8d6d583208e3abc4eddd4d8271",
        [
         null,
         {}
        ]
       ],
       "stretch-alias-max-inline-size-001.tentative.html": [
-       "828bf7e1d2f83eeba7201972e760f789b09af940",
+       "7d7b6ab6ef586ffbae6046dc6c06b586ea5c6740",
        [
         null,
         {}
        ]
       ],
       "stretch-alias-min-block-size-001.tentative.html": [
-       "bc03c684b26124591c61887c8f9138ec482eccb2",
+       "c11b60609b37a332622e33e81b955e9afbdf50a6",
        [
         null,
         {}
        ]
       ],
       "stretch-alias-min-inline-size-001.tentative.html": [
-       "2af9315848f2a5a5bb5d136ccbb8441480759cb4",
+       "000511e71b70a0a5b2e83178ea6098fda52f6177",
        [
         null,
         {}
        ]
       ],
       "stretch-block-size-001.html": [
-       "c5c02ea231de1f33ecdc9859264b55ab93eac66e",
+       "c2cac98d3a57bfaea455e219341c3f77242659c9",
        [
         null,
         {}
@@ -520784,7 +520780,7 @@
        ]
       ],
       "stretch-inline-size-001.html": [
-       "ee59a7cfd355e598cc343518f154e0e02ee031e1",
+       "30fcdafd16e56cf2ead68c1a859d9fa5c086608a",
        [
         null,
         {}
@@ -520805,28 +520801,28 @@
        ]
       ],
       "stretch-max-block-size-001.html": [
-       "f836e84fcae60feb51c21c616cc5b4bc4e070fc4",
+       "26eae5f68811df7ae0a5a1662381e3bece38787f",
        [
         null,
         {}
        ]
       ],
       "stretch-max-inline-size-001.html": [
-       "e17bc9a9cd94f675fa45ea41a4d1f6c7f9bfd074",
+       "4c356c1a52d97025ff56fd4cdd49ab609f4a5799",
        [
         null,
         {}
        ]
       ],
       "stretch-min-block-size-001.html": [
-       "c7fc12728531311840e57f2b46fbd28e47327b94",
+       "ec023a34fb28798b5d5aee18e19edefb22500f81",
        [
         null,
         {}
        ]
       ],
       "stretch-min-inline-size-001.html": [
-       "60c01030f54025831e2f14e72b9ecba54371e798",
+       "28c1cc93be32bad5d59b852c061db48e6afd5bad",
        [
         null,
         {}
@@ -663705,6 +663701,15 @@
     ],
     "roles-generic.tentative.html": [
      "09a39d2e635c5cfbb35a0a9786fbc139477dbd88",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "roles-minimum.tentative.html": [
+     "2093620bb36598b38e0caa353b5014740aeb6aa4",
      [
       null,
       {
