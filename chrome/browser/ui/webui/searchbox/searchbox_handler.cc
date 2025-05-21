@@ -107,8 +107,6 @@ const char* kSparkIconResourceName =
     "//resources/cr_components/searchbox/icons/spark.svg";
 const char* kStarActiveIconResourceName =
     "//resources/cr_components/searchbox/icons/star_active.svg";
-const char* kSubdirectoryArrowRightResourceName =
-    "//resources/cr_components/searchbox/icons/subdirectory_arrow_right.svg";
 const char* kTabIconResourceName =
     "//resources/cr_components/searchbox/icons/tab.svg";
 const char* kTrendingUpIconResourceName =
@@ -642,7 +640,12 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
     return kStarActiveIconResourceName;
   }
   if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
-    return kSubdirectoryArrowRightResourceName;
+    // The subdirectory arrow right icon is used for contextual suggestions only
+    // in the omnibox. It is not supported in the WebUI contextual searchbox,
+    // so use the search icon instead.
+    // TODO(crbug.com/419077032): Allow the derived class to override these
+    // icons so that there is not conditional logic based on one derived class.
+    return kSearchIconResourceName;
   }
   NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
                   "must have an equivalent SVG resource for the NTP Realbox. "
@@ -686,7 +689,7 @@ void SearchboxHandler::OnFocusChanged(bool focused) {
 }
 
 void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
-                                       bool prevent_inline_autocomplete) {
+                                         bool prevent_inline_autocomplete) {
   // TODO(tommycli): We use the input being empty as a signal we are requesting
   // on-focus suggestions. It would be nice if we had a more explicit signal.
   bool is_on_focus = input.empty();
@@ -730,13 +733,13 @@ void SearchboxHandler::StopAutocomplete(bool clear_result) {
 }
 
 void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
-                                           const GURL& url,
-                                           bool are_matches_showing,
-                                           uint8_t mouse_button,
-                                           bool alt_key,
-                                           bool ctrl_key,
-                                           bool meta_key,
-                                           bool shift_key) {
+                                             const GURL& url,
+                                             bool are_matches_showing,
+                                             uint8_t mouse_button,
+                                             bool alt_key,
+                                             bool ctrl_key,
+                                             bool meta_key,
+                                             bool shift_key) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
   if (!match) {
     // This can happen due to asynchronous updates changing the result while
@@ -796,7 +799,7 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
 }
 
 const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(size_t index,
-                                                         const GURL& url) {
+                                                           const GURL& url) {
   const AutocompleteResult& result = autocomplete_controller()->result();
   if (index >= result.size()) {
     // This can happen due to asynchronous updates changing the result while
