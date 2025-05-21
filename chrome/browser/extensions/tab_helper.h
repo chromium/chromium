@@ -55,9 +55,11 @@ class TabHelper : public content::WebContentsObserver,
     return script_executor_.get();
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionActionRunner* extension_action_runner() {
     return extension_action_runner_.get();
   }
+#endif
 
   void OnWatchedPageChanged(const std::vector<std::string>& css_selectors);
 
@@ -98,7 +100,9 @@ class TabHelper : public content::WebContentsObserver,
 
   std::unique_ptr<ScriptExecutor> script_executor_;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<ExtensionActionRunner> extension_action_runner_;
+#endif
 
   declarative_net_request::WebContentsHelper declarative_net_request_helper_;
 

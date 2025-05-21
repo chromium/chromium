@@ -7,8 +7,6 @@
 
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
-#include "chrome/browser/extensions/api/declarative_content/default_content_predicate_evaluators.h"
 #include "chrome/browser/extensions/api/messaging/chrome_messaging_delegate.h"
 #include "chrome/browser/extensions/api/messaging/chrome_native_message_port_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
@@ -22,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/extension_action.h"
@@ -157,16 +156,6 @@ void ChromeExtensionsAPIClient::OpenFileUrl(
   navigate_params.browser =
       chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
   Navigate(&navigate_params);
-}
-
-scoped_refptr<ContentRulesRegistry>
-ChromeExtensionsAPIClient::CreateContentRulesRegistry(
-    content::BrowserContext* browser_context,
-    RulesCacheDelegate* cache_delegate) const {
-  return base::MakeRefCounted<ChromeContentRulesRegistry>(
-      browser_context, cache_delegate,
-      base::BindOnce(&CreateDefaultContentPredicateEvaluators,
-                     base::Unretained(browser_context)));
 }
 
 std::unique_ptr<DevicePermissionsPrompt>

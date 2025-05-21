@@ -17,6 +17,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/automation_internal/chrome_automation_internal_api_delegate.h"
+#include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
+#include "chrome/browser/extensions/api/declarative_content/default_content_predicate_evaluators.h"
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
@@ -211,6 +213,16 @@ ChromeExtensionsAPIClient::CreateConsentProvider(
       std::move(consent_provider_delegate));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+scoped_refptr<ContentRulesRegistry>
+ChromeExtensionsAPIClient::CreateContentRulesRegistry(
+    content::BrowserContext* browser_context,
+    RulesCacheDelegate* cache_delegate) const {
+  return base::MakeRefCounted<ChromeContentRulesRegistry>(
+      browser_context, cache_delegate,
+      base::BindOnce(&CreateDefaultContentPredicateEvaluators,
+                     base::Unretained(browser_context)));
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,

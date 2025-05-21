@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -42,6 +43,8 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::APIPermissionID;
 
@@ -70,7 +73,6 @@ enum PermittedFeature {
   PERMITTED_BOTH
 };
 
-// TODO(crbug.com/393179880): Port to desktop Android when TabHelper is ported.
 class ActiveTabTest : public ChromeRenderViewHostTestHarness {
  protected:
   ActiveTabTest()

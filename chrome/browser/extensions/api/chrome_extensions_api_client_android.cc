@@ -54,16 +54,6 @@ void ChromeExtensionsAPIClient::OpenFileUrl(
   NOTIMPLEMENTED();
 }
 
-scoped_refptr<ContentRulesRegistry>
-ChromeExtensionsAPIClient::CreateContentRulesRegistry(
-    content::BrowserContext* browser_context,
-    RulesCacheDelegate* cache_delegate) const {
-  // TODO(crbug.com/417786079): Support ChromeContentRulesRegistry on desktop
-  // Android.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 std::unique_ptr<DevicePermissionsPrompt>
 ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
     content::WebContents* web_contents) const {

@@ -12,8 +12,11 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/test_extension_dir.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -53,6 +56,9 @@ class TabHelperUnitTest : public ExtensionServiceTestWithInstall {
   raw_ptr<PermissionsManager> permissions_manager_ = nullptr;
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/393179880): Enable this test when SitePermissionsHelper is
+// ported to desktop Android.
 TEST_F(TabHelperUnitTest, ReloadRequired_BlockAllExtensions) {
   static constexpr char kManifest[] =
       R"({
@@ -86,6 +92,7 @@ TEST_F(TabHelperUnitTest, ReloadRequired_BlockAllExtensions) {
   web_contents_tester()->NavigateAndCommit(other_url);
   EXPECT_FALSE(tab_helper()->IsReloadRequired());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(TabHelperUnitTest, ReloadRequired_CustomizeByExtension) {
   static constexpr char kManifest[] =

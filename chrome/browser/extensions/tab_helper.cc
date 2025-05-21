@@ -7,21 +7,14 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
-#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
-#include "chrome/browser/extensions/app_tab_helper.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -38,6 +31,16 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/app_tab_helper.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service.h"
@@ -73,8 +76,12 @@ TabHelper::TabHelper(content::WebContents* web_contents)
       content::WebContentsUserData<TabHelper>(*web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       script_executor_(std::make_unique<ScriptExecutor>(web_contents)),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      // TODO(crbug.com/393179880): Port ExtensionActionRunner to desktop
+      // Android.
       extension_action_runner_(
           std::make_unique<ExtensionActionRunner>(web_contents)),
+#endif
       declarative_net_request_helper_(web_contents) {
   // The ActiveTabPermissionManager requires a session ID; ensure this
   // WebContents has one.
@@ -87,8 +94,10 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   // tab id assignment can be done on desktop Android.
   ActiveTabPermissionGranter::CreateForWebContents(web_contents, tab_id,
                                                    profile_);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // TODO(crbug.com/393179880): Pull this creation out of TabHelper.
   AppTabHelper::CreateForWebContents(web_contents);
+#endif
 
   ActivityLog::GetInstance(profile_)->ObserveScripts(script_executor_.get());
 
@@ -102,7 +111,11 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   registry_observation_.Observe(
       ExtensionRegistry::Get(web_contents->GetBrowserContext()));
 
+#if !BUILDFLAG(IS_ANDROID)
+  // The Android bookmark manager is native UI, not web UI, so this event router
+  // isn't needed on desktop Android.
   BookmarkManagerPrivateDragEventRouter::CreateForWebContents(web_contents);
+#endif
 }
 
 void TabHelper::SetReloadRequired(
@@ -114,8 +127,11 @@ void TabHelper::SetReloadRequired(
       NOTREACHED();
     }
     case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       // A reload is required if any extension that had site access will lose
       // it.
+      // TODO(crbug.com/393179880): Port SitePermissionsHelper to desktop
+      // Android.
       content::WebContents* web_contents = GetVisibleWebContents();
       SitePermissionsHelper permissions_helper(profile_);
       const ExtensionSet& extensions =
@@ -127,6 +143,9 @@ void TabHelper::SetReloadRequired(
                                                          web_contents) ==
                    SitePermissionsHelper::SiteInteraction::kGranted;
           });
+#else
+      NOTIMPLEMENTED_LOG_ONCE();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
       break;
     }
     case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
@@ -223,7 +242,13 @@ void TabHelper::WebContentsDestroyed() {
 }
 
 WindowController* TabHelper::GetExtensionWindowController() const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/393179880): Support this method.
   return ExtensionTabUtil::GetWindowControllerOfTab(web_contents());
+#else
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
+#endif
 }
 
 WebContents* TabHelper::GetAssociatedWebContents() const {
