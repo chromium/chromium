@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
@@ -74,13 +75,15 @@ class OpticalCharacterRecognizer
   void MaybeConnectToOcrService();
 
   // Performs OCR on the given image and returns the results as a
-  // `VisualAnnotation` struct.
+  // `VisualAnnotation` struct. Returns empty results in the callback if the
+  // service is not ready yet.
   virtual void PerformOCR(
       const SkBitmap& image,
       base::OnceCallback<void(mojom::VisualAnnotationPtr)> callback);
 
   // Performs OCR on the given image and returns the results as an accessibility
-  // tree update.
+  // tree update. Returns empty results in the callback if the service is not
+  // ready yet.
   virtual void PerformOCR(
       const SkBitmap& image,
       base::OnceCallback<void(const ui::AXTreeUpdate& tree_update)> callback);
@@ -96,6 +99,12 @@ class OpticalCharacterRecognizer
   // be triggered from the UI thread, and it's the responsibility of the client
   // to execute it on the right thread.
   void SetDisconnectedCallback(OcrDisconnectedCallback callback);
+
+  // Returns the maximum dimension for which images are processed without
+  // downsampling. This value is not expected to change after initialization of
+  // the service and is expected to be non-zero. Returns 0 in the callback if
+  // the service is not ready yet.
+  void GetMaxImageDimension(base::OnceCallback<void(uint32_t)> callback);
 
  protected:
   explicit OpticalCharacterRecognizer(Profile* profile,

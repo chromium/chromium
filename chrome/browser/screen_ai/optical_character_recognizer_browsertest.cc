@@ -286,6 +286,12 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
 
   EXPECT_TRUE(ocr->StatusAvailableForTesting());
   EXPECT_EQ(ocr->is_ready(), IsOcrAvailable());
+
+  base::test::TestFuture<uint32_t> max_dimension_future;
+  ocr->GetMaxImageDimension(max_dimension_future.GetCallback());
+  ASSERT_TRUE(max_dimension_future.Wait());
+  ASSERT_EQ(max_dimension_future.Get<uint32_t>(),
+            IsOcrAvailable() ? screen_ai::GetMaxDimensionForOCR() : 0);
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
@@ -299,6 +305,12 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   ASSERT_TRUE(future.Wait());
   ASSERT_EQ(future.Get<bool>(), IsOcrAvailable());
   ASSERT_TRUE(ocr);
+
+  base::test::TestFuture<uint32_t> max_dimension_future;
+  ocr->GetMaxImageDimension(max_dimension_future.GetCallback());
+  ASSERT_TRUE(max_dimension_future.Wait());
+  ASSERT_EQ(max_dimension_future.Get<uint32_t>(),
+            IsOcrAvailable() ? screen_ai::GetMaxDimensionForOCR() : 0);
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,

@@ -245,4 +245,16 @@ void OpticalCharacterRecognizer::SetDisconnectedCallback(
   ocr_disconnected_callback_ = std::move(callback);
 }
 
+void OpticalCharacterRecognizer::GetMaxImageDimension(
+    base::OnceCallback<void(uint32_t)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_ready()) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  MaybeConnectToOcrService();
+  (*screen_ai_annotator_)->GetMaxImageDimension(std::move(callback));
+}
+
 }  // namespace screen_ai

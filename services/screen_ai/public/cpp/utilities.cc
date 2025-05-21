@@ -18,6 +18,9 @@ namespace screen_ai {
 
 namespace {
 
+// The maximum image dimension which is processed without downsampling by OCR.
+constexpr uint32_t kMaxImageDimensionForOcr = 2048;
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 constexpr char kBinaryPathSwitch[] = "screen-ai-binary";
 #endif
@@ -133,6 +136,10 @@ const char* GetBinaryPathSwitch() {
 #else
   return nullptr;
 #endif
+}
+
+uint32_t GetMaxDimensionForOCR() {
+  return kMaxImageDimensionForOcr;
 }
 
 }  // namespace screen_ai
