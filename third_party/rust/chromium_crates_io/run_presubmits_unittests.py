@@ -8,7 +8,7 @@ import unittest
 
 import crate_utils
 
-from check_gnrt_config import (
+from run_presubmits import (
     # Functions under test:
     _GetExtraKvForCrateName,
     CheckExplicitAllowUnsafeForAllCrates,

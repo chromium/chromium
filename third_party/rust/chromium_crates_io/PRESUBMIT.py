@@ -11,23 +11,25 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckGnrtConfig(input_api, output_api):
-    # `input_files` lists files that are used as input by
-    # `third_party/rust/chromium_crates_io/check_gnrt_config.py`.
+    # First check if the CL touches any files used as inputs by
+    # `third_party/rust/chromium_crates_io/run_presubmits.py`.
     CARGO_LOCK_PATH = "third_party/rust/chromium_crates_io/Cargo.lock"
     GNRT_CONFIG_PATH = "third_party/rust/chromium_crates_io/gnrt_config.toml"
-    input_files = set([CARGO_LOCK_PATH, GNRT_CONFIG_PATH])
-
-    # Exit early if no `input_files` are affected by the current CL.
+    toml_inputs = set([CARGO_LOCK_PATH, GNRT_CONFIG_PATH])
     affected_paths = set(
         map(lambda f: f.UnixLocalPath(), input_api.change.AffectedFiles()))
-    if not input_files.intersection(affected_paths):
+    any_patches_affected = filter(lambda p: "chromium_crates_io/patches" in p,
+                                  affected_paths)
+    any_toml_inputs_affected = toml_inputs.intersection(affected_paths)
+    if not (any_patches_affected or any_toml_inputs_affected):
+        # Exit early if no input files are affected by the current CL.
         return []
 
     # Delegate actual checks to `check_gnrt_config.py` (one reason is that we
     # can't apparently `import toml` in `PRESUBMIT.py`).
     test_script_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                              "check_gnrt_config.py")
-    cmd_name = '//third_party/rust/chromium_crates_io/check_gnrt_config.py'
+                                              "run_presubmits.py")
+    cmd_name = '//third_party/rust/chromium_crates_io/run_presubmits.py'
     test_cmd = input_api.Command(
         name=cmd_name,
         cmd=[input_api.python_executable, test_script_path],

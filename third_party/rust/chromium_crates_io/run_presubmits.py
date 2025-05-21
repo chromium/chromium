@@ -4,9 +4,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This script checks for issues in:
+# This script checks for issues in the following files and directories
+# (including interactions between them):
+#
 # * `//third_party/rust/chromium_crates_io/Cargo.lock` and
 # * `//third_party/rust/chromium_crates_io/gnrt_config.toml`.
+# * `//third_party/rust/chromium_crates_io/patches/`.
 #
 # We don't surface these issues earlier (by reporting a fatal error from `gnrt
 # vendor`, `gnrt gen`, `gn gen`, or failing the builds), because we want to
@@ -27,6 +30,7 @@ import crate_utils
 GNRT_CONFIG_RELATIVE_PATH = "third_party/rust/chromium_crates_io/gnrt_config.toml"
 GNRT_CONFIG_PATH = os.path.join(crate_utils.CHROMIUM_DIR,
                                 GNRT_CONFIG_RELATIVE_PATH)
+PATCHES_DIR = os.path.join(crate_utils.CRATES_DIR, "patches")
 
 
 def _GetCratesConfigDict(gnrt_config):
@@ -45,6 +49,14 @@ def _GetCrateConfigForCrateName(crate_name, gnrt_config):
     return dict()
 
 
+def _GetRealCrateNames(crate_ids):
+    non_placeholder_crate_ids = filter(
+        lambda crate_id: not crate_utils.IsPlaceholderCrate(crate_id),
+        crate_ids)
+    return set(
+        map(crate_utils.ConvertCrateIdToCrateName, non_placeholder_crate_ids))
+
+
 def _GetExtraKvForCrateName(crate_name, gnrt_config):
     crate_cfg = _GetCrateConfigForCrateName(crate_name, gnrt_config)
     extra_kv = crate_cfg.get("extra_kv")
@@ -60,11 +72,7 @@ def CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config):
        Returns an error message if a problem is detected.
        Returns an empty string if there are no problems.
     """
-    non_placeholder_crate_ids = filter(
-        lambda crate_id: not crate_utils.IsPlaceholderCrate(crate_id),
-        crate_ids)
-    real_crate_names = set(
-        map(crate_utils.ConvertCrateIdToCrateName, non_placeholder_crate_ids))
+    real_crate_names = _GetRealCrateNames(crate_ids)
 
     crates_cfg_dict = _GetCratesConfigDict(gnrt_config)
     configured_crate_names = set(crates_cfg_dict.keys())
@@ -74,6 +82,28 @@ def CheckNonapplicableGnrtConfigEntries(crate_ids, gnrt_config):
         return (f"Some entries in `{GNRT_CONFIG_RELATIVE_PATH}` are not "
                 "needed, because they don't apply to actual crates: "
                 f'{", ".join(sorted(nonapplicable_config_entries))}')
+
+    return ""
+
+
+def CheckNonapplicablePatches(crate_ids, gnrt_config):
+    """Checks that each directory under `chromium_crates_io/patches/`
+       corresponds to an actual depedency of `chromium_crates_io/Cargo.toml`.
+
+       Returns an error message if a problem is detected.
+       Returns an empty string if there are no problems.
+    """
+    real_crate_names = _GetRealCrateNames(crate_ids)
+
+    patched_crate_names = set(
+        filter(lambda filename: filename != "README.md",
+               os.listdir(PATCHES_DIR)))
+
+    nonapplicable_patches = patched_crate_names - real_crate_names
+    if nonapplicable_patches:
+        return (f"Some files/directories under `{PATCHES_DIR}` are not "
+                "needed, because they don't apply to actual crates: "
+                f'{", ".join(sorted(nonapplicable_patches))}')
 
     return ""
 
@@ -189,6 +219,7 @@ def main():
     RunChecks(CheckExplicitAllowUnsafeForAllCrates)
     RunChecks(CheckMultiversionCrates)
     RunChecks(CheckNonapplicableGnrtConfigEntries)
+    RunChecks(CheckNonapplicablePatches)
 
     if success:
         return 0
