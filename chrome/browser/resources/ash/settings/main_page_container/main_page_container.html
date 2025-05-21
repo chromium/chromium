@@ -151,7 +151,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kNetwork)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kNetwork]]">
+    <page-displayer section="[[SectionEnum_.kNetwork]]"
+        aria-label="$i18n{internetPageTitle}">
       <settings-internet-page prefs="{{prefs}}">
       </settings-internet-page>
     </page-displayer>
@@ -159,7 +160,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kBluetooth)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kBluetooth]]">
+    <page-displayer section="[[SectionEnum_.kBluetooth]]"
+        aria-label="$i18n{bluetoothPageTitle}">
       <os-settings-bluetooth-page prefs="{{prefs}}">
       </os-settings-bluetooth-page>
     </page-displayer>
@@ -167,7 +169,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kMultiDevice)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kMultiDevice]]">
+    <page-displayer section="[[SectionEnum_.kMultiDevice]]"
+        aria-label="$i18n{multidevicePageTitle}">
       <settings-multidevice-page prefs="{{prefs}}">
       </settings-multidevice-page>
     </page-displayer>
@@ -175,7 +178,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kPeople)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kPeople]]">
+    <page-displayer section="[[SectionEnum_.kPeople]]"
+        aria-label="$i18n{osPeoplePageTitle}">
       <os-settings-people-page prefs="{{prefs}}">
       </os-settings-people-page>
     </page-displayer>
@@ -183,14 +187,16 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kKerberos)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kKerberos]]">
+    <page-displayer section="[[SectionEnum_.kKerberos]]"
+        aria-label="$i18n{kerberosPageTitle}">
       <settings-kerberos-page></settings-kerberos-page>
     </page-displayer>
   </template>
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kDevice)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kDevice]]">
+    <page-displayer section="[[SectionEnum_.kDevice]]"
+        aria-label="$i18n{devicePageTitle}">
       <settings-device-page prefs="{{prefs}}"
           languages="[[languages_]]"
           language-helper="[[languageHelper_]]">
@@ -200,7 +206,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kPersonalization)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kPersonalization]]">
+    <page-displayer section="[[SectionEnum_.kPersonalization]]"
+        aria-label="$i18n{personalizationPageTitle}">
       <settings-personalization-page prefs="{{prefs}}">
       </settings-personalization-page>
     </page-displayer>
@@ -208,7 +215,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kPrivacyAndSecurity)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kPrivacyAndSecurity]]">
+    <page-displayer section="[[SectionEnum_.kPrivacyAndSecurity]]"
+        aria-label="$i18n{privacyPageTitle}">
       <os-settings-privacy-page prefs="{{prefs}}">
       </os-settings-privacy-page>
     </page-displayer>
@@ -216,7 +224,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kApps)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kApps]]">
+    <page-displayer section="[[SectionEnum_.kApps]]"
+        aria-label="$i18n{appsPageTitle}">
       <os-settings-apps-page
           prefs="{{prefs}}"
           android-apps-info="[[androidAppsInfo]]">
@@ -226,7 +235,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kAccessibility)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kAccessibility]]">
+    <page-displayer section="[[SectionEnum_.kAccessibility]]"
+        aria-label="$i18n{a11yPageTitle}">
       <os-settings-a11y-page prefs="{{prefs}}"
           languages="[[languages_]]"
           language-helper="[[languageHelper_]]">
@@ -236,7 +246,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kSystemPreferences)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kSystemPreferences]]">
+    <page-displayer section="[[SectionEnum_.kSystemPreferences]]"
+        aria-label="$i18n{systemPreferencesTitle}">
       <settings-system-preferences-page prefs="{{prefs}}"
           languages="[[languages_]]"
           language-helper="[[languageHelper_]]">
@@ -246,7 +257,8 @@
   <template is="dom-if"
       if="[[shouldStampPage_(pageAvailability, SectionEnum_.kAboutChromeOs)]]"
       restamp>
-    <page-displayer section="[[SectionEnum_.kAboutChromeOs]]">
+    <page-displayer section="[[SectionEnum_.kAboutChromeOs]]"
+        aria-label="$i18n{aboutOsPageTitle}">
       <os-about-page prefs="{{prefs}}"></os-about-page>
     </page-displayer>
   </template>
