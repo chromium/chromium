@@ -3109,7 +3109,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.MultiWindow.Configuration"
     enum="IOSMultiWindowConfiguration" expires_after="2022-12-11">
   <owner>marq@chromium.org</owner>
-  <owner>fedegermi@chromium.org</owner>
+  <owner>fedegermi@google.com</owner>
   <summary>MultiWindow configuration sampled once per minute.</summary>
 </histogram>
 
@@ -3130,7 +3130,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
     expires_after="2025-11-09">
   <owner>marq@chromium.org</owner>
-  <owner>fedegermi@chromium.org</owner>
+  <owner>fedegermi@google.com</owner>
   <summary>
     The source of &quot;Open in new Window&quot; user requests. Recorded when a
     newly created window is added to a session. Collection of

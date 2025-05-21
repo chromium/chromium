@@ -975,7 +975,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Session.WebStates.LoadingTimeOnMainThread" units="ms"
     expires_after="2025-09-28">
-  <owner>fedegermi@chromium.org</owner>
+  <owner>fedegermi@google.com</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     The time spent on the main thread to restore a session as a continuous task.
@@ -1055,7 +1055,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Session.WebStates.SavingTimeOnMainThread" units="ms"
     expires_after="2025-09-28">
-  <owner>fedegermi@chromium.org</owner>
+  <owner>fedegermi@google.com</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     The time spend on the main thread to save a session as a continuous task.
@@ -1083,7 +1083,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Session.WebStates.StorageFormat" enum="SessionStorageFormat"
     expires_after="2025-09-28">
-  <owner>fedegermi@chromium.org</owner>
+  <owner>fedegermi@google.com</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     The format used for the session storage. Recorded during every startup of
@@ -1094,7 +1094,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Session.WebStates.StorageMigrationDuration" units="ms"
     expires_after="2025-09-28">
-  <owner>fedegermi@chromium.org</owner>
+  <owner>fedegermi@google.com</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     The time spent to migrate the session storage. This corresponds to the time
@@ -1111,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Session.WebStates.StorageMigrationStatus"
     enum="SessionStorageMigrationStatus" expires_after="2025-09-28">
-  <owner>fedegermi@chromium.org</owner>
+  <owner>fedegermi@google.com</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     The status of the session storage format migration (from legacy to optimized
