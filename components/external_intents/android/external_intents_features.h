@@ -14,6 +14,7 @@ BASE_DECLARE_FEATURE(kBlockFrameRenavigations);
 BASE_DECLARE_FEATURE(kBlockIntentsToSelf);
 BASE_DECLARE_FEATURE(kNavigationCaptureRefactorAndroid);
 BASE_DECLARE_FEATURE(kAuxiliaryNavigationStaysInBrowser);
+BASE_DECLARE_FEATURE(kReparentTopLevelNavigationFromPWA);
 
 }  // namespace external_intents
 

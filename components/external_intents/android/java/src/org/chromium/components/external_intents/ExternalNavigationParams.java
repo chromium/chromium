@@ -100,6 +100,7 @@ public class ExternalNavigationParams {
     private final @Nullable Origin mInitiatorOrigin;
     private final long mNavigationId;
     private final boolean mIsTabInPWA;
+    private final boolean mIsInDesktopWindowingMode;
 
     // Populated when an async action is taken, ensuring the callback gets called.
     private @Nullable RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
@@ -124,7 +125,8 @@ public class ExternalNavigationParams {
             boolean isHiddenCrossFrameNavigation,
             boolean isSandboxedMainFrame,
             long navigationId,
-            boolean isTabInPWA) {
+            boolean isTabInPWA,
+            boolean isInDesktopWindowingMode) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -145,6 +147,7 @@ public class ExternalNavigationParams {
         mIsSandboxedMainFrame = isSandboxedMainFrame;
         mNavigationId = navigationId;
         mIsTabInPWA = isTabInPWA;
+        mIsInDesktopWindowingMode = isInDesktopWindowingMode;
     }
 
     public void onAsyncActionStarted() {
@@ -271,6 +274,13 @@ public class ExternalNavigationParams {
         return mIsTabInPWA;
     }
 
+    /**
+     * @return whether this activity is in Android desktop windowing mode or not.
+     */
+    public boolean isInDesktopWindowingMode() {
+        return mIsInDesktopWindowingMode;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         private final GURL mUrl;
@@ -293,6 +303,7 @@ public class ExternalNavigationParams {
         private boolean mIsSandboxedMainFrame;
         private long mNavigationId;
         private boolean mIsTabInPWA;
+        private boolean mIsInDesktopWindowingMode;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -401,6 +412,12 @@ public class ExternalNavigationParams {
             return this;
         }
 
+        /** Sets whether this application is in a desktop window. */
+        public Builder setIsInDesktopWindowingMode(boolean v) {
+            mIsInDesktopWindowingMode = v;
+            return this;
+        }
+
         /**
          * @return A fully constructed {@link ExternalNavigationParams} object.
          */
@@ -425,7 +442,8 @@ public class ExternalNavigationParams {
                     mIsHiddenCrossFrameNavigation,
                     mIsSandboxedMainFrame,
                     mNavigationId,
-                    mIsTabInPWA);
+                    mIsTabInPWA,
+                    mIsInDesktopWindowingMode);
         }
     }
 }

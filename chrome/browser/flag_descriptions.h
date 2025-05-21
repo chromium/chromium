@@ -3023,6 +3023,9 @@ extern const char kReaderModeHeuristicsAlwaysOn[];
 extern const char kReaderModeImprovementsName[];
 extern const char kReaderModeImprovementsDescription[];
 
+extern const char kReparentTopLevelNavigationFromPWAName[];
+extern const char kReparentTopLevelNavigationFromPWADescription[];
+
 extern const char kReengagementNotificationName[];
 extern const char kReengagementNotificationDescription[];
 

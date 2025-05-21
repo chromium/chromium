@@ -7535,6 +7535,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kEducationalTipDefaultBrowserPromoCard)},
 
+    {"enable-reparent-top-level-navigation-from-pwa",
+     flag_descriptions::kReparentTopLevelNavigationFromPWAName,
+     flag_descriptions::kReparentTopLevelNavigationFromPWADescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(external_intents::kReparentTopLevelNavigationFromPWA)},
+
     {"enable-segmentation-platform-ephemeral_card_ranker",
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,

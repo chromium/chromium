@@ -5125,6 +5125,12 @@ const char kReaderModeImprovementsName[] = "Reader Mode improvements";
 const char kReaderModeImprovementsDescription[] =
     "Collection of improvements to reader modefor android.";
 
+const char kReparentTopLevelNavigationFromPWAName[] =
+    "Reparent Top Level Navigation From PWA";
+const char kReparentTopLevelNavigationFromPWADescription[] =
+    "Opens a new browser tab when a new top level navigation "
+    "that starts in a PWA has no specialized handler.";
+
 const char kReengagementNotificationName[] =
     "Enable re-engagement notifications";
 const char kReengagementNotificationDescription[] =

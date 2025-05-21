@@ -4002,6 +4002,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-reparent-top-level-navigation-from-pwa",
+    "owners": [
+      "muratori@google.org",
+      "cros-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-resampling-scroll-events-experimental-prediction",
     "owners": [ "input-dev@chromium.org" ],
     "expiry_milestone": 140

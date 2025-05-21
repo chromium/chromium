@@ -386,6 +386,7 @@ public class ExternalNavigationHandler {
         OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
         OverrideUrlLoadingResultType.NO_OVERRIDE,
         OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH,
+        OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER,
         OverrideUrlLoadingResultType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -401,8 +402,10 @@ public class ExternalNavigationHandler {
         int NO_OVERRIDE = 3;
 
         int OVERRIDE_CLOSING_AFTER_AUTH = 4;
+        /* We should move the navigation to a browser window. */
+        int OVERRIDE_WITH_REPARENT_TO_BROWSER = 5;
 
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
     }
 
     // LINT.ThenChange(:printDebugShouldOverrideUrlLoadingResultType)
@@ -517,6 +520,12 @@ public class ExternalNavigationHandler {
         public static OverrideUrlLoadingResult forClosingAfterAuth() {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH);
+        }
+
+        /** Use this result when the navigation should be moved from a PWA to a browser window. */
+        public static OverrideUrlLoadingResult forReparentToBrowser() {
+            return new OverrideUrlLoadingResult(
+                    OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER);
         }
     }
 
@@ -663,6 +672,9 @@ public class ExternalNavigationHandler {
                 break;
             case OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH:
                 resultString = "OVERRIDE_CLOSING_AFTER_AUTH";
+                break;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER:
+                resultString = "OVERRIDE_WITH_REPARENT_TO_BROWSER";
                 break;
             case OverrideUrlLoadingResultType.NO_OVERRIDE: // Fall through.
             default:
@@ -1170,8 +1182,17 @@ public class ExternalNavigationHandler {
      * This is the catch-all path for any intent that the app can handle that doesn't have a
      * specialized external app handling it.
      */
-    private OverrideUrlLoadingResult fallBackToHandlingInApp() {
+    private OverrideUrlLoadingResult fallBackToHandlingInApp(ExternalNavigationParams params) {
         if (debug()) Log.i(TAG, "No specialized handler for URL");
+        // The default behavior for Desktop windowing should be to open a browser tab. In case
+        // the navigation starts in a PWA, we should reparent the tab to the browser.
+        if (ExternalIntentsFeatures.REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA.isEnabled()
+                && params.isInDesktopWindowingMode()
+                && params.isInitialNavigationInFrame()
+                && params.isTabInPWA()) {
+            if (debug()) Log.i(TAG, "No specialized handler found, reparent to browser.");
+            return OverrideUrlLoadingResult.forReparentToBrowser();
+        }
         return OverrideUrlLoadingResult.forNoOverride();
     }
 
@@ -1677,7 +1698,7 @@ public class ExternalNavigationHandler {
 
         boolean hasSpecializedHandler = countSpecializedHandlers(resolvingInfos.get()) > 0;
         if (!isExternalProtocol && !hasSpecializedHandler && !intentMatchesNonDefaultWebApk) {
-            return fallBackToHandlingInApp();
+            return fallBackToHandlingInApp(params);
         }
 
         if (shouldStayWithinHost(params, resolvingInfos.get(), isExternalProtocol)) {

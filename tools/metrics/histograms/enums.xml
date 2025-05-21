@@ -13314,6 +13314,7 @@ from previous Chrome versions.
   <int value="-290672626" label="enable-asm-wasm"/>
   <int value="-290533453" label="SafetyCheckExtensions:enabled"/>
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
+  <int value="-289992131" label="ReparentTopLevelNavigationFromPWA:enabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
   <int value="-287941568" label="LogoPolishAnimationKillSwitch:disabled"/>
   <int value="-287089194" label="PrintManagementSetupAssistance:enabled"/>
@@ -17133,6 +17134,7 @@ from previous Chrome versions.
   <int value="1169418814" label="ManualFallbacksFilling:enabled"/>
   <int value="1170030686" label="BookmarkBottomSheet:enabled"/>
   <int value="1170632919" label="DrawNativeEdgeToEdge:enabled"/>
+  <int value="1173253030" label="ReparentTopLevelNavigationFromPWA:disabled"/>
   <int value="1174027589" label="OmniboxNumWebZpsRelatedSearches:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
   <int value="1175660959" label="AutofillEnableCardArtImage:enabled"/>

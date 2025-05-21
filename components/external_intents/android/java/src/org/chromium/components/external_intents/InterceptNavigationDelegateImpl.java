@@ -264,18 +264,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             startTimeoutForDeferredNavigation();
         }
 
-        // Catches all cases where a navigation that starts in a PWA should cause a Tab reparenting
-        // towards the Chrome browser.
-        // TODO(crbug.com/417279038): use a specific feature flag for this use-case.
-        // TODO(crbug.com/416562397): eventually consider in-scope PWAs in the reparenting process.
-        // TODO(crbug.com/415926894): do not override POPUP auxiliary navigations when they lead
-        // to popup window opening.
-        if (shouldReparentTab(navigationHandle.getWebContents())) {
-            resultCallback.onResult(false);
-            mClient.startReparentingTask();
-            return;
-        }
-
         mShouldIgnoreResultCallback = resultCallback;
         OverrideUrlLoadingResult result =
                 shouldOverrideUrlLoading(
@@ -317,6 +305,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH:
                 shouldIgnore = true;
                 break;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER:
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
                 if (isExternalProtocol) {
@@ -328,6 +317,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 break;
         }
         runResultCallback(shouldIgnore);
+
+        if (!shouldIgnore
+                && result.getResultType()
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER) {
+            // Reparenting task must be executed after runResultCallback has been called.
+            mClient.startReparentingTask();
+        }
     }
 
     @Override
@@ -466,6 +462,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setIsSandboxedMainFrame(isSandboxedMainFrame)
                         .setNavigationId(navigationId)
                         .setIsTabInPWA(mClient.isTabInPWA())
+                        .setIsInDesktopWindowingMode(mClient.isInDesktopWindowingMode())
                         .build();
         if (!shouldRunAsync) return doShouldOverrideUrlLoading(params, isExternalProtocol);
         Runnable shouldIgnoreCheck =
@@ -518,7 +515,15 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             ExternalNavigationParams params, boolean isExternalProtocol) {
         try (TraceEvent e = TraceEvent.scoped("shouldOverrideUrlLoading")) {
             OverrideUrlLoadingResult result = null;
-            if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
+            if (shouldReparentTab(mClient.getWebContents())) {
+                // Catches all cases where a navigation that starts in a PWA should cause a Tab
+                // reparenting towards the Chrome browser.
+                // TODO(crbug.com/416562397): eventually consider in-scope PWAs in the reparenting
+                // process.
+                // TODO(crbug.com/415926894): do not override POPUP auxiliary navigations when they
+                // lead to popup window opening.
+                result = OverrideUrlLoadingResult.forReparentToBrowser();
+            } else if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
                             mClient.isInDesktopWindowingMode())
                     && isBrowserAuxiliaryNavigation()) {
                 // A new auxiliary browsing context navigation starting in the browser should not be
