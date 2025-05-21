@@ -251,6 +251,7 @@ public class TabTest {
         tabState.rootId = 5;
         tabState.tabGroupId = new Token(1L, 2L);
         tabState.tabHasSensitiveContent = true;
+        tabState.isPinned = true;
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -263,6 +264,7 @@ public class TabTest {
         assertEquals(tabState.rootId, mTab.getRootId());
         assertEquals(tabState.tabGroupId, mTab.getTabGroupId());
         assertEquals(tabState.tabHasSensitiveContent, mTab.getTabHasSensitiveContent());
+        assertEquals(tabState.isPinned, mTab.getIsPinned());
     }
 
     @FunctionalInterface

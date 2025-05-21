@@ -69,6 +69,9 @@ public class TabState {
     // been migrated onto the new FlatBuffer format.
     public @Nullable File legacyFileToDelete;
 
+    /* Indicates whether the tab is pinned. */
+    public boolean isPinned;
+
     /** Returns true if the tab has a theme color set. */
     public boolean hasThemeColor() {
         return themeColor != UNSPECIFIED_THEME_COLOR

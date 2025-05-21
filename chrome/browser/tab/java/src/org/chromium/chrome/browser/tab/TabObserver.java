@@ -430,4 +430,12 @@ public interface TabObserver {
      * @param tab the {@link Tab} has been unarchived
      */
     default void onTabUnarchived(Tab tab) {}
+
+    /**
+     * Called when the pinned state of the tab changes.
+     *
+     * @param tab the {@link Tab} whose pinned state is changed.
+     * @param isPinned boolean indicator to represent whether tab is pinned or unpinned.
+     */
+    default void onTabPinnedStateChanged(Tab tab, boolean isPinned) {}
 }

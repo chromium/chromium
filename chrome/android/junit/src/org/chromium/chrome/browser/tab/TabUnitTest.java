@@ -239,6 +239,41 @@ public class TabUnitTest {
 
     @Test
     @SmallTest
+    public void testSetIsPinnedWithChange() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes attributes = TabStateAttributes.from(mTab);
+
+        assertThat(
+                attributes.getDirtinessState(), equalTo(TabStateAttributes.DirtinessState.CLEAN));
+        assertFalse(mTab.getIsPinned());
+
+        mTab.setIsPinned(true);
+        verify(mObserver).onTabPinnedStateChanged(mTab, true);
+        assertTrue(mTab.getIsPinned());
+        assertThat(
+                attributes.getDirtinessState(), equalTo(TabStateAttributes.DirtinessState.DIRTY));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetIsPinnedWithoutChange() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes attributes = TabStateAttributes.from(mTab);
+
+        assertThat(
+                attributes.getDirtinessState(), equalTo(TabStateAttributes.DirtinessState.CLEAN));
+        assertFalse(mTab.getIsPinned());
+
+        mTab.setIsPinned(false);
+
+        verify(mObserver, never()).onTabPinnedStateChanged(any(Tab.class), anyBoolean());
+        assertFalse(mTab.getIsPinned());
+        assertThat(
+                attributes.getDirtinessState(), equalTo(TabStateAttributes.DirtinessState.CLEAN));
+    }
+
+    @Test
+    @SmallTest
     public void testFreezeDetachedNativePage() {
         TabImplJni.setInstanceForTesting(mNativeMock);
 

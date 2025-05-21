@@ -381,6 +381,7 @@ public class TabStateFlatBufferTest {
         state.lastNavigationCommittedTimestampMillis = 42L;
         state.timestampMillis = 41L;
         state.tabHasSensitiveContent = true;
+        state.isPinned = true;
         state.isIncognito = isIncognito;
         int capacity = 100;
         byte[] bytes = new byte[capacity];
@@ -426,6 +427,7 @@ public class TabStateFlatBufferTest {
         Assert.assertEquals(expected.timestampMillis, actual.timestampMillis);
         Assert.assertEquals(expected.themeColor, actual.themeColor);
         Assert.assertEquals(expected.tabHasSensitiveContent, actual.tabHasSensitiveContent);
+        Assert.assertEquals(expected.isPinned, actual.isPinned);
         ByteBufferTestUtils.verifyByteBuffer(
                 expected.contentsState.buffer(), actual.contentsState.buffer());
         // Don't assert on the fields of the WebContentsState as it is random data in this test.

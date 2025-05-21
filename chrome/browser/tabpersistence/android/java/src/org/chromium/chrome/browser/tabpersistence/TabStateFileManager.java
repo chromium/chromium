@@ -475,6 +475,12 @@ public class TabStateFileManager {
                         "Failed to read tabHasSensitiveContent from tab state. "
                                 + "Assuming tabHasSensitiveContent is false");
             }
+            try {
+                tabState.isPinned = stream.readBoolean();
+            } catch (EOFException eof) {
+                tabState.isPinned = false;
+                Log.w(TAG, "Failed to read isPinned from tab state. Assuming isPinned is false");
+            }
             // If TabState was restored using legacy format and the FlatBuffer flag is on, that
             // indicates the TabState hasn't been migrated yet and should be.
             if (isMigrateStaleTabsToFlatBufferEnabled()) {
@@ -687,6 +693,7 @@ public class TabStateFileManager {
             dataOutputStream.writeLong(tokenHigh);
             dataOutputStream.writeLong(tokenLow);
             dataOutputStream.writeBoolean(state.tabHasSensitiveContent);
+            dataOutputStream.writeBoolean(state.isPinned);
             long saveTime = SystemClock.elapsedRealtime() - startTime;
             RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime", saveTime);
             RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.Legacy", saveTime);

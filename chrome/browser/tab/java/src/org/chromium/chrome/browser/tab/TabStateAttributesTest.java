@@ -519,6 +519,34 @@ public class TabStateAttributesTest {
     }
 
     @Test
+    public void testIsPinnedUpdates() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+        assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.setIsPinned(true);
+        assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setIsPinned(false);
+        assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+        verify(mAttributesObserver, times(2))
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+
+        verify(mAttributesObserver, never())
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.UNTIDY);
+    }
+
+    @Test
     public void testTabUnarchived() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         TabStateAttributes.from(mTab).addObserver(mAttributesObserver);

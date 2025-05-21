@@ -49,6 +49,7 @@ public class TabStateExtractor {
                 tab.getLastNavigationCommittedTimestampMillis();
         tabState.tabGroupId = tab.getTabGroupId();
         tabState.tabHasSensitiveContent = tab.getTabHasSensitiveContent();
+        tabState.isPinned = tab.getIsPinned();
         return tabState;
     }
 

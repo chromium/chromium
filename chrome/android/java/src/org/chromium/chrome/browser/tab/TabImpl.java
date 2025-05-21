@@ -262,6 +262,7 @@ class TabImpl implements Tab {
     private int mRootId;
     private @Nullable Token mTabGroupId;
     private boolean mTabHasSensitiveContent;
+    private boolean mIsPinned;
     private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
 
     /**
@@ -1286,6 +1287,7 @@ class TabImpl implements Tab {
         setTabGroupId(state.tabGroupId);
         setUserAgent(state.userAgent);
         setTabHasSensitiveContent(state.tabHasSensitiveContent);
+        setIsPinned(state.isPinned);
     }
 
     /**
@@ -2582,6 +2584,20 @@ class TabImpl implements Tab {
         mTabHasSensitiveContent = contentIsSensitive;
         for (TabObserver observer : mObservers) {
             observer.onTabContentSensitivityChanged(this, contentIsSensitive);
+        }
+    }
+
+    @Override
+    public boolean getIsPinned() {
+        return mIsPinned;
+    }
+
+    @Override
+    public void setIsPinned(boolean isPinned) {
+        if (mIsPinned == isPinned || isDestroyed()) return;
+        mIsPinned = isPinned;
+        for (TabObserver observer : mObservers) {
+            observer.onTabPinnedStateChanged(this, isPinned);
         }
     }
 

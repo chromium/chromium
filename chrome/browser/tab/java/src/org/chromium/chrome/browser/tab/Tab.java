@@ -458,6 +458,16 @@ public interface Tab extends TabLifecycle {
      */
     void setTabHasSensitiveContent(boolean contentIsSensitive);
 
+    /** Returns the current pinned state of the tab. */
+    boolean getIsPinned();
+
+    /**
+     * Sets the pinned state of the tab.
+     *
+     * @param isPinned True if the tab is pinned.
+     */
+    void setIsPinned(boolean isPinned);
+
     /** Called when the tab is restored from the archived tab model. */
     void onTabRestoredFromArchivedTabModel();
 
