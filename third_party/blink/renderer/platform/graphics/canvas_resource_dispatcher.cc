@@ -46,23 +46,20 @@ struct CanvasResourceDispatcher::FrameResource {
         release_callback_(std::move(callback)) {
     CHECK(canvas_resource_);
   }
-  ~FrameResource() {
+
+  void ReleaseResource(const gpu::SyncToken& sync_token, bool is_lost) {
+    auto resource = std::move(canvas_resource_);
     if (release_callback_) {
       std::move(release_callback_)
-          .Run(std::move(canvas_resource_), sync_token_, is_lost_);
+          .Run(std::move(resource), sync_token, is_lost);
     }
   }
 
-  void set_sync_token(const gpu::SyncToken& sync_token) {
-    sync_token_ = sync_token;
-  }
-  void set_is_lost(bool is_lost) { is_lost_ = is_lost; }
+  ~FrameResource() { ReleaseResource(gpu::SyncToken(), /*is_lost=*/false); }
 
  private:
   scoped_refptr<CanvasResource> canvas_resource_;
   CanvasResource::ReleaseCallback release_callback_;
-  gpu::SyncToken sync_token_;
-  bool is_lost_ = false;
 };
 
 CanvasResourceDispatcher::CanvasResourceDispatcher(
@@ -458,8 +455,7 @@ void CanvasResourceDispatcher::ReclaimResources(
     if (it == resources_.end())
       continue;
 
-    it->value->set_sync_token(resource.sync_token);
-    it->value->set_is_lost(resource.lost);
+    it->value->ReleaseResource(resource.sync_token, resource.lost);
     resources_.erase(it);
   }
 }
