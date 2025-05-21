@@ -779,7 +779,10 @@ bool SearchPrefetchService::OnNavigationLikely(
                                               &search_terms)) {
     return false;
   }
-  CHECK(!search_terms.empty());
+  // Normalized search terms can be empty.
+  if (search_terms.empty()) {
+    return false;
+  }
 
   RecordPotentialDuplicateSearchTermsAheadOfNavigationalPrefetch(search_terms);
 
