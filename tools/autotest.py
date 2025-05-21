@@ -157,7 +157,7 @@ _TEST_TARGET_ALLOWLIST = [
     '//third_party/rapidhash:rapidhash_fuzztests',
     '//ui/ozone:ozone_integration_tests',
 ]
-"""
+r"""
  You can run this command to find test targets that do not match these regexes,
  and use it to update _TEST_TARGET_ALLOWLIST.
 rg '^(instrumentation_test_runner|test)\("([^"]*)' -o -g'BUILD.gn' -r'$2' -N \
