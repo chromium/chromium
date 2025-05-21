@@ -31,14 +31,7 @@ AutofillOptimizationGuideFactory::GetInstance() {
 AutofillOptimizationGuideFactory::AutofillOptimizationGuideFactory()
     : ProfileKeyedServiceFactory(
           "AutofillOptimizationGuide",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
-              // OptimizationGuideKeyedService is not available if it is a
-              // sign-in or lockscreen profile, so we should not build
-              // AutofillOptimizationGuide for these profiles either.
-              .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
