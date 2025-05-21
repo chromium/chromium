@@ -806,9 +806,11 @@ targets.bundle(
             ),
         ),
         "android_webview_wpt_tests": targets.mixin(
+            ci_only = True,
             swarming = targets.swarming(
                 shards = 4,
             ),
+            experiment_percentage = 100,
         ),
         "android_webdriver_wpt_tests": targets.mixin(
             ci_only = True,

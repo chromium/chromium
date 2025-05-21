@@ -325,14 +325,5 @@
             "android_chrome_wpt_tests": {}
         },
         "is_try_builder": true
-    },
-    "android-webview-13-x64-wpt-android-specific": {
-        "main": "tryserver.chromium.android",
-        "port_name": "webview",
-        "specifiers": ["Webview", "Release"],
-        "steps": {
-            "android_webview_wpt_tests": {}
-        },
-        "is_try_builder": true
     }
 }

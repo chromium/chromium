@@ -91,8 +91,7 @@
     "android-annotator-rel": "ci/android-annotator-rel/gn-args.json",
     "android-chrome-13-x64-wpt-android-specific": "ci/android-chrome-13-x64-wpt-android-specific/gn-args.json",
     "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
-    "android-pie-x86-fyi-rel": "ci/android-pie-x86-fyi-rel/gn-args.json",
-    "android-webview-13-x64-wpt-android-specific": "ci/android-webview-13-x64-wpt-android-specific/gn-args.json"
+    "android-pie-x86-fyi-rel": "ci/android-pie-x86-fyi-rel/gn-args.json"
   },
   "chromium.angle": {
     "android-angle-chromium-arm64-builder": "ci/android-angle-chromium-arm64-builder/gn-args.json",
@@ -643,7 +642,6 @@
     "android-webview-12-x64-dbg": "try/android-webview-12-x64-dbg/gn-args.json",
     "android-webview-13-x64-dbg": "try/android-webview-13-x64-dbg/gn-args.json",
     "android-webview-13-x64-hostside-rel": "try/android-webview-13-x64-hostside-rel/gn-args.json",
-    "android-webview-13-x64-wpt-android-specific": "try/android-webview-13-x64-wpt-android-specific/gn-args.json",
     "android-webview-oreo-arm64-dbg": "try/android-webview-oreo-arm64-dbg/gn-args.json",
     "android-webview-pie-arm64-dbg": "try/android-webview-pie-arm64-dbg/gn-args.json",
     "android-x64-rel": "try/android-x64-rel/gn-args.json",

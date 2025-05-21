@@ -1080,18 +1080,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-webview-13-x64-wpt-android-specific",
-    mirrors = ["ci/android-webview-13-x64-wpt-android-specific"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-webview-13-x64-wpt-android-specific",
-            "release_try_builder",
-        ],
-    ),
-    contact_team_email = "chrome-blink-engprod@google.com",
-)
-
-try_.builder(
     name = "android-webview-12-x64-dbg",
     mirrors = [
         "ci/Android x64 Builder (dbg)",
