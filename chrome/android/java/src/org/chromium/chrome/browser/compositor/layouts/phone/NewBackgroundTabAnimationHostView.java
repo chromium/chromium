@@ -13,6 +13,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -20,6 +21,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.NewTabAnimationUtils.NewTabAnim;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -35,9 +38,12 @@ import java.lang.annotation.Target;
 /** Host view for the new background tab animation. */
 public class NewBackgroundTabAnimationHostView extends FrameLayout {
     /* package */ static final long CROSS_FADE_DURATION_MS = 150L;
-    private static final long CURVED_MOTION_DURATION_MS = 300L;
+    private static final long PATH_ARC_DURATION_MS = 300L;
+    private static final long NEW_PATH_ARC_DURATION_MS = 400L;
     private static final long LINK_SCALE_DURATION_MS = 160L;
-    private static final long DELAY_DURATION_MS = 100L;
+    private static final long NEW_LINK_SCALE_DURATION_MS = 192L;
+    private static final long TRANSLATE_DELAY_DURATION_MS = 100L;
+    private static final long SHRINK_DELAY_DURATION_MS = 50L;
 
     @IntDef({
         AnimationType.UNINITIALIZED,
@@ -88,30 +94,43 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         target[0] -= Math.round(mLinkIcon.getWidth() / 2f);
         target[1] -= Math.round(mLinkIcon.getHeight() / 2f);
 
-        AnimatorSet transitionAnimator = getTransitionAnimator();
-        ObjectAnimator curvedAnimator =
-                getCurvedMotionAnimator(originX, originY, target[0], target[1]);
+        // TODO(crbug.com/419065710): Clean up versions.
+        boolean isNewDuration = ChromeFeatureList.sShowNewTabAnimationsNewDuration.getValue();
+        @NewTabAnim int version = ChromeFeatureList.sShowNewTabAnimationsVersion.getValue();
+        long pathDuration = isNewDuration ? NEW_PATH_ARC_DURATION_MS : PATH_ARC_DURATION_MS;
 
+        AnimatorSet transitionAnimator = getTransitionAnimator(isNewDuration);
+        ObjectAnimator pathAnimator =
+                getPathArcAnimator(originX, originY, target[0], target[1], pathDuration, version);
         AnimatorSet backgroundAnimation = new AnimatorSet();
         AnimatorSet fakeTabSwitcherAnimator;
 
         if (mAnimationType == AnimationType.DEFAULT) {
             fakeTabSwitcherAnimator =
                     mFakeTabSwitcherButton.getShrinkAnimator(/* incrementCount= */ true);
+
+            if (version == NewTabAnim.BOUNCE) {
+                fakeTabSwitcherAnimator.setInterpolator(
+                        Interpolators.NEW_BACKGROUND_TAB_ANIMATION_BOUNCE_INTERPOLATOR);
+                fakeTabSwitcherAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
+                transitionAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
+            } else {
+                fakeTabSwitcherAnimator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
+            }
             backgroundAnimation
                     .play(transitionAnimator)
                     .with(fakeTabSwitcherAnimator)
-                    .after(curvedAnimator);
+                    .after(pathAnimator);
         } else {
-            transitionAnimator.setStartDelay(CURVED_MOTION_DURATION_MS - CROSS_FADE_DURATION_MS);
+            transitionAnimator.setStartDelay(pathDuration - CROSS_FADE_DURATION_MS);
             fakeTabSwitcherAnimator =
                     mFakeTabSwitcherButton.getTranslateAnimator(
                             NewBackgroundTabFakeTabSwitcherButton.TranslateDirection.UP);
-            fakeTabSwitcherAnimator.setStartDelay(DELAY_DURATION_MS);
+            fakeTabSwitcherAnimator.setStartDelay(TRANSLATE_DELAY_DURATION_MS);
             AnimatorSet scaleAnimator = mFakeTabSwitcherButton.getScaleDownAnimator();
 
             backgroundAnimation
-                    .play(curvedAnimator)
+                    .play(pathAnimator)
                     .with(transitionAnimator)
                     .before(scaleAnimator)
                     .before(fakeTabSwitcherAnimator);
@@ -183,22 +202,39 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
     }
 
     /**
-     * Returns the {@link ObjectAnimator} for the curved motion animation.
+     * Returns the {@link ObjectAnimator} for the path arc animation.
      *
      * @param originX x-coordinate for the start point.
      * @param originY y-coordinate for the start point.
      * @param finalX x-coordinate for the end point.
      * @param finalY y-coordinate for the end point.
+     * @param duration Animation duration in ms.
+     * @param version The {@link NewTabAnim} animation version.
      */
-    private ObjectAnimator getCurvedMotionAnimator(
-            float originX, float originY, float finalX, float finalY) {
+    private ObjectAnimator getPathArcAnimator(
+            float originX,
+            float originY,
+            float finalX,
+            float finalY,
+            long duration,
+            @NewTabAnim int version) {
         boolean isClockwise = mIsTopToolbar ? (originX >= finalX) : (originX <= finalX);
 
         ObjectAnimator animator =
                 ViewCurvedMotionAnimatorFactory.build(
                         mLinkIcon, originX, originY, finalX, finalY, isClockwise);
-        animator.setDuration(CURVED_MOTION_DURATION_MS);
-        animator.setInterpolator(Interpolators.NEW_BACKGROUND_TAB_ANIMATION_PATH_INTERPOLATOR);
+        animator.setDuration(duration);
+
+        Interpolator pathInterpolator;
+        pathInterpolator =
+                switch (version) {
+                    case NewTabAnim.BOUNCE -> Interpolators
+                            .NEW_BACKGROUND_TAB_ANIMATION_SECOND_PATH_INTERPOLATOR;
+                    case NewTabAnim.DECELERATE -> Interpolators.EMPHASIZED_DECELERATE;
+                    default -> Interpolators.NEW_BACKGROUND_TAB_ANIMATION_PATH_INTERPOLATOR;
+                };
+        animator.setInterpolator(pathInterpolator);
+
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
@@ -213,7 +249,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
     /**
      * Returns the {@link AnimatorSet} for the transition between the Link icon and the Tab icon.
      */
-    private AnimatorSet getTransitionAnimator() {
+    private AnimatorSet getTransitionAnimator(boolean isNewDuration) {
         AnimatorSet animatorSet = new AnimatorSet();
         ObjectAnimator fadeAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.ALPHA, 1f, 0f);
 
@@ -224,7 +260,8 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
             ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_X, 1f, 0f);
             ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_Y, 1f, 0f);
             animatorSet.playTogether(scaleXAnimator, scaleYAnimator, fadeAnimator);
-            animatorSet.setDuration(LINK_SCALE_DURATION_MS);
+            animatorSet.setDuration(
+                    isNewDuration ? NEW_LINK_SCALE_DURATION_MS : LINK_SCALE_DURATION_MS);
             animatorSet.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
         } else {
             AnimatorSet fakeTabSwitcherAnimator = mFakeTabSwitcherButton.getScaleFadeAnimator();

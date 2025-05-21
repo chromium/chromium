@@ -3786,6 +3786,24 @@ const FeatureEntry::FeatureVariation
         {" - all windowing modes", kAuxiliaryNavigationStaysInBrowserOn,
          std::size(kAuxiliaryNavigationStaysInBrowserOn), nullptr}};
 
+const FeatureEntry::FeatureParam kShowNewTabAnimationsNewDurationOnly[] = {
+    {"version", "0"},
+    {"new-duration", "true"}};
+const FeatureEntry::FeatureParam kShowNewTabAnimationsBounce[] = {
+    {"version", "1"},
+    {"new-duration", "true"}};
+const FeatureEntry::FeatureParam kShowNewTabAnimationsDecelerate[] = {
+    {"version", "2"},
+    {"new-duration", "true"}};
+const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
+    {"- Use new duration only", kShowNewTabAnimationsNewDurationOnly,
+     std::size(kShowNewTabAnimationsNewDurationOnly), nullptr},
+    {"- Bounce version", kShowNewTabAnimationsBounce,
+     std::size(kShowNewTabAnimationsBounce), nullptr},
+    {"- Decelerate version", kShowNewTabAnimationsDecelerate,
+     std::size(kShowNewTabAnimationsDecelerate), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -7636,7 +7654,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"show-new-tab-animations", flag_descriptions::kShowNewTabAnimationsName,
      flag_descriptions::kShowNewTabAnimationsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kShowNewTabAnimations)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kShowNewTabAnimations,
+                                    kShowNewTabAnimationsVariations,
+                                    "ShowNewTabAnimations")},
 
     {"tab-switcher-color-blend-animate",
      flag_descriptions::kTabSwitcherColorBlendAnimateName,

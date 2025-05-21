@@ -42,6 +42,19 @@ public class NewTabAnimationUtils {
         int CENTER = 4;
     }
 
+    /**
+     * Version for the new background tab animation.
+     *
+     * <p>These numbers match with the "version" feature param for ShowNewTabAnimations.
+     */
+    @IntDef({NewTabAnim.BOUNCE, NewTabAnim.DECELERATE})
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NewTabAnim {
+        int BOUNCE = 1;
+        int DECELERATE = 2;
+    }
+
     private static final float INITIAL_SCALE = 0.2f;
     private static final float FINAL_SCALE = 1.1f;
 

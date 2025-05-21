@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
@@ -46,6 +47,7 @@ import java.lang.annotation.RetentionPolicy;
 public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implements RunOnNextLayout {
     @VisibleForTesting /* package */ static final long TRANSLATE_DURATION_MS = 200L;
     @VisibleForTesting /* package */ static final long SHRINK_DURATION_MS = 250L;
+    @VisibleForTesting /* package */ static final long NEW_SHRINK_DURATION_MS = 300L;
     @VisibleForTesting /* package */ static final long SCALE_DOWN_DURATION_MS = 50L;
 
     @IntDef({
@@ -131,8 +133,10 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
-        animatorSet.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
-        animatorSet.setDuration(SHRINK_DURATION_MS);
+        animatorSet.setDuration(
+                ChromeFeatureList.sShowNewTabAnimationsNewDuration.getValue()
+                        ? NEW_SHRINK_DURATION_MS
+                        : SHRINK_DURATION_MS);
 
         animatorSet.addListener(
                 new AnimatorListenerAdapter() {
