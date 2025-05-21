@@ -45,13 +45,10 @@ Events: [
     [0] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : set
+        method : clear
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
-            ignoreIfPresent : false
-            key : key0-set-from-document
-            value : value0
         }
         scope : window
     }
@@ -63,12 +60,25 @@ Events: [
         ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
+            key : key0-set-from-document
+            value : value0
+        }
+        scope : window
+    }
+    [2] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : set
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            ignoreIfPresent : false
             key : key1-set-from-document
             value : value1
         }
         scope : window
     }
-    [2] : {
+    [3] : {
         accessTime : <number>
         mainFrameId : <string>
         method : append
@@ -80,7 +90,7 @@ Events: [
         }
         scope : window
     }
-    [3] : {
+    [4] : {
         accessTime : <number>
         mainFrameId : <string>
         method : set

@@ -21,10 +21,6 @@
     testRunner.log(entriesResult.result?.entries, 'Entries:');
   }
 
-  async function getSharedStorageEvents(testRunner, events) {
-    testRunner.log(events, 'Events: ', ['accessTime', 'mainFrameId']);
-  }
-
   const events = [];
   dp.Storage.onSharedStorageAccessed(
       (messageObject) => {events.push(messageObject.params)});
@@ -32,6 +28,7 @@
 
   // This call should not trigger any events, since tracking is disabled.
   await session.evaluateAsync(`
+        sharedStorage.clear();
         sharedStorage.set('key0-set-from-document', 'value0');
         sharedStorage.set('key1-set-from-document', 'value1');
         sharedStorage.append('key1-set-from-document', 'value1');
@@ -43,7 +40,10 @@
   await getSharedStorageEntries(dp, testRunner, baseOrigin);
 
   // We do not expect any events.
-  await getSharedStorageEvents(testRunner, events);
+  testRunner.log(events, 'Events: ', ['accessTime', 'mainFrameId']);
+
+  // Clean up shared storage.
+  await session.evaluateAsync(`sharedStorage.clear();`);
 
   testRunner.completeTest();
 })
