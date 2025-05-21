@@ -5,39 +5,50 @@
 package org.chromium.components.browser_ui.widget.highlight;
 
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.R;
 
 /** Allows for testing of views which are highlightable via ViewHighlighter. */
 public class ViewHighlighterTestUtils {
+
     /**
-     * Returns true if the provided view is currently being highlighted.
-     * Please note that this function may not be the same as !checkHighlightOff.
+     * Returns the pulse drawable reference that is kept via tags.
+     *
+     * @param view The view that is being checked for highlighting.
+     * @return The pulse drawable.
+     */
+    private static @Nullable PulseDrawable getPulseDrawable(View view) {
+        Object tag = view.getTag(R.id.highlight_drawable);
+        if (tag instanceof PulseDrawable) {
+            return (PulseDrawable) tag;
+        }
+        return null;
+    }
+
+    /**
+     * Returns true if the provided view is currently being highlighted. Please note that this
+     * function may not be the same as !checkHighlightOff.
      *
      * @param view The view which you'd like to check for highlighting.
      * @return True if the view is currently being highlighted.
      */
     public static boolean checkHighlightOn(View view) {
-        if (!(view.getBackground() instanceof LayerDrawable)) return false;
-        LayerDrawable layerDrawable = (LayerDrawable) view.getBackground();
-        Drawable drawable = layerDrawable.getDrawable(layerDrawable.getNumberOfLayers() - 1);
-        if (!(drawable instanceof PulseDrawable)) return false;
-        PulseDrawable pulse = (PulseDrawable) drawable;
-        return pulse.isRunning() && pulse.isVisible();
+        PulseDrawable pulse = getPulseDrawable(view);
+        return pulse != null && pulse.isRunning() && pulse.isVisible();
     }
 
     /**
-     * Returns true if the provided view is not currently being highlighted.
-     * Please note that this function may not be the same as !checkHighlightOn.
+     * Returns true if the provided view is not currently being highlighted. Please note that this
+     * function may not be the same as !checkHighlightOn.
      *
      * @param view The view which you'd like to check for highlighting.
      * @return True if view is not currently being highlighted.
      */
     public static boolean checkHighlightOff(View view) {
-        return !(view.getBackground() instanceof LayerDrawable);
+        return getPulseDrawable(view) == null;
     }
 
     /**
@@ -80,10 +91,9 @@ public class ViewHighlighterTestUtils {
     /** Draws the {@link PulseDrawable} attached to the {@link View} with the {@link Canvas}. */
     public static void drawPulseDrawable(View view, Canvas canvas) {
         if (!checkHighlightOn(view)) return;
-        LayerDrawable layerDrawable = (LayerDrawable) view.getBackground();
-        PulseDrawable pulseDrawable =
-                (PulseDrawable) layerDrawable.getDrawable(layerDrawable.getNumberOfLayers() - 1);
-
-        pulseDrawable.draw(canvas);
+        PulseDrawable pulse = getPulseDrawable(view);
+        if (pulse != null) {
+            pulse.draw(canvas);
+        }
     }
 }

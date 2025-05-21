@@ -343,6 +343,7 @@ android_library("test_support_java") {
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//base:tasks_java",
     "//components/browser_ui/util/android:java",

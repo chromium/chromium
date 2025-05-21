@@ -129,19 +129,15 @@ public class PulseDrawable extends Drawable implements Animatable {
 
     /**
      * Creates a {@link PulseDrawable} that will fill the bounds with a pulsing color.
+     *
      * @param context The {@link Context} under which the drawable is created.
      * @param cornerRadius The corner radius in pixels of the highlight rectangle, 0 may be passed
-     *         if the rectangle should not be rounded.
-     * @param highlightExtension How far in pixels the highlight should be extended past the bounds
-     *         of the view. 0 should be passed if there should be no extension.
+     *     if the rectangle should not be rounded.
      * @param pulseEndAuthority The {@link PulseEndAuthority} associated with this drawable.
      * @return A new {@link PulseDrawable} instance.
      */
     public static PulseDrawable createRoundedRectangle(
-            Context context,
-            @Px int cornerRadius,
-            @Px int highlightExtension,
-            PulseEndAuthority pulseEndAuthority) {
+            Context context, @Px int cornerRadius, PulseEndAuthority pulseEndAuthority) {
         Painter painter =
                 new Painter() {
                     @Override
@@ -156,14 +152,6 @@ public class PulseDrawable extends Drawable implements Animatable {
                             Canvas canvas,
                             float interpolation) {
                         Rect bounds = drawable.getBounds();
-                        if (highlightExtension != 0) {
-                            bounds =
-                                    new Rect(
-                                            bounds.left - highlightExtension,
-                                            bounds.top - highlightExtension,
-                                            bounds.right + highlightExtension,
-                                            bounds.bottom + highlightExtension);
-                        }
                         canvas.drawRoundRect(new RectF(bounds), cornerRadius, cornerRadius, paint);
                     }
                 };
@@ -176,27 +164,13 @@ public class PulseDrawable extends Drawable implements Animatable {
      * Creates a {@link PulseDrawable} that will fill the bounds with a pulsing color. The {@link
      * PulseDrawable} will continue pulsing forever (if this is not the desired behavior, please use
      * {@link PulseEndAuthority}).
+     *
      * @param context The {@link Context} under which the drawable is created.
      * @param cornerRadius The corner radius in pixels of the highlight rectangle.
-     * @param highlightExtension How far in pixels the highlight should be extended past the bounds
-     *         of the view. 0 should be passed if there should be no extension.
      * @return A new {@link PulseDrawable} instance.
      */
-    public static PulseDrawable createRoundedRectangle(
-            Context context, @Px int cornerRadius, @Px int highlightExtension) {
-        return createRoundedRectangle(
-                context, cornerRadius, highlightExtension, new EndlessPulser());
-    }
-
-    /**
-     * Creates a {@link PulseDrawable} that will fill the bounds with a pulsing color. The {@link
-     * PulseDrawable} will continue pulsing forever (if this is not the desired behavior, please use
-     * {@link PulseEndAuthority}).
-     * @param context The {@link Context} under which the drawable is created.
-     * @return A new {@link PulseDrawable} instance.
-     */
-    public static PulseDrawable createRectangle(Context context) {
-        return createRoundedRectangle(context, 0, /* highlightExtension= */ 0);
+    public static PulseDrawable createRoundedRectangle(Context context, @Px int cornerRadius) {
+        return createRoundedRectangle(context, cornerRadius, new EndlessPulser());
     }
 
     /**
