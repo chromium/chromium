@@ -266,7 +266,7 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
     }
 
     /** Determines whether HttpEngine should be used or not. */
-    public boolean shouldOverrideWithHttpEngine(Context context) {
+    public static boolean shouldOverrideWithHttpEngine(Context context) {
         var shouldOverrideWithHttpEngineFlagValue =
                 HttpFlagsForApi.getHttpFlags(context).flags().get(SHOULD_OVERRIDE_WITH_HTTPENGINE);
         return shouldOverrideWithHttpEngineFlagValue != null
