@@ -1169,6 +1169,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
       SerializeLayer(*layer, resource_provider, context_provider, *update);
     }
   }
+  tree.ClearLayersThatShouldPushProperties();
 
   // TODO(rockot): Granular change tracking for property trees, so we aren't
   // diffing every time.

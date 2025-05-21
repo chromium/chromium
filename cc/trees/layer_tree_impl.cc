@@ -3015,7 +3015,6 @@ bool LayerTreeImpl::TakeForceSendMetadataRequest() {
 }
 
 void LayerTreeImpl::ResetAllChangeTracking() {
-  layers_that_should_push_properties_.clear();
   // Iterate over all layers, including masks.
   for (auto* layer : *this)
     layer->ResetChangeTracking();
