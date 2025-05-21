@@ -58,7 +58,8 @@ AX_TEST_F(
       assertEquals(undefined, runMacroResult.error);
     });
 
-AX_TEST_F('DictationMV2MacrosTest', 'ListCommandsMacro', async function() {
+// Disabled due to flaky test: crbug.com/413223744
+AX_TEST_F('DictationMV2MacrosTest', 'DISABLED_ListCommandsMacro', async function() {
   this.toggleDictationOn();
   const macro = await this.getSimpleParseStrategy().parse('help');
   assertEquals('LIST_COMMANDS', macro.getNameAsString());
