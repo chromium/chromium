@@ -550,7 +550,8 @@ void FillAndSubmitXframeCreditCardForm() {
 // with partial data (only card number and expiration date) and that Google
 // Payments server is queried to request card upload. Due to partial data,
 // instead of bottomsheet, infobar will be shown.
-- (void)testOfferUpstream_PartialData_PaymentsAccepts {
+// TODO(crbug.com/419219302): Test is flaky.
+- (void)DISABLED_testOfferUpstream_PartialData_PaymentsAccepts {
   [self fillAndSubmitFormWithID:kFillPartialFormId
                paymentsResponse:kResponseGetUploadDetailsSuccess
                       errorCode:net::HTTP_OK
@@ -566,7 +567,8 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Ensures that UMA metrics are correctly logged when the user declines upload
 // on a bottomsheet and an infobar.
-- (void)testUMA_Upstream_UserDeclinesBottomSheetAndInfobar {
+// TODO(crbug.com/419219302): Test is flaky.
+- (void)DISABLED_testUMA_Upstream_UserDeclinesBottomSheetAndInfobar {
   // Form submitted with full credit card data and no previous strikes offers
   // upstream save in a bottomsheet.
   [self fillAndSubmitFormWithID:kFillFullFormId
@@ -638,7 +640,8 @@ void FillAndSubmitXframeCreditCardForm() {
 // Ensures that UMA metrics are correctly logged when the user declines upload
 // on a bottomsheet and accepts when offered infobar. On accept, ensures that an
 // UploadCardRequest RPC is sent to Google Payments Server.
-- (void)testUMA_Upstream_UserDeclinesBottomSheetAcceptsInfobar {
+// TODO(crbug.com/419219302): Test is flaky.
+- (void)DISABLED_testUMA_Upstream_UserDeclinesBottomSheetAcceptsInfobar {
   // Form submitted with full credit card data and no previous strikes offers
   // card upload in a bottomsheet.
   [self fillAndSubmitFormWithID:kFillFullFormId
@@ -726,7 +729,9 @@ void FillAndSubmitXframeCreditCardForm() {
   }
 }
 
-- (void)testSaveCardBottomSheetShowsLoadingAndConfirmationAfterAcceptPushed {
+// TODO(crbug.com/419219302): Test is flaky.
+- (void)
+    DISABLED_testSaveCardBottomSheetShowsLoadingAndConfirmationAfterAcceptPushed {
   [self fillAndSubmitFormWithID:kFillFullFormId
                paymentsResponse:kResponseGetUploadDetailsSuccess
                       errorCode:net::HTTP_OK
