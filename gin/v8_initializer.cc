@@ -390,7 +390,7 @@ void SetFeatureFlags() {
                         features::kV8MemoryReducerGCCount.Get());
   }
   if (base::FeatureList::IsEnabled(features::kV8PreconfigureOldGen)) {
-    SetV8FlagsFormatted("--initial-old-space-size=%i",
+    SetV8FlagsFormatted("--preconfigured-old-space-size=%i",
                         features::kV8PreconfigureOldGenSize.Get());
   }
   SetV8FlagsIfOverridden(features::kV8IncrementalMarkingStartUserVisible,
