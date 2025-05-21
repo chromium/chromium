@@ -257,7 +257,15 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
 // Tests that stopping syncing tabs keeps groups created before syncing and
 // deletes groups created since.
-- (void)testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup {
+// TODO(crbug.com/419246344): Test is flaky.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup \
+  DISABLED_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup
+#else
+#define MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup \
+  testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup
+#endif
+- (void)MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
