@@ -150,12 +150,6 @@ BASE_FEATURE(kGpuYieldRasterization,
              "GpuYieldRasterization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls how one component textures are supported over raster decoder for
-// VideoResourceUpdater.
-BASE_FEATURE(kDisableOneComponentTextureConditionally,
-             "DisableOneComponentTextureConditionally",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls how many ops are rastered before checking if we should yield.
 const base::FeatureParam<int> kGpuYieldRasterizationOpCount(
     &kGpuYieldRasterization,
@@ -1188,24 +1182,18 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.render_buffer_format_bgra8888 =
       feature_info()->feature_flags().ext_render_buffer_format_bgra8888;
 
-  if (base::FeatureList::IsEnabled(kDisableOneComponentTextureConditionally)) {
-    if (shared_context_state_->GrContextIsGL()) {
-      caps.disable_one_component_textures =
-          display_context_on_another_thread_ &&
-          workarounds().avoid_one_component_egl_images;
-    } else if (shared_context_state_->GrContextIsVulkan() ||
-               shared_context_state_->IsGraphiteDawnVulkan()) {
-      // Vulkan currently doesn't support single-component cross-thread shared
-      // images for WebView.
-      const bool is_drdc = features::IsDrDcEnabled() &&
-                           !feature_info()->workarounds().disable_drdc;
-      caps.disable_one_component_textures =
-          display_context_on_another_thread_ && !is_drdc;
-    }
-  } else {
+  if (shared_context_state_->GrContextIsGL()) {
     caps.disable_one_component_textures =
-        workarounds().avoid_one_component_egl_images ||
-        (display_context_on_another_thread_ && features::IsUsingVulkan());
+        display_context_on_another_thread_ &&
+        workarounds().avoid_one_component_egl_images;
+  } else if (shared_context_state_->GrContextIsVulkan() ||
+             shared_context_state_->IsGraphiteDawnVulkan()) {
+    // Vulkan currently doesn't support single-component cross-thread shared
+    // images for WebView.
+    const bool is_drdc = features::IsDrDcEnabled() &&
+                         !feature_info()->workarounds().disable_drdc;
+    caps.disable_one_component_textures =
+        display_context_on_another_thread_ && !is_drdc;
   }
 
   caps.angle_rgbx_internal_format =
