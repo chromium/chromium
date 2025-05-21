@@ -101,22 +101,6 @@ class Interface(Base):
             """
             raise NotImplementedError('submit')
 
-        def get_result(self, uuid, config):
-            """Retrieves the current notarization status of the submission
-            referenced by `uuid`.
-
-            Args:
-                config: The `config.CodeSignConfig`.
-                uuid: The string UUID of the notarization submission.
-
-            Returns:
-                A `notarize.NotarizationResult` containing the status.
-
-            Raises:
-                A `notarize.NotarizationError` on failure.
-            """
-            raise NotImplementedError('get_result')
-
     @property
     def notarizer(self):
         """Returns an instance of `invoker.Interface.Notarizer`."""

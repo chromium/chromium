@@ -16,34 +16,36 @@ from signing.model import CodeSignedProduct, Paths
 class TestSubmitNotarytool(unittest.TestCase):
 
     @mock.patch('signing.commands.run_command_output_async')
-    @mock.patch('signing.commands.run_command_output')
-    def test_valid_upload(self, run_command_output, run_command_output_async):
-        run_command_output_async.return_value = plistlib.dumps({
-            'id': '13d6aa9b-d204-4f0d-9164-4bda5e730258',
-            'message': 'Successfully uploaded file',
-            'path': '/tmp/file.dmg'
-        })
-        run_command_output.return_value = plistlib.dumps({'status': 'Accepted'})
+    def test_valid_upload(self, run_command_output_async):
+        run_command_output_async.side_effect = [
+            plistlib.dumps({
+                'id': '13d6aa9b-d204-4f0d-9164-4bda5e730258',
+                'message': 'Successfully uploaded file',
+                'path': '/tmp/file.dmg'
+            }),
+            plistlib.dumps({'status': 'Accepted'})
+        ]
         config = test_config.TestConfig()
         asyncio.run(notarize.submit('/tmp/file.dmg', config))
 
-        run_command_output_async.assert_awaited_once_with([
-            'xcrun', 'notarytool', 'submit', '/tmp/file.dmg', '--no-wait',
-            '--output-format', 'plist'
-        ])
-
-        run_command_output.assert_called_once_with([
-            'xcrun', 'notarytool', 'info',
-            '13d6aa9b-d204-4f0d-9164-4bda5e730258', '--output-format', 'plist'
+        run_command_output_async.assert_has_awaits([
+            mock.call([
+                'xcrun', 'notarytool', 'submit', '/tmp/file.dmg', '--no-wait',
+                '--output-format', 'plist'
+            ]),
+            mock.call([
+                'xcrun', 'notarytool', 'info',
+                '13d6aa9b-d204-4f0d-9164-4bda5e730258', '--output-format',
+                'plist'
+            ])
         ])
 
     @mock.patch('signing.commands.run_command_output_async')
-    @mock.patch('signing.commands.run_command_output')
-    def test_valid_upload_with_args(self, run_command_output,
-                                    run_command_output_async):
-        run_command_output_async.return_value = plistlib.dumps(
-            {'id': 'b53b3ed1-82cb-41b4-9e12-b097b2c05f64'})
-        run_command_output.return_value = plistlib.dumps({'status': 'Accepted'})
+    def test_valid_upload_with_args(self, run_command_output_async):
+        run_command_output_async.side_effect = [
+            plistlib.dumps({'id': 'b53b3ed1-82cb-41b4-9e12-b097b2c05f64'}),
+            plistlib.dumps({'status': 'Accepted'})
+        ]
         config = test_config.TestConfig(
             invoker=test_config.TestInvoker.factory_with_args(notary_arg=[
                 '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
@@ -51,23 +53,25 @@ class TestSubmitNotarytool(unittest.TestCase):
             ]))
         asyncio.run(notarize.submit('/tmp/file.dmg', config))
 
-        run_command_output_async.assert_awaited_once_with([
-            'xcrun', 'notarytool', 'submit', '/tmp/file.dmg', '--no-wait',
-            '--output-format', 'plist', '--apple-id', '[NOTARY-USER]',
-            '--team-id', '[NOTARY-TEAM]', '--password', 'hunter2'
-        ])
-        run_command_output.assert_called_once_with([
-            'xcrun', 'notarytool', 'info',
-            'b53b3ed1-82cb-41b4-9e12-b097b2c05f64', '--output-format', 'plist',
-            '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
-            '--password', 'hunter2'
+        run_command_output_async.assert_has_awaits([
+            mock.call([
+                'xcrun', 'notarytool', 'submit', '/tmp/file.dmg', '--no-wait',
+                '--output-format', 'plist', '--apple-id', '[NOTARY-USER]',
+                '--team-id', '[NOTARY-TEAM]', '--password', 'hunter2'
+            ]),
+            mock.call([
+                'xcrun', 'notarytool', 'info',
+                'b53b3ed1-82cb-41b4-9e12-b097b2c05f64', '--output-format',
+                'plist', '--apple-id', '[NOTARY-USER]', '--team-id',
+                '[NOTARY-TEAM]', '--password', 'hunter2'
+            ])
         ])
 
 
 class TestGetResultNotarytool(unittest.TestCase):
 
-    @mock.patch('signing.commands.run_command_output')
-    def test_successs(self, run_command_output):
+    @mock.patch('signing.commands.run_command_output_async')
+    def test_successs(self, run_command_output_async):
         plist_output = plistlib.dumps({
             'status': 'Accepted',
             'id': 'eeeacc17-9e4b-4408-8001-894bbae9c9e9',
@@ -75,21 +79,21 @@ class TestGetResultNotarytool(unittest.TestCase):
             'message': 'Successfully received submission info',
             'name': 'file.zip'
         })
-        run_command_output.return_value = plist_output
+        run_command_output_async.return_value = plist_output
         uuid = 'eeeacc17-9e4b-4408-8001-894bbae9c9e9'
         config = test_config.TestConfig()
-        result = config.invoker.notarizer.get_result(uuid, config)
+        result = asyncio.run(config.invoker.notarizer.get_result(uuid, config))
 
         self.assertEqual(notarize.Status.SUCCESS, result.status)
         self.assertEqual('Accepted', result.status_string)
         self.assertEqual(plist_output, result.output)
         self.assertEqual(None, result.log_file)
 
-        run_command_output.assert_called_once_with(
+        run_command_output_async.assert_called_once_with(
             ['xcrun', 'notarytool', 'info', uuid, '--output-format', 'plist'])
 
-    @mock.patch('signing.commands.run_command_output')
-    def test_success_with_args(self, run_command_output):
+    @mock.patch('signing.commands.run_command_output_async')
+    def test_success_with_args(self, run_command_output_async):
         plist_output = plistlib.dumps({
             'status': 'Accepted',
             'id': 'eeeacc17-9e4b-4408-8001-894bbae9c9e9',
@@ -97,7 +101,7 @@ class TestGetResultNotarytool(unittest.TestCase):
             'message': 'Successfully received submission info',
             'name': 'file.zip'
         })
-        run_command_output.return_value = plist_output
+        run_command_output_async.return_value = plist_output
         uuid = 'eeeacc17-9e4b-4408-8001-894bbae9c9e9'
         os.environ['NOTARIZE_TEST_PASSWORD'] = 'hunter2'
         config = test_config.TestConfig(
@@ -105,21 +109,21 @@ class TestGetResultNotarytool(unittest.TestCase):
                 '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
                 '--password', 'hunter2'
             ]))
-        result = config.invoker.notarizer.get_result(uuid, config)
+        result = asyncio.run(config.invoker.notarizer.get_result(uuid, config))
 
         self.assertEqual(notarize.Status.SUCCESS, result.status)
         self.assertEqual('Accepted', result.status_string)
         self.assertEqual(plist_output, result.output)
         self.assertEqual(None, result.log_file)
 
-        run_command_output.assert_called_once_with([
+        run_command_output_async.assert_called_once_with([
             'xcrun', 'notarytool', 'info', uuid, '--output-format', 'plist',
             '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
             '--password', 'hunter2'
         ])
 
-    @mock.patch('signing.commands.run_command_output')
-    def test_in_progress(self, run_command_output):
+    @mock.patch('signing.commands.run_command_output_async')
+    def test_in_progress(self, run_command_output_async):
         plist_output = plistlib.dumps({
             'status': 'In Progress',
             'id': 'eeeacc17-9e4b-4408-8001-894bbae9c9e9',
@@ -127,21 +131,21 @@ class TestGetResultNotarytool(unittest.TestCase):
             'message': 'Successfully received submission info',
             'name': 'file.zip'
         })
-        run_command_output.return_value = plist_output
+        run_command_output_async.return_value = plist_output
         uuid = 'eeeacc17-9e4b-4408-8001-894bbae9c9e9'
         config = test_config.TestConfig()
-        result = config.invoker.notarizer.get_result(uuid, config)
+        result = asyncio.run(config.invoker.notarizer.get_result(uuid, config))
 
         self.assertEqual(notarize.Status.IN_PROGRESS, result.status)
         self.assertEqual('In Progress', result.status_string)
         self.assertEqual(plist_output, result.output)
         self.assertEqual(None, result.log_file)
 
-        run_command_output.assert_called_once_with(
+        run_command_output_async.assert_called_once_with(
             ['xcrun', 'notarytool', 'info', uuid, '--output-format', 'plist'])
 
-    @mock.patch('signing.commands.run_command_output')
-    def test_rejected(self, run_command_output):
+    @mock.patch('signing.commands.run_command_output_async')
+    def test_rejected(self, run_command_output_async):
         plist_output = plistlib.dumps({
             'status': 'Invalid',
             'id': '13d6aa9b-d204-4f0d-9164-4bda5e730258',
@@ -149,27 +153,27 @@ class TestGetResultNotarytool(unittest.TestCase):
             'message': 'Successfully received submission info',
             'name': 'chromium_helper.zip'
         })
-        run_command_output.side_effect = [
+        run_command_output_async.side_effect = [
             plist_output, b'This is the log file contents'
         ]
         uuid = '13d6aa9b-d204-4f0d-9164-4bda5e730258'
         config = test_config.TestConfig()
-        result = config.invoker.notarizer.get_result(uuid, config)
+        result = asyncio.run(config.invoker.notarizer.get_result(uuid, config))
 
         self.assertEqual(notarize.Status.ERROR, result.status)
         self.assertEqual('Invalid', result.status_string)
         self.assertEqual(plist_output, result.output)
         self.assertEqual('This is the log file contents', result.log_file)
 
-        run_command_output.assert_has_calls([
+        run_command_output_async.assert_has_awaits([
             mock.call([
                 'xcrun', 'notarytool', 'info', uuid, '--output-format', 'plist'
             ]),
             mock.call(['xcrun', 'notarytool', 'log', uuid])
         ])
 
-    @mock.patch('signing.commands.run_command_output')
-    def test_rejected_failed_get_log(self, run_command_output):
+    @mock.patch('signing.commands.run_command_output_async')
+    def test_rejected_failed_get_log(self, run_command_output_async):
         plist_output = plistlib.dumps({
             'status': 'Invalid',
             'id': '13d6aa9b-d204-4f0d-9164-4bda5e730258',
@@ -177,20 +181,20 @@ class TestGetResultNotarytool(unittest.TestCase):
             'message': 'Successfully received submission info',
             'name': 'chromium_helper.zip'
         })
-        run_command_output.side_effect = [
+        run_command_output_async.side_effect = [
             plist_output,
             subprocess.CalledProcessError(1, 'notarytool', 'Error message.')
         ]
         uuid = '13d6aa9b-d204-4f0d-9164-4bda5e730258'
         config = test_config.TestConfig()
-        result = config.invoker.notarizer.get_result(uuid, config)
+        result = asyncio.run(config.invoker.notarizer.get_result(uuid, config))
 
         self.assertEqual(notarize.Status.ERROR, result.status)
         self.assertEqual('Invalid', result.status_string)
         self.assertEqual(plist_output, result.output)
         self.assertEqual(None, result.log_file)
 
-        run_command_output.assert_has_calls([
+        run_command_output_async.assert_has_awaits([
             mock.call([
                 'xcrun', 'notarytool', 'info', uuid, '--output-format', 'plist'
             ]),

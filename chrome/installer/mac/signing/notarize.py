@@ -48,7 +48,7 @@ class Invoker(invoker.Base):
     def notary_args(self):
         return self._notary_args
 
-    async def submit_async(self, path, config):
+    async def submit(self, path, config):
         # Submit the notarization.
         command = [
             'xcrun',
@@ -71,7 +71,7 @@ class Invoker(invoker.Base):
 
         # Wait for notarization to complete.
         while True:
-            result = config.invoker.notarizer.get_result(uuid, config)
+            result = await self.get_result(uuid, config)
             if result.status == Status.IN_PROGRESS:
                 await asyncio.sleep(5)
                 continue
@@ -90,7 +90,7 @@ class Invoker(invoker.Base):
                         result.status_string,
                     ))
 
-    def get_result(self, uuid, config):
+    async def get_result(self, uuid, config):
         command = [
             'xcrun',
             'notarytool',
@@ -99,7 +99,7 @@ class Invoker(invoker.Base):
             '--output-format',
             'plist',
         ] + self.notary_args
-        output = commands.run_command_output(command)
+        output = await commands.run_command_output_async(command)
 
         plist = plistlib.loads(output)
         status = plist['status']
@@ -110,15 +110,15 @@ class Invoker(invoker.Base):
         # notarytool does not provide log file URLs, so instead try to fetch
         # the log on failure.
         try:
-            log = self._get_log(uuid, config).decode('utf8')
+            log = (await self._get_log(uuid, config)).decode('utf8')
         except Exception as e:
             logger.error('Failed to get the notarization log data', e)
             log = None
         return NotarizationResult(Status.ERROR, status, output, log)
 
-    def _get_log(self, uuid, config):
+    async def _get_log(self, uuid, config):
         command = ['xcrun', 'notarytool', 'log', uuid] + self.notary_args
-        return commands.run_command_output(command)
+        return await commands.run_command_output_async(command)
 
 
 async def submit(path, config):
@@ -128,7 +128,7 @@ async def submit(path, config):
         path: The path to the artifact that will be uploaded for notarization.
         config: The |config.CodeSignConfig| for the artifact.
     """
-    await config.invoker.notarizer.submit_async(path, config)
+    await config.invoker.notarizer.submit(path, config)
 
 
 class Status(enum.Enum):
