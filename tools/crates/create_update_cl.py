@@ -10,6 +10,7 @@ zero, one, or more resulting CLs to Gerrit.  For more details please see
 import argparse
 import datetime
 import fnmatch
+import itertools
 import os
 import re
 import shlex
@@ -619,15 +620,20 @@ def AutoUpdate(args):
 
     todo_crate_updates = FindUpdateableCrates(args)
     if args.skip:
+        # Flatten a list of lists into `skip_patterns`:
+        skip_patterns = list(itertools.chain.from_iterable(args.skip))
+        skipped_crate_names = []
         todo_crate_updates_without_skips = []
         for old_crate_id, new_crate_id in todo_crate_updates:
             crate_name = crate_utils.ConvertCrateIdToCrateName(old_crate_id)
-            if not any(
-                    fnmatch.fnmatch(crate_name, pattern)
-                    for pattern in args.skip):
+            if any(fnmatch.fnmatch(crate_name, p) for p in skip_patterns):
+                skipped_crate_names.append(crate_name)
+            else:
                 todo_crate_updates_without_skips.append(
                     (old_crate_id, new_crate_id))
         todo_crate_updates = todo_crate_updates_without_skips
+        print(f"Skipping the following crates because of `--skip`: " +
+              f"{', '.join(skipped_crate_names)}")
 
     if not todo_crate_updates:
         print("There were no updates - exiting early...")
@@ -724,6 +730,8 @@ def main():
         default="origin/main",
         help="The upstream branch on which to base the series of CLs.")
     parser_auto.add_argument("--skip",
+                             default=[],
+                             action="append",
                              nargs="+",
                              help="Skip updating this crate name.")
     parser_auto.add_argument("remaining_args",
