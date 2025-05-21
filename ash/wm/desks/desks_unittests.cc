@@ -7221,8 +7221,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
 // Test reordering desks in RTL mode.
 TEST_P(DesksTest, ReorderDesksInRTLMode) {
   // Turn on RTL mode.
-  const bool default_rtl = base::i18n::IsRTL();
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(/*rtl=*/true);
   EXPECT_TRUE(base::i18n::IsRTL());
 
   auto* desks_controller = DesksController::Get();
@@ -7308,9 +7307,6 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_0));
   EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "2", "0"));
-
-  // Recover to default RTL mode.
-  base::i18n::SetRTLForTesting(default_rtl);
 }
 
 // Tests the behavior when dragging a desk on the scroll button.
@@ -11284,8 +11280,7 @@ TEST_P(DeskButtonTest, DeskButtonPressMetrics) {
 // desk to the left in the desk bar.
 TEST_P(DeskButtonTest, LayoutInRTL) {
   // Turn on RTL mode.
-  const bool default_rtl = base::i18n::IsRTL();
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(/*rtl=*/true);
   EXPECT_TRUE(base::i18n::IsRTL());
 
   // The test doesn't start in RTL so we need to tell the widget to swap the
@@ -11363,9 +11358,6 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
   SwitchToAdjacentDesk(/*next=*/true);
   SwitchToAdjacentDesk(/*next=*/true);
   EXPECT_EQ(2, desks_controller->GetActiveDeskIndex());
-
-  // Recover to default RTL mode.
-  base::i18n::SetRTLForTesting(default_rtl);
 }
 
 TEST_P(DeskButtonTest, BarBoundsWithDeviceSacleFactorChange) {
@@ -11462,17 +11454,13 @@ TEST_P(DeskButtonTest, BarBoundsWithRTL) {
   UpdateDisplay("800x600");
 
   // Turn on RTL mode.
-  const bool default_rtl = base::i18n::IsRTL();
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(/*rtl=*/true);
   ASSERT_TRUE(base::i18n::IsRTL());
 
   OpenDeskBar();
   EXPECT_EQ(GetDeskBarView()->bounds(), gfx::Rect(0, 0, 154, 98));
 
   CloseDeskBar();
-
-  // Recover to default RTL mode.
-  base::i18n::SetRTLForTesting(default_rtl);
 }
 
 // Tests that desk button tab order is correct in the shelf.

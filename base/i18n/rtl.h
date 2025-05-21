@@ -54,7 +54,24 @@ BASE_I18N_EXPORT void SetICUDefaultLocale(const std::string& locale_string);
 BASE_I18N_EXPORT bool IsRTL();
 
 // A test utility function to set the application default text direction.
+// Prefer using ScopedRTLForTesting instead of this function directly.
 BASE_I18N_EXPORT void SetRTLForTesting(bool rtl);
+
+// A RAII wrapper for setting RTL in tests. Automatically restores the previous
+// RTL state when destroyed. This is the preferred way to set RTL state in
+// tests.
+class BASE_I18N_EXPORT ScopedRTLForTesting {
+ public:
+  explicit ScopedRTLForTesting(bool rtl);
+  ~ScopedRTLForTesting();
+
+  // Not copyable or movable
+  ScopedRTLForTesting(const ScopedRTLForTesting&) = delete;
+  ScopedRTLForTesting& operator=(const ScopedRTLForTesting&) = delete;
+
+ private:
+  bool previous_rtl_state_;
+};
 
 // Returns whether the text direction for the default ICU locale is RTL.  This
 // assumes that SetICUDefaultLocale has been called to set the default locale to

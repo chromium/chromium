@@ -326,7 +326,7 @@ TEST_F(RTLTest, WrapString) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
-    SetRTLForTesting(!IsRTL());
+    ScopedRTLForTesting scoped_rtl(!IsRTL());
 
     std::u16string empty;
     WrapStringWithLTRFormatting(&empty);
@@ -378,7 +378,7 @@ TEST_F(RTLTest, GetDisplayStringInLTRDirectionality) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
-    SetRTLForTesting(!IsRTL());
+    ScopedRTLForTesting scoped_rtl(!IsRTL());
     for (auto& test_case : cases) {
       std::u16string input = WideToUTF16(test_case.path);
       std::u16string output = GetDisplayStringInLTRDirectionality(input);
@@ -466,7 +466,7 @@ TEST_F(RTLTest, UnadjustStringForLocaleDirection) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
-    SetRTLForTesting(!IsRTL());
+    ScopedRTLForTesting scoped_rtl(!IsRTL());
 
     for (auto*& test_case : cases) {
       std::u16string unadjusted_string = WideToUTF16(test_case);
@@ -519,7 +519,7 @@ TEST_F(RTLTest, EnsureTerminatedDirectionalFormatting) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
-    SetRTLForTesting(!IsRTL());
+    ScopedRTLForTesting scoped_rtl(!IsRTL());
     for (auto& test_case : cases) {
       std::u16string unsanitized_text = WideToUTF16(test_case.unformated_text);
       std::u16string sanitized_text = WideToUTF16(test_case.formatted_text);

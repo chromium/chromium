@@ -172,6 +172,15 @@ void SetRTLForTesting(bool rtl) {
   DCHECK_EQ(rtl, IsRTL());
 }
 
+ScopedRTLForTesting::ScopedRTLForTesting(bool rtl) {
+  previous_rtl_state_ = IsRTL();
+  SetRTLForTesting(rtl);  // IN-TEST
+}
+
+ScopedRTLForTesting::~ScopedRTLForTesting() {
+  SetRTLForTesting(previous_rtl_state_);  // IN-TEST
+}
+
 bool ICUIsRTL() {
   if (g_icu_text_direction == UNKNOWN_DIRECTION) {
     const icu::Locale& locale = icu::Locale::getDefault();
