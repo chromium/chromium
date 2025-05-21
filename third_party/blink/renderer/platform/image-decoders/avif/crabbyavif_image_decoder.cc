@@ -22,7 +22,6 @@
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -33,7 +32,6 @@
 #include "cc/base/math_util.h"
 #include "media/base/video_color_space.h"
 #include "skia/ext/cicp.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -778,8 +776,7 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
     // crbug.com/1198455.
     decoder_->strictFlags &= ~crabbyavif::AVIF_STRICT_PIXI_REQUIRED;
 
-    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages) &&
-        aux_image_ == cc::AuxImage::kGainmap) {
+    if (aux_image_ == cc::AuxImage::kGainmap) {
       decoder_->imageContentToDecode = crabbyavif::AVIF_IMAGE_CONTENT_GAIN_MAP;
     }
 
@@ -1246,9 +1243,6 @@ void CrabbyAVIFImageDecoder::ColorCorrectImage(int from_row,
 bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_data) const {
-  if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
-    return false;
-  }
   // Ensure that parsing succeeded.
   if (!IsDecodedSizeAvailable()) {
     return false;

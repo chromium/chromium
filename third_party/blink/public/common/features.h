@@ -96,10 +96,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutoSpeculationRules);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                                kAutoSpeculationRulesHoldback);
 
-// Switch to enabling rendering of gainmap-based AVIF HDR images.
-// Tracker: https://crbug.com/1451889
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvifGainmapHdrImages);
-
 // When synchronousy loading the initial empty document, perform the layout
 // asynchronously.
 // TODO(http://crbug.com/324572951): Remove flag after Finch shows that this is

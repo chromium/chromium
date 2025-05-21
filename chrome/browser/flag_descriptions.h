@@ -350,9 +350,6 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kFwupdDeveloperModeName[];
 extern const char kFwupdDeveloperModeDescription[];
 
-extern const char kAvifGainmapHdrImagesName[];
-extern const char kAvifGainmapHdrImagesDescription[];
-
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 

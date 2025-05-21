@@ -24,10 +24,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -1015,11 +1013,6 @@ TEST(CrabbyStaticAVIFTests, invalidImages) {
 }
 
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
       "/images/resources/avif/small-with-gainmap-iso.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
@@ -1076,11 +1069,6 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
 }
 
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
       "/images/resources/avif/small-with-gainmap-iso-hdrbase.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
@@ -1135,11 +1123,6 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
 }
 
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
   // The image has use_base_color_space set to false (i.e. use the alternate
   // image's color space), and the base and alternate image ICC profiles are the
   // same, so the alternate image color space should be ignored.
@@ -1167,11 +1150,6 @@ void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
 }
 
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
   // The image has use_base_color_space set to false (i.e. use the alternate
   // image's color space), and the base and alternate image ICC profiles are
   // different, so the alternate ICC profile should be set as
@@ -1197,11 +1175,6 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
 }
 
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
   // The image has use_base_color_space set to false (i.e. use the alternate
   // image's color space), and the base and alternate images don't have ICC
   // but CICP values instead. The alternate image's CICP values should be used.
@@ -1224,38 +1197,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
   ExpectMatrixNear(matrix, SkNamedGamut::kRec2020, 0.0001);
 }
 
-TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAvifGainmapHdrImages});
-
-  const std::string image = "small-with-gainmap-iso.avif";
-  scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer("web_tests/images/resources/avif", image.c_str());
-  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(data, true);
-  SkGainmapInfo gainmap_info;
-  scoped_refptr<SegmentReader> gainmap_data;
-  const bool has_gainmap =
-      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
-  ASSERT_FALSE(has_gainmap);
-
-  // Check that we get an error if we try decoding the gain map.
-  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateGainMapAVIFDecoder();
-  gainmap_decoder->SetData(data, true);
-  EXPECT_FALSE(gainmap_decoder->IsSizeAvailable());
-  EXPECT_TRUE(gainmap_decoder->Failed());
-  EXPECT_EQ(gainmap_decoder->FrameCount(), 0u);
-  EXPECT_FALSE(gainmap_decoder->DecodeFrameBufferAtIndex(0));
-}
-
 TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
   const std::string image = "small-with-gainmap-iso.avif";
   const Vector<char> data_vector =
       ReadFile("web_tests/images/resources/avif", image.c_str());
@@ -1272,11 +1214,6 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
 }
 
 TEST(CrabbyStaticAVIFTests, GetGainmapWithGammaZero) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
   const std::string image = "small-with-gainmap-iso-gammazero.avif";
   scoped_refptr<SharedBuffer> data =
       ReadFileToSharedBuffer("web_tests/images/resources/avif", image.c_str());

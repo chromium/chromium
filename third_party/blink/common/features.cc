@@ -140,10 +140,6 @@ BASE_FEATURE_PARAM(bool,
                    "holdback",
                    false);
 
-BASE_FEATURE(kAvifGainmapHdrImages,
-             "AvifGainmapHdrImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe,
              "AvoidForcedLayoutOnInitialEmptyDocumentInSubframe",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -8068,10 +8068,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"avif-gainmap-hdr-images", flag_descriptions::kAvifGainmapHdrImagesName,
-     flag_descriptions::kAvifGainmapHdrImagesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAvifGainmapHdrImages)},
-
     {"file-handling-icons", flag_descriptions::kFileHandlingIconsName,
      flag_descriptions::kFileHandlingIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kFileHandlingIcons)},
