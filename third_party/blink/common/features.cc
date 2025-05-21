@@ -88,10 +88,6 @@ BASE_FEATURE(kDisplayWarningDeprecateURNIframesUseFencedFrames,
              "DisplayWarningDeprecateURNIframesUseFencedFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidExtendedKeyboardShortcuts,
-             "AndroidExtendedKeyboardShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A server-side switch for the kRealtimeAudio thread type of
 // RealtimeAudioWorkletThread object. This can be controlled by a field trial,
 // it will use the kNormal type thread when disabled.

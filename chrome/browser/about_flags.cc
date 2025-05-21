@@ -10165,11 +10165,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kComputePressureBreakCalibrationMitigation)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-extended-keyboard-shortcuts",
-     flag_descriptions::kAndroidExtendedKeyboardShortcutsName,
-     flag_descriptions::kAndroidExtendedKeyboardShortcutsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kAndroidExtendedKeyboardShortcuts)},
     {"deprecated-external-picker-function",
      flag_descriptions::kDeprecatedExternalPickerFunctionName,
      flag_descriptions::kDeprecatedExternalPickerFunctionDescription,

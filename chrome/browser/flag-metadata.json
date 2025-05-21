@@ -243,11 +243,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "android-extended-keyboard-shortcuts",
-    "owners": [ "wbjacksonjr@google.com"],
-    "expiry_milestone": 119
-  },
-  {
     "name": "android-hub-search",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140

@@ -168,12 +168,6 @@ const char kAndroidBottomToolbarName[] = "Bottom Toolbar";
 const char kAndroidBottomToolbarDescription[] =
     "If enabled, displays the toolbar at the bottom.";
 
-const char kAndroidExtendedKeyboardShortcutsName[] =
-    "Android Extended Keyboard Shortcuts";
-const char kAndroidExtendedKeyboardShortcutsDescription[] =
-    "If enabled, allows for extended keyboard shortcuts (i.e. Alt + Backspace "
-    "to delete line).";
-
 const char kAndroidBrowserControlsInVizName[] =
     "Android Browser Controls in Viz";
 const char kAndroidBrowserControlsInVizDescription[] =
