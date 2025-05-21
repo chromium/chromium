@@ -15,13 +15,10 @@ class CrExtensionsFocusTest : public WebUIMochaFocusTest {
   }
 };
 
-// TODO(crbug.com/392777363): Make the test pass on android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UninstallFocus) {
   RunTest("extensions/manager_unit_test.js",
           "runMochaTest('ExtensionManagerUnitTest', 'UninstallFocus')");
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UpdateShortcut) {
   RunTest("extensions/keyboard_shortcuts_test.js",
