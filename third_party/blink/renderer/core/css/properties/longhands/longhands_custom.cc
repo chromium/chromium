@@ -2499,8 +2499,9 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
 
 bool ColumnRuleColor::IsAffectedByCurrentColor(
     const ComputedStyle& style) const {
-  return style.HasGapDecoration() &&
-         style.ColumnRuleColor().MaybeDependsOnCurrentColor();
+  return style.HasGapRule() &&
+         CSSGapDecorationUtils::RuleColorMaybeDependsOnCurrentColor(
+             style.ColumnRuleColor());
 }
 
 const CSSValue* RowRuleColor::ParseSingleValue(
@@ -2536,8 +2537,9 @@ const CSSValue* RowRuleColor::CSSValueFromComputedStyleInternal(
 }
 
 bool RowRuleColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
-  return style.HasGapDecoration() &&
-         style.RowRuleColor().MaybeDependsOnCurrentColor();
+  return style.HasGapRule() &&
+         CSSGapDecorationUtils::RuleColorMaybeDependsOnCurrentColor(
+             style.RowRuleColor());
 }
 
 const CSSValue* ColumnRuleStyle::ParseSingleValue(

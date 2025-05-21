@@ -609,17 +609,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return RowRuleWidthInternal();
   }
 
-  bool HasGapDecoration() const {
-    // Various layouts in CSS such as multicol containers, flex containers, grid
-    // containers, and masonry containers position child boxes adjacent to each
-    // other with gaps, also known as gutters, between them. Each such gap may
-    // contain a gap decoration, which is a visible separator (such as a line)
-    // painted between adjacent boxes.
-    // See https://drafts.csswg.org/css-gaps-1/#gap-decorations
-    return SpecifiesColumns() || IsDisplayFlexibleBox() || IsDisplayGridBox() ||
-           IsDisplayMasonryBox();
-  }
-
   // content
   ContentData* GetContentData() const { return ContentInternal().Get(); }
 

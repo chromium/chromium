@@ -9,6 +9,10 @@
 
 namespace blink {
 
+template <typename T>
+class GapDataList;
+class StyleColor;
+
 enum class CSSGapDecorationPropertyType : int {
   kColor,
   kWidth,
@@ -24,6 +28,9 @@ class CORE_EXPORT CSSGapDecorationUtils {
   STATIC_ONLY(CSSGapDecorationUtils);
 
  public:
+  static bool RuleColorMaybeDependsOnCurrentColor(
+      const GapDataList<StyleColor>& gap_rule_color);
+
   static CSSPropertyID GetLonghandProperty(
       CSSGapDecorationPropertyDirection direction,
       CSSGapDecorationPropertyType type);
