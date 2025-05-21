@@ -84,6 +84,15 @@ TransferableResource TransferableResource::Make(
   resource.color_space =
       override.color_space.value_or(shared_image->color_space());
   resource.origin = override.origin.value_or(shared_image->surface_origin());
+  SkAlphaType alpha_type =
+      override.alpha_type.value_or(shared_image->alpha_type());
+  // TODO(crbug.com/410591523): Set `resource.alpha_type` directly from
+  // `alpha_type` under a killswitch; this will result in kOpaque_SkAlphaType
+  // being passed through to the service side, whereas historically that has
+  // been compressed to a "premul" bool and treated as kPremul_SkAlphaType on
+  // the service side.
+  resource.alpha_type =
+      (alpha_type == kUnpremul_SkAlphaType) ? alpha_type : kPremul_SkAlphaType;
   resource.set_texture_target(
       override.texture_target.value_or(shared_image->GetTextureTarget()));
 

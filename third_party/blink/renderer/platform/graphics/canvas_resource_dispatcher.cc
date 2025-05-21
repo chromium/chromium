@@ -314,9 +314,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
                                               std::move(canvas_resource),
                                               std::move(release_callback)));
 
-  // TODO(crbug.com/645993): this should be inherited from WebGL context's
-  // creation settings.
-  resource.alpha_type = kPremul_SkAlphaType;
   frame->resource_list.push_back(std::move(resource));
 
   viz::TextureDrawQuad* quad =

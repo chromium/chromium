@@ -302,9 +302,12 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   front_buffer_sync_token_ = sync_token;
 
   // Populate the output resource.
+  viz::TransferableResource::MetadataOverride overrides;
+  overrides.alpha_type = kPremul_SkAlphaType;
   *out_resource = viz::TransferableResource::Make(
       shared_image,
-      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer, sync_token);
+      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer, sync_token,
+      overrides);
   out_resource->hdr_metadata = GetHDRMetadata();
 
   return true;

@@ -1229,16 +1229,17 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
       frame_resource->SetUniqueId(video_frame->unique_id());
     }
 
+    viz::TransferableResource::MetadataOverride overrides;
+    overrides.alpha_type =
+        software_compositor() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
     auto transferable_resource = viz::TransferableResource::Make(
         frame_resource->shared_image(),
         viz::TransferableResource::ResourceSource::kVideo,
-        frame_resource->sync_token());
+        frame_resource->sync_token(), overrides);
     transferable_resource.hdr_metadata =
         video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
     transferable_resource.needs_detiling =
         video_frame->metadata().needs_detiling;
-    transferable_resource.alpha_type =
-        software_compositor() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
     external_resource.resource = std::move(transferable_resource);
     external_resource.type = software_compositor()
                                  ? VideoFrameResourceType::RGBA_PREMULTIPLIED
@@ -1257,13 +1258,14 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
     return VideoFrameExternalResource();
   }
 
+  viz::TransferableResource::MetadataOverride overrides;
+  overrides.alpha_type = kUnpremul_SkAlphaType;
   auto transferable_resource = viz::TransferableResource::Make(
       frame_resource->shared_image(),
       viz::TransferableResource::ResourceSource::kVideo,
-      frame_resource->sync_token());
+      frame_resource->sync_token(), overrides);
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
-  transferable_resource.alpha_type = kUnpremul_SkAlphaType;
 
   external_resource.resource = std::move(transferable_resource);
   external_resource.release_callback =

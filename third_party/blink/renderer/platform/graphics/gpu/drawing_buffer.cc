@@ -450,13 +450,14 @@ bool DrawingBuffer::PrepareTransferableResource(
     }
 
     // Populate the output TransferableResource from the SharedImage.
+    viz::TransferableResource::MetadataOverride overrides;
+    overrides.alpha_type = resource_alpha_type;
     *out_resource = viz::TransferableResource::Make(
         shared_image, viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        sync_token);
+        sync_token, overrides);
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->is_low_latency_rendering = shared_image->usage().Has(
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-    out_resource->alpha_type = resource_alpha_type;
   } else {
     // Populate the TransferableResource with a SharedImage for the software
     // compositor.
@@ -469,15 +470,16 @@ bool DrawingBuffer::PrepareTransferableResource(
     ReadFramebufferIntoBitmapPixels(
         static_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data()));
 
+    viz::TransferableResource::MetadataOverride overrides;
+    overrides.alpha_type = resource_alpha_type;
     *out_resource = viz::TransferableResource::Make(
         resource.shared_image,
         viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        resource.sync_token);
+        resource.sync_token, overrides);
 
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->is_low_latency_rendering = resource.shared_image->usage().Has(
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-    out_resource->alpha_type = resource_alpha_type;
 
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running). It also

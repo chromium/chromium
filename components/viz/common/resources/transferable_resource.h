@@ -39,6 +39,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     std::optional<bool> is_overlay_candidate;
     std::optional<gfx::ColorSpace> color_space;
     std::optional<GrSurfaceOrigin> origin;
+    std::optional<SkAlphaType> alpha_type;
   };
 
   enum class SynchronizationType : uint8_t {
