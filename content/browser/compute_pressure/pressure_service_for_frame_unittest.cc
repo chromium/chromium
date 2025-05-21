@@ -139,6 +139,7 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
   }
 
   void SetPressureServiceForFrame() {
+    pressure_manager_overrider_.reset();
     pressure_manager_overrider_ =
         std::make_unique<device::ScopedPressureManagerOverrider>();
     pressure_manager_.reset();
