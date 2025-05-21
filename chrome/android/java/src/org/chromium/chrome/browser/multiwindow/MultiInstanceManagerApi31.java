@@ -752,6 +752,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @VisibleForTesting
     static Activity getActivityById(int id) {
+        if (sActivitySupplierForTesting != null) {
+            return sActivitySupplierForTesting.get();
+        }
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         for (Activity activity : getAllRunningActivities()) {
             if (id == windowManager.getIdForWindow(activity)) return activity;
@@ -983,7 +986,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // alive.
         ((ChromeTabbedActivity) activity).onNewIntent(intent);
         var activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-        activityManager.moveTaskToFront(taskId, 0);
+        if (activityManager != null) {
+            activityManager.moveTaskToFront(taskId, 0);
+        }
         return true;
     }
 

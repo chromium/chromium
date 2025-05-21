@@ -33,6 +33,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -44,6 +46,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -299,6 +303,25 @@ public class CustomTabActivityNavigationController
         mIsHandlingUserNavigation = false;
     }
 
+    // TODO (crbug.com/417460143): Bring new tab to foreground when applicable.
+    /** Opens a URL in an adjacent Activity. */
+    private void openInAdjacentActivity(Tab tab, Activity adjacentActivity) {
+        Intent newIntent = new Intent();
+        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(adjacentActivity);
+        newIntent.setClassName(
+                ContextUtils.getApplicationContext(), adjacentActivity.getClass().getName());
+        newIntent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
+        newIntent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, true);
+        IntentUtils.addTrustedIntentExtras(newIntent);
+        MultiWindowUtils.setOpenInOtherWindowIntentExtras(
+                newIntent, mActivity, adjacentActivity.getClass());
+        MultiInstanceManager.onMultiInstanceModeStarted();
+        ReparentingTask.from(tab).setupIntent(newIntent, null);
+        MultiWindowUtils.launchIntentInInstance(newIntent, windowId);
+        finish(REPARENTING);
+        mTabProvider.removeTab();
+    }
+
     /**
      * Opens the URL currently being displayed in the Custom Tab in the regular browser.
      *
@@ -358,15 +381,19 @@ public class CustomTabActivityNavigationController
                     ContextUtils.getApplicationContext().getPackageName());
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
             IntentUtils.addTrustedIntentExtras(intent);
-
             mActivity.startActivity(intent, startActivityOptions);
             finish(FinishReason.OPEN_IN_BROWSER);
         } else if (canFinishActivity && willChromeHandleIntent) {
-            // Remove observer to not trigger finishing in onAllTabsClosed() callback - we'll use
-            // reparenting finish callback instead.
-            mTabProvider.removeObserver(mTabObserver);
-            mTabController.detachAndStartReparenting(
-                    intent, startActivityOptions, () -> finish(FinishReason.REPARENTING));
+            Activity adjacentActivity = MultiWindowUtils.getAdjacentWindowActivity(mActivity);
+            if (adjacentActivity != null) {
+                openInAdjacentActivity(tab, adjacentActivity);
+            } else {
+                // Remove observer to not trigger finishing in onAllTabsClosed() callback - we'll
+                // use reparenting finish callback instead.
+                mTabProvider.removeObserver(mTabObserver);
+                mTabController.detachAndStartReparenting(
+                        intent, startActivityOptions, () -> finish(REPARENTING));
+            }
         } else {
             if (mIntentDataProvider.isInfoPage()) {
                 IntentHandler.startChromeLauncherActivityForTrustedIntent(intent);

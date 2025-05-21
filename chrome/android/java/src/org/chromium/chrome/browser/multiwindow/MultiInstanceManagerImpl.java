@@ -24,6 +24,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
@@ -83,6 +84,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
 
     protected TabModelSelectorTabModelObserver mTabModelObserver;
+    protected static Supplier<ChromeTabbedActivity> sActivitySupplierForTesting;
 
     private int mActivityTaskId;
     private boolean mNativeInitialized;
@@ -512,5 +514,11 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, filter);
+    }
+
+    public static void setAdjacentWindowActivitySupplierForTesting(
+            Supplier<ChromeTabbedActivity> supplier) {
+        sActivitySupplierForTesting = supplier;
+        ResettersForTesting.register(() -> sActivitySupplierForTesting = null);
     }
 }

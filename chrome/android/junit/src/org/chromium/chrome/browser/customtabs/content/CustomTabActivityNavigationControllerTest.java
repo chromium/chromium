@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PackageManagerWrapper;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
@@ -50,6 +53,8 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerImpl;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
@@ -79,6 +84,7 @@ public class CustomTabActivityNavigationControllerTest {
     @Mock OnBackInvokedDispatcher mDispatcher;
     @Mock private PackageManager mPackageManager;
     @Mock private ResolveInfo mResolveInfo;
+    @Mock private ChromeTabbedActivity mAdjacentActivity;
 
     class TestContext extends ContextWrapper {
         public TestContext(Context base) {
@@ -135,7 +141,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController
                 .getTabObserverForTesting()
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
@@ -168,7 +174,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController
                 .getTabObserverForTesting()
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
@@ -194,7 +200,7 @@ public class CustomTabActivityNavigationControllerTest {
                                 })
                 .when(mTabController)
                 .closeTab();
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
@@ -240,6 +246,19 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    public void finishes_whenDoneReparentingToAdjacentActivity() {
+        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
+        MultiInstanceManagerImpl.setAdjacentWindowActivitySupplierForTesting(
+                () -> mAdjacentActivity);
+        MultiWindowUtils.setActivitySupplierForTesting(() -> mAdjacentActivity);
+
+        mNavigationController.openCurrentUrlInBrowser();
+
+        verify(mAdjacentActivity, times(1)).onNewIntent(any());
+        verify(mFinishHandler).onFinish(FinishReason.REPARENTING, false);
+    }
+
+    @Test
     public void startsNewActivity_WhenOpenInBrowserCalled_AndChromeCanNotHandleIntent() {
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
         mNavigationController.openCurrentUrlInBrowser();
@@ -265,7 +284,7 @@ public class CustomTabActivityNavigationControllerTest {
         when(mTabController.onlyOneTabRemaining()).thenReturn(false);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
@@ -283,7 +302,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController
                 .getTabObserverForTesting()
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
@@ -294,7 +313,7 @@ public class CustomTabActivityNavigationControllerTest {
         // Sets the Android version to Baklava.
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
 
-        Assert.assertTrue(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
+        assertTrue(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
     }
 
     @Test
