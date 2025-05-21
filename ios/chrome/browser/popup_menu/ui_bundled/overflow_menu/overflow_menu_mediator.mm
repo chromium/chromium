@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -1480,6 +1481,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   if (IsReaderModeAvailable()) {
     self.readerModeAction.enabled = [self isReaderModeEnabled];
+  }
+
+  // If Lens Overlay is already being displayed, disable the action.
+  if (self.webState) {
+    if (LensOverlayTabHelper* lensOverlayTabHelper =
+            LensOverlayTabHelper::FromWebState(self.webState)) {
+      self.lensOverlayAction.enabled =
+          !lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+    }
   }
 }
 

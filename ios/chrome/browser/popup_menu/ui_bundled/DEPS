@@ -27,6 +27,7 @@ include_rules = [
   "+ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h",
   "+ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
+  "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
   "+ios/chrome/browser/overlays/model/public/overlay_presenter.h",
   "+ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h",
   "+ios/chrome/browser/overlays/model/public/overlay_request.h",
