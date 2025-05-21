@@ -18892,7 +18892,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <!-- Chrome Apps Deprecation -->
     <if expr="is_chromeos">
       <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_NOTIFICATION_MESSAGE" desc="Message of the notification displayed while launching a user-installed app.">
-        Support for Chrome apps will end soon. To learn about your options, contact the app developer or your IT support team.
+        This Chrome app will stop working after your ChromeOS version is updated. Save any app data you want to keep. To learn about your options, contact the app developer or your IT support team.
       </message>
     </if>
 
