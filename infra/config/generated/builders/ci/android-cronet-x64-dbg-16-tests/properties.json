@@ -86,6 +86,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x64-dbg-16-tests/targets"
     }
   },

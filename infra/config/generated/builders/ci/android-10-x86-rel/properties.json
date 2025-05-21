@@ -54,6 +54,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-10-x86-rel/targets"
     }
   },

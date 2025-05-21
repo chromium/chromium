@@ -17,6 +17,12 @@ load("//project.star", "settings")
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.android",
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        # Android emulator tasks often flake during emulator start-up, which
+        # leads to the whole shard being marked as invalid.
+        retry_invalid_shards = True,
+    ),
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,

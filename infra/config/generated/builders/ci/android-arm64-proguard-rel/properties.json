@@ -47,6 +47,8 @@
           "project": "chromium"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-arm64-proguard-rel/targets"
     }
   },
