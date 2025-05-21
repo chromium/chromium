@@ -66,6 +66,7 @@ const CGFloat kSeparatorMargin = 80;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.accessibilityIdentifier = nil;
+  self.accessibilityLabel = nil;
   self.identityView.style = IdentityViewStyleDefault;
 }
 

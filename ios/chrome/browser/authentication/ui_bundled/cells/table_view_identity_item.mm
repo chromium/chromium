@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @implementation TableViewIdentityItem
 
@@ -35,6 +39,21 @@
     subtitle = nil;
   }
   cell.accessibilityIdentifier = self.email;
+  // When not set, the screen readers will read this cell as "name, email".
+  // Add a custom accessibility label for managed accounts to append "managed by
+  // your organization" so that the screen readers read this cell as "name,
+  // email, managed by your organization".
+  if (AreSeparateProfilesForManagedAccountsEnabled() && self.managed) {
+    cell.accessibilityLabel =
+        self.name
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_SIGNIN_ACCOUNT_PICKER_CHOOSE_ACCOUNT_ITEM_DESCRIPTION_WITH_NAME_AND_EMAIL_MANAGED,
+                  base::SysNSStringToUTF16(self.name),
+                  base::SysNSStringToUTF16(self.email))
+            : l10n_util::GetNSStringF(
+                  IDS_IOS_SIGNIN_ACCOUNT_PICKER_CHOOSE_ACCOUNT_ITEM_DESCRIPTION_WITH_EMAIL_MANAGED,
+                  base::SysNSStringToUTF16(self.email));
+  }
   [cell configureCellWithTitle:title
                       subtitle:subtitle
                          image:self.avatar

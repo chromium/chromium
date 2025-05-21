@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -73,6 +74,23 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
         base::apple::ObjCCastStrict<UIImageView>(cell.accessoryView);
     accessoryImage.tintColor =
         [accessoryImage.tintColor colorWithAlphaComponent:0.5];
+  }
+
+  // When not set, the screen readers will read this cell as "text, detailText".
+  // Add a custom accessibility label for managed accounts to append "managed by
+  // your organization" so that the screen readers read this cell as "text,
+  // detailText, managed by your organization".
+  if (AreSeparateProfilesForManagedAccountsEnabled() && self.managed) {
+    cell.accessibilityLabel =
+        self.text && self.detailText
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_SIGNIN_ACCOUNT_PICKER_CHOOSE_ACCOUNT_ITEM_DESCRIPTION_WITH_NAME_AND_EMAIL_MANAGED,
+                  base::SysNSStringToUTF16(self.text),
+                  base::SysNSStringToUTF16(self.detailText))
+            : l10n_util::GetNSStringF(
+                  IDS_IOS_SIGNIN_ACCOUNT_PICKER_CHOOSE_ACCOUNT_ITEM_DESCRIPTION_WITH_EMAIL_MANAGED,
+                  base::SysNSStringToUTF16(self.text ? self.text
+                                                     : self.detailText));
   }
 }
 

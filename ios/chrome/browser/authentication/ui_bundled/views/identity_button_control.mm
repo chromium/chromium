@@ -101,12 +101,15 @@ const CGFloat kArrowDownMargin = 12.;
   if (!name.length) {
     [self.identityView setTitle:email subtitle:nil managed:managed];
     self.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL,
+        managed ? IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL_MANAGED
+                : IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL,
         base::SysNSStringToUTF16(email));
   } else {
     [self.identityView setTitle:name subtitle:email managed:managed];
     self.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
+        managed
+            ? IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL_MANAGED
+            : IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
         base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
   }
 }

@@ -424,20 +424,25 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSString* email = [self.dataSource emailForGaiaID:gaiaID];
   cell.detailTextLabel.text = email;
   cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  BOOL isGaiaIDManaged = [self.dataSource isGaiaIDManaged:gaiaID];
   if (name) {
     cell.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_ACCESSIBILITY_LABEL,
+        isGaiaIDManaged
+            ? IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_MANAGED_ACCESSIBILITY_LABEL
+            : IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_ACCESSIBILITY_LABEL,
         base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
   } else {
     cell.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL,
+        isGaiaIDManaged
+            ? IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_MANAGED_ACCESSIBILITY_LABEL
+            : IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL,
         base::SysNSStringToUTF16(email));
   }
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
   // Set the enterprise icon. This may be replaced by the activity indicator
   // when needed.
-  [cell showManagementIcon:[self.dataSource isGaiaIDManaged:gaiaID]];
+  [cell showManagementIcon:isGaiaIDManaged];
 
   if ([indexPath isEqual:_selectedIndexPath]) {
     // In theory, this can occur if, during the account switch process, the
