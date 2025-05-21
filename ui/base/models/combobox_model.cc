@@ -44,6 +44,10 @@ bool ComboboxModel::IsItemEnabledAt(size_t index) const {
   return true;
 }
 
+ComboboxModel::ItemCheckmarkConfig ComboboxModel::GetCheckmarkConfig() const {
+  return ItemCheckmarkConfig::kDefault;
+}
+
 void ComboboxModel::AddObserver(ComboboxModelObserver* observer) {
   observers_.AddObserver(observer);
 }

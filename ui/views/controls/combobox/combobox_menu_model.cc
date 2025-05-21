@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/combobox/combobox_menu_model.h"
 
+#include "ui/base/models/combobox_model.h"
+
 ComboboxMenuModel::ComboboxMenuModel(views::Combobox* owner,
                                      ui::ComboboxModel* model)
     : owner_(owner), model_(model) {}
@@ -11,7 +13,14 @@ ComboboxMenuModel::ComboboxMenuModel(views::Combobox* owner,
 ComboboxMenuModel::~ComboboxMenuModel() = default;
 
 bool ComboboxMenuModel::UseCheckmarks() const {
-  return views::MenuConfig::instance().check_selected_combobox_item;
+  switch (model_->GetCheckmarkConfig()) {
+    case ui::ComboboxModel::ItemCheckmarkConfig::kDefault:
+      return views::MenuConfig::instance().check_selected_combobox_item;
+    case ui::ComboboxModel::ItemCheckmarkConfig::kDisabled:
+      return false;
+    case ui::ComboboxModel::ItemCheckmarkConfig::kEnabled:
+      return true;
+  }
 }
 
 // Overridden from MenuModel:

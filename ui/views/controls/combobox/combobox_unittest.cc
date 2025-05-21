@@ -86,6 +86,10 @@ class TestComboboxModel : public ui::ComboboxModel {
     NOTREACHED();
   }
 
+  ComboboxModel::ItemCheckmarkConfig GetCheckmarkConfig() const override {
+    return menu_checkmark_override_;
+  }
+
   void SetSeparators(const std::set<size_t>& separators) {
     separators_ = separators;
     OnModelChanged();
@@ -94,6 +98,10 @@ class TestComboboxModel : public ui::ComboboxModel {
   void set_item_count(size_t item_count) {
     item_count_ = item_count;
     OnModelChanged();
+  }
+
+  void SetMenuCheckmarkOverride(ComboboxModel::ItemCheckmarkConfig config) {
+    menu_checkmark_override_ = config;
   }
 
  private:
@@ -105,6 +113,8 @@ class TestComboboxModel : public ui::ComboboxModel {
 
   std::set<size_t> separators_;
   size_t item_count_ = kItemCount;
+  ComboboxModel::ItemCheckmarkConfig menu_checkmark_override_ =
+      ComboboxModel::ItemCheckmarkConfig::kDefault;
 };
 
 // A combobox model which refers to a vector.
@@ -1008,6 +1018,16 @@ TEST_F(ComboboxTest, MenuModel) {
   EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu_model->GetTypeAt(0));
   EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu_model->GetTypeAt(1));
 #endif
+
+  // Override OS-specific checkmark setting.
+  model_->SetMenuCheckmarkOverride(
+      ui::ComboboxModel::ItemCheckmarkConfig::kEnabled);
+  EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu_model->GetTypeAt(0));
+  EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu_model->GetTypeAt(1));
+  model_->SetMenuCheckmarkOverride(
+      ui::ComboboxModel::ItemCheckmarkConfig::kDisabled);
+  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu_model->GetTypeAt(0));
+  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu_model->GetTypeAt(1));
 
   EXPECT_EQ(u"PEANUT BUTTER", menu_model->GetLabelAt(0));
   EXPECT_EQ(u"JELLY", menu_model->GetLabelAt(1));
