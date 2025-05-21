@@ -281,8 +281,10 @@ struct ScrollToNodeSelector {
 };
 
 // Note: This must be kept in sync with the corresponding enum (same name) in
-// glic_api.ts
+// glic_api.ts. The enums are also recorded as histograms when they are
+// reported.
 // Next version: 7
+// LINT.IfChange(ScrollToErrorReason)
 [Stable, Extensible]
 enum ScrollToErrorReason {
   // Default error reason. Used when the browser doesn't support ScrollTo, the
@@ -315,6 +317,7 @@ enum ScrollToErrorReason {
   // Page context access is disabled.
   [MinVersion=6] kTabContextPermissionDisabled,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicScrollToErrorReason)
 
 // A single suggestion.
 struct SuggestionContent {

@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/state_transitions.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -24,6 +25,32 @@
 
 namespace glic {
 
+namespace {
+void RunScrollToCallback(mojom::WebClientHandler::ScrollToCallback callback,
+                         std::optional<mojom::ScrollToErrorReason> error) {
+  if (error) {
+    base::UmaHistogramEnumeration("Glic.ScrollTo.ErrorReason", *error);
+  }
+  std::move(callback).Run(error);
+}
+
+std::string AttachmentResultToString(blink::mojom::AttachmentResult result) {
+  std::string string;
+  switch (result) {
+    case blink::mojom::AttachmentResult::kSuccess:
+      string = "Success";
+      break;
+    case blink::mojom::AttachmentResult::kSelectorNotMatched:
+      string = "SelectorNotMatched";
+      break;
+    case blink::mojom::AttachmentResult::kRangeInvalid:
+      string = "RangeInvalid";
+      break;
+  }
+  return string;
+}
+}  // namespace
+
 GlicAnnotationManager::GlicAnnotationManager(GlicKeyedService* service)
     : service_(service) {}
 
@@ -38,6 +65,8 @@ void GlicAnnotationManager::ScrollTo(
   }
   annotation_task_.reset();
 
+  mojom::WebClientHandler::ScrollToCallback wrapped_callback =
+      base::BindOnce(&RunScrollToCallback, std::move(callback));
   mojom::ScrollToSelector* selector = params->selector.get();
   std::optional<shared_highlighting::TextFragment> text_fragment;
   std::optional<int> search_range_start_node_id = std::nullopt;
@@ -47,7 +76,8 @@ void GlicAnnotationManager::ScrollTo(
     auto* exact_text_selector = selector->get_exact_text_selector().get();
     const std::string& exact_text = exact_text_selector->text;
     if (exact_text.empty()) {
-      std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
+      std::move(wrapped_callback)
+          .Run(mojom::ScrollToErrorReason::kNotSupported);
       return;
     }
     if (exact_text_selector->search_range_start_node_id.has_value()) {
@@ -65,12 +95,14 @@ void GlicAnnotationManager::ScrollTo(
     auto* text_fragment_selector = selector->get_text_fragment_selector().get();
     const std::string& text_start = text_fragment_selector->text_start;
     if (text_start.empty()) {
-      std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
+      std::move(wrapped_callback)
+          .Run(mojom::ScrollToErrorReason::kNotSupported);
       return;
     }
     const std::string& text_end = text_fragment_selector->text_end;
     if (text_end.empty()) {
-      std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
+      std::move(wrapped_callback)
+          .Run(mojom::ScrollToErrorReason::kNotSupported);
       return;
     }
     if (text_fragment_selector->search_range_start_node_id.has_value()) {
@@ -106,8 +138,8 @@ void GlicAnnotationManager::ScrollTo(
 
   if (!service_->profile()->GetPrefs()->GetBoolean(
           prefs::kGlicTabContextEnabled)) {
-    std::move(callback).Run(
-        mojom::ScrollToErrorReason::kTabContextPermissionDisabled);
+    std::move(wrapped_callback)
+        .Run(mojom::ScrollToErrorReason::kTabContextPermissionDisabled);
     return;
   }
 
@@ -117,7 +149,7 @@ void GlicAnnotationManager::ScrollTo(
     focused_primary_page = &focused_tab_data.focus()->GetPrimaryPage();
   }
   if (!focused_primary_page) {
-    std::move(callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
+    std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
     return;
   }
 
@@ -125,7 +157,7 @@ void GlicAnnotationManager::ScrollTo(
   // `focused_primary_page` will be non-null when `GlicWindowController` is
   // running the close animation.
   if (!service_->window_controller().IsShowing()) {
-    std::move(callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
+    std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
     return;
   }
 
@@ -149,7 +181,7 @@ void GlicAnnotationManager::ScrollTo(
   const bool fail_without_document_id =
       features::kGlicScrollToEnforceDocumentId.Get();
   if (fail_without_document_id && !params->document_id) {
-    std::move(callback).Run(glic::mojom::ScrollToErrorReason::kNotSupported);
+    std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNotSupported);
     return;
   }
 
@@ -164,8 +196,8 @@ void GlicAnnotationManager::ScrollTo(
     if (!document_identifier_user_data ||
         document_identifier_user_data->serialized_token() !=
             params->document_id) {
-      std::move(callback).Run(
-          glic::mojom::ScrollToErrorReason::kNoMatchingDocument);
+      std::move(wrapped_callback)
+          .Run(mojom::ScrollToErrorReason::kNoMatchingDocument);
       return;
     }
   }
@@ -189,7 +221,7 @@ void GlicAnnotationManager::ScrollTo(
       search_range_start_node_id);
   annotation_task_ = std::make_unique<AnnotationTask>(
       this, std::move(agent_remote), std::move(agent_host_receiver),
-      std::move(callback), *focused_primary_page);
+      std::move(wrapped_callback), *focused_primary_page);
 }
 
 GlicAnnotationManager::AnnotationTask::AnnotationTask(
@@ -204,7 +236,8 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
       annotation_agent_host_receiver_(this,
                                       std::move(agent_host_pending_receiver)),
       scroll_to_callback_(std::move(callback)),
-      page_(page.GetWeakPtr()) {
+      page_(page.GetWeakPtr()),
+      start_time_(base::TimeTicks::Now()) {
   GlicKeyedService* service = annotation_manager_->service_;
   CHECK(service);
   // Using base::Unretained is safe here because `this` owns the subscription.
@@ -335,10 +368,10 @@ void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(
   switch (attachment_result) {
     case blink::mojom::AttachmentResult::kSelectorNotMatched:
       FailTask(mojom::ScrollToErrorReason::kNoMatchFound);
-      return;
+      break;
     case blink::mojom::AttachmentResult::kRangeInvalid:
       FailTask(mojom::ScrollToErrorReason::kSearchRangeInvalid);
-      return;
+      break;
     case blink::mojom::AttachmentResult::kSuccess:
       SetState(State::kActive);
       annotation_agent_->ScrollIntoView(/*applies_focus=*/true);
@@ -354,6 +387,10 @@ void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(
           content::WebContents::FromRenderFrameHost(&page_->GetMainDocument()));
       break;
   }
+  base::UmaHistogramTimes(
+      base::StringPrintf("Glic.ScrollTo.MatchDuration.%s",
+                         AttachmentResultToString(attachment_result)),
+      base::TimeTicks::Now() - start_time_);
 }
 
 // Note: We explicitly listen for `PrimaryPageChanged` to drop the highlight

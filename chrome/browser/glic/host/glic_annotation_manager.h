@@ -147,6 +147,9 @@ class GlicAnnotationManager {
 
     // Current state of the task, see documentation for `State`.
     State state_ = State::kRunning;
+
+    // Used to record the match duration of `ScrollTo()`.
+    const base::TimeTicks start_time_;
   };
 
   // See documentation for `annotation_agent_container_` below.
