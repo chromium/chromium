@@ -18,6 +18,15 @@ BASE_FEATURE(kIPHDemoMode, "IPH_DemoMode", base::FEATURE_DISABLED_BY_DEFAULT);
 // Features used by various clients to show their In-Product Help messages.
 BASE_FEATURE(kIPHDummyFeature, "IPH_Dummy", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature used to add on-device storage for feature engagement.
+BASE_FEATURE(kOnDeviceStorage,
+             "OnDeviceStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOnDeviceStorageEnabled() {
+  return base::FeatureList::IsEnabled(kOnDeviceStorage);
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

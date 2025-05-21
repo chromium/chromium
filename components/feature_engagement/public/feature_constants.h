@@ -16,6 +16,9 @@
 
 namespace feature_engagement {
 
+// Returns true if adding on-device storage is enabled.
+bool IsOnDeviceStorageEnabled();
+
 #define FEATURE_CONSTANTS_DECLARE_FEATURE(feature_name)  \
   COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS) \
   BASE_DECLARE_FEATURE(feature_name)
