@@ -83,6 +83,7 @@ class MODULES_EXPORT MediaRecorder
   virtual void WriteData(base::span<const uint8_t> data,
                          bool last_in_slice,
                          ErrorEvent* error_event);
+  virtual void OnStarted();
   virtual void OnError(DOMExceptionCode code, const String& message);
 
   // This causes an invalid modification error to be sent and recording to be

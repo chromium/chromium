@@ -467,6 +467,16 @@ void MediaRecorder::WriteData(base::span<const uint8_t> data,
       BlobDataHandle::Create(std::move(blob_data_), blob_data_length)));
 }
 
+void MediaRecorder::OnStarted() {
+  if (first_write_received_) {
+    return;
+  }
+
+  mime_type_ = recorder_handler_->ActualMimeType();
+  ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
+  first_write_received_ = true;
+}
+
 void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   DVLOG(1) << __func__ << " message=" << message.Ascii();
 
