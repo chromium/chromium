@@ -2686,6 +2686,14 @@ const char kNotebookLmAppPreinstallName[] = "NotebookLM app preload";
 const char kNotebookLmAppPreinstallDescription[] =
     "Preloads the NotebookLM app.";
 
+const char kNotebookLmAppShelfPinName[] = "NotebookLM app shelf pin";
+const char kNotebookLmAppShelfPinDescription[] =
+    "Pins the NotebookLM app preload to the shelf";
+
+const char kNotebookLmAppShelfPinResetName[] = "NotebookLM app shelf pin reset";
+const char kNotebookLmAppShelfPinResetDescription[] =
+    "Clears state relating to pinning the NotebookLM app preload to the shelf";
+
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";

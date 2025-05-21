@@ -79,17 +79,22 @@ syncer::StringOrdinal CreateBetween(const syncer::StringOrdinal& lhs,
   return syncer::StringOrdinal::CreateInitialOrdinal();
 }
 
-// Template for GetNextPositionAfter() and GetNextPositionBefore().
+struct PositionItemId {
+  syncer::StringOrdinal position;
+  std::string item_id;
+};
+
+// Template for GetNextPositionItemIdAfter() and GetNextPositionBefore().
 // Returns the adjacent pin (before or after based on `compare` to `position`.
 // If |exclude_chrome| is true then Chrome app is not processed. Returns invalid
 // if `position` is not found or has no adjacent item.
 template <typename Compare>
-syncer::StringOrdinal GetAdjacentPosition(
+PositionItemId GetAdjacentPosition(
     app_list::AppListSyncableService* syncable_service,
     const syncer::StringOrdinal& position,
     bool exclude_chrome,
     Compare compare) {
-  syncer::StringOrdinal result;
+  PositionItemId result;
   for (const auto& [item_id, sync_item] : syncable_service->sync_items()) {
     if (!sync_item->item_pin_ordinal.IsValid()) {
       continue;
@@ -101,15 +106,17 @@ syncer::StringOrdinal GetAdjacentPosition(
       continue;
     }
 
-    if (!result.IsValid() || compare(sync_item->item_pin_ordinal, result)) {
-      result = sync_item->item_pin_ordinal;
+    if (!result.position.IsValid() ||
+        compare(sync_item->item_pin_ordinal, result.position)) {
+      result.position = sync_item->item_pin_ordinal;
+      result.item_id = item_id;
     }
   }
   return result;
 }
 
-// Returns the next pin after `position`.
-syncer::StringOrdinal GetNextPositionAfter(
+// Returns the next pin position and item ID after `position`.
+PositionItemId GetNextPositionItemIdAfter(
     app_list::AppListSyncableService* syncable_service,
     const syncer::StringOrdinal& position,
     bool exclude_chrome = false) {
@@ -120,16 +127,16 @@ syncer::StringOrdinal GetNextPositionAfter(
       });
 }
 
-// Returns the next pin before `position`.
+// Returns the next pin position before `position`.
 syncer::StringOrdinal GetNextPositionBefore(
     app_list::AppListSyncableService* syncable_service,
     const syncer::StringOrdinal& position,
     bool exclude_chrome = false) {
   return GetAdjacentPosition(
-      syncable_service, position, exclude_chrome,
-      [](const syncer::StringOrdinal& a, const syncer::StringOrdinal& b) {
-        return a.GreaterThan(b);
-      });
+             syncable_service, position, exclude_chrome,
+             [](const syncer::StringOrdinal& a,
+                const syncer::StringOrdinal& b) { return a.GreaterThan(b); })
+      .position;
 }
 
 // Returns the last pin position.
@@ -146,7 +153,8 @@ syncer::StringOrdinal GetFirstPinnedAppPosition(
     app_list::AppListSyncableService* syncable_service,
     bool exclude_chrome) {
   syncer::StringOrdinal invalid;
-  return GetNextPositionAfter(syncable_service, invalid, exclude_chrome);
+  return GetNextPositionItemIdAfter(syncable_service, invalid, exclude_chrome)
+      .position;
 }
 
 // Helper to create pin position that stays before any synced app, even if
@@ -340,8 +348,83 @@ void AddGeminiAppPinIfNeeded(
 #endif  // GOOGLE_CHROME_BRANDING
 }
 
-// Ensures the Mall app is pinned to the shelf after Chrome, when Mall is
-// enabled.
+// Pins app_id to the shelf after Chrome and after any apps in skip_app_ids that
+// appear immediately after Chrome.
+// Leaves the app where it is if it is already pinned.
+void PinAfterChromeIfNotPresent(app_list::AppListSyncableService* syncable_service,
+                         const std::vector<std::string>& skip_app_ids,
+                         const std::string& app_id) {
+  // If already pinned, do nothing.
+  const app_list::AppListSyncableService::SyncItem* existing_sync_item =
+      syncable_service->GetSyncItem(app_id);
+  if (existing_sync_item && existing_sync_item->item_pin_ordinal.IsValid()) {
+    return;
+  }
+
+  syncer::StringOrdinal current_position =
+      syncable_service->GetPinPosition(app_constants::kChromeAppId);
+  CHECK(current_position.IsValid());
+  syncer::StringOrdinal next_position;
+
+  // Increment current position until either the end of the shelf is reached or
+  // a non-skip app is found.
+  for (size_t i = 0; i < skip_app_ids.size(); ++i) {
+    PositionItemId next =
+        GetNextPositionItemIdAfter(syncable_service, current_position);
+    if (!next.position.IsValid() ||
+        !base::Contains(skip_app_ids, next.item_id)) {
+      next_position = next.position;
+      break;
+    }
+    current_position = next.position;
+    next_position = syncer::StringOrdinal();
+  }
+
+  if (!next_position.IsValid()) {
+    next_position =
+        GetNextPositionItemIdAfter(syncable_service, current_position).position;
+  }
+
+  syncable_service->SetPinPosition(
+      app_id, CreateBetween(current_position, next_position));
+}
+
+// Ensures the NotebookLM app is pinned to the shelf after Chrome and Gemini,
+// when NotebookLM pinning is enabled.
+void AddNotebookLmAppPinIfNeeded(
+    Profile* profile,
+    app_list::AppListSyncableService* syncable_service) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Allow manual testers to reset the sync state easily.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kNotebookLmAppShelfPinReset)) {
+    ScopedListPrefUpdate update(profile->GetPrefs(),
+                                prefs::kShelfNotebookLmAppPinRolls);
+
+    update->clear();
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kNotebookLmAppShelfPin) ||
+      !ShelfControllerHelper::IsAppDefaultInstalled(profile,
+                                                    ash::kNotebookLmAppId) ||
+      !profile->GetPrefs()
+           ->GetList(prefs::kShelfNotebookLmAppPinRolls)
+           .empty()) {
+    return;
+  }
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kShelfNotebookLmAppPinRolls);
+  update->Append("v1");
+
+  PinAfterChromeIfNotPresent(syncable_service, {ash::kGeminiAppId},
+                      ash::kNotebookLmAppId);
+#endif  // GOOGLE_CHROME_BRANDING
+}
+
+// Ensures the Mall app is pinned to the shelf after Chrome, Gemini and
+// NotebookLM, when Mall is enabled.
 void AddMallPinIfNeeded(Profile* profile,
                         app_list::AppListSyncableService* syncable_service) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kCrosMall)) {
@@ -364,47 +447,12 @@ void AddMallPinIfNeeded(Profile* profile,
                               prefs::kShelfMallAppPinRolls);
   update->Append("v1");
 
-  // If Mall is already pinned (by default_pinned_apps.cc), do nothing.
-  const app_list::AppListSyncableService::SyncItem* sync_item =
-      syncable_service->GetSyncItem(ash::kMallSystemAppId);
-  if (sync_item && sync_item->item_pin_ordinal.IsValid()) {
-    return;
+  std::vector<std::string> skip_app_ids = {ash::kGeminiAppId};
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kNotebookLmAppShelfPin)) {
+    skip_app_ids.push_back(ash::kNotebookLmAppId);
   }
-
-  // Mall should be pinned immediately after Chrome, but also after Gemini if it
-  // is next after Chrome.
-  syncer::StringOrdinal chrome_position =
-      syncable_service->GetPinPosition(app_constants::kChromeAppId);
-  CHECK(chrome_position.IsValid());
-  syncer::StringOrdinal first_pin_after_chrome = GetNextPositionAfter(
-      syncable_service, chrome_position, /*exclude_chrome=*/true);
-  syncer::StringOrdinal gemini_position =
-      syncable_service->GetPinPosition(ash::kGeminiAppId);
-
-  syncer::StringOrdinal pin_mall_after;
-  syncer::StringOrdinal pin_mall_before;
-
-  if (gemini_position.IsValid() && first_pin_after_chrome == gemini_position) {
-    // Current order is <possibly some apps>, Chrome, Gemini, <something else>.
-    // Insert Mall after Gemini.
-    pin_mall_after = gemini_position;
-    pin_mall_before = GetNextPositionAfter(syncable_service, gemini_position,
-                                           /*exclude_chrome=*/true);
-
-  } else {
-    // Current order is <possibly some apps>, Chrome, <non-Gemini app>. Insert
-    // Mall immdiately after Chrome.
-    pin_mall_after = chrome_position;
-    pin_mall_before = first_pin_after_chrome;
-  }
-
-  if (!pin_mall_before.IsValid()) {
-    pin_mall_before = pin_mall_after.CreateAfter();
-  }
-
-  syncer::StringOrdinal mall_position =
-      pin_mall_after.CreateBetween(pin_mall_before);
-  syncable_service->SetPinPosition(ash::kMallSystemAppId, mall_position);
+  PinAfterChromeIfNotPresent(syncable_service, skip_app_ids, ash::kMallSystemAppId);
 }
 
 void SetPreloadPinComplete(Profile* profile) {
@@ -427,6 +475,9 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterListPref(
       prefs::kShelfGeminiAppPinRolls,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterListPref(
+      prefs::kShelfNotebookLmAppPinRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
       prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor,
@@ -549,6 +600,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
 
   if (IsSafeToApplyDefaultPinLayout(profile_)) {
     AddGeminiAppPinIfNeeded(profile_, helper, syncable_service);
+    AddNotebookLmAppPinIfNeeded(profile_, syncable_service);
     AddMallPinIfNeeded(profile_, syncable_service);
   }
 
@@ -816,7 +868,7 @@ void ChromeShelfPrefs::PinPreloadApps() {
       auto pos = GetAppPosition(profile_, app, syncable_service);
       if (pos.IsValid()) {
         lhs = pos;
-        rhs = GetNextPositionAfter(syncable_service, pos);
+        rhs = GetNextPositionItemIdAfter(syncable_service, pos).position;
         break;
       }
     }

@@ -776,6 +776,7 @@ chromium-metrics-reviews@google.com.
   <int value="100326" label="ReadAloudPlaybackMode"/>
   <int value="100327" label="PinSplitTabButton"/>
   <int value="100328" label="GlicRolloutEligibility"/>
+  <int value="100329" label="ShelfNotebookLmAppPinRolls"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

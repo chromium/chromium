@@ -9383,6 +9383,7 @@ from previous Chrome versions.
   <int value="-1908551313" label="MahiDebugging:enabled"/>
   <int value="-1907565048" label="HtmlBaseUsernameDetector:disabled"/>
   <int value="-1907342706" label="ReadItLaterInMenu:disabled"/>
+  <int value="-1907159779" label="NotebookLmAppShelfPinReset:enabled"/>
   <int value="-1907000073"
       label="AutofillEnablePaymentSettingsServerCardSave:disabled"/>
   <int value="-1906427432" label="WallpaperFastRefresh:disabled"/>
@@ -14540,6 +14541,7 @@ from previous Chrome versions.
       label="NewConfirmationBubbleForGeneratedPasswords:enabled"/>
   <int value="73606763" label="XsurfaceMetricsReporting:disabled"/>
   <int value="73670097" label="LockedMode:disabled"/>
+  <int value="73852162" label="NotebookLmAppShelfPin:enabled"/>
   <int value="73929836" label="VrBrowsingInCustomTab:enabled"/>
   <int value="75207621" label="enable-stylus-virtual-keyboard:enabled"/>
   <int value="75237697" label="ash-enable-new-overview-ui"/>
@@ -15904,6 +15906,7 @@ from previous Chrome versions.
   <int value="601875786" label="PageVisibilityPageContentAnnotations:enabled"/>
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
+  <int value="603256057" label="NotebookLmAppShelfPin:disabled"/>
   <int value="603275624" label="AndroidHubSearch:enabled"/>
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>
   <int value="603897763" label="AutofillPageLanguageDetection:disabled"/>
@@ -18748,6 +18751,7 @@ from previous Chrome versions.
   <int value="1672637465" label="OsIntegrationSubManagers:disabled"/>
   <int value="1673185316" label="EarlyCodeCache:enabled"/>
   <int value="1673427566" label="ChromeHomeExpandButton:disabled"/>
+  <int value="1673750445" label="NotebookLmAppShelfPinReset:disabled"/>
   <int value="1673776797"
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:disabled"/>
   <int value="1673943701" label="UseSCContentSharingPicker:disabled"/>

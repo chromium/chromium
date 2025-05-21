@@ -205,6 +205,13 @@ class ChromeShelfPrefsTest : public testing::Test {
     InstallApp(std::move(app));
   }
 
+  void InstallNotebookLmApp() {
+    apps::AppPtr app =
+        std::make_unique<apps::App>(apps::AppType::kWeb, ash::kNotebookLmAppId);
+    app->install_reason = apps::InstallReason::kDefault;
+    InstallApp(std::move(app));
+  }
+
   AppListSyncableServiceFake& syncable_service() {
     return *static_cast<AppListSyncableServiceFake*>(
         app_list::AppListSyncableServiceFactory::GetForProfile(profile_.get()));
@@ -220,6 +227,7 @@ class ChromeShelfPrefsTest : public testing::Test {
         {
             {app_constants::kChromeAppId, "chrome"},
             {ash::kGeminiAppId, "gemini"},
+            {ash::kNotebookLmAppId, "notebook_lm"},
             {ash::kMallSystemAppId, "mall"},
             {ash::kGmailAppId, "gmail"},
             {ash::kGoogleCalendarAppId, "cal"},
@@ -244,6 +252,18 @@ class ChromeShelfPrefsTest : public testing::Test {
 #else
     return false;
 #endif
+  }
+
+  const char* MaybeGeminiItem() {
+    return IsGoogleChromeBranded() ? "gemini, " : "";
+  }
+
+  const char* MaybeNotebookLmItem() {
+    return base::FeatureList::IsEnabled(
+               chromeos::features::kNotebookLmAppShelfPin) &&
+                   IsGoogleChromeBranded()
+               ? "notebook_lm, "
+               : "";
   }
 
   void ResetShelfToOrder(std::vector<std::string> pin_order) {
@@ -336,6 +356,137 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
   ASSERT_TRUE(shelf_prefs_->ShouldPerformConsistencyMigrations());
 }
 
+// NotebookLM is only pinned in branded versions of Chrome.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmAppWhenInstalled) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  InstallNotebookLmApp();
+
+  std::vector<std::string> expected_order = {
+      ash::kGeminiAppId,     app_constants::kChromeAppId,
+      ash::kNotebookLmAppId, ash::kMallSystemAppId,
+      ash::kGmailAppId,
+  };
+  EXPECT_THAT(GetPinnedAppIds(), testing::IsSupersetOf(expected_order));
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmAppOnceOnly) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  EXPECT_THAT(GetPinnedAppIds(), testing::Contains(ash::kNotebookLmAppId));
+
+  shelf_prefs_->RemovePinPosition(ash::ShelfID(ash::kNotebookLmAppId));
+
+  // The NotebookLM app must not reappear in the pinned apps list.
+  EXPECT_THAT(GetPinnedAppIds(),
+              testing::Not(testing::Contains(ash::kNotebookLmAppId)));
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeOther) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+      ash::kGmailAppId,
+  });
+
+  InstallNotebookLmApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, notebook_lm, gmail");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeGeminiOther) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+      ash::kGeminiAppId,
+      ash::kGmailAppId,
+  });
+
+  InstallNotebookLmApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, gemini, notebook_lm, gmail");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_GeminiChromeOther) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  ResetShelfToOrder({
+      ash::kGeminiAppId,
+      app_constants::kChromeAppId,
+      ash::kGmailAppId,
+  });
+
+  InstallNotebookLmApp();
+
+  EXPECT_EQ(GetPinned(), "gemini, chrome, notebook_lm, gmail");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_Chrome) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+  });
+
+  InstallNotebookLmApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, notebook_lm");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeGemini) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+      ash::kGeminiAppId,
+  });
+
+  InstallNotebookLmApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, gemini, notebook_lm");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeOtherGemini) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+      ash::kGmailAppId,
+      ash::kGeminiAppId,
+  });
+
+  InstallNotebookLmApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, notebook_lm, gmail, gemini");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_OtherChromeGemini) {
+  base::test::ScopedFeatureList feature_list{
+      chromeos::features::kNotebookLmAppShelfPin};
+
+  ResetShelfToOrder({
+      ash::kGmailAppId,
+      app_constants::kChromeAppId,
+      ash::kGeminiAppId,
+  });
+
+  InstallNotebookLmApp();
+
+  EXPECT_EQ(GetPinned(), "gmail, chrome, gemini, notebook_lm");
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 TEST_F(ChromeShelfPrefsTest, PinMallSystemAppWhenInstalled) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
@@ -370,121 +521,146 @@ TEST_F(ChromeShelfPrefsTest, PinMallSystemAppOnceOnly) {
               testing::Not(testing::Contains(ash::kMallSystemAppId)));
 }
 
-TEST_F(ChromeShelfPrefsTest, PinMallMigration_Default) {
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeOther) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   ResetShelfToOrder({
       app_constants::kChromeAppId,
-      ash::kGeminiAppId,
       ash::kGmailAppId,
   });
 
   InstallMallApp();
 
-  std::vector<std::string> expected_order = {
-      app_constants::kChromeAppId,
-      ash::kGeminiAppId,
-      ash::kMallSystemAppId,
-      ash::kGmailAppId,
-  };
-  EXPECT_THAT(GetPinnedAppIds(), testing::ContainerEq(expected_order));
+  EXPECT_EQ(GetPinned(), "chrome, mall, gmail");
 }
 
-TEST_F(ChromeShelfPrefsTest,
-       PinMallMigration_PinAfterChromeGeminiFirstPosition) {
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiOther) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   ResetShelfToOrder({
-      ash::kGeminiAppId,
       app_constants::kChromeAppId,
+      ash::kGeminiAppId,
       ash::kGmailAppId,
   });
 
   InstallMallApp();
 
-  std::vector<std::string> expected_order = {
-      ash::kGeminiAppId,
-      app_constants::kChromeAppId,
-      ash::kMallSystemAppId,
-      ash::kGmailAppId,
-  };
-  EXPECT_THAT(GetPinnedAppIds(), testing::ContainerEq(expected_order));
+  EXPECT_EQ(GetPinned(), "chrome, gemini, mall, gmail");
 }
 
-TEST_F(ChromeShelfPrefsTest, PinMallMigration_PinAfterChromeWhenNoGemini) {
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmOther) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   ResetShelfToOrder({
       app_constants::kChromeAppId,
+      ash::kNotebookLmAppId,
       ash::kGmailAppId,
   });
 
   InstallMallApp();
 
-  std::vector<std::string> expected_order = {
-      app_constants::kChromeAppId,
-      ash::kMallSystemAppId,
-      ash::kGmailAppId,
-  };
-  EXPECT_THAT(GetPinnedAppIds(), testing::ContainerEq(expected_order));
+  EXPECT_EQ(GetPinned(), "chrome, mall, notebook_lm, gmail");
 }
 
-TEST_F(ChromeShelfPrefsTest, PinMallMigration_PinAfterChromeOnly) {
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiNotebookLmOther) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   ResetShelfToOrder({
       app_constants::kChromeAppId,
+      ash::kGeminiAppId,
+      ash::kNotebookLmAppId,
+      ash::kGmailAppId,
   });
 
   InstallMallApp();
 
-  std::vector<std::string> expected_order = {
-      app_constants::kChromeAppId,
-      ash::kMallSystemAppId,
-  };
-  EXPECT_THAT(GetPinnedAppIds(), testing::ContainerEq(expected_order));
+  EXPECT_EQ(GetPinned(), "chrome, gemini, mall, notebook_lm, gmail");
 }
 
-TEST_F(ChromeShelfPrefsTest, PinMallMigration_PinAfterChromeAndGeminiOnly) {
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmGeminiOther) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   ResetShelfToOrder({
       app_constants::kChromeAppId,
+      ash::kNotebookLmAppId,
       ash::kGeminiAppId,
+      ash::kGmailAppId,
   });
 
   InstallMallApp();
 
-  std::vector<std::string> expected_order = {
-      app_constants::kChromeAppId,
-      ash::kGeminiAppId,
-      ash::kMallSystemAppId,
-  };
-  EXPECT_THAT(GetPinnedAppIds(), testing::ContainerEq(expected_order));
+  EXPECT_EQ(GetPinned(), "chrome, mall, notebook_lm, gemini, gmail");
 }
 
-TEST_F(ChromeShelfPrefsTest, PinMallMigration_PinAfterChromeWhenGeminiLater) {
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_GeminiChromeOther) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   ResetShelfToOrder({
+      ash::kGeminiAppId,
       app_constants::kChromeAppId,
       ash::kGmailAppId,
-      ash::kGeminiAppId,
   });
 
   InstallMallApp();
 
-  std::vector<std::string> expected_order = {
-      app_constants::kChromeAppId,
-      ash::kMallSystemAppId,
-      ash::kGmailAppId,
-      ash::kGeminiAppId,
-  };
-  EXPECT_THAT(GetPinnedAppIds(), testing::ContainerEq(expected_order));
+  EXPECT_EQ(GetPinned(), "gemini, chrome, mall, gmail");
 }
 
-TEST_F(ChromeShelfPrefsTest,
-       PinMallMigration_PinAfterChromeAndGeminiNotFirstSpot) {
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_GeminiNotebookLmChromeOther) {
+  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
+
+  ResetShelfToOrder({
+      ash::kGeminiAppId,
+      ash::kNotebookLmAppId,
+      app_constants::kChromeAppId,
+      ash::kGmailAppId,
+  });
+
+  InstallMallApp();
+
+  EXPECT_EQ(GetPinned(), "gemini, notebook_lm, chrome, mall, gmail");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_Chrome) {
+  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+  });
+
+  InstallMallApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, mall");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGemini) {
+  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+      ash::kGeminiAppId,
+  });
+
+  InstallMallApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, gemini, mall");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeOtherGemini) {
+  base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
+
+  ResetShelfToOrder({
+      app_constants::kChromeAppId,
+      ash::kGmailAppId,
+      ash::kGeminiAppId,
+  });
+
+  InstallMallApp();
+
+  EXPECT_EQ(GetPinned(), "chrome, mall, gmail, gemini");
+}
+
+TEST_F(ChromeShelfPrefsTest, PinMallMigration_OtherChromeGemini) {
   base::test::ScopedFeatureList feature_list{chromeos::features::kCrosMall};
 
   ResetShelfToOrder({
@@ -495,13 +671,7 @@ TEST_F(ChromeShelfPrefsTest,
 
   InstallMallApp();
 
-  std::vector<std::string> expected_order = {
-      ash::kGmailAppId,
-      app_constants::kChromeAppId,
-      ash::kGeminiAppId,
-      ash::kMallSystemAppId,
-  };
-  EXPECT_THAT(GetPinnedAppIds(), testing::ContainerEq(expected_order));
+  EXPECT_EQ(GetPinned(), "gmail, chrome, gemini, mall");
 }
 
 TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
@@ -532,7 +702,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
   EXPECT_EQ(
       GetPinned(),
       base::StrCat(
-          {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
+          {"chrome, ", MaybeGeminiItem(), MaybeNotebookLmItem(),
            "mall, gmail, cal, files, messages, meet, play, youtube, photos"}));
 
   // Simulate installation finishing in unpredictable order.
@@ -547,30 +717,30 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadApps) {
   EXPECT_EQ(
       GetPinned(),
       base::StrCat(
-          {"app4, chrome, app2, ", IsGoogleChromeBranded() ? "gemini, " : "",
+          {"app4, chrome, app2, ", MaybeGeminiItem(), MaybeNotebookLmItem(),
            "mall, gmail, cal, files, messages, meet, play, youtube, photos"}));
 
   // Install app3, comes after gmail.
   InstallApp(app3);
   EXPECT_EQ(GetPinned(),
-            base::StrCat({"app4, chrome, app2, ",
-                          IsGoogleChromeBranded() ? "gemini, " : "",
+            base::StrCat({"app4, chrome, app2, ", MaybeGeminiItem(),
+                          MaybeNotebookLmItem(),
                           "mall, gmail, app3, cal, files, messages, meet, "
                           "play, youtube, photos"}));
 
   // Install app5, which should not get pinned since it is not in first list.
   InstallApp(app5);
   EXPECT_EQ(GetPinned(),
-            base::StrCat({"app4, chrome, app2, ",
-                          IsGoogleChromeBranded() ? "gemini, " : "",
+            base::StrCat({"app4, chrome, app2, ", MaybeGeminiItem(),
+                          MaybeNotebookLmItem(),
                           "mall, gmail, app3, cal, files, messages, meet, "
                           "play, youtube, photos"}));
 
   // Install app1, comes after chrome.
   InstallApp(app1);
   EXPECT_EQ(GetPinned(),
-            base::StrCat({"app4, chrome, app1, app2, ",
-                          IsGoogleChromeBranded() ? "gemini, " : "",
+            base::StrCat({"app4, chrome, app1, app2, ", MaybeGeminiItem(),
+                          MaybeNotebookLmItem(),
                           "mall, gmail, app3, cal, files, messages, meet, "
                           "play, youtube, photos"}));
 }
@@ -585,7 +755,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadRepeats) {
 
   std::vector<apps::PackageId> pin_order({app1, app2, app3, chrome});
   std::string default_apps = base::StrCat(
-      {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
+      {"chrome, ", MaybeGeminiItem(), MaybeNotebookLmItem(),
        "mall, gmail, cal, files, messages, meet, play, youtube, photos"});
 
   // Request to pin app1, and app2, but only install app1.
@@ -612,7 +782,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
   EXPECT_EQ(
       GetPinned(),
       base::StrCat(
-          {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
+          {"chrome, ", MaybeGeminiItem(), MaybeNotebookLmItem(),
            "mall, gmail, cal, files, messages, meet, play, youtube, photos"}));
   auto get_prefs = [&]() {
     return profile_->GetPrefs()
@@ -633,7 +803,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
   EXPECT_EQ(
       GetPinned(),
       base::StrCat(
-          {"chrome, ", IsGoogleChromeBranded() ? "gemini, " : "",
+          {"chrome, ", MaybeGeminiItem(), MaybeNotebookLmItem(),
            "mall, gmail, cal, files, messages, meet, play, youtube, photos"}));
 
   // Further calls to OnGetPinPreloadApps() should not write additional values

@@ -1546,6 +1546,12 @@ extern const char kNewEtc1EncoderDescription[];
 extern const char kNotebookLmAppPreinstallName[];
 extern const char kNotebookLmAppPreinstallDescription[];
 
+extern const char kNotebookLmAppShelfPinName[];
+extern const char kNotebookLmAppShelfPinDescription[];
+
+extern const char kNotebookLmAppShelfPinResetName[];
+extern const char kNotebookLmAppShelfPinResetDescription[];
+
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 

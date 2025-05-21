@@ -6557,6 +6557,16 @@
     "expiry_milestone": 146
   },
   {
+    "name": "notebook-lm-app-shelf-pin",
+    "owners": [ "alancutter@google.com", "crosdev-commerce-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
+    "name": "notebook-lm-app-shelf-pin-reset",
+    "owners": [ "alancutter@google.com", "crosdev-commerce-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "notification-collision-management",
     "owners": [ "thegreenfrog@chromium.org", "bling-gsu-pod@google.com" ],
     "expiry_milestone": 145

@@ -12357,6 +12357,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseFrameIntervalDeciderAdaptiveFrameRate)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"notebook-lm-app-shelf-pin", flag_descriptions::kNotebookLmAppShelfPinName,
+     flag_descriptions::kNotebookLmAppShelfPinDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppShelfPin)},
+    {"notebook-lm-app-shelf-pin-reset",
+     flag_descriptions::kNotebookLmAppShelfPinResetName,
+     flag_descriptions::kNotebookLmAppShelfPinResetDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppShelfPinReset)},
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -359,6 +359,17 @@ BASE_FEATURE(kSystemFeaturesDisableListHidden,
              "SystemFeaturesDisableListHidden",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables pinning the NotebookLM preinstalled app to the shelf.
+BASE_FEATURE(kNotebookLmAppShelfPin,
+             "NotebookLmAppShelfPin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Resets the act of pinning the NotebookLM preinstalled app to the shelf, used
+// for manual testing.
+BASE_FEATURE(kNotebookLmAppShelfPinReset,
+             "NotebookLmAppShelfPinReset",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsApnPoliciesEnabled() {
