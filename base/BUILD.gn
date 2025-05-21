@@ -5608,6 +5608,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/MutableBooleanParamWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/MutableFlagWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/MutableIntParamWithSafeDefaultUnitTest.java",
+      "android/junit/src/org/chromium/base/PackageUtilsUnitTest.java",
       "android/junit/src/org/chromium/base/PathUtilsTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",
       "android/junit/src/org/chromium/base/PostNativeFlagUnitTest.java",

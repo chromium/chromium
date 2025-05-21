@@ -364,6 +364,11 @@ public class PdfUtils {
                 "Android.Pdf.AssistContent.IsWorkProfile", isWorkProfile);
     }
 
+    static void recordGetAssistantPackageResult(boolean success) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Pdf.AssistContent.GetAssistantPackageResult", success);
+    }
+
     private static void recordIsPdfDownloadUrlEncoded(boolean encodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlEncoded", encodeResult);
     }

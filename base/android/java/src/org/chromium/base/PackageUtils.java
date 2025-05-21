@@ -5,10 +5,12 @@
 package org.chromium.base;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Build;
+import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -31,6 +33,8 @@ import java.util.List;
 public class PackageUtils {
     private static final String TAG = "PackageUtils";
     private static final char[] HEX_CHAR_LOOKUP = "0123456789ABCDEF".toCharArray();
+
+    private static final String DEFAULT_ASSISTANT_SETTING = "assistant";
 
     /** Retrieves the PackageInfo for the given package, or null if it is not installed. */
     public static @Nullable PackageInfo getPackageInfo(String packageName, int flags) {
@@ -155,7 +159,29 @@ public class PackageUtils {
     }
 
     /**
+     * Gets the package name of the default assistant app (e.g. com.example.app).
+     *
+     * @param context Context used to get settings.
+     * @return Package name of assistant app, or null if unable to get.
+     */
+    public static @Nullable String getDefaultAssistantPackageName(Context context) {
+        @Nullable String defaultAssistantSetting =
+                Settings.Secure.getString(context.getContentResolver(), DEFAULT_ASSISTANT_SETTING);
+        if (defaultAssistantSetting == null || defaultAssistantSetting.isBlank()) {
+            return null;
+        }
+
+        var splitSetting = defaultAssistantSetting.split("/");
+        if (splitSetting.length > 1 && !splitSetting[0].isBlank()) {
+            return splitSetting[0];
+        }
+
+        return null;
+    }
+
+    /**
      * Converts a byte array to hex string with : inserted between each element.
+     *
      * @param byteArray The array to be converted.
      * @return A string with two letters representing each byte and : in between.
      */

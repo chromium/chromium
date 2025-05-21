@@ -616,6 +616,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.AssistContent.WebPageContentProvider.GetAssistantPackageResult"
+    enum="BooleanSuccess" expires_after="2025-09-07">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records whether we were able to get the package name of the default
+    assistant app from Android's settings. Recorded when AssistContent is
+    requested for web pages.
+  </summary>
+</histogram>
+
+<histogram
     name="Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart"
     units="ms" expires_after="2025-10-12">
   <owner>salg@google.com</owner>
@@ -4204,6 +4216,17 @@ chromium-metrics-reviews@google.com.
     Records which delegate will be used to provide the home page URL that is
     needed for a custom provider's customization. Recorded at startup on
     Android.
+  </summary>
+</histogram>
+
+<histogram name="Android.Pdf.AssistContent.GetAssistantPackageResult"
+    enum="BooleanSuccess" expires_after="2025-09-07">
+  <owner>salg@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether we were able to get the package name of the default
+    assistant app from Android's settings. Recorded when AssistContent is
+    requested for pdf pages.
   </summary>
 </histogram>
 

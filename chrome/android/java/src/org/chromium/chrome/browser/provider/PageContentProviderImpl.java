@@ -8,8 +8,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.UriMatcher;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -24,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
@@ -36,7 +34,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.base.SplitCompatContentProvider;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.provider.PageContentProviderMetrics.PageContentProviderEvent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -60,8 +57,6 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
     private static final int INVALIDATE_URI_DELAY_MS = 60_000;
     private static final int PAGE_EXTRACTION_TIMEOUT_MS = 30_000;
-    private static final String[] AUTHORIZED_PACKAGE_NAMES =
-            new String[] {GSAUtils.GSA_PACKAGE_NAME};
 
     static final class PageContentInvocationState {
 
@@ -357,22 +352,18 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
     }
 
     private static void grantAccessToUri(Uri uri) {
-
-        for (String packageName : AUTHORIZED_PACKAGE_NAMES) {
-            ContextUtils.getApplicationContext()
-                    .grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        var assistantPackageName =
+                PackageUtils.getDefaultAssistantPackageName(ContextUtils.getApplicationContext());
+        RecordHistogram.recordBooleanHistogram(
+                "Android.AssistContent.WebPageContentProvider.GetAssistantPackageResult",
+                assistantPackageName != null);
+        if (assistantPackageName == null) {
+            return;
         }
 
-        var intent = new Intent(Intent.ACTION_VOICE_COMMAND);
-        var intentActivities =
-                PackageManagerUtils.queryIntentActivities(intent, PackageManager.MATCH_ALL);
-        for (ResolveInfo packageInfo : intentActivities) {
-            ContextUtils.getApplicationContext()
-                    .grantUriPermission(
-                            packageInfo.activityInfo.packageName,
-                            uri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
+        ContextUtils.getApplicationContext()
+                .grantUriPermission(
+                        assistantPackageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
