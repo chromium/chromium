@@ -129,7 +129,13 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
   CHECK(base_view_controller_);
 }
 
-IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
+IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {
+  if (IsInObserverList()) {
+    CHECK(browser_);
+    browser_->RemoveObserver(this);
+    browser_ = nullptr;
+  }
+}
 
 // CollaborationControllerDelegate.
 void IOSCollaborationControllerDelegate::PrepareFlowUI(
