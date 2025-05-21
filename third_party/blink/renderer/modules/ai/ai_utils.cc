@@ -15,7 +15,7 @@ namespace {
 
 mojom::blink::AISummarizerType ToMojoSummarizerType(V8SummarizerType type) {
   switch (type.AsEnum()) {
-    case V8SummarizerType::Enum::kTlDr:
+    case V8SummarizerType::Enum::kTldr:
       return mojom::blink::AISummarizerType::kTLDR;
     case V8SummarizerType::Enum::kKeyPoints:
       return mojom::blink::AISummarizerType::kKeyPoints;

@@ -66,7 +66,7 @@ void SummarizerBase::RecordCreateOptionMetrics(
   WritingAssistanceMetricsOptionFormat format_metric;
   WritingAssistanceMetricsOptionLength length_metric;
   switch (options.type().AsEnum()) {
-    case V8SummarizerType::Enum::kTlDr:
+    case V8SummarizerType::Enum::kTldr:
       type_metric = WritingAssistanceMetricsOptionType::kTldr;
       break;
     case V8SummarizerType::Enum::kKeyPoints:
