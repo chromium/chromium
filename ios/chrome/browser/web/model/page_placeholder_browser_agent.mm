@@ -15,7 +15,7 @@
 #import "ios/web/public/web_state.h"
 
 PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {
+    : BrowserUserData(browser) {
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.
   DCHECK(browser_->GetWebStateList()->empty())
@@ -27,9 +27,7 @@ PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
       SessionRestorationServiceFactory::GetForProfile(profile));
 }
 
-PagePlaceholderBrowserAgent::~PagePlaceholderBrowserAgent() {
-  browser_ = nullptr;
-}
+PagePlaceholderBrowserAgent::~PagePlaceholderBrowserAgent() = default;
 
 #pragma mark - Public
 

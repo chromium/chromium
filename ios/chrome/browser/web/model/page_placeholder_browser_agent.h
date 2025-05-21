@@ -40,9 +40,6 @@ class PagePlaceholderBrowserAgent final
 
   explicit PagePlaceholderBrowserAgent(Browser* browser);
 
-  // The Browser this object is attached to.
-  raw_ptr<Browser> browser_ = nullptr;
-
   // Observation for SessionRestorationService events.
   base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
       session_restoration_service_observation_{this};
