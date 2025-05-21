@@ -1028,13 +1028,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.BulkCheck.Error"
-    enum="PasswordLeakDetectionError" expires_after="2025-06-29">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>Error encountered during the password bulk check.</summary>
-</histogram>
-
 <histogram name="PasswordManager.BulkCheck.InsecureCredentials.Count"
     units="credentials" expires_after="2025-10-26">
   <owner>eic@google.com</owner>
