@@ -74,7 +74,7 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
         super.onSelectionStateChange(selectedItems);
 
         int selectCount = selectedItems.size();
-        Button done = (Button) findViewById(R.id.done);
+        Button done = findViewById(R.id.done);
         done.setEnabled(selectedItems.size() > 0);
 
         if (selectCount > 0) {

@@ -340,7 +340,7 @@ public class ManagedPreferencesUtils {
      * @param view The view corresponding to a given preference.
      */
     private static void hideManagedIcon(View view) {
-        final ImageView imageView = (ImageView) view.findViewById(android.R.id.icon);
+        final ImageView imageView = view.findViewById(android.R.id.icon);
         if (imageView != null) {
             imageView.setVisibility(View.GONE);
         }

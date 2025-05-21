@@ -97,7 +97,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
         mScrimView.setBackgroundColor(activity.getColor(R.color.modal_dialog_scrim_color));
         LayoutInflater.from(activity).inflate(R.layout.promo_dialog_layout, mScrimView, true);
 
-        mDialogLayout = (PromoDialogLayout) mScrimView.findViewById(R.id.promo_dialog_layout);
+        mDialogLayout = mScrimView.findViewById(R.id.promo_dialog_layout);
     }
 
     /** Force the promo dialog to have a fully opaque background hiding any underlying content. */

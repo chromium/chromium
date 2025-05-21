@@ -245,7 +245,7 @@ public class PickerCategoryView extends RelativeLayout
                                 false);
         toolbar.setNavigationOnClickListener(this);
         toolbar.setDelegate(delegate);
-        Button doneButton = (Button) toolbar.findViewById(R.id.done);
+        Button doneButton = toolbar.findViewById(R.id.done);
         doneButton.setOnClickListener(this);
         mVideoPlayer = findViewById(R.id.playback_container);
         mZoom = findViewById(R.id.zoom);

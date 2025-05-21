@@ -837,10 +837,8 @@ public class ModalDialogViewTest {
                 () -> {
                     model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, customButtonBarView);
                 });
-        Button positiveButton =
-                (Button) spinnerButtonWrapperPositive.findViewById(R.id.button_primary);
-        ProgressBar progressBar =
-                (ProgressBar) spinnerButtonWrapperPositive.findViewById(R.id.progress_bar);
+        Button positiveButton = spinnerButtonWrapperPositive.findViewById(R.id.button_primary);
+        ProgressBar progressBar = spinnerButtonWrapperPositive.findViewById(R.id.progress_bar);
         Assert.assertEquals(View.GONE, progressBar.getVisibility());
         onView(withId(R.id.spinner_button)).perform(click());
 
@@ -924,10 +922,8 @@ public class ModalDialogViewTest {
                 () -> {
                     model.set(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, customButtonBarView);
                 });
-        Button negativeButton =
-                (Button) spinnerButtonWrapperNegative.findViewById(R.id.button_secondary);
-        ProgressBar progressBar =
-                (ProgressBar) spinnerButtonWrapperNegative.findViewById(R.id.progress_bar);
+        Button negativeButton = spinnerButtonWrapperNegative.findViewById(R.id.button_secondary);
+        ProgressBar progressBar = spinnerButtonWrapperNegative.findViewById(R.id.progress_bar);
         Assert.assertEquals(View.GONE, progressBar.getVisibility());
         onView(withId(R.id.spinner_button)).perform(click());
 

@@ -65,8 +65,8 @@ public class LoginPrompt {
 
     private void createDialog(@Nullable GURL autofillUrl) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.http_auth_dialog, null);
-        mUsernameView = (AlertDialogEditText) v.findViewById(R.id.username);
-        mPasswordView = (AlertDialogEditText) v.findViewById(R.id.password);
+        mUsernameView = v.findViewById(R.id.username);
+        mPasswordView = v.findViewById(R.id.password);
         if (autofillUrl != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // By default Android Autofill support is turned off for these controls because Chrome
             // uses its own autofill provider (Chrome Sync). If an app is using Android Autofill
@@ -85,7 +85,7 @@ public class LoginPrompt {
                     return false;
                 });
 
-        TextView explanationView = (TextView) v.findViewById(R.id.explanation);
+        TextView explanationView = v.findViewById(R.id.explanation);
         explanationView.setText(mMessageBody);
 
         mDialog =

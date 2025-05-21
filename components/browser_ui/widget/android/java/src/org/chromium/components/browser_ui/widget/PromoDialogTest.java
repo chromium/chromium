@@ -205,8 +205,7 @@ public class PromoDialogTest {
                 new PromoDialogWrapper(
                         sActivity, dialogParams, /* shouldPadForWindowInsets= */ true);
         final PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
-        LinearLayout flippableLayout =
-                (LinearLayout) promoDialogLayout.findViewById(R.id.full_promo_content);
+        LinearLayout flippableLayout = promoDialogLayout.findViewById(R.id.full_promo_content);
 
         // Tall screen should keep the illustration above everything else.
         ThreadUtils.runOnUiThreadBlocking(
@@ -287,8 +286,7 @@ public class PromoDialogTest {
                 new PromoDialogWrapper(
                         sActivity, dialogParams, /* shouldPadForWindowInsets= */ true);
         PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
-        ViewGroup scrollableLayout =
-                (ViewGroup) promoDialogLayout.findViewById(R.id.scrollable_promo_content);
+        ViewGroup scrollableLayout = promoDialogLayout.findViewById(R.id.scrollable_promo_content);
 
         View header = promoDialogLayout.findViewById(R.id.header);
         Assert.assertEquals(scrollableLayout.getChildAt(0), header);
@@ -322,7 +320,7 @@ public class PromoDialogTest {
         PromoDialogWrapper wrapper =
                 new PromoDialogWrapper(sActivity, dialogParams, shouldPadForWindowInsets);
         PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
-        TextView subheader = (TextView) promoDialogLayout.findViewById(R.id.subheader);
+        TextView subheader = promoDialogLayout.findViewById(R.id.subheader);
         checkControlVisibility(subheader, true);
 
         // Create basic dialog with both subheaderCharSequence and subheaderStringResource.
@@ -365,8 +363,7 @@ public class PromoDialogTest {
         PromoDialogWrapper wrapper =
                 new PromoDialogWrapper(sActivity, dialogParams, shouldPadForWindowInsets);
         PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
-        ViewGroup scrollableLayout =
-                (ViewGroup) promoDialogLayout.findViewById(R.id.scrollable_promo_content);
+        ViewGroup scrollableLayout = promoDialogLayout.findViewById(R.id.scrollable_promo_content);
 
         View header = promoDialogLayout.findViewById(R.id.header);
         Assert.assertEquals(scrollableLayout.getChildAt(0), header);
@@ -391,8 +388,7 @@ public class PromoDialogTest {
         promoDialogLayout.addControl(view);
 
         View header = promoDialogLayout.findViewById(R.id.header);
-        ViewGroup scrollableLayout =
-                (ViewGroup) promoDialogLayout.findViewById(R.id.scrollable_promo_content);
+        ViewGroup scrollableLayout = promoDialogLayout.findViewById(R.id.scrollable_promo_content);
 
         wrapper.triggerDialogLayoutMeasure(400, 2000);
         Assert.assertEquals(promoDialogLayout.getChildAt(0), header);

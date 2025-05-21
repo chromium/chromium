@@ -322,12 +322,10 @@ class BottomSheet extends FrameLayout
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
-        mToolbarHolder =
-                (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
+        mToolbarHolder = findViewById(R.id.bottom_sheet_toolbar_container);
         mToolbarHolder.setBottomSheet(this);
 
-        mBottomSheetContentContainer =
-                (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_content);
+        mBottomSheetContentContainer = findViewById(R.id.bottom_sheet_content);
         mBottomSheetContentContainer.setBottomSheet(this);
 
         mContainerWidth = mSheetContainer.getWidth();

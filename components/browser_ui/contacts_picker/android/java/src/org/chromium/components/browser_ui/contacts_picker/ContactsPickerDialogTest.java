@@ -196,7 +196,7 @@ public class ContactsPickerDialogTest
     }
 
     private RecyclerView getRecyclerView() {
-        return (RecyclerView) mDialog.findViewById(R.id.selectable_list_recycler_view);
+        return mDialog.findViewById(R.id.selectable_list_recycler_view);
     }
 
     /**
@@ -334,9 +334,8 @@ public class ContactsPickerDialogTest
 
         mLastActionRecorded = ContactsPickerAction.NUM_ENTRIES;
 
-        ContactsPickerToolbar toolbar =
-                (ContactsPickerToolbar) mDialog.findViewById(R.id.action_bar);
-        Button done = (Button) toolbar.findViewById(R.id.done);
+        ContactsPickerToolbar toolbar = mDialog.findViewById(R.id.action_bar);
+        Button done = toolbar.findViewById(R.id.done);
         int callCount = onActionCallback.getCallCount();
         TestTouchUtils.performClickOnMainSync(InstrumentationRegistry.getInstrumentation(), done);
         onActionCallback.waitForCallback(callCount, 1);
@@ -388,8 +387,7 @@ public class ContactsPickerDialogTest
     }
 
     private void clickSearchButton() {
-        ContactsPickerToolbar toolbar =
-                (ContactsPickerToolbar) mDialog.findViewById(R.id.action_bar);
+        ContactsPickerToolbar toolbar = mDialog.findViewById(R.id.action_bar);
         View search = toolbar.findViewById(R.id.search);
         TestTouchUtils.performClickOnMainSync(InstrumentationRegistry.getInstrumentation(), search);
     }
@@ -519,7 +517,7 @@ public class ContactsPickerDialogTest
         TopView topView = getTopView();
         Assert.assertNotNull(topView);
 
-        TextView explanation = (TextView) topView.findViewById(R.id.explanation);
+        TextView explanation = topView.findViewById(R.id.explanation);
         Assert.assertNotNull(explanation);
         Assert.assertEquals(
                 "The contacts you select will be shared with example.com.",

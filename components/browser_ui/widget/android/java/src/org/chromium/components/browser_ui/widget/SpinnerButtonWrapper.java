@@ -73,7 +73,7 @@ public class SpinnerButtonWrapper extends FrameLayout implements View.OnClickLis
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mSpinner = (ProgressBar) findViewById(R.id.progress_bar);
+        mSpinner = findViewById(R.id.progress_bar);
     }
 
     /** Helper for setting up the custom button. */

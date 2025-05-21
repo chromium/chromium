@@ -71,12 +71,12 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
 
     @Override
     public void onFinishInflate() {
-        mFlippableContent = (LinearLayout) findViewById(R.id.full_promo_content);
-        mScrollingContainer = (ViewGroup) findViewById(R.id.promo_container);
-        mScrollableContent = (LinearLayout) findViewById(R.id.scrollable_promo_content);
-        mIllustrationView = (ImageView) findViewById(R.id.illustration);
-        mHeaderView = (TextView) findViewById(R.id.header);
-        mSubheaderView = (TextView) findViewById(R.id.subheader);
+        mFlippableContent = findViewById(R.id.full_promo_content);
+        mScrollingContainer = findViewById(R.id.promo_container);
+        mScrollableContent = findViewById(R.id.scrollable_promo_content);
+        mIllustrationView = findViewById(R.id.illustration);
+        mHeaderView = findViewById(R.id.header);
+        mSubheaderView = findViewById(R.id.subheader);
 
         super.onFinishInflate();
     }
@@ -124,7 +124,7 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
         }
 
         // Create the footer.
-        ViewStub footerStub = (ViewStub) findViewById(R.id.footer_stub);
+        ViewStub footerStub = findViewById(R.id.footer_stub);
         if (mParams.footerStringResource == 0) {
             ((ViewGroup) footerStub.getParent()).removeView(footerStub);
         } else {
@@ -133,7 +133,7 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
         }
 
         // Create the buttons.
-        DualControlLayout buttonBar = (DualControlLayout) findViewById(R.id.button_bar);
+        DualControlLayout buttonBar = findViewById(R.id.button_bar);
         String primaryString =
                 mParams.primaryButtonCharSequence != null
                         ? mParams.primaryButtonCharSequence.toString()

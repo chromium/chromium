@@ -217,9 +217,9 @@ public class PickerCategoryView extends OptimizedFrameLayout
                 });
         mSelectableListLayout.configureWideDisplayStyle();
 
-        mSearchButton = (ImageView) mToolbar.findViewById(R.id.search);
+        mSearchButton = mToolbar.findViewById(R.id.search);
         mSearchButton.setOnClickListener(this);
-        mDoneButton = (Button) mToolbar.findViewById(R.id.done);
+        mDoneButton = mToolbar.findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 
         mLayoutManager = new LinearLayoutManager(context);

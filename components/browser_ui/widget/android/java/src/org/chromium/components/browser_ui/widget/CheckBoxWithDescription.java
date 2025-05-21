@@ -49,21 +49,27 @@ public class CheckBoxWithDescription extends ConstraintLayout implements OnClick
         mDescription = getDescriptionTextView();
     }
 
-    /** @return CheckBox View inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return CheckBox View inside this {@link CheckBoxWithDescription}.
+     */
     private CheckBox getCheckBoxView() {
-        return (CheckBox) findViewById(R.id.checkbox);
+        return findViewById(R.id.checkbox);
     }
 
-    /** @return TextView displayed as primary inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return TextView displayed as primary inside this {@link CheckBoxWithDescription}.
+     */
     @VisibleForTesting
     TextView getPrimaryTextView() {
-        return (TextView) findViewById(R.id.primary);
+        return findViewById(R.id.primary);
     }
 
-    /** @return TextView displayed as description inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return TextView displayed as description inside this {@link CheckBoxWithDescription}.
+     */
     @VisibleForTesting
     TextView getDescriptionTextView() {
-        return (TextView) findViewById(R.id.description);
+        return findViewById(R.id.description);
     }
 
     @Override

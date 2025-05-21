@@ -46,8 +46,8 @@ class ShareDialogAdapter extends ArrayAdapter<ResolveInfo> {
         } else {
             view = convertView;
         }
-        TextView text = (TextView) view.findViewById(R.id.text);
-        ImageView icon = (ImageView) view.findViewById(R.id.icon);
+        TextView text = view.findViewById(R.id.text);
+        ImageView icon = view.findViewById(R.id.icon);
 
         ResolveInfo info = assumeNonNull(getItem(position));
         text.setText(info.loadLabel(mManager));
