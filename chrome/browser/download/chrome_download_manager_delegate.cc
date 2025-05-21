@@ -109,7 +109,6 @@
 #include "chrome/browser/download/android/download_utils.h"
 #include "chrome/browser/download/android/duplicate_download_dialog_bridge_delegate.h"
 #include "chrome/browser/download/android/insecure_download_dialog_bridge.h"
-#include "chrome/browser/download/android/insecure_download_infobar_delegate.h"
 #include "chrome/browser/download/android/new_navigation_observer.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/pdf/pdf_jni_headers/PdfUtils_jni.h"

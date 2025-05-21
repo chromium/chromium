@@ -298,7 +298,8 @@ chromium-metrics-reviews@google.com.
   <int value="95" label="SMS_RECEIVER_INFOBAR_DELEGATE"/>
   <int value="96" label="KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE"/>
   <int value="97" label="SYNC_ERROR_INFOBAR_DELEGATE_ANDROID"/>
-  <int value="98" label="MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="98"
+      label="MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="99" label="CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID"/>
   <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
   <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC (Obsolete)"/>
