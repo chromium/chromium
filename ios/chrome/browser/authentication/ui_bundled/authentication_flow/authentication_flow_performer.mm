@@ -166,7 +166,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 void MaybeShowHistorySyncScreenAfterProfileSwitch(
     Browser* browser,
-    signin_metrics::AccessPoint access_point) {
+    signin_metrics::AccessPoint access_point,
+    ProceduralBlock completion) {
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
@@ -174,8 +175,18 @@ void MaybeShowHistorySyncScreenAfterProfileSwitch(
   if (history_sync::GetSkipReason(syncService, authenticationService,
                                   profile->GetPrefs(), /*isOptional=*/NO) !=
       history_sync::HistorySyncSkipReason::kNone) {
+    if (completion) {
+      completion();
+    }
     return;
   }
+
+  SigninCoordinatorCompletionCallback historySyncCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        if (identity && completion) {
+          completion();
+        }
+      };
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kHistorySync
@@ -183,7 +194,7 @@ void MaybeShowHistorySyncScreenAfterProfileSwitch(
             accessPoint:access_point
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:nil];
+             completion:historySyncCompletion];
   command.optionalHistorySync = YES;
 
   UIViewController* view_controller =
@@ -272,7 +283,16 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
 
   if (post_signin_actions.Has(
           PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch)) {
-    MaybeShowHistorySyncScreenAfterProfileSwitch(browser, access_point);
+    ProceduralBlock showSnackbar;
+    if (post_signin_actions.Has(
+            PostSignInAction::kShowIdentityConfirmationSnackbar)) {
+      showSnackbar = ^{
+        TriggerAccountSwitchSnackbarWithIdentity(identity, browser);
+      };
+    }
+    MaybeShowHistorySyncScreenAfterProfileSwitch(browser, access_point,
+                                                 showSnackbar);
+    return;
   }
 
   if (post_signin_actions.Has(
