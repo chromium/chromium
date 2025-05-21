@@ -15264,10 +15264,12 @@ from previous Chrome versions.
   <int value="439858569" label="OmniboxForceAllowedToBeDefault:enabled"/>
   <int value="439859371" label="WebXRWebGPUBinding:disabled"/>
   <int value="441096714" label="WebBluetoothConfirmPairingSupport:disabled"/>
+  <int value="441851855" label="EdgeToEdgeTablet:disabled"/>
   <int value="441992617" label="OmniboxContextualSuggestions:enabled"/>
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="442898264"
       label="CrOSLateBootChromeboxUsbPassthroughRestrictions:disabled"/>
+  <int value="443826886" label="EdgeToEdgeTablet:enabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444461915" label="LogoPolish:enabled"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>

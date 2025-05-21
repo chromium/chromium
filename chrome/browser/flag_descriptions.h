@@ -2849,6 +2849,9 @@ extern const char kEdgeToEdgeEverywhereDescription[];
 extern const char kEdgeToEdgeSafeAreaConstraintName[];
 extern const char kEdgeToEdgeSafeAreaConstraintDescription[];
 
+extern const char kEdgeToEdgeTabletName[];
+extern const char kEdgeToEdgeTabletDescription[];
+
 extern const char kEdgeToEdgeWebOptInName[];
 extern const char kEdgeToEdgeWebOptInDescription[];
 

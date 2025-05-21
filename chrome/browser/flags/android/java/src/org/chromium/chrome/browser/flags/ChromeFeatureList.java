@@ -359,6 +359,7 @@ public abstract class ChromeFeatureList {
             "EdgeToEdgeMonitorConfigurations";
     public static final String EDGE_TO_EDGE_EVERYWHERE = "EdgeToEdgeEverywhere";
     public static final String EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT = "EdgeToEdgeSafeAreaConstraint";
+    public static final String EDGE_TO_EDGE_TABLET = "EdgeToEdgeTablet";
     public static final String EDGE_TO_EDGE_WEB_OPT_IN = "EdgeToEdgeWebOptIn";
     public static final String EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD =
             "EducationalTipDefaultBrowserPromoCard";
@@ -754,6 +755,7 @@ public abstract class ChromeFeatureList {
                     EDGE_TO_EDGE_EVERYWHERE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sEdgeToEdgeTablet = newCachedFlag(EDGE_TO_EDGE_TABLET, false);
     public static final CachedFlag sEdgeToEdgeWebOptIn =
             newCachedFlag(EDGE_TO_EDGE_WEB_OPT_IN, true);
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =
@@ -949,6 +951,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeBottomChin,
                     sEdgeToEdgeEverywhere,
                     sEdgeToEdgeMonitorConfigurations,
+                    sEdgeToEdgeTablet,
                     sEdgeToEdgeWebOptIn,
                     sEducationalTipDefaultBrowserPromoCard,
                     sEducationalTipModule,

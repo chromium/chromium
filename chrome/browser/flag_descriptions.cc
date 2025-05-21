@@ -4828,6 +4828,10 @@ const char kEdgeToEdgeSafeAreaConstraintDescription[] =
     "Ensure web content is constrained to within the safe area if safe area "
     "constraint is presents on a given web page.";
 
+const char kEdgeToEdgeTabletName[] = "EdgeToEdgeTablet";
+const char kEdgeToEdgeTabletDescription[] =
+    "Enables the Android feature Edge-to-Edge on tablets";
+
 const char kEdgeToEdgeWebOptInName[] = "EdgeToEdgeWebOptIn";
 const char kEdgeToEdgeWebOptInDescription[] =
     "Enables Chrome to draw below the Nav Bar on websites that have explicitly "

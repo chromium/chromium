@@ -2452,6 +2452,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "edge-to-edge-tablet",
+    "owners": ["lazzzis@google.com", "wenyufu@chromium.org","twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "edge-to-edge-web-opt-in",
     "owners": ["clhager@google.com", "wenyufu@chromium.org","twellington@chromium.org", "edge-to-edge@chromium.org"],
     "expiry_milestone": 142
