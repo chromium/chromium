@@ -72,7 +72,7 @@ public class ContactDetails implements Comparable<ContactDetails> {
      */
     public ContactDetails(
             String id,
-            String displayName,
+            @Nullable String displayName,
             @Nullable List<String> emails,
             @Nullable List<String> phoneNumbers,
             @Nullable List<PaymentAddress> addresses) {

@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.latency_injection;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
+@NullMarked
 public final class StartupLatencyInjector {
     private static final String HISTOGRAM_TOTAL_WAIT_TIME =
             "Startup.Android.MainIconLaunchTotalWaitTime";
@@ -38,6 +40,7 @@ public final class StartupLatencyInjector {
 
     private void busyWait() {
         UptimeMillisTimer timer = new UptimeMillisTimer();
-        while (mBusyWaitDurationMillis.compareTo(timer.getElapsedMillis()) >= 0);
+        while (mBusyWaitDurationMillis.compareTo(timer.getElapsedMillis()) >= 0)
+            ;
     }
 }

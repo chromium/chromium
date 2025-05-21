@@ -6,6 +6,7 @@ package org.chromium.components.embedder_support.contextmenu;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Interface to handle chip data and actions. */
 @NullMarked
@@ -23,7 +24,7 @@ public interface ChipDelegate {
      * @param callback The callback will always be called with the retrieved ChipRenderParams. The
      *     ChipRenderParams will be null in the event there is no chip to show.
      */
-    void getChipRenderParams(Callback<ChipRenderParams> callback);
+    void getChipRenderParams(Callback<@Nullable ChipRenderParams> callback);
 
     /** Called when the context menu is closed. */
     void onMenuClosed();
@@ -34,5 +35,5 @@ public interface ChipDelegate {
      * @param chipRenderParams A wrapper object contains the params used when rendering the chip.
      * @return True if the params are valid.
      */
-    boolean isValidChipRenderParams(ChipRenderParams chipRenderParams);
+    boolean isValidChipRenderParams(@Nullable ChipRenderParams chipRenderParams);
 }

@@ -13,6 +13,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -28,14 +30,15 @@ import org.chromium.ui.base.WindowAndroid;
  * extend HttpAuthHandler due to the private access of HttpAuthHandler's
  * constructor.
  */
+@NullMarked
 public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginPrompt.Observer {
-    private static Callback<ChromeHttpAuthHandler> sTestCreationCallback;
+    private static @Nullable Callback<ChromeHttpAuthHandler> sTestCreationCallback;
 
     private long mNativeChromeHttpAuthHandler;
-    private String mAutofillUsername;
-    private String mAutofillPassword;
-    private LoginPrompt mLoginPrompt;
-    private Tab mTab;
+    private @Nullable String mAutofillUsername;
+    private @Nullable String mAutofillPassword;
+    private @Nullable LoginPrompt mLoginPrompt;
+    private @Nullable Tab mTab;
 
     private ChromeHttpAuthHandler(long nativeChromeHttpAuthHandler) {
         assert nativeChromeHttpAuthHandler != 0;
@@ -113,6 +116,7 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
                         .getMessageBody(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
         mLoginPrompt = new LoginPrompt(activity, messageBody, null, this);
         // In case the autofill data arrives before the prompt is created.
+
         if (mAutofillUsername != null && mAutofillPassword != null) {
             mLoginPrompt.onAutofillDataAvailable(mAutofillUsername, mAutofillPassword);
         }

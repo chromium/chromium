@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.installedapp;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.installedapp.InstalledAppProviderImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -12,6 +13,7 @@ import org.chromium.installedapp.mojom.InstalledAppProvider;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 /** Factory to create instances of the InstalledAppProvider Mojo service. */
+@NullMarked
 public class InstalledAppProviderFactory implements InterfaceFactory<InstalledAppProvider> {
     private final RenderFrameHost mRenderFrameHost;
 
@@ -21,8 +23,9 @@ public class InstalledAppProviderFactory implements InterfaceFactory<InstalledAp
 
     @Override
     public InstalledAppProvider createImpl() {
-        return new InstalledAppProviderImpl(
-                Profile.fromWebContents(WebContentsStatics.fromRenderFrameHost(mRenderFrameHost)),
-                mRenderFrameHost);
+        Profile profile =
+                Profile.fromWebContents(WebContentsStatics.fromRenderFrameHost(mRenderFrameHost));
+        assert profile != null;
+        return new InstalledAppProviderImpl(profile, mRenderFrameHost);
     }
 }

@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.view.Gravity;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.UiUtils;
@@ -20,6 +22,7 @@ import java.util.function.BooleanSupplier;
  * Interface for fullscreen notification toast that allows experimenting different
  * implementations, based on Android Toast widget and a custom view.
  */
+@NullMarked
 interface FullscreenToast {
     // Fullscreen is entered. System UI starts being hidden. Actual fullscreen layout is
     // completed at |onFullscreenLayout|.
@@ -45,7 +48,7 @@ interface FullscreenToast {
         private final Activity mActivity;
         private final BooleanSupplier mIsPersistentFullscreenMode;
 
-        private Toast mNotificationToast;
+        private @Nullable Toast mNotificationToast;
 
         AndroidToast(Activity activity, BooleanSupplier isPersistentFullscreenMode) {
             mActivity = activity;

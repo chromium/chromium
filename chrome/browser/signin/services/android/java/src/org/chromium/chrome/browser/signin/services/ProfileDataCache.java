@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -239,9 +241,10 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      *     given account or a {@link DisplayableProfileData} with a placeholder image and null full
      *     and given name.
      */
-    public DisplayableProfileData getProfileDataOrDefault(String accountEmail) {
+    public DisplayableProfileData getProfileDataOrDefault(@Nullable String accountEmail) {
         DisplayableProfileData profileData = mCachedProfileData.get(accountEmail);
         if (profileData == null) {
+            assumeNonNull(accountEmail);
             return new DisplayableProfileData(
                     accountEmail,
                     mPlaceholderImage,

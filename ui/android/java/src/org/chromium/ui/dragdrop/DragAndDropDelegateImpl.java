@@ -250,6 +250,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 return ClipData.newUri(
                         ContextUtils.getApplicationContext().getContentResolver(), null, cachedUri);
             case DragTargetType.LINK:
+                assumeNonNull(dropData.gurl);
                 if (mDragAndDropBrowserDelegate != null) {
                     Intent intent =
                             mDragAndDropBrowserDelegate.createUrlIntent(
@@ -465,6 +466,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     /** Return the text to be dropped when {@link DropDataAndroid} contains a link. */
     static String getTextForLinkData(DropDataAndroid dropData) {
         assert dropData.hasLink();
+        assumeNonNull(dropData.gurl);
         if (TextUtils.isEmpty(dropData.text)) return dropData.gurl.getSpec();
         return dropData.text + "\n" + dropData.gurl.getSpec();
     }

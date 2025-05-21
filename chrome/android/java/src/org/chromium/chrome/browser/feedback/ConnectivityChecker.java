@@ -16,6 +16,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.NetworkTrafficAnnotationTag;
@@ -29,6 +30,7 @@ import java.net.URL;
 
 /** A utility class for checking if the device is currently connected to the Internet. */
 @JNINamespace("chrome::android")
+@NullMarked
 public final class ConnectivityChecker {
     private static final String TAG = "feedback";
 

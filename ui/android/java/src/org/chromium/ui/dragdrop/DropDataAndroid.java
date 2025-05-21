@@ -12,24 +12,25 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Bare minimal wrapper class of native content::DropData. */
 @JNINamespace("ui")
 @NullMarked
 public class DropDataAndroid {
-    public final String text;
-    public final GURL gurl;
-    public final byte[] imageContent;
-    public final String imageContentExtension;
-    public final String imageFilename;
+    public final @Nullable String text;
+    public final @Nullable GURL gurl;
+    public final byte @Nullable [] imageContent;
+    public final @Nullable String imageContentExtension;
+    public final @Nullable String imageFilename;
 
     protected DropDataAndroid(
-            String text,
-            GURL gurl,
-            byte[] imageContent,
-            String imageContentExtension,
-            String imageFilename) {
+            @Nullable String text,
+            @Nullable GURL gurl,
+            byte @Nullable [] imageContent,
+            @Nullable String imageContentExtension,
+            @Nullable String imageFilename) {
         this.text = text;
         this.gurl = gurl;
         this.imageContent = imageContent;

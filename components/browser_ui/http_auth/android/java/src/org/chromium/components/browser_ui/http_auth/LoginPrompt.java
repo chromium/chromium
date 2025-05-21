@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 import org.chromium.url.GURL;
 
@@ -54,14 +55,15 @@ public class LoginPrompt {
      *     given url being set as the web domain for the View control.
      * @param observer An interface to receive the result of the prompt.
      */
-    public LoginPrompt(Context context, String messageBody, GURL autofillUrl, Observer observer) {
+    public LoginPrompt(
+            Context context, String messageBody, @Nullable GURL autofillUrl, Observer observer) {
         mContext = context;
         mMessageBody = messageBody;
         mObserver = observer;
         createDialog(autofillUrl);
     }
 
-    private void createDialog(GURL autofillUrl) {
+    private void createDialog(@Nullable GURL autofillUrl) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.http_auth_dialog, null);
         mUsernameView = (AlertDialogEditText) v.findViewById(R.id.username);
         mPasswordView = (AlertDialogEditText) v.findViewById(R.id.password);

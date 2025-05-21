@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.common;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.common.IsolatedWorldIds;
 
 import java.lang.annotation.Retention;
@@ -25,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_UNUSED_EXTENSIONS
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface ChromeIsolatedWorldIds {
     int ISOLATED_WORLD_ID_TRANSLATE = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 1;
     int ISOLATED_WORLD_ID_CHROME_INTERNAL = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 2;
