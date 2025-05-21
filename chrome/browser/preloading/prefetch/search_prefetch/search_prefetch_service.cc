@@ -1101,9 +1101,12 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return prefetches_.end();
   }
-  // `HasCanonicalPreloadingOmniboxSearchURL` should return false if
-  // search_terms is empty.
-  CHECK(!search_terms.empty());
+  // TODO(https://crbug.com/417978876): figure out the reason why search_terms
+  // can be empty when `HasCanonicalPreloadingOmniboxSearchURL` returns true.
+  if (search_terms.empty()) {
+    recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
+    return prefetches_.end();
+  }
   recorder.search_terms_ = search_terms;
   const auto& iter = prefetches_.find(canonical_search_url);
 
