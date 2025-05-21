@@ -60,6 +60,8 @@ class NtpBackgroundService : public KeyedService {
 
   // Requests an asynchronous fetch from the network. After the update
   // completes, OnCollectionInfoAvailable will be called on the observers.
+  // Requests that are made while an asynchronous fetch is in progress will be
+  // dropped until the currently active loader completes.
   virtual void FetchCollectionInfo();
 
   // Callback type for fetching collection images, invoked with a vector of

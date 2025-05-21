@@ -308,6 +308,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/history/model:unit_tests",
     "//ios/chrome/browser/history/ui_bundled:unit_tests",
     "//ios/chrome/browser/home_customization/coordinator:unit_tests",
+    "//ios/chrome/browser/home_customization/model:unit_tests",
     "//ios/chrome/browser/https_upgrades/model:unit_tests",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:unit_tests",
     "//ios/chrome/browser/infobars/model:unit_tests",

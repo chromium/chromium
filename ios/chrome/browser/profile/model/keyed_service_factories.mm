@@ -68,6 +68,8 @@
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/ntp_background_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
@@ -276,6 +278,8 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   GoogleLogoServiceFactory::GetInstance();
   HashRealTimeServiceFactory::GetInstance();
   HomeBackgroundCustomizationServiceFactory::GetInstance();
+  HomeBackgroundImageServiceFactory::GetInstance();
+  NtpBackgroundServiceFactory::GetInstance();
   HttpsUpgradeServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   ImageFetcherServiceFactory::GetInstance();
