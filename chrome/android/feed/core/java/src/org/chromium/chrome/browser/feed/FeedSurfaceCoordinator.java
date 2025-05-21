@@ -493,16 +493,12 @@ public class FeedSurfaceCoordinator
                     ColorStateList.valueOf(
                             ContextCompat.getColor(
                                     mActivity, R.color.ntp_customization_edit_icon_fill_color)));
-            FrameLayout.LayoutParams layoutParams =
-                    new FrameLayout.LayoutParams(
-                            mActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.ntp_customization_edit_icon_background_size),
-                            mActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.ntp_customization_edit_icon_background_size));
+            int size =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.ntp_customization_edit_icon_background_size);
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
             layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
             int margin =
                     mActivity
