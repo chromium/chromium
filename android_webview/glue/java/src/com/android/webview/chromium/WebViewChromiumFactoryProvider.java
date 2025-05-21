@@ -255,12 +255,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return new ContentSettingsAdapter(settings);
     }
 
-    // Overridden in B-specific subclass.
+    // Overridden in downstream subclass when building using the unreleased Android SDK.
     boolean shouldEnableUserAgentReduction() {
         return false;
     }
 
-    // Overridden in B-specific subclass.
+    // Overridden in downstream subclass when building using the unreleased Android SDK.
     boolean shouldEnableFileSystemAccess() {
         return false;
     }

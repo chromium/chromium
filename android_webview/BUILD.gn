@@ -400,9 +400,11 @@ if (_is_default_toolchain) {
       "//android_webview/support_library:support_lib_glue_java",
     ]
 
-    # If the B SDK isn't public yet, include the downstream code to support B.
-    if (!public_android_sdk && android_sdk_release == "b") {
-      deps += [ "//clank/android_webview/next:b_sdk_java" ]
+    # If we are using an unreleased Android SDK snapshot, include the downstream
+    # glue code to support any functionality specific to the in-development
+    # Android version.
+    if (!public_android_sdk) {
+      deps += [ "//clank/android_webview/unreleased:unreleased_glue_java" ]
     }
   }
 
