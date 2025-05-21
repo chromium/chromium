@@ -421,8 +421,8 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
 
   {  // kAttributionReportingInBrowserMigration disabled
     scoped_feature_list().Reset();
-    scoped_feature_list().InitAndEnableFeature(
-        blink::features::kKeepAliveInBrowserMigration);
+    scoped_feature_list().InitAndDisableFeature(
+        blink::features::kAttributionReportingInBrowserMigration);
     const GURL source_url("https://secure.test");
     test_web_contents()->NavigateAndCommit(source_url);
 
