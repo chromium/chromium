@@ -509,13 +509,6 @@ RangeVendorCapability::~RangeVendorCapability() = default;
 RangeVendorCapability& RangeVendorCapability::operator=(
     RangeVendorCapability&& other) = default;
 
-bool RangeVendorCapability::operator==(
-    const RangeVendorCapability& other) const {
-  return value_type_ == other.value_type_ && min_value_ == other.min_value_ &&
-         max_value_ == other.max_value_ &&
-         default_value_ == other.default_value_;
-}
-
 bool RangeVendorCapability::IsValid() const {
   if (min_value_.empty() || max_value_.empty())
     return false;
@@ -596,11 +589,6 @@ SelectVendorCapabilityOption::SelectVendorCapabilityOption(
 
 SelectVendorCapabilityOption::~SelectVendorCapabilityOption() = default;
 
-bool SelectVendorCapabilityOption::operator==(
-    const SelectVendorCapabilityOption& other) const {
-  return value == other.value && display_name == other.display_name;
-}
-
 bool SelectVendorCapabilityOption::IsValid() const {
   return !value.empty() && !display_name.empty();
 }
@@ -622,12 +610,6 @@ TypedValueVendorCapability::~TypedValueVendorCapability() = default;
 
 TypedValueVendorCapability& TypedValueVendorCapability::operator=(
     TypedValueVendorCapability&& other) = default;
-
-bool TypedValueVendorCapability::operator==(
-    const TypedValueVendorCapability& other) const {
-  return value_type_ == other.value_type_ &&
-         default_value_ == other.default_value_;
-}
 
 bool TypedValueVendorCapability::IsValid() const {
   if (default_value_.empty())
@@ -863,11 +845,6 @@ Color::Color() : type(ColorType::AUTO_COLOR) {}
 Color::Color(ColorType type) : type(type) {
 }
 
-bool Color::operator==(const Color& other) const {
-  return type == other.type && vendor_id == other.vendor_id &&
-         custom_display_name == other.custom_display_name;
-}
-
 bool Color::IsValid() const {
   if (type != ColorType::CUSTOM_COLOR && type != ColorType::CUSTOM_MONOCHROME)
     return true;
@@ -881,10 +858,6 @@ VendorItem::VendorItem(const std::string& id, const std::string& value)
 
 bool VendorItem::IsValid() const {
   return !id.empty() && !value.empty();
-}
-
-bool VendorItem::operator==(const VendorItem& other) const {
-  return id == other.id && value == other.value;
 }
 
 Margins::Margins() : top_um(0), right_um(0), bottom_um(0), left_um(0) {}
@@ -911,10 +884,6 @@ Dpi::Dpi(int32_t horizontal, int32_t vertical)
 
 bool Dpi::IsValid() const {
   return horizontal > 0 && vertical > 0;
-}
-
-bool Dpi::operator==(const Dpi& other) const {
-  return horizontal == other.horizontal && vertical == other.vertical;
 }
 
 Media::Media()
@@ -1032,17 +1001,11 @@ Interval::Interval(int32_t start, int32_t end) : start(start), end(end) {}
 
 Interval::Interval(int32_t start) : start(start), end(kMaxPageNumber) {}
 
-bool Interval::operator==(const Interval& other) const {
-  return start == other.start && end == other.end;
-}
-
 MediaType::MediaType() = default;
 
 MediaType::MediaType(const std::string& vendor_id,
                      const std::string& custom_display_name)
     : vendor_id(vendor_id), custom_display_name(custom_display_name) {}
-
-bool MediaType::operator==(const MediaType& other) const = default;
 
 bool MediaType::IsValid() const {
   return !vendor_id.empty();
