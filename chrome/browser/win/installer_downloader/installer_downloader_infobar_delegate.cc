@@ -19,6 +19,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -80,7 +81,7 @@ std::u16string InstallerDownloaderInfoBarDelegate::GetMessageText() const {
 }
 
 std::u16string InstallerDownloaderInfoBarDelegate::GetLinkText() const {
-  return l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_LINK_TEXT);
+  return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 
 int InstallerDownloaderInfoBarDelegate::GetButtons() const {
