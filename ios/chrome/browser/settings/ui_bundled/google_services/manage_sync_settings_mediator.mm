@@ -863,13 +863,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 }
 
 - (BOOL)shouldEncryptionItemBeEnabled {
+  // Note, that it is not enough to check whether UserActionableError is
+  // kNeedsTrustedVaultKeyForPasswords or kNeedsTrustedVaultKeyForEverything
+  // because sync might currently attempt to silently fetch the trusted vault
+  // keys.
   return !self.disabledBecauseOfSyncError &&
-         _syncService->GetUserActionableError() !=
-             syncer::SyncService::UserActionableError::
-                 kNeedsTrustedVaultKeyForPasswords &&
-         _syncService->GetUserActionableError() !=
-             syncer::SyncService::UserActionableError::
-                 kNeedsTrustedVaultKeyForEverything &&
+         !_syncService->GetUserSettings()->IsTrustedVaultKeyRequired() &&
          _syncService->GetUserSettings()->IsCustomPassphraseAllowed();
 }
 

@@ -333,6 +333,12 @@ const CGFloat kSpinnerButtonPadding = 18;
                                    IDS_IOS_SYNC_INCORRECT_PASSPHRASE)];
       [self hideDecryptionProgress];
     }
+  } else if (service->GetUserSettings()->IsTrustedVaultKeyRequired() ||
+             service->GetUserSettings()->IsPassphraseRequired()) {
+    // Can't set the passphrase while keys are required for decryption. Hitting
+    // this line means that the state has changed while the user was setting
+    // the passphrase.
+    [self hideDecryptionProgress];
   } else {
     service->GetUserSettings()->SetEncryptionPassphrase(passphrase);
   }

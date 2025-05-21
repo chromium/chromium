@@ -178,7 +178,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       ProfileIOS* profile = self.browser->GetProfile();
       syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
       if (service->IsEngineInitialized() &&
-          !service->GetUserSettings()->IsUsingExplicitPassphrase()) {
+          !service->GetUserSettings()->IsUsingExplicitPassphrase() &&
+          !service->GetUserSettings()->IsTrustedVaultKeyRequired()) {
         SyncCreatePassphraseTableViewController* controller =
             [[SyncCreatePassphraseTableViewController alloc]
                 initWithBrowser:self.browser];

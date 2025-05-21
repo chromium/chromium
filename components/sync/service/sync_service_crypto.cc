@@ -256,10 +256,9 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
       // Cryptographer has pending keys.
-      // TODO(crbug.com/40904402): this is currently reachable on iOS due to
-      // discrepancy in UI code. Fix iOS implementation and avoid using more
-      // strict checks here until this is done.
-      DUMP_WILL_BE_NOTREACHED()
+      // TODO(crbug.com/40904402): verify this is not reachable anymore and
+      // remove NotFatalUntil.
+      NOTREACHED(base::NotFatalUntil::M140)
           << "Can not set explicit passphrase when decryption is needed.";
       return;
   }
