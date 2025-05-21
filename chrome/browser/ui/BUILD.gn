@@ -1653,9 +1653,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
 
-      # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
-      # gets modularized.
-      "//chrome/browser/chooser_controller",
+      # No reason for this dependencies be out of alphabetical order.
       "//chrome/browser/content_extraction",
       "//chrome/browser/download",
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
