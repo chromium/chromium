@@ -8,8 +8,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -102,7 +102,7 @@ public class IncognitoTrackingProtectionsFragmentTest {
         onView(withText(R.string.incognito_tracking_protections_page_description))
                 .check(matches(isDisplayed()));
         onView(getBlock3pcsToggleMatcher())
-                .check(matches(allOf(isDisplayed(), isNotChecked(), isNotEnabled())));
+                .check(matches(allOf(isDisplayed(), isChecked(), isNotEnabled())));
     }
 
     @Test

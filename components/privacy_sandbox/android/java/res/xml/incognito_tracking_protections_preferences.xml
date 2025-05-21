@@ -23,7 +23,6 @@ found in the LICENSE file.
       android:key="block_3pcs_toggle"
       android:title="@string/incognito_tracking_protections_block_3pcs_toggle_label"
       android:summary="@string/incognito_tracking_protections_block_3pcs_toggle_sublabel"
-      android:checked="true"
       android:enabled="false"/>
     <Preference
         android:key="ip_protection"
