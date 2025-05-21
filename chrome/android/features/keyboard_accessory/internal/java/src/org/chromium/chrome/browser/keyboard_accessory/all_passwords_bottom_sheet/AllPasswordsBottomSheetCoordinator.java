@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,6 +25,7 @@ import java.util.List;
  * Creates the AllPasswordsBottomSheet. AllPasswordsBottomSheet uses a bottom sheet to let the user
  * select a credential and fills it into the focused form.
  */
+@NullMarked
 class AllPasswordsBottomSheetCoordinator {
     private final AllPasswordsBottomSheetMediator mMediator = new AllPasswordsBottomSheetMediator();
 

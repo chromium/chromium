@@ -13,13 +13,14 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -32,9 +33,10 @@ import org.chromium.ui.base.LocalizationUtils;
  * origin. It is a View in this Model-View-Controller component and doesn't inherit from a view but
  * holds Android Views.
  */
+@NullMarked
 class AllPasswordsBottomSheetView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
-    private Callback<Integer> mDismissHandler;
+    private @Nullable Callback<Integer> mDismissHandler;
     private final RecyclerView mSheetItemListView;
     private final LinearLayout mContentView;
 
@@ -51,6 +53,7 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
                 @Override
                 public void onSheetStateChanged(int newState, int reason) {
                     super.onSheetStateChanged(newState, reason);
+                    assert mDismissHandler != null;
                     if (newState != BottomSheetController.SheetState.HIDDEN) return;
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
                     mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);

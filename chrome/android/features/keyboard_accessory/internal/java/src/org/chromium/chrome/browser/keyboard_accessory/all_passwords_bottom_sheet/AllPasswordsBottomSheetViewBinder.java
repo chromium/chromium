@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.IS_PASSWORD_FIELD;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.ON_CLICK_LISTENER;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
@@ -39,6 +41,7 @@ import org.chromium.url.GURL;
  * Provides functions that map {@link AllPasswordsBottomSheetProperties} changes in a {@link
  * PropertyModel} to the suitable method in {@link AllPasswordsBottomSheetView}.
  */
+@NullMarked
 class AllPasswordsBottomSheetViewBinder {
 
     /**
@@ -95,7 +98,8 @@ class AllPasswordsBottomSheetViewBinder {
                                 bindCredentialView(model, view, propertyKey, faviconHelper));
         }
         assert false : "Cannot create view for ItemType: " + itemType;
-        return null;
+        // https://github.com/uber/NullAway/issues/1104
+        return assumeNonNull(null);
     }
 
     /**
