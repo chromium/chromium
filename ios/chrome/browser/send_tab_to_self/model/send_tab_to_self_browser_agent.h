@@ -76,9 +76,6 @@ class SendTabToSelfBrowserAgent
   // variables.
   void CleanUpObserversAndVariables();
 
-  // The owning Browser
-  raw_ptr<Browser> browser_;
-
   // Owned by the SendTabToSelfSyncService which should outlive this class
   raw_ptr<send_tab_to_self::SendTabToSelfModel> model_;
 

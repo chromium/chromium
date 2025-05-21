@@ -30,7 +30,6 @@
 
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
-      browser_(browser),
       model_(
           SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
               ->GetSendTabToSelfModel()) {
