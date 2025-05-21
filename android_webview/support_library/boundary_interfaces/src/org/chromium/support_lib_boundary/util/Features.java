@@ -360,4 +360,7 @@ public class Features {
     // ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept
     // WebResourceResponseCompat.setCookieHeaderValues
     public static final String COOKIE_INTERCEPT = "COOKIE_INTERCEPT";
+
+    // Profile.warmUpRendererProcess
+    public static final String WARM_UP_RENDERER_PROCESS = "WARM_UP_RENDERER_PROCESS";
 }

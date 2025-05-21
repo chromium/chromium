@@ -167,4 +167,9 @@ public class Profile {
             throw new IllegalArgumentException("Callback cannot be null for prefetch.");
         }
     }
+
+    @UiThread
+    public void warmUpRendererProcess() {
+        mBrowserContext.warmUpSpareRenderer();
+    }
 }

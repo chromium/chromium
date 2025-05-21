@@ -48,4 +48,6 @@ public interface ProfileBoundaryInterface {
             /* PrefetchOperationCallback */ InvocationHandler callback);
 
     void setSpeculativeLoadingConfig(/* SpeculativeLoadingConfig */ InvocationHandler config);
+
+    void warmUpRendererProcess();
 }

@@ -210,4 +210,10 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                 };
         callback.onFailure(type, message, networkErrorCode);
     }
+
+    @Override
+    public void warmUpRendererProcess() {
+        assert ThreadUtils.runningOnUiThread();
+        mProfileImpl.warmUpRendererProcess();
+    }
 }

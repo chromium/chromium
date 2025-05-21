@@ -392,6 +392,11 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .setAllowedPrerenderingCount(mNativeAwBrowserContext, maxPrerenders);
     }
 
+    @UiThread
+    public void warmUpSpareRenderer() {
+        AwBrowserContextJni.get().warmUpSpareRenderer(mNativeAwBrowserContext);
+    }
+
     private static SharedPreferences createSharedPrefs(String relativePath) {
         return ContextUtils.getApplicationContext()
                 .getSharedPreferences(getSharedPrefsFilename(relativePath), Context.MODE_PRIVATE);
@@ -455,5 +460,7 @@ public class AwBrowserContext implements BrowserContextHandle {
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);
 
         void setAllowedPrerenderingCount(long nativeAwBrowserContext, int maxPrerenders);
+
+        void warmUpSpareRenderer(long nativeAwBrowserContext);
     }
 }

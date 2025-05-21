@@ -122,6 +122,7 @@ class AwBrowserContext : public content::BrowserContext,
 
   int AllowedPrerenderingCount() const;
   void SetAllowedPrerenderingCount(JNIEnv* const env, int allowed_count);
+  void WarmUpSpareRenderer(JNIEnv* const env);
 
   // content::BrowserContext implementation.
   base::FilePath GetPath() override;

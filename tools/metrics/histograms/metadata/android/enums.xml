@@ -651,6 +651,7 @@ chromium-metrics-reviews@google.com.
       label="ServiceWorkerWebSettingsCompat.setIncludeCookiesOnIntercept"/>
   <int value="149"
       label="ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept"/>
+  <int value="150" label="Profile.warmUpRendererProcess"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
