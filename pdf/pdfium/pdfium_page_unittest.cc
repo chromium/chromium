@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
@@ -624,12 +625,20 @@ TEST_P(PDFiumPageImageForOcrTest, RotatedPage) {
   page.PopulateTextRunTypeAndImageAltText(text_runs);
   ASSERT_EQ(1u, page.images_.size());
 
-  // This page is rotated, therefore the extracted image size is 25x100 while
-  // the stored image is 100x25.
   SkBitmap image_bitmap = engine->GetImageForOcr(
       /*page_index=*/0, page.images_[0].page_object_index);
-  EXPECT_EQ(image_bitmap.width(), 25);
-  EXPECT_EQ(image_bitmap.height(), 100);
+
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    // When PDF Searchify is enabled, page rotation does not affect the images
+    // that are sent to OCR.
+    EXPECT_EQ(image_bitmap.width(), 100);
+    EXPECT_EQ(image_bitmap.height(), 25);
+  } else {
+    // This page is rotated, therefore the extracted image size is 25x100 while
+    // the stored image is 100x25.
+    EXPECT_EQ(image_bitmap.width(), 25);
+    EXPECT_EQ(image_bitmap.height(), 100);
+  }
 }
 
 TEST_P(PDFiumPageImageForOcrTest, NonImage) {

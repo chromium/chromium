@@ -286,7 +286,8 @@ std::vector<uint8_t> PDFiumSearchify(
       // GetImageForOcr() checks for null `image`.
       FPDF_PAGEOBJECT image = FPDFPage_GetObject(page.get(), object_index);
       SkBitmap bitmap = GetImageForOcr(document.get(), page.get(), image,
-                                       screen_ai::GetMaxDimensionForOCR());
+                                       screen_ai::GetMaxDimensionForOCR(),
+                                       /*rotate_image_to_upright=*/false);
       // The object is not an image or failed to get the bitmap from the image.
       if (bitmap.empty()) {
         continue;

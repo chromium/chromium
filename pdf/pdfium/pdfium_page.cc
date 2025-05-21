@@ -951,9 +951,15 @@ SkBitmap PDFiumPage::GetImageForOcr(int page_object_index,
                                     int max_image_dimension) {
   FPDF_PAGE page = GetPage();
   FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
+  bool rotate_image_to_upright =
+      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify);
   SkBitmap bitmap = ::chrome_pdf::GetImageForOcr(
-      engine_->doc(), page, page_object, max_image_dimension);
+      engine_->doc(), page, page_object, max_image_dimension,
+      rotate_image_to_upright);
 
+  if (!rotate_image_to_upright) {
+    return bitmap;
+  }
   SkBitmapOperations::RotationAmount rotation;
   switch (FPDFPage_GetRotation(page)) {
     case 0:

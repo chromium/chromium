@@ -39,16 +39,22 @@ gfx::SizeF GetImageSize(FPDF_PAGEOBJECT page_object) {
 SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
                         FPDF_PAGE page,
                         FPDF_PAGEOBJECT page_object,
-                        uint32_t max_image_dimension) {
+                        uint32_t max_image_dimension,
+                        bool rotate_image_to_upright) {
   SkBitmap bitmap;
 
   if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE) {
     return bitmap;
   }
 
-  // OCR needs the image with at most `kMaxNeededDPI` dpi resolution. To get it,
-  // the image transform matrix is set to an appropriate scale, the bitmap is
-  // extracted, and then the original matrix is restored.
+  // If image is resized so that it is not shown, no need to OCR it.
+  if (GetImageSize(page_object).IsEmpty()) {
+    return bitmap;
+  }
+
+  // OCR needs the image with at most `max_image_dimension` resolution. To get
+  // it, the image transform matrix is set to an appropriate scale, the bitmap
+  // is extracted, and then the original matrix is restored.
   FS_MATRIX original_matrix;
   if (!FPDFPageObj_GetMatrix(page_object, &original_matrix)) {
     DLOG(ERROR) << "Failed to get original matrix";
@@ -80,25 +86,37 @@ SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
     effective_height = pixel_height;
   }
 
-  // Scale the matrix to get image with highest resolution and keep the
-  // rotation. If image is stretched differently in horizontal and vertical
-  // directions, the one with no enlargement of the original height and width is
-  // selected.
-  float width_scale = hypotf(original_matrix.a, original_matrix.c);
-  float height_scale = hypotf(original_matrix.b, original_matrix.d);
-  if (width_scale == 0 || height_scale == 0) {
-    return bitmap;
-  }
-  float ratio =
-      std::min(effective_width / width_scale, effective_height / height_scale);
-  const FS_MATRIX new_matrix = {
-      original_matrix.a * ratio, original_matrix.b * ratio,
-      original_matrix.c * ratio, original_matrix.d * ratio,
-      original_matrix.e,         original_matrix.f};
+  if (rotate_image_to_upright) {
+    // Scale the matrix to get image with highest resolution and keep the
+    // rotation. If image is stretched differently in horizontal and vertical
+    // directions, the one with no enlargement of the original height and width
+    // is selected.
+    float width_scale = hypotf(original_matrix.a, original_matrix.c);
+    float height_scale = hypotf(original_matrix.b, original_matrix.d);
+    if (width_scale == 0 || height_scale == 0) {
+      return bitmap;
+    }
+    float ratio = std::min(effective_width / width_scale,
+                           effective_height / height_scale);
+    const FS_MATRIX new_matrix = {
+        original_matrix.a * ratio, original_matrix.b * ratio,
+        original_matrix.c * ratio, original_matrix.d * ratio,
+        original_matrix.e,         original_matrix.f};
 
-  if (!FPDFPageObj_SetMatrix(page_object, &new_matrix)) {
-    DLOG(ERROR) << "Failed to set new matrix on image";
-    return bitmap;
+    if (!FPDFPageObj_SetMatrix(page_object, &new_matrix)) {
+      DLOG(ERROR) << "Failed to set new matrix on image";
+      return bitmap;
+    }
+  } else {
+    // Scale the image to the highest (capped) resolution, but do not rotate the
+    // image to make it upright.
+    const FS_MATRIX new_matrix = {effective_width,  0, 0,
+                                  effective_height, 0, 0};
+
+    if (!FPDFPageObj_SetMatrix(page_object, &new_matrix)) {
+      DLOG(ERROR) << "Failed to set new matrix on image";
+      return bitmap;
+    }
   }
 
   ScopedFPDFBitmap raw_bitmap(
