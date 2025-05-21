@@ -10,8 +10,7 @@ export function getHtml(this: InkTextBoxElement) {
   return html`<!--_html_template_start_-->
     <!-- TODO(crbug.com/414858397): Add labels for screenreaders -->
     <textarea id="textbox" .value="${this.textValue_}" rows="1"
-        @input="${this.onTextValueInput_}"
-        @focus="${this.onTextareaFocus_}">
+        @input="${this.onTextValueInput_}">
     </textarea>
     <div class="handle top left" tabindex="0"></div>
     <div class="handle top center" tabindex="0"></div>

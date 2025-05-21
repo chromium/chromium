@@ -115,6 +115,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.setAttribute('tabindex', '0');
+    this.addEventListener('focus', e => this.onFocus_(e));
   }
 
   override connectedCallback() {
@@ -208,10 +209,17 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private onBlurTextBox_() {
-    this.$.textbox.blur();
+    this.blur();
   }
 
-  protected onTextareaFocus_() {
+  protected onFocus_(e: FocusEvent) {
+    if (e.relatedTarget === this ||
+        e.currentTarget === this && e.relatedTarget === this.$.textbox) {
+      // Focus moved from the box to the textarea (or vice versa via the
+      // "Escape" shortcut), ignore.
+      return;
+    }
+
     Ink2Manager.getInstance().textBoxFocused({
       height: this.height_,
       locationX: this.locationX_,

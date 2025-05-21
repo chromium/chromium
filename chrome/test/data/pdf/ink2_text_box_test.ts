@@ -780,8 +780,10 @@ chrome.test.runTests([
   },
 
   async function testEscapeAndDelete() {
-    // Initialize to a 100x100 box at 400, 300.
-    initializeBox(100, 100, 400, 300);
+    viewport.setZoom(1.0);
+    // Initialize to a 100x100 box at 10, 10. Place the box in the top corner
+    // so that the viewport won't scroll when it is focused.
+    initializeBox(100, 100, 10, 10);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
@@ -791,7 +793,7 @@ chrome.test.runTests([
     // Messages to the backend are in page coordinates. Convert to page
     // coordinates since this is used for validating the commit message.
     testAnnotation
-        .textBoxRect = {locationX: 195, locationY: 147, height: 50, width: 50};
+        .textBoxRect = {locationX: 0, locationY: 7, height: 100, width: 100};
 
     mockPlugin.clearMessages();
     textbox.$.textbox.value = testAnnotation.text;
@@ -811,7 +813,7 @@ chrome.test.runTests([
 
     // If the user is dragging, escape commits the annotation at the start
     // location and hides the box.
-    initializeBox(100, 100, 400, 300);
+    initializeBox(100, 100, 10, 10);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
@@ -833,7 +835,7 @@ chrome.test.runTests([
     verifyFinishTextAnnotationMessage(testAnnotation);
 
     // Escape without any modification hides the box but doesn't send a message.
-    initializeBox(100, 100, 400, 300);
+    initializeBox(100, 100, 10, 10);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
@@ -847,7 +849,7 @@ chrome.test.runTests([
     // Initialize to a 100x100 box at 400, 300 with some text content. Use
     // "Delete" to clear all the content, which will trigger a message since
     // this is for an existing annotation.
-    initializeBox(100, 100, 400, 300, true);
+    initializeBox(100, 100, 10, 10, true);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
@@ -971,7 +973,7 @@ chrome.test.runTests([
     // This won't actually scroll the viewport in the test, since the plugin
     // won't send a corresponding scroll message back.
     mockPlugin.clearMessages();
-    textbox.$.textbox.focus();
+    textbox.focus();
     const syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
     chrome.test.assertTrue(syncScrollMessage !== undefined);
     chrome.test.assertEq('syncScrollToRemote', syncScrollMessage.type);
