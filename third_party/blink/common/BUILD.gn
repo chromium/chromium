@@ -383,6 +383,7 @@ source_set("common_unittests_sources") {
     "device_memory/approximated_device_memory_unittest.cc",
     "frame/delegated_capability_request_token_unittest.cc",
     "frame/user_activation_state_unittest.cc",
+    "indexeddb/indexed_db_default_mojom_traits_unittest.cc",
     "indexeddb/indexeddb_key_unittest.cc",
     "input/synthetic_web_input_event_builders_unittest.cc",
     "input/web_input_event_unittest.cc",

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
@@ -12,11 +14,11 @@ namespace blink {
 
 IndexedDBKeyPath::IndexedDBKeyPath() : type_(mojom::IDBKeyPathType::Null) {}
 
-IndexedDBKeyPath::IndexedDBKeyPath(const std::u16string& string)
-    : type_(mojom::IDBKeyPathType::String), string_(string) {}
+IndexedDBKeyPath::IndexedDBKeyPath(std::u16string string)
+    : type_(mojom::IDBKeyPathType::String), string_(std::move(string)) {}
 
-IndexedDBKeyPath::IndexedDBKeyPath(const std::vector<std::u16string>& array)
-    : type_(mojom::IDBKeyPathType::Array), array_(array) {}
+IndexedDBKeyPath::IndexedDBKeyPath(std::vector<std::u16string> array)
+    : type_(mojom::IDBKeyPathType::Array), array_(std::move(array)) {}
 
 IndexedDBKeyPath::IndexedDBKeyPath(const IndexedDBKeyPath& other) = default;
 IndexedDBKeyPath::IndexedDBKeyPath(IndexedDBKeyPath&& other) = default;

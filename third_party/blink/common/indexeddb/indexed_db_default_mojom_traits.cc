@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/indexeddb/indexed_db_default_mojom_traits.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
@@ -161,19 +162,32 @@ bool StructTraits<blink::mojom::IDBKeyPathDataView, blink::IndexedDBKeyPath>::
     return true;
   }
 
+  auto is_valid_key_path_entry = [](const std::u16string& entry) {
+    // Must not contain spaces: https://www.w3.org/TR/IndexedDB/#valid-key-path.
+    return entry.find_first_of(u' ') == std::u16string::npos;
+  };
+
   switch (data_view.tag()) {
     case blink::mojom::IDBKeyPathDataDataView::Tag::kString: {
-      std::u16string string;
-      if (!data_view.ReadString(&string))
+      std::u16string entry;
+      if (!data_view.ReadString(&entry)) {
         return false;
-      *out = blink::IndexedDBKeyPath(string);
+      }
+      if (!is_valid_key_path_entry(entry)) {
+        return false;
+      }
+      *out = blink::IndexedDBKeyPath(std::move(entry));
       return true;
     }
     case blink::mojom::IDBKeyPathDataDataView::Tag::kStringArray: {
-      std::vector<std::u16string> array;
-      if (!data_view.ReadStringArray(&array))
+      std::vector<std::u16string> entries;
+      if (!data_view.ReadStringArray(&entries)) {
         return false;
-      *out = blink::IndexedDBKeyPath(array);
+      }
+      if (!std::ranges::all_of(entries, is_valid_key_path_entry)) {
+        return false;
+      }
+      *out = blink::IndexedDBKeyPath(std::move(entries));
       return true;
     }
   }
