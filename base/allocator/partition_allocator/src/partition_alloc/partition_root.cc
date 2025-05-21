@@ -69,7 +69,8 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
 PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
                                        uintptr_t test_address,
                                        size_t type_size) {
-  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(orig_address));
+  PA_DCHECK(ReservationOffsetTable::Get(orig_address)
+                .IsManagedByNormalBucketsOrDirectMap(orig_address));
   DCheckIfManagedByPartitionAllocBRPPool(orig_address);
 
   auto [slot_start, _] =
@@ -1004,24 +1005,8 @@ void PartitionRoot::DestructForTesting()
           reinterpret_cast<uintptr_t>(curr), kSuperPageSize);
       size_t reservation_size = curr->reservation_size;
 
-      {
-        uintptr_t reservation_end = reservation_start + reservation_size;
-        auto* offset_ptr =
-            internal::ReservationOffsetPointer(reservation_start);
-        // Reset the offset table entries for the given memory before
-        // unreserving it. Since the memory is not unreserved and not available
-        // for other threads, the table entries for the memory are not modified
-        // by other threads either. So we can update the table entries without
-        // race condition.
-        uint16_t i = 0;
-        for (uintptr_t address = reservation_start; address < reservation_end;
-             address += kSuperPageSize) {
-          PA_DCHECK(offset_ptr <
-                    internal::GetReservationOffsetTableEnd(address));
-          PA_DCHECK(*offset_ptr == i++);
-          *offset_ptr++ = internal::kOffsetTagNotAllocated;
-        }
-      }
+      GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
+                                                     reservation_size);
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       internal::AddressPoolManager::GetInstance().MarkUnused(
           pool_handle, reservation_start, reservation_size);
@@ -1222,6 +1207,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
     settings.offset_lookup =
         internal::PartitionAddressSpace::GetOffsetLookup(settings.pool_handle);
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    settings.reservation_offset_table =
+        internal::ReservationOffsetTable::Get(settings.pool_handle);
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
@@ -1353,8 +1340,8 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
     size_t requested_size) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // Slot-span metadata isn't MTE-tagged.
-  PA_DCHECK(
-      internal::IsManagedByDirectMap(reinterpret_cast<uintptr_t>(slot_span)));
+  PA_DCHECK(GetReservationOffsetTable().IsManagedByDirectMap(
+      reinterpret_cast<uintptr_t>(slot_span)));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   auto* extent = ReadOnlyDirectMapExtent::FromSlotSpanMetadata(slot_span);
@@ -1403,7 +1390,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
       PartitionRoot::GetDirectMapMetadataAndGuardPagesSize();
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   uintptr_t reservation_start = slot_start & internal::kSuperPageBaseMask;
-  PA_DCHECK(internal::IsReservationStart(reservation_start));
+  PA_DCHECK(GetReservationOffsetTable().IsReservationStart(reservation_start));
   PA_DCHECK(slot_start + available_reservation_size ==
             reservation_start + current_reservation_size -
                 GetDirectMapMetadataAndGuardPagesSize() +
@@ -1483,7 +1470,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     internal::SlotSpanMetadata<internal::MetadataKind::kReadOnly>* slot_span,
     size_t new_size) {
   uintptr_t slot_start = ObjectToSlotStart(object);
-  PA_DCHECK(internal::IsManagedByNormalBuckets(slot_start));
+  PA_DCHECK(GetReservationOffsetTable().IsManagedByNormalBuckets(slot_start));
 
   // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
   // new size is a significant percentage smaller. We could do the same if we
@@ -2012,15 +1999,19 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
   if (!IsManagedByPartitionAlloc(address)) {
     // Not managed by PA; cannot help to determine its integrity.
     return;
-  } else if (internal::IsManagedByDirectMap(address)) {
+  }
+
+  auto* root = FromAddrInFirstSuperpage(address);
+
+  const internal::ReservationOffsetTable& reservation_offset =
+      root->GetReservationOffsetTable();
+  if (reservation_offset.IsManagedByDirectMap(address)) {
     // OOB for direct-mapped allocations is likely immediate crash.
     // No extra benefit from additional checks.
     return;
   }
-  PA_CHECK(internal::IsManagedByNormalBuckets(address));
 
-  auto* root = FromAddrInFirstSuperpage(address);
-
+  PA_CHECK(reservation_offset.IsManagedByNormalBuckets(address));
   ReadOnlySlotSpanMetadata* slot_span =
       ReadOnlySlotSpanMetadata::FromAddr(address);
   PA_CHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == root);

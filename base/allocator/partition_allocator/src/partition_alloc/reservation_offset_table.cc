@@ -9,9 +9,28 @@
 namespace partition_alloc::internal {
 
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-PA_CONSTINIT ReservationOffsetTable ReservationOffsetTable::singleton_;
+PA_CONSTINIT ReservationOffsetTable::_ReservationOffsetTable<
+    ReservationOffsetTable::kRegularOffsetTableLength>
+    ReservationOffsetTable::regular_pool_table_;
+PA_CONSTINIT ReservationOffsetTable::_ReservationOffsetTable<
+    ReservationOffsetTable::kBRPOffsetTableLength>
+    ReservationOffsetTable::brp_pool_table_;
+PA_CONSTINIT ReservationOffsetTable::_ReservationOffsetTable<
+    ReservationOffsetTable::kConfigurableOffsetTableLength>
+    ReservationOffsetTable::configurable_pool_table_;
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+// If thread isolation support is enabled, we need to write-protect the tables
+// of the thread isolated pool. For this, the thread isolated ones start on a
+// page boundary.
+PA_THREAD_ISOLATED_ALIGN
+PA_CONSTINIT ReservationOffsetTable::_ReservationOffsetTable<
+    ReservationOffsetTable::kThreadIsolatedOffsetTableLength>
+    ReservationOffsetTable::thread_isolated_pool_table_;
+#endif
 #else
-PA_CONSTINIT ReservationOffsetTable::_ReservationOffsetTable
+// A single table for the entire 32-bit address space.
+PA_CONSTINIT ReservationOffsetTable::_ReservationOffsetTable<
+    ReservationOffsetTable::kReservationOffsetTableLength>
     ReservationOffsetTable::reservation_offset_table_;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
