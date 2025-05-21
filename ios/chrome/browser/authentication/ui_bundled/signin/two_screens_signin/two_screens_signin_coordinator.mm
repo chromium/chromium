@@ -90,6 +90,10 @@ using base::UserMetricsAction;
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_upgradeSigninLogger, base::NotFatalUntil::M146);
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -104,11 +108,14 @@ using base::UserMetricsAction;
                                                     toolbarClass:nil];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
 
+  // Retain `self` in case `presentScreenIfNeeded` executes the
+  // signinCompletion, which would cause self’s owner to unassign its variable.
+  __typeof(self) strongSelf = self;
   [self presentScreenIfNeeded:[_screenProvider nextScreenType]];
 
   // Check if the flow is already completed (kStepsCompleted) to prevent
   // presenting a nil navigation controller.
-  if (_currentScreenType == kStepsCompleted) {
+  if (strongSelf->_currentScreenType == kStepsCompleted) {
     return;
   }
 

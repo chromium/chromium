@@ -87,13 +87,12 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
         id<SystemIdentity> signinCompletionIdentity) {
       EXPECT_EQ(signinResult, expected_result);
       EXPECT_EQ(expected_signin_completion_identity, signinCompletionIdentity);
+      StopCoordinator();
       completion_block_done_ = true;
     };
     EXPECT_EQ(PresentedViewController(), nil);
     [coordinator_ start];
   }
-
-  ~TwoScreensSigninCoordinatorTest() override { [coordinator_ stop]; }
 
   // Returns the presentedViewController.
   UIViewController* PresentedViewController() {
@@ -146,6 +145,12 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   }
 
  protected:
+  // Stops the coordinator and unset it.
+  void StopCoordinator() {
+    [coordinator_ stop];
+    coordinator_ = nil;
+  }
+
   bool completion_block_done_ = false;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -176,9 +181,9 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
       [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
 
   // Shut it down.
-  [coordinator_ stop];
-  // Expect completion block to be run synchronously and be finished when
-  // -stop returns.
+  StopCoordinator();
+  // Expect completion block not to be run when the stop comes from an external
+  // caller.
   EXPECT_FALSE(completion_block_done_);
   ExpectNoUpgradePromoHistogram(&histogram_tester);
   histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
@@ -221,10 +226,10 @@ TEST_F(TwoScreensSigninCoordinatorTest,
 TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
   base::HistogramTester histogram_tester;
   StartTwoScreensSigninCoordinator(SigninCoordinatorResultInterrupted, nil);
-  [coordinator_ stop];
 
-  // Expect completion block to be run synchronously and be finished when
-  // -stop returns.
+  StopCoordinator();
+  // Expect completion block not to be run when the stop comes from an external
+  // caller.
   EXPECT_FALSE(completion_block_done_);
 
   ExpectNoUpgradePromoHistogram(&histogram_tester);
@@ -242,7 +247,6 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   };
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::Seconds(1), true, completion_condition));
-  [coordinator_ stop];
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
 
@@ -265,6 +269,5 @@ TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
 
-  [coordinator_ stop];
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
