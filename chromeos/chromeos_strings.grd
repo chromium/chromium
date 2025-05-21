@@ -7175,10 +7175,10 @@
         Class Tools
       </message>
       <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_COUNTDOWN_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the teachers lock students' screen.">
-        Your teacher will lock your screen in <ph name="NUM_SECONDS">$1<ex>5</ex></ph> seconds
+        You will only be able to use Class Tools in <ph name="NUM_SECONDS">$1<ex>5</ex></ph> seconds
       </message>
       <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE" desc="Notification message telling students that their teachers have locked their screen.">
-        Your teacher has locked your screen
+        You're now only able to use Class Tools
       </message>
       <message name="IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE" desc="Notification message telling students that their class session ended.">
         Class Tools session has ended for you
