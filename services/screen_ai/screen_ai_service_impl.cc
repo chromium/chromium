@@ -419,13 +419,13 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
                                 client_type);
 
-  ocr_last_used_ = base::TimeTicks::Now();
+  base::TimeTicks start_time = base::TimeTicks::Now();
   base::SequenceBound<HangTimer> hang_timer(background_task_runner_,
                                             /*is_ocr=*/true);
   hang_timer.AsyncCall(&HangTimer::StartTimer);
   auto result = library_->PerformOcr(image);
   hang_timer.AsyncCall(&base::OneShotTimer::Stop);
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - ocr_last_used_;
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
   int lines_count = result ? result->lines_size() : 0;
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
@@ -476,6 +476,7 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
     }
   }
 
+  ocr_last_used_ = base::TimeTicks::Now();
   return result;
 }
 
@@ -650,6 +651,7 @@ bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
         client_type);
   }
 
+  mce_last_used_ = base::TimeTicks::Now();
   if (successful) {
     base::UmaHistogramTimes(
         "Accessibility.ScreenAI.MainContentExtraction.Latency.Success",
