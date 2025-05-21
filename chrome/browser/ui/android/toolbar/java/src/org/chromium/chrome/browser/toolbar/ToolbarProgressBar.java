@@ -91,9 +91,6 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     /** The indeterminate animating view for the progress bar. */
     private @Nullable ToolbarProgressBarAnimatingView mAnimatingView;
 
-    /** The progress bar's height. */
-    private final int mProgressBarHeight;
-
     /** The current running animator that controls the fade in/out of the progress bar. */
     private @Nullable Animator mFadeAnimator;
 
@@ -164,11 +161,6 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         super(context, attrs);
         setAlpha(0.0f);
         mAnimationLogic = new ProgressAnimationSmooth();
-        mProgressBarHeight =
-                getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.toolbar.R.dimen
-                                        .toolbar_progress_bar_height);
 
         setVisibility(View.VISIBLE);
 

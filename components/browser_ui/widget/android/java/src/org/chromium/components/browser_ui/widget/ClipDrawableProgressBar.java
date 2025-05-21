@@ -57,6 +57,7 @@ public class ClipDrawableProgressBar extends ImageView {
     @Nullable private GradientDrawable mBackgroundGradientDrawable;
     private int mForegroundColor;
     private int mBackgroundColor;
+    protected int mProgressBarHeight;
     private float mProgress;
     private int mDesiredVisibility;
 
@@ -75,6 +76,8 @@ public class ClipDrawableProgressBar extends ImageView {
 
         mForegroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
         mBackgroundColor = getContext().getColor(R.color.progress_bar_bg_color_list);
+        mProgressBarHeight = getResources().getDimensionPixelSize(
+                R.dimen.toolbar_progress_bar_height);
         initializeDrawables();
         setBackgroundColor(mBackgroundColor);
     }
@@ -87,12 +90,14 @@ public class ClipDrawableProgressBar extends ImageView {
      */
     private void initializeDrawables() {
         if (useGradientDrawable()) {
-            mForegroundGradientDrawable = createGradientDrawable(mForegroundColor);
+            mForegroundGradientDrawable = createGradientDrawable(mForegroundColor,
+                    mProgressBarHeight / 2);
             ClipDrawable foregroundClipDrawable =
                     new ClipDrawable(mForegroundGradientDrawable, Gravity.START,
                             ClipDrawable.HORIZONTAL);
 
-            mBackgroundGradientDrawable = createGradientDrawable(mBackgroundColor);
+            mBackgroundGradientDrawable = createGradientDrawable(mBackgroundColor,
+                    mProgressBarHeight / 2);
             ClipDrawable backgroundClipDrawable = new ClipDrawable(
                     mBackgroundGradientDrawable, Gravity.END, ClipDrawable.HORIZONTAL);
             // Background will be fully visible.
@@ -116,10 +121,11 @@ public class ClipDrawableProgressBar extends ImageView {
      * @param color The color to set for the drawable.
      * @return A new {@link GradientDrawable} instance.
      */
-    private static GradientDrawable createGradientDrawable(int color) {
+    private static GradientDrawable createGradientDrawable(int color, int cornerRadius) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
         drawable.setColor(color);
+        drawable.setCornerRadius(cornerRadius);
         return drawable;
     }
 
