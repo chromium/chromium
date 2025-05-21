@@ -380,8 +380,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     navigate_params.navigated_or_inserted_contents->SetInitialFocus();
 
   if (split) {
-    tab_strip->AddToNewSplit({new_index},
-                             split_tabs::SplitTabLayout::kVertical);
+    tab_strip->AddToNewSplit({new_index}, split_tabs::SplitTabVisualData());
   }
 
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =

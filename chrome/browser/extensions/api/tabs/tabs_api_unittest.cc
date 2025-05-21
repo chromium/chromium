@@ -1778,7 +1778,7 @@ TEST_F(TabsApiUnitTest, SplitTabsWithHighlightFunction) {
                                           /*foreground=*/true);
   }
   GetTabStripModel()->ActivateTabAt(0);
-  GetTabStripModel()->AddToNewSplit({1}, split_tabs::SplitTabLayout::kVertical);
+  GetTabStripModel()->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
 
   // Run extension to highlight tabs
   auto extension = CreateTabsExtension();

@@ -1298,8 +1298,8 @@ TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
   AddTab(browser(), GURL(kTabUrl2));
   AddTab(browser(), GURL(kTabUrl3));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
-      {1}, split_tabs::SplitTabLayout::kVertical);
+  const split_tabs::SplitTabId split_id =
+      tab_strip_model->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
 
   const split_tabs::SplitTabData* split_data =
       tab_strip_model->GetSplitData(split_id);

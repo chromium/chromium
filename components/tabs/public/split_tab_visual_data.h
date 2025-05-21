@@ -21,7 +21,8 @@ enum class SplitTabLayout {
 class SplitTabVisualData {
  public:
   SplitTabVisualData();
-  SplitTabVisualData(SplitTabLayout split_layout_, double split_ratio);
+  explicit SplitTabVisualData(SplitTabLayout split_layout);
+  SplitTabVisualData(SplitTabLayout split_layout, double split_ratio);
   ~SplitTabVisualData();
 
   SplitTabVisualData(const SplitTabVisualData& other) = default;
@@ -47,7 +48,7 @@ class SplitTabVisualData {
  private:
   SplitTabLayout split_layout_;
   // ratio of the first split tab's width to the available width.
-  double split_ratio_;
+  double split_ratio_ = 0.5;
 };
 
 }  // namespace split_tabs

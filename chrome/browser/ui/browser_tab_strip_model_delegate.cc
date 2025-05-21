@@ -45,6 +45,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/site_instance.h"
@@ -134,6 +135,11 @@ bool BrowserTabStripModelDelegate::IsTabStripEditable() {
 
 void BrowserTabStripModelDelegate::DuplicateContentsAt(int index) {
   DuplicateTabAt(browser_, index);
+}
+
+void BrowserTabStripModelDelegate::DuplicateSplit(
+    split_tabs::SplitTabId split) {
+  chrome::DuplicateSplit(browser_, split);
 }
 
 void BrowserTabStripModelDelegate::MoveToExistingWindow(
@@ -332,7 +338,7 @@ void BrowserTabStripModelDelegate::NewSplitTab(std::vector<int> indices) {
     chrome::NewSplitTab(browser_);
   } else {
     browser_->tab_strip_model()->AddToNewSplit(
-        indices, split_tabs::SplitTabLayout::kVertical);
+        indices, split_tabs::SplitTabVisualData());
   }
 }
 

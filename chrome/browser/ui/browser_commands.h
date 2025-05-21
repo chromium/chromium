@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "content/public/common/page_zoom.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
@@ -140,6 +141,7 @@ void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group);
 bool CanCloseTabsToRight(const Browser* browser);
 bool CanCloseOtherTabs(const Browser* browser);
 content::WebContents* DuplicateTabAt(Browser* browser, int index);
+void DuplicateSplit(Browser* browser, split_tabs::SplitTabId split);
 bool CanDuplicateTabAt(const Browser* browser, int index);
 void MoveTabsToExistingWindow(Browser* source,
                               Browser* target,

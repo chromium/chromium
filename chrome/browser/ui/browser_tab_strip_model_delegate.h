@@ -44,6 +44,7 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool CanDuplicateContentsAt(int index) override;
   bool IsTabStripEditable() override;
   void DuplicateContentsAt(int index) override;
+  void DuplicateSplit(split_tabs::SplitTabId split) override;
   void MoveToExistingWindow(const std::vector<int>& indices,
                             int browser_index) override;
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override;

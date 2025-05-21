@@ -614,8 +614,9 @@ class TabStripModel {
   // Create a new split view with the active tab and add the set of tabs pointed
   // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
   // must be sorted in ascending order.
-  split_tabs::SplitTabId AddToNewSplit(const std::vector<int> indices,
-                                       split_tabs::SplitTabLayout tab_layout);
+  split_tabs::SplitTabId AddToNewSplit(
+      const std::vector<int> indices,
+      split_tabs::SplitTabVisualData visual_data);
 
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
@@ -814,6 +815,10 @@ class TabStripModel {
   // into webcontents.
   tabs::TabInterface* GetTabForWebContents(
       const content::WebContents* contents) const;
+
+  // Returns [start, end) where the leftmost tab in the split has index start
+  // and the rightmost tab in the split has index end - 1.
+  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
@@ -1258,10 +1263,6 @@ class TabStripModel {
 
   std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(
       split_tabs::SplitTabId split_id);
-
-  // Returns [start, end) where the leftmost tab in the split has index start
-  // and the rightmost tab in the split has index end - 1.
-  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id) const;
 
   // If inserting at `index` breaks a split, returns its id, otherwise nullopt.
   std::optional<split_tabs::SplitTabId> InsertionBreaksSplitContiguity(

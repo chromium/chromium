@@ -4935,7 +4935,7 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
         params_.link_url, active_index + 1, true,
         tab_strip_model->GetTabGroupForTab(active_index));
     tab_strip_model->AddToNewSplit({active_index},
-                                   split_tabs::SplitTabLayout::kVertical);
+                                   split_tabs::SplitTabVisualData());
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

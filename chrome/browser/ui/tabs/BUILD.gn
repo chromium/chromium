@@ -419,6 +419,8 @@ if (!is_android) {
       "pinned_tab_test_utils.h",
       "tab_activity_simulator.cc",
       "tab_activity_simulator.h",
+      "tab_strip_model_test_utils.cc",
+      "tab_strip_model_test_utils.h",
       "tab_ukm_test_helper.cc",
       "tab_ukm_test_helper.h",
       "test_tab_strip_model_delegate.cc",

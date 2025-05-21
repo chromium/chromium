@@ -519,12 +519,12 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
   chrome::AddTabAt(browser(), GURL(), -1, true);
   // Add tabs to splits.
   browser()->tab_strip_model()->ActivateTabAt(0);
-  browser()->tab_strip_model()->AddToNewSplit(
-      {1}, split_tabs::SplitTabLayout::kVertical);
+  browser()->tab_strip_model()->AddToNewSplit({1},
+                                              split_tabs::SplitTabVisualData());
 
   browser()->tab_strip_model()->ActivateTabAt(2);
-  browser()->tab_strip_model()->AddToNewSplit(
-      {3}, split_tabs::SplitTabLayout::kVertical);
+  browser()->tab_strip_model()->AddToNewSplit({3},
+                                              split_tabs::SplitTabVisualData());
 
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(browser_view()->multi_contents_view_for_testing());

@@ -49,6 +49,8 @@ bool TestTabStripModelDelegate::IsTabStripEditable() {
 
 void TestTabStripModelDelegate::DuplicateContentsAt(int index) {}
 
+void TestTabStripModelDelegate::DuplicateSplit(split_tabs::SplitTabId split) {}
+
 void TestTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
     int browser_index) {}

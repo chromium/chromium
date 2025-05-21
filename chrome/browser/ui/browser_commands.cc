@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -155,6 +156,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -333,6 +335,38 @@ bool BookmarkCurrentTabHelper(Browser* browser,
     favicon::SaveFaviconEvenIfInIncognito(web_contents);
   }
   return true;
+}
+
+content::WebContents* DuplicateTabAt(Browser* browser,
+                                     int index,
+                                     int dst_index) {
+  content::WebContents* contents =
+      browser->tab_strip_model()->GetWebContentsAt(index);
+  CHECK(contents);
+  std::unique_ptr<content::WebContents> contents_dupe = contents->Clone();
+  content::WebContents* raw_contents_dupe = contents_dupe.get();
+
+  bool pinned = false;
+  if (browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
+    // If this is a tabbed browser, just create a duplicate tab inside the same
+    // window next to the tab being duplicated.
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    pinned = tab_strip_model->IsTabPinned(index);
+    int add_types = AddTabTypes::ADD_ACTIVE | AddTabTypes::ADD_INHERIT_OPENER |
+                    (pinned ? AddTabTypes::ADD_PINNED : 0);
+    const auto old_group = tab_strip_model->GetTabGroupForTab(index);
+    tab_strip_model->InsertWebContentsAt(dst_index, std::move(contents_dupe),
+                                         add_types, old_group);
+  } else {
+    CreateAndShowNewWindowWithContents(std::move(contents_dupe), browser);
+  }
+
+  SessionServiceBase* session_service =
+      GetAppropriateSessionServiceIfExisting(browser);
+  if (session_service) {
+    session_service->TabRestored(raw_contents_dupe, pinned);
+  }
+  return raw_contents_dupe;
 }
 
 }  // namespace
@@ -1197,33 +1231,37 @@ bool CanCloseOtherTabs(const Browser* browser) {
 }
 
 WebContents* DuplicateTabAt(Browser* browser, int index) {
-  WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(index);
-  CHECK(contents);
-  std::unique_ptr<WebContents> contents_dupe = contents->Clone();
-  WebContents* raw_contents_dupe = contents_dupe.get();
+  return ::DuplicateTabAt(browser, index, index + 1);
+}
 
-  bool pinned = false;
-  if (browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
-    // If this is a tabbed browser, just create a duplicate tab inside the same
-    // window next to the tab being duplicated.
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    const int contents_index = tab_strip_model->GetIndexOfWebContents(contents);
-    pinned = tab_strip_model->IsTabPinned(contents_index);
-    int add_types = AddTabTypes::ADD_ACTIVE | AddTabTypes::ADD_INHERIT_OPENER |
-                    (pinned ? AddTabTypes::ADD_PINNED : 0);
-    const auto old_group = tab_strip_model->GetTabGroupForTab(contents_index);
-    tab_strip_model->InsertWebContentsAt(
-        contents_index + 1, std::move(contents_dupe), add_types, old_group);
-  } else {
-    CreateAndShowNewWindowWithContents(std::move(contents_dupe), browser);
+void DuplicateSplit(Browser* browser, split_tabs::SplitTabId split) {
+  CHECK(browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP));
+
+  TabStripModel* model = browser->tab_strip_model();
+  gfx::Range split_indices_range = model->GetIndexRangeOfSplit(split);
+  std::vector<int> duplicated_tab_indices;
+  for (size_t split_index = split_indices_range.GetMin();
+       split_index < split_indices_range.GetMax(); split_index++) {
+    size_t dst_index = split_index + split_indices_range.length();
+    ::DuplicateTabAt(browser, split_index, dst_index);
+    duplicated_tab_indices.push_back(dst_index);
   }
 
-  SessionServiceBase* session_service =
-      GetAppropriateSessionServiceIfExisting(browser);
-  if (session_service) {
-    session_service->TabRestored(raw_contents_dupe, pinned);
-  }
-  return raw_contents_dupe;
+  // Activate the tab that was last active in the old split, and then
+  // create the new split with the same visual data.
+  // TODO(418015278): Revisit if we should store last active tab in the visual
+  // data, to make copying it easier.
+  int active_index = split_tabs::GetIndexOfLastActiveTab(model, split) +
+                     split_indices_range.length();
+  model->ActivateTabAt(active_index);
+  // AddToNewSplit always creates a split with the active index so remove it
+  // from the passed in indices.
+  duplicated_tab_indices.erase(std::find(duplicated_tab_indices.begin(),
+                                         duplicated_tab_indices.end(),
+                                         active_index));
+  model->AddToNewSplit(duplicated_tab_indices,
+                       split_tabs::SplitTabVisualData(
+                           *(model->GetSplitData(split)->visual_data())));
 }
 
 bool CanDuplicateTabAt(const Browser* browser, int index) {
@@ -1286,7 +1324,7 @@ void NewSplitTab(Browser* browser) {
       GURL(chrome::kChromeUISplitViewNewTabPageURL), active_index + 1, true,
       tab_strip_model->GetTabGroupForTab(active_index));
   tab_strip_model->AddToNewSplit({active_index},
-                                 split_tabs::SplitTabLayout::kVertical);
+                                 split_tabs::SplitTabVisualData());
 }
 
 void AddNewTabToGroup(Browser* browser) {

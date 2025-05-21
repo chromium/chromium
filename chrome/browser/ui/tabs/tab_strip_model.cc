@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1812,7 +1813,7 @@ void TabStripModel::ReverseTabsInSplit(split_tabs::SplitTabId split_id) {
 
 split_tabs::SplitTabId TabStripModel::AddToNewSplit(
     std::vector<int> indices,
-    split_tabs::SplitTabLayout tab_layout) {
+    split_tabs::SplitTabVisualData visual_data) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   // Ensure that there is only one index. This will be split with the active
@@ -1824,8 +1825,7 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
 
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
-  return AddToSplitImpl(split_id, indices,
-                        split_tabs::SplitTabVisualData(tab_layout, 0.5),
+  return AddToSplitImpl(split_id, indices, visual_data,
                         SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
 }
 
@@ -2356,10 +2356,20 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       for (int index : indices) {
         tabs.push_back(GetTabAtIndex(index));
       }
-      for (const tabs::TabInterface* const tab : tabs) {
-        const int index = GetIndexOfTab(tab);
-        if (index != -1 && delegate()->CanDuplicateContentsAt(index)) {
-          delegate()->DuplicateContentsAt(index);
+
+      for (size_t i = 0; i < tabs.size();) {
+        tabs::TabInterface* tab = tabs[i];
+        if (tab->IsSplit()) {
+          split_tabs::SplitTabId split_id = tab->GetSplit().value();
+          delegate()->DuplicateSplit(split_id);
+          i += contents_data_->GetSplitTabCollection(split_id)
+                   ->TabCountRecursive();
+        } else {
+          // Need to reacquire the index of the tab as that could have changed
+          // since we got the tab from the index due to a previous tab being
+          // duplicated.
+          delegate()->DuplicateContentsAt(GetIndexOfTab(tab));
+          i++;
         }
       }
       break;

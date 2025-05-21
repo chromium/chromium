@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_id.h"
 
 class Browser;
 class BrowserWindowInterface;
@@ -100,6 +101,9 @@ class TabStripModelDelegate {
 
   // Duplicates the contents at the provided index and places it into a new tab.
   virtual void DuplicateContentsAt(int index) = 0;
+
+  // Duplicates a split tab.
+  virtual void DuplicateSplit(split_tabs::SplitTabId split) = 0;
 
   // Move the contents at the provided indices into the specified window.
   virtual void MoveToExistingWindow(const std::vector<int>& indices,

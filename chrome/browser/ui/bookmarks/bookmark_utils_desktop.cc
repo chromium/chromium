@@ -294,7 +294,7 @@ void OpenAllIfAllowed(
           const int opened_web_contents_index =
               model->GetIndexOfWebContents(single_web_contents);
           model->AddToNewSplit({opened_web_contents_index},
-                               split_tabs::SplitTabLayout::kVertical);
+                               split_tabs::SplitTabVisualData());
         } else if (folder_title.has_value()) {
           TabStripModel* model = browser->tab_strip_model();
 
