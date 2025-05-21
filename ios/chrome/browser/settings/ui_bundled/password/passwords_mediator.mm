@@ -409,8 +409,11 @@ struct PasswordManagerActiveWidgetPromoData
   }
 }
 
+// LINT.IfChange(IsTrustedVaultKeyRequiredForPreferredDataTypes)
 // Decides whether the Trusted Vault widget promo should be displayed and asks
-// consumer to do so.
+// consumer to do so. This code should be in sync with the code that decides
+// whether the error badge should be displayed for the GPM icon in the overflow
+// menu.
 - (void)displayOrHideTrustedVaultPasswordManagerWidgetPromo {
   if (password_manager::features::
           IsPasswordManagerTrustedVaultWidgetEnabled()) {
@@ -419,6 +422,7 @@ struct PasswordManagerActiveWidgetPromoData
                            ->IsTrustedVaultKeyRequiredForPreferredDataTypes()];
   }
 }
+// LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
 
 #pragma mark - SavedPasswordsPresenterObserver
 

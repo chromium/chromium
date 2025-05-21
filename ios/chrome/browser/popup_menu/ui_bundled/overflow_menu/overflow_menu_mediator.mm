@@ -30,6 +30,7 @@
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -1402,6 +1404,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   return GetAccountErrorUIInfo(self.syncService) != nil;
 }
 
+// LINT.IfChange(IsTrustedVaultKeyRequiredForPreferredDataTypes)
+// Returns YES if the Overflow Menu should indicate a missing Trusted Vault key
+// error. This code should be in sync with the code that decides whether the
+// Trusted Vault promo widget should be displayed in the Password Manager
+// settings UI.
+- (BOOL)shouldIndicateMissingTrustedVaultKeyForPasswordsError {
+  if (!self.syncService) {
+    return NO;
+  }
+
+  return self.syncService->GetUserSettings()
+      ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
+}
+// LINT.ThenChange(/ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
+
 // Updates the model to match the current page state.
 - (void)updateModel {
   // First update the items' states, and then update all the orders.
@@ -1950,6 +1967,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.readingListModel->loaded() ? self.readingListDestination
                                              : nil;
     case overflow_menu::Destination::Passwords:
+      if ([self shouldIndicateMissingTrustedVaultKeyForPasswordsError] &&
+          password_manager::features::
+              IsPasswordManagerTrustedVaultWidgetEnabled()) {
+        self.passwordsDestination.badge = BadgeTypeError;
+      }
       return self.passwordsDestination;
     case overflow_menu::Destination::Downloads:
       return self.downloadsDestination;

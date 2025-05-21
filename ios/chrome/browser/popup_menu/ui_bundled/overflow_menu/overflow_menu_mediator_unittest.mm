@@ -36,6 +36,7 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
@@ -61,6 +62,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -875,6 +877,60 @@ TEST_F(OverflowMenuMediatorTest, TestSyncError) {
   EXPECT_NSEQ(kToolsMenuSettingsId,
               promotedDestination.accessibilityIdentifier);
   EXPECT_EQ(BadgeTypeError, promotedDestination.badge);
+}
+
+// Tests that there is an error badge on the Passwords destination when the
+// Trusted Vault key for preferred data types is missing. The account is signed.
+TEST_F(OverflowMenuMediatorTest,
+       TestTrustedVaultKeyMissingForPreferredDataTypes) {
+  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
+
+  CreateMediator(/*incognito=*/NO);
+
+  syncer::MockSyncService syncService;
+  // Mock IsTrustedVaultKeyRequiredForPreferredDataTypes to return true.
+  ON_CALL(*(syncService.GetMockUserSettings()),
+          IsTrustedVaultKeyRequiredForPreferredDataTypes())
+      .WillByDefault(Return(true));
+  mediator_.syncService = &syncService;
+  mediator_.model = model_;
+
+  // Verify that the Passwords destination has the red dot badge to indicate the
+  // error.
+  OverflowMenuDestination* passwordsDestination =
+      GetDestination(kToolsMenuPasswordsId);
+  ASSERT_NE(nil, passwordsDestination);
+  EXPECT_EQ(BadgeTypeError, passwordsDestination.badge);
+}
+
+// Tests that there is no error badge on the Passwords destination when the
+// Trusted Vault key for preferred data types is not missing. The account is
+// signed.
+TEST_F(OverflowMenuMediatorTest,
+       TestNoErrorBadgeWhenTrustedVaultKeyIsNotMissingForPreferredDataTypes) {
+  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
+
+  CreateMediator(/*incognito=*/NO);
+
+  syncer::MockSyncService syncService;
+  // Mock IsTrustedVaultKeyRequiredForPreferredDataTypes to return false.
+  ON_CALL(*(syncService.GetMockUserSettings()),
+          IsTrustedVaultKeyRequiredForPreferredDataTypes())
+      .WillByDefault(Return(false));
+  mediator_.syncService = &syncService;
+  mediator_.model = model_;
+
+  // Verify that the Passwords destination does not have the error badge.
+  OverflowMenuDestination* passwordsDestination =
+      GetDestination(kToolsMenuPasswordsId);
+  ASSERT_NE(nil, passwordsDestination);
+  EXPECT_EQ(BadgeTypeNone, passwordsDestination.badge);
 }
 
 // Tests that there is no error cue (red dot) displayed on the Settings
