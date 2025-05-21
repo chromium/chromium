@@ -36,6 +36,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
+#include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/color_space_util_win.h"
 #include "media/capture/mojom/image_capture_types.h"
@@ -720,13 +721,40 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
                 << logging::SystemErrorCodeToString(hr);
     return E_FAIL;
   }
-  device_context->CopySubresourceRegion(target_texture.Get(), 0, 0, 0, 0,
-                                        texture, 0, nullptr);
-  keyed_mutex->ReleaseSync(0);
 
-  // Need to flush context to ensure that other devices receive updated contents
-  // of shared resource
-  device_context->Flush();
+  {
+    gpu::DXGIScopedReleaseKeyedMutex scoped_keyed_mutex(keyed_mutex, 0);
+
+    device_context->CopySubresourceRegion(target_texture.Get(), 0, 0, 0, 0,
+                                          texture, 0, nullptr);
+
+    // Wait here for copy completion for D3D11/D3D12 interop, due to:
+    // 1) For D3D12 access in GPU process, D3D12 runtime is not aware of the
+    // simultaneous D3D11 write-access by capture module, so capture module
+    // must ensure copy completion before handing over to D3D12;
+    // 2) For D3D11 access in GPU process, if we add a D3D11Fence here and
+    // deliver that in GMB for access in GPU process, it will not work as GPU
+    // process is on a different D3D11 device/context, though they may be on
+    // the same adapter.
+    Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device2;
+    hr = texture_device.As(&dxgi_device2);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to query IDXGIDevice2: "
+                 << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                              base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+    hr = dxgi_device2->EnqueueSetEvent(event.handle());
+    if (SUCCEEDED(hr)) {
+      event.Wait();
+    } else {
+      LOG(WARNING) << "Failed to set event: "
+                   << logging::SystemErrorCodeToString(hr);
+      device_context->Flush();
+    }
+  }
 
   return S_OK;
 }
