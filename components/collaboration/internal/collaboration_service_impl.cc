@@ -106,9 +106,6 @@ void CollaborationServiceImpl::StartJoinFlow(
     token = parse_result.value();
   }
 
-  // TODO(crbug.com/393194653): Promote the active screen instead of closing and
-  // starting a new flow if flow is ongoing.
-
   CancelAllFlows(base::BindOnce(
       &CollaborationServiceImpl::StartJoinFlowInternal,
       weak_ptr_factory_.GetWeakPtr(), std::move(delegate), token));
@@ -124,11 +121,6 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   metrics::RecordShareOrManageEntryPoint(data_sharing_service_->GetLogger(),
                                          entry);
-  auto it = collaboration_controllers_.find(either_id);
-  if (it != collaboration_controllers_.end()) {
-    it->second->delegate()->PromoteCurrentScreen();
-    return;
-  }
 
   CancelAllFlows(
       base::BindOnce(&CollaborationServiceImpl::StartCollaborationFlowInternal,
@@ -146,11 +138,6 @@ void CollaborationServiceImpl::StartLeaveOrDeleteFlow(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   metrics::RecordLeaveOrDeleteEntryPoint(data_sharing_service_->GetLogger(),
                                          entry);
-  auto it = collaboration_controllers_.find(either_id);
-  if (it != collaboration_controllers_.end()) {
-    it->second->delegate()->PromoteCurrentScreen();
-    return;
-  }
 
   CancelAllFlows(
       base::BindOnce(&CollaborationServiceImpl::StartCollaborationFlowInternal,
