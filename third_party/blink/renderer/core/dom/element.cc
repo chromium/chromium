@@ -4866,10 +4866,12 @@ StyleRecalcChange Element::RecalcOwnStyle(
         apply_changes = LayoutObject::ApplyStyleChanges::kYes;
       }
     }
-    if (style_recalc_context.is_interleaved_oof) {
-      // If we're in interleaved style recalc from out-of-flow,
-      // we're already in the middle of laying out the objects
-      // we would mark for layout.
+    if (style_recalc_context.anchor_evaluator) {
+      // If we're in an interleaved style recalc from out-of-flow,
+      // and we're already in the middle of laying out the anchored element,
+      // we should not mark that element for layout again. Note that the
+      // anchor_evaluator is reset for children so that that elements
+      // recalculated for anchored() queries will be invalidates as normal.
       apply_changes = LayoutObject::ApplyStyleChanges::kNo;
     } else if (new_style->HasAnchorFunctionsWithoutEvaluator()) {
       // For regular (non-interleaved) recalcs that depend on anchor*()

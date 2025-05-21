@@ -3811,7 +3811,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
 
   StyleRecalcContext style_recalc_context =
       StyleRecalcContext::FromAncestors(element);
-  style_recalc_context.is_interleaved_oof = true;
   style_recalc_context.anchor_evaluator = anchor_evaluator;
   style_recalc_context.try_set = try_set;
   style_recalc_context.try_tactics_set = try_tactics_set;
@@ -3819,9 +3818,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
   StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
   if (ContainerQueryEvaluator* evaluator =
           element.GetContainerQueryEvaluator()) {
-    // TODO(crbug.com/417621241): This method now needs to be similar to
-    // UpdateStyleAndLayoutTreeForContainer() and also run layout tree rebuild
-    // when necessary.
     change = evaluator->ApplyAnchoredChanges(change, try_fallback_index);
   }
 

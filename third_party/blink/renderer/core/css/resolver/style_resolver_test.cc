@@ -3384,9 +3384,8 @@ TEST_F(StyleResolverTest, TrySet_Basic) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  const ComputedStyle* try_style = StyleForId(
-      "div",
-      StyleRecalcContext{.try_set = try_set, .is_interleaved_oof = true});
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.try_set = try_set});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("20px", ComputedValue("left", *try_style));
   EXPECT_EQ("30px", ComputedValue("right", *try_style));
@@ -3416,9 +3415,8 @@ TEST_F(StyleResolverTest, TrySet_RevertLayer) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  const ComputedStyle* try_style = StyleForId(
-      "div",
-      StyleRecalcContext{.try_set = try_set, .is_interleaved_oof = true});
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.try_set = try_set});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
   EXPECT_EQ("30px", ComputedValue("right", *try_style));
@@ -3448,9 +3446,8 @@ TEST_F(StyleResolverTest, TrySet_Revert) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  const ComputedStyle* try_style = StyleForId(
-      "div",
-      StyleRecalcContext{.try_set = try_set, .is_interleaved_oof = true});
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.try_set = try_set});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("auto", ComputedValue("left", *try_style));
   EXPECT_EQ("30px", ComputedValue("right", *try_style));
@@ -3481,9 +3478,8 @@ TEST_F(StyleResolverTest, TrySet_NonAbsPos) {
   )CSS");
   ASSERT_TRUE(try_set);
 
-  const ComputedStyle* try_style = StyleForId(
-      "div",
-      StyleRecalcContext{.try_set = try_set, .is_interleaved_oof = true});
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.try_set = try_set});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
   EXPECT_EQ("auto", ComputedValue("right", *try_style));
@@ -3517,9 +3513,8 @@ TEST_F(StyleResolverTest, TrySet_NonAbsPosDynamic) {
   ASSERT_TRUE(try_set);
 
   div->SetInlineStyleProperty(CSSPropertyID::kPosition, "static");
-  const ComputedStyle* try_style = StyleForId(
-      "div",
-      StyleRecalcContext{.try_set = try_set, .is_interleaved_oof = true});
+  const ComputedStyle* try_style =
+      StyleForId("div", StyleRecalcContext{.try_set = try_set});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
   EXPECT_EQ("auto", ComputedValue("right", *try_style));
@@ -3564,8 +3559,7 @@ TEST_F(StyleResolverTest, TryTacticsSet_Flip) {
 
   const ComputedStyle* try_style =
       StyleForId("div", StyleRecalcContext{.try_set = try_set,
-                                           .try_tactics_set = try_tactics_set,
-                                           .is_interleaved_oof = true});
+                                           .try_tactics_set = try_tactics_set});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("200px", ComputedValue("left", *try_style));
   EXPECT_EQ("100px", ComputedValue("right", *try_style));
