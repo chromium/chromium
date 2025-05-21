@@ -17,6 +17,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -141,6 +142,15 @@ public class AutofillClientProviderUtils {
                         .edit();
         editor.putBoolean(AUTOFILL_OPTIONS_DEEP_LINK_FEATURE_KEY, featureOn);
         editor.apply();
+    }
+
+    @CalledByNative
+    public static String getTrialGroupForPackage() {
+        AndroidAutofillAccessibilityFieldTrial fieldTrialImpl =
+                ServiceLoaderUtil.maybeCreate(AndroidAutofillAccessibilityFieldTrial.class);
+        return fieldTrialImpl != null
+                ? fieldTrialImpl.getTrialGroupForPackage()
+                : AndroidAutofillAccessibilityFieldTrial.AUTOFILL_VIA_A11Y_DEPRECATION_DEFAULT;
     }
 
     private AutofillClientProviderUtils() {}

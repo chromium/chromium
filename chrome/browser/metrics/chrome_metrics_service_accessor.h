@@ -43,6 +43,12 @@ namespace {
 class CrashesDOMHandler;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+namespace autofill {
+class AutofillClientProvider;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeCameraAppUIDelegate;
 
@@ -158,6 +164,9 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class BoundSessionCookieRefreshServiceImpl;
 #endif
   friend class ::CrashesDOMHandler;
+#if BUILDFLAG(IS_ANDROID)
+  friend class autofill::AutofillClientProvider;
+#endif  // BUILDFLAG(IS_ANDROID)
   friend class ChromeBrowserFieldTrials;
   // For ClangPGO.
   friend class ChromeBrowserMainExtraPartsMetrics;
