@@ -37,11 +37,7 @@ class FakeTransaction : public BackingStore::Transaction {
                            const std::u16string& new_name) override;
   Status ClearObjectStore(int64_t object_store_id) override;
   Status CreateIndex(int64_t object_store_id,
-                     int64_t index_id,
-                     const std::u16string& name,
-                     blink::IndexedDBKeyPath key_path,
-                     bool is_unique,
-                     bool is_multi_entry) override;
+                     blink::IndexedDBIndexMetadata index) override;
   Status DeleteIndex(int64_t object_store_id, int64_t index_id) override;
   Status RenameIndex(int64_t object_store_id,
                      int64_t index_id,

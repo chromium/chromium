@@ -425,11 +425,7 @@ interface IDBDatabase {
   // Correlates to IDBObjectStore::createIndex()
   CreateIndex(int64 transaction_id,
               int64 object_store_id,
-              int64 index_id,
-              mojo_base.mojom.String16 name,
-              IDBKeyPath key_path,
-              bool unique,
-              bool multi_entry);
+              IDBIndexMetadata index);
   DeleteIndex(int64 transaction_id,
               int64 object_store_id,
               int64 index_id);

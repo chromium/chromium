@@ -1205,11 +1205,13 @@ TEST_F(BackingStoreTest, CreateAndDeleteIndex) {
                                         /*auto_increment=*/true)
                     .ok());
 
-    EXPECT_TRUE(transaction
-                    ->CreateIndex(object_store_id, index_id, u"index_name",
-                                  index_key_path, /*unique=*/true,
-                                  /*multi_entry=*/true)
-                    .ok());
+    EXPECT_TRUE(
+        transaction
+            ->CreateIndex(object_store_id, blink::IndexedDBIndexMetadata(
+                                               u"index_name", index_id,
+                                               index_key_path, /*unique=*/true,
+                                               /*multi_entry=*/true))
+            .ok());
 
     CommitTransaction(*transaction);
   }
@@ -1443,8 +1445,10 @@ TEST_F(BackingStoreTest, CreateDatabase) {
         (*db1)->GetMetadata().object_stores.find(object_store_id)->second;
     EXPECT_EQ(object_store.id, object_store_id);
 
-    s = transaction->CreateIndex(object_store.id, index_id, index_name,
-                                 index_key_path, unique, multi_entry);
+    s = transaction->CreateIndex(
+        object_store.id,
+        blink::IndexedDBIndexMetadata(index_name, index_id, index_key_path,
+                                      unique, multi_entry));
     EXPECT_TRUE(s.ok());
 
     const IndexedDBIndexMetadata& index =

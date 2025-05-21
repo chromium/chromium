@@ -693,11 +693,7 @@ void Connection::Clear(int64_t transaction_id,
 
 void Connection::CreateIndex(int64_t transaction_id,
                              int64_t object_store_id,
-                             int64_t index_id,
-                             const std::u16string& name,
-                             const IndexedDBKeyPath& key_path,
-                             bool unique,
-                             bool multi_entry) {
+                             const blink::IndexedDBIndexMetadata& index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
@@ -726,13 +722,12 @@ void Connection::CreateIndex(int64_t transaction_id,
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       base::BindOnce(
-          [](int64_t object_store_id, int64_t index_id,
-             const std::u16string& name, const IndexedDBKeyPath& key_path,
-             bool unique, bool multi_entry, Transaction* transaction) {
+          [](int64_t object_store_id, blink::IndexedDBIndexMetadata index,
+             Transaction* transaction) {
             return transaction->BackingStoreTransaction()->CreateIndex(
-                object_store_id, index_id, name, key_path, unique, multi_entry);
+                object_store_id, std::move(index));
           },
-          object_store_id, index_id, name, key_path, unique, multi_entry));
+          object_store_id, index));
 }
 
 void Connection::DeleteIndex(int64_t transaction_id,

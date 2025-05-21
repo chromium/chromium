@@ -731,8 +731,10 @@ void IDBDatabase::CreateIndex(int64_t transaction_id,
                               const IDBKeyPath& key_path,
                               bool unique,
                               bool multi_entry) {
-  database_remote_->CreateIndex(transaction_id, object_store_id, index_id, name,
-                                key_path, unique, multi_entry);
+  database_remote_->CreateIndex(
+      transaction_id, object_store_id,
+      base::MakeRefCounted<IDBIndexMetadata>(name, index_id, key_path, unique,
+                                             multi_entry));
 }
 
 void IDBDatabase::DeleteIndex(int64_t transaction_id,

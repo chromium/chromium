@@ -984,9 +984,10 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
     ASSERT_TRUE(connection1->database.is_bound());
     connection1->version_change_transaction->CreateObjectStore(
         kObjectStoreId, kObjectStoreName, blink::IndexedDBKeyPath(), false);
-    connection1->database->CreateIndex(kTransactionId1, kObjectStoreId,
-                                       kIndexId, kIndexName,
-                                       blink::IndexedDBKeyPath(), false, false);
+    connection1->database->CreateIndex(
+        kTransactionId1, kObjectStoreId,
+        blink::IndexedDBIndexMetadata(kIndexName, kIndexId,
+                                      blink::IndexedDBKeyPath(), false, false));
     connection1->version_change_transaction->Commit(0);
 
     loop.Run();

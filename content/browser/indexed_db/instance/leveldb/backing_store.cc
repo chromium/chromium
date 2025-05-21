@@ -2009,13 +2009,11 @@ Status BackingStore::Transaction::RenameObjectStore(
   return Status::OK();
 }
 
-Status BackingStore::Transaction::CreateIndex(int64_t object_store_id,
-                                              int64_t index_id,
-                                              const std::u16string& name,
-                                              blink::IndexedDBKeyPath key_path,
-                                              bool is_unique,
-                                              bool is_multi_entry) {
+Status BackingStore::Transaction::CreateIndex(
+    int64_t object_store_id,
+    blink::IndexedDBIndexMetadata index) {
   CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
+  const int64_t index_id = index.id;
   auto object_store_it =
       database_->metadata().object_stores.find(object_store_id);
   if (object_store_it == database_->metadata().object_stores.end()) {
@@ -2046,30 +2044,24 @@ Status BackingStore::Transaction::CreateIndex(int64_t object_store_id,
   const std::string multi_entry_key = IndexMetaDataKey::Encode(
       database_id(), object_store_id, index_id, IndexMetaDataKey::MULTI_ENTRY);
 
-  s = PutString(leveldb_transaction, name_key, name);
+  s = PutString(leveldb_transaction, name_key, index.name);
   if (!s.ok()) {
     return s;
   }
-  s = PutBool(leveldb_transaction, unique_key, is_unique);
+  s = PutBool(leveldb_transaction, unique_key, index.unique);
   if (!s.ok()) {
     return s;
   }
-  s = PutIDBKeyPath(leveldb_transaction, key_path_key, key_path);
+  s = PutIDBKeyPath(leveldb_transaction, key_path_key, index.key_path);
   if (!s.ok()) {
     return s;
   }
-  s = PutBool(leveldb_transaction, multi_entry_key, is_multi_entry);
+  s = PutBool(leveldb_transaction, multi_entry_key, index.multi_entry);
   if (!s.ok()) {
     return s;
   }
 
-  blink::IndexedDBIndexMetadata metadata;
-  metadata.name = std::move(name);
-  metadata.id = index_id;
-  metadata.key_path = std::move(key_path);
-  metadata.unique = is_unique;
-  metadata.multi_entry = is_multi_entry;
-  object_store.indexes[index_id] = std::move(metadata);
+  object_store.indexes[index_id] = std::move(index);
 
   DCHECK_LT(object_store.max_index_id, index_id);
   object_store.max_index_id = index_id;

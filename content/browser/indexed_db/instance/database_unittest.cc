@@ -726,15 +726,18 @@ class DatabaseOperationTest : public DatabaseTest {
     EXPECT_EQ(1u, db_->metadata().object_stores.size());
 
     // Optionally, create an index when the test provides a valid index id.
-    const auto& index_parameters = database_parameters.index_parameters;
-    const int64_t index_id = index_parameters.index_id;
+    const blink::IndexedDBIndexMetadata index(
+        database_parameters.index_parameters.name,
+        database_parameters.index_parameters.index_id,
+        database_parameters.index_parameters.key_path,
+        database_parameters.index_parameters.unique,
+        database_parameters.index_parameters.multi_entry);
+    const int64_t index_id = index.id;
     const bool has_index =
-        (index_id != blink::IndexedDBIndexMetadata::kInvalidId);
+        index_id != blink::IndexedDBIndexMetadata::kInvalidId;
     if (has_index) {
-      status = transaction_->BackingStoreTransaction()->CreateIndex(
-          store_id, index_parameters.index_id, index_parameters.name,
-          index_parameters.key_path, index_parameters.unique,
-          index_parameters.multi_entry);
+      status =
+          transaction_->BackingStoreTransaction()->CreateIndex(store_id, index);
     }
     EXPECT_TRUE(status.ok()) << status.ToString();
 
@@ -848,8 +851,9 @@ TEST_F(DatabaseOperationTest, CreateIndex) {
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
   const int64_t index_id = 2002;
   s = transaction_->BackingStoreTransaction()->CreateIndex(
-      store_id, index_id, u"index", IndexedDBKeyPath(), /*unique=*/false,
-      /*multi_entry=*/false);
+      store_id, blink::IndexedDBIndexMetadata(
+                    u"index", index_id, IndexedDBKeyPath(), /*unique=*/false,
+                    /*multi_entry=*/false));
   EXPECT_TRUE(s.ok());
   EXPECT_EQ(
       1ULL,
@@ -900,8 +904,9 @@ TEST_F(DatabaseOperationAbortTest, CreateIndex) {
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
   const int64_t index_id = 2002;
   s = transaction_->BackingStoreTransaction()->CreateIndex(
-      store_id, index_id, u"index", IndexedDBKeyPath(), /*unique=*/false,
-      /*multi_entry=*/false);
+      store_id, blink::IndexedDBIndexMetadata(
+                    u"index", index_id, IndexedDBKeyPath(), /*unique=*/false,
+                    /*multi_entry=*/false));
   EXPECT_TRUE(s.ok());
   EXPECT_EQ(
       1ULL,

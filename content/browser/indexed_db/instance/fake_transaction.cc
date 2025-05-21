@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content::indexed_db {
@@ -69,14 +70,8 @@ Status FakeTransaction::ClearObjectStore(int64_t object_store_id) {
 }
 
 Status FakeTransaction::CreateIndex(int64_t object_store_id,
-                                    int64_t index_id,
-                                    const std::u16string& name,
-                                    blink::IndexedDBKeyPath key_path,
-                                    bool is_unique,
-                                    bool is_multi_entry) {
-  return wrapped_transaction_->CreateIndex(object_store_id, index_id, name,
-                                           std::move(key_path), is_unique,
-                                           is_multi_entry);
+                                    blink::IndexedDBIndexMetadata index) {
+  return wrapped_transaction_->CreateIndex(object_store_id, std::move(index));
 }
 
 Status FakeTransaction::DeleteIndex(int64_t object_store_id, int64_t index_id) {

@@ -164,11 +164,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
     // Creates a new index metadata and writes it to the transaction.
     Status CreateIndex(int64_t object_store_id,
-                       int64_t index_id,
-                       const std::u16string& name,
-                       blink::IndexedDBKeyPath key_path,
-                       bool is_unique,
-                       bool is_multi_entry) override;
+                       blink::IndexedDBIndexMetadata index) override;
     // Deletes the index metadata on the transaction (but not any index
     // entries).
     Status DeleteIndex(int64_t object_store_id, int64_t index_id) override;

@@ -190,11 +190,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
              ClearCallback callback) override;
   void CreateIndex(int64_t transaction_id,
                    int64_t object_store_id,
-                   int64_t index_id,
-                   const std::u16string& name,
-                   const blink::IndexedDBKeyPath& key_path,
-                   bool unique,
-                   bool multi_entry) override;
+                   const blink::IndexedDBIndexMetadata& index) override;
   void DeleteIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id) override;

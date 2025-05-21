@@ -80,11 +80,7 @@ Status BackingStoreTransactionImpl::ClearObjectStore(int64_t object_store_id) {
 
 Status BackingStoreTransactionImpl::CreateIndex(
     int64_t object_store_id,
-    int64_t index_id,
-    const std::u16string& name,
-    blink::IndexedDBKeyPath key_path,
-    bool is_unique,
-    bool is_multi_entry) {
+    blink::IndexedDBIndexMetadata index) {
   NOTIMPLEMENTED();
   return Status::OK();
 }

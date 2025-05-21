@@ -119,12 +119,10 @@ class BackingStore {
     [[nodiscard]] virtual Status ClearObjectStore(int64_t object_store_id) = 0;
 
     // Creates a new index metadata and writes it to the transaction.
-    [[nodiscard]] virtual Status CreateIndex(int64_t object_store_id,
-                                             int64_t index_id,
-                                             const std::u16string& name,
-                                             blink::IndexedDBKeyPath key_path,
-                                             bool is_unique,
-                                             bool is_multi_entry) = 0;
+    [[nodiscard]] virtual Status CreateIndex(
+        int64_t object_store_id,
+        blink::IndexedDBIndexMetadata index) = 0;
+
     // Deletes the index metadata on the transaction (but not any index
     // entries).
     [[nodiscard]] virtual Status DeleteIndex(int64_t object_store_id,
