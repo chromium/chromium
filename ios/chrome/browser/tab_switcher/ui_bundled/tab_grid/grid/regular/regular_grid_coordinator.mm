@@ -4,10 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_coordinator.h"
 
-#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
-#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
-#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -142,14 +139,6 @@
 
   self.gridViewController = gridViewController;
 
-  FaviconLoader* faviconLoader = nil;
-  collaboration::CollaborationService* collaborationService =
-      collaboration::CollaborationServiceFactory::GetForProfile(profile);
-  // Fetch favicons if shared tab groups is enabled.
-  if (IsSharedTabGroupsJoinEnabled(collaborationService)) {
-    faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
-  }
-
   _mediator = [[RegularGridMediator alloc]
        initWithModeHolder:self.modeHolder
       tabGroupSyncService:tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -157,8 +146,7 @@
           shareKitService:ShareKitServiceFactory::GetForProfile(profile)
          messagingService:collaboration::messaging::
                               MessagingBackendServiceFactory::GetForProfile(
-                                  profile)
-            faviconLoader:faviconLoader];
+                                  profile)];
   _mediator.consumer = gridViewController;
 
   gridViewController.dragDropHandler = _mediator;

@@ -8,10 +8,17 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 
 @class ActivityLabelData;
+@class GroupTabInfo;
 @class GridItemIdentifier;
 namespace web {
 class WebStateID;
 }  // namespace web
+
+// Block invoked when a GroupTabInfo fetching operation completes. The
+// `groupTabInfos` is nil if the operation failed.
+typedef void (^GroupTabInfosFetchingCompletionBlock)(
+    TabGroupItem* item,
+    NSArray<GroupTabInfo*>* groupTabInfos);
 
 // Protocol allowing to get information of the grid model.
 @protocol BaseGridMediatorItemProvider

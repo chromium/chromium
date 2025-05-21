@@ -975,9 +975,7 @@ TEST_F(TabStripMediatorTest, CollapseExpandGroup) {
   AddWebState();
   const TabGroup* group =
       web_state_list_->CreateGroup({1, 2}, {}, TabGroupId::GenerateNew());
-  TabGroupItem* group_item =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* group_item = [[TabGroupItem alloc] initWithTabGroup:group];
   TabStripItemIdentifier* group_item_identifier =
       [TabStripItemIdentifier groupIdentifier:group_item];
 
@@ -1016,9 +1014,7 @@ TEST_F(TabStripMediatorTest, RenameGroup) {
   AddWebState();
   const TabGroup* group =
       web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
-  TabGroupItem* groupItem =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* groupItem = [[TabGroupItem alloc] initWithTabGroup:group];
 
   InitializeMediator();
 
@@ -1033,9 +1029,7 @@ TEST_F(TabStripMediatorTest, AddTabInGroupFromGroup) {
   AddWebState();
   const TabGroup* group =
       web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
-  TabGroupItem* groupItem =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* groupItem = [[TabGroupItem alloc] initWithTabGroup:group];
 
   InitializeMediator();
 
@@ -1060,9 +1054,7 @@ TEST_F(TabStripMediatorTest, AddTabInGroupOutsideOfGroup) {
   AddWebState();
   const TabGroup* group =
       web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
-  TabGroupItem* groupItem =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* groupItem = [[TabGroupItem alloc] initWithTabGroup:group];
 
   InitializeMediator();
 
@@ -1090,9 +1082,7 @@ TEST_F(TabStripMediatorTest, UngroupTabs) {
   AddWebState();
   const TabGroup* group =
       web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
-  TabGroupItem* groupItem =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* groupItem = [[TabGroupItem alloc] initWithTabGroup:group];
 
   InitializeMediator();
 
@@ -1114,9 +1104,7 @@ TEST_F(TabStripMediatorTest, DeleteGroup) {
   AddWebState();
   const TabGroup* group =
       web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
-  TabGroupItem* groupItem =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* groupItem = [[TabGroupItem alloc] initWithTabGroup:group];
 
   InitializeMediator();
 
@@ -1138,9 +1126,7 @@ TEST_F(TabStripMediatorTest, CloseGroup) {
   AddWebState();
   const TabGroup* group =
       web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
-  TabGroupItem* groupItem =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* groupItem = [[TabGroupItem alloc] initWithTabGroup:group];
 
   InitializeMediator();
 

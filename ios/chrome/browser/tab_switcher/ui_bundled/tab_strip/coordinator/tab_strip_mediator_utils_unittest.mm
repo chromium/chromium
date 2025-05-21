@@ -129,10 +129,10 @@ TEST_F(TabStripMediatorUtilsTest, CreateGroupItemIdentifier) {
   const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
 
   TabStripItemIdentifier* group_0_item_identifier =
-      CreateGroupItemIdentifier(group_0, web_state_list_.get());
+      CreateGroupItemIdentifier(group_0);
   EXPECT_EQ(group_0, group_0_item_identifier.tabGroupItem.tabGroup);
   TabStripItemIdentifier* group_1_item_identifier =
-      CreateGroupItemIdentifier(group_1, web_state_list_.get());
+      CreateGroupItemIdentifier(group_1);
   EXPECT_EQ(group_1, group_1_item_identifier.tabGroupItem.tabGroup);
 }
 
@@ -156,7 +156,7 @@ TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemSameBrowser) {
   web::WebState* webstate_e = builder.GetWebStateForIdentifier('e');
 
   TabStripItemIdentifier* group_0_item_identifier =
-      CreateGroupItemIdentifier(group_0, web_state_list_.get());
+      CreateGroupItemIdentifier(group_0);
   TabStripItemIdentifier* webstate_a_item_identifier =
       CreateTabItemIdentifier(webstate_a);
   TabStripItemIdentifier* webstate_b_item_identifier =
@@ -164,7 +164,7 @@ TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemSameBrowser) {
   TabStripItemIdentifier* webstate_c_item_identifier =
       CreateTabItemIdentifier(webstate_c);
   TabStripItemIdentifier* group_1_item_identifier =
-      CreateGroupItemIdentifier(group_1, web_state_list_.get());
+      CreateGroupItemIdentifier(group_1);
   TabStripItemIdentifier* webstate_d_item_identifier =
       CreateTabItemIdentifier(webstate_d);
   TabStripItemIdentifier* webstate_e_item_identifier =
@@ -292,9 +292,8 @@ TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemDifferentBrowser) {
   EXPECT_EQ("| [ 1 e f ] d", other_builder.GetWebStateListDescription());
 
   // Move `group_1` before `group_0_item_identifier` in `browser_`.
-  MoveGroupBeforeTabStripItem(
-      group_1, CreateGroupItemIdentifier(group_0, web_state_list_.get()),
-      browser_.get());
+  MoveGroupBeforeTabStripItem(group_1, CreateGroupItemIdentifier(group_0),
+                              browser_.get());
   builder.SetWebStateIdentifier(webstate_e, 'e');
   builder.SetWebStateIdentifier(webstate_f, 'f');
   builder.GenerateIdentifiersForWebStateList();

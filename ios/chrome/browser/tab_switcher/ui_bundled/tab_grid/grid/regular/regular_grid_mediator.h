@@ -15,7 +15,6 @@ namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
 
-class FaviconLoader;
 class ShareKitService;
 
 // Mediates between model layer and regular grid UI layer.
@@ -29,14 +28,13 @@ class ShareKitService;
 
 // Designated initialized. `tabGroupSyncService`, `shareKitService` and
 // `messagingService`: can be `nullptr`.
-// `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
 - (instancetype)
      initWithModeHolder:(TabGridModeHolder*)modeHolder
     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
         shareKitService:(ShareKitService*)shareKitService
        messagingService:
            (collaboration::messaging::MessagingBackendService*)messagingService
-          faviconLoader:(FaviconLoader*)faviconLoader NS_DESIGNATED_INITIALIZER;
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
     NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

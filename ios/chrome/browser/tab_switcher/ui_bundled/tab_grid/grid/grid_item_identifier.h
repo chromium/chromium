@@ -12,11 +12,10 @@
 
 #ifdef __cplusplus
 class TabGroup;
-class WebStateList;
 
 namespace web {
 class WebState;
-}
+}  // namespace web
 #endif
 
 // Different types of items identified by a GridItemIdentifier.
@@ -51,8 +50,7 @@ enum class GridItemType : NSUInteger {
 + (instancetype)inactiveTabsButtonIdentifier;
 #ifdef __cplusplus
 + (instancetype)tabIdentifier:(web::WebState*)webState;
-+ (instancetype)groupIdentifier:(const TabGroup*)group
-               withWebStateList:(WebStateList*)webStateList;
++ (instancetype)groupIdentifier:(const TabGroup*)group;
 #endif
 + (instancetype)suggestedActionsIdentifier;
 + (instancetype)activitySummaryIdentifier;

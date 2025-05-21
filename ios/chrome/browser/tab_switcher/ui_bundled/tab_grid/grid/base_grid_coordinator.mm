@@ -111,8 +111,7 @@ using collaboration::CollaborationControllerDelegate;
     return NO;
   }
   GridItemIdentifier* groupIdentifier =
-      [GridItemIdentifier groupIdentifier:tabGroup
-                         withWebStateList:webStateList];
+      [GridItemIdentifier groupIdentifier:tabGroup];
   [self.gridViewController bringItemIntoView:groupIdentifier animated:animated];
   return YES;
 }

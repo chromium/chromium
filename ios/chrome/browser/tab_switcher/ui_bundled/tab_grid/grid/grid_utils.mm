@@ -33,8 +33,7 @@ NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
     DCHECK(!web_state_list->IsWebStatePinnedAt(i));
     const TabGroup* tab_group = web_state_list->GetGroupOfWebStateAt(i);
     if (tab_group) {
-      [items addObject:[GridItemIdentifier groupIdentifier:tab_group
-                                          withWebStateList:web_state_list]];
+      [items addObject:[GridItemIdentifier groupIdentifier:tab_group]];
 
       // Skip the webStates that belong to `group_item`.
       incrementer = tab_group->range().count();

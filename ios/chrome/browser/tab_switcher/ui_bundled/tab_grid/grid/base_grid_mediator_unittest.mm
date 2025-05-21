@@ -98,8 +98,7 @@ class BaseGridMediatorTest
            initWithModeHolder:mode_holder_
           tabGroupSyncService:tab_group_sync_service_.get()
               shareKitService:share_kit_service_.get()
-             messagingService:nil
-                faviconLoader:nil];
+             messagingService:nil];
     }
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
@@ -866,9 +865,7 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   const TabGroup* group = web_state_list->CreateGroup({1}, {}, tab_group_id);
   mode_holder_.mode = TabGridMode::kSelection;
-  [mediator_
-      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group
-                                              withWebStateList:web_state_list]];
+  [mediator_ addToSelectionItemID:[GridItemIdentifier groupIdentifier:group]];
   EXPECT_EQ(1UL, [mediator_ allSelectedDragItems].count);
 
   std::optional<SavedTabGroup> saved_group =
@@ -903,9 +900,8 @@ TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
       tab_group_sync_service_->GetGroup(tab_group_id);
   ASSERT_TRUE(saved_group.has_value());
 
-  [mediator_ closeItemWithIdentifier:[GridItemIdentifier
-                                          groupIdentifier:group
-                                         withWebStateList:web_state_list]];
+  [mediator_
+      closeItemWithIdentifier:[GridItemIdentifier groupIdentifier:group]];
   EXPECT_EQ(0u, web_state_list->GetGroups().size());
 
   std::optional<SavedTabGroup> updated_group =
@@ -939,9 +935,7 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
   ASSERT_TRUE(saved_group.has_value());
 
   [mediator_
-      closeItemWithIdentifier:[GridItemIdentifier
-                                   groupIdentifier:group
-                                  withWebStateList:other_web_state_list]];
+      closeItemWithIdentifier:[GridItemIdentifier groupIdentifier:group]];
   EXPECT_EQ(0u, other_web_state_list->GetGroups().size());
 
   std::optional<SavedTabGroup> updated_group =
@@ -983,12 +977,8 @@ TEST_P(BaseGridMediatorTest, CloseSelectedTabsAndGroups) {
       addToSelectionItemID:[GridItemIdentifier tabIdentifier:web_state_a]];
   [mediator_
       addToSelectionItemID:[GridItemIdentifier tabIdentifier:web_state_b]];
-  [mediator_
-      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group_1
-                                              withWebStateList:web_state_list]];
-  [mediator_
-      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group_2
-                                              withWebStateList:web_state_list]];
+  [mediator_ addToSelectionItemID:[GridItemIdentifier groupIdentifier:group_1]];
+  [mediator_ addToSelectionItemID:[GridItemIdentifier groupIdentifier:group_2]];
 
   // 2 tabs, 2 tab groups.
   EXPECT_EQ(4UL, [mediator_ allSelectedDragItems].count);
@@ -1018,9 +1008,7 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroupInBatch) {
   web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
   mode_holder_.mode = TabGridMode::kSelection;
-  [mediator_
-      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group
-                                              withWebStateList:web_state_list]];
+  [mediator_ addToSelectionItemID:[GridItemIdentifier groupIdentifier:group]];
   EXPECT_EQ(1UL, [mediator_ allSelectedDragItems].count);
 
   {

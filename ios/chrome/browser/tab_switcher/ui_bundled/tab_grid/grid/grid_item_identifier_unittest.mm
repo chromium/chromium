@@ -65,9 +65,7 @@ TEST_F(GridItemIdentifierTest, Group) {
 
   const TabGroup* group = web_state_list_->GetGroupOfWebStateAt(0);
   ASSERT_TRUE(group);
-  TabGroupItem* tab_group_item =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* tab_group_item = [[TabGroupItem alloc] initWithTabGroup:group];
   GridItemIdentifier* item_identifier =
       [[GridItemIdentifier alloc] initWithGroupItem:tab_group_item];
 
@@ -111,14 +109,12 @@ TEST_F(GridItemIdentifierTest, GroupEqualGroup) {
   ASSERT_TRUE(group);
 
   TabGroupItem* tab_group_item_1 =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+      [[TabGroupItem alloc] initWithTabGroup:group];
   GridItemIdentifier* item_identifier_1 =
       [[GridItemIdentifier alloc] initWithGroupItem:tab_group_item_1];
 
   TabGroupItem* tab_group_item_2 =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+      [[TabGroupItem alloc] initWithTabGroup:group];
   GridItemIdentifier* item_identifier_2 =
       [[GridItemIdentifier alloc] initWithGroupItem:tab_group_item_2];
 
@@ -153,8 +149,7 @@ TEST_F(GridItemIdentifierTest, GroupNotEqualGroup) {
   const TabGroup* group_1 = web_state_list_->GetGroupOfWebStateAt(0);
   ASSERT_TRUE(group_1);
   TabGroupItem* tab_group_item_1 =
-      [[TabGroupItem alloc] initWithTabGroup:group_1
-                                webStateList:web_state_list_];
+      [[TabGroupItem alloc] initWithTabGroup:group_1];
 
   GridItemIdentifier* item_identifier_1 =
       [[GridItemIdentifier alloc] initWithGroupItem:tab_group_item_1];
@@ -162,8 +157,7 @@ TEST_F(GridItemIdentifierTest, GroupNotEqualGroup) {
   const TabGroup* group_2 = web_state_list_->GetGroupOfWebStateAt(1);
   ASSERT_TRUE(group_2);
   TabGroupItem* tab_group_item_2 =
-      [[TabGroupItem alloc] initWithTabGroup:group_2
-                                webStateList:web_state_list_];
+      [[TabGroupItem alloc] initWithTabGroup:group_2];
   GridItemIdentifier* item_identifier_2 =
       [[GridItemIdentifier alloc] initWithGroupItem:tab_group_item_2];
 
@@ -197,9 +191,7 @@ TEST_F(GridItemIdentifierTest, GroupNotEqualSuggestedAction) {
 
   const TabGroup* group = web_state_list_->GetGroupOfWebStateAt(0);
   ASSERT_TRUE(group);
-  TabGroupItem* tab_group_item =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:web_state_list_];
+  TabGroupItem* tab_group_item = [[TabGroupItem alloc] initWithTabGroup:group];
   GridItemIdentifier* group_item_identifier =
       [[GridItemIdentifier alloc] initWithGroupItem:tab_group_item];
 

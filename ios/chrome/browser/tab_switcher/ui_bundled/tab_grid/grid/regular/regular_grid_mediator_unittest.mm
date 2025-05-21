@@ -71,8 +71,7 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
          initWithModeHolder:mode_holder_
         tabGroupSyncService:tab_group_sync_service_.get()
             shareKitService:share_kit_service_.get()
-           messagingService:&messaging_backend_
-              faviconLoader:nil];
+           messagingService:&messaging_backend_];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
@@ -257,8 +256,7 @@ TEST_F(RegularGridMediatorTest, FacePileViewForItem) {
       tab_group_sync_service_->GetGroup(group.saved_guid()).has_value());
 
   GridItemIdentifier* group_item_id =
-      [GridItemIdentifier groupIdentifier:local_group
-                         withWebStateList:browser_->GetWebStateList()];
+      [GridItemIdentifier groupIdentifier:local_group];
   EXPECT_EQ(nil, [mediator_ facePileViewForItem:group_item_id]);
 
   // Share the group.

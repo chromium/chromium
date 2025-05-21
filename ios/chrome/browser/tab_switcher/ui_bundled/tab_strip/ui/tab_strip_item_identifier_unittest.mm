@@ -95,8 +95,7 @@ TEST_F(TabStripItemIdentifierTest, Group) {
   const TabGroup* tab_group =
       web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item =
-      [[TabGroupItem alloc] initWithTabGroup:tab_group
-                                webStateList:web_state_list.get()];
+      [[TabGroupItem alloc] initWithTabGroup:tab_group];
   TabStripItemIdentifier* item_identifier =
       [TabStripItemIdentifier groupIdentifier:tab_group_item];
 
@@ -113,13 +112,11 @@ TEST_F(TabStripItemIdentifierTest, GroupEqualGroup) {
   const TabGroup* tab_group =
       web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item_1 =
-      [[TabGroupItem alloc] initWithTabGroup:tab_group
-                                webStateList:web_state_list.get()];
+      [[TabGroupItem alloc] initWithTabGroup:tab_group];
   TabStripItemIdentifier* item_identifier_1 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_1];
   TabGroupItem* tab_group_item_2 =
-      [[TabGroupItem alloc] initWithTabGroup:tab_group
-                                webStateList:web_state_list.get()];
+      [[TabGroupItem alloc] initWithTabGroup:tab_group];
   TabStripItemIdentifier* item_identifier_2 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_2];
 
@@ -137,15 +134,13 @@ TEST_F(TabStripItemIdentifierTest, GroupNotEqualGroup) {
   const TabGroup* tab_group_1 =
       web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item_1 =
-      [[TabGroupItem alloc] initWithTabGroup:tab_group_1
-                                webStateList:web_state_list.get()];
+      [[TabGroupItem alloc] initWithTabGroup:tab_group_1];
   TabStripItemIdentifier* item_identifier_1 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_1];
   const TabGroup* tab_group_2 =
       web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item_2 =
-      [[TabGroupItem alloc] initWithTabGroup:tab_group_2
-                                webStateList:web_state_list.get()];
+      [[TabGroupItem alloc] initWithTabGroup:tab_group_2];
   TabStripItemIdentifier* item_identifier_2 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_2];
 
@@ -165,8 +160,7 @@ TEST_F(TabStripItemIdentifierTest, GroupsHashingLikeNSValueWithPointer) {
   const TabGroup* tab_group =
       web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item =
-      [[TabGroupItem alloc] initWithTabGroup:tab_group
-                                webStateList:web_state_list.get()];
+      [[TabGroupItem alloc] initWithTabGroup:tab_group];
   TabStripItemIdentifier* item_identifier =
       [TabStripItemIdentifier groupIdentifier:tab_group_item];
   EXPECT_EQ(item_identifier.hash, GetHashForTabGroupItem(tab_group_item));
@@ -186,8 +180,7 @@ TEST_F(TabStripItemIdentifierTest, TabNotEqualGroup) {
   const TabGroup* tab_group =
       web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item =
-      [[TabGroupItem alloc] initWithTabGroup:tab_group
-                                webStateList:web_state_list.get()];
+      [[TabGroupItem alloc] initWithTabGroup:tab_group];
   TabStripItemIdentifier* group_item_identifier =
       [TabStripItemIdentifier groupIdentifier:tab_group_item];
 

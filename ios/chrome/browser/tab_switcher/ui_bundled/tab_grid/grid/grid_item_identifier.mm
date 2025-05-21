@@ -33,11 +33,9 @@ constexpr NSUInteger kActivitySummaryHash = 2;
                                            initWithWebState:webState]];
 }
 
-+ (instancetype)groupIdentifier:(const TabGroup*)group
-               withWebStateList:(WebStateList*)webStateList {
++ (instancetype)groupIdentifier:(const TabGroup*)group {
   return [[self alloc]
-      initWithGroupItem:[[TabGroupItem alloc] initWithTabGroup:group
-                                                  webStateList:webStateList]];
+      initWithGroupItem:[[TabGroupItem alloc] initWithTabGroup:group]];
 }
 
 + (instancetype)suggestedActionsIdentifier {

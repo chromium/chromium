@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon_configurator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
@@ -50,6 +50,8 @@
   NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
   // Item to fetch pictures.
   TabGroupItem* _groupItem;
+  // Helper class to configure tab item images.
+  std::unique_ptr<TabSnapshotAndFaviconConfigurator> _tabImagesConfigurator;
   // Source browser. Only set when creating a new group, not when editing an
   // existing one.
   raw_ptr<Browser> _browser;
@@ -81,7 +83,8 @@
     _consumer = consumer;
     [_consumer setDefaultGroupColor:TabGroup::DefaultColorForNewTabGroup(
                                         _webStateList)];
-
+    _tabImagesConfigurator =
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
     ProfileIOS* profile = browser->GetProfile();
     BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
@@ -113,14 +116,11 @@
       }
 
       __weak CreateTabGroupMediator* weakSelf = self;
-      [TabGroupUtils
-          fetchTabGroupInfoFromWebState:currentWebStateList->GetWebStateAt(
-                                            index)
-                          faviconLoader:faviconLoader
-                             completion:^(GroupTabInfo* info) {
-                               [weakSelf addInfo:info];
-                               [weakSelf updateConsumer];
-                             }];
+      _tabImagesConfigurator->FetchSingleGroupTabInfoFromWebState(
+          currentWebStateList->GetWebStateAt(index), ^(GroupTabInfo* info) {
+            [weakSelf addInfo:info];
+            [weakSelf updateConsumer];
+          });
       numberOfRequestedImages++;
     }
   }
@@ -150,16 +150,17 @@
         base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>>(
         _webStateListObserverBridge.get());
     _scopedWebStateListObservation->AddObservation(_webStateList);
-    _groupItem = [[TabGroupItem alloc] initWithTabGroup:_tabGroup
-                                           webStateList:_webStateList];
+    _groupItem = [[TabGroupItem alloc] initWithTabGroup:_tabGroup];
+    _tabImagesConfigurator =
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
+
     __weak CreateTabGroupMediator* weakSelf = self;
-    [_groupItem
-        fetchGroupTabInfos:^(TabGroupItem* item,
-                             NSArray<GroupTabInfo*>* groupTabInfos) {
+    _tabImagesConfigurator->FetchGroupTabInfoForTabGroupItem(
+        _groupItem, _webStateList,
+        ^(TabGroupItem* item, NSArray<GroupTabInfo*>* groupTabInfos) {
           [weakSelf setGroupTabInfos:groupTabInfos];
           [weakSelf updateConsumer];
-        }
-             faviconLoader:faviconLoader];
+        });
 
     // Do not use the helper to get the following values as the title helper do
     // not return nil but the number of tabs. In this case, we want nil so it do

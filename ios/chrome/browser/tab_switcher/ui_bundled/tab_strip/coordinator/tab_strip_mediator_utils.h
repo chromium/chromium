@@ -13,14 +13,11 @@ namespace web {
 class WebState;
 }
 
-class WebStateList;
-
 // Returns the `TabStripItemIdentifier` for `web_state`.
 TabStripItemIdentifier* CreateTabItemIdentifier(web::WebState* web_state);
 
 // Returns the `TabStripItemIdentifier` for `group`.
-TabStripItemIdentifier* CreateGroupItemIdentifier(const TabGroup* group,
-                                                  WebStateList* web_state_list);
+TabStripItemIdentifier* CreateGroupItemIdentifier(const TabGroup* group);
 
 // Moves group to `destination_browser`, before the tab strip item with
 // identifier `next_item_identifier`. If `next_item_identifier` is nil, the

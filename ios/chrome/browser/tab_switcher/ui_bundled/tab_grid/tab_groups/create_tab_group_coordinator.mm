@@ -112,8 +112,11 @@
   FaviconLoader* faviconLoader = nil;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
-  // Fetch favicons if shared tab groups is enabled.
-  if (IsSharedTabGroupsJoinEnabled(collaborationService)) {
+
+  // Fetch favicons if in regular mode and sync or shared tab groups is enabled.
+  if (!profile->IsOffTheRecord() &&
+      (IsTabGroupSyncEnabled() ||
+       IsSharedTabGroupsJoinEnabled(collaborationService))) {
     faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   }
 
