@@ -26242,8 +26242,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WebViewNewInvalidateHeuristic",
-                        "WebViewSurfaceControl"
+                        "WebViewNewInvalidateHeuristic"
                     ]
                 }
             ]
