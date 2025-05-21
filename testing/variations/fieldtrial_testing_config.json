@@ -860,6 +860,21 @@
             ]
         }
     ],
+    "AndroidWebAppLaunchHandler": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidWebAppLaunchHandler"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidWindowManagementWebApi": [
         {
             "platforms": [
