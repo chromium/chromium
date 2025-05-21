@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] idl_test validation
-  Validation error at line 4 in scoped-custom-elements-registry.tentative, inside `partial interface CustomElementRegistry`:\n  undefined initialize(Node root)\n            ^ The operation "initialize" has already been defined for the base interface "CustomElementRegistry" either in itself or in a mixin\n\nValidation error at line 320 in dom, inside `dictionary ImportNodeOptions`:\ndictionary ImportNodeOptions {\n           ^ The name "ImportNodeOptions" of type "dictionary" was already seen
+  Validation error at line 4 in scoped-custom-elements-registry, inside `partial interface CustomElementRegistry`:\n  undefined initialize(Node root)\n            ^ The operation "initialize" has already been defined for the base interface "CustomElementRegistry" either in itself or in a mixin\n\nValidation error at line 320 in dom, inside `dictionary ImportNodeOptions`:\ndictionary ImportNodeOptions {\n           ^ The name "ImportNodeOptions" of type "dictionary" was already seen
 [FAIL] Partial interface CustomElementRegistry: member names are unique
   assert_true: member undefined is unique expected true got false
 [FAIL] Partial interface HTMLTemplateElement: member names are unique

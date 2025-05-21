@@ -381095,6 +381095,10 @@
       "de22e864d7d14a9e0280ec2f41678dbc90ee2e58",
       []
      ],
+     "idlharness.window-expected.txt": [
+      "73b50e7884b31d31be24e60058480c17750b9fbe",
+      []
+     ],
      "initial-about-blank.window-expected.txt": [
       "a715c1e2339881b9cc061246cf1c0b71cdf4d371",
       []
@@ -381135,12 +381139,6 @@
      ],
      "navigation-destination.html": [
       "50e28f0ed87fc12ef0f659433df97be9c14b9e71",
-      []
-     ]
-    },
-    "revamped-scoped-registry": {
-     "idlharness.tentative.window-expected.txt": [
-      "8471d258b45446d877a55ec69e7d9cf6a304ef1f",
       []
      ]
     },
@@ -412526,7 +412524,7 @@
      "6f93db15a74e052913a277e5130226280a3f9311",
      []
     ],
-    "scoped-custom-elements-registry.tentative.idl": [
+    "scoped-custom-elements-registry.idl": [
      "46ca2d6b9c45805d8aa684af7fe91af6dd5d7919",
      []
     ],
@@ -494575,6 +494573,13 @@
        {}
       ]
      ],
+     "anchor-ident-function.html": [
+      "fbc6fc5560c4184b210594ba7883f63dc9eb3aa0",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-inherited.html": [
       "0f84311d6d784fdb33fd2c6642a838deefb60830",
       [
@@ -539103,6 +539108,24 @@
        {}
       ]
      ],
+     "idlharness.window.js": [
+      "b2727e3a8742a791ba51fabf0de02c744ae0d732",
+      [
+       "custom-elements/registries/idlharness.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/WebIDLParser.js"
+         ],
+         [
+          "script",
+          "/resources/idlharness.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "initial-about-blank.window.js": [
       "b3bb7e139b5c543bae2d4cc86d3f5ebe1fe197f1",
       [
@@ -539157,30 +539180,6 @@
       [
        null,
        {}
-      ]
-     ]
-    },
-    "revamped-scoped-registry": {
-     "idlharness.tentative.window.js": [
-      "1f5c776cc2513e651de15b85884ba785027e59b6",
-      [
-       "custom-elements/revamped-scoped-registry/idlharness.tentative.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/resources/WebIDLParser.js"
-         ],
-         [
-          "script",
-          "/resources/idlharness.js"
-         ],
-         [
-          "global",
-          "window,dedicatedworker,shadowrealm-in-window"
-         ]
-        ]
-       }
       ]
      ]
     },
@@ -730456,6 +730455,32 @@
     ]
    },
    "subresource-integrity": {
+    "integrity-policy": {
+     "parsing.html": [
+      "205854419a7d58871e39a5cfb3a86ccd38cd5492",
+      [
+       "subresource-integrity/integrity-policy/parsing.html?type=enforce",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "subresource-integrity/integrity-policy/parsing.html?type=report",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "script.https.html": [
+      "783374db920a24ae32a3492d8cfe2edc5d8eb5d3",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ]
+    },
     "signatures": {
      "tentative": {
       "accept-signature.parser-inserted.html": [
@@ -730665,34 +730690,6 @@
       {}
      ]
     ],
-    "tentative": {
-     "integrity-policy": {
-      "parsing.html": [
-       "205854419a7d58871e39a5cfb3a86ccd38cd5492",
-       [
-        "subresource-integrity/tentative/integrity-policy/parsing.html?type=enforce",
-        {
-         "timeout": "long"
-        }
-       ],
-       [
-        "subresource-integrity/tentative/integrity-policy/parsing.html?type=report",
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "script.https.html": [
-       "783374db920a24ae32a3492d8cfe2edc5d8eb5d3",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ]
-     }
-    },
     "unencoded-digest": {
      "tentative": {
       "fetch.any.js": [
@@ -776098,7 +776095,7 @@
       ]
      ],
      "reduce_l1.https.any.js": [
-      "1e6b163cff340a6ceb9b161e6f2920b5d833e22c",
+      "cb09f1cab93e890dd7cb610c90e9afb9938043e2",
       [
        "webnn/conformance_tests/reduce_l1.https.any.html?cpu",
        {
@@ -796861,6 +796858,13 @@
       {
        "testdriver": true
       }
+     ]
+    ],
+    "RTCPeerConnection-addTransceiver-renegotiation.https.html": [
+     "76259c57686be00936636b34022116a4b5bbe8d5",
+     [
+      null,
+      {}
      ]
     ],
     "RTCPeerConnection-addTransceiver.https.html": [

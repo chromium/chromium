@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Video flows to RTCPeerConnection's second transceiver added through renegotiation, with first transceiver also sending
+  assert_greater_than: packets received indicates media flow. expected a number greater than 10 but got 0
+[FAIL] Audio flows to RTCPeerConnection's second transceiver added through renegotiation, with first transceiver also sending
+  assert_greater_than: packets received indicates media flow. expected a number greater than 10 but got 0
+[FAIL] Video flows to RTCPeerConnection's second transceiver added through renegotiation, with first transceiver inactive
+  assert_greater_than: packets received indicates media flow. expected a number greater than 10 but got 0
+[FAIL] Audio flows to RTCPeerConnection's second transceiver added through renegotiation, with first transceiver inactive
+  assert_greater_than: packets received indicates media flow. expected a number greater than 10 but got 0
+Harness: the test ran to completion.
+

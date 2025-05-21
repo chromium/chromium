@@ -1,9 +1,8 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
-// META: global=window,dedicatedworker,shadowrealm-in-window
 
 idl_test(
-  ["scoped-custom-elements-registry.tentative"],
+  ["scoped-custom-elements-registry"],
   ["html", "dom"],
   (idl_array) => {
     let element = document.createElement("div");
