@@ -117,7 +117,7 @@ source_set("authentication_flow_performer") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
-    "//ios/chrome/browser/shared/ui/util/identity_snackbar:identity_snackbar",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",

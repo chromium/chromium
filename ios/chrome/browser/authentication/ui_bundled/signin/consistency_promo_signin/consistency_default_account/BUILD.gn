@@ -21,7 +21,7 @@ source_set("consistency_default_account") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin:layout",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",

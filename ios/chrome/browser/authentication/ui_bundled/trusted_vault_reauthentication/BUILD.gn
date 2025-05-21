@@ -24,7 +24,7 @@ source_set("trusted_vault_reauthentication") {
     "//ios/chrome/browser/signin/model:trusted_vault_factory",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator:chrome_coordinator" ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
 }
 
 source_set("unit_tests") {

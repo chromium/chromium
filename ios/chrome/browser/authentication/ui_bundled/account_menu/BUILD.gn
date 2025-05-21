@@ -181,7 +181,7 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
-    "//ui/base:base",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
