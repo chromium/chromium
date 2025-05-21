@@ -330,8 +330,18 @@ SlotSpanMetadata<MetadataKind::kReadOnly>* PartitionDirectMap(
     // so no other thread can update the same offset table entries at the
     // same time. Furthermore, nobody will be ready these offsets until this
     // function returns.
-    root->GetReservationOffsetTable().SetDirectMapReservationStart(
-        reservation_start, reservation_size);
+    auto* offset_ptr = ReservationOffsetPointer(reservation_start);
+    [[maybe_unused]] const auto* offset_ptr_end =
+        GetReservationOffsetTableEnd(reservation_start);
+
+    // |raw_size| > MaxBucketed(). So |reservation_size| > 0.
+    PA_DCHECK(reservation_size > 0);
+    const uint16_t offset_end = (reservation_size - 1) >> kSuperPageShift;
+    for (uint16_t offset = 0; offset <= offset_end; ++offset) {
+      PA_DCHECK(offset < kOffsetTagNormalBuckets);
+      PA_DCHECK(offset_ptr < offset_ptr_end);
+      *offset_ptr++ = offset;
+    }
 
     auto* super_page_extent = PartitionSuperPageToExtent(reservation_start);
     auto* writable_super_page_extent = super_page_extent->ToWritable(root);
@@ -805,7 +815,7 @@ PA_ALWAYS_INLINE uintptr_t
 PartitionBucket::InitializeSuperPage(PartitionRoot* root,
                                      uintptr_t super_page,
                                      uintptr_t requested_address) {
-  root->GetReservationOffsetTable().SetNormalBucketsTag(super_page);
+  *ReservationOffsetPointer(super_page) = kOffsetTagNormalBuckets;
 
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
                                             std::memory_order_relaxed);

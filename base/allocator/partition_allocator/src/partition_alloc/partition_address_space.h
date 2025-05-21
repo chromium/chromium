@@ -42,12 +42,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
   PoolOffsetLookup()
       : base_address_(0), base_mask_(static_cast<uintptr_t>(-1)) {}
 
-  PA_ALWAYS_INLINE uintptr_t GetOffset(uintptr_t address) const {
-    PA_DCHECK(Includes(address));
-    return address & ~base_mask_;
-  }
-
-  // Similar to `GetOffset()`, but with MTE tag left in the top bits.
   PA_ALWAYS_INLINE uintptr_t GetTaggedOffset(void* ptr) const {
     const uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
     PA_DCHECK((address & base_mask_) == base_address_);
@@ -59,12 +53,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
     return reinterpret_cast<void*>(base_address_ | tagged_offset);
   }
 
-  // Determines if a given address belongs to address range for this pool.
-  PA_ALWAYS_INLINE bool Includes(uintptr_t address) const {
-    return (UntagAddr(address) & base_mask_) == base_address_;
-  }
-
-  // Ensures that a given offset does not contain a bit for "base" part.
   PA_ALWAYS_INLINE bool IsValidTaggedOffset(uintptr_t tagged_offset) const {
     return !(tagged_offset & base_mask_ & ~kPtrTagMask);
   }
@@ -395,11 +383,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   void* operator new(size_t) = delete;
   void* operator new(size_t, void*) = delete;
 
-#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
  private:
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   static bool IsIOSTestProcess();
 
- public:
   PA_ALWAYS_INLINE static size_t CorePoolSize() {
     return IsIOSTestProcess() ? kCorePoolSizeForIOSTestProcess : kCorePoolSize;
   }
@@ -410,19 +397,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
-  // Almost always equals to `CorePoolSize()`, except on iOS.
-  // Guaranteed to be a compile-time constant.
-  PA_ALWAYS_INLINE static constexpr size_t CorePoolMaxSize() {
-    return kCorePoolSize;
-  }
-
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PA_ALWAYS_INLINE static constexpr size_t ThreadIsolatedPoolSize() {
     return kThreadIsolatedPoolSize;
   }
 #endif
 
- private:
   // On 64-bit systems, PA allocates from several contiguous, mutually disjoint
   // pools. The BRP pool is where all allocations have a BRP ref-count, thus
   // pointers pointing there can use a BRP protection against UaF. Allocations

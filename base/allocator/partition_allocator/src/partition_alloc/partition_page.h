@@ -524,8 +524,7 @@ PA_ALWAYS_INLINE PartitionPageMetadata<MetadataKind::kReadOnly>*
 PartitionSuperPageToMetadataArea(uintptr_t super_page) {
   // This can't be just any super page, but it has to be the first super page of
   // the reservation, as we assume here that the metadata is near its beginning.
-  PA_DCHECK(
-      ReservationOffsetTable::Get(super_page).IsReservationStart(super_page));
+  PA_DCHECK(IsReservationStart(super_page));
   PA_DCHECK(!(super_page & kSuperPageOffsetMask));
   // The metadata area is exactly one system page (the guard page) into the
   // super page.
@@ -558,13 +557,15 @@ ReservedStateBitmapSize() {
   return 0ull;
 }
 
-PA_ALWAYS_INLINE uintptr_t SuperPagePayloadStartOffset() {
+PA_ALWAYS_INLINE uintptr_t
+SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets) {
   return PartitionPageSize();
 }
 
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
-  return super_page + SuperPagePayloadStartOffset();
+  return super_page +
+         SuperPagePayloadStartOffset(IsManagedByNormalBuckets(super_page));
 }
 
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEndOffset() {
@@ -625,8 +626,7 @@ PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  PA_DCHECK(
-      ReservationOffsetTable::Get(super_page).IsReservationStart(super_page));
+  PA_DCHECK(IsReservationStart(super_page));
   PA_DCHECK(IsWithinSuperPagePayload(address));
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 

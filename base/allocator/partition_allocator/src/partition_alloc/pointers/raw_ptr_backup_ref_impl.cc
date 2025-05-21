@@ -125,15 +125,13 @@ template struct RawPtrBackupRefImpl</*AllowDangling=*/true,
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
-  auto reservation_offset_table =
-      partition_alloc::internal::ReservationOffsetTable::Get(address);
-  if (reservation_offset_table.IsManagedByDirectMap(address)) {
+  if (partition_alloc::internal::IsManagedByDirectMap(address)) {
     uintptr_t reservation_start =
-        reservation_offset_table.GetDirectMapReservationStart(address);
+        partition_alloc::internal::GetDirectMapReservationStart(address);
     PA_BASE_CHECK(address - reservation_start >=
                   partition_alloc::PartitionPageSize());
   } else {
-    PA_BASE_CHECK(reservation_offset_table.IsManagedByNormalBuckets(address));
+    PA_BASE_CHECK(partition_alloc::internal::IsManagedByNormalBuckets(address));
     PA_BASE_CHECK(address % partition_alloc::kSuperPageSize >=
                   partition_alloc::PartitionPageSize());
   }

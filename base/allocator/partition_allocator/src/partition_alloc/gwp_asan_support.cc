@@ -49,7 +49,8 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   auto* bucket = root->buckets + bucket_index;
 
   const size_t kSuperPagePayloadStartOffset =
-      internal::SuperPagePayloadStartOffset();
+      internal::SuperPagePayloadStartOffset(
+          /* is_managed_by_normal_buckets = */ true);
   PA_CHECK(kSuperPagePayloadStartOffset % kSlotSize == 0);
   const size_t kSuperPageGwpAsanSlotAreaBeginOffset =
       kSuperPagePayloadStartOffset;
