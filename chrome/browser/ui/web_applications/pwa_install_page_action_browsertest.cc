@@ -59,6 +59,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -172,7 +173,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
            {{features::kPageActionsMigrationPwaInstall.name, "true"}}});
     }
 
-    features_.InitWithFeaturesAndParameters(enabled_features, {});
+    features_.InitAndEnableFeaturesWithParameters(enabled_features, {});
   }
 
   PwaInstallViewBrowserTest(const PwaInstallViewBrowserTest&) = delete;
@@ -427,7 +428,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
 
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-  base::test::ScopedFeatureList features_;
+  feature_engagement::test::ScopedIphFeatureList features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PwaInstallViewBrowserTestSuite,
@@ -834,8 +835,10 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   site_engagement::SiteEngagementService::Get(profile())->AddPointsForTesting(
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
   OpenTab(app_url);
-  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHDesktopPwaInstallFeature));
+  EXPECT_TRUE(browser()->window()->IsFeaturePromoQueued(
+                  feature_engagement::kIPHDesktopPwaInstallFeature) ||
+              browser()->window()->IsFeaturePromoActive(
+                  feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {

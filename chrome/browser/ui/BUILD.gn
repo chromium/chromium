@@ -4910,6 +4910,8 @@ static_library("ui") {
       "views/webid/fedcm_modal_dialog_view.h",
       "views/webid/webid_utils.cc",
       "views/webid/webid_utils.h",
+      "web_applications/pwa_install_page_action.cc",
+      "web_applications/pwa_install_page_action.h",
       "webauthn/account_hover_list_model.cc",
       "webauthn/account_hover_list_model.h",
       "webauthn/ambient/ambient_signin_controller.cc",
