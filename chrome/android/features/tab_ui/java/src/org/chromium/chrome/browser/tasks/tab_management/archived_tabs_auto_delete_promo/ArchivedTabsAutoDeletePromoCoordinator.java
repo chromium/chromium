@@ -101,11 +101,6 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
         }
     }
 
-    private void onPromoChoice(@UserChoice int choice) {
-        mUserChoiceThisInstance = choice;
-        initiateSheetDismissal(StateChangeReason.INTERACTION_COMPLETE);
-    }
-
     /** Shows the promo. The caller is responsible for all eligibility checks. */
     public void showPromo() {
         if (mIsSheetCurrentlyManagedByController) {
@@ -145,6 +140,11 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
             // Failed to show. Promo was NOT seen. Clean up resources just created.
             cleanupSheetResourcesOnly();
         }
+    }
+
+    private void onPromoChoice(@UserChoice int choice) {
+        mUserChoiceThisInstance = choice;
+        initiateSheetDismissal(StateChangeReason.INTERACTION_COMPLETE);
     }
 
     /**

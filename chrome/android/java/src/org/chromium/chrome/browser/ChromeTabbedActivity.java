@@ -208,6 +208,7 @@ import org.chromium.chrome.browser.sync.ui.SyncErrorMessage;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -256,6 +257,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegatePro
 import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
+import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -556,6 +558,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private SuggestionEventObserver mSuggestionEventObserver;
     private GroupSuggestionsPromotionCoordinator mGroupSuggestionsPromotionCoordinator;
+    private @Nullable ArchivedTabsAutoDeletePromoManager mArchivedTabsAutoDeletePromoManager;
 
     @Nullable private ExtensionKeybindingRegistry mExtensionKeybindingRegistry;
 
@@ -1038,8 +1041,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         tabGroupCreationUiDelegate,
                         mUndoBarPopupController,
                         mHubProvider.getHubManagerSupplier(),
-                        ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
-                                .getTabCountSupplier(),
+                        mArchivedTabsAutoDeletePromoManager,
                         () ->
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController());
@@ -1351,6 +1353,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mExtensionKeybindingRegistry =
                     ExtensionKeybindingRegistry.maybeCreate(
                             getProfileProviderSupplier().get().getOriginalProfile());
+
+            initiateArchivedTabsAutoDeletePromoManager();
         }
     }
 
@@ -4270,5 +4274,24 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     public UndoBarController getUndoBarControllerForTesting() {
         return mUndoBarPopupController;
+    }
+
+    private void initiateArchivedTabsAutoDeletePromoManager() {
+        if (ChromeFeatureList.sAndroidTabDeclutterAutoDelete.isEnabled()
+                && ChromeFeatureList.sAndroidTabDeclutterAutoDeleteKillSwitch.isEnabled()
+                && !ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE,
+                                false)) {
+            mArchivedTabsAutoDeletePromoManager =
+                    new ArchivedTabsAutoDeletePromoManager(
+                            ChromeTabbedActivity.this,
+                            mRootUiCoordinator.getBottomSheetController(),
+                            new TabArchiveSettings(ChromeSharedPreferences.getInstance()),
+                            ArchivedTabModelOrchestrator.getForProfile(
+                                            mTabModelSelector.getCurrentModel().getProfile())
+                                    .getTabCountSupplier(),
+                            mTabModelSelector.getModel(false));
+        }
     }
 }

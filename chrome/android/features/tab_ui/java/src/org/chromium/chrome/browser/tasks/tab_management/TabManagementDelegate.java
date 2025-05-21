@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -126,6 +127,7 @@ public interface TabManagementDelegate {
      * @param tabGroupCreationUiDelegate Orchestrates the tab group creation UI flow.
      * @param undoBarThrottle The controller to throttle the undo bar.
      * @param hubManagerSupplier Supplier ultimately used to get the pane manager to switch panes.
+     * @param archivedTabsAutoDeletePromoManager Manager class for Archived Tabs Auto Delete Promo.
      * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open hidden
      *     groups.
      */
@@ -157,7 +159,7 @@ public interface TabManagementDelegate {
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle,
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            ObservableSupplier<Integer> archivedTabCountSupplier,
+            @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier);
 
     /**

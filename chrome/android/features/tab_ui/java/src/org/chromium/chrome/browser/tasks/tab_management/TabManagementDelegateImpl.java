@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -123,7 +124,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle,
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull ObservableSupplier<Integer> archivedTabCountSupplier,
+            @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
@@ -191,8 +192,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                 edgeToEdgeSupplier,
                                 compositorViewHolderSupplier,
                                 tabGroupCreationUiDelegate,
-                                bottomSheetController,
-                                archivedTabCountSupplier);
+                                archivedTabsAutoDeletePromoManager);
         return Pair.create(pane, pane);
     }
 
