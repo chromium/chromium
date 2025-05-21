@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
@@ -38,7 +39,9 @@ class AccountPickerCoordinatorTest : public PlatformTest {
     return [[AccountPickerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
-                     configuration:configuration];
+                     configuration:configuration
+                       accessPoint:signin_metrics::AccessPoint::
+                                       kSaveToPhotosIos];
   }
 
   AccountPickerConfiguration* CreateAccountPickerConfiguration() {

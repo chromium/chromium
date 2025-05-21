@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
@@ -191,7 +192,9 @@ TEST_F(SaveToDriveCoordinatorTest, ShowsAndHidesAccountPicker) {
                                              AccountPickerConfiguration* conf) {
                                            observed_conf = conf;
                                            return YES;
-                                         }]])
+                                         }]
+                         accessPoint:signin_metrics::AccessPoint::
+                                         kSaveToDriveIos])
       .andReturn(mock_account_picker_coordinator);
   OCMExpect([mock_account_picker_coordinator
       setDelegate:static_cast<id<AccountPickerCoordinatorDelegate>>(
@@ -256,15 +259,6 @@ TEST_F(SaveToDriveCoordinatorTest, ShowsAddAccount) {
                 return YES;
               }]
       baseViewController:mock_account_picker_coordinator_view_controller]);
-
-  // Ask the SaveToDriveCoordinator to open the Add account view and verify the
-  // ShowSigninCommand was dispatched.
-  [static_cast<id<AccountPickerCoordinatorDelegate>>(coordinator)
-          accountPickerCoordinator:mock_account_picker_coordinator
-      openAddAccountWithCompletion:^(id<SystemIdentity> identity) {
-        EXPECT_EQ(added_identity, identity);
-      }];
-  EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
 
   [coordinator stop];
 }

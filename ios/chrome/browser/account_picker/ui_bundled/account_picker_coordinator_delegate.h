@@ -12,13 +12,6 @@
 
 @protocol AccountPickerCoordinatorDelegate <NSObject>
 
-// Called when the account picker wants to let the user add an account to the
-// device. `completion` should be called with the identity added from the
-// AddAccountSigninCoordinator.
-- (void)accountPickerCoordinator:
-            (AccountPickerCoordinator*)accountPickerCoordinator
-    openAddAccountWithCompletion:(void (^)(id<SystemIdentity>))completion;
-
 // Called when the user confirmed their selection in the confirmation screen. If
 // the "Ask every time" switch was shown, its value is passed as `askEveryTime`.
 // Otherwise, `askEveryTime` will be YES.

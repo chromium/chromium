@@ -11,6 +11,9 @@
 @class AccountPickerConfiguration;
 @protocol AccountPickerCoordinatorDelegate;
 @protocol AccountPickerLogger;
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
 @protocol SystemIdentity;
 
 // Presents a bottom sheet that lets the user pick or add an account on the
@@ -34,10 +37,11 @@
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
 // Inits the coordinator.
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                             configuration:
-                                 (AccountPickerConfiguration*)configuration
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)baseViewController
+                       browser:(Browser*)browser
+                 configuration:(AccountPickerConfiguration*)configuration
+                   accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

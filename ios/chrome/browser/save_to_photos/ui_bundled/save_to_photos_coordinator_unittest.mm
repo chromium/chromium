@@ -135,7 +135,9 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
     OCMStub([mock_account_picker_coordinator_
                 initWithBaseViewController:base_view_controller_
                                    browser:browser_.get()
-                             configuration:expected_configuration])
+                             configuration:expected_configuration
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kSaveToPhotosIos])
         .andReturn(mock_account_picker_coordinator_);
     OCMStub([mock_account_picker_coordinator_ viewController])
         .andReturn(view_controller);
@@ -448,18 +450,6 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
                       continuationProvider:DoNothingContinuationProvider()])
       .ignoringNonObjectArgs()
       .andReturn(signin_coordinator_mock);
-
-  // Expect that a ShowSigninCommand will be dispatched to present the Add
-  // account view on top of the account picker view.
-  id<SystemIdentity> added_identity = [FakeSystemIdentity fakeIdentity1];
-
-  // Ask the SaveToPhotosCoordinator to open the Add account view and verify the
-  // ShowSigninCommand was dispatched.
-  [static_cast<id<AccountPickerCoordinatorDelegate>>(coordinator)
-          accountPickerCoordinator:mock_account_picker_coordinator_
-      openAddAccountWithCompletion:^(id<SystemIdentity> identity) {
-        EXPECT_EQ(added_identity, identity);
-      }];
 
   [coordinator stop];
 }

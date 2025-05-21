@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
@@ -99,7 +100,8 @@
   _accountPickerCoordinator = [[AccountPickerCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                   configuration:accountPickerConfiguration];
+                   configuration:accountPickerConfiguration
+                     accessPoint:signin_metrics::AccessPoint::kSaveToDriveIos];
   _accountPickerCoordinator.delegate = self;
   _accountPickerCoordinator.logger = self;
   _destinationPicker = [[FileDestinationPickerViewController alloc] init];
@@ -128,28 +130,6 @@
 }
 
 #pragma mark - AccountPickerCoordinatorDelegate
-
-- (void)accountPickerCoordinator:
-            (AccountPickerCoordinator*)accountPickerCoordinator
-    openAddAccountWithCompletion:(void (^)(id<SystemIdentity>))completion {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kAddAccount
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kSaveToDriveIos
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult result,
-                          id<SystemIdentity> completionIdentity) {
-               if (completion) {
-                 completion(completionIdentity);
-               }
-             }];
-  [applicationCommandsHandler
-              showSignin:addAccountCommand
-      baseViewController:accountPickerCoordinator.viewController];
-}
 
 - (void)accountPickerCoordinator:
             (AccountPickerCoordinator*)accountPickerCoordinator

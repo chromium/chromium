@@ -55,7 +55,6 @@
   UIAlertController* _alertController;
   StoreKitCoordinator* _storeKitCoordinator;
   AccountPickerCoordinator* _accountPickerCoordinator;
-  SigninCoordinator* _addAccountCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -107,7 +106,6 @@
 }
 
 - (void)stop {
-  [self stopAddAccountCoordinator];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [_mediator disconnect];
   _mediator = nil;
@@ -129,7 +127,8 @@
   _accountPickerCoordinator = [[AccountPickerCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                   configuration:configuration];
+                   configuration:configuration
+                     accessPoint:signin_metrics::AccessPoint::kSaveToPhotosIos];
   _accountPickerCoordinator.delegate = self;
   _accountPickerCoordinator.logger = self;
   [_accountPickerCoordinator start];
@@ -251,31 +250,6 @@
 
 - (void)accountPickerCoordinator:
             (AccountPickerCoordinator*)accountPickerCoordinator
-    openAddAccountWithCompletion:(void (^)(id<SystemIdentity>))completion {
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kSaveToPhotosIos;
-  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
-  _addAccountCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:accountPickerCoordinator
-                                                      .viewController
-                                          browser:self.browser
-                                     contextStyle:contextStyle
-                                      accessPoint:accessPoint
-                             continuationProvider:
-                                 DoNothingContinuationProvider()];
-  __weak __typeof(self) weakSelf = self;
-  _addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-        if (completion) {
-          completion(completionIdentity);
-        }
-        [weakSelf stopAddAccountCoordinator];
-      };
-  [_addAccountCoordinator start];
-}
-
-- (void)accountPickerCoordinator:
-            (AccountPickerCoordinator*)accountPickerCoordinator
                didSelectIdentity:(id<SystemIdentity>)identity
                     askEveryTime:(BOOL)askEveryTime {
   [_mediator accountPickerDidSelectIdentity:identity askEveryTime:askEveryTime];
@@ -364,13 +338,6 @@
   [alertBaseViewController presentViewController:_alertController
                                         animated:YES
                                       completion:nil];
-}
-
-#pragma mark - Private
-
-- (void)stopAddAccountCoordinator {
-  [_addAccountCoordinator stop];
-  _addAccountCoordinator = nil;
 }
 
 @end

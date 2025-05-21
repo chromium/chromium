@@ -1,3 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
 ]
