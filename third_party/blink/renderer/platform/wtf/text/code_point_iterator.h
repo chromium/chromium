@@ -13,6 +13,7 @@
 #include <unicode/utf16.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -33,8 +34,33 @@ class CodePointIterator {
   STACK_ALLOCATED();
 
  public:
-  CodePointIterator(bool is_8bit, const void* data, wtf_size_t len)
-      : data_(data), data_length_(len), is_8bit_(is_8bit) {}
+  // A code point iterator for 16-bits strings.
+  class Utf16 {
+    STACK_ALLOCATED();
+
+   public:
+    Utf16(base::span<const uint16_t> span) : Utf16(span.data(), span.size()) {}
+    static Utf16 End(base::span<const uint16_t> span) {
+      return Utf16{base::to_address(span.end()), 0};
+    }
+
+    bool operator==(const Utf16& other) const { return data_ == other.data_; }
+    bool operator!=(const Utf16& other) const { return !(*this == other); }
+
+    UChar32 operator*() const;
+    void operator++();
+
+   private:
+    friend class CodePointIterator;
+
+    Utf16(const uint16_t* data, wtf_size_t length)
+        : data_(data), length_(length) {}
+
+    const uint16_t* data_;
+    wtf_size_t length_;
+    // Caches the length of the current code point, in the number of code units.
+    mutable wtf_size_t code_point_length_ = 0;
+  };
 
   // Create a `begin()` iterator.
   template <class T>
@@ -52,12 +78,12 @@ class CodePointIterator {
         0);
   }
 
-  UChar32 operator*() const;
-  void operator++();
+  UChar32 operator*() const { return is_8bit_ ? *Data() : *utf16_; }
+  void operator++() { is_8bit_ ? static_cast<void>(++DataRef()) : ++utf16_; }
 
   bool operator==(const CodePointIterator& other) const {
     DCHECK_EQ(is_8bit_, other.is_8bit_);
-    return data_ == other.data_;
+    return utf16_ == other.utf16_;
   }
 
   bool operator!=(const CodePointIterator& other) const {
@@ -65,39 +91,36 @@ class CodePointIterator {
   }
 
  private:
-  const void* data_;
-  wtf_size_t data_length_;
-  // Caches the length of the current code point, in the number of code units.
-  mutable wtf_size_t code_point_length_ = 0;
+  CodePointIterator(bool is_8bit, const void* data, wtf_size_t len)
+      : utf16_(static_cast<const uint16_t*>(data), len), is_8bit_(is_8bit) {}
+
+  // The 8bit string shares the `data_` and `length_` with `Utf16`.
+  const uint8_t* Data() const {
+    return reinterpret_cast<const uint8_t*>(utf16_.data_);
+  }
+  const uint8_t*& DataRef() {
+    return *reinterpret_cast<const uint8_t**>(&utf16_.data_);
+  }
+
+  Utf16 utf16_;
   bool is_8bit_;
 };
 
-inline UChar32 CodePointIterator::operator*() const {
-  CHECK_GT(data_length_, 0u);
-  if (is_8bit_) {
-    return *static_cast<const uint8_t*>(data_);
-  }
+inline UChar32 CodePointIterator::Utf16::operator*() const {
   // Get a code point, and cache its length to `code_point_length_`.
   UChar32 ch;
   code_point_length_ = 0;
-  U16_NEXT(static_cast<const uint16_t*>(data_), code_point_length_,
-           data_length_, ch);
+  U16_NEXT(data_, code_point_length_, length_, ch);
   return ch;
 }
 
-inline void CodePointIterator::operator++() {
-  CHECK_GT(data_length_, 0u);
-  if (is_8bit_) {
-    data_ = static_cast<const uint8_t*>(data_) + 1;
-    return;
-  }
-  if (!code_point_length_) {
+inline void CodePointIterator::Utf16::operator++() {
+  if (!code_point_length_) [[unlikely]] {
     // `code_point_length_` is cached by `operator*()`. If not, compute it.
-    U16_FWD_1(static_cast<const uint16_t*>(data_), code_point_length_,
-              data_length_);
+    U16_FWD_1(data_, code_point_length_, length_);
   }
-  data_ = static_cast<const uint16_t*>(data_) + code_point_length_;
-  data_length_ -= code_point_length_;
+  data_ += code_point_length_;
+  length_ -= code_point_length_;
   code_point_length_ = 0;
 }
 
