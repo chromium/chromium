@@ -84,8 +84,6 @@ class StartSurfaceRecentTabBrowserAgent
       web_state_observation_{this};
   // The most recent tab managed by this Browser Agent.
   raw_ptr<web::WebState> most_recent_tab_ = nullptr;
-  // Browser.
-  raw_ptr<Browser> browser_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_START_SURFACE_UI_BUNDLED_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
