@@ -170,6 +170,12 @@ source_set("browser_tests") {
     sources += [ "discards/discards_browsertest.cc" ]
   }
 
+  deps = [
+    "//chrome/test:test_support",
+    "//components/commerce/core:commerce_constants",
+    "//components/webui/chrome_urls/",
+  ]
+
   if (is_win || is_mac || is_linux) {
     sources += [
       "app_home/app_home_browsertest.cc",
@@ -177,15 +183,11 @@ source_set("browser_tests") {
       "on_device_translation_internals/on_device_translation_internals_browsertest.cc",
       "whats_new/whats_new_browsertest.cc",
     ]
+
+    deps += [ "//chrome/browser/ui/webui/app_settings" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  deps = [
-    "//chrome/test:test_support",
-    "//components/commerce/core:commerce_constants",
-    "//components/webui/chrome_urls/",
-  ]
 
   if (!is_android) {
     deps += [

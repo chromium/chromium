@@ -10784,6 +10784,8 @@ if (!is_android) {
         "../browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.cc",
         "../browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h",
       ]
+
+      deps += [ "//chrome/browser/ui/webui/app_settings" ]
     }
 
     if (use_ozone) {

@@ -78,6 +78,7 @@ source_set("configs") {
 
     if (!is_chromeos) {
       deps += [
+        "//chrome/browser/ui/webui/app_settings",
         "//chrome/browser/ui/webui/signin:profile",
         "//chrome/browser/ui/webui/whats_new",
       ]

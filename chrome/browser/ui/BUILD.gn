@@ -3124,10 +3124,6 @@ static_library("ui") {
       "views/web_apps/force_installed_deprecated_apps_dialog_view.h",
       "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.cc",
       "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h",
-      "webui/app_settings/web_app_settings_navigation_throttle.cc",
-      "webui/app_settings/web_app_settings_navigation_throttle.h",
-      "webui/app_settings/web_app_settings_ui.cc",
-      "webui/app_settings/web_app_settings_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",
       "webui/browser_switch/browser_switch_ui.h",
       "webui/intro/intro_handler.cc",
@@ -3163,6 +3159,8 @@ static_library("ui") {
       "//chrome/browser/shortcuts",
       "//chrome/browser/ui/webui/app_home",
       "//chrome/browser/ui/webui/app_home:impl",
+      "//chrome/browser/ui/webui/app_settings",
+      "//chrome/browser/ui/webui/app_settings:impl",
       "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:profile_impl",
       "//components/capture_mode",
@@ -3180,6 +3178,10 @@ static_library("ui") {
       # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
       # subdirectories such as views and webui which are not modularized yet.
       "//chrome/browser/ui/webui/app_home:impl",
+
+      # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
+      # such as browser_window.h, browser.h and other files.
+      "//chrome/browser/ui/webui/app_settings:impl",
     ]
 
     if (enable_dice_support) {
