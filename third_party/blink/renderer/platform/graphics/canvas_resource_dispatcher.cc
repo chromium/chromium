@@ -38,27 +38,31 @@ constexpr base::TimeDelta kSyntheticFrameDelay = base::Hertz(60);
 
 namespace blink {
 
-struct CanvasResourceDispatcher::FrameResource {
+// Holds the ref and release callback for a CanvasResource that has been
+// exported to the compositor, to be released when either (a) the compositor
+// notifies CanvasResourceDispatcher that it no longer requires this resource,
+// or (b) the CanvasResourceDispatcher is torn down (e.g., because its owning
+// thread was torn down).
+struct CanvasResourceDispatcher::ExportedResource {
  public:
-  FrameResource(scoped_refptr<CanvasResource> resource,
-                CanvasResource::ReleaseCallback callback)
-      : canvas_resource_(std::move(resource)),
-        release_callback_(std::move(callback)) {
-    CHECK(canvas_resource_);
+  ExportedResource(scoped_refptr<CanvasResource> resource,
+                   CanvasResource::ReleaseCallback callback)
+      : resource_(std::move(resource)), release_callback_(std::move(callback)) {
+    CHECK(resource_);
   }
 
   void ReleaseResource(const gpu::SyncToken& sync_token, bool is_lost) {
-    auto resource = std::move(canvas_resource_);
+    auto resource = std::move(resource_);
     if (release_callback_) {
       std::move(release_callback_)
           .Run(std::move(resource), sync_token, is_lost);
     }
   }
 
-  ~FrameResource() { ReleaseResource(gpu::SyncToken(), /*is_lost=*/false); }
+  ~ExportedResource() { ReleaseResource(gpu::SyncToken(), /*is_lost=*/false); }
 
  private:
-  scoped_refptr<CanvasResource> canvas_resource_;
+  scoped_refptr<CanvasResource> resource_;
   CanvasResource::ReleaseCallback release_callback_;
 };
 
@@ -306,9 +310,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // duration of the compositor's usage (we'll drop our ref when the compositor
   // notifies us that it is no longer using the resource via
   // `ReclaimResources()`).
-  resources_.insert(resource_id, std::make_unique<FrameResource>(
-                                     std::move(canvas_resource),
-                                     std::move(release_callback)));
+  exported_resources_.insert(resource_id, std::make_unique<ExportedResource>(
+                                              std::move(canvas_resource),
+                                              std::move(release_callback)));
 
   // TODO(crbug.com/645993): this should be inherited from WebGL context's
   // creation settings.
@@ -449,14 +453,15 @@ void CanvasResourceDispatcher::OnFakeFrameTimer(TimerBase* timer) {
 void CanvasResourceDispatcher::ReclaimResources(
     WTF::Vector<viz::ReturnedResource> resources) {
   for (const auto& resource : resources) {
-    auto it = resources_.find(resource.id);
+    auto it = exported_resources_.find(resource.id);
 
-    CHECK(it != resources_.end(), base::NotFatalUntil::M130);
-    if (it == resources_.end())
+    CHECK(it != exported_resources_.end(), base::NotFatalUntil::M130);
+    if (it == exported_resources_.end()) {
       continue;
+    }
 
     it->value->ReleaseResource(resource.sync_token, resource.lost);
-    resources_.erase(it);
+    exported_resources_.erase(it);
   }
 }
 
