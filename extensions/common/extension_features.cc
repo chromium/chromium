@@ -223,7 +223,7 @@ BASE_FEATURE(kDisableLoadExtensionCommandLineSwitch,
 
 BASE_FEATURE(kUserScriptUserExtensionToggle,
              "UserScriptUserExtensionToggle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDebuggerAPIRestrictedToDevMode,
              "DebuggerAPIRestrictedToDevMode",
