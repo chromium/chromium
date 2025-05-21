@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_view_controller.h"
 
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
 namespace {
 
 // The name of the animation used for the Search What You See Lottie.
@@ -25,6 +28,12 @@ NSString* const kSearchWhatYouSeePromoAXID = @"kSearchWhatYouSeePromoAXID";
 - (void)viewDidLoad {
   self.animationName = kAnimationName;
   self.animationNameDarkMode = kAnimationNameDarkMode;
+  self.titleString =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_TITLE);
+  self.subtitleString =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SUBTITLE);
+  self.secondaryActionString = l10n_util::GetNSString(
+      IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SHOW_ME_HOW_ACTION);
 
   [super viewDidLoad];
 

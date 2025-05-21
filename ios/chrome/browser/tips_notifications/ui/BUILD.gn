@@ -63,6 +63,10 @@ source_set("search_what_you_see_promo") {
     "search_what_you_see_promo_view_controller.h",
     "search_what_you_see_promo_view_controller.mm",
   ]
-  deps = [ ":shared" ]
+  deps = [
+    ":shared",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
