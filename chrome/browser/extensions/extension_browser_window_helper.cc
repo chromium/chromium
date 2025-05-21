@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/extension_browser_window_helper.h"
 
-#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/constants.h"
 #include "url/origin.h"
 
 namespace extensions {
@@ -50,7 +51,7 @@ bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
   // Case 2: Check if the page is a page associated with a hosted app, which
   // can have non-extension schemes. For example, the Gmail hosted app would
   // have a URL of https://mail.google.com.
-  if (TabHelper::FromWebContents(web_contents)->GetExtensionAppId() ==
+  if (AppTabHelper::FromWebContents(web_contents)->GetExtensionAppId() ==
       extension->id()) {
     return true;
   }

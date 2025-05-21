@@ -7,7 +7,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -44,11 +44,12 @@ std::string GetAppIdForWebContents(content::WebContents* web_contents) {
     return *app_id;
   }
 
-  extensions::TabHelper* extensions_tab_helper =
-      extensions::TabHelper::FromWebContents(web_contents);
-  // extensions_tab_helper is nullptr in some tests.
-  return extensions_tab_helper ? extensions_tab_helper->GetExtensionAppId()
-                               : std::string();
+  extensions::AppTabHelper* extensions_app_tab_helper =
+      extensions::AppTabHelper::FromWebContents(web_contents);
+  // extensions_app_tab_helper is nullptr in some tests.
+  return extensions_app_tab_helper
+             ? extensions_app_tab_helper->GetExtensionAppId()
+             : std::string();
 }
 
 void SetAppIdForWebContents(Profile* profile,
@@ -57,10 +58,11 @@ void SetAppIdForWebContents(Profile* profile,
   if (!web_app::AreWebAppsEnabled(profile)) {
     return;
   }
-  auto* extension_helper = extensions::TabHelper::FromWebContents(web_contents);
+  auto* extensions_app_tab_helper =
+      extensions::AppTabHelper::FromWebContents(web_contents);
   auto* web_app_helper =
       web_app::WebAppTabHelper::FromWebContents(web_contents);
-  if (!extension_helper || !web_app_helper) {
+  if (!extensions_app_tab_helper || !web_app_helper) {
     return;
   }
 
@@ -70,12 +72,12 @@ void SetAppIdForWebContents(Profile* profile,
   if (extension) {
     DCHECK(extension->is_app());
     web_app_helper->SetAppId(std::nullopt);
-    extension_helper->SetExtensionAppById(app_id);
+    extensions_app_tab_helper->SetExtensionAppById(app_id);
   } else {
     bool app_installed = IsAppReady(profile, app_id);
     web_app_helper->SetAppId(
         app_installed ? std::optional<webapps::AppId>(app_id) : std::nullopt);
-    extension_helper->SetExtensionAppById(std::string());
+    extensions_app_tab_helper->SetExtensionAppById(std::string());
   }
 }
 

@@ -7,8 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -92,8 +92,8 @@ ui::ImageModel HostedAppBrowserController::GetWindowAppIcon() const {
     return GetFallbackAppIcon();
   }
 
-  extensions::TabHelper* extensions_tab_helper =
-      extensions::TabHelper::FromWebContents(contents);
+  extensions::AppTabHelper* extensions_tab_helper =
+      extensions::AppTabHelper::FromWebContents(contents);
   if (!extensions_tab_helper) {
     return GetFallbackAppIcon();
   }
@@ -216,13 +216,14 @@ void HostedAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
 
   const Extension* extension = GetExtension();
-  extensions::TabHelper::FromWebContents(contents)->SetExtensionApp(extension);
+  extensions::AppTabHelper::FromWebContents(contents)->SetExtensionApp(
+      extension);
 }
 
 void HostedAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
 
-  extensions::TabHelper::FromWebContents(contents)->SetExtensionApp(nullptr);
+  extensions::AppTabHelper::FromWebContents(contents)->SetExtensionApp(nullptr);
 }
 
 void HostedAppBrowserController::LoadAppIcon(

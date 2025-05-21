@@ -9110,6 +9110,7 @@ test("unit_tests") {
       "../browser/extensions/api/tabs/tabs_api_unittest.cc",
       "../browser/extensions/api/tabs/windows_util_unittest.cc",
       "../browser/extensions/api/web_navigation/frame_navigation_state_unittest.cc",
+      "../browser/extensions/app_tab_helper_unittest.cc",
       "../browser/extensions/blocklist_check_unittest.cc",
       "../browser/extensions/blocklist_extension_prefs_unittest.cc",
       "../browser/extensions/blocklist_state_fetcher_unittest.cc",

@@ -672,6 +672,8 @@ source_set("extensions") {
       "api/tabs/tabs_windows_api.h",
       "api/tabs/windows_event_router.cc",
       "api/tabs/windows_event_router.h",
+      "app_tab_helper.cc",
+      "app_tab_helper.h",
       "browser_extension_window_controller.cc",
       "browser_extension_window_controller.h",
       "chrome_app_icon_loader.cc",

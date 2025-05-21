@@ -22,9 +22,9 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
+#include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/file_handlers/file_handling_launch_utils.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -492,9 +492,10 @@ WebContents* NavigateApplicationWindow(Browser* browser,
   WebContents* const web_contents = nav_params.navigated_or_inserted_contents;
 
   // Before MV3, an extension reaching this point must have been an app. MV3
-  // added support for Web File Handlers, which don't use extension TabHelper.
+  // added support for Web File Handlers, which don't use extension
+  // AppTabHelper.
   if (extension && extension->is_app()) {
-    extensions::TabHelper::FromWebContents(web_contents)
+    extensions::AppTabHelper::FromWebContents(web_contents)
         ->SetExtensionApp(extension);
   }
 
