@@ -979,6 +979,14 @@ std::string PasswordSyncBridge::GetStorageKey(
   NOTREACHED() << "PasswordSyncBridge does not support GetStorageKey.";
 }
 
+bool PasswordSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_password());
+  // GetClientTag() always returns a non-empty string.
+  CHECK(!GetClientTag(entity_data).empty());
+  return true;
+}
+
 bool PasswordSyncBridge::SupportsGetStorageKey() const {
   return false;
 }
