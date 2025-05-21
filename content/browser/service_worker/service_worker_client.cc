@@ -788,15 +788,10 @@ NavigationRequest* ServiceWorkerClient::GetOngoingNavigationRequestBeforeCommit(
   DCHECK(IsContainerForWindowClient());
   DCHECK(!GetRenderFrameHostId());
 
-  if (!ongoing_navigation_frame_tree_node_id_) {
-    // For Window clients for prefetch, `ongoing_navigation_frame_tree_node_id_`
-    // is null and tentatively return `nullptr`.
-    //
-    // TODO(https://crbug.com/40947546): Check if this works. Maybe the callers
-    // have to check if the request is prefetch and suppress cert dialogs, just
-    // as prerendering.
-    return nullptr;
-  }
+  // For Window clients for prefetch,
+  // `GetOngoingNavigationRequestBeforeCommit()` isn't called at all, because
+  // prefetching requests don't set `URLLoaderNetworkServiceObserver`.
+  CHECK(!is_initiated_by_prefetch_);
 
   // It is safe to use `ongoing_navigation_frame_tree_node_id_` to obtain the
   // corresponding navigation request without being concerned about the case

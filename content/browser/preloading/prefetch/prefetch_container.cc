@@ -1804,6 +1804,13 @@ void PrefetchContainer::MakeResourceRequest(
     AddXClientDataHeader(*request.get());
   }
 
+  // `URLLoaderNetworkServiceObserver`
+  // (`request->trusted_params->url_loader_network_observer`) is NOT set here,
+  // because for prefetching request we don't want to ask users e.g. for
+  // authentication/cert errors, and instead make the prefetch fail. Because of
+  // this, `ServiceWorkerClient::GetOngoingNavigationRequestBeforeCommit()` is
+  // never called. `NavPrefetchBrowserTest` has the corresponding test coverage.
+
   resource_request_ = std::move(request);
 }
 
