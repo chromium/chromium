@@ -29,10 +29,8 @@ import {UserDataServiceProvider} from './user_data_service_provider.js';
 const OsSettingsJapaneseManageUserDictionaryPageElementBase =
     GlobalScrollTargetMixin(I18nMixin(PolymerElement));
 
-const NEW_DICTIONARY_NAME = 'New Dictionary';
-
-class OsSettingsJapaneseManageUserDictionaryPageElement extends
-    OsSettingsJapaneseManageUserDictionaryPageElementBase {
+class OsSettingsJapaneseManageUserDictionaryPageElement extends I18nMixin
+(OsSettingsJapaneseManageUserDictionaryPageElementBase) {
   static get is() {
     return 'os-settings-japanese-manage-user-dictionary-page' as const;
   }
@@ -102,12 +100,12 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends
   // The backend does not let you add the same dictionary name twice. We have to
   // automatically append an incrementing number to it if there is a clash.
   private newDictName_(): string {
-    let count = 0;
-    let newName = NEW_DICTIONARY_NAME;
+    let count = 1;
+    let newName = this.i18n('japaneseDictionaryDefaultName', count);
     while (this.dictionaries_.some(
         (dict: JapaneseDictionary) => dict.name === newName)) {
       count++;
-      newName = `${NEW_DICTIONARY_NAME} ${count}`;
+      newName = this.i18n('japaneseDictionaryDefaultName', count);
     }
 
     return newName;
