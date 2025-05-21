@@ -31,8 +31,6 @@
       }
 
       promise_test(async (t) => {
-        // TODO(crbug.com/418839741) - Update this test if/when we also detect the slow navigation.
-
         document.getElementById("slow-soft-navigation").addEventListener("click", () => {
           slowSoftNavigation(t);
         });
@@ -40,12 +38,12 @@
           .getElementById("fast-soft-navigation")
           .addEventListener("click", fastSoftNavigation);
 
-        // Wait for the fast soft navigation to complete.
+        // Wait for both soft navigations to complete.
         const promise = new Promise((resolve) => {
           let entries = [];
           new PerformanceObserver((list, observer) => {
             entries.push(...list.getEntries());
-            if (entries.length >= 1) {
+            if (entries.length >= 2) {
               observer.disconnect();
               resolve(entries);
             }
@@ -57,20 +55,19 @@
           test_driver.click(document.getElementById("fast-soft-navigation"));
         }
 
-        // Notice that only the fast soft navigation is detected.
+        // Notice that both navigations are detected, with the fast one
+        // arriving first.
         const entries = await promise;
-        assert_equals(entries.length, 1, "Expected just one soft navigation entry.");
+        assert_equals(entries.length, 2, "Expected two soft navigation entries");
         assert_equals(
           entries[0].name.replace(/.*\//, ""),
           "fast-soft-navigation",
           "First entry should be the fast soft navigation.",
         );
-
-        // Wait for the effect of the slow soft navigation (URL change).
-        // We're not detecting this soft navigation for now. See crbug.com/418839741.
-        await t.step_wait(
-          () => location.href.replace(/.*\//, "") === "slow-soft-navigation",
-          "Expecting the slow navigation to eventually change the URL.",
+        assert_equals(
+          entries[1].name.replace(/.*\//, ""),
+          "slow-soft-navigation",
+          "Second entry should be the slow soft navigation.",
         );
       }, "Two soft navigations that race each other should be detected correctly.");
     </script>
