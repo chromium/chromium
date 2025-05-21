@@ -164,13 +164,13 @@ TabGroupSyncBridgeMediator::GetLocalCacheGuidForSavedBridge() const {
   return saved_bridge_->GetLocalCacheGuid();
 }
 
-std::optional<GaiaId> TabGroupSyncBridgeMediator::GetAccountIdForSavedBridge()
+std::optional<GaiaId> TabGroupSyncBridgeMediator::GetGaiaIdForSavedBridge()
     const {
-  return saved_bridge_->GetTrackedAccountId();
+  return saved_bridge_->GetTrackedGaiaId();
 }
 
 std::optional<GaiaId>
-TabGroupSyncBridgeMediator::GetTrackingAccountIdForSharedBridge() const {
+TabGroupSyncBridgeMediator::GetTrackingGaiaIdForSharedBridge() const {
   CHECK(shared_bridge_);
   GaiaId tracked_gaia_id = shared_bridge_->change_processor()->TrackedGaiaId();
   if (tracked_gaia_id.empty()) {

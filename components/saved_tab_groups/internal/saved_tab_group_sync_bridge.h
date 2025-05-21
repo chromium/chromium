@@ -98,7 +98,7 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Returns the account ID from the change processor if metadata is tracked,
   // otherwise returns a nullopt.
-  std::optional<GaiaId> GetTrackedAccountId() const;
+  std::optional<GaiaId> GetTrackedGaiaId() const;
 
   // Whether the sync is currently enabled and syncing for saved tab groups.
   // False before bridge initialization is completed.

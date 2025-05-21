@@ -551,8 +551,7 @@ std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() const {
   return change_processor()->TrackedCacheGuid();
 }
 
-// TODO(crbug.com/383089506): rename to GetTrackedGaiaId().
-std::optional<GaiaId> SavedTabGroupSyncBridge::GetTrackedAccountId() const {
+std::optional<GaiaId> SavedTabGroupSyncBridge::GetTrackedGaiaId() const {
   if (!change_processor()->IsTrackingMetadata()) {
     return std::nullopt;
   }
