@@ -1100,10 +1100,6 @@ constexpr char kObsoleteLocalPasswordMigrationWarningPrefsVersion[] =
 inline constexpr char kSuggestionGroupVisibility[] =
     "omnibox.suggestionGroupVisibility";
 
-// Deprecated 05/2025
-inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
-    "managed_private_network_access_restrictions_enabled";
-
 #if BUILDFLAG(IS_ANDROID)
 // Deprecated 05/2025.
 inline constexpr char kWipedWebAPkDataForMigration[] =
@@ -1566,10 +1562,6 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 04/2025.
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
-
-  // Deprecated 05/2025
-  registry->RegisterBooleanPref(kManagedPrivateNetworkAccessRestrictionsEnabled,
-                                false);
 
   // Deprecated 05/2025.
 #if BUILDFLAG(IS_ANDROID)
@@ -2875,9 +2867,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2025.
   profile_prefs->ClearPref(kSuggestionGroupVisibility);
-
-  // Added 05/2025
-  profile_prefs->ClearPref(kManagedPrivateNetworkAccessRestrictionsEnabled);
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 05/2025.
