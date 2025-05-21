@@ -93,9 +93,9 @@ source_set("unit_tests") {
   deps = [
     ":cells",
     "//components/browsing_data/core",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/strings",
-    "//components/sync_preferences:sync_preferences",
+    "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model",
@@ -104,7 +104,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",
   ]

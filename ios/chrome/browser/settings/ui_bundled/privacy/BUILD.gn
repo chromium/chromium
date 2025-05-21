@@ -174,7 +174,7 @@ source_set("unit_tests") {
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/ocmock:ocmock",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

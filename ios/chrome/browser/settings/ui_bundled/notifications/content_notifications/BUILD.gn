@@ -36,12 +36,12 @@ source_set("content_notifications") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/ui/list_model",
-    "//ios/chrome/browser/shared/ui/symbols:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
 }

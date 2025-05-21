@@ -16,8 +16,8 @@ source_set("info_popover_view_controller") {
 
   deps = [
     ":constants",
-    "//base:base",
-    "//components/supervised_user/core/common:common",
+    "//base",
+    "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -40,7 +40,7 @@ source_set("enterprise_info_popover_view_controller") {
   deps = [
     ":constants",
     ":info_popover_view_controller",
-    "//base:base",
+    "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/symbols",

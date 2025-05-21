@@ -39,7 +39,7 @@ source_set("google_services") {
     "//components/prefs",
     "//components/prefs/ios",
     "//components/regional_capabilities",
-    "//components/search_engines:search_engines",
+    "//components/search_engines",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
@@ -61,7 +61,7 @@ source_set("google_services") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication",
-    "//ios/chrome/browser/commerce/model:model",
+    "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model",
@@ -298,7 +298,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/ocmock:ocmock",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

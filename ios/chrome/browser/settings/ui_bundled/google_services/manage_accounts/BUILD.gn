@@ -89,7 +89,7 @@ source_set("manage_accounts_ui") {
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
-    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:signout_action_sheet",
+    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
@@ -215,7 +215,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/ocmock:ocmock",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

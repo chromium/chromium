@@ -35,6 +35,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//testing/gtest",
-    "//third_party/ocmock:ocmock",
+    "//third_party/ocmock",
   ]
 }
