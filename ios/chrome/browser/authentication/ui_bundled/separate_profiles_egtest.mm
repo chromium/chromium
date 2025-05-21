@@ -81,6 +81,16 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   [super tearDown];
 }
 
+- (void)setUp {
+  [super setUp];
+  ClearHistorySyncPrefs();
+}
+
+- (void)tearDownHelper {
+  ClearHistorySyncPrefs();
+  [super tearDownHelper];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 

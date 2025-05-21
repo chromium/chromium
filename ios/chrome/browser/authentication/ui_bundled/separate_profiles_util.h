@@ -43,4 +43,6 @@ id<GREYMatcher> AccountMenuSecondaryAccountsButtonMatcher();
 id<GREYMatcher> ContinueButtonWithIdentityMatcher(
     FakeSystemIdentity* fakeIdentity);
 
+void ClearHistorySyncPrefs();
+
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SEPARATE_PROFILES_UTIL_H_

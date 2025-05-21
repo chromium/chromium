@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/pref_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -120,4 +121,11 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                  grey_sufficientlyVisible(), nil);
 
   return matcher;
+}
+
+void ClearHistorySyncPrefs() {
+  [ChromeEarlGrey clearUserPrefWithName:history_sync_prefs::
+                                            kHistorySyncSuccessiveDeclineCount];
+  [ChromeEarlGrey clearUserPrefWithName:history_sync_prefs::
+                                            kHistorySyncLastDeclinedTimestamp];
 }
