@@ -29,6 +29,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /** The model and controller for a group of site suggestion tiles. */
@@ -69,6 +70,9 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         /** Flag to indicate that Custom Tiles are being changed. */
         public boolean customTilesIndicator;
+
+        /** List of tasks to run after tiles are reloaded and re-rendered. */
+        public final LinkedList<Runnable> taskToRunAfterTileReload = new LinkedList<Runnable>();
     }
 
     /**
@@ -139,15 +143,24 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         /**
          * Called when a tile icon has changed.
+         *
          * @param tile The tile for which the icon has changed.
          */
         void onTileIconChanged(Tile tile);
 
         /**
          * Called when the visibility of a tile's offline badge has changed.
+         *
          * @param tile The tile for which the visibility of the offline badge has changed.
          */
         void onTileOfflineBadgeVisibilityChanged(Tile tile);
+
+        /**
+         * Called when a Custom Tile is created.
+         *
+         * @param tile The Custom Tile that was created.
+         */
+        void onCustomTileCreation(Tile tile);
     }
 
     /**
@@ -449,6 +462,10 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         if (!mHasReceivedData || !mUiDelegate.isVisible() || expectedChangeCompleted) {
             loadTiles(forceUpdate);
+            for (Runnable task : mPendingChanges.taskToRunAfterTileReload) {
+                task.run();
+            }
+            mPendingChanges.taskToRunAfterTileReload.clear();
         }
     }
 
@@ -595,7 +612,19 @@ public class TileGroup implements MostVisitedSites.Observer {
         return null;
     }
 
-    /** @return All tiles matching the provided URL, or an empty list if none is found. */
+    /**
+     * @param url The URL to search for within PERSONALIZED tiles.
+     * @return A tile matching the provided URL and section, or {@code null} if none is found.
+     */
+    private @Nullable Tile findPersonalTileByUrl(GURL url) {
+        List<Tile> personalTiles = mTileSections.get(TileSectionType.PERSONALIZED);
+        assert personalTiles != null;
+        return findTileByUrl(url, personalTiles);
+    }
+
+    /**
+     * @return All tiles matching the provided URL, or an empty list if none is found.
+     */
     private List<Tile> findTilesForUrl(GURL url) {
         List<Tile> tiles = new ArrayList<>();
         for (int i = 0; i < mTileSections.size(); ++i) {
@@ -729,6 +758,13 @@ public class TileGroup implements MostVisitedSites.Observer {
             return mCustomTileCountIsUnderLimit;
         }
 
+        private void handleCustomTileAdd(GURL url) {
+            @Nullable Tile tile = findPersonalTileByUrl(url);
+            if (tile != null) {
+                mObserver.onCustomTileCreation(tile);
+            }
+        }
+
         private boolean addCustomLinkAndUpdateOnSuccess(
                 String name, GURL url, @Nullable Integer pos) {
             if (!TileUtils.isValidCustomTileName(name) || !TileUtils.isValidCustomTileUrl(url)) {
@@ -737,8 +773,11 @@ public class TileGroup implements MostVisitedSites.Observer {
 
             // On success, onSiteSuggestionsAvailable() triggers.
             mPendingChanges.customTilesIndicator = true;
+            Runnable onSuccessCallback = () -> handleCustomTileAdd(url);
+            mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
             boolean success = mTileGroupDelegate.addCustomLink(name, url, pos);
             if (!success) {
+                mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
                 mPendingChanges.customTilesIndicator = false;
             }
             return success;
@@ -753,8 +792,11 @@ public class TileGroup implements MostVisitedSites.Observer {
 
             // On success, onSiteSuggestionsAvailable() triggers.
             mPendingChanges.customTilesIndicator = true;
+            Runnable onSuccessCallback = () -> handleCustomTileAdd(url);
+            mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
             boolean success = mTileGroupDelegate.assignCustomLink(keyUrl, name, url);
             if (!success) {
+                mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
                 mPendingChanges.customTilesIndicator = false;
             }
             return success;

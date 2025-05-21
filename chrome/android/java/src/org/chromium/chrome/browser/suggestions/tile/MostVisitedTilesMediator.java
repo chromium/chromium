@@ -164,6 +164,11 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         if (mSnapshotTileGridChangedRunnable != null) mSnapshotTileGridChangedRunnable.run();
     }
 
+    @Override
+    public void onCustomTileCreation(Tile tile) {
+        mMvTilesLayout.ensureTileIsInViewOnNextLayout(tile.getIndex());
+    }
+
     public void onConfigurationChanged() {
         maybeSetPortraitIntervalPaddings();
         updateTilesView();
