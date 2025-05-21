@@ -123,10 +123,9 @@ WebViewDeviceAccountsProviderImpl::GetAccountsOnDevice() const {
       [CWVSyncController.dataSource allKnownIdentities];
   std::vector<AccountInfo> account_infos;
   for (CWVIdentity* identity in identities) {
-    AccountInfo account_info;
-    account_info.email = base::SysNSStringToUTF8(identity.email);
-    account_info.gaia = GaiaId(identity.gaiaID);
-    account_infos.push_back(account_info);
+    account_infos.emplace_back(GaiaId(identity.gaiaID),
+                               base::SysNSStringToUTF8(identity.email),
+                               /*hosted_domain=*/"");
   }
   return account_infos;
 }

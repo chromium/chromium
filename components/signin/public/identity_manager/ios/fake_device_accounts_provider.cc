@@ -44,9 +44,7 @@ FakeDeviceAccountsProvider::GetAccountsOnDevice() const {
 DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::AddAccount(
     const GaiaId& gaia,
     const std::string& email) {
-  DeviceAccountsProvider::AccountInfo account;
-  account.gaia = gaia;
-  account.email = email;
+  DeviceAccountsProvider::AccountInfo account(gaia, email, "");
   accounts_.push_back(account);
   FireOnAccountsOnDeviceChanged();
   return account;
@@ -56,10 +54,10 @@ DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::UpdateAccount(
     const GaiaId& gaia,
     const std::string& email) {
   for (AccountInfo& account : accounts_) {
-    if (account.gaia != gaia) {
+    if (account.GetGaiaId() != gaia) {
       continue;
     }
-    account.email = email;
+    account = AccountInfo(gaia, email, account.GetHostedDomain());
     FireAccountOnDeviceUpdated(account);
     return account;
   }

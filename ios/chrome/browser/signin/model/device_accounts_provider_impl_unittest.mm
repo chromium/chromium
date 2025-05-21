@@ -24,7 +24,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using testing::Eq;
-using testing::Field;
+using testing::Property;
 
 namespace {
 class MockObserver : public DeviceAccountsProvider::Observer {
@@ -131,8 +131,8 @@ TEST_F(DeviceAccountsProviderImplTest, TestOnAccountOnDeviceUpdated) {
       scoped_observation{&observer};
   scoped_observation.Observe(provider);
 
-  EXPECT_CALL(observer, OnAccountOnDeviceUpdated(
-                            Field(&DeviceAccountsProvider::AccountInfo::gaia,
-                                  Eq(GaiaId(fake_identity.gaiaID)))));
+  EXPECT_CALL(observer, OnAccountOnDeviceUpdated(Property(
+                            &DeviceAccountsProvider::AccountInfo::GetGaiaId,
+                            Eq(GaiaId(fake_identity.gaiaID)))));
   fake_system_identity_manager_->FireIdentityUpdatedNotification(fake_identity);
 }

@@ -4,6 +4,40 @@
 
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
+DeviceAccountsProvider::AccountInfo::AccountInfo(GaiaId gaia,
+                                                 std::string email,
+                                                 std::string hosted_domain)
+    : gaia_(std::move(gaia)),
+      email_(std::move(email)),
+      hosted_domain_(std::move(hosted_domain)) {}
+
+DeviceAccountsProvider::AccountInfo::AccountInfo(const AccountInfo& other) =
+    default;
+
+DeviceAccountsProvider::AccountInfo&
+DeviceAccountsProvider::AccountInfo::operator=(const AccountInfo& other) =
+    default;
+
+DeviceAccountsProvider::AccountInfo::AccountInfo(AccountInfo&& other) = default;
+
+DeviceAccountsProvider::AccountInfo&
+DeviceAccountsProvider::AccountInfo::operator=(AccountInfo&& other) = default;
+
+DeviceAccountsProvider::AccountInfo::~AccountInfo() = default;
+
+const GaiaId& DeviceAccountsProvider::AccountInfo::GetGaiaId() const {
+  return gaia_;
+}
+
+const std::string& DeviceAccountsProvider::AccountInfo::GetEmail() const {
+  return email_;
+}
+
+const std::string& DeviceAccountsProvider::AccountInfo::GetHostedDomain()
+    const {
+  return hosted_domain_;
+}
+
 std::vector<DeviceAccountsProvider::AccountInfo>
 DeviceAccountsProvider::GetAccountsForProfile() const {
   return std::vector<DeviceAccountsProvider::AccountInfo>();

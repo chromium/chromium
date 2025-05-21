@@ -86,8 +86,8 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAllAccounts) {
 
   ASSERT_EQ(1UL, accounts.size());
   DeviceAccountsProvider::AccountInfo account_info = accounts[0];
-  EXPECT_EQ("foo@chromium.org", account_info.email);
-  EXPECT_EQ(GaiaId("gaia-id"), account_info.gaia);
+  EXPECT_EQ("foo@chromium.org", account_info.GetEmail());
+  EXPECT_EQ(GaiaId("gaia-id"), account_info.GetGaiaId());
 
   [data_source verify];
 }

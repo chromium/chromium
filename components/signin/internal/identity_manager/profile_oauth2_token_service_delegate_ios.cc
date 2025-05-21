@@ -63,9 +63,9 @@ GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
 AccountInfo AccountInfoFromDeviceAccount(
     const DeviceAccountsProvider::AccountInfo& account) {
   AccountInfo account_info;
-  account_info.email = account.email;
-  account_info.gaia = GaiaId(account.gaia);
-  account_info.hosted_domain = account.hosted_domain;
+  account_info.email = account.GetEmail();
+  account_info.gaia = account.GetGaiaId();
+  account_info.hosted_domain = account.GetHostedDomain();
   return account_info;
 }
 
@@ -212,8 +212,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
   // Get the list of new account ids.
   std::set<CoreAccountId> new_account_ids;
   for (const auto& new_account : provider_->GetAccountsForProfile()) {
-    DCHECK(!new_account.gaia.empty());
-    DCHECK(!new_account.email.empty());
+    DCHECK(!new_account.GetGaiaId().empty());
+    DCHECK(!new_account.GetEmail().empty());
 
     // Account must to be seeded before adding an account to ensure that
     // the GAIA ID is available if any client of this token service starts
@@ -346,13 +346,13 @@ ProfileOAuth2TokenServiceIOSDelegate::GetAccountsOnDevice() const {
   // separate AccountTrackerService instance.
   std::vector<AccountInfo> account_infos;
   for (const auto& account : provider_->GetAccountsOnDevice()) {
-    CHECK(!account.gaia.empty());
-    CHECK(!account.email.empty());
+    CHECK(!account.GetGaiaId().empty());
+    CHECK(!account.GetEmail().empty());
     AccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(account.gaia);
-    account_info.gaia = account.gaia;
-    account_info.email = account.email;
-    account_info.hosted_domain = account.hosted_domain;
+    account_info.account_id = CoreAccountId::FromGaiaId(account.GetGaiaId());
+    account_info.gaia = account.GetGaiaId();
+    account_info.email = account.GetEmail();
+    account_info.hosted_domain = account.GetHostedDomain();
     // TODO(crbug.com/368409110): Find a way to determine the full AccountInfo
     // for these accounts, not only the "core" fields.
     account_infos.push_back(std::move(account_info));
@@ -372,9 +372,9 @@ bool ProfileOAuth2TokenServiceIOSDelegate::RefreshTokenIsAvailableOnDevice(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   for (const auto& account : provider_->GetAccountsOnDevice()) {
-    CHECK(!account.gaia.empty());
-    CHECK(!account.email.empty());
-    if (account.gaia.ToString() == account_id.ToString()) {
+    CHECK(!account.GetGaiaId().empty());
+    CHECK(!account.GetEmail().empty());
+    if (account.GetGaiaId().ToString() == account_id.ToString()) {
       return true;
     }
   }

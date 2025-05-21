@@ -101,8 +101,8 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
   }
 
   CoreAccountId GetAccountId(const ProviderAccount& provider_account) {
-    return account_tracker_.PickAccountIdForAccount(provider_account.gaia,
-                                                    provider_account.email);
+    return account_tracker_.PickAccountIdForAccount(
+        provider_account.GetGaiaId(), provider_account.GetEmail());
   }
 
  protected:
@@ -228,12 +228,12 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, ReloadAllAccountsFromSystem) {
   // Change the accounts.
   ResetObserverCounts();
   fake_provider_->ClearAccounts();
-  fake_provider_->AddAccount(account1.gaia, account1.email);
+  fake_provider_->AddAccount(account1.GetGaiaId(), account1.GetEmail());
   ProviderAccount account4 =
       fake_provider_->AddAccount(GaiaId("gaia_4"), "email_4@x");
   oauth2_delegate_->ReloadAllAccountsFromSystemWithPrimaryAccount(
       GetAccountId(account1));
-  fake_provider_->UpdateAccount(account4.gaia, "email_4_new@x");
+  fake_provider_->UpdateAccount(account4.GetGaiaId(), "email_4_new@x");
 
   EXPECT_EQ(1, token_available_count_);
   EXPECT_EQ(0, tokens_loaded_count_);
