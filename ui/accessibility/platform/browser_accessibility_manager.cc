@@ -1910,9 +1910,12 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
     const AXNode* changed_node = change.node;
     DCHECK(changed_node);
 
-    BrowserAccessibility* obj = GetFromAXNode(changed_node);
-    if (obj)
-      nodes_needing_update->insert(obj->GetAXPlatformNode());
+    if (!changed_node->IsIgnored()) {
+      BrowserAccessibility* obj = GetFromAXNode(changed_node);
+      if (obj) {
+        nodes_needing_update->insert(obj->GetAXPlatformNode());
+      }
+    }
 
     const AXNode* parent = changed_node->GetUnignoredParent();
     if (!parent)
