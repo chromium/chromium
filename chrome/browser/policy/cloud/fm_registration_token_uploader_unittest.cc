@@ -245,4 +245,26 @@ TEST_F(FmRegistrationTokenUploaderTest,
   task_environment_.FastForwardBy(base::Minutes(1));
 }
 
+TEST_F(FmRegistrationTokenUploaderTest,
+       CoreDisconnectBeforeClientIsRegistered) {
+  auto client = std::make_unique<MockCloudPolicyClient>();
+  MockCloudPolicyClient* client_ptr = client.get();
+
+  // Connect cloud policy client without registration.
+  core_.Connect(std::move(client));
+  FmRegistrationTokenUploader uploader(PolicyInvalidationScope::kDevice,
+                                       &mock_invalidation_listener_, &core_);
+
+  // Expect that `UploadFmRegistrationToken()` will be never be called.
+  EXPECT_CALL(*client_ptr, UploadFmRegistrationToken(_, _)).Times(0);
+  EXPECT_CALL(mock_invalidation_listener_, SetRegistrationUploadStatus(_))
+      .Times(0);
+
+  uploader.OnRegistrationTokenReceived(kFakeRegistrationToken,
+                                       kFakeTokenEndOfLife);
+
+  // Disconnect cloud policy core should not cleanup everything properly.
+  core_.Disconnect();
+}
+
 }  // namespace policy
