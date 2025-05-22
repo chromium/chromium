@@ -48,9 +48,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
     api::developer_private::ExtensionInfo info) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(browser_context_);
-
   // ControlledInfo.
   bool is_policy_location = Manifest::IsPolicyLocation(extension.location());
   if (is_policy_location) {
@@ -69,32 +66,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
               warning_reason, state);
     }
   }
-
-  // Dependent extensions.
-  if (extension.is_shared_module()) {
-    std::unique_ptr<ExtensionSet> dependent_extensions =
-        SharedModuleService::Get(browser_context_)
-            ->GetDependentExtensions(&extension);
-    for (const scoped_refptr<const Extension>& dependent :
-         *dependent_extensions) {
-      developer::DependentExtension dependent_extension;
-      dependent_extension.id = dependent->id();
-      dependent_extension.name = dependent->name();
-      info.dependent_extensions.push_back(std::move(dependent_extension));
-    }
-  }
-  // TODO(crbug.com/413650880): Investigate if `parent_disabled_permissions`
-  // can be removed.
-  info.disable_reasons.parent_disabled_permissions = false;
-
-  ManagementPolicy* management_policy = extension_system_->management_policy();
-  info.must_remain_installed =
-      management_policy->MustRemainInstalled(&extension, nullptr);
-  info.user_may_modify =
-      management_policy->UserMayModifySettings(&extension, nullptr);
-
-  info.update_url =
-      extension_management->GetEffectiveUpdateURL(extension).spec();
 
   // Show access requests in toolbar.
   info.show_access_requests_in_toolbar =

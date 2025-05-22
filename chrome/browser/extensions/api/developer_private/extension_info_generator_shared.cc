@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/chrome_features.h"
@@ -596,7 +597,19 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
           ->IsRegistrationHandledExternally();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  // TODO(crbug.com/419419534): Add back dependent extensions.
+  // Dependent extensions.
+  if (extension.is_shared_module()) {
+    std::unique_ptr<ExtensionSet> dependent_extensions =
+        SharedModuleService::Get(browser_context_)
+            ->GetDependentExtensions(&extension);
+    for (const scoped_refptr<const Extension>& dependent :
+         *dependent_extensions) {
+      developer::DependentExtension dependent_extension;
+      dependent_extension.id = dependent->id();
+      dependent_extension.name = dependent->name();
+      info.dependent_extensions.push_back(std::move(dependent_extension));
+    }
+  }
 
   info.description = extension.description();
 
@@ -617,7 +630,9 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
       disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   info.disable_reasons.custodian_approval_required =
       custodian_approval_required;
-  // TODO(crbug.com/419419534): Add back parent_disabled_permissions.
+  // TODO(crbug.com/413650880): Investigate if `parent_disabled_permissions`
+  // can be removed.
+  info.disable_reasons.parent_disabled_permissions = false;
   info.disable_reasons.published_in_store_required = disable_reasons.contains(
       disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY);
   info.disable_reasons.unsupported_manifest_version = disable_reasons.contains(
@@ -635,6 +650,7 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
       error_console_->IsReportingEnabledForExtension(extension.id());
 
   // File access.
+  ManagementPolicy* management_policy = extension_system_->management_policy();
   info.file_access.is_enabled =
       (extension.wants_file_access() ||
        Manifest::ShouldAlwaysAllowFileAccess(extension.location()));
@@ -761,7 +777,8 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
     }
   }
 
-  // TODO(crbug.com/419419534): Add back must_remain_installed.
+  info.must_remain_installed =
+      management_policy->MustRemainInstalled(&extension, nullptr);
 
   info.name = extension.name();
   info.offline_enabled = OfflineEnabledInfo::IsOfflineEnabled(&extension);
@@ -794,8 +811,11 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
 
   info.type = GetExtensionType(extension.manifest()->type());
 
-  // TODO(crbug.com/419419534): Add back update_url and user_may_modify in this
-  // order.
+  info.update_url =
+      extension_management->GetEffectiveUpdateURL(extension).spec();
+
+  info.user_may_modify =
+      management_policy->UserMayModifySettings(&extension, nullptr);
 
   info.version = extension.GetVersionForDisplay();
 
