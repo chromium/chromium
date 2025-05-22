@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/resources_util.h"
 
 #include <stddef.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
@@ -37,39 +33,36 @@ class ThemeMap {
   using StringIntMap = base::flat_map<std::string, int>;
 
   ThemeMap() {
-    size_t storage_size =
-        kComponentsScaledResourcesSize + kThemeResourcesSize + kUiResourcesSize;
+    size_t storage_size = std::size(kComponentsScaledResources) +
+                          std::size(kThemeResources) + std::size(kUiResources);
 #if !BUILDFLAG(IS_ANDROID)
-    storage_size += kSearchEnginesScaledResourcesSize;
+    storage_size += std::size(kSearchEnginesScaledResources);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    storage_size += kUiChromeosResourcesSize;
+    storage_size += std::size(kUiChromeosResources);
 #endif
 
     // Construct in one-shot from a moved vector.
     std::vector<StringIntMap::value_type> storage;
     storage.reserve(storage_size);
 
-    for (size_t i = 0; i < kComponentsScaledResourcesSize; ++i) {
-      storage.emplace_back(kComponentsScaledResources[i].path,
-                           kComponentsScaledResources[i].id);
+    for (const auto& resource : kComponentsScaledResources) {
+      storage.emplace_back(resource.path, resource.id);
     }
-    for (size_t i = 0; i < kThemeResourcesSize; ++i) {
-      storage.emplace_back(kThemeResources[i].path, kThemeResources[i].id);
+    for (const auto& resource : kThemeResources) {
+      storage.emplace_back(resource.path, resource.id);
     }
-    for (size_t i = 0; i < kUiResourcesSize; ++i) {
-      storage.emplace_back(kUiResources[i].path, kUiResources[i].id);
+    for (const auto& resource : kUiResources) {
+      storage.emplace_back(resource.path, resource.id);
     }
 #if !BUILDFLAG(IS_ANDROID)
-    for (size_t i = 0; i < kSearchEnginesScaledResourcesSize; ++i) {
-      storage.emplace_back(kSearchEnginesScaledResources[i].path,
-                           kSearchEnginesScaledResources[i].id);
+    for (const auto& resource : kSearchEnginesScaledResources) {
+      storage.emplace_back(resource.path, resource.id);
     }
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    for (size_t i = 0; i < kUiChromeosResourcesSize; ++i) {
-      storage.emplace_back(kUiChromeosResources[i].path,
-                           kUiChromeosResources[i].id);
+    for (const auto& resource : kUiChromeosResources) {
+      storage.emplace_back(resource.path, resource.id);
     }
 #endif
 
