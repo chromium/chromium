@@ -58,12 +58,12 @@ using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
 
 struct ScopedIOSurfaceLock {
   ScopedIOSurfaceLock(IOSurfaceRef iosurface, IOSurfaceLockOptions options)
-      : io_surface_(iosurface) {
-    kern_return_t r = IOSurfaceLock(io_surface_, options, nullptr);
+      : io_surface_(iosurface), options_(options) {
+    kern_return_t r = IOSurfaceLock(io_surface_, options_, /*seed=*/nullptr);
     CHECK_EQ(KERN_SUCCESS, r);
   }
   ~ScopedIOSurfaceLock() {
-    kern_return_t r = IOSurfaceUnlock(io_surface_, 0, nullptr);
+    kern_return_t r = IOSurfaceUnlock(io_surface_, options_, /*seed=*/nullptr);
     CHECK_EQ(KERN_SUCCESS, r);
   }
 
@@ -71,7 +71,8 @@ struct ScopedIOSurfaceLock {
   ScopedIOSurfaceLock& operator=(const ScopedIOSurfaceLock&) = delete;
 
  private:
-  IOSurfaceRef io_surface_;
+  const IOSurfaceRef io_surface_;
+  const IOSurfaceLockOptions options_;
 };
 
 // Returns BufferFormat for given multiplanar `format`.
@@ -1122,7 +1123,8 @@ bool IOSurfaceImageBacking::ReadbackToMemory(
   // Make sure any pending ANGLE EGLDisplays and Dawn devices are flushed.
   WaitForCommandsToBeScheduled();
 
-  ScopedIOSurfaceLock io_surface_lock(io_surface_.get(), /*options=*/0);
+  ScopedIOSurfaceLock io_surface_lock(io_surface_.get(),
+                                      kIOSurfaceLockReadOnly);
 
   for (int plane_index = 0; plane_index < static_cast<int>(pixmaps.size());
        ++plane_index) {
