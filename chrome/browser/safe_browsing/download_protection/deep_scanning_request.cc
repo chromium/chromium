@@ -768,6 +768,11 @@ DeepScanningRequest::referrer_chain() const {
       ::safe_browsing::ReferrerChainEntry>();
 }
 
+google::protobuf::RepeatedPtrField<std::string>
+DeepScanningRequest::frame_url_chain() const {
+  return {};
+}
+
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
   download_check_result_ =
       GetHighestPrecedenceResult(download_check_result_, result);

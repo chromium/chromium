@@ -51,6 +51,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
@@ -83,6 +84,9 @@ using safe_browsing::BinaryUploadService;
 namespace enterprise_connectors {
 
 namespace {
+
+// URL chain limit for nested iFrames.
+constexpr int kMaxFrameUrls = 10;
 
 // Global pointer of factory function (RepeatingCallback) used to create
 // instances of ContentAnalysisDelegate in tests.  !is_null() only in tests.
@@ -139,6 +143,39 @@ void OnPathsExpanded(
       base::BindOnce(&OnContentAnalysisComplete, std::move(files_scan_data),
                      std::move(callback)),
       access_point);
+}
+
+// Returns the list of URLs from the current frame all the way to the outermost
+// frame URL. Above the `kMaxFrameUrls` limit, we skip the rest of the chain and
+// take the outermost URL for performance considerations.
+google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
+    content::WebContents* web_contents) {
+  google::protobuf::RepeatedPtrField<std::string> frame_urls;
+
+  if (!web_contents) {
+    return frame_urls;
+  }
+
+  content::RenderFrameHost* current_frame = web_contents->GetFocusedFrame();
+
+  // Traverse upwards and add URLs to the chain.
+  while (current_frame && frame_urls.size() < kMaxFrameUrls - 1) {
+    *frame_urls.Add() = current_frame->GetLastCommittedURL().spec();
+
+    content::RenderFrameHost* parent = current_frame->GetParent();
+    if (!parent) {
+      // Already at outermost frame.
+      return frame_urls;
+    }
+    current_frame = parent;
+  }
+
+  // If we hit the limit, collect the top frame instead.
+  if (frame_urls.size() == kMaxFrameUrls - 1 && current_frame) {
+    current_frame = current_frame->GetOutermostMainFrame();
+    *frame_urls.Add() = current_frame->GetLastCommittedURL().spec();
+  }
+  return frame_urls;
 }
 
 }  // namespace
@@ -533,6 +570,10 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   DCHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
+  if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport) &&
+      access_point_ == safe_browsing::DeepScanAccessPoint::UPLOAD) {
+    frame_url_chain_ = CollectFrameUrls(web_contents);
+  }
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
   user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
   page_content_type_ = web_contents->GetContentsMimeType();
@@ -1028,6 +1069,11 @@ ContentAnalysisDelegate::referrer_chain() const {
       url_, tab_id_, enterprise_connectors::kReferrerUserGestureLimit,
       &referrers);
   return referrers;
+}
+
+google::protobuf::RepeatedPtrField<std::string>
+ContentAnalysisDelegate::frame_url_chain() const {
+  return frame_url_chain_;
 }
 
 }  // namespace enterprise_connectors

@@ -468,6 +468,11 @@ FileTransferAnalysisDelegate::referrer_chain() const {
       ::safe_browsing::ReferrerChainEntry>();
 }
 
+google::protobuf::RepeatedPtrField<std::string>
+FileTransferAnalysisDelegate::frame_url_chain() const {
+  return {};
+}
+
 void FileTransferAnalysisDelegate::OnGotFileURLs(
     std::vector<storage::FileSystemURL> scanning_urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

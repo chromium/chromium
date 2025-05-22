@@ -283,6 +283,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
   referrer_chain() const override;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override;
 
  protected:
   ContentAnalysisDelegate(content::WebContents* web_contents,
@@ -405,6 +407,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // The GURL corresponding to the page where the scan triggered.
   GURL url_;
+
+  // Parent URL chain of the frame from which the action was triggered.
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain_;
 
   // The title corresponding to the WebContents triggering the scan.
   std::string title_;

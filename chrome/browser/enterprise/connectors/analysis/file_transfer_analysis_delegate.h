@@ -178,6 +178,8 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
   referrer_chain() const override;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override;
 
  protected:
   // For `block_until_verdict == 0`, the `destination_url` has to point to the

@@ -40,6 +40,8 @@ class ContentAnalysisInfo {
   virtual google::protobuf::RepeatedPtrField<
       ::safe_browsing::ReferrerChainEntry>
   referrer_chain() const = 0;
+  virtual google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const = 0;
 
   // Adds shared fields to `request` before sending it to the binary upload
   // service. Connector-specific fields need to be added to the request

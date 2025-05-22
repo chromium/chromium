@@ -40,6 +40,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -135,8 +136,10 @@ class BaseTest : public testing::Test {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     ContentAnalysisDelegate::DisableUIForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kEnhancedFieldsForSecOps);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps,
+                              kEnterpriseIframeDlpRulesSupport},
+        /*disabled_features=*/{});
   }
 
   void ScanUpload(content::WebContents* web_contents,

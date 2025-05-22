@@ -282,6 +282,12 @@ void BinaryUploadService::Request::set_content_area_account_email(
       ->set_content_area_account_email(email);
 }
 
+void BinaryUploadService::Request::set_frame_url_chain(
+    const google::protobuf::RepeatedPtrField<std::string> frame_url_chain) {
+  *content_analysis_request_.mutable_request_data()->mutable_frame_url_chain() =
+      std::move(frame_url_chain);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(

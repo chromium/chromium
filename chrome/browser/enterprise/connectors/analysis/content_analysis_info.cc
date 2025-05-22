@@ -103,6 +103,10 @@ void ContentAnalysisInfo::InitializeRequest(
     if (!email.empty()) {
       request->set_content_area_account_email(email);
     }
+
+    if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
+      request->set_frame_url_chain(frame_url_chain());
+    }
   }
 
   request->set_user_action_requests_count(user_action_requests_count());

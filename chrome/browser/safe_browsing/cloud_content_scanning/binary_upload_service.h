@@ -198,6 +198,8 @@ class BinaryUploadService : public KeyedService {
     void set_referrer_chain(const google::protobuf::RepeatedPtrField<
                             safe_browsing::ReferrerChainEntry> referrer_chain);
     void set_content_area_account_email(const std::string& email);
+    void set_frame_url_chain(
+        const google::protobuf::RepeatedPtrField<std::string> frame_url_chain);
 
     std::string SetRandomRequestToken();
 

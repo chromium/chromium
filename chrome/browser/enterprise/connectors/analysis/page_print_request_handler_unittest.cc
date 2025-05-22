@@ -89,6 +89,11 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
         ::safe_browsing::ReferrerChainEntry>();
   }
 
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override {
+    return {};
+  }
+
  private:
   GURL tab_url_{kTabUrl};
   AnalysisSettings settings_;

@@ -119,6 +119,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   enterprise_connectors::ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
   referrer_chain() const override;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override;
 
  private:
   // Starts the deep scanning request when there is a one-to-one mapping from

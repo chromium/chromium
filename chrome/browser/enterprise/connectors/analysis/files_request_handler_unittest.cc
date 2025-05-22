@@ -201,6 +201,11 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
         ::safe_browsing::ReferrerChainEntry>();
   }
 
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override {
+    return {};
+  }
+
  private:
   const raw_ref<const enterprise_connectors::AnalysisSettings> settings_;
   int user_action_requests_count_ = 0;
