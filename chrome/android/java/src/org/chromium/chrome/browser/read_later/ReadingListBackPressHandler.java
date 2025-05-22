@@ -110,6 +110,14 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     }
 
     @Override
+    public boolean invokeBackActionOnEscape() {
+        // Escape key presses should not close the tab even if it was opened from the reading list.
+        // We do not also implement a custom {@link BackPressHandler#handleEscPress()} since we
+        // don't want anything to happen and for the manager to move to the next priority handler.
+        return false;
+    }
+
+    @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
     }
