@@ -4,16 +4,19 @@
 
 package org.chromium.chrome.browser.tab;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 
 /** Handles the visibility update of the activity tab. */
+@NullMarked
 public class AccessibilityVisibilityHandler
         implements DestroyObserver, TabObscuringHandler.Observer {
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
     private final TabObscuringHandler mTabObscuringHandler;
-    private TabImpl mTab;
+    private @Nullable TabImpl mTab;
 
     public AccessibilityVisibilityHandler(
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -22,7 +25,7 @@ public class AccessibilityVisibilityHandler
         mActivityTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    public void onObservingDifferentTab(Tab tab, boolean hint) {
+                    public void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
                         if (mTab == tab) return;
                         if (mTab != null) {
                             updateObscured(false, false);
@@ -62,6 +65,5 @@ public class AccessibilityVisibilityHandler
     public void onDestroy() {
         mActivityTabObserver.destroy();
         mTabObscuringHandler.removeObserver(this);
-        mTab = null;
     }
 }

@@ -7,6 +7,7 @@ package org.chromium.components.external_intents;
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -21,7 +22,7 @@ public interface InterceptNavigationDelegateClient {
     WebContents getWebContents();
 
     /* Creates an ExternalNavigationHandler instance that is configured for this client. */
-    ExternalNavigationHandler createExternalNavigationHandler();
+    @Nullable ExternalNavigationHandler createExternalNavigationHandler();
 
     /* Gets a RedirectHandler instance that is associated with this client, creating it if
      * necessary. */

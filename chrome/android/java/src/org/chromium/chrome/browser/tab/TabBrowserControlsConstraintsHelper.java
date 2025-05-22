@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsOffsetTagModifications;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.cc.input.OffsetTag;
@@ -23,6 +23,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Manages the state of tab browser controls. */
+@NullMarked
 public class TabBrowserControlsConstraintsHelper implements UserData {
     private static final Class<TabBrowserControlsConstraintsHelper> USER_DATA_KEY =
             TabBrowserControlsConstraintsHelper.class;
@@ -31,7 +32,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     private final Callback<@BrowserControlsState Integer> mConstraintsChangedCallback;
 
     private long mNativeTabBrowserControlsConstraintsHelper; // Lazily initialized in |update|
-    private BrowserControlsVisibilityDelegate mVisibilityDelegate;
+    private @Nullable BrowserControlsVisibilityDelegate mVisibilityDelegate;
 
     // These OffsetTags are used in:
     //   - Browser, to tag the layers that move with top controls to be moved by viz.
@@ -44,19 +45,25 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 .setUserData(USER_DATA_KEY, new TabBrowserControlsConstraintsHelper(tab));
     }
 
-    public static TabBrowserControlsConstraintsHelper get(Tab tab) {
+    private static @Nullable TabBrowserControlsConstraintsHelper safeGet(@Nullable Tab tab) {
+        return tab == null ? null : get(tab);
+    }
+
+    public static @Nullable TabBrowserControlsConstraintsHelper get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
     /**
-     * Returns the current visibility constraints for the display of browser controls.
-     * {@link BrowserControlsState} defines the valid return options.
+     * Returns the current visibility constraints for the display of browser controls. {@link
+     * BrowserControlsState} defines the valid return options.
+     *
      * @param tab Tab whose browser controls state is looked into.
      * @return The current visibility constraints.
      */
     public static @BrowserControlsState int getConstraints(Tab tab) {
-        if (tab == null || get(tab) == null) return BrowserControlsState.BOTH;
-        return get(tab).getConstraints();
+        TabBrowserControlsConstraintsHelper helper = safeGet(tab);
+        if (helper == null) return BrowserControlsState.BOTH;
+        return helper.getConstraints();
     }
 
     /**
@@ -66,41 +73,38 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
      * @param tab Tab whose browser controls state is looked into.
      * @return Observable supplier for the current visibility constraints.
      */
-    public static @Nullable ObservableSupplier<@BrowserControlsState Integer>
-            getObservableConstraints(Tab tab) {
-        if (tab == null) {
-            return null;
-        }
-        TabBrowserControlsConstraintsHelper helper = get(tab);
-        if (helper == null) {
-            return null;
-        }
+    public static @Nullable
+            ObservableSupplier<@BrowserControlsState Integer> getObservableConstraints(Tab tab) {
+        TabBrowserControlsConstraintsHelper helper = safeGet(tab);
+        if (helper == null) return null;
         return helper.mVisibilityDelegate;
     }
 
     /**
      * Push state about whether or not the browser controls can show or hide to the renderer.
+     *
      * @param tab Tab object.
      */
     public static void updateEnabledState(Tab tab) {
-        if (tab == null || get(tab) == null) return;
-        get(tab).updateEnabledState();
+        TabBrowserControlsConstraintsHelper helper = safeGet(tab);
+        if (helper == null) return;
+        helper.updateEnabledState();
     }
 
     /**
-     * Updates the browser controls state for this tab.  As these values are set at the renderer
-     * level, there is potential for this impacting other tabs that might share the same
-     * process.
+     * Updates the browser controls state for this tab. As these values are set at the renderer
+     * level, there is potential for this impacting other tabs that might share the same process.
      *
      * @param tab Tab whose browser constrol state is looked into.
-     * @param current The desired current state for the controls.  Pass
-     *         {@link BrowserControlsState#BOTH} to preserve the current position.
+     * @param current The desired current state for the controls. Pass {@link
+     *     BrowserControlsState#BOTH} to preserve the current position.
      * @param animate Whether the controls should animate to the specified ending condition or
-     *         should jump immediately.
+     *     should jump immediately.
      */
     public static void update(Tab tab, int current, boolean animate) {
-        if (tab == null || get(tab) == null) return;
-        get(tab).update(current, animate);
+        TabBrowserControlsConstraintsHelper helper = safeGet(tab);
+        if (helper == null) return;
+        helper.update(current, animate);
     }
 
     /** Constructor */

@@ -9,11 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,6 +38,7 @@ import java.util.Set;
  * Determines the desired visibility of the browser controls based on the current state of a given
  * tab.
  */
+@NullMarked
 public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate
         implements ImeEventObserver {
     private static final String TAG = "BrowserControls";
@@ -76,7 +77,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private static boolean sDisableLoadingCheck;
 
     protected final TabImpl mTab;
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
     private boolean mIsFullscreenWaitingForLoad;
     private boolean mIsFocusedNodeEditable;
@@ -256,7 +257,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         updateVisibilityConstraints();
     }
 
-    private void onWebContentsUpdated(WebContents contents) {
+    private void onWebContentsUpdated(@Nullable WebContents contents) {
         if (mWebContents == contents) return;
         mWebContents = contents;
         if (mWebContents == null) return;
@@ -273,7 +274,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         WebContents webContents = mTab.getWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
 
-        @NonNull GURL url = mTab.getUrl();
+        GURL url = mTab.getUrl();
         boolean enableHidingBrowserControls = true;
         int flags = 0;
         if (url.getScheme().equals(UrlConstants.CHROME_SCHEME)

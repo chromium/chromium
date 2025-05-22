@@ -126,7 +126,7 @@ public class RedirectHandler {
 
     /** Resets |mIntentState| for the newly received Intent. */
     public void updateIntent(
-            Intent intent,
+            @Nullable Intent intent,
             boolean isCustomTabIntent,
             boolean sendToExternalApps,
             boolean externalIntentStartedTask) {

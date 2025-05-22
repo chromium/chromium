@@ -4,28 +4,32 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.app.Activity;
 import android.content.Intent;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * A holder of {@link Intent} object to be used to bring back the parent {@link Activity}
- * from which the associated tab was opened.
+ * A holder of {@link Intent} object to be used to bring back the parent {@link Activity} from which
+ * the associated tab was opened.
  */
+@NullMarked
 public final class TabParentIntent extends EmptyTabObserver implements UserData {
     private static final Class<TabParentIntent> USER_DATA_KEY = TabParentIntent.class;
 
     private final Tab mTab;
 
-    private Supplier<Tab> mCurrentTab;
+    private @Nullable Supplier<@Nullable Tab> mCurrentTab;
 
     /**
      * If the associated tab was opened from another tab in another Activity, this is the Intent
      * that can be fired to bring the parent Activity back.
      */
-    private Intent mParentIntent;
+    private @Nullable Intent mParentIntent;
 
     public static TabParentIntent from(Tab tab) {
         UserDataHost host = tab.getUserDataHost();
@@ -43,13 +47,14 @@ public final class TabParentIntent extends EmptyTabObserver implements UserData 
 
     @Override
     public void onCloseContents(Tab tab) {
-        boolean isSelected = mCurrentTab.get() == tab;
+        boolean isSelected = mCurrentTab != null && mCurrentTab.get() == tab;
 
         // If the parent Tab belongs to another Activity, fire the Intent to bring it back.
-        if (isSelected
-                && mParentIntent != null
-                && TabUtils.getActivity(tab).getIntent() != mParentIntent) {
-            TabUtils.getActivity(tab).startActivity(mParentIntent);
+        if (isSelected && mParentIntent != null) {
+            Activity activity = TabUtils.getActivity(tab);
+            if (activity != null && activity.getIntent() != mParentIntent) {
+                activity.startActivity(mParentIntent);
+            }
         }
     }
 
@@ -58,8 +63,8 @@ public final class TabParentIntent extends EmptyTabObserver implements UserData 
         return this;
     }
 
-    /** Set the supplier of the current Tab. */
-    public void setCurrentTab(Supplier<Tab> currentTab) {
+    /** Set the supplier of the current tab. */
+    public void setCurrentTab(Supplier<@Nullable Tab> currentTab) {
         mCurrentTab = currentTab;
     }
 

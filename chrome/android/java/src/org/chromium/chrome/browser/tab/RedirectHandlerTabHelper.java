@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.components.external_intents.RedirectHandler;
@@ -19,11 +22,12 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 
 /** This class glues RedirectHandler instances to Tabs. */
+@NullMarked
 public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserData {
     private static final Class<RedirectHandlerTabHelper> USER_DATA_KEY =
             RedirectHandlerTabHelper.class;
 
-    private Tab mTab;
+    private final Tab mTab;
     private RedirectHandler mRedirectHandler;
 
     /**
@@ -64,7 +68,7 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
         RedirectHandlerTabHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (helper == null) {
             getOrCreateHandlerFor(tab);
-            helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
+            helper = assumeNonNull(tab.getUserDataHost().getUserData(USER_DATA_KEY));
         }
         RedirectHandler oldHandler = helper.mRedirectHandler;
         helper.mRedirectHandler = newHandler;
@@ -79,7 +83,6 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
     @Override
     public void destroy() {
         mTab.removeObserver(this);
-        mTab = null;
     }
 
     @Override

@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.tab;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -27,8 +28,9 @@ import org.chromium.ui.base.WindowAndroid;
  * Class that provides embedder-level information to InterceptNavigationDelegateImpl based off a
  * Tab.
  */
+@NullMarked
 public class InterceptNavigationDelegateClientImpl implements InterceptNavigationDelegateClient {
-    private static Boolean sIsInDesktopWindowingModeForTesting;
+    private static @Nullable Boolean sIsInDesktopWindowingModeForTesting;
     private final TabImpl mTab;
     private final TabObserver mTabObserver;
     private InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
@@ -76,7 +78,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public ExternalNavigationHandler createExternalNavigationHandler() {
+    public @Nullable ExternalNavigationHandler createExternalNavigationHandler() {
         return mTab.getDelegateFactory().createExternalNavigationHandler(mTab);
     }
 
@@ -115,15 +117,14 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                         /* allowDialog= */ false);
     }
 
+    @Initializer
     public void initializeWithDelegate(InterceptNavigationDelegateImpl delegate) {
         mInterceptNavigationDelegate = delegate;
         mTab.addObserver(mTabObserver);
     }
 
     public void destroy() {
-        assert mInterceptNavigationDelegate != null;
         mTab.removeObserver(mTabObserver);
-        mInterceptNavigationDelegate = null;
     }
 
     @Override

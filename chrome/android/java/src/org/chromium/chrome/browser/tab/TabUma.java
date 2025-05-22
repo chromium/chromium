@@ -6,20 +6,19 @@ package org.chromium.chrome.browser.tab;
 
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
- * Centralizes UMA data collection for Tab management.
- * This will drive our memory optimization efforts, specially tab restoring and
- * eviction.
- * All calls must be made from the UI thread.
+ * Centralizes UMA data collection for Tab management. This will drive our memory optimization
+ * efforts, specially tab restoring and eviction. All calls must be made from the UI thread.
  */
+@NullMarked
 public class TabUma extends EmptyTabObserver implements UserData {
     private static final Class<TabUma> USER_DATA_KEY = TabUma.class;
 

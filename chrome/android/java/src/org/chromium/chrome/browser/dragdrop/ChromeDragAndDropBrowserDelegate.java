@@ -15,13 +15,13 @@ import android.view.DragEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -50,7 +50,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     /**
      * @param activitySupplier The supplier to get the Activity this delegate is associated with.
      */
-    public ChromeDragAndDropBrowserDelegate(Supplier<Activity> activitySupplier) {
+    public ChromeDragAndDropBrowserDelegate(Supplier<@Nullable Activity> activitySupplier) {
         mActivitySupplier = activitySupplier;
         mSupportDropInChrome =
                 ContentFeatureMap.getInstance()

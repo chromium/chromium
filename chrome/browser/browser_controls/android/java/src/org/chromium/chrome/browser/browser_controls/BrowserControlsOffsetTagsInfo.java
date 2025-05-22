@@ -41,7 +41,9 @@ public final class BrowserControlsOffsetTagsInfo {
      * @param bottomControls An OffsetTag enabling viz to move the bottom controls.
      */
     public BrowserControlsOffsetTagsInfo(
-            OffsetTag topControls, OffsetTag content, OffsetTag bottomControls) {
+            @Nullable OffsetTag topControls,
+            @Nullable OffsetTag content,
+            @Nullable OffsetTag bottomControls) {
         mTags = new BrowserControlsOffsetTags(topControls, content, bottomControls);
     }
 

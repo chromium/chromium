@@ -134,11 +134,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private static @Nullable Callback<Pair<GURL, OverrideUrlLoadingResult>>
             sResultCallbackForTesting;
 
-    @SuppressWarnings("NullAway.Init")
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
-    @SuppressWarnings("NullAway.Init")
-    private ExternalNavigationHandler mExternalNavHandler;
+    private @Nullable ExternalNavigationHandler mExternalNavHandler;
 
     private @Nullable WebContentsObserver mWebContentsObserver;
 
@@ -166,7 +164,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         maybeUpdateNavigationHistory();
     }
 
-    public void setExternalNavigationHandler(ExternalNavigationHandler handler) {
+    public void setExternalNavigationHandler(@Nullable ExternalNavigationHandler handler) {
         mExternalNavHandler = handler;
     }
 
@@ -183,7 +181,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         requestFinishPendingShouldIgnoreCheck();
     }
 
-    public void associateWithWebContents(WebContents webContents) {
+    public void associateWithWebContents(@Nullable WebContents webContents) {
         if (mWebContents == webContents) return;
 
         // Before we attach to another WebContents, cancel any checks that were in progress.
@@ -209,11 +207,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 new WebContentsObserver(mWebContents) {
                     @Override
                     public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        assumeNonNull(mExternalNavHandler);
                         mExternalNavHandler.onNavigationStarted(navigation.getNavigationId());
                     }
 
                     @Override
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        assumeNonNull(mExternalNavHandler);
                         mExternalNavHandler.onNavigationFinished(navigation.getNavigationId());
                     }
                 };
@@ -530,7 +530,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 // captured.
                 result = OverrideUrlLoadingResult.forNoOverride();
             } else {
-                result = mExternalNavHandler.shouldOverrideUrlLoading(params);
+                result = assumeNonNull(mExternalNavHandler).shouldOverrideUrlLoading(params);
             }
 
             if (sResultCallbackForTesting != null) {
@@ -684,7 +684,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         ? params.targetUrl
                         : null;
         InterceptNavigationDelegateImplJni.get()
-                .onSubframeAsyncActionTaken(mWebContents, redirectUrl);
+                .onSubframeAsyncActionTaken(assumeNonNull(mWebContents), redirectUrl);
     }
 
     private void onDidFinishMainFrameIntentLaunch(boolean canCloseTab, GURL escapedUrl) {
@@ -816,7 +816,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     private void logBlockedNavigationToDevToolsConsole(GURL url) {
         int resId =
-                mExternalNavHandler.canExternalAppHandleUrl(url)
+                assumeNonNull(mExternalNavHandler).canExternalAppHandleUrl(url)
                         ? R.string.blocked_navigation_warning
                         : R.string.unreachable_navigation_warning;
         mClient.getWebContents()

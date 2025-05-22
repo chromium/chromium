@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
@@ -17,8 +17,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.List;
 
 /** A simple wrapper around a {@link ContextMenuPopulator} to handle observer notification. */
+@NullMarked
 public class TabContextMenuPopulator implements ContextMenuPopulator {
-    @Nullable private final ContextMenuPopulator mPopulator;
+    private final ContextMenuPopulator mPopulator;
     private final ContextMenuParams mParams;
     private final TabImpl mTab;
 

@@ -169,7 +169,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     }
 
     @Override
-    public void setDragAndDropBrowserDelegate(DragAndDropBrowserDelegate delegate) {
+    public void setDragAndDropBrowserDelegate(@Nullable DragAndDropBrowserDelegate delegate) {
         mDragAndDropBrowserDelegate = delegate;
     }
 

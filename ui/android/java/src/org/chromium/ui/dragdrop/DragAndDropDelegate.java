@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.DragShadowBuilder;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Delegate to facilitate Drag and Drop operations, for example re-routing the call to {@link
@@ -42,7 +43,7 @@ public interface DragAndDropDelegate {
      *
      * @param delegate The {@link DragAndDropBrowserDelegate} that will be used by this class.
      */
-    default void setDragAndDropBrowserDelegate(DragAndDropBrowserDelegate delegate) {}
+    default void setDragAndDropBrowserDelegate(@Nullable DragAndDropBrowserDelegate delegate) {}
 
     /** Cleanup {@link DragAndDropBrowserDelegate}. */
     default void destroy() {}

@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 
 /** Class that glues InterceptNavigationDelegateImpl objects to Tabs. */
+@NullMarked
 public class InterceptNavigationDelegateTabHelper implements UserData {
     private static final Class<InterceptNavigationDelegateTabHelper> USER_DATA_KEY =
             InterceptNavigationDelegateTabHelper.class;
@@ -20,7 +24,7 @@ public class InterceptNavigationDelegateTabHelper implements UserData {
     public static void setDelegateForTesting(Tab tab, InterceptNavigationDelegateImpl delegate) {
         InterceptNavigationDelegateTabHelper helper =
                 tab.getUserDataHost().getUserData(USER_DATA_KEY);
-        helper.mInterceptNavigationDelegate = delegate;
+        assumeNonNull(helper).mInterceptNavigationDelegate = delegate;
     }
 
     public static void createForTab(Tab tab) {

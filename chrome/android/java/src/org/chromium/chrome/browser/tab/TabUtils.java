@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -20,12 +22,12 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,6 +47,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Collection of utility methods that operates on Tab. */
+@NullMarked
 public class TabUtils {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final float PORTRAIT_THUMBNAIL_ASPECT_RATIO = 0.85f;
@@ -127,17 +130,18 @@ public class TabUtils {
      */
     public static void switchUserAgent(Tab tab, boolean switchToDesktop, int caller) {
         final boolean reloadOnChange = !tab.isNativePage();
-        tab.getWebContents()
+        assumeNonNull(tab.getWebContents())
                 .getNavigationController()
                 .setUseDesktopUserAgent(switchToDesktop, reloadOnChange, caller);
     }
 
     /**
      * Get UseDesktopUserAgent setting from webContents.
+     *
      * @param webContents The webContents used to retrieve UseDesktopUserAgent setting.
      * @return Whether the webContents is set to use desktop user agent.
      */
-    public static boolean isUsingDesktopUserAgent(WebContents webContents) {
+    public static boolean isUsingDesktopUserAgent(@Nullable WebContents webContents) {
         return webContents != null
                 && webContents.getNavigationController().getUseDesktopUserAgent();
     }
@@ -305,11 +309,12 @@ public class TabUtils {
 
     /**
      * Derive thumbnail size based on parent card size.
+     *
      * @param gridCardSize size of parent card.
      * @param context to derive view margins.
      * @return computed width and height of thumbnail.
      */
-    public static Size deriveThumbnailSize(@NonNull Size gridCardSize, @NonNull Context context) {
+    public static Size deriveThumbnailSize(Size gridCardSize, Context context) {
         int thumbnailWidth = gridCardSize.getWidth() - getThumbnailWidthDiff(context);
         int thumbnailHeight = gridCardSize.getHeight() - getThumbnailHeightDiff(context);
         return new Size(thumbnailWidth, thumbnailHeight);
