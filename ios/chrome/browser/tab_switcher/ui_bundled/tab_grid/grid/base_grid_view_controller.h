@@ -18,6 +18,7 @@
 @protocol GridEmptyView;
 @class GridItemIdentifier;
 @protocol GridViewControllerMutator;
+@class LayoutGuideCenter;
 @class LegacyGridTransitionLayout;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
@@ -159,6 +160,8 @@ class WebStateID;
 // Handler for tab group confirmation commands.
 @property(nonatomic, weak) id<TabGroupConfirmationCommands>
     tabGroupConfirmationHandler;
+// The layout guide center to use to refer to the selected cell.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;

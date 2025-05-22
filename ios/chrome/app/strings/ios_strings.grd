@@ -2468,6 +2468,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TITLE" desc="Title of the Guided Tour IPH for the step focusing on the tab grid's incognito page control item." meaning="Title-cased">
           Browse in Incognito
     </message>
+      <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TEXT" desc="Text of the Guided Tour IPH for the step focusing on the active tab." meaning="Title-cased">
+          Create tab groups to organize your open tabs and stay productive
+    </message>
+      <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TITLE" desc="Title of the Guided Tour IPH for the step focusing on the active tab." meaning="Title-cased">
+          Long press to add to a tab group
+    </message>
       <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
         More
       </message>

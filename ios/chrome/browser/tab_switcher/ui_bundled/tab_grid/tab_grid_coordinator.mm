@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 #import "ios/chrome/browser/history/ui_bundled/public/history_presentation_delegate.h"
@@ -174,6 +175,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @interface TabGridCoordinator () <BringAndroidTabsCommands,
                                   GridCoordinatorAudience,
                                   GridMediatorDelegate,
+                                  GuidedTourCoordinatorDelegate,
                                   HistoryCoordinatorDelegate,
                                   HistoryPresentationDelegate,
                                   HistorySyncPopupCoordinatorDelegate,
@@ -287,7 +289,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 @end
 
-@implementation TabGridCoordinator
+@implementation TabGridCoordinator {
+  // Coordinator for the long press step of the guided tour.
+  GuidedTourCoordinator* _guidedTourCoordinator;
+  // Completion block for when the `_guidedTourCoordinator` finishes.
+  ProceduralBlock _guidedTourCompletionBlock;
+}
 // Superclass property.
 @synthesize baseViewController = _baseViewController;
 // Ivars are not auto-synthesized when accessors are overridden.
@@ -1832,6 +1839,28 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     return;
   }
   [self showActiveTabInPage:targetPage focusOmnibox:NO];
+}
+
+- (void)showGuidedTourLongPressStepWithDismissalCompletion:
+    (ProceduralBlock)completion {
+  _guidedTourCoordinator =
+      [[GuidedTourCoordinator alloc] initWithStep:GuidedTourStepTabGridLongPress
+                               baseViewController:self.baseViewController
+                                          browser:self.regularBrowser
+                                         delegate:self];
+  [_guidedTourCoordinator start];
+  _guidedTourCompletionBlock = completion;
+}
+
+#pragma mark - GuidedTourCoordinatorDelegate
+
+- (void)nextTappedForStep:(GuidedTourStep)step {
+}
+
+- (void)stepCompleted:(GuidedTourStep)step {
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+  _guidedTourCompletionBlock();
 }
 
 #pragma mark - SnackbarCoordinatorDelegate

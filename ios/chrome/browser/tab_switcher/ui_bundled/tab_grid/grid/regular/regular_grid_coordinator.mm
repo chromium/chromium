@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -128,6 +129,9 @@
   if (regularModeEnabled) {
     gridViewController = [[RegularGridViewController alloc] init];
     container.containedViewController = gridViewController;
+    LayoutGuideCenter* layoutGuideCenter =
+        LayoutGuideCenterForBrowser(self.browser);
+    gridViewController.layoutGuideCenter = layoutGuideCenter;
   } else {
     DisabledGridViewController* disabledViewController =
         [[DisabledGridViewController alloc]

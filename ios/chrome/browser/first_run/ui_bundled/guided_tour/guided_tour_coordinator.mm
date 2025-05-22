@@ -84,6 +84,9 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else if (_step == GuidedTourStepTabGridIncognito) {
     return [LayoutGuideCenterForBrowser(nil)
         referencedViewUnderName:kTabGridPageControlIncognitoGuide];
+  } else if (_step == GuidedTourStepTabGridLongPress) {
+    return [LayoutGuideCenterForBrowser(self.browser)
+        referencedViewUnderName:kSelectedRegularCellGuide];
   }
   NOTREACHED() << "A layout guide view needs to be fetched for each step";
 }
@@ -119,6 +122,9 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else if (_step == GuidedTourStepTabGridIncognito) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TITLE);
+  } else if (_step == GuidedTourStepTabGridLongPress) {
+    return l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TITLE);
   }
   return @"";
 }
@@ -130,6 +136,9 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else if (_step == GuidedTourStepTabGridIncognito) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_INCOGNITO_IPH_TEXT);
+  } else if (_step == GuidedTourStepTabGridLongPress) {
+    return l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TEXT);
   }
   return @"";
 }
@@ -151,7 +160,8 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 - (BubbleAlignment)bubbleAlignment {
   if (_step == GuidedTourStepNTP) {
     return BubbleAlignmentBottomOrTrailing;
-  } else if (_step == GuidedTourStepTabGridIncognito) {
+  } else if (_step == GuidedTourStepTabGridIncognito ||
+             _step == GuidedTourStepTabGridLongPress) {
     return BubbleAlignmentTopOrLeading;
   }
   NOTREACHED()
@@ -161,7 +171,7 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 // Returns the frame that needs to be cut out of the blur background.
 - (CGRect)cutoutView {
   UIView* cutoutView;
-  if (_step == GuidedTourStepNTP) {
+  if (_step == GuidedTourStepNTP || _step == GuidedTourStepTabGridLongPress) {
     cutoutView = [self anchorView];
   } else {
     // The TabGrid Page Control steps should cut out the entire page control,

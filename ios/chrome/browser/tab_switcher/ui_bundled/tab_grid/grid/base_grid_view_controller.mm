@@ -1719,6 +1719,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   } else {
     cell.state = GridCellStateNotEditing;
   }
+  if ([cell.itemIdentifier isEqual:self.selectedItemIdentifier]) {
+    cell.layoutGuideCenter = self.layoutGuideCenter;
+    [cell registerAsSelectedCellGuide];
+  }
   [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
     // Only update the icon if the cell is not already reused for another item.
     if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {

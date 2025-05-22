@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 @class GridCell;
+@class LayoutGuideCenter;
 
 // Informs the receiver of actions on the cell.
 @protocol GridCellDelegate
@@ -37,6 +38,8 @@
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
 @property(nonatomic, weak) PriceCardView* priceCardView;
+// The layout guide center to use to refer to the selected cell.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Returns a transition selection cell with the same theme and frame as `cell`,
 // but with no visible content view, no delegate, and no identifier.
@@ -56,6 +59,9 @@
 - (void)showActivityIndicator;
 // Stops the activity indicator animation.
 - (void)hideActivityIndicator;
+
+// Registers the cell as a layout guide.
+- (void)registerAsSelectedCellGuide;
 @end
 
 @interface GridTransitionCell : GridCell <LegacyGridToTabTransitionView>

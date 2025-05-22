@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
 class TabGroup;
@@ -33,6 +34,11 @@ class TabGroup;
 // Exits the tab grid, opening the selected tab of the current page (if
 // relevant).
 - (void)exitTabGrid;
+
+// Displays the Guided Tour step that highlights the active tab. `completion`
+// will be executed after the step dismisses.
+- (void)showGuidedTourLongPressStepWithDismissalCompletion:
+    (ProceduralBlock)completion;
 
 @end
 

@@ -26,6 +26,7 @@ source_set("regular") {
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
