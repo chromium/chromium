@@ -221,12 +221,6 @@ BASE_FEATURE(kProductSpecificationsCache,
              "ProductSpecificationsCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Moves the table management interface from history to chrome://compare and
-// enables a new context menu for comparison tables under Bookmarks and Lists.
-BASE_FEATURE(kCompareManagementInterface,
-             "CompareManagementInterface",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Discount on navigation
 BASE_FEATURE(kEnableDiscountInfoApi,
              "EnableDiscountInfoApi",

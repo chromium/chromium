@@ -84,8 +84,7 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
       commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
           browser->profile());
   if (product_specs_service &&
-      base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
-      base::FeatureList::IsEnabled(commerce::kCompareManagementInterface)) {
+      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     compare_sub_menu_model_ = std::make_unique<commerce::CompareSubMenuModel>(
         delegate(), browser, product_specs_service);

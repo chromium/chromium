@@ -69,9 +69,8 @@ class AppMenuBrowserTest : public UiBrowserTest {
  public:
   AppMenuBrowserTest() {
     // Disable the comparison tables submenu.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {commerce::kProductSpecifications,
-             commerce::kCompareManagementInterface});
+    scoped_feature_list_.InitAndDisableFeature(
+        commerce::kProductSpecifications);
   }
 
   // UiBrowserTest:
@@ -360,10 +359,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest,
 class AppMenuBrowserTestCompareOnly : public AppMenuBrowserTest {
  public:
   AppMenuBrowserTestCompareOnly() {
-    scoped_feature_list_.InitWithFeatures(
-        {commerce::kProductSpecifications,
-         commerce::kCompareManagementInterface},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
   }
 
  private:

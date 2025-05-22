@@ -79,9 +79,8 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 
   AppMenuDragAndDropInteractiveTest() {
     // Disabled to hide the comparison tables submenu.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {commerce::kProductSpecifications,
-             commerce::kCompareManagementInterface});
+    scoped_feature_list_.InitAndDisableFeature(
+        commerce::kProductSpecifications);
   }
 
   ~AppMenuDragAndDropInteractiveTest() override = default;

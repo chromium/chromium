@@ -154,16 +154,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
 
   // Product specifications:
-  commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   // Used to determine when the compare tab on history sidepanel is shown.
-  // Hide the compare tab when the new management interface is enabled, since
-  // this interface provides the same functionality.
-  source->AddBoolean(
-      "compareHistoryEnabled",
-      commerce::CanLoadProductSpecificationsFullPageUi(
-          service->GetAccountChecker()) &&
-          !base::FeatureList::IsEnabled(commerce::kCompareManagementInterface));
+  source->AddBoolean("compareHistoryEnabled", false);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

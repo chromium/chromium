@@ -205,7 +205,7 @@ class TabMenuModelCommerceProductSpecsTest : public TabMenuModelBrowserTest {
   TabMenuModelCommerceProductSpecsTest()
       : account_checker_(std::make_unique<commerce::MockAccountChecker>()),
         prefs_(std::make_unique<TestingPrefServiceSimple>()) {
-    feature_list_.InitWithFeatures({commerce::kProductSpecifications}, {});
+    feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
 
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -385,7 +385,7 @@ class TabMenuModelCommerceProductSpecsDisabledTest
     : public TabMenuModelCommerceProductSpecsTest {
  public:
   TabMenuModelCommerceProductSpecsDisabledTest() {
-    feature_list_.InitWithFeatures({}, {commerce::kProductSpecifications});
+    feature_list_.InitAndDisableFeature(commerce::kProductSpecifications);
   }
 
  private:
@@ -466,9 +466,7 @@ class TabMenuModelComparisonTableTest : public TabMenuModelBrowserTest {
                 &TabMenuModelComparisonTableTest::SetTestingFactory,
                 base::Unretained(this)));
 
-    feature_list_.InitWithFeatures({commerce::kProductSpecifications,
-                                    commerce::kCompareManagementInterface},
-                                   {});
+    feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
   }
 
   void SetTestingFactory(content::BrowserContext* context) {
@@ -515,8 +513,7 @@ class TabMenuModelComparisonTableDisabledTest
     : public TabMenuModelComparisonTableTest {
  public:
   TabMenuModelComparisonTableDisabledTest() {
-    feature_list_.InitWithFeatures({}, {commerce::kProductSpecifications,
-                                        commerce::kCompareManagementInterface});
+    feature_list_.InitAndDisableFeature(commerce::kProductSpecifications);
   }
 
  private:

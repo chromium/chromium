@@ -611,10 +611,7 @@ class BrowserCommandControllerBrowserTestCompare
     : public BrowserCommandControllerBrowserTest {
  public:
   BrowserCommandControllerBrowserTestCompare() {
-    scoped_feature_list_.InitWithFeatures(
-        {commerce::kProductSpecifications,
-         commerce::kCompareManagementInterface},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
   }
 
  private:
