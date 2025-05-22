@@ -95,8 +95,10 @@ void SystemLoopbackListener::EnsureLoopbackStreamStarted() {
   if (loopback_stream_) {
     return;
   }
+  // Capture audio from all audio devices, or equivalently, audio from all PIDs
+  // playing out audio.
   const std::string loopback_device_id =
-      media::AudioDeviceDescription::kLoopbackInputDeviceId;
+      media::AudioDeviceDescription::kLoopbackAllDevicesId;
 
   // TODO(crbug.com/412581642): Determine optimal parameters.
   const media::AudioParameters params =
