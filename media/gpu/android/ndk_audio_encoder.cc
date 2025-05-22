@@ -456,28 +456,13 @@ bool NdkAudioEncoder::DrainConfig() {
   // We already have the info we need from `output_buffer`
   std::ignore = media_codec_->TakeOutput();
 
-  auto mc_output_data =
-      media_codec_->GetOutputBuffer(output_buffer.buffer_index);
-
+  auto mc_output_data = media_codec_->GetOutputBuffer(output_buffer);
   if (mc_output_data.empty()) {
     LogError({EncoderStatus::Codes::kEncoderFailedEncode,
               "Can't obtain config output buffer from media codec"});
     return false;
   }
 
-  const size_t mc_buffer_size = base::checked_cast<size_t>(mc_buffer_info.size);
-  const size_t mc_buffer_offset = static_cast<size_t>(mc_buffer_info.offset);
-
-  if (mc_buffer_offset + mc_buffer_size > mc_output_data.size()) {
-    LogError({EncoderStatus::Codes::kEncoderFailedEncode,
-              base::StringPrintf("Invalid config output buffer layout."
-                                 "offset: %d size: %zu capacity: %zu",
-                                 mc_buffer_offset, mc_buffer_size,
-                                 mc_output_data.size())});
-    return false;
-  }
-
-  mc_output_data = mc_output_data.subspan(mc_buffer_offset, mc_buffer_size);
   if (GetOutputFormat(options_) == AudioEncoder::AacOutputFormat::ADTS) {
     NullMediaLog null_log;
     if (!aac_config_parser_.Parse(mc_output_data, &null_log)) {
@@ -521,28 +506,14 @@ void NdkAudioEncoder::DrainOutput() {
     return;
   }
 
-  auto mc_output_data =
-      media_codec_->GetOutputBuffer(output_buffer.buffer_index);
+  auto mc_output_data = media_codec_->GetOutputBuffer(output_buffer);
   if (mc_output_data.empty()) {
     LogError({EncoderStatus::Codes::kEncoderFailedEncode,
               "Unable to get output buffer"});
     return;
   }
 
-  const size_t mc_buffer_size = base::checked_cast<size_t>(mc_buffer_info.size);
-  const size_t mc_buffer_offset = static_cast<size_t>(mc_buffer_info.offset);
-  if (mc_buffer_size + mc_buffer_offset > mc_output_data.size()) {
-    LogError({EncoderStatus::Codes::kEncoderFailedEncode,
-              base::StringPrintf("Invalid output buffer layout."
-                                 "offset: %d size: %zu capacity: %zu",
-                                 mc_buffer_info.offset, mc_buffer_size,
-                                 mc_output_data.size())});
-    return;
-  }
-
-  mc_output_data = mc_output_data.subspan(mc_buffer_offset, mc_buffer_size);
   base::HeapArray<uint8_t> output_data;
-
   auto output_format = GetOutputFormat(options_);
   if (output_format == AudioEncoder::AacOutputFormat::ADTS) {
     int adts_header_size = 0;

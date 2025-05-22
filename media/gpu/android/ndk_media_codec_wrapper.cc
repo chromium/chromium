@@ -132,11 +132,20 @@ base::span<uint8_t> NdkMediaCodecWrapper::GetInputBuffer(size_t idx) {
   return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
 }
 
-base::span<uint8_t> NdkMediaCodecWrapper::GetOutputBuffer(size_t idx) {
+base::span<uint8_t> NdkMediaCodecWrapper::GetOutputBuffer(
+    const OutputInfo& info) {
   size_t capacity = 0;
+  const size_t size = static_cast<size_t>(info.info.size);
+  // `AMediaCodec_getOutputBuffer()` already took `info.info.offset` into
+  // account, we don't need to do it again here.
+
   // SAFETY: `AMediaCodec_getOutputBuffer` returns buffer size as the out param.
-  uint8_t* buf_data = AMediaCodec_getOutputBuffer(codec(), idx, &capacity);
-  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
+  uint8_t* buf_data =
+      AMediaCodec_getOutputBuffer(codec(), info.buffer_index, &capacity);
+  if (size > capacity) {
+    return {};
+  }
+  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity)).first(size);
 }
 
 void NdkMediaCodecWrapper::OnAsyncInputAvailable(AMediaCodec* codec,

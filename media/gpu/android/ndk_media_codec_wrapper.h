@@ -108,7 +108,7 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API)
 
   // Safe wrapper around AMediaCodec_getOutputBuffer(). The buffer still needs
   // to be manually released by calling AMediaCodec_releaseOutputBuffer().
-  base::span<uint8_t> GetOutputBuffer(size_t idx);
+  base::span<uint8_t> GetOutputBuffer(const OutputInfo& info);
 
  private:
   friend class NdkMediaCodecWrapperTest;
