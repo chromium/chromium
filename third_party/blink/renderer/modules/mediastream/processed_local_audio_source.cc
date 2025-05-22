@@ -71,34 +71,6 @@ std::string GetEnsureSourceIsStartedLogString(
       device.session_id().ToString().c_str());
 }
 
-std::string GetAudioProcesingPropertiesLogString(
-    const blink::AudioProcessingProperties& properties) {
-  auto aec_to_string =
-      [](blink::AudioProcessingProperties::EchoCancellationType type) {
-        using AEC = blink::AudioProcessingProperties::EchoCancellationType;
-        switch (type) {
-          case AEC::kEchoCancellationDisabled:
-            return "disabled";
-          case AEC::kEchoCancellationAec3:
-            return "aec3";
-          case AEC::kEchoCancellationSystem:
-            return "system";
-        }
-      };
-  auto str = base::StringPrintf(
-      "echo_cancellation_type: %s, "
-      "auto_gain_control: %s, "
-      "noise_suppression: %s, "
-      "system_gain_control: %s, "
-      "system_noise_suppression: %s",
-      aec_to_string(properties.echo_cancellation_type),
-      base::ToString(properties.auto_gain_control).c_str(),
-      base::ToString(properties.noise_suppression).c_str(),
-      base::ToString(properties.system_gain_control_activated).c_str(),
-      base::ToString(properties.system_noise_suppression_activated).c_str());
-  return str;
-}
-
 void LogInputDeviceParametersToUma(
     const media::AudioParameters& input_device_params) {
   UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout",
@@ -120,8 +92,7 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
     LocalFrame& frame,
     const blink::MediaStreamDevice& device,
     bool disable_local_echo,
-    const blink::AudioProcessingProperties& audio_processing_properties,
-    int num_requested_channels,
+    const MediaStreamAudioProcessingLayout& processing_layout,
     ConstraintsOnceCallback started_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : blink::MediaStreamAudioSource(std::move(task_runner),
@@ -131,8 +102,7 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
       consumer_frame_(&frame),
       dependency_factory_(
           PeerConnectionDependencyFactory::From(*frame.DomWindow())),
-      audio_processing_properties_(audio_processing_properties),
-      num_requested_channels_(num_requested_channels),
+      processing_layout_(processing_layout),
       started_callback_(std::move(started_callback)),
       allow_invalid_render_frame_id_for_testing_(false) {
   DCHECK(frame.DomWindow());
@@ -141,8 +111,7 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
   SetDevice(device);
   SendLogMessage(StringPrintf(
       "%s({audio_processing_properties=[%s]}, {APM=%s})[session_id=%s]",
-      __func__,
-      GetAudioProcesingPropertiesLogString(audio_processing_properties_),
+      __func__, processing_layout.properties().ToString(),
       use_remote_apm_ ? "remote" : "local", device.session_id().ToString()));
 }
 
@@ -168,7 +137,7 @@ void ProcessedLocalAudioSource::SendLogMessageWithSessionId(
 
 std::optional<blink::AudioProcessingProperties>
 ProcessedLocalAudioSource::GetAudioProcessingProperties() const {
-  return audio_processing_properties_;
+  return processing_layout_.properties();
 }
 
 void* ProcessedLocalAudioSource::GetClassIdentifier() const {
@@ -192,86 +161,14 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
   SendLogMessage(GetEnsureSourceIsStartedLogString(device()));
 
-  int device_effects = device().input.effects();
-
-  if (audio_processing_properties_.echo_cancellation_type ==
-      EchoCancellationType::kEchoCancellationSystem) {
-    // On Windows we can only disable platform NS and AGC effects if platform
-    // AEC effect is disabled.
-#if !BUILDFLAG(IS_WIN)
-    // Platform echo cancellation is requested.
-    // TODO(crbug.com/405165917): CHECK(device_effects &
-    // media::AudioParameters::ECHO_CANCELLER);
-
-    // Disable platform NS effect if it's not requested.
-    if (!audio_processing_properties_.noise_suppression) {
-      if (!IsIndependentSystemNsAllowed()) {
-        // Special case for NS. TODO(crbug.com/417413190): Rethink.
-        device_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
-      }
-    }
-
-    // Disable platform AGC effect if not requested.
-    if (!audio_processing_properties_.auto_gain_control) {
-      device_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
-    }
-#endif
-  } else {
-    // No platform processing if platform AEC is not requested.
-    device_effects &= ~media::AudioParameters::ECHO_CANCELLER;
-    device_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
-    if (!IsIndependentSystemNsAllowed()) {
-      // Special case for NS. TODO(crbug.com/417413190): Rethink.
-      device_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
-    }
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(media::kCrOSSystemVoiceIsolationOption) &&
-      device_effects & media::AudioParameters::VOICE_ISOLATION_SUPPORTED) {
-    if (audio_processing_properties_.echo_cancellation_type ==
-            AudioProcessingProperties::EchoCancellationType::
-                kEchoCancellationAec3 ||
-        audio_processing_properties_.voice_isolation ==
-            AudioProcessingProperties::VoiceIsolationType::
-                kVoiceIsolationDisabled) {
-      // Force voice isolation effect to be disabled if disabled in the
-      // properties, or if browser-based AEC is enabled (platform voice
-      // isolation would break browser-based AEC).
-      device_effects |=
-          media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION;
-      device_effects &= ~media::AudioParameters::VOICE_ISOLATION;
-    } else if (audio_processing_properties_.voice_isolation ==
-               AudioProcessingProperties::VoiceIsolationType::
-                   kVoiceIsolationEnabled) {
-      // No browser-based AEC involved; voice isolation is enabled in the
-      // properties: force voice isolation to be enabled in the effects.
-      device_effects |=
-          media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION;
-
-      device_effects |= media::AudioParameters::VOICE_ISOLATION;
-    } else {
-      // Turn off voice isolation control.
-      device_effects &=
-          ~media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION;
-    }
-  }
-
-  if (base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
-    // Ignore UI Gains if AGC is running in either browser or system
-    if (audio_processing_properties_.auto_gain_control) {
-      device_effects |= media::AudioParameters::IGNORE_UI_GAINS;
-    }
-  }
-#endif
-
-  if (device_effects != device().input.effects()) {
+  if (processing_layout_.platform_effects() != device().input.effects()) {
     SendLogMessage(
         StringPrintf("%s() => (Modified system effect mask from [%s] to [%s])",
                      __func__, EffectsToString(device().input.effects()),
-                     EffectsToString(device_effects)));
+                     EffectsToString(processing_layout_.platform_effects())));
 
     blink::MediaStreamDevice modified_device(device());
-    modified_device.input.set_effects(device_effects);
+    modified_device.input.set_effects(processing_layout_.platform_effects());
     SetDevice(modified_device);
   }
   // Create the audio processor.
@@ -285,36 +182,10 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     return false;
   }
 
-  // If system level echo cancellation is active, flag any other active system
-  // level effects to the audio processor.
-  if (audio_processing_properties_.echo_cancellation_type ==
-      AudioProcessingProperties::EchoCancellationType::
-          kEchoCancellationSystem) {
-    if (!IsIndependentSystemNsAllowed()) {
-      if (audio_processing_properties_.noise_suppression) {
-        audio_processing_properties_.system_noise_suppression_activated =
-            device().input.effects() &
-            media::AudioParameters::NOISE_SUPPRESSION;
-      }
-    }
-
-    if (audio_processing_properties_.auto_gain_control) {
-      audio_processing_properties_.system_gain_control_activated =
-          device().input.effects() &
-          media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
-    }
-  }
-
-  // No more modifications of |audio_processing_properties_| after this line.
-  media::AudioProcessingSettings audio_processing_settings(
-      audio_processing_properties_.ToAudioProcessingSettings(
-          num_requested_channels_ > 1));
-  if (audio_processing_properties_.system_noise_suppression_activated &&
-      audio_processing_settings.noise_suppression) {
+  if (processing_layout_.NoiseSuppressionInTandem()) {
     SendLogMessage(StringPrintf("%s() => (NS will run in tandem)", __func__));
   }
-  if (audio_processing_properties_.system_gain_control_activated &&
-      audio_processing_settings.automatic_gain_control) {
+  if (processing_layout_.AutomaticGainControlInTandem()) {
     SendLogMessage(StringPrintf("%s() => (AGC will run in tandem)", __func__));
   }
 
@@ -322,7 +193,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   const media::AudioParameters input_device_params = device().input;
   LogInputDeviceParametersToUma(input_device_params);
   auto maybe_audio_capture_params = media::AudioProcessor::ComputeInputFormat(
-      input_device_params, audio_processing_settings);
+      input_device_params, processing_layout_.webrtc_processing_settings());
 
   if (!maybe_audio_capture_params) {
     SendLogMessage(base::StringPrintf(
@@ -340,7 +211,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     // audio here in the audio processing output format to avoid forced
     // resampling.
     audio_capture_params = media::AudioProcessor::GetDefaultOutputFormat(
-        audio_capture_params, audio_processing_settings);
+        audio_capture_params, processing_layout_.webrtc_processing_settings());
 
     // Create a proxy to the audio processor in the audio service.
     audio_processor_proxy_ =
@@ -351,7 +222,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     SetFormat(audio_capture_params);
 
     // Add processing to the AudioCapturerSource configuration.
-    source_config.processing = audio_processing_settings;
+    source_config.processing = processing_layout_.webrtc_processing_settings();
 
   } else {
     // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device
@@ -367,7 +238,8 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
     media_stream_audio_processor_ =
         new webrtc::RefCountedObject<MediaStreamAudioProcessor>(
-            std::move(processing_callback), audio_processing_settings,
+            std::move(processing_callback),
+            processing_layout_.webrtc_processing_settings(),
             audio_capture_params, rtc_audio_device);
 
     // The output format of this ProcessedLocalAudioSource is the audio
@@ -375,11 +247,11 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     SetFormat(media_stream_audio_processor_->output_format());
   }
 
-  SendLogMessageWithSessionId(
-      base::StringPrintf("EnsureSourceIsStarted() => (using APM in %s process: "
-                         "settings=[%s])",
-                         audio_processor_proxy_ ? "audio" : "renderer",
-                         audio_processing_settings.ToString().c_str()));
+  SendLogMessageWithSessionId(base::StringPrintf(
+      "EnsureSourceIsStarted() => (using APM in %s process: "
+      "settings=[%s])",
+      audio_processor_proxy_ ? "audio" : "renderer",
+      processing_layout_.webrtc_processing_settings().ToString().c_str()));
 
   // Start the source.
   SendLogMessageWithSessionId(base::StringPrintf(
@@ -397,7 +269,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   new_source->SetAutomaticGainControl(true);
 #else
   new_source->SetAutomaticGainControl(
-      audio_processing_settings.automatic_gain_control);
+      processing_layout_.webrtc_processing_settings().automatic_gain_control);
 #endif
   source_ = std::move(new_source);
   source_->Start();

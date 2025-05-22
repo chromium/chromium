@@ -40,6 +40,8 @@ blink_modules_sources("mediastream") {
     "media_devices.h",
     "media_stream.cc",
     "media_stream.h",
+    "media_stream_audio_processing_layout.cc",
+    "media_stream_audio_processing_layout.h",
     "media_stream_audio_processor.cc",
     "media_stream_audio_processor.h",
     "media_stream_audio_renderer.h",

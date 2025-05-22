@@ -119,8 +119,10 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     device.input.set_effects(effects);
 
     return std::make_unique<ProcessedLocalAudioSource>(
-        *MainFrame().GetFrame(), device, disable_local_echo, properties,
-        num_requested_channels, base::NullCallback(),
+        *MainFrame().GetFrame(), device, disable_local_echo,
+        MediaStreamAudioProcessingLayout(properties, effects,
+                                         num_requested_channels),
+        base::NullCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
