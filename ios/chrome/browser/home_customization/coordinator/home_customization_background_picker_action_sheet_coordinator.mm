@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_color_picker_mediator.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_preset_gallery_picker_mediator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_library_picker_view_controller.h"
@@ -25,6 +26,9 @@
   // The mediator for the background preset gallery picker.
   HomeCustomizationBackgroundPresetGalleryPickerMediator*
       _backgroundPresetGalleryPickerMediator;
+
+  // The coordinator for the photo picker.
+  PHPickerCoordinator* _photoPickerCoordinator;
 }
 
 @end
@@ -82,6 +86,10 @@
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _backgroundColorPickerMediator = nil;
   _backgroundPresetGalleryPickerMediator = nil;
+  if (_photoPickerCoordinator) {
+    [_photoPickerCoordinator stop];
+    _photoPickerCoordinator = nil;
+  }
   [super stop];
 }
 
@@ -136,16 +144,11 @@
 // Presents the view controller for selecting a background photo
 // from the device's photo library.
 - (void)presentPhotoLibraryPicker {
-  UIViewController* mainViewController =
-      [[HomeCustomizationBackgroundPhotoLibraryPickerViewController alloc]
-          init];
-  mainViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  UINavigationController* navigationController = [[UINavigationController alloc]
-      initWithRootViewController:mainViewController];
-
-  [self.baseViewController presentViewController:navigationController
-                                        animated:YES
-                                      completion:nil];
+  // Create and start the photo picker coordinator
+  _photoPickerCoordinator = [[PHPickerCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  [_photoPickerCoordinator start];
 }
 
 @end
