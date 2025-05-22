@@ -405,6 +405,8 @@ public abstract class ChromeFeatureList {
             "HideTabletToolbarDownloadButton";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String HISTORY_PANE_ANDROID = "HistoryPaneAndroid";
+    public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID =
+            "HomepageIsNewTabPagePolicyAndroid";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INSTANCE_SWITCHER_V2 = "InstanceSwitcherV2";
@@ -790,6 +792,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sHideTabletToolbarDownloadButton =
             newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, true);
     public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
+    public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
+            newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGAION, false);
     public static final CachedFlag sLegacyTabStateDeprecation =
@@ -850,6 +854,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
     public static final CachedFlag sSettingsSingleActivity =
             newCachedFlag(SETTINGS_SINGLE_ACTIVITY, false);
+    public static final CachedFlag sShowHomeButtonPolicyAndroid =
+            newCachedFlag(SHOW_HOME_BUTTON_POLICY_ANDROID, false);
     public static final CachedFlag sSkipIsolatedSplitPreload =
             newCachedFlag(
                     SKIP_ISOLATED_SPLIT_PRELOAD,
@@ -859,8 +865,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
-    public static final CachedFlag sShowHomeButtonPolicyAndroid =
-            newCachedFlag(SHOW_HOME_BUTTON_POLICY_ANDROID, false);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabletTabStripAnimation =
@@ -974,6 +978,7 @@ public abstract class ChromeFeatureList {
                     sGridTabSwitcherUpdate,
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
+                    sHomepageIsNewTabPagePolicyAndroid,
                     sKeyboardEscBackNavigation,
                     sLegacyTabStateDeprecation,
                     sLockBackPressHandlerAtStart,
@@ -1001,10 +1006,10 @@ public abstract class ChromeFeatureList {
                     sSearchInCCT,
                     sSearchInCCTAlternateTapHandling,
                     sSettingsSingleActivity,
+                    sShowHomeButtonPolicyAndroid,
                     sSkipIsolatedSplitPreload,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
-                    sShowHomeButtonPolicyAndroid,
                     sTabClosureMethodRefactor,
                     sTabletTabStripAnimation,
                     sTabStateFlatBuffer,

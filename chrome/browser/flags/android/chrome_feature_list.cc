@@ -301,6 +301,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHeadlessTabModel,
     &kHideTabletToolbarDownloadButton,
     &kHistoryPaneAndroid,
+    &kHomepageIsNewTabPagePolicyAndroid,
     &kLegacyTabStateDeprecation,
     &kLockBackPressHandlerAtStart,
     &kIncognitoScreenshot,
@@ -971,6 +972,10 @@ BASE_FEATURE(kHeadlessTabModel,
 
 BASE_FEATURE(kHistoryPaneAndroid,
              "HistoryPaneAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHomepageIsNewTabPagePolicyAndroid,
+             "HomepageIsNewTabPagePolicyAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLegacyTabStateDeprecation,

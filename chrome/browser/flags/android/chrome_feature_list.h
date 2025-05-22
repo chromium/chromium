@@ -140,6 +140,7 @@ BASE_DECLARE_FEATURE(kGridTabSwitcherSurfaceColorUpdate);
 BASE_DECLARE_FEATURE(kGroupNewTabWithParent);
 BASE_DECLARE_FEATURE(kHeadlessTabModel);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
+BASE_DECLARE_FEATURE(kHomepageIsNewTabPagePolicyAndroid);
 BASE_DECLARE_FEATURE(kLockBackPressHandlerAtStart);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
 BASE_DECLARE_FEATURE(kInstanceSwitcherV2);
