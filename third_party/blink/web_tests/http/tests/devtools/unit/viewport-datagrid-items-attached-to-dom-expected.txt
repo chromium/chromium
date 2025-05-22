@@ -17,6 +17,7 @@ a9
 a10
 a11
 a12
+a13
 
 Scrolled down to 312px
 Nodes attached to dom:
@@ -27,6 +28,7 @@ a18
 a19
 a20
 a21
+a22
 
 Scrolled down to 1000px - should be at bottom
 Nodes attached to dom:

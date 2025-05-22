@@ -8861,17 +8861,6 @@ crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling
 crbug.com/388445687 http/tests/devtools/console/console-copy-treeoutline.js [ Failure Pass ]
 crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6187530
-crbug.com/391381439 http/tests/devtools/components/minimum-size.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/components/split-widget.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/unit/viewport-datagrid-items-attached-to-dom.js [ Failure Pass ]
-
-# Temporarily disabled to unblock https://crrev.com/c/6216261
-crbug.com/391381439 http/tests/devtools/security/blocked-mixed-content.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/mixed-content-active-and-passive-reload.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
-crbug.com/391381439 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
-
 # Temporarily disabled to unblock https://crrev.com/c/6164904
 crbug.com/388445687 http/tests/devtools/a11y-axe-core/performance/settings-pane-a11y-test.js [ Failure Pass ]
 
@@ -9085,9 +9074,6 @@ crbug.com/372749228 [ Win ] external/wpt/preload/avoid-delaying-onload-link-prel
 crbug.com/827209 [ Release Win ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 crbug.com/827209 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
-
-# Temporarily disabled to unblock https://crrev.com/c/6519316
-crbug.com/391381439 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass Timeout ]
 
 # Gardener 2024-10-11
 crbug.com/372293920 [ Mac11 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass Timeout ]
