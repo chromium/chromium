@@ -387,20 +387,6 @@ ShortcutLocations MergeLocations(
   return merged_locations;
 }
 
-bool operator==(const ShortcutLocations& location1,
-                const ShortcutLocations& location2) {
-  return (location1.on_desktop == location2.on_desktop) &&
-         (location1.in_quick_launch_bar == location2.in_quick_launch_bar) &&
-         (location1.in_startup == location2.in_startup) &&
-         (location1.applications_menu_location ==
-          location2.applications_menu_location);
-}
-
-bool operator!=(const ShortcutLocations& location1,
-                const ShortcutLocations& location2) {
-  return !(location1 == location2);
-}
-
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
   if (shortcut_info.app_id.empty()) {
     return GenerateApplicationNameFromURL(shortcut_info.url);

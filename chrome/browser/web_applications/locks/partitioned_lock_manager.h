@@ -187,8 +187,6 @@ bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
                const PartitionedLockManager::PartitionedLockRequest& y);
 bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y);
-bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
-                const PartitionedLockManager::PartitionedLockRequest& y);
 
 }  // namespace web_app
 

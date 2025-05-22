@@ -138,6 +138,10 @@ enum ApplicationsMenuLocation {
 struct ShortcutLocations {
   ShortcutLocations();
   ~ShortcutLocations();
+
+  friend bool operator==(const ShortcutLocations&,
+                         const ShortcutLocations&) = default;
+
   base::Value ToDebugValue() const;
 
   bool on_desktop = false;
@@ -156,12 +160,6 @@ struct ShortcutLocations {
 ShortcutLocations MergeLocations(
     const ShortcutLocations& user_specified_locations,
     const ShortcutLocations& existing_locations);
-
-bool operator==(const ShortcutLocations& location1,
-                const ShortcutLocations& location2);
-
-bool operator!=(const ShortcutLocations& location1,
-                const ShortcutLocations& location2);
 
 
 // Compute a deterministic name based on data in the shortcut_info.

@@ -63,7 +63,6 @@ std::ostream& operator<<(std::ostream& out, const PartitionedLock& lock_id);
 // Equality doesn't take into account whether the lock 'is_locked()' or not,
 // only the partition and the lock_id.
 bool operator==(const PartitionedLock& x, const PartitionedLock& y);
-bool operator!=(const PartitionedLock& x, const PartitionedLock& y);
 // Comparison operator to allow sorting for locking / unlocking order.
 bool operator<(const PartitionedLock& x, const PartitionedLock& y);
 

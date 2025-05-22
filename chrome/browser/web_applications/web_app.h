@@ -313,6 +313,9 @@ class WebApp {
     ExternalManagementConfig& operator=(
         ExternalManagementConfig&& external_management_config);
 
+    friend bool operator==(const ExternalManagementConfig&,
+                           const ExternalManagementConfig&) = default;
+
     base::Value::Dict AsDebugValue() const;
 
     bool is_placeholder = false;
@@ -524,7 +527,6 @@ class WebApp {
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
-  bool operator!=(const WebApp&) const;
   // Used by the WebAppTest suite to cover only platform agnostic fields to
   // avoid needing multiple platform specific expectation files per test.
   // Otherwise, the same as AsDebugValue().
@@ -680,17 +682,10 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app);
 std::ostream& operator<<(
     std::ostream& out,
     const WebApp::ExternalManagementConfig& management_config);
-bool operator==(const WebApp::ExternalManagementConfig& management_config1,
-                const WebApp::ExternalManagementConfig& management_config2);
-bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
-                const WebApp::ExternalManagementConfig& management_config2);
 
 namespace proto::os_state {
 
 bool operator==(const WebAppOsIntegration& os_integration_state1,
-                const WebAppOsIntegration& os_integration_state2);
-
-bool operator!=(const WebAppOsIntegration& os_integration_state1,
                 const WebAppOsIntegration& os_integration_state2);
 
 }  // namespace proto::os_state
@@ -703,8 +698,6 @@ std::vector<std::string> GetSerializedAllowedOrigins(
 
 namespace sync_pb {
 bool operator==(const WebAppSpecifics& sync_proto1,
-                const WebAppSpecifics& sync_proto2);
-bool operator!=(const WebAppSpecifics& sync_proto1,
                 const WebAppSpecifics& sync_proto2);
 }  // namespace sync_pb
 

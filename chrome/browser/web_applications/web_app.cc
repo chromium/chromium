@@ -1064,10 +1064,6 @@ bool WebApp::operator==(const WebApp& other) const {
   return AsTuple(*this) == AsTuple(other);
 }
 
-bool WebApp::operator!=(const WebApp& other) const {
-  return !(*this == other);
-}
-
 base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   base::Value::Dict root;
 
@@ -1303,32 +1299,12 @@ std::ostream& operator<<(
   return out << management_config.AsDebugValue().DebugString();
 }
 
-bool operator==(const WebApp::ExternalManagementConfig& management_config1,
-                const WebApp::ExternalManagementConfig& management_config2) {
-  return std::tie(management_config1.install_urls,
-                  management_config1.is_placeholder,
-                  management_config1.additional_policy_ids) ==
-         std::tie(management_config2.install_urls,
-                  management_config2.is_placeholder,
-                  management_config2.additional_policy_ids);
-}
-
-bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
-                const WebApp::ExternalManagementConfig& management_config2) {
-  return !(management_config1 == management_config2);
-}
-
 namespace proto::os_state {
 
 bool operator==(const WebAppOsIntegration& os_integration_state1,
                 const WebAppOsIntegration& os_integration_state2) {
   return os_integration_state1.SerializeAsString() ==
          os_integration_state2.SerializeAsString();
-}
-
-bool operator!=(const WebAppOsIntegration& os_integration_state1,
-                const WebAppOsIntegration& os_integration_state2) {
-  return !(os_integration_state1 == os_integration_state2);
 }
 
 }  // namespace proto::os_state
@@ -1356,11 +1332,6 @@ namespace sync_pb {
 bool operator==(const WebAppSpecifics& sync_proto1,
                 const WebAppSpecifics& sync_proto2) {
   return sync_proto1.SerializeAsString() == sync_proto2.SerializeAsString();
-}
-
-bool operator!=(const WebAppSpecifics& sync_proto1,
-                const WebAppSpecifics& sync_proto2) {
-  return !(sync_proto1 == sync_proto2);
 }
 
 }  // namespace sync_pb
