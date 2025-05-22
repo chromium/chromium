@@ -56,6 +56,10 @@ BASE_DECLARE_FEATURE(kPermissionDedicatedCpssSettingAndroid);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kApproximateGeolocationPermission);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<bool>
+    kApproximateGeolocationPermissionSampleData;
+
 #else
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

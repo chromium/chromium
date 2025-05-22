@@ -210,6 +210,7 @@ android_library("core_java") {
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//components/cached_flags:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/location/android:location_java",
     "//components/webxr/android:features_java",

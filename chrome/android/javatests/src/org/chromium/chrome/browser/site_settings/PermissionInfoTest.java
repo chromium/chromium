@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
@@ -19,6 +22,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -30,10 +34,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.concurrent.Callable;
@@ -269,5 +275,46 @@ public class PermissionInfoTest {
                 ContentSettingValues.DEFAULT,
                 regularProfile,
                 ContentSettingValues.ASK);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures("ApproximateGeolocationPermission")
+    public void testGeolocationPermissionMockValues() throws Throwable {
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_SAMPLE_DATA.setForTesting(true);
+        Profile regularProfile = getRegularProfile();
+        var permissionSiteInfo =
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION,
+                        "https://permission.site",
+                        "https://permission.site",
+                        false,
+                        SessionModel.DURABLE);
+        assertEquals(
+                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.BLOCK),
+                permissionSiteInfo.getGeolocationSetting(regularProfile));
+
+        GeolocationSetting allow_precise =
+                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
+        permissionSiteInfo.setGeolocationSetting(regularProfile, allow_precise);
+        assertEquals(allow_precise, permissionSiteInfo.getGeolocationSetting(regularProfile));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures("ApproximateGeolocationPermission")
+    public void testGeolocationPermissionDefault() throws Throwable {
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_SAMPLE_DATA.setForTesting(false);
+        Profile regularProfile = getRegularProfile();
+        var permissionSiteInfo =
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION,
+                        "https://permission.site",
+                        "https://permission.site",
+                        false,
+                        SessionModel.DURABLE);
+        assertNull(permissionSiteInfo.getGeolocationSetting(regularProfile));
     }
 }
