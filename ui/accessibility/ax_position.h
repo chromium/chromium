@@ -3127,7 +3127,9 @@ class AXPosition {
             AXBoundaryBehavior::kStopAtAnchorBoundary &&
         options.boundary_detection ==
             AXBoundaryDetection::kCheckInitialPosition &&
-        (AtEndOfAnchor() || *text_position == *CloneWithDownstreamAffinity())) {
+        (AtEndOfAnchor() ||
+         (IsTextPosition() &&
+          *text_position == *CloneWithDownstreamAffinity()))) {
       return Clone();
     }
 
@@ -3215,8 +3217,9 @@ class AXPosition {
           options.boundary_detection ==
               AXBoundaryDetection::kCheckInitialPosition &&
           (AtStartOfAnchor() ||
-           *text_position == *CloneWithUpstreamAffinity() ||
-           *text_position == *CloneWithDownstreamAffinity())) {
+           (IsTextPosition() &&
+            (*text_position == *CloneWithUpstreamAffinity() ||
+             *text_position == *CloneWithDownstreamAffinity())))) {
         return Clone();
       }
 
