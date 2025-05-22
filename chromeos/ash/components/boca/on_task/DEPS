@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/webui/boca_ui/url_constants.h",
   "+components/google/core/common",
   "+components/policy/core/browser",
   "+components/sessions/content/session_tab_helper.h",

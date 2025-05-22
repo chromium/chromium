@@ -241,7 +241,7 @@ source_set("browser_tests") {
 
   if (is_chromeos) {
     deps += [
-      "//ash/webui/boca_ui",
+      "//ash/webui/boca_ui:constants",
       "//ash/webui/sanitize_ui:sanitize_ui",
       "//ash/webui/shimless_rma",
       "//ash/webui/vc_background_ui",

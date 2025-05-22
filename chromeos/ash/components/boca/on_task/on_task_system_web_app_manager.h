@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 
+#include "ash/webui/boca_ui/url_constants.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -23,10 +24,11 @@ class OnTaskSystemWebAppManager {
       delete;
   virtual ~OnTaskSystemWebAppManager() = default;
 
-  // Launches the Boca SWA and triggers the specified callback to convey the
-  // caller if the launch succeeded.
+  // Launches the Boca SWA with homepage url and triggers the specified callback
+  // to convey the caller if the launch succeeded.
   virtual void LaunchSystemWebAppAsync(
-      base::OnceCallback<void(bool)> callback) = 0;
+      base::OnceCallback<void(bool)> callback,
+      const GURL& url = GURL(kChromeBocaAppUntrustedIndexURL)) = 0;
 
   // Closes the specified Boca SWA window.
   virtual void CloseSystemWebAppWindow(SessionID window_id) = 0;

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "ash/webui/boca_ui/url_constants.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -32,7 +33,8 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
 
   // OnTaskSystemWebAppManager:
   void LaunchSystemWebAppAsync(
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(bool)> callback,
+      const GURL& url = GURL(kChromeBocaAppUntrustedIndexURL)) override;
   void CloseSystemWebAppWindow(SessionID window_id) override;
   SessionID GetActiveSystemWebAppWindowID() override;
   void SetPinStateForSystemWebAppWindow(bool pinned,

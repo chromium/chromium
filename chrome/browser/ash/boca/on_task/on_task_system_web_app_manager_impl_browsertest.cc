@@ -127,6 +127,35 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       LaunchSystemWebAppAsyncWithCustomUrl) {
+  // Verify no Boca app is launched initially.
+  ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
+
+  // Launch Boca app and verify launch result.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback(),
+                                                 GURL(kTestUrl));
+  ASSERT_TRUE(launch_future.Get());
+
+  // Also verify the new app window is the active window and is set up for
+  // locked mode transition.
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_EQ(boca_app_browser->session_id(),
+            system_web_app_manager.GetActiveSystemWebAppWindowID());
+
+  // Verify the homepage is the custom url.
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+  content::WebContents* web_contents =
+      boca_app_browser->tab_strip_model()->GetWebContentsAt(0);
+  content::TestNavigationObserver observer(web_contents);
+  observer.Wait();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), GURL(kTestUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
                        CloseSystemWebAppWindow) {
   // Launch Boca app for testing purposes.
   OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());

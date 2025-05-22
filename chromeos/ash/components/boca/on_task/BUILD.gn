@@ -27,6 +27,7 @@ static_library("on_task") {
     "//ash/constants:constants",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
+    "//ash/webui/boca_ui:constants",
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:spotlight_notification_constants",
@@ -76,6 +77,7 @@ source_set("unit_tests") {
   deps = [
     ":activity",
     ":on_task",
+    "//ash/webui/boca_ui:constants",
     "//base",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca/proto",

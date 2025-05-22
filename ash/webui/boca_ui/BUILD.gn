@@ -25,7 +25,6 @@ static_library("boca_ui") {
     "provider/network_info_provider.h",
     "provider/tab_info_collector.cc",
     "provider/tab_info_collector.h",
-    "url_constants.h",
     "webview_auth_delegate.cc",
     "webview_auth_delegate.h",
     "webview_auth_handler.cc",
@@ -33,6 +32,7 @@ static_library("boca_ui") {
   ]
 
   deps = [
+    ":constants",
     "resources:resources",
     "//ash",
     "//ash/constants:constants",
@@ -71,6 +71,10 @@ static_library("boca_ui") {
     "//ui/webui",
     "//ui/wm",
   ]
+}
+
+source_set("constants") {
+  sources = [ "url_constants.h" ]
 }
 
 # Used to turn off tests that only work with our CIPD package.
