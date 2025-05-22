@@ -6899,7 +6899,7 @@ bool ConsumeGapDecorationsLonghandsGreedily(CSSParserTokenStream& stream,
   };
 
   while (!stream.AtEnd() && stream.Peek().GetType() != kCommaToken) {
-    bool consumed_any = false;
+    bool is_successful = false;
     for (const auto& property_pair : property_pairs) {
       CSSGapDecorationPropertyType type = property_pair.first;
       CSSValue*& value = property_pair.second;
@@ -6909,12 +6909,23 @@ bool ConsumeGapDecorationsLonghandsGreedily(CSSParserTokenStream& stream,
       if (result == ParseResult::kDuplicate) {
         return false;
       }
-      consumed_any |= result == ParseResult::kSuccess;
+      is_successful |= result == ParseResult::kSuccess;
     }
 
-    if (!consumed_any) {
-      return false;
+    // We break here because it may be the case that the only remaining thing in
+    // the stream is `!important`. For example, when parsing `column-rule: 5px
+    // solid red !important` the last iteration of the loop will
+    // `attemptToConsumeValue` the `!important` token, which will fail and thus
+    // `is_successful` will be false. In such case, we just break and defer
+    // `!important` consumption to the top-level parsing function
+    // `CSSPropertyParser::ParseValueStart`.
+    if (!is_successful) {
+      break;
     }
+  }
+
+  if (!width_value && !style_value && !color_value) {
+    return false;
   }
 
   // Fill in any missing properties with the property's default.
