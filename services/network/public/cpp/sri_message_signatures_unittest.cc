@@ -622,6 +622,19 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputParameters) {
   }
 }
 
+TEST_F(SRIMessageSignatureParserTest, NonSRITag) {
+  const char* non_sri_signature_input =
+      "signature=(\"something-invalid-for-sri\");keyid=\"also-invalid\";tag="
+      "\"not-sri\"";
+
+  auto headers = GetHeaders(kValidSignatureHeader, non_sri_signature_input);
+  mojom::SRIMessageSignaturesPtr result =
+      ParseSRIMessageSignaturesFromHeaders(*headers);
+
+  EXPECT_EQ(0u, result->signatures.size());
+  EXPECT_EQ(0u, result->issues.size());
+}
+
 TEST_F(SRIMessageSignatureParserTest, ValidComponents) {
   struct {
     std::string_view components;

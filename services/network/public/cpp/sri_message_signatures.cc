@@ -483,6 +483,25 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
       continue;
     }
 
+    // Step 1.1 of the signature validation requirements punts on any signature
+    // input whose `tag`parameter is not valid for SRI. We'll do that before
+    // parsing the header's components or parameters, as it might be valid for
+    // some other scheme, and any issues we'd record would be confusing in
+    // that case. The preceding checks (does a `Signature` and
+    // `Signature-Input` pair exist for a given name, and is the component set
+    // an inner-list) should be valid for any RFC9421-based system, so we'll
+    // perform those first.
+    //
+    // https://wicg.github.io/signature-based-sri/#abstract-opdef-validating-an-integrity-signature
+    if (!std::ranges::any_of(input_entry.params, [](const auto& param) {
+      return (param.first == "tag" && param.second.is_string() &&
+          (param.second.GetString() == "ed25519-integrity" ||
+           param.second.GetString() == "sri"));
+    })) {
+      continue;
+    }
+
+    // Process the components.
     for (const auto& component : input_entry.member) {
       // If any declared component is invalid, skip the signature (but not the
       // entire header; if both valid and invalid signatures are delivered,

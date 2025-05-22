@@ -18,7 +18,7 @@ const valid_signature_input = `signature=("unencoded-digest";sf);keyid="JrQLj5P/
 
   let testURL = new URL('/inspector-protocol/resources/sri-message-signature-test.php', self.origin);
   testURL.searchParams.set('signature', valid_signature);
-  testURL.searchParams.set('input', `signature=("unknown-component")`);
+  testURL.searchParams.set('input', `signature=("unknown-component");tag="ed25519-integrity"`);
   await session.evaluate(`fetch('${testURL.href}')`);
 
   // Dump the issue:
