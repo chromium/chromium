@@ -52,10 +52,14 @@ std::string GetKeySystemNameForUMA(const std::string& key_system,
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (key_system == kPlayReadyKeySystemBase &&
-      use_hw_secure_codecs.value_or(false)) {
-    return std::string(kPlayReadyKeySystemNameForUMA) + "." +
-           kHardwareSecureForUMA;
+  if (key_system == kPlayReadyKeySystemBase) {
+    std::string key_system_name = kPlayReadyKeySystemNameForUMA;
+    if (use_hw_secure_codecs.has_value()) {
+      key_system_name += ".";
+      key_system_name += (use_hw_secure_codecs.value() ? kHardwareSecureForUMA
+                                                       : kSoftwareSecureForUMA);
+    }
+    return key_system_name;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
