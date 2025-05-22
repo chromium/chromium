@@ -10,8 +10,6 @@ source_set("extension_action") {
   sources = [
     "extension_action_api.cc",
     "extension_action_api.h",
-    "extension_page_actions_api_constants.cc",
-    "extension_page_actions_api_constants.h",
   ]
 
   if (is_android) {
