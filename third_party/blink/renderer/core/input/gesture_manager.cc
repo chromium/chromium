@@ -448,11 +448,15 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
   } else if (frame_->GetSettings() &&
              frame_->GetSettings()->GetTouchDragDropEnabled() &&
              frame_->View()) {
-    bool hit_test_contains_links =
-        hit_test_result.URLElement() ||
-        !hit_test_result.AbsoluteImageURL().IsNull() ||
-        !hit_test_result.AbsoluteMediaURL().IsNull();
-    if (!hit_test_contains_links &&
+    // Dragging is suppressed on links and images in favor of opening a context
+    // menu on long press. In Windows, a drag is started and the context menu
+    // is opened if the drop happens in the same spot.
+    const bool should_open_context_menu_now =
+        !frame_->GetSettings()->GetTouchDragEndContextMenu() &&
+        (hit_test_result.URLElement() ||
+         !hit_test_result.AbsoluteImageURL().IsNull() ||
+         !hit_test_result.AbsoluteMediaURL().IsNull());
+    if (!should_open_context_menu_now &&
         mouse_event_manager_->HandleDragDropIfPossible(
             targeted_event,
             GetPointerIdFromWebGestureEvent(targeted_event.Event()))) {
