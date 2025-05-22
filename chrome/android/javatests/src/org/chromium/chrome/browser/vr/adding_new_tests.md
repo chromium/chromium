@@ -154,7 +154,7 @@ should be added to the `sources` list of the `chrome_test_ar_java`
 If you are adding an AR test and none of the existing datasets work for it, you
 can create and upload a new dataset that fits your needs. Dataset creation
 requires some internal tools, see go/arcore-chrome-collect-recordings (internal
-link) or contact either bsheedy@ or bialpio@ for instructions.
+link) or contact bsheedy@ for instructions.
 
 Once you have your playback dataset (.mp4 file), simply place it in
 `//chrome/test/data/xr/ar_playback_datasets/` and upload it using

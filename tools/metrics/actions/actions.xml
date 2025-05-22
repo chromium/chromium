@@ -48450,7 +48450,8 @@ should be able to be added at any place in this file.
     The code that caused the issue this action was meant to track is no longer
     present.
   </obsolete>
-  <owner>bialpio@chromium.org</owner>
+  <owner>alcooper@chromium.org</owner>
+  <owner>xr-dev@chromium.org</owner>
   <description>
     Raised when XR service was unable to obtain necessary component. The action
     is not directly raised by the user's behavior as it should only be logged

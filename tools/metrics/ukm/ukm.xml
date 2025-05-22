@@ -26837,10 +26837,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="XR.WebXR.Session">
-  <owner>billorr@chromium.org</owner>
-  <owner>bialpio@chromium.org</owner>
+  <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
-  <owner>cassew@google.com</owner>
   <summary>
     When session ends, records data for a WebXR / WebVR session.
   </summary>

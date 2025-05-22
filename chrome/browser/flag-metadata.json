@@ -3847,17 +3847,17 @@
   },
   {
     "name": "enable-openxr-android",
-    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "bialpio@chromium.org", "xr-dev@chromium.org" ],
+    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
     "expiry_milestone": 140
   },
   {
     "name": "enable-openxr-android-smooth-depth",
-    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "bialpio@chromium.org", "xr-dev@chromium.org" ],
+    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
     "expiry_milestone": 150
   },
   {
     "name": "enable-openxr-extended",
-    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "bialpio@chromium.org", "xr-dev@chromium.org" ],
+    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
     "expiry_milestone": 140
   },
   {
@@ -10220,7 +10220,7 @@
   },
   {
     "name": "zero-copy-tab-capture",
-    "owners": [ "bialpio@chromium.org", "media-capture-dev@chromium.org" ],
+    "owners": [ "media-capture-dev@chromium.org" ],
     "expiry_milestone": 140
   },
   {
