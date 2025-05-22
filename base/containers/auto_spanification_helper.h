@@ -80,7 +80,17 @@ inline T& ToPointer(T& value) {
     return UNSAFE_TODO(base::span<uint32_t>(row, size));  \
   }(::base::spanification_internal::ToPointer(arg_self), arg_x, arg_y))
 
-// https://source.chromium.org/chromium/chromium/src/+/main:third_party/perl/c/include/harfbuzz/hb-buffer.h;drc=6f3e5028eb65d0b4c5fdd792106ac4c84eee1eb3;l=442
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/harfbuzz-ng/src/src/hb-buffer.h;drc=ea6a172f84f2cbcfed803b5ae71064c7afb6b5c2;l=647
+#define UNSAFE_HB_BUFFER_GET_GLYPH_INFOS(arg_buffer, arg_length)     \
+  ([](hb_buffer_t* buffer, unsigned int* length) {                   \
+    unsigned int len;                                                \
+    hb_glyph_info_t* info = hb_buffer_get_glyph_infos(buffer, &len); \
+    if (length)                                                      \
+      *length = len;                                                 \
+    return UNSAFE_TODO(base::span<hb_glyph_info_t>(info, len));      \
+  }(arg_buffer, arg_length))
+
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/harfbuzz-ng/src/src/hb-buffer.h;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b;l=651
 #define UNSAFE_HB_BUFFER_GET_GLYPH_POSITIONS(arg_buffer, arg_length)        \
   ([](hb_buffer_t* buffer, unsigned int* length) {                          \
     unsigned int len;                                                       \
