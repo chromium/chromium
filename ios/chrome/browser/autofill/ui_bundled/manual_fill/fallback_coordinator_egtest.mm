@@ -290,8 +290,7 @@ void OpenAddressManualFillView() {
 // Tests the mediator stops observing objects when the incognito BVC is
 // destroyed. Waiting for dealloc was causing a race condition with the
 // autorelease pool, and some times a DCHECK will be hit.
-// TODO(crbug.com/40776865) Flaky test.
-- (void)DISABLED_testOpeningIncognitoTabsDoNotLeak {
+- (void)testOpeningIncognitoTabsDoNotLeak {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   std::string webViewText("Profile form");
   [AutofillAppInterface saveExampleProfile];
