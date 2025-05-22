@@ -313,6 +313,40 @@ most useful.
 $ autoninja -C out/Debug-iphonesimulator content_shell
 ```
 
+## Blink for tvOS builds and running
+
+Blink for tvOS is an experimental project that aims to port Blink to Apple tvOS.
+Due to platform limitations, specifically because tvOS does not support
+multi-process applications, Blink for tvOS runs in a single-process mode only.
+As a result, there is no security isolation, since all content runs within the
+same process. Therefore, it is intended solely for loading trusted content.
+Please note that this project is still under development and considered
+unstable.
+
+If you use the `setup-gn.py` script as described above, it will automatically
+create `out/${configuration}-appletvsimulator` and
+`out/${configuration}-appletvos` directories with the appropriate GN arguments.
+
+If you would like to set your build up manually, the following GN arguments are
+required:
+
+```
+target_os="ios"
+target_platform="tvos"
+use_blink=true
+```
+
+Currently, tvOS supports only a limited set of targets, with `content_shell`
+being the most useful one. Note that `chrome` is not a supported target.
+
+The `iossim` tool also supports tvOS via the `-x tvos` argument. You can run a
+debug build of `content_shell`:
+
+```shell
+$ out/Debug-appletvsimulator/iossim -d 'Apple TV' -s '18.4' -x tvos \
+  out/Debug-appletvsimulator/content_shell.app
+```
+
 ## Running apps from the command line
 
 Any target that is built and runs on the bots (see [below](#Troubleshooting))
