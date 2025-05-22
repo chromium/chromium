@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "components/commerce/ios/browser/commerce_internals_ui.h"
 
 #import "components/commerce/core/commerce_constants.h"
@@ -32,10 +27,7 @@ CommerceInternalsUI::CommerceInternalsUI(web::WebUIIOS* web_ui,
       web::WebUIIOSDataSource::Create(kChromeUICommerceInternalsHost);
   source->SetDefaultResource(IDR_COMMERCE_INTERNALS_COMMERCE_INTERNALS_HTML);
   source->UseStringsJs();
-  const base::span<const webui::ResourcePath> resources(
-      kCommerceInternalsResources, kCommerceInternalsResourcesSize);
-
-  for (const auto& resource : resources) {
+  for (const auto& resource : kCommerceInternalsResources) {
     source->AddResourcePath(resource.path, resource.id);
   }
 

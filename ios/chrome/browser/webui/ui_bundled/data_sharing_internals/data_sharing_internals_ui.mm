@@ -23,9 +23,8 @@ web::WebUIIOSDataSource* CreateDataSharingInternalsUIDataSource() {
       web::WebUIIOSDataSource::Create(kChromeUIDataSharingInternalsHost);
 
   source->UseStringsJs();
-  for (size_t i = 0; i < kDataSharingInternalsResourcesSize; i++) {
-    const webui::ResourcePath path = kDataSharingInternalsResources[i];
-    source->AddResourcePath(path.path, path.id);
+  for (const auto& resource : kDataSharingInternalsResources) {
+    source->AddResourcePath(resource.path, resource.id);
   }
   source->SetDefaultResource(
       IDR_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_HTML);

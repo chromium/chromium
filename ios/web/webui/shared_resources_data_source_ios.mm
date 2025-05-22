@@ -31,19 +31,19 @@ const char kWebUIResourcesHost[] = "resources";
 // Maps a path name (i.e. "/js/path.js") to a resource map entry. Returns
 // nullptr if not found.
 const webui::ResourcePath* PathToResource(const std::string& path) {
-  for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
-    if (path == kWebuiResources[i].path) {
-      return &kWebuiResources[i];
+  for (const auto& resource : kWebuiResources) {
+    if (path == resource.path) {
+      return &resource;
     }
   }
-  for (size_t i = 0; i < kMojoBindingsResourcesSize; ++i) {
-    if (path == kMojoBindingsResources[i].path) {
-      return &kMojoBindingsResources[i];
+  for (const auto& resource : kMojoBindingsResources) {
+    if (path == resource.path) {
+      return &resource;
     }
   }
-  for (size_t i = 0; i < kIosWebResourcesSize; ++i) {
-    if (path == kIosWebResources[i].path) {
-      return &kIosWebResources[i];
+  for (const auto& resource : kIosWebResources) {
+    if (path == resource.path) {
+      return &resource;
     }
   }
 

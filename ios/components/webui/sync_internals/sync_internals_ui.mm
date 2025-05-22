@@ -25,9 +25,8 @@ web::WebUIIOSDataSource* CreateSyncInternalsHTMLSource() {
       web::WebUIIOSDataSource::Create(kChromeUISyncInternalsHost);
 
   source->UseStringsJs();
-  for (size_t i = 0; i < kSyncServiceSyncInternalsResourcesSize; i++) {
-    const webui::ResourcePath path = kSyncServiceSyncInternalsResources[i];
-    source->AddResourcePath(path.path, path.id);
+  for (const auto& resource : kSyncServiceSyncInternalsResources) {
+    source->AddResourcePath(resource.path, resource.id);
   }
   source->SetDefaultResource(IDR_SYNC_SERVICE_SYNC_INTERNALS_INDEX_HTML);
   return source;
