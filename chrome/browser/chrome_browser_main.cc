@@ -749,26 +749,6 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
     return content::RESULT_CODE_NORMAL_EXIT;
   }
 
-#if BUILDFLAG(IS_WIN)
-  // If we are running stale binaries then relaunch and exit immediately.
-  if (upgrade_util::IsRunningOldChrome()) {
-    if (!upgrade_util::RelaunchChromeBrowser(
-            *base::CommandLine::ForCurrentProcess())) {
-      // The relaunch failed. Feel free to panic now.
-      DUMP_WILL_BE_NOTREACHED();
-    }
-
-    // Note, cannot return RESULT_CODE_NORMAL_EXIT here as this code needs to
-    // result in browser startup bailing.
-    return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
-  }
-
-  // Requires FeatureList and may restart the browser.
-  if (auto result = ChromeBrowserMainPartsWin::MaybeAutoDeElevate()) {
-    return *result;
-  }
-#endif
-
   return load_local_state_result;
 }
 

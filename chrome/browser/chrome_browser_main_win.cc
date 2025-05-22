@@ -35,6 +35,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,6 +58,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/first_run/upgrade_util.h"
+#include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -515,6 +518,33 @@ ChromeBrowserMainPartsWin::ChromeBrowserMainPartsWin(bool is_integration_test,
 
 ChromeBrowserMainPartsWin::~ChromeBrowserMainPartsWin() = default;
 
+int ChromeBrowserMainPartsWin::PreEarlyInitialization() {
+  if (const int result = ChromeBrowserMainParts::PreEarlyInitialization();
+      result != content::RESULT_CODE_NORMAL_EXIT) {
+    return result;
+  }
+
+  // If we are running stale binaries then relaunch and exit immediately.
+  if (upgrade_util::IsRunningOldChrome()) {
+    if (!upgrade_util::RelaunchChromeBrowser(
+            *base::CommandLine::ForCurrentProcess())) {
+      // The relaunch failed. Feel free to panic now.
+      DUMP_WILL_BE_NOTREACHED();
+    }
+
+    // Note, cannot return RESULT_CODE_NORMAL_EXIT here as this code needs to
+    // result in browser startup bailing.
+    return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
+  }
+
+  // Requires FeatureList and may restart the browser.
+  if (auto deelevate_result = MaybeAutoDeElevate()) {
+    return *deelevate_result;
+  }
+
+  return content::RESULT_CODE_NORMAL_EXIT;
+}
+
 void ChromeBrowserMainPartsWin::ToolkitInitialized() {
   DCHECK_NE(base::PlatformThread::CurrentId(), base::kInvalidThreadId);
   gfx::CrashIdHelper::RegisterMainThread(base::PlatformThread::CurrentId());
@@ -955,6 +985,11 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
 // Check if the browser process is launching elevated, and attempt to
 // automatically de-elevate.
 std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
+  // Do not de-elevate in an integration test.
+  if (is_integration_test()) {
+    return std::nullopt;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kAutoDeElevate)) {
     return std::nullopt;
   }
