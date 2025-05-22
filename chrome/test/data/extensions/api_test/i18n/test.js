@@ -41,7 +41,7 @@ chrome.test.getConfig(function(config) {
       chrome.test.succeed();
     },
     function getMessageFromContentScript() {
-      // TODO(crbug.com/391932982): Port to desktop Android once the chrome.tabs
+      // TODO(crbug.com/371432155): Port to desktop Android once the chrome.tabs
       // API is supported.
       if (/Android/.test(navigator.userAgent)) {
         chrome.test.succeed();

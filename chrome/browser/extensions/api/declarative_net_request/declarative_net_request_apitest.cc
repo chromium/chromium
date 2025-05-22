@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSafeRulesLazyApiTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/391932982): Port to desktop Android when chrome.tabs API is
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
 // available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, OnRulesMatchedDebug) {
   ASSERT_TRUE(RunExtensionTest("on_rules_matched_debug")) << message_;
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, ModifyHeaders) {
   ASSERT_TRUE(RunExtensionTest("modify_headers")) << message_;
 }
 
-// TODO(crbug.com/391932982): Port to desktop Android when chrome.tabs API is
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
 // available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, GetMatchedRules) {
   ASSERT_TRUE(RunExtensionTest("get_matched_rules")) << message_;
@@ -249,7 +249,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestApiPrerenderingTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/391932982): Port to desktop Android when chrome.tabs API is
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
 // available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiPrerenderingTest,
                        PrerenderedPageInterception) {

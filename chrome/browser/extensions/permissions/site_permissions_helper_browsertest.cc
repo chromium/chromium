@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Provides test cases with an extension that executes a script programmatically
 // on every site it visits.
-// TODO(crbug.com/391932982): Port to desktop Android when the chrome.tabs API
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
 // is supported. chrome.tabs is used by the test extension.
 class SitePermissionsHelperExecuteSciptBrowserTest
     : public SitePermissionsHelperBrowserTest {
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/391932982): Port to desktop Android when the chrome.tabs API
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
 // is supported. chrome.tabs is used by the test extension.
 class SitePermissionsHelperOptionalHostPermissions
     : public SitePermissionsHelperBrowserTest {
