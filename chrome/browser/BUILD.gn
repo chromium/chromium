@@ -13,8 +13,8 @@ import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
-import("//chrome/browser/request_header_integrity/buildflags.gni")
 import("//chrome/common/features.gni")
+import("//chrome/common/request_header_integrity/buildflags.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/captive_portal/core/features.gni")
@@ -8052,7 +8052,7 @@ static_library("browser") {
   }
 
   if (enable_request_header_integrity) {
-    deps += [ "//chrome/browser/request_header_integrity" ]
+    deps += [ "//chrome/common/request_header_integrity" ]
   }
 
   if (enable_rlz) {
@@ -8603,7 +8603,6 @@ static_library("browser_generated_files") {
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/push_messaging:budget_proto",
     "//chrome/browser/regional_capabilities",
-    "//chrome/browser/request_header_integrity:buildflags",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
@@ -8617,6 +8616,7 @@ static_library("browser_generated_files") {
     "//chrome/browser/ui/webui/user_education_internals:mojo_bindings",
     "//chrome/browser/v8_compile_hints/proto",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common/request_header_integrity:buildflags",
     "//components/data_sharing/data_sharing_internals/webui:mojo_bindings",
     "//components/webui/chrome_urls/mojom:mojo_bindings",
   ]

@@ -4491,12 +4491,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/chrome/browser/request_header_integrity/internal': {
-      'url': Var('chrome_git') + '/chrome/browser/request_header_integrity/internal.git' + '@' +
-        '1592aa7ba598a048f918f54735bcf056556532c3',
-      'condition': 'checkout_src_internal',
-  },
-
   'src/chrome/browser/resources/downloads/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/downloads_internal.git' + '@' +
         '4fefb8a24ae6c421f640b9ef028e4b4ca75df729',
@@ -4535,6 +4529,12 @@ deps = {
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
     'dep_type': 'cipd',
+  },
+
+  'src/chrome/common/request_header_integrity/internal': {
+      'url': Var('chrome_git') + '/chrome/browser/request_header_integrity/internal.git' + '@' +
+        '1592aa7ba598a048f918f54735bcf056556532c3',
+      'condition': 'checkout_src_internal',
   },
 
   'src/chrome/elevation_service/internal': {

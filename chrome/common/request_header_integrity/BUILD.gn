@@ -5,7 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/util/process_version.gni")
-import("//chrome/browser/request_header_integrity/buildflags.gni")
+import("//chrome/common/request_header_integrity/buildflags.gni")
 
 config("header_name_defines") {
   defines = []

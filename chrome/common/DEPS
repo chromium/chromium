@@ -20,6 +20,7 @@ include_rules = [
   "+components/dom_distiller/core",
   "+components/embedder_support/android/common",
   "+components/embedder_support/origin_trials",
+  "+components/embedder_support/user_agent_utils.h",
   "+components/favicon_base",
   "+components/gcm_driver",
   "+components/google/core/common",
@@ -62,6 +63,7 @@ include_rules = [
   "+extensions/common",
   "+gin/public",  # For profiling.cc
   "+google_apis/gaia",  # For gaia_switches.h
+  "+google_apis/google_api_keys.h",
   "+media",
   "+ppapi/c",
   "+ppapi/shared_impl",

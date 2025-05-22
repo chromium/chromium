@@ -714,10 +714,6 @@
 	path = chrome/browser/platform_experience/win
 	url = https://chrome-internal.googlesource.com/chrome/browser/platform_experience/win
 	gclient-condition = checkout_src_internal
-[submodule "chrome/browser/request_header_integrity/internal"]
-	path = chrome/browser/request_header_integrity/internal
-	url = https://chrome-internal.googlesource.com/chrome/browser/request_header_integrity/internal
-	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/resources/downloads/internal"]
 	path = chrome/browser/resources/downloads/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/downloads_internal
@@ -729,6 +725,10 @@
 [submodule "chrome/browser/spellchecker/internal"]
 	path = chrome/browser/spellchecker/internal
 	url = https://chrome-internal.googlesource.com/chrome/spellchecker/internal
+	gclient-condition = checkout_src_internal
+[submodule "chrome/common/request_header_integrity/internal"]
+	path = chrome/common/request_header_integrity/internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/request_header_integrity/internal
 	gclient-condition = checkout_src_internal
 [submodule "chrome/elevation_service/internal"]
 	path = chrome/elevation_service/internal

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/request_header_integrity/request_header_integrity_url_loader_throttle.h"
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 
 #include <memory>
 #include <optional>
@@ -15,7 +15,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/request_header_integrity/internal/google_header_names.h"
+#include "chrome/common/request_header_integrity/internal/google_header_names.h"
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 

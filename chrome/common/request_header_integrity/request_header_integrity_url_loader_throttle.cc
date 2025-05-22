@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/request_header_integrity/request_header_integrity_url_loader_throttle.h"
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 
 #include <string>
 
@@ -12,15 +12,15 @@
 #include "base/hash/sha1.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/request_header_integrity/build_derived_values.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/request_header_integrity/build_derived_values.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/request_header_integrity/internal/google_header_names.h"
+#include "chrome/common/request_header_integrity/internal/google_header_names.h"
 #endif
 
 #if !defined(CHANNEL_NAME_HEADER_NAME)
