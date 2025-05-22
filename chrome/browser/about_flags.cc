@@ -1368,9 +1368,8 @@ const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
       std::size(kOmniboxStarterPackExpansionStagingUrl), nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorProdParams[] = {
-    {"name", "Agentspace (prod)"},
+    {"name", "Agentspace"},
     {"shortcut", "agentspace"},
-    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
     {"search_url",
      "https://vertexaisearch.cloud.google.com/home/cid/"
      "8884f744-aae1-4fbc-8a64-b8bf7cbf270e?q={searchTerms}"},
@@ -1378,41 +1377,18 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorProdParams[] = {
      "https://discoveryengine.googleapis.com/v1alpha/projects/862721868538/"
      "locations/global/collections/default_collection/engines/"
      "teamfood-v11_1720671063545/completionConfig:completeQuery"}};
-const FeatureEntry::FeatureParam
-    kOmniboxSearchAggregatorProdWithFallbackIconParams[] = {
-        {"name", "Agentspace (prod with fallback icon)"},
-        {"shortcut", "agentspace"},
-        {"search_url",
-         "https://vertexaisearch.cloud.google.com/home/cid/"
-         "8884f744-aae1-4fbc-8a64-b8bf7cbf270e?q={searchTerms}"},
-        {"suggest_url",
-         "https://discoveryengine.googleapis.com/v1alpha/projects/862721868538/"
-         "locations/global/collections/default_collection/engines/"
-         "teamfood-v11_1720671063545/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorStagingParams[] = {
     {"name", "Agentspace (staging)"},
     {"shortcut", "agentspace"},
     {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
     {"search_url",
      "https://vertexaisearch.cloud.google.com/home/cid/"
-     "8884f744-aae1-4fbc-8a64-b8bf7cbf270e?e=97710846%2C97750609%2C97760709%"
-     "2C97711975&q={searchTerms}"},
+     "3abd7045-7845-4f83-b204-e39fcbca3494?q={searchTerms}&mods=widget_staging_"
+     "api_mod"},
     {"suggest_url",
      "https://staging-discoveryengine.sandbox.googleapis.com/v1alpha/projects/"
      "862721868538/locations/global/collections/default_collection/engines/"
      "teamfood-v11/completionConfig:completeQuery"}};
-const FeatureEntry::FeatureParam kOmniboxSearchAggregatorAlternateParams[] = {
-    {"name", "NeuraVibe"},
-    {"shortcut", "neura"},
-    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
-    {"search_url",
-     "https://vertexaisearch.cloud.google.com/home/cid/"
-     "e04a19e6-1fc2-48ba-9d0d-53c6aabcba7b?e=97844069%2C-97770083&"
-     "q={searchTerms}"},
-    {"suggest_url",
-     "https://discoveryengine.googleapis.com/v1alpha/projects/301214329925/"
-     "locations/global/collections/default_collection/engines/"
-     "neuravibeblendedsearch_1727383849310/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorDemoParams[] = {
     {"name", "Neuravibe"},
     {"shortcut", "neura"},
@@ -1427,13 +1403,8 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorDemoParams[] = {
 const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"prod", kOmniboxSearchAggregatorProdParams,
      std::size(kOmniboxSearchAggregatorProdParams), nullptr},
-    {"prod (with fallback icon)",
-     kOmniboxSearchAggregatorProdWithFallbackIconParams,
-     std::size(kOmniboxSearchAggregatorProdWithFallbackIconParams), nullptr},
     {"staging", kOmniboxSearchAggregatorStagingParams,
      std::size(kOmniboxSearchAggregatorStagingParams), nullptr},
-    {"alternate", kOmniboxSearchAggregatorAlternateParams,
-     std::size(kOmniboxSearchAggregatorAlternateParams), nullptr},
     {"demo", kOmniboxSearchAggregatorDemoParams,
      std::size(kOmniboxSearchAggregatorDemoParams), nullptr}};
 
