@@ -60,6 +60,7 @@ void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
     AccountPreselectedCallback account_preselected_callback,
     PasswordSelectedCallback password_selected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
+    base::OnceClosure cancel_ui_timeout_callback,
     base::RepeatingClosure bluetooth_adapter_power_on_callback,
     base::RepeatingCallback<
         void(device::FidoRequestHandlerBase::BlePermissionCallback)>

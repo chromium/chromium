@@ -146,6 +146,9 @@ using Mediation = blink::mojom::Mediation;
 
 namespace {
 
+const char kImmediateTimeoutWhileWaitingForUi[] =
+    "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi";
+
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
 }
@@ -761,6 +764,8 @@ struct AuthenticatorCommonImpl::RequestState {
   std::string relying_party_id;
   std::unique_ptr<base::OneShotTimer> timer =
       std::make_unique<base::OneShotTimer>();
+  std::unique_ptr<base::OneShotTimer> immediate_timer =
+      std::make_unique<base::OneShotTimer>();
   std::optional<std::string> app_id;
   std::variant<std::monostate,
                device::CtapMakeCredentialRequest,
@@ -896,6 +901,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       base::BindRepeating(
           &device::FidoRequestHandlerBase::StartAuthenticatorRequest,
           req_state_->request_handler->GetWeakPtr()) /* request_callback */,
+      base::DoNothing() /* cancel_ui_timeout_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
           req_state_->request_handler
@@ -950,7 +956,11 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommonImpl::OnSignResponse,
                      weak_factory_.GetWeakPtr()));
-
+  auto cancel_ui_timeout_callback =
+      is_immediate_mediation
+          ? base::BindOnce(&AuthenticatorCommonImpl::CancelImmediateTimeout,
+                           weak_factory_.GetWeakPtr())
+          : base::DoNothing();
   req_state_->request_delegate->RegisterActionCallbacks(
       base::BindOnce(&AuthenticatorCommonImpl::OnCancelFromUI,
                      weak_factory_.GetWeakPtr()) /* cancel_callback */,
@@ -972,6 +982,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       base::BindRepeating(
           &device::GetAssertionRequestHandler::StartAuthenticatorRequest,
           request_handler->GetWeakPtr()) /* request_callback */,
+      std::move(cancel_ui_timeout_callback),
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
           request_handler
@@ -1408,6 +1419,9 @@ void AuthenticatorCommonImpl::GetCredential(
 
   if (options->mediation != Mediation::CONDITIONAL) {
     BeginRequestTimeout(options->timeout);
+  }
+  if (options->mediation == Mediation::IMMEDIATE) {
+    BeginImmediateRequestTimeout();
   }
 
   if (options->challenge.has_value() == options->challenge_url.has_value()) {
@@ -2522,6 +2536,32 @@ void AuthenticatorCommonImpl::OnTimeout() {
   SignalFailureToRequestDelegate(
       AuthenticatorRequestClientDelegate::InterestingFailureReason::kTimeout,
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+void AuthenticatorCommonImpl::BeginImmediateRequestTimeout() {
+  base::TimeDelta timeout_duration = base::Milliseconds(
+      device::kWebAuthnImmediateMediationTimeoutMilliseconds.Get());
+  if (timeout_duration.is_negative()) {
+    return;
+  }
+  req_state_->immediate_timer->Start(
+      FROM_HERE, timeout_duration,
+      base::BindOnce(&AuthenticatorCommonImpl::OnImmediateTimeout,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void AuthenticatorCommonImpl::OnImmediateTimeout() {
+  base::UmaHistogramBoolean(kImmediateTimeoutWhileWaitingForUi, true);
+  CancelWithStatus(blink::mojom::AuthenticatorStatus::IMMEDIATE_NOT_FOUND);
+}
+
+void AuthenticatorCommonImpl::CancelImmediateTimeout() {
+  if (!req_state_ || !req_state_->immediate_timer ||
+      !req_state_->immediate_timer->IsRunning()) {
+    return;
+  }
+  base::UmaHistogramBoolean(kImmediateTimeoutWhileWaitingForUi, false);
+  req_state_->immediate_timer->Stop();
 }
 
 void AuthenticatorCommonImpl::CancelWithStatus(

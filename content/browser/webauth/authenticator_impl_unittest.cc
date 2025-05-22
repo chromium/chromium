@@ -2173,6 +2173,7 @@ class TestAuthenticatorRequestDelegate
       AccountPreselectedCallback account_preselected_callback,
       PasswordSelectedCallback password_selected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
+      base::OnceClosure cancel_ui_timeout_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback,
       base::RepeatingCallback<
           void(device::FidoRequestHandlerBase::BlePermissionCallback)>
@@ -7004,6 +7005,7 @@ class BlockingAuthenticatorRequestDelegate
       AccountPreselectedCallback account_preselected_callback,
       PasswordSelectedCallback password_selected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
+      base::OnceClosure cancel_ui_timeout_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback,
       base::RepeatingCallback<
           void(device::FidoRequestHandlerBase::BlePermissionCallback)>
@@ -7145,6 +7147,10 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     // called.
     bool expect_conditional = false;
 
+    // Indicates whether `RegisterActionCallbacks()` should run the cancel UI
+    // timeout callback.
+    bool run_cancel_ui_timeout_callback = false;
+
     // If set, indicates that `DoesBlockRequestOnFailure()` is expected to be
     // called with this value.
     std::optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
@@ -7192,12 +7198,16 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       AccountPreselectedCallback account_preselected_callback,
       PasswordSelectedCallback password_selected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
+      base::OnceClosure cancel_ui_timeout_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback,
       base::RepeatingCallback<
           void(device::FidoRequestHandlerBase::BlePermissionCallback)>
           ble_status_callback) override {
     account_preselected_callback_ = account_preselected_callback;
     request_callback_ = request_callback;
+    if (config_.run_cancel_ui_timeout_callback) {
+      std::move(cancel_ui_timeout_callback).Run();
+    }
   }
 
   void SelectAccount(
@@ -7246,7 +7256,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     if (config_.expect_conditional) {
       EXPECT_EQ(ui_presentation, UIPresentation::kAutofill);
     } else {
-      EXPECT_EQ(ui_presentation, UIPresentation::kModal);
+      EXPECT_TRUE(ui_presentation == UIPresentation::kModal ||
+                  ui_presentation == UIPresentation::kModalImmediate);
     }
     EXPECT_TRUE(!expect_conditional_satisfied_);
     expect_conditional_satisfied_ = true;
@@ -7285,6 +7296,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   bool expected_failure_reason_satisfied_ = false;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
   AccountPreselectedCallback account_preselected_callback_;
+  base::OnceClosure cancel_ui_timeout_callback_;
 };
 
 class ResidentKeyTestAuthenticatorContentBrowserClient
@@ -9421,6 +9433,7 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         AccountPreselectedCallback account_preselected_callback,
         PasswordSelectedCallback password_selected_callback,
         device::FidoRequestHandlerBase::RequestCallback request_callback,
+        base::OnceClosure cancel_ui_timeout_callback,
         base::RepeatingClosure bluetooth_adapter_power_on_callback,
         base::RepeatingCallback<
             void(device::FidoRequestHandlerBase::BlePermissionCallback)>
@@ -9639,6 +9652,79 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, PRFOnGet) {
 }
 
 #endif  // BUILDFLAG(IS_MAC)
+
+TEST_F(ResidentKeyAuthenticatorImplTest,
+       GetAssertionImmediateMediationTimeout_NoUI) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  constexpr base::TimeDelta kImmediateTimeout = base::Milliseconds(10);
+  feature_params["timeout_ms"] =
+      base::NumberToString(kImmediateTimeout.InMilliseconds());
+  feature_list.InitAndEnableFeatureWithParameters(device::kWebAuthnImmediateGet,
+                                                  feature_params);
+
+  ReplaceDiscoveryFactory(std::make_unique<device::FidoDiscoveryFactory>());
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->mediation = blink::mojom::Mediation::IMMEDIATE;
+  options->allow_credentials.clear();
+  options->timeout = kTestTimeout;
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  TestGetCredentialFuture future;
+  authenticator->GetCredential(std::move(options), future.GetCallback());
+
+  task_environment()->FastForwardBy(kImmediateTimeout);
+
+  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Get()->is_get_assertion_response());
+  auto& get_assertion_response = future.Get()->get_get_assertion_response();
+  EXPECT_EQ(get_assertion_response->status,
+            AuthenticatorStatus::IMMEDIATE_NOT_FOUND);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi", true,
+      1);
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest,
+       GetAssertionImmediateMediationTimeout_WithUiThenNoImmediateTimeout) {
+  base::HistogramTester histogram_tester;
+  test_client_.delegate_config.run_cancel_ui_timeout_callback = true;
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  constexpr base::TimeDelta kImmediateTimeout = base::Milliseconds(10);
+  feature_params["timeout_ms"] =
+      base::NumberToString(kImmediateTimeout.InMilliseconds());
+  feature_list.InitAndEnableFeatureWithParameters(device::kWebAuthnImmediateGet,
+                                                  feature_params);
+
+  ReplaceDiscoveryFactory(std::make_unique<device::FidoDiscoveryFactory>());
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->mediation = blink::mojom::Mediation::IMMEDIATE;
+  options->allow_credentials.clear();
+  options->timeout = kTestTimeout;
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  TestGetCredentialFuture future;
+
+  authenticator->GetCredential(std::move(options), future.GetCallback());
+  // Fast forward by the immediate mediation timeout.
+  task_environment()->FastForwardBy(kImmediateTimeout + base::Milliseconds(1));
+
+  // The request should NOT be complete yet because UI is displayed,
+  // which bypasses the immediate timeout.
+  EXPECT_FALSE(future.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi",
+      false, 1);
+  test_client_.delegate_config.run_cancel_ui_timeout_callback = false;
+}
 
 // AuthenticatorCableV2Test tests features of the caBLEv2 transport and
 // protocol.

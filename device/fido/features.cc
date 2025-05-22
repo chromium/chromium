@@ -13,6 +13,8 @@ namespace {
 constexpr int kDefaultMaxRequests = 10;
 // Default time window (in seconds) for the immediate request rate limit.
 constexpr int kDefaultWindowSeconds = 60;
+// Default timeout for immediate mediation requests (in milliseconds).
+constexpr int kDefaultImmediateMediationTimeoutMs = 500;
 
 }  // namespace
 
@@ -198,5 +200,11 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kWebAuthnImmediateGet,
              "WebAuthenticationImmediateGet",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kWebAuthnImmediateMediationTimeoutMilliseconds,
+                   &kWebAuthnImmediateGet,
+                   "timeout_ms",
+                   kDefaultImmediateMediationTimeoutMs);
 
 }  // namespace device

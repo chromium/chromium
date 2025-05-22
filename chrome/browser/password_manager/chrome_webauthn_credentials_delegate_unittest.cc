@@ -133,7 +133,7 @@ class ChromeWebAuthnCredentialsDelegateTest
     authenticator_request_delegate_->RegisterActionCallbacks(
         base::DoNothing(), base::DoNothing(), base::DoNothing(),
         base::DoNothing(), base::DoNothing(), base::DoNothing(),
-        base::DoNothing(), base::DoNothing());
+        base::DoNothing(), base::DoNothing(), base::DoNothing());
 #else
     delegate_ =
         WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents());

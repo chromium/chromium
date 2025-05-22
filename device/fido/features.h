@@ -150,6 +150,11 @@ BASE_DECLARE_FEATURE_PARAM(int,
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnImmediateGet);
 
+// Parameter controlling the duration (in milliseconds) for the immediate
+// mediation timeout.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE_PARAM(int, kWebAuthnImmediateMediationTimeoutMilliseconds);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

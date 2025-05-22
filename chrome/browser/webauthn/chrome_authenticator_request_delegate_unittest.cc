@@ -687,10 +687,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
 
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     delegate.SetRelyingPartyId(test.rp_id);
-    delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
-                                     base::DoNothing(), base::DoNothing(),
-                                     base::DoNothing(), base::DoNothing(),
-                                     base::DoNothing(), base::DoNothing());
+    delegate.RegisterActionCallbacks(
+        base::DoNothing(), base::DoNothing(), base::DoNothing(),
+        base::DoNothing(), base::DoNothing(), base::DoNothing(),
+        base::DoNothing(), base::DoNothing(), base::DoNothing());
     delegate.OnTransportAvailabilityEnumerated(std::move(data));
 
     EXPECT_EQ(result.has_platform_authenticator_credential,
@@ -737,10 +737,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   delegate.SetRelyingPartyId(kGoogleRpId);
-  delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing());
+  delegate.RegisterActionCallbacks(
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
   delegate.OnTransportAvailabilityEnumerated(std::move(data));
 
   // Despite lacking the user ID prefix, credentials are not filtered from
@@ -953,10 +953,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   auto raw_password_controller = password_controller.get();
   delegate.SetPasswordControllerForTesting(std::move(password_controller));
   base::MockCallback<base::OnceClosure> mock_closure;
-  delegate.RegisterActionCallbacks(base::DoNothing(), mock_closure.Get(),
-                                   base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing());
+  delegate.RegisterActionCallbacks(
+      base::DoNothing(), mock_closure.Get(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
   delegate.SetUIPresentation(UIPresentation::kModalImmediate);
   delegate.SetCredentialTypes(kRequestPassword | kRequestPublicKey);
   delegate.SetRelyingPartyId(kRpId);
@@ -997,10 +997,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   auto raw_password_controller = password_controller.get();
   delegate.SetPasswordControllerForTesting(std::move(password_controller));
   base::MockCallback<base::OnceClosure> mock_closure;
-  delegate.RegisterActionCallbacks(base::DoNothing(), mock_closure.Get(),
-                                   base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing());
+  delegate.RegisterActionCallbacks(
+      base::DoNothing(), mock_closure.Get(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
   delegate.SetUIPresentation(UIPresentation::kModalImmediate);
   delegate.SetCredentialTypes(kRequestPassword | kRequestPublicKey);
   delegate.SetRelyingPartyId(kRpId);
@@ -1064,6 +1064,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ImmediateMediationRateLimit) {
       /*account_preselected_callback=*/base::DoNothing(),
       /*password_selected_callback=*/base::DoNothing(),
       /*request_callback=*/base::DoNothing(),
+      /*cancel_ui_timeout_callback=*/base::DoNothing(),
       /*bluetooth_adapter_power_on_callback=*/base::DoNothing(),
       /*bluetooth_query_status_callback=*/base::DoNothing());
 

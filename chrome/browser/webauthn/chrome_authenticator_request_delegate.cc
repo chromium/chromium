@@ -471,6 +471,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
     AccountPreselectedCallback account_preselected_callback,
     PasswordSelectedCallback password_selected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
+    base::OnceClosure cancel_ui_timeout_callback,
     base::RepeatingClosure bluetooth_adapter_power_on_callback,
     base::RepeatingCallback<
         void(device::FidoRequestHandlerBase::BlePermissionCallback)>
@@ -481,6 +482,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
   account_preselected_callback_ = std::move(account_preselected_callback);
   password_selected_callback_ = std::move(password_selected_callback);
   request_callback_ = request_callback;
+  cancel_ui_timeout_callback_ = std::move(cancel_ui_timeout_callback);
 
   dialog_controller_->SetRequestCallback(request_callback);
   dialog_controller_->SetAccountPreselectedCallback(
@@ -1002,6 +1004,10 @@ void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
   if (MaybeHandleImmediateMediation(tai, passwords)) {
     std::move(immediate_not_found_callback_).Run();
     return;
+  }
+
+  if (!cancel_ui_timeout_callback_.is_null()) {
+    std::move(cancel_ui_timeout_callback_).Run();
   }
 
   if (g_observer) {

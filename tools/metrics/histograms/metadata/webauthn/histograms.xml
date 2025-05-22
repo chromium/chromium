@@ -363,6 +363,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi"
+    enum="Boolean" expires_after="2025-11-09">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether the immediate timeout occurred while waiting for UI to be
+    shown. Recorded when an immediate get() request is made.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.GetAssertion.Result"
     enum="WebAuthenticationCredentialRequestResult" expires_after="2025-10-26">
   <owner>nsatragno@chromium.org</owner>
