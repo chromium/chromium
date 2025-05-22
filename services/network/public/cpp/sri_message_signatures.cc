@@ -527,8 +527,11 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
       } else if (param.first == "nonce" && param.second.is_string()) {
         message_signature->nonce = param.second.GetString();
       } else if (param.first == "tag" && param.second.is_string() &&
-                 param.second.GetString() == "sri") {
-        message_signature->tag = "sri";
+                 (param.second.GetString() == "ed25519-integrity" ||
+                  param.second.GetString() == "sri")) {
+        // TODO(crbug.com/419149647): Drop support for `sri` once tests are
+        // updated and OT participants have adopted the new `tag`.
+        message_signature->tag = param.second.GetString();
       } else if (param.first == "alg" || param.first == "created" ||
                  param.first == "expires" || param.first == "keyid" ||
                  param.first == "nonce" || param.first == "tag") {
@@ -809,7 +812,7 @@ void MaybeSetAcceptSignatureHeader(
       header << ", ";
     }
     header << "sig" << counter << "=(\"unencoded-digest\";sf);keyid=\""
-           << public_key << "\";tag=\"sri\"";
+           << public_key << "\";tag=\"ed25519-integrity\"";
     ++counter;
   }
   if (header.str().empty()) {
