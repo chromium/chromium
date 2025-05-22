@@ -124,13 +124,6 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-
-#if BUILDFLAG(IS_WIN)
-  // Paint image(s) to a layer so that the canvas is snapped to pixel
-  // boundaries.
-  image_container_view()->SetPaintToLayer();
-  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
-#endif
 }
 
 ToolbarButton::~ToolbarButton() = default;
@@ -758,24 +751,6 @@ void ToolbarButton::HighlightColorAnimation::ClearHighlightColor() {
 std::unique_ptr<views::ActionViewInterface>
 ToolbarButton::GetActionViewInterface() {
   return std::make_unique<ToolbarButtonActionViewInterface>(this);
-}
-
-void ToolbarButton::AddLayerToRegion(ui::Layer* new_layer,
-                                     views::LayerRegion region) {
-#if !BUILDFLAG(IS_WIN)
-  image_container_view()->SetPaintToLayer();
-  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
-#endif
-  ink_drop_container()->SetVisible(true);
-  ink_drop_container()->AddLayerToRegion(new_layer, region);
-}
-
-void ToolbarButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
-  ink_drop_container()->RemoveLayerFromRegions(old_layer);
-  ink_drop_container()->SetVisible(false);
-#if !BUILDFLAG(IS_WIN)
-  image_container_view()->DestroyLayer();
-#endif
 }
 
 ToolbarButtonActionViewInterface::ToolbarButtonActionViewInterface(

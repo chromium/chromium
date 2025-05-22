@@ -7,7 +7,6 @@
 
 #include <string_view>
 
-#include "build/buildflag.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -25,11 +24,6 @@ class BookmarkMenuButtonBase : public views::MenuButton {
   // MenuButton:
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
-#if BUILDFLAG(IS_WIN)
-  void AddLayerToRegion(ui::Layer* new_layer,
-                        views::LayerRegion region) override;
-  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_BUTTON_BASE_H_

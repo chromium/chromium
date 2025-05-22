@@ -82,6 +82,13 @@ LabelButton::LabelButton(
   SetTextInternal(text);
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
   GetViewAccessibility().SetIsDefault(is_default_);
+
+#if BUILDFLAG(IS_WIN)
+  // Paint image(s) to a layer so that the canvas is snapped to pixel
+  // boundaries.
+  image_container_view()->SetPaintToLayer();
+  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
+#endif
 }
 
 LabelButton::~LabelButton() {
@@ -520,8 +527,10 @@ void LabelButton::UpdateImage() {
 
 void LabelButton::AddLayerToRegion(ui::Layer* new_layer,
                                    views::LayerRegion region) {
+#if !BUILDFLAG(IS_WIN)
   image_container_view()->SetPaintToLayer();
   image_container_view()->layer()->SetFillsBoundsOpaquely(false);
+#endif
   ink_drop_container()->SetVisible(true);
   ink_drop_container()->AddLayerToRegion(new_layer, region);
 }
@@ -529,7 +538,9 @@ void LabelButton::AddLayerToRegion(ui::Layer* new_layer,
 void LabelButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
   ink_drop_container()->RemoveLayerFromRegions(old_layer);
   ink_drop_container()->SetVisible(false);
+#if !BUILDFLAG(IS_WIN)
   image_container_view()->DestroyLayer();
+#endif
 }
 
 std::unique_ptr<ActionViewInterface> LabelButton::GetActionViewInterface() {

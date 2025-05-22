@@ -22,9 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -50,13 +48,6 @@ SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
   SetProperty(views::kElementIdentifierKey,
               kSavedTabGroupOverflowButtonElementId);
-
-#if BUILDFLAG(IS_WIN)
-  // Paint image(s) to a layer so that the canvas is snapped to pixel
-  // boundaries.
-  image_container_view()->SetPaintToLayer();
-  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
-#endif
 }
 
 SavedTabGroupOverflowButton::~SavedTabGroupOverflowButton() = default;
@@ -85,19 +76,6 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
           icon, color_provider->GetColor(ui::kColorIconDisabled), icon_size));
   return;
 }
-
-#if BUILDFLAG(IS_WIN)
-void SavedTabGroupOverflowButton::AddLayerToRegion(ui::Layer* new_layer,
-                                                   views::LayerRegion region) {
-  ink_drop_container()->SetVisible(true);
-  ink_drop_container()->AddLayerToRegion(new_layer, region);
-}
-
-void SavedTabGroupOverflowButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
-  ink_drop_container()->RemoveLayerFromRegions(old_layer);
-  ink_drop_container()->SetVisible(false);
-}
-#endif
 
 BEGIN_METADATA(SavedTabGroupOverflowButton)
 END_METADATA

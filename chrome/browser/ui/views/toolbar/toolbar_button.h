@@ -131,9 +131,6 @@ class ToolbarButton : public views::LabelButton,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
-  void AddLayerToRegion(ui::Layer* new_layer,
-                        views::LayerRegion region) override;
-  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
 
   // When IPH is showing we suppress the tooltip text. This means that we must
   // provide an alternative accessible name, when this is the case. This is
