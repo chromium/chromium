@@ -319,11 +319,13 @@ inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
 }
 
 inline bool Character::MayNeedEastAsianSpacing(UChar32 ch) {
-  // `EastAsianSpacingType::kWide` may need the spacing.
-  // U+2000-206F General Punctuation has rather popular characters, such as ZWSP
-  // and curly quotation marks. Exclude the largest range of non-`kWide` that
-  // include them.
-  return ch >= 0x02C7 && !IsInRange(ch, 0x1200, 0x3004);
+  // `EastAsianSpacingType::kWide` may need the spacing. U+02C7 is the minimum
+  // code point of `kWide`.
+  return ch >= 0x02C7 && ch != kObjectReplacementCharacter &&
+         // U+2000-206F General Punctuation has rather popular characters, such
+         // as ZWSP and curly quotation marks. Exclude the largest range of
+         // non-`kWide` that include them.
+         !IsInRange(ch, 0x1200, 0x3004);
 }
 
 }  // namespace blink
