@@ -115,6 +115,10 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/cocoa/appkit_utils.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
 #endif
@@ -1146,17 +1150,46 @@ bool OmniboxViewViews::IsItemForCommandIdDynamic(int command_id) const {
 std::u16string OmniboxViewViews::GetLabelForCommandId(int command_id) const {
   DCHECK_EQ(IDC_PASTE_AND_GO, command_id);
 
-  // Don't paste-and-go data that was marked by its originator as confidential.
-  constexpr size_t kMaxSelectionTextLength = 50;
+  // If the originator marked the clipboard data as confidential, then
+  // paste-and-go is unavailable, so use a menu label that doesn't contain
+  // clipboard data. (The menu command is disabled in
+  // `OmniboxViewViews::IsCommandIdEnabled()`.)
+  //
+  // On the Mac, if Pasteboard Privacy is enabled, then programmatic access to
+  // the clipboard is either prohibited or will prompt the user, and we can't
+  // inline the contents of the clipboard into the label.
+  //
+  // If we were to attempt to access the clipboard contents to inline it into
+  // the label, the result would be a glitched out user window (see the
+  // screenshot attached to https://crbug.com/417683820#comment3). That's super
+  // bad.
+  //
+  // Therefore, take the less bad approach as done below, where if accessing the
+  // clipboard could block, we just turn "paste and go" into a generic menu
+  // item.
+  //
+  // The best approach would actually be to use -[NSPasteboard
+  // detectPatternsForPatterns:completionHandler:] to select a specific menu
+  // string that matches what's on the clipboard, in order to convey to the user
+  // what will happen. The usage of `/components/open_from_clipboard` might be
+  // useful. This behavior should be patterned after what Chrome iOS does, which
+  // has to work under similar restrictions. TODO(https://crbug.com/419266152):
+  // Switch to this better approach.
+  if (IsClipboardDataMarkedAsConfidential()
+#if BUILDFLAG(IS_MAC)
+      || ui::PasteMightBlockWithPrivacyAlert()
+#endif
+  )
+    return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
+
   const std::u16string clipboard_text =
-      IsClipboardDataMarkedAsConfidential()
-          ? std::u16string()
-          : GetClipboardText(/*notify_if_restricted=*/false);
+      GetClipboardText(/*notify_if_restricted=*/false);
 
   if (clipboard_text.empty()) {
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
   }
 
+  constexpr size_t kMaxSelectionTextLength = 50;
   std::u16string selection_text = gfx::TruncateString(
       clipboard_text, kMaxSelectionTextLength, gfx::WORD_BREAK);
 
@@ -1520,9 +1553,44 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
     return !GetReadOnly() && CanGetClipboardText();
   }
   if (command_id == IDC_PASTE_AND_GO) {
-    return !GetReadOnly() && !IsClipboardDataMarkedAsConfidential() &&
-           model()->CanPasteAndGo(
-               GetClipboardText(/*notify_if_restricted=*/false));
+    if (GetReadOnly()) {
+      return false;
+    }
+
+    // If the originator marked the clipboard data as confidential, then
+    // paste-and-go is unavailable, so disable the menu command. (The menu label
+    // is set to be generic in `GetLabelForCommandId()`.)
+    if (IsClipboardDataMarkedAsConfidential()) {
+      return false;
+    }
+
+#if BUILDFLAG(IS_MAC)
+    // On the Mac, if Pasteboard Privacy is enabled, then programmatic access to
+    // the clipboard is either prohibited or will prompt the user, and we can't
+    // use the actual clipboard text to make decisions about enabling the menu
+    // command.
+    //
+    // Therefore, for now, go with a general check for if there is a
+    // probably-valid item on the clipboard to use for paste-and-go, with a
+    // cheat of using a constant string to ensure that all the other
+    // requirements for paste-and-go are fulfilled.
+    //
+    // TODO(https://crbug.com/419266152): Switch to a better approach of using
+    // -[NSPasteboard detectPatternsForPatterns:completionHandler:] to actually
+    // know if there are valid values on the clipboard to enable paste-and-go
+    // with confidence.
+    if (ui::PasteMightBlockWithPrivacyAlert()) {
+      if (CanGetClipboardText()) {
+        constexpr char16_t kSomeValidText[] = u"validtext";
+        return model()->CanPasteAndGo(kSomeValidText);
+      } else {
+        return false;
+      }
+    }
+#endif
+
+    return model()->CanPasteAndGo(
+        GetClipboardText(/*notify_if_restricted=*/false));
   }
 
   // These menu items are only shown when they are valid.

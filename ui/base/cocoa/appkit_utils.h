@@ -23,6 +23,18 @@ COMPONENT_EXPORT(UI_BASE) bool IsCGFloatEqual(CGFloat a, CGFloat b);
 // Returns true if the current application is the active application.
 COMPONENT_EXPORT(UI_BASE) bool IsActiveApplication();
 
+// Returns true if it is possible that accessing pasteboard contents
+// programmatically will block with a Pasteboard Privacy alert. Returns false if
+// it is known for sure that it will not, either because Chromium has been
+// granted an exception to Pasteboard Privacy, or because Chromium has been
+// locked down with regard to Pasteboard Privacy and it's certain that the
+// access would fail.
+//
+// TODO(https://crbug.com/419266152): Remove this, and use -[NSPasteboard
+// detectPatternsForPatterns:completionHandler:] to accurately convey to the
+// user what will happen.
+COMPONENT_EXPORT(UI_BASE) bool PasteMightBlockWithPrivacyAlert();
+
 // The NSServicesMenuRequestor protocol does not pass modern NSPasteboardType
 // constants in the `types` array, but only obsolete "Pboard" constants. This is
 // verified through macOS 15 (FB11838671). These are utility functions to
