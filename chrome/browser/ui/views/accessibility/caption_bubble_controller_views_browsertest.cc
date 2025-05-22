@@ -25,6 +25,7 @@
 #include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
+#include "components/live_caption/views/translation_view_wrapper.h"
 #include "components/soda/soda_installer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -105,7 +106,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
       caption_bubble_settings_ = std::make_unique<LiveCaptionBubbleSettings>(
           browser()->profile()->GetPrefs());
       controller_ = std::make_unique<CaptionBubbleControllerViews>(
-          caption_bubble_settings_.get(), "en-US" /* application_locale */);
+          caption_bubble_settings_.get(), "en-US" /* application_locale */,
+          std::make_unique<TranslationViewWrapper>(
+              caption_bubble_settings_.get()));
     }
     return controller_.get();
   }
@@ -143,12 +146,14 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   views::Label* GetSourceLanguageLabel() {
     return controller_ ? controller_->caption_bubble_
+                             ->GetTranslationViewWrapperForTesting()
                              ->GetSourceLanguageLabelForTesting()
                        : nullptr;
   }
 
   views::Label* GetTargetLanguageLabel() {
     return controller_ ? controller_->caption_bubble_
+                             ->GetTranslationViewWrapperForTesting()
                              ->GetTargetLanguageLabelForTesting()
                        : nullptr;
   }
@@ -186,26 +191,30 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   views::MdTextButton* GetSourceLanguageButton() {
     return controller_ ? controller_->caption_bubble_
+                             ->GetTranslationViewWrapperForTesting()
                              ->GetSourceLanguageButtonForTesting()
                        : nullptr;
   }
 
   views::MdTextButton* GetTargetLanguageButton() {
     return controller_ ? controller_->caption_bubble_
+                             ->GetTranslationViewWrapperForTesting()
                              ->GetTargetLanguageButtonForTesting()
                        : nullptr;
   }
 
   views::View* GetTranslateIconAndText() {
     return controller_ ? controller_->caption_bubble_
+                             ->GetTranslationViewWrapperForTesting()
                              ->GetTranslateIconAndTextForTesting()
                        : nullptr;
   }
 
   views::View* GetTranslateArrowIcon() {
-    return controller_
-               ? controller_->caption_bubble_->GetTranslateArrowIconForTesting()
-               : nullptr;
+    return controller_ ? controller_->caption_bubble_
+                             ->GetTranslationViewWrapperForTesting()
+                             ->GetTranslateArrowIconForTesting()
+                       : nullptr;
   }
 
   views::Button* GetCollapseButton() {
@@ -251,8 +260,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   void SetTargetLanguage(std::string language_code) {
-    GetController()->caption_bubble_->SetTargetLanguageForTesting(
-        language_code);
+    GetController()
+        ->caption_bubble_->GetTranslationViewWrapperForTesting()
+        ->SetTargetLanguageForTesting(language_code);
   }
 
   void DestroyController() { controller_.reset(nullptr); }

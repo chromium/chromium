@@ -46,6 +46,10 @@ if (!is_android && !is_ios) {
         "views/caption_bubble_model.cc",
         "views/caption_bubble_model.h",
         "views/format_constants.h",
+        "views/translation_view_wrapper.cc",
+        "views/translation_view_wrapper.h",
+        "views/translation_view_wrapper_base.cc",
+        "views/translation_view_wrapper_base.h",
       ]
 
       public_deps = [ "//ui/base/mojom:ui_base_types" ]

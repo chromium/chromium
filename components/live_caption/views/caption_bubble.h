@@ -15,10 +15,10 @@
 #include "build/buildflag.h"
 #include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/live_caption/views/translation_view_wrapper_base.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
-#include "ui/menus/simple_menu_model.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
@@ -31,20 +31,13 @@ class Checkbox;
 class ImageButton;
 class ImageView;
 class Label;
-class MenuRunner;
 }  // namespace views
-
-namespace translate {
-class TranslateUILanguagesManager;
-}
 
 namespace captions {
 
 class CaptionBubbleEventObserver;
 class CaptionBubbleFrameView;
 class CaptionBubbleLabel;
-class LanguageTextButton;
-class LanguageDropdownButton;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These should be the same as
@@ -77,14 +70,15 @@ extern const ui::ClassProperty<bool>* const kIsCaptionBubbleKey;
 //
 class CaptionBubble : public views::BubbleDialogDelegateView,
                       public gfx::AnimationDelegate,
-                      public ui::SimpleMenuModel::Delegate,
-                      public CaptionBubbleSettings::Observer {
+                      public TranslationViewWrapperBase::Delegate {
   METADATA_HEADER(CaptionBubble, views::BubbleDialogDelegateView)
 
  public:
-  CaptionBubble(CaptionBubbleSettings* caption_bubble_settings,
-                const std::string& application_locale,
-                base::OnceClosure destroyed_callback);
+  CaptionBubble(
+      CaptionBubbleSettings* caption_bubble_settings,
+      std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper,
+      const std::string& application_locale,
+      base::OnceClosure destroyed_callback);
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
   ~CaptionBubble() override;
@@ -108,17 +102,11 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   views::Label* GetLabelForTesting();
   views::Label* GetDownloadProgressLabelForTesting();
-  views::Label* GetSourceLanguageLabelForTesting();
-  views::Label* GetTargetLanguageLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   views::Button* GetCloseButtonForTesting();
   views::Button* GetBackToTabButtonForTesting();
-  views::MdTextButton* GetSourceLanguageButtonForTesting();
-  views::MdTextButton* GetTargetLanguageButtonForTesting();
   views::View* GetHeaderForTesting();
-  views::View* GetTranslateIconAndTextForTesting();
-  views::View* GetTranslateArrowIconForTesting();
-  void SetTargetLanguageForTesting(std::string language_code);
+  TranslationViewWrapperBase* GetTranslationViewWrapperForTesting();
 
   void SetCaptionBubbleStyle();
 
@@ -132,16 +120,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void SetTitleTextForTesting(const std::u16string title_text) {
     title_->SetText(title_text);
   }
-
-  // ui::SimpleMenuModelDelegate:
-  void ExecuteCommand(int target_language_code_index, int event_flags) override;
-
-  bool IsCommandIdChecked(int target_language_code_index) const override;
-
-  // CaptionBubbleSettings::Observer:
-  void OnLiveTranslateEnabledChanged() override;
-  void OnLiveCaptionLanguageChanged() override;
-  void OnLiveTranslateTargetLanguageChanged() override;
 
  protected:
   // views::BubbleDialogDelegateView:
@@ -168,7 +146,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void SwapButtons(views::Button* first_button,
                    views::Button* second_button,
                    bool show_first_button);
-  void CaptionSettingsButtonPressed();
+  // TranslationViewWrapperBase::Delegate:
+  void CaptionSettingsButtonPressed() override;
 
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
@@ -224,8 +203,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void SetTextSizeAndFontFamily();
   void SetTextColor();
   void SetBackgroundColor();
-  void OnLanguageChanged();
-  void UpdateLanguageLabelText();
+
+  // TranslationViewWrapperBase::Delegate:
+  void OnLanguageChanged(const std::string& display_language) override;
+  void UpdateLanguageDirection(const std::string& display_language) override;
 
   // Places the bubble at the bottom center of the context widget for the active
   // model, ensuring that it's positioned where the user will spot it. If there
@@ -253,17 +234,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   void UpdateAccessibleName();
 
-  void SetTranslationsViewVisible(bool live_translate_enabled);
-
-  void ShowTranslateOptionsMenu();
-
-  std::string GetSourceLanguageCode() const;
-  std::string GetTargetLanguageCode() const;
-  bool SourceAndTargetLanguageCodeMatch();
-
-  std::u16string GetSourceLanguageName() const;
-  std::u16string GetTargetLanguageName() const;
-
   bool IsTranslateHeaderEnabled() const;
 
   // Unowned. Owned by views hierarchy.
@@ -271,28 +241,16 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
   raw_ptr<views::Label> download_progress_label_;
-  raw_ptr<views::Label> translation_header_text_;
-  raw_ptr<LanguageTextButton> source_language_button_;
-  raw_ptr<LanguageDropdownButton> target_language_button_;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
-  raw_ptr<views::View> translate_indicator_container_;
   raw_ptr<views::View> translate_header_container_;
-  std::u16string source_language_text_;
-  std::u16string target_language_text_;
   raw_ptr<views::ImageView> generic_error_icon_;
-  raw_ptr<views::ImageView> translate_arrow_icon_;
-  raw_ptr<views::ImageView> translate_icon_;
   raw_ptr<views::View> generic_error_message_;
   raw_ptr<views::ImageButton> back_to_tab_button_;
   raw_ptr<views::ImageButton> close_button_;
   raw_ptr<views::ImageButton> expand_button_;
   raw_ptr<views::ImageButton> collapse_button_;
   raw_ptr<CaptionBubbleFrameView> frame_;
-
-  // Flag indicating whether the current source language does not match the user
-  // preference source language.
-  bool auto_detected_source_language_ = false;
 
 #if BUILDFLAG(IS_WIN)
   raw_ptr<views::StyledLabel> media_foundation_renderer_error_text_;
@@ -307,6 +265,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::optional<ui::CaptionStyle> caption_style_;
   raw_ptr<CaptionBubbleModel> model_ = nullptr;
   const raw_ptr<CaptionBubbleSettings> caption_bubble_settings_;
+  std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper_;
 
   OnErrorClickedCallback error_clicked_callback_;
   OnDoNotShowAgainClickedCallback error_silenced_callback_;
@@ -334,13 +293,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::unique_ptr<CaptionBubbleEventObserver> caption_bubble_event_observer_;
 
   base::CallbackListSubscription title_text_changed_callback_;
-
-  // Manages the Translate UI language list related APIs.
-  std::unique_ptr<translate::TranslateUILanguagesManager>
-      translate_ui_languages_manager_;
-
-  std::unique_ptr<ui::SimpleMenuModel> translation_menu_model_;
-  std::unique_ptr<views::MenuRunner> translation_menu_runner_;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
 };

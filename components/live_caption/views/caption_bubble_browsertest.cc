@@ -36,6 +36,7 @@
 #include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/views/translation_view_wrapper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -85,7 +86,9 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
     const std::string application_locale;
     base::OnceClosure destroyed_callback;
     auto bubble = std::make_unique<CaptionBubble>(
-        settings_.get(), application_locale, std::move(destroyed_callback));
+        settings_.get(),
+        std::make_unique<TranslationViewWrapper>(settings_.get()),
+        application_locale, std::move(destroyed_callback));
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
     bubble_->SetModel(model_.get());

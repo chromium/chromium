@@ -27,6 +27,7 @@ class CaptionBubble;
 class CaptionBubbleModel;
 class CaptionBubbleSettings;
 class CaptionBubbleSessionObserver;
+class TranslationViewWrapperBase;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Controller for Views
@@ -36,8 +37,10 @@ class CaptionBubbleSessionObserver;
 class CaptionBubbleControllerViews : public CaptionBubbleController,
                                      public speech::SodaInstaller::Observer {
  public:
-  CaptionBubbleControllerViews(CaptionBubbleSettings* caption_bubble_settings,
-                               const std::string& application_locale);
+  CaptionBubbleControllerViews(
+      CaptionBubbleSettings* caption_bubble_settings,
+      const std::string& application_locale,
+      std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper);
   ~CaptionBubbleControllerViews() override;
   CaptionBubbleControllerViews(const CaptionBubbleControllerViews&) = delete;
   CaptionBubbleControllerViews& operator=(const CaptionBubbleControllerViews&) =
