@@ -313,6 +313,15 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
+  // Checks if a prompt should be suppressed and updates the suppression
+  // reason preference if a new reason is determined.
+  // Returns true if the prompt should be suppressed (due to an existing
+  // or newly set reason), false otherwise.
+  bool UpdateAndGetSuppressionReason();
+
+  // Helper function to set the prompt suppression reason.
+  void SetPromptSuppressedReason(PromptSuppressedReason reason);
+
   raw_ptr<Profile> profile_;
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
