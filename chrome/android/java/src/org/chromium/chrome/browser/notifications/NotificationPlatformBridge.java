@@ -970,6 +970,18 @@ public class NotificationPlatformBridge {
             appendReportButton(notificationBuilder, identifyingAttributes, ACTION_REPORT_AS_SAFE);
         }
 
+        // If reporting is enabled and the user is being shown the notification rather than a
+        // warning, reporting as spam should be allowed on unsubscribe.
+        if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
+                && !shouldTreatNotificationAsSuspicious) {
+            Bundle extras = new Bundle();
+            extras.putBoolean(
+                    NotificationConstants.EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED,
+                    false);
+            notificationBuilder.setExtras(extras);
+        }
+
         NotificationWrapper notification =
                 buildNotificationWrapper(notificationBuilder, identifyingAttributes.notificationId);
 
@@ -1190,11 +1202,16 @@ public class NotificationPlatformBridge {
                 ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)) {
             notificationTitle =
                     res.getString(R.string.notification_provisionally_unsubscribed_title_new);
-            notificationBody =
-                    res.getString(R.string.notification_provisionally_unsubscribed_body_new);
         } else {
             notificationTitle =
                     res.getString(R.string.notification_provisionally_unsubscribed_title);
+        }
+        boolean shouldAllowReportingSpam =
+                NotificationContentDetectionManager.shouldAllowReportingSpam(extras);
+        if (shouldAllowReportingSpam) {
+            notificationBody =
+                    res.getString(R.string.notification_provisionally_unsubscribed_body_new);
+        } else {
             notificationBody =
                     res.getString(
                             R.string.notification_provisionally_unsubscribed_body,
@@ -1246,14 +1263,14 @@ public class NotificationPlatformBridge {
                 NotificationUmaTracker.ActionType.UNDO_UNSUBSCRIBE,
                 res.getString(R.string.notification_undo_unsubscribe_button));
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)) {
+        // Only add the report button if the user has seen the notification contents. This happens
+        // if the notification was not warned on or if the user tapped to show the original
+        // notification on a warning.
+        if (shouldAllowReportingSpam) {
             appendReportButton(
                     notificationBuilder,
                     identifyingAttributes,
-                    NotificationContentDetectionManager.isNotificationSuspicious(
-                                    identifyingAttributes.notificationId,
-                                    identifyingAttributes.origin)
+                    NotificationContentDetectionManager.wasNotificationWarned(extras)
                             ? ACTION_REPORT_WARNED_NOTIFICATION_AS_SPAM
                             : ACTION_REPORT_UNWARNED_NOTIFICATION_AS_SPAM);
         } else {
@@ -1685,6 +1702,16 @@ public class NotificationPlatformBridge {
                     originalNotificationBackup.putParcelable(
                             NotificationConstants.EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL,
                             tappedNotification);
+                    if (tappedNotification.extras.containsKey(
+                            NotificationConstants
+                                    .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED)) {
+                        originalNotificationBackup.putBoolean(
+                                NotificationConstants
+                                        .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED,
+                                tappedNotification.extras.getBoolean(
+                                        NotificationConstants
+                                                .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED));
+                    }
 
                     displayProvisionallyUnsubscribedNotification(
                             identifyingAttributes, originalNotificationBackup);
@@ -1863,6 +1890,13 @@ public class NotificationPlatformBridge {
                                 NotificationConstants
                                         .EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT,
                                 notificationBackup.clone());
+                        // Store extra signaling that the user has seen the original notification.
+                        // This will help determine whether to allow the reporting feature from the
+                        // unsubscribe confirmation notification or not.
+                        extras.putBoolean(
+                                NotificationConstants
+                                        .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED,
+                                true);
                         builder.addExtras(extras);
 
                         // Add the unsubscribe and always allow notification buttons. If the feature

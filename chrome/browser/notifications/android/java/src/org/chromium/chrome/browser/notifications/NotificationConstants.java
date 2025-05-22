@@ -60,6 +60,9 @@ public class NotificationConstants {
     static final String EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT =
             "notification_backup_for_suspicious_verdict";
 
+    static final String EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED =
+            "notification_allow_reporting_as_spam_is_notification_warned";
+
     static final String EXTRA_JOB_SCHEDULED_TIME_MS = "notification_job_scheduled_time_ms";
     static final String EXTRA_JOB_STARTED_TIME_MS = "notification_job_started_time_ms";
 

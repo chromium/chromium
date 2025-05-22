@@ -339,4 +339,20 @@ public class NotificationContentDetectionManager {
         recordSuspiciousNotificationWarningInteractions(
                 SuspiciousNotificationWarningInteractions.WARNING_SHOWN);
     }
+
+    static boolean shouldAllowReportingSpam(Bundle extras) {
+        if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
+                && extras.containsKey(
+                        NotificationConstants
+                                .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED)) {
+            return true;
+        }
+        return false;
+    }
+
+    static boolean wasNotificationWarned(Bundle extras) {
+        return extras.getBoolean(
+                NotificationConstants.EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED);
+    }
 }
