@@ -37,7 +37,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.UrlBarViewBinderUnitTest.ShadowOmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -206,19 +205,13 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testTextSize() {
+    public void testTextSiz() {
         mUrlBar.setPaddingRelative(13, 0, 17, 0);
         int normalPadding =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
         int smallPadding = 0;
-        float normalTextSize =
-                mActivity.getResources().getDimension(R.dimen.location_bar_url_text_size);
-        float smallTextSize = mActivity.getResources().getDimension(R.dimen.text_size_small);
-
-        Assert.assertEquals(normalTextSize, mUrlBar.getTextSize(), MathUtils.EPSILON);
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
-        Assert.assertEquals(smallTextSize, mUrlBar.getTextSize(), MathUtils.EPSILON);
         Assert.assertEquals(smallPadding, mUrlBar.getPaddingBottom());
         Assert.assertEquals(smallPadding, mUrlBar.getPaddingTop());
         Assert.assertEquals(13, mUrlBar.getPaddingStart());

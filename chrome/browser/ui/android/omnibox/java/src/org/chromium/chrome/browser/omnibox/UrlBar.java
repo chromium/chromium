@@ -141,6 +141,8 @@ public class UrlBar extends AutocompleteEditText {
      */
     private int mOriginEndIndex;
 
+    private boolean mUseSmallTextHeight;
+
     /** What scrolling action should be taken after the URL bar text changes. */
     @IntDef({ScrollType.NO_SCROLL, ScrollType.SCROLL_TO_TLD, ScrollType.SCROLL_TO_BEGINNING})
     @Retention(RetentionPolicy.SOURCE)
@@ -1237,6 +1239,7 @@ public class UrlBar extends AutocompleteEditText {
 
     @VisibleForTesting
     void enforceMaxTextHeight() {
+        if (mUseSmallTextHeight) return;
         int viewHeight = getHeight() - getPaddingTop() - getPaddingBottom();
         // Don't touch the text size if the view has not measured and shown yet, or if it's a
         // subject to custom layout constraints (e.g. CCT) that might result with font size being
@@ -1261,6 +1264,10 @@ public class UrlBar extends AutocompleteEditText {
             var scaleRatio = viewHeight / effectiveFontHeightPx;
             setTextSize(TypedValue.COMPLEX_UNIT_PX, getTextSize() * scaleRatio);
         }
+    }
+
+    void setUseSmallTextHeight(boolean useSmallTextHeight) {
+        mUseSmallTextHeight = useSmallTextHeight;
     }
 
     @VisibleForTesting
