@@ -32,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -211,6 +212,7 @@ public class HubToolbarViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/419357373")
     public void testPaneSwitcher() throws Exception {
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
@@ -244,6 +246,7 @@ public class HubToolbarViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE})
+    @DisabledTest(message = "https://crbug.com/419357373")
     public void testPaneSwitcherWithGtsUpdate() throws Exception {
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
@@ -276,6 +279,7 @@ public class HubToolbarViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/419357373")
     public void testHideMenuButton() throws Exception {
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
@@ -296,6 +300,7 @@ public class HubToolbarViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/419357373")
     public void testTabSwitcherDrawable_toggleNotificationStatus() throws Exception {
         TabSwitcherDrawable tabSwitcherDrawable =
                 TabSwitcherDrawable.createTabSwitcherDrawable(
@@ -331,6 +336,7 @@ public class HubToolbarViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/419357373")
     public void testTabSwitcherDrawable_toggleNotificationStatusIncognito() throws Exception {
         TabSwitcherDrawable tabSwitcherDrawable =
                 TabSwitcherDrawable.createTabSwitcherDrawable(
@@ -369,6 +375,7 @@ public class HubToolbarViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/419357373")
     public void testSearchBox() throws Exception {
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
