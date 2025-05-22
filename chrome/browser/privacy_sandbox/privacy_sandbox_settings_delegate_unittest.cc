@@ -255,17 +255,6 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   EXPECT_FALSE(delegate()->HasAppropriateTopicsConsent());
 }
 
-TEST_F(PrivacySandboxSettingsDelegateTest,
-       CapabilityRestrictionWhenForcedRestictedUser) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
-            .name,
-        "true"}});
-  EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
-  EXPECT_FALSE(delegate()->IsPrivacySandboxCurrentlyUnrestricted());
-}
-
 namespace {
 
 using TpcdExperimentEligibility = privacy_sandbox::TpcdExperimentEligibility;

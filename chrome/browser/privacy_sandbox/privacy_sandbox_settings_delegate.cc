@@ -80,10 +80,6 @@ bool PrivacySandboxSettingsDelegate::IsRestrictedNoticeEnabled() const {
 }
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
-          .Get()) {
-    return true;
-  }
   // If the Sandbox was ever reported as restricted, it is always restricted.
   // TODO (crbug.com/1428546): Adjust when we have a graduation flow.
   bool was_ever_reported_as_restricted =
@@ -114,11 +110,6 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxCurrentlyUnrestricted()
     const {
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
-          .Get()) {
-    return false;
-  }
-
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
