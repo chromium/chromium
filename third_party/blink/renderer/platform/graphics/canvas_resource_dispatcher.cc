@@ -79,7 +79,7 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
       size_(size),
       change_size_for_next_commit_(false),
       placeholder_canvas_id_(canvas_id),
-      num_unreclaimed_frames_posted_(0),
+      num_pending_placeholder_resources_(0),
       client_(client),
       task_runner_(std::move(task_runner)),
       agent_group_scheduler_compositor_task_runner_(
@@ -159,19 +159,20 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
 
   // Determines whether the main thread may be blocked. If unblocked, post
   // |canvas_resource|. Otherwise, save it but do not post it.
-  if (num_unreclaimed_frames_posted_ < kMaxUnreclaimedPlaceholderFrames) {
+  if (num_pending_placeholder_resources_ < kMaxPendingPlaceholderResources) {
     PostImageToPlaceholder(std::move(canvas_resource), resource_id);
-    num_unreclaimed_frames_posted_++;
+    num_pending_placeholder_resources_++;
   } else {
-    DCHECK(num_unreclaimed_frames_posted_ == kMaxUnreclaimedPlaceholderFrames);
+    DCHECK(num_pending_placeholder_resources_ ==
+           kMaxPendingPlaceholderResources);
 
     // The previous unposted resource becomes obsolete now.
     // Inform the resource that the placeholder ref was released so it can do
     // any appropriate cleanup/recycling.
     CanvasResource::OnPlaceholderReleasedResource(
-        std::move(latest_unposted_image_));
+        std::move(latest_unposted_resource_));
 
-    latest_unposted_image_ = std::move(canvas_resource);
+    latest_unposted_resource_ = std::move(canvas_resource);
     latest_unposted_resource_id_ = resource_id;
   }
 }
@@ -463,19 +464,19 @@ void CanvasResourceDispatcher::ReclaimResources(
 }
 
 void CanvasResourceDispatcher::OnMainThreadReceivedImage() {
-  num_unreclaimed_frames_posted_--;
+  num_pending_placeholder_resources_--;
 
-  // The main thread has become unblocked recently and we have an image that
-  // have not been posted yet.
-  if (latest_unposted_image_) {
-    DCHECK(num_unreclaimed_frames_posted_ ==
-           kMaxUnreclaimedPlaceholderFrames - 1);
-    PostImageToPlaceholderIfNotBlocked(std::move(latest_unposted_image_),
+  // The main thread has become unblocked recently and we have a resource that
+  // has not been posted yet.
+  if (latest_unposted_resource_) {
+    DCHECK(num_pending_placeholder_resources_ ==
+           kMaxPendingPlaceholderResources - 1);
+    PostImageToPlaceholderIfNotBlocked(std::move(latest_unposted_resource_),
                                        latest_unposted_resource_id_);
-    // To make it safe to use/check latest_unposted_image_ after using
+    // To make it safe to use/check latest_unposted_resource_ after using
     // std::move on it, we need to force a reset because the move above is
     // elide-able.
-    latest_unposted_image_.reset();
+    latest_unposted_resource_.reset();
     latest_unposted_resource_id_ = viz::kInvalidResourceId;
   }
 }

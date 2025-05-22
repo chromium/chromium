@@ -37,13 +37,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
  public:
   static constexpr unsigned kMaxPendingCompositorFrames = 2;
 
-  // In theory, the spec allows an unlimited number of frames to be retained
-  // on the main thread. For example, by acquiring ImageBitmaps from the
-  // placeholder canvas.  We nonetheless set a limit to the number of
-  // outstanding placeholder frames in order to prevent potential resource
-  // leaks that can happen when the main thread is in a jam, causing posted
-  // frames to pile-up.
-  static constexpr unsigned kMaxUnreclaimedPlaceholderFrames = 50;
+  // We set a limit to the number of placeholder resources that have been posted
+  // to the main thread but not yet received on that thread.
+  static constexpr unsigned kMaxPendingPlaceholderResources = 50;
 
   base::WeakPtr<CanvasResourceDispatcher> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -178,10 +174,10 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   viz::FrameTokenGenerator next_frame_token_;
 
   // The latest_unposted_resource_id_ always refers to the Id of the frame
-  // resource used by the latest_unposted_image_.
-  scoped_refptr<CanvasResource> latest_unposted_image_;
+  // resource used by the latest_unposted_resource_.
+  scoped_refptr<CanvasResource> latest_unposted_resource_;
   viz::ResourceId latest_unposted_resource_id_;
-  unsigned num_unreclaimed_frames_posted_;
+  unsigned num_pending_placeholder_resources_;
 
   viz::BeginFrameAck current_begin_frame_ack_;
 
