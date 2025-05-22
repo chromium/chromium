@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -80,11 +81,13 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
       conversion_checkers.push_back(
           TreeCountingChecker::Create(length_resolver));
     }
+    CSSPrimitiveValue::LengthTypeFlags types;
+    primitive_value->AccumulateLengthUnitTypes(types);
+    if (InterpolationType::ConversionChecker* length_units_checker =
+            LengthUnitsChecker::MaybeCreate(types, state)) {
+      conversion_checkers.push_back(length_units_checker);
+    }
   }
-  // TODO(40946458): Should do a proper interpolation here instead of converting
-  // relative units first.
-  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
-  // if necessary.
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
       length_resolver, value, inherited_font_weight));
 }
