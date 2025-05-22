@@ -83,8 +83,7 @@ InstallerDownloaderModelImpl::InstallerDownloaderModelImpl(
 InstallerDownloaderModelImpl::~InstallerDownloaderModelImpl() = default;
 
 void InstallerDownloaderModelImpl::CheckEligibility(
-    base::OnceCallback<void(const std::optional<base::FilePath>& destination)>
-        callback) {
+    EligibilityCheckCallback callback) {
   if (!system_info_provider_->IsOsEligible()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
@@ -150,6 +149,11 @@ void InstallerDownloaderModelImpl::StartDownload(
 bool InstallerDownloaderModelImpl::IsMaxShowCountReached() const {
   return g_browser_process->local_state()->GetInteger(
              prefs::kInstallerDownloaderInfobarShowCount) >= kMaxShowCount;
+}
+
+bool InstallerDownloaderModelImpl::ShouldByPassEligibilityCheck() const {
+  return g_browser_process->local_state()->GetBoolean(
+      prefs::kInstallerDownloaderBypassEligibilityCheck);
 }
 
 void InstallerDownloaderModelImpl::OnInstallerDownloadCreated(

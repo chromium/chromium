@@ -8,10 +8,12 @@
 #include <optional>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -105,9 +107,20 @@ void InstallerDownloaderController::MaybeShowInfoBar() {
 }
 
 void InstallerDownloaderController::OnEligibilityReady(
-    const std::optional<base::FilePath>& destination) {
-  if (!destination.has_value()) {
+    std::optional<base::FilePath> destination) {
+  // Early return when we have no destination and bypass is not allowed.
+  if (!destination.has_value() && !model_->ShouldByPassEligibilityCheck()) {
     return;
+  }
+
+  // Compute a fallback destination (user’s Desktop) when bypassing eligibility.
+  if (!destination) {
+    base::FilePath desktop_path;
+    if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
+      return;
+    }
+
+    destination = std::move(desktop_path);
   }
 
   // TODO(https://crbug.com/417708652): Ensure that the infobar is visible on

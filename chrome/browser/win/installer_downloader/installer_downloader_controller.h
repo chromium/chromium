@@ -81,7 +81,7 @@ class InstallerDownloaderController {
       GetActiveWebContentsCallback callback);
 
  private:
-  void OnEligibilityReady(const std::optional<base::FilePath>& destination);
+  void OnEligibilityReady(std::optional<base::FilePath> destination);
   void OnDownloadCompleted(std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
                            bool success);
 

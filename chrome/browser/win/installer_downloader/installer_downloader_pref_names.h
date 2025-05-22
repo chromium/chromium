@@ -12,6 +12,11 @@ namespace installer_downloader::prefs {
 inline constexpr char kInstallerDownloaderInfobarShowCount[] =
     "installer_downloader.infobar_show_count";
 
+// Bool browser locate state that indicates whether the installer downloader
+// eligibility check should be by-passed.
+inline constexpr char kInstallerDownloaderBypassEligibilityCheck[] =
+    "installer_downloader.bypass_eligibility_check_for_testing";
+
 }  // namespace installer_downloader::prefs
 
 #endif  // CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_PREF_NAMES_H_

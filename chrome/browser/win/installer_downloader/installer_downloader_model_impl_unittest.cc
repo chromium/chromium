@@ -92,7 +92,7 @@ TEST_F(InstallerDownloaderModelTest, NotEligibleWhenOsIneligible) {
 
   base::RunLoop run_loop;
   model_->CheckEligibility(base::BindLambdaForTesting(
-      [&](const std::optional<base::FilePath>& destination) {
+      [&](std::optional<base::FilePath> destination) {
         EXPECT_FALSE(destination.has_value());
         run_loop.Quit();
       }));
@@ -111,7 +111,7 @@ TEST_F(InstallerDownloaderModelTest, OsUpgradeEligible) {
 
   base::RunLoop run_loop;
   model_->CheckEligibility(base::BindLambdaForTesting(
-      [&](const std::optional<base::FilePath>& destination) {
+      [&](std::optional<base::FilePath> destination) {
         EXPECT_FALSE(destination.has_value());
         run_loop.Quit();
       }));
@@ -138,7 +138,7 @@ TEST_F(InstallerDownloaderModelTest, OsUpgradeNotEligibleWhenNoPathSet) {
 
   base::RunLoop run_loop;
   model_->CheckEligibility(base::BindLambdaForTesting(
-      [&](const std::optional<base::FilePath>& destination) {
+      [&](std::optional<base::FilePath> destination) {
         EXPECT_FALSE(destination.has_value());
         run_loop.Quit();
       }));
@@ -160,7 +160,7 @@ TEST_F(InstallerDownloaderModelTest, OsUpgradeNotEligibleWhenDesktopPathSet) {
 
   base::RunLoop run_loop;
   model_->CheckEligibility(base::BindLambdaForTesting(
-      [&](const std::optional<base::FilePath>& destination) {
+      [&](std::optional<base::FilePath> destination) {
         ASSERT_TRUE(destination.has_value());
         EXPECT_EQ(destination.value(), status.desktop_path);
         run_loop.Quit();
@@ -181,7 +181,7 @@ TEST_F(InstallerDownloaderModelTest, OsUpgradeNotEligibleWhenOnlyRootPathSet) {
 
   base::RunLoop run_loop;
   model_->CheckEligibility(base::BindLambdaForTesting(
-      [&](const std::optional<base::FilePath>& destination) {
+      [&](std::optional<base::FilePath> destination) {
         EXPECT_TRUE(destination.has_value());
         EXPECT_EQ(destination, status.one_drive_path);
         run_loop.Quit();

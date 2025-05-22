@@ -8,13 +8,16 @@
 #include <optional>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/test/base/testing_profile.h"
@@ -56,11 +59,9 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
                content::DownloadManager&,
                CompletionCallback),
               (override));
-  MOCK_METHOD(void,
-              CheckEligibility,
-              (base::OnceCallback<void(const std::optional<base::FilePath>&)>),
-              (override));
+  MOCK_METHOD(void, CheckEligibility, (EligibilityCheckCallback), (override));
   MOCK_METHOD(bool, IsMaxShowCountReached, (), (const, override));
+  MOCK_METHOD(bool, ShouldByPassEligibilityCheck, (), (const, override));
 };
 
 class InstallerDownloaderControllerTest : public testing::Test {
@@ -115,6 +116,8 @@ TEST_F(InstallerDownloaderControllerTest, BailsWhenShowCountExceeded) {
 TEST_F(InstallerDownloaderControllerTest,
        CallsEligibilityWhenShowCountNotExceeded) {
   EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, ShouldByPassEligibilityCheck())
+      .WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(RunOnceCallback<0>(std::nullopt));
 
@@ -126,7 +129,7 @@ TEST_F(InstallerDownloaderControllerTest, ShowsInfobarWhenEligible) {
   EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(base::test::RunOnceCallback<0>(
-          std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
+          std::optional<base::FilePath>(FILE_PATH_LITERAL("C:\\foo"))));
   EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
 
   controller_->MaybeShowInfoBar();
@@ -141,7 +144,7 @@ TEST_F(InstallerDownloaderControllerTest, SkipsWhenNoActiveContents) {
   EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(base::test::RunOnceCallback<0>(
-          std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
+          std::optional<base::FilePath>(FILE_PATH_LITERAL("C:\\foo"))));
 
   controller_->MaybeShowInfoBar();
 }
@@ -149,6 +152,8 @@ TEST_F(InstallerDownloaderControllerTest, SkipsWhenNoActiveContents) {
 // If the eligibility callback returns `std::nullopt`, no infobar is shown.
 TEST_F(InstallerDownloaderControllerTest, SkipsWhenNotEligible) {
   EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, ShouldByPassEligibilityCheck())
+      .WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(base::test::RunOnceCallback<0>(std::nullopt));
 
@@ -225,6 +230,31 @@ TEST_F(InstallerDownloaderControllerTest,
   controller_->OnDownloadRequestAccepted(destination);
 
   EXPECT_NE(first_url, second_url);
+}
+
+// Bypass = true, eligibility callback returns std::nullopt → infobar shown.
+TEST_F(InstallerDownloaderControllerTest,
+       ShowsInfobarWhenBypassEnabledAndNoDestination) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  // Point DIR_USER_DESKTOP to a real, absolute temp location so that the
+  // fallback path logic succeeds.
+  base::ScopedPathOverride desktop_override(base::DIR_USER_DESKTOP,
+                                            temp_dir.GetPath(),
+                                            /*is_absolute=*/true,
+                                            /*create=*/true);
+
+  EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, ShouldByPassEligibilityCheck())
+      .WillOnce(Return(true));
+  // Eligibility returns std::nullopt → controller must rely on the bypass path.
+  EXPECT_CALL(*mock_model_, CheckEligibility(_))
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
+
+  // When bypass is enabled we still expect the infobar to be shown.
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
+
+  controller_->MaybeShowInfoBar();
 }
 
 }  // namespace

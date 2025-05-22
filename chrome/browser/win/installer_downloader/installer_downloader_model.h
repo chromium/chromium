@@ -22,6 +22,8 @@ class DownloadManager;
 namespace installer_downloader {
 
 using CompletionCallback = base::OnceCallback<void(bool succeeded)>;
+using EligibilityCheckCallback =
+    base::OnceCallback<void(std::optional<base::FilePath>)>;
 
 class InstallerDownloaderModel {
  public:
@@ -30,9 +32,7 @@ class InstallerDownloaderModel {
   // Posts the OS / OneDrive probe to the ThreadPool and returns the installer
   // download destination file path asynchronously on the calling sequence. The
   // destination file path will be null if the user is not eligible.
-  virtual void CheckEligibility(
-      base::OnceCallback<void(const std::optional<base::FilePath>&)>
-          callback) = 0;
+  virtual void CheckEligibility(EligibilityCheckCallback callback) = 0;
 
   // Kicks off a **transient** download with DownloadManager. Completion is
   // reported through `completion_callback`.
@@ -46,6 +46,10 @@ class InstallerDownloaderModel {
   // Returns true if the infobar has been displayed the maximum number of times,
   // false otherwise.
   virtual bool IsMaxShowCountReached() const = 0;
+
+  // Returns true if eligibility check should be overridden for manual testing
+  // purpose.
+  virtual bool ShouldByPassEligibilityCheck() const = 0;
 };
 
 }  // namespace installer_downloader

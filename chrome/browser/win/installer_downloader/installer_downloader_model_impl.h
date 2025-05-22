@@ -56,14 +56,13 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
   ~InstallerDownloaderModelImpl() override;
 
   // InstallerDownloaderModel:
-  void CheckEligibility(
-      base::OnceCallback<void(const std::optional<base::FilePath>&)> callback)
-      override;
+  void CheckEligibility(EligibilityCheckCallback callback) override;
   void StartDownload(const GURL& url,
                      const base::FilePath& destination,
                      content::DownloadManager& download_manager,
                      CompletionCallback completion_callback) override;
   bool IsMaxShowCountReached() const override;
+  bool ShouldByPassEligibilityCheck() const override;
 
  private:
   std::optional<base::FilePath> GetInstallerDestination() const;
