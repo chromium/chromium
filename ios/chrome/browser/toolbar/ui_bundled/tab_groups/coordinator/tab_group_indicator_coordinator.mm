@@ -271,6 +271,7 @@ using collaboration::IOSCollaborationControllerDelegate;
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeDefault
+            pageControlPage:BubblePageControlPageNone
           dismissalCallback:^(IPHDismissalReasonType reason) {
             [weakSelf sharedTabGroupForegroundIPHDismissed];
           }];

@@ -9,6 +9,24 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter+Subclassing.h"
 #import "ios/chrome/browser/bubble/ui_bundled/guided_tour/guided_tour_bubble_view_controller_animator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/guided_tour/guided_tour_bubble_view_controller_presentation_controller.h"
+#import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+
+namespace {
+
+BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
+  switch (step) {
+    case GuidedTourStepNTP:
+      return BubblePageControlPageFirst;
+    case GuidedTourStepTabGridIncognito:
+      return BubblePageControlPageSecond;
+    case GuidedTourStepTabGridLongPress:
+      return BubblePageControlPageThird;
+    case GuidedTourStepTabGridTabGroup:
+      return BubblePageControlPageFourth;
+  }
+}
+
+}  // namespace
 
 @interface GuidedTourBubbleViewControllerPresenter () <
     UIViewControllerTransitioningDelegate>
@@ -19,10 +37,12 @@
   CGPoint _anchorPointInParent;
   ProceduralBlock _completionCallback;
   CGFloat _cornerRadius;
+  BubblePageControlPage _page;
 }
 
 - (instancetype)initWithText:(NSString*)text
                            title:(NSString*)titleString
+                  guidedTourStep:(GuidedTourStep)step
                   arrowDirection:(BubbleArrowDirection)arrowDirection
                        alignment:(BubbleAlignment)alignment
                       bubbleType:(BubbleViewType)type
@@ -35,6 +55,7 @@
               arrowDirection:arrowDirection
                    alignment:alignment
                   bubbleType:type
+             pageControlPage:BubblePageControlPageForStep(step)
            dismissalCallback:dismissalCallback];
   if (self) {
     _completionCallback = completionCallback;

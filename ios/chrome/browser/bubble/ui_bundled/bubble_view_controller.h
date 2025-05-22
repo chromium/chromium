@@ -10,6 +10,7 @@
 typedef NS_ENUM(NSInteger, BubbleAlignment);
 typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 typedef NS_ENUM(NSInteger, BubbleViewType);
+typedef NS_ENUM(NSInteger, BubblePageControlPage);
 
 @protocol BubbleViewDelegate;
 
@@ -19,12 +20,14 @@ typedef NS_ENUM(NSInteger, BubbleViewType);
 
 // Initializes the bubble with the given text, titleString, arrow direction,
 // alignment, type of bubble view and bubble view's delegate (handles bubble
-// view's buttons taps).
+// view's buttons taps). Optional `page number` that when set, shows a page
+// control with the number highlighted.
 - (instancetype)initWithText:(NSString*)text
                        title:(NSString*)titleString
               arrowDirection:(BubbleArrowDirection)direction
                    alignment:(BubbleAlignment)alignment
               bubbleViewType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
                     delegate:(id<BubbleViewDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 

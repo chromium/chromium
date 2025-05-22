@@ -14,6 +14,7 @@
 typedef NS_ENUM(NSInteger, BubbleAlignment);
 typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 typedef NS_ENUM(NSInteger, BubbleViewType);
+typedef NS_ENUM(NSInteger, BubblePageControlPage);
 
 // Used for the bubble's dismissal callback.
 using CallbackWithIPHDismissalReasonType =
@@ -78,6 +79,7 @@ using CallbackWithIPHDismissalReasonType =
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback
     NS_DESIGNATED_INITIALIZER;

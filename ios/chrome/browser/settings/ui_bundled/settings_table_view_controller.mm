@@ -1695,6 +1695,7 @@ struct EnhancedSafeBrowsingActivePromoData
          arrowDirection:BubbleArrowDirectionUp
               alignment:BubbleAlignmentCenter
              bubbleType:BubbleViewTypeDefault
+        pageControlPage:BubblePageControlPageNone
       dismissalCallback:dismissalCallback];
   CGPoint anchorPointInCell = CGPointMake(CGRectGetMidX(accountCell.bounds),
                                           CGRectGetMaxY(accountCell.bounds));

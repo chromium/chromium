@@ -10,6 +10,8 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 
+typedef NS_ENUM(NSInteger, GuidedTourStep);
+
 // A subclass implementation that presents the BubbleView in front of a
 // background dimmed view with a cutout of the view that the IPH is pointed and
 // anchored to.
@@ -25,6 +27,7 @@
 // invoked when the dismissal finishes.
 - (instancetype)initWithText:(NSString*)text
                            title:(NSString*)titleString
+                  guidedTourStep:(GuidedTourStep)step
                   arrowDirection:(BubbleArrowDirection)arrowDirection
                        alignment:(BubbleAlignment)alignment
                       bubbleType:(BubbleViewType)type
@@ -39,6 +42,7 @@
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback
     NS_UNAVAILABLE;

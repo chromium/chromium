@@ -87,6 +87,9 @@ const CGFloat kNextButtonVerticalMargin = 16.0f;
 // The size of symbol action images.
 const CGFloat kSymbolBubblePointSize = 17;
 
+// The size of the page dot symbol images.
+const CGFloat kPageControlPageSymbolPointSize = 8;
+
 // The size that the arrow with arrow direction will appear to have.
 CGSize GetArrowSize(BubbleArrowDirection arrowDirection) {
   return IsArrowDirectionVertical(arrowDirection)
@@ -266,6 +269,31 @@ UIButton* BubbleNextButton() {
   return button;
 }
 
+UIStackView* PageControl(BubblePageControlPage page) {
+  CHECK(page != BubblePageControlPageNone);
+  UIStackView* container = [[UIStackView alloc] init];
+  container.axis = UILayoutConstraintAxisHorizontal;
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  container.distribution = UIStackViewDistributionEqualSpacing;
+  container.alignment = UIStackViewAlignmentCenter;
+  container.spacing = 8;
+  container.accessibilityIdentifier = kBubbleViewPageControlIdentifier;
+  for (NSInteger i = 0; i < (NSInteger)BubblePageControlPageFourth; i++) {
+    UIImageSymbolConfiguration* symbolConfiguration =
+        [UIImageSymbolConfiguration
+            configurationWithPointSize:kPageControlPageSymbolPointSize];
+    UIImageView* circleImageView = [[UIImageView alloc]
+        initWithImage:DefaultSymbolWithConfiguration(kCircleBadgeFill,
+                                                     symbolConfiguration)];
+    BOOL shouldBeHighlighted = i == page - 1;
+    circleImageView.tintColor = shouldBeHighlighted
+                                    ? [UIColor whiteColor]
+                                    : [UIColor colorWithWhite:1 alpha:0.45];
+    [container addArrangedSubview:circleImageView];
+  }
+  return container;
+}
+
 }  // namespace
 
 @interface BubbleView ()
@@ -309,6 +337,8 @@ UIButton* BubbleNextButton() {
   UIView* _separator;
   // Optional Next button displayed on the bubble.
   UIButton* _nextButton;
+  // Optional PageControl displayed in the bubble.
+  UIStackView* _stepPageControl;
 }
 
 - (instancetype)initWithText:(NSString*)text
@@ -318,6 +348,7 @@ UIButton* BubbleNextButton() {
                        title:(NSString*)titleString
            showsSnoozeButton:(BOOL)shouldShowSnoozeButton
              showsNextButton:(BOOL)showsNextButton
+                        page:(BubblePageControlPage)page
                textAlignment:(NSTextAlignment)textAlignment
                     delegate:(id<BubbleViewDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
@@ -380,6 +411,14 @@ UIButton* BubbleNextButton() {
                       action:@selector(nextButtonWasTapped:)
             forControlEvents:UIControlEventTouchUpInside];
       [self addSubview:_nextButton];
+
+      if (page > BubblePageControlPageNone) {
+        _stepPageControl = PageControl(page);
+        [_stepPageControl
+            setContentHuggingPriority:UILayoutPriorityRequired
+                              forAxis:UILayoutConstraintAxisHorizontal];
+        [self addSubview:_stepPageControl];
+      }
     }
     _delegate = delegate;
     _needsAddConstraints = YES;
@@ -413,6 +452,7 @@ UIButton* BubbleNextButton() {
                       title:nil
           showsSnoozeButton:NO
             showsNextButton:NO
+                       page:BubblePageControlPageNone
               textAlignment:NSTextAlignmentCenter
                    delegate:nil];
 }
@@ -533,6 +573,9 @@ UIButton* BubbleNextButton() {
   }
   if (self.showsNextButton) {
     [constraints addObjectsFromArray:[self nextButtonConstraints]];
+    if (_stepPageControl) {
+      [constraints addObjectsFromArray:[self pageControlConstraints]];
+    }
   }
   [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -699,11 +742,23 @@ UIButton* BubbleNextButton() {
         constraintEqualToAnchor:_nextButton.titleLabel.bottomAnchor
                        constant:kNextButtonVerticalMargin],
     [_background.trailingAnchor
-        constraintGreaterThanOrEqualToAnchor:_nextButton.trailingAnchor
-                                    constant:kBubbleHorizontalPadding],
+        constraintEqualToAnchor:_nextButton.trailingAnchor
+                       constant:kBubbleHorizontalPadding],
     [_nextButton.heightAnchor constraintGreaterThanOrEqualToConstant:42.0f],
     [_nextButton.widthAnchor
         constraintGreaterThanOrEqualToConstant:kSnoozeButtonMinimumSize],
+  ];
+}
+
+- (NSArray<NSLayoutConstraint*>*)pageControlConstraints {
+  return @[
+    [_stepPageControl.leadingAnchor
+        constraintEqualToAnchor:_label.leadingAnchor],
+    [_stepPageControl.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_nextButton.leadingAnchor
+                                 constant:-10],
+    [_stepPageControl.centerYAnchor
+        constraintEqualToAnchor:_nextButton.centerYAnchor],
   ];
 }
 

@@ -28,6 +28,7 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
                arrowDirection:BubbleArrowDirectionUp
                     alignment:BubbleAlignmentCenter
                    bubbleType:BubbleViewTypeRich
+              pageControlPage:BubblePageControlPageNone
             dismissalCallback:^(IPHDismissalReasonType reason) {
               dismissal_callback_count_++;
               run_loop_.Quit();
@@ -222,6 +223,7 @@ TEST_F(BubbleViewControllerPresenterTest,
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeWithClose
+            pageControlPage:BubblePageControlPageNone
           dismissalCallback:^(IPHDismissalReasonType reason) {
             dismissal_callback_count_++;
           }];

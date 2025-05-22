@@ -23,6 +23,8 @@ extern NSTimeInterval const kBubbleVisibilityDuration;
 extern NSTimeInterval const kDefaultLongDurationBubbleVisibility;
 // Accessibility identifier for the next button.
 extern NSString* const kBubbleViewNextButtonIdentifier;
+// Accessibility identifier for the page control.
+extern NSString* const kBubbleViewPageControlIdentifier;
 
 // Metric name for bubble dismissal tracking.
 extern const char kUMAIPHDismissalReason[];
@@ -91,6 +93,15 @@ enum class IPHDismissalReasonType {
   kVoiceOverAnnouncementEnded = 9,
   kSwipedAsInstructedByGestureIPH = 10,
   kMaxValue = kSwipedAsInstructedByGestureIPH,
+};
+
+// The page that should be highlighted in the Bubble PageControl.
+typedef NS_ENUM(NSInteger, BubblePageControlPage) {
+  BubblePageControlPageNone = 0,
+  BubblePageControlPageFirst,
+  BubblePageControlPageSecond,
+  BubblePageControlPageThird,
+  BubblePageControlPageFourth,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_CONSTANTS_H_

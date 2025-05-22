@@ -107,6 +107,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback {
   self = [super init];
@@ -117,6 +118,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                                     arrowDirection:arrowDirection
                                          alignment:alignment
                                     bubbleViewType:type
+                                   pageControlPage:page
                                           delegate:self];
     _userEngaged = NO;
     _triggerFollowUpAction = NO;
@@ -143,6 +145,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
              arrowDirection:arrowDirection
                   alignment:alignment
                  bubbleType:BubbleViewTypeDefault
+            pageControlPage:BubblePageControlPageNone
           dismissalCallback:dismissalCallback];
 }
 

@@ -280,6 +280,7 @@ extern NSString* const kWorkSymbol;
 extern NSString* const kShieldedEnvelope;
 extern NSString* const kReaderModeSymbolPreIOS18;
 extern NSString* const kReaderModeSymbolPostIOS18;
+extern NSString* const kCircleBadgeFill;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

@@ -43,3 +43,8 @@ UIButton* GetNextButtonFromBubbleView(BubbleView* bubble_view) {
   return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
       [UIButton class], kBubbleViewNextButtonIdentifier, bubble_view));
 }
+
+UIStackView* GetPageControlPageBubbleView(BubbleView* bubble_view) {
+  return base::apple::ObjCCastStrict<UIStackView>(GetViewOfClassWithIdentifier(
+      [UIStackView class], kBubbleViewPageControlIdentifier, bubble_view));
+}

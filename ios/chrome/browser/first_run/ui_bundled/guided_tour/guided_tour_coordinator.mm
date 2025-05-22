@@ -48,6 +48,7 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   _presenter = [[GuidedTourBubbleViewControllerPresenter alloc]
       initWithText:[self bodyString]
       title:[self titleString]
+      guidedTourStep:_step
       arrowDirection:direction
       alignment:[self bubbleAlignment]
       bubbleType:BubbleViewTypeRichWithNext

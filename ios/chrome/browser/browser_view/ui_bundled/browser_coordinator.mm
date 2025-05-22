@@ -2487,6 +2487,7 @@ enum class ToolbarKind {
                  bubbleType:ShouldShowRichContextualPanelEntrypointIPH()
                                 ? BubbleViewTypeRich
                                 : BubbleViewTypeDefault
+            pageControlPage:BubblePageControlPageNone
           dismissalCallback:dismissalCallback];
 
   _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement =

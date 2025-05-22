@@ -953,6 +953,7 @@ bool CanReloadInputViews() {
              arrowDirection:BubbleArrowDirectionDown
                   alignment:BubbleAlignmentTopOrLeading
                  bubbleType:BubbleViewTypeWithClose
+            pageControlPage:BubblePageControlPageNone
           dismissalCallback:dismissalCallback];
   bubbleViewControllerPresenter.voiceOverAnnouncement = voiceOverText;
   return bubbleViewControllerPresenter;

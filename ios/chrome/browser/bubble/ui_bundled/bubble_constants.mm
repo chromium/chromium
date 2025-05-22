@@ -22,6 +22,8 @@ NSString* const kBubbleViewArrowViewIdentifier =
 NSTimeInterval const kBubbleVisibilityDuration = 5.0;
 NSString* const kBubbleViewNextButtonIdentifier =
     @"kBubbleViewNextButtonIdentifier";
+NSString* const kBubbleViewPageControlIdentifier =
+    @"kBubbleViewPageControlIdentifier";
 // How long, in seconds, the default "long duration" bubbles are visible.
 NSTimeInterval const kDefaultLongDurationBubbleVisibility = 8.0;
 // Metric name for bubble dismissal tracking.

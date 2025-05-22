@@ -88,6 +88,7 @@
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeDefault
+            pageControlPage:BubblePageControlPageNone
           dismissalCallback:^(IPHDismissalReasonType reason) {
             [weakSelf savedTabGroupIPHDismissed];
           }];

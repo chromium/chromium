@@ -10,7 +10,7 @@
 #import "base/ios/block_types.h"
 
 // Different steps of the Guided Tour.
-typedef NS_ENUM(NSUInteger, GuidedTourStep) {
+typedef NS_ENUM(NSInteger, GuidedTourStep) {
   GuidedTourStepNTP,
   GuidedTourStepTabGridIncognito,
   GuidedTourStepTabGridLongPress,

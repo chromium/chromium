@@ -293,6 +293,7 @@ NSString* const kWorkSymbol = @"case";
 NSString* const kShieldedEnvelope = @"envelope.badge.shield.half.filled";
 NSString* const kReaderModeSymbolPreIOS18 = @"doc.plaintext";
 NSString* const kReaderModeSymbolPostIOS18 = @"text.page";
+NSString* const kCircleBadgeFill = @"circlebadge.fill";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
