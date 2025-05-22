@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_LOTTIE_RESOURCE_H_
-#define UI_LOTTIE_RESOURCE_H_
+#ifndef UI_BASE_RESOURCE_LOTTIE_RESOURCE_H_
+#define UI_BASE_RESOURCE_LOTTIE_RESOURCE_H_
 
 #include <stdint.h>
 
@@ -18,20 +18,15 @@ class ImageSkia;
 
 namespace ui {
 class ImageModel;
-}
-
-namespace lottie {
 
 // Used for loading a Lottie asset intended as a still image (not animated).
-COMPONENT_EXPORT(UI_LOTTIE)
 gfx::ImageSkia ParseLottieAsStillImage(std::vector<uint8_t> data);
 
 // Used for loading a Lottie asset intended as a still image (not animated),
 // with support for using different colors in light mode, dark mode, and
 // "elevated" dark mode (see |views::Widget::InitParams::background_elevation|).
-COMPONENT_EXPORT(UI_LOTTIE)
 ui::ImageModel ParseLottieAsThemedStillImage(std::vector<uint8_t> data);
 
-}  // namespace lottie
+}  // namespace ui
 
-#endif  // UI_LOTTIE_RESOURCE_H_
+#endif  // UI_BASE_RESOURCE_LOTTIE_RESOURCE_H_

@@ -16,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
-#include "ui/lottie/resource.h"
 
 namespace ash {
 
@@ -29,14 +28,7 @@ constexpr char kTestUrl[] = "https://www.google.com";
 
 class MagicBoostControllerAshTest : public AshTestBase {
  public:
-  MagicBoostControllerAshTest() {
-    // Sets the default functions for the test to create image with the lottie
-    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
-    // the `ResourceBundle`.
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
-  }
+  MagicBoostControllerAshTest() = default;
   MagicBoostControllerAshTest(const MagicBoostControllerAshTest&) = delete;
   MagicBoostControllerAshTest& operator=(const MagicBoostControllerAshTest&) =
       delete;

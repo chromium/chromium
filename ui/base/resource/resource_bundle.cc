@@ -46,6 +46,7 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/data_pack.h"
+#include "ui/base/resource/lottie_resource.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
@@ -92,14 +93,6 @@ const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 #if !BUILDFLAG(IS_APPLE)
 const char kPakFileExtension[] = ".pak";
 #endif
-
-// Pointers to the functions |lottie::ParseLottieAsStillImage| and
-// |lottie::ParseLottieAsThemedStillImage|, so that dependencies used by those
-// functions do not need to be included directly in ui/base.
-ResourceBundle::LottieImageParseFunction g_parse_lottie_as_still_image_ =
-    nullptr;
-ResourceBundle::LottieThemedImageParseFunction
-    g_parse_lottie_as_themed_still_image_ = nullptr;
 
 ResourceBundle* g_shared_instance_ = nullptr;
 
@@ -351,14 +344,6 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
   // Must call InitSharedInstance before this function.
   CHECK(g_shared_instance_ != nullptr);
   return *g_shared_instance_;
-}
-
-// static
-void ResourceBundle::SetLottieParsingFunctions(
-    LottieImageParseFunction parse_lottie_as_still_image,
-    LottieThemedImageParseFunction parse_lottie_as_themed_still_image) {
-  g_parse_lottie_as_still_image_ = parse_lottie_as_still_image;
-  g_parse_lottie_as_themed_still_image_ = parse_lottie_as_themed_still_image;
 }
 
 void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
@@ -697,7 +682,7 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
   // The bytes string was successfully loaded, so parse it and cache the
   // resulting image.
   auto inserted = image_models_.emplace(
-      resource_id, (*g_parse_lottie_as_themed_still_image_)(std::move(*data)));
+      resource_id, ParseLottieAsThemedStillImage(std::move(*data)));
   DCHECK(inserted.second);
   return inserted.first->second;
 }
@@ -1131,7 +1116,7 @@ gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
 
   std::optional<LottieData> data = GetLottieData(resource_id);
   if (data) {
-    return (*g_parse_lottie_as_still_image_)(std::move(*data));
+    return ParseLottieAsStillImage(std::move(*data));
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

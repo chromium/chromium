@@ -197,6 +197,8 @@ component("base") {
     "pointer/touch_ui_controller.cc",
     "pointer/touch_ui_controller.h",
     "resource/allowlist.h",
+    "resource/lottie_resource.cc",
+    "resource/lottie_resource.h",
     "resource/resource_bundle.cc",
     "resource/resource_bundle.h",
     "resource/scoped_startup_resource_bundle.cc",
@@ -541,8 +543,10 @@ component("base") {
 
   if (use_blink) {
     deps += [
+      "//cc/paint",
       "//ui/events",
       "//ui/events/devices",
+      "//ui/lottie",
     ]
   }
 

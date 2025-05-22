@@ -16,7 +16,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "content/public/test/browser_task_environment.h"
-#include "ui/lottie/resource.h"
 
 namespace arc::input_overlay {
 
@@ -50,9 +49,6 @@ void GameControlsTestBase::EnableDisplayMode(DisplayMode mode) {
 }
 
 void GameControlsTestBase::SetUp() {
-  ui::ResourceBundle::SetLottieParsingFunctions(
-      &lottie::ParseLottieAsStillImage, &lottie::ParseLottieAsThemedStillImage);
-
   ash::AshTestBase::SetUp();
 
   profile_ = std::make_unique<TestingProfile>();

@@ -206,12 +206,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Return the global resource loader instance.
   static ResourceBundle& GetSharedInstance();
 
-  // TODO(crbug.com/415384540): Simplify the injection after enabling lottie
-  // on all platforms.
-  static void SetLottieParsingFunctions(
-      LottieImageParseFunction parse_lottie_as_still_image,
-      LottieThemedImageParseFunction parse_lottie_as_themed_still_image);
-
   // Exposed for testing, otherwise use GetSharedInstance().
   explicit ResourceBundle(Delegate* delegate);
   ~ResourceBundle();

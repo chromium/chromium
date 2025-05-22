@@ -9,8 +9,6 @@ component("lottie") {
     "animation.cc",
     "animation.h",
     "animation_observer.h",
-    "resource.cc",
-    "resource.h",
   ]
 
   defines = [ "IS_UI_LOTTIE_IMPL" ]
@@ -18,7 +16,6 @@ component("lottie") {
   deps = [
     "//base",
     "//cc/paint",
-    "//ui/base",
     "//ui/color",
     "//ui/gfx",
   ]

@@ -42,7 +42,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/lottie/resource.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -123,14 +122,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
  public:
   MahiManagerImplTest()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    // Sets the default functions for the test to create image with the lottie
-    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
-    // the `ResourceBundle`.
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   MahiManagerImplTest(const MahiManagerImplTest&) = delete;
   MahiManagerImplTest& operator=(const MahiManagerImplTest&) = delete;

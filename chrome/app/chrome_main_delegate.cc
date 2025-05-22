@@ -106,7 +106,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/lottie/resource.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <malloc.h>
@@ -1388,10 +1387,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
       // See comment at ReadAppLocale() for why we do this.
       locale = ash::startup_settings_cache::ReadAppLocale();
     }
-
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
 #endif
 #if BUILDFLAG(IS_ANDROID)
     // The renderer sandbox prevents us from accessing our .pak files directly.

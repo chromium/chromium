@@ -14,7 +14,6 @@
 #include "base/time/time_override.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
-#include "ui/lottie/resource.h"
 
 namespace ash {
 
@@ -58,13 +57,6 @@ class MahiNudgeControllerTest : public AshTestBase {
  public:
   MahiNudgeControllerTest() {
     mahi_nudge_controller_ = std::make_unique<MahiNudgeController>();
-
-    // Sets the default functions for the test to create image with the lottie
-    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
-    // the `ResourceBundle`.
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
 
     test_magic_boost_state_.AsyncWriteConsentStatus(
         chromeos::HMRConsentStatus::kUnset);

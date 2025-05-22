@@ -29,6 +29,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "skia/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -67,20 +68,59 @@ const unsigned char kPngScaleChunk[12] = { 0x00, 0x00, 0x00, 0x00,
                                            'c', 's', 'C', 'l',
                                            0xc1, 0x30, 0x60, 0x4d };
 
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
+// The width and height attributes values in the lottie asset.
+constexpr int kLottieWidth = 200;
+constexpr int kLottieHeight = 200;
 // A string with the "LOTTIE" prefix that GRIT adds to Lottie assets.
-constexpr char kLottieData[] = "LOTTIEtest";
+constexpr std::string_view kLottieData =
+    R"(LOTTIE{
+    "v": "5.5.2",
+    "fr": 1,
+    "ip": 0,
+    "op": 1,
+    "w": 200,
+    "h": 200,
+    "ddd": 0,
+    "assets": [],
+    "layers": [
+        {
+        "ty": 1,
+        "ip": 0,
+        "op": 1,
+        "st": 0,
+        "ks": {},
+        "sc": "#ff0000",
+        "sh": 200,
+        "sw": 200
+        }
+    ]
+    })";
 // The contents after the prefix has been removed.
-constexpr uint8_t kLottieExpected[] = {'t', 'e', 's', 't'};
-
-// Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
-// properly stripped of the "LOTTIE" prefix.
-gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
-  CHECK(std::ranges::equal(data, kLottieExpected));
-
-  constexpr int kDimension = 16;
-  return gfx::ImageSkia(
-      gfx::ImageSkiaRep(gfx::Size(kDimension, kDimension), 0.f));
-}
+constexpr std::string_view kLottieExpected =
+    R"({
+    "v": "5.5.2",
+    "fr": 1,
+    "ip": 0,
+    "op": 1,
+    "w": 200,
+    "h": 200,
+    "ddd": 0,
+    "assets": [],
+    "layers": [
+        {
+        "ty": 1,
+        "ip": 0,
+        "op": 1,
+        "st": 0,
+        "ks": {},
+        "sc": "#ff0000",
+        "sh": 200,
+        "sw": 200
+        }
+    ]
+    })";
+#endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
 
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
 void AddCustomChunk(std::string_view custom_chunk,
@@ -704,6 +744,7 @@ TEST_F(ResourceBundleImageTest, FallbackToNone) {
                                  image_skia->image_reps()[0].scale()));
 }
 
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
 TEST_F(ResourceBundleImageTest, Lottie) {
   // Create the pak files.
   const base::FilePath data_unscaled_path =
@@ -720,9 +761,6 @@ TEST_F(ResourceBundleImageTest, Lottie) {
   ASSERT_TRUE(data.has_value());
   EXPECT_TRUE(std::ranges::equal(*data, kLottieExpected));
 
-  ui::ResourceBundle::SetLottieParsingFunctions(
-      &ParseLottieAsStillImageForTesting,
-      /*parse_lottie_as_themed_still_image=*/nullptr);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       {k100Percent, k200Percent});
 
@@ -733,8 +771,12 @@ TEST_F(ResourceBundleImageTest, Lottie) {
   EXPECT_EQ(1.f, image_skia->GetRepresentation(1.f).scale());
   EXPECT_EQ(1.f, image_skia->GetRepresentation(1.4f).scale());
 
+  EXPECT_EQ(kLottieWidth, image_skia->width());
+  EXPECT_EQ(kLottieHeight, image_skia->height());
+
   // Lottie resource should be 'unscaled'.
   EXPECT_TRUE(image_skia->image_reps()[0].unscaled());
 }
+#endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
 
 }  // namespace ui

@@ -21,7 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/lottie/resource.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/base/resource/resource_bundle_android.h"
@@ -87,9 +86,6 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
   preferred_locale =
       local_state->GetString(language::prefs::kApplicationLocale);
 #endif
-
-  ui::ResourceBundle::SetLottieParsingFunctions(
-      &lottie::ParseLottieAsStillImage, &lottie::ParseLottieAsThemedStillImage);
 
   TRACE_EVENT0("startup",
                "ChromeBrowserMainParts::InitResourceBundleAndDetermineLocale");

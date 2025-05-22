@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/lottie/resource.h"
 #include "ui/views/view_utils.h"
 
 namespace chromeos {
@@ -48,13 +47,6 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
     // The magic boost card only exists when Magic Boost Revamp logic is
     // disabled.
     features_.InitAndDisableFeature(chromeos::features::kMagicBoostRevamp);
-
-    // Sets the default functions for the test to create image with the lottie
-    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
-    // the `ResourceBundle`.
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
   }
 
   // ChromeViewsTestBase:

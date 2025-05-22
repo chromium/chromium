@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/lottie/resource.h"
+#include "ui/base/resource/lottie_resource.h"
 
 #include <memory>
 #include <utility>
@@ -10,10 +10,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notreached.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -25,9 +27,11 @@
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/lottie/animation.h"
 
-namespace lottie {
+namespace ui {
 
 namespace {
+
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
 
 // A descendant of |gfx::ImageSkiaSource| that simply uses one
 // |gfx::ImageSkiaRep| for all scales.
@@ -47,7 +51,7 @@ class LottieImageSource : public gfx::ImageSkiaSource {
 };
 
 // Uses |LottieImageSource| to create a |gfx::ImageSkia| from an |Animation|.
-gfx::ImageSkia CreateImageSkia(Animation* content) {
+gfx::ImageSkia CreateImageSkia(lottie::Animation* content) {
   const gfx::Size size = content->GetOriginalSize();
 
   cc::InspectableRecordPaintCanvas record_canvas(size);
@@ -198,27 +202,37 @@ cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
 gfx::ImageSkia CreateImageSkiaWithCurrentTheme(
     std::vector<uint8_t> bytes,
     const ui::ColorProvider* color_provider) {
-  auto content = std::make_unique<Animation>(
+  auto content = std::make_unique<lottie::Animation>(
       cc::SkottieWrapper::UnsafeCreateSerializable(std::move(bytes)),
       CreateColorMap(color_provider));
   return CreateImageSkia(content.get());
 }
 
+#endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
+
 }  // namespace
 
 gfx::ImageSkia ParseLottieAsStillImage(std::vector<uint8_t> data) {
-  auto content = std::make_unique<Animation>(
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
+  auto content = std::make_unique<lottie::Animation>(
       cc::SkottieWrapper::UnsafeCreateSerializable(std::move(data)));
   return CreateImageSkia(content.get());
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
 }
 
 ui::ImageModel ParseLottieAsThemedStillImage(std::vector<uint8_t> data) {
-  const gfx::Size size = std::make_unique<Animation>(
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
+  const gfx::Size size = std::make_unique<lottie::Animation>(
                              cc::SkottieWrapper::UnsafeCreateSerializable(data))
                              ->GetOriginalSize();
   return ui::ImageModel::FromImageGenerator(
       base::BindRepeating(&CreateImageSkiaWithCurrentTheme, std::move(data)),
       size);
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE) && BUILDFLAG(USE_BLINK)
 }
 
-}  // namespace lottie
+}  // namespace ui
