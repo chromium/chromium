@@ -10,9 +10,9 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
@@ -148,9 +148,10 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
             return sIsInDesktopWindowingModeForTesting;
         }
 
-        // TODO(crbug.com/417047079): replace multli-window mode check with desktop windowing mode
+        // TODO(crbug.com/417047079): replace the following check with desktop windowing mode
         // as soon as https://chromium-review.googlesource.com/c/chromium/src/+/6527788 is resolved.
-        return MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity());
+        // return MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity());
+        return DeviceInfo.isDesktop();
     }
 
     @Override
