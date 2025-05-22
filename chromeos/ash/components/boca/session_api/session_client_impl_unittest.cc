@@ -230,4 +230,24 @@ TEST_F(SessionClientImplTest, SequentialInsertActivityRequestRunInOrder) {
       CreateInsertActivityRequest(future_2.GetCallback()));
   EXPECT_TRUE(future_2.Wait());
 }
+
+TEST_F(SessionClientImplTest, GetSessionAfterInsertActivityShouldBeExecuted) {
+  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+      future_1;
+
+  EXPECT_CALL(request_handler_, HandleRequest(_)).Times(2);
+  session_client_impl_->UpdateStudentActivity(
+      CreateInsertActivityRequest(future_1.GetCallback()));
+  EXPECT_TRUE(future_1.Wait());
+
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future_2;
+
+  session_client_impl_->GetSession(
+      CreateGetSessionRequest(future_2.GetCallback()),
+      /*can_skip_duplicate_request=*/false);
+  EXPECT_TRUE(future_2.Wait());
+}
+
 }  // namespace ash::boca

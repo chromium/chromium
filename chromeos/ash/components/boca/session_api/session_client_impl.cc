@@ -70,7 +70,6 @@ void SessionClientImpl::GetSession(std::unique_ptr<GetSessionRequest> request,
       }
       return;
     }
-
     request->set_callback(
         base::BindOnce(&SessionClientImpl::OnGetSessionCompleted,
                        weak_ptr_factory_.GetWeakPtr(), request->callback()));
@@ -106,7 +105,7 @@ void SessionClientImpl::UpdateStudentActivity(
     request->set_callback(
         base::BindOnce(&SessionClientImpl::OnInsertStudentActivityCompleted,
                        weak_ptr_factory_.GetWeakPtr(), request->callback()));
-    has_blocking_get_session_request_ = true;
+    has_blocking_update_activity_request_ = true;
   }
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
