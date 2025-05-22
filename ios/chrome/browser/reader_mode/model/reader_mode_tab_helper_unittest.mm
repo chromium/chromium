@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -164,6 +165,28 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNonHTML) {
   WaitForReaderModeContentReady();
 
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+}
+
+// Tests that reader mode page eligibility supports same-page navigations.
+TEST_F(ReaderModeTabHelperTest, ReaderModeEligibleForSamePageNavigation) {
+  GURL test_url("https://test.url/ref");
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), test_url);
+  WaitForReaderModeContentReady();
+
+  // Start same page navigation.
+  GURL test_url_with_ref("https://test.url/ref#");
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetIsSameDocument(true);
+  navigation_context.SetHasCommitted(true);
+  web_state()->OnNavigationStarted(&navigation_context);
+  web_state()->LoadSimulatedRequest(test_url_with_ref,
+                                    @"<html><body>Content</body></html>");
+  web_state()->OnNavigationFinished(&navigation_context);
+
+  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
 }
 
 // Tests that ReaderModeTabHelper observers are notified when the Reader mode

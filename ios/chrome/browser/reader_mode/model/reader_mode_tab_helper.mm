@@ -164,7 +164,8 @@ web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
 
 bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
   if (!web_state_ || web_state_->IsBeingDestroyed() ||
-      web_state_->GetLastCommittedURL() != reader_mode_eligible_url_ ||
+      !reader_mode_eligible_url_.EqualsIgnoringRef(
+          web_state_->GetLastCommittedURL()) ||
       !reader_mode_eligible_url_.is_valid()) {
     return false;
   }
@@ -230,7 +231,10 @@ void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
   if (trigger_reader_mode_timer_.IsRunning()) {
     trigger_reader_mode_timer_.Stop();
   }
-  reader_mode_eligible_url_ = GURL();
+  // Do not reset URL eligibility for same-page navigations.
+  if (!reader_mode_eligible_url_.EqualsIgnoringRef(url)) {
+    reader_mode_eligible_url_ = GURL();
+  }
 }
 
 void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
