@@ -7728,9 +7728,6 @@ crbug.com/1371756 virtual/static-routing-api/http/tests/inspector-protocol/servi
 # Sheriff 2023-07-13
 crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
 
-# To allow devtools-frontend CL crrev.com/c/4678759 to land.
-crbug.com/40275526 http/tests/devtools/a11y-axe-core/performance/timeline-overview-container-a11y-test.js [ Failure Pass ]
-
 # Gardener 2023-07-21
 crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
 

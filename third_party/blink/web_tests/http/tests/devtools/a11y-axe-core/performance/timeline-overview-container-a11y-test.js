@@ -13,8 +13,8 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
   await PerformanceTestRunner.runPerfTraceWithReload();
   const widget = await PerformanceTestRunner.getTimelineWidget();
-  const timeLineViewElement = widget.overviewPane.element;
-  await AxeCoreTestRunner.runValidation(timeLineViewElement);
+  const timelineOverviewComponent = widget.element.querySelector('#timeline-overview-pane')
+  await AxeCoreTestRunner.runValidation(timelineOverviewComponent);
 
   TestRunner.completeTest();
 })();
