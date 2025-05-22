@@ -6,8 +6,6 @@ package org.chromium.chrome.test.transit;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import androidx.test.espresso.Espresso;
@@ -17,7 +15,6 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.R;
 
@@ -28,19 +25,22 @@ import org.chromium.chrome.test.R;
  */
 public abstract class BottomSheetFacility<HostStationT extends Station<ChromeTabbedActivity>>
         extends Facility<HostStationT> {
-    private static final Matcher<View> BOTTOM_SHEET_MATCHER = withId(R.id.sheet_container);
-    protected final ViewElement<View> mBottomSheetContent;
+    public final ViewElement<View> bottomSheetElement;
 
     /** Constructor. Expects a specific title and selected color. */
     public BottomSheetFacility() {
-        mBottomSheetContent = declareView(viewSpec(BOTTOM_SHEET_MATCHER));
+        bottomSheetElement = declareView(withId(R.id.sheet_container));
     }
 
+    @SafeVarargs
+    protected final ViewElement<View> declareDescendantView(Matcher<View>... viewMatchers) {
+        return declareView(bottomSheetElement.descendant(viewMatchers));
+    }
+
+    @SafeVarargs
     protected final <ViewT extends View> ViewElement<ViewT> declareDescendantView(
-            ViewSpec<ViewT> viewSpec) {
-        ViewSpec<ViewT> descendant =
-                mBottomSheetContent.descendant(viewSpec.getViewClass(), viewSpec.getViewMatcher());
-        return declareView(descendant);
+            Class<ViewT> viewClass, Matcher<View>... viewMatchers) {
+        return declareView(bottomSheetElement.descendant(viewClass, viewMatchers));
     }
 
     /** Press the system backpress to close the bottom sheet. */

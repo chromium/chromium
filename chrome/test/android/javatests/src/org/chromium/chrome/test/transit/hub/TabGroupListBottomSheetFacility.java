@@ -4,28 +4,21 @@
 
 package org.chromium.chrome.test.transit.hub;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -43,10 +36,10 @@ import java.util.List;
  */
 public class TabGroupListBottomSheetFacility<HostStationT extends Station<ChromeTabbedActivity>>
         extends BottomSheetFacility<HostStationT> {
-    private final ViewElement<View> mTitle;
     private final List<Token> mTabGroupIds;
-    public final ViewElement<RecyclerView> mRecyclerViewElement;
-    private final @Nullable ViewSpec<View> mNewTabGroupRowViewSpec;
+    public final ViewElement<View> titleElement;
+    public final ViewElement<RecyclerView> recyclerViewElement;
+    public final ViewElement<View> newTabGroupRow;
 
     /** Constructor. Expects a specific title and selected color. */
     public TabGroupListBottomSheetFacility(
@@ -57,27 +50,25 @@ public class TabGroupListBottomSheetFacility<HostStationT extends Station<Chrome
 
         // Declare the drag handlebar.
         declareDescendantView(
-                viewSpec(ImageView.class, withId(R.id.tab_group_list_bottom_sheet_drag_handlebar)));
+                ImageView.class, withId(R.id.tab_group_list_bottom_sheet_drag_handlebar));
 
-        mTitle =
+        titleElement =
                 declareDescendantView(
-                        viewSpec(
-                                withId(R.id.tab_group_parity_bottom_sheet_title_text),
-                                withText("Add to")));
-        mRecyclerViewElement =
+                        withId(R.id.tab_group_parity_bottom_sheet_title_text), withText("Add to"));
+        recyclerViewElement =
                 declareDescendantView(
-                        viewSpec(RecyclerView.class, withId(R.id.tab_group_parity_recycler_view)));
+                        RecyclerView.class, withId(R.id.tab_group_parity_recycler_view));
 
         // If `isNewTabGroupRowVisible` is true, the new tab group row should always be visible on
         // bottom sheet showing.
         if (isNewTabGroupRowVisible) {
-            mNewTabGroupRowViewSpec =
-                    mRecyclerViewElement.descendant(
-                            withId(R.id.tab_group_list_new_group_row),
-                            hasDescendant(withText("New tab group")));
-            declareView(mNewTabGroupRowViewSpec);
+            newTabGroupRow =
+                    declareView(
+                            recyclerViewElement.descendant(
+                                    withId(R.id.tab_group_list_new_group_row),
+                                    hasDescendant(withText("New tab group"))));
         } else {
-            mNewTabGroupRowViewSpec = null;
+            newTabGroupRow = null;
         }
     }
 
@@ -93,16 +84,15 @@ public class TabGroupListBottomSheetFacility<HostStationT extends Station<Chrome
 
     /** Clicks the "New tab group" row to initialize the UI flow for creating a new tab group. */
     public NewTabGroupDialogFacility<HostStationT> clickNewTabGroupRow() {
-        assertNotNull(mNewTabGroupRowViewSpec);
+        assert newTabGroupRow != null : "New tab group row was not expected to be visible.";
+
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility<HostStationT> newTabGroupDialog =
                 new NewTabGroupDialogFacility<>(softKeyboard);
         mHostStation.swapFacilitiesSync(
                 List.of(this),
                 List.of(newTabGroupDialog, softKeyboard),
-                () ->
-                        ViewActionOnDescendant.performOnRecyclerViewNthItem(
-                                mRecyclerViewElement.getViewSpec().getViewMatcher(), 0, click()));
+                newTabGroupRow.getClickTrigger());
         return newTabGroupDialog;
     }
 }
