@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "zerotrie"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -123,7 +124,7 @@ version = "0.2.3"
 default-features = false
 
 [dependencies.litemap]
-version = "0.7.3"
+version = "0.8.0"
 features = ["alloc"]
 optional = true
 default-features = false
@@ -152,16 +153,21 @@ default-features = false
 [dev-dependencies.bincode]
 version = "1.3.1"
 
+[dev-dependencies.icu_locale_core]
+version = "2.0.0"
+features = ["alloc"]
+default-features = false
+
 [dev-dependencies.postcard]
 version = "1.0.3"
 features = ["alloc"]
 default-features = false
 
 [dev-dependencies.rand]
-version = "0.8"
+version = "0.9"
 
 [dev-dependencies.rand_pcg]
-version = "0.3"
+version = "0.9"
 
 [dev-dependencies.rmp-serde]
 version = "1.2.0"

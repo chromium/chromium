@@ -156,9 +156,10 @@ mod tests {
     fn random_alphanums(seed: u64, len: usize) -> Vec<u8> {
         use rand::seq::SliceRandom;
         use rand::SeedableRng;
-        const BYTES: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let mut bytes: Vec<u8> =
+            b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".into();
         let mut rng = rand_pcg::Lcg64Xsh32::seed_from_u64(seed);
-        BYTES.choose_multiple(&mut rng, len).copied().collect()
+        bytes.partial_shuffle(&mut rng, len).0.into()
     }
 
     #[test]
@@ -185,8 +186,8 @@ mod tests {
 
         assert_eq!(2500, fast_p);
         assert_eq!(0, slow_p);
-        assert_eq!(61247, fast_q);
-        assert_eq!(3, slow_q);
+        assert_eq!(61243, fast_q);
+        assert_eq!(7, slow_q);
 
         let bytes = random_alphanums(0, 16);
 

@@ -5,7 +5,7 @@
 [package]
 name = "zerotrie"
 description = "A data structure that efficiently maps strings to integers"
-version = "0.2.1"
+version = "0.2.2"
 
 authors.workspace = true
 categories.workspace = true
@@ -39,7 +39,7 @@ rmp-serde = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 zerovec = { path = "../../utils/zerovec", features = ["serde", "hashmap"] }
-icu_locale_core = { path = "../../components/locale_core" }
+icu_locale_core = { workspace = true, features = ["alloc"]  }
 writeable = { path = "../../utils/writeable" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
