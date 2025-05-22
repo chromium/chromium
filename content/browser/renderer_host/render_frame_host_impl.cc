@@ -54,6 +54,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/optional_trace_event.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -18147,6 +18148,11 @@ void RenderFrameHostImpl::Clone(
 void RenderFrameHostImpl::NotifyCookiesAccessed(
     std::vector<network::mojom::CookieAccessDetailsPtr> details_vector,
     CookieAccessDetails::Source source) {
+  TRACE_EVENT("browser", "RenderFrameHostImpl::NotifyCookiesAccessed");
+  std::optional<base::ElapsedTimer> timer;
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    timer.emplace();
+  }
   UMA_HISTOGRAM_COUNTS_1M("Cookie.OnCookiesAccessed.BatchSize",
                           details_vector.size());
   size_t access_sum = 0;
@@ -18165,6 +18171,11 @@ void RenderFrameHostImpl::NotifyCookiesAccessed(
     }
   }
   UMA_HISTOGRAM_COUNTS_1M("Cookie.OnCookiesAccessed.TotalAccesses", access_sum);
+  if (timer) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Browser.CookieAccessObserver.RenderFrameHost.Duration.Subsampled",
+        timer->Elapsed(), base::Microseconds(1), base::Seconds(1), 100);
+  }
 }
 
 void RenderFrameHostImpl::OnTrustTokensAccessed(

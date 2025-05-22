@@ -9973,10 +9973,15 @@ NavigationRequest::CreateDeviceBoundSessionObserver() {
 void NavigationRequest::NotifyCookiesAccessed(
     std::vector<network::mojom::CookieAccessDetailsPtr> details_vector,
     CookieAccessDetails::Source source) {
-  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnCookiesAccessed",
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::NotifyCookiesAccessed",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  std::optional<base::ElapsedTimer> timer;
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    timer.emplace();
+  }
   for (auto& details : details_vector) {
     // TODO(crbug.com/40520047): We should not send information to the current
     // frame about (potentially unrelated) ongoing navigation, but at the moment
@@ -10014,6 +10019,11 @@ void NavigationRequest::NotifyCookiesAccessed(
             http_only_cookie_modification_count);
       }
     }
+  }
+  if (timer) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Browser.CookieAccessObserver.NavigationRequest.Duration.Subsampled",
+        timer->Elapsed(), base::Microseconds(1), base::Seconds(1), 100);
   }
 }
 
