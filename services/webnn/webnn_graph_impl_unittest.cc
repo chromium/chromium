@@ -74,9 +74,8 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
   // Return nothing for testing the validation of inputs and outputs in
   // `WebNNGraphImpl::Dispatch()` function.
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
-      override {}
+      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override {}
 };
 
 // A fake WebNNTensor Mojo interface implementation that binds a pipe for

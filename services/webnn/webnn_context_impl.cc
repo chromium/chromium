@@ -7,7 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/atomic_sequence_num.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -27,23 +30,44 @@
 
 namespace webnn {
 
+// Generates unique IDs for WebNNContextImpl.
+base::AtomicSequenceNumber g_next_route_id;
+
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties,
     mojom::CreateContextOptionsPtr options)
-    : receiver_(this, std::move(receiver)),
-      context_provider_(context_provider),
+    : context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))),
-      options_(std::move(options)) {
+      options_(std::move(options)),
+      command_buffer_id_(
+          gpu::CommandBufferIdFromChannelAndRoute(context_provider->client_id(),
+                                                  g_next_route_id.GetNext())),
+      sequence_id_(context_provider_->scheduler()->CreateSequence(
+          gpu::SchedulingPriority::kNormal,
+          context_provider->main_thread_task_runner(),
+          gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE,
+          command_buffer_id_)),
+      scheduler_task_runner_(base::MakeRefCounted<gpu::SchedulerTaskRunner>(
+          *context_provider_->scheduler(),
+          sequence_id_)),
+      receiver_(this, std::move(receiver)) {
   CHECK(context_provider_);
   // Safe to use base::Unretained because the context_provider_ owns this class
   // that won't be destroyed until this callback executes.
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &WebNNContextImpl::OnConnectionError, base::Unretained(this)));
+  receiver_.set_disconnect_handler(
+      base::BindPostTask(scheduler_task_runner_,
+                         base::BindOnce(&WebNNContextImpl::OnConnectionError,
+                                        base::Unretained(this))));
 }
 
-WebNNContextImpl::~WebNNContextImpl() = default;
+WebNNContextImpl::~WebNNContextImpl() {
+  // Note: ShutDown() prevents new tasks from being scheduled and drops existing
+  // ones from executing.
+  scheduler_task_runner_->ShutDown();
+  context_provider_->scheduler()->DestroySequence(sequence_id_);
+}
 
 void WebNNContextImpl::OnConnectionError() {
   context_provider_->OnConnectionError(this);
@@ -119,10 +143,14 @@ void WebNNContextImpl::CreateTensor(
 
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  CreateTensorImpl(std::move(receiver), std::move(tensor_info),
-                   base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
-                                  AsWeakPtr(), std::move(callback),
-                                  std::move(remote), std::move(tensor_data)));
+  scheduler_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebNNContextImpl::CreateTensorImpl, AsWeakPtr(), std::move(receiver),
+          std::move(tensor_info),
+          base::BindOnce(&WebNNContextImpl::DidCreateWebNNTensorImpl,
+                         AsWeakPtr(), std::move(callback), std::move(remote),
+                         std::move(tensor_data))));
 }
 
 void WebNNContextImpl::DidCreateWebNNTensorImpl(

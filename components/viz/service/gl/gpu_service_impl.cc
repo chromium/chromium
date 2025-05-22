@@ -956,7 +956,8 @@ void GpuServiceImpl::BindWebNNContextProvider(
     // `client_id` in order to support memory metrics.
     webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
         std::move(shared_context_state), gpu_feature_info_, gpu_info_,
-        base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_));
+        base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_),
+        main_runner(), GetGpuScheduler(), client_id);
   }
 
   webnn_context_provider_->BindWebNNContextProvider(

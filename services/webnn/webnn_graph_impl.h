@@ -84,9 +84,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   // Execute the compiled platform graph. The `named_inputs` and `named_outputs`
   // were validated in base class.
   virtual void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNTensorImpl*>&
-          named_outputs) = 0;
+      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) = 0;
 
   // The validator is to make sure the inputs from a compute call match the
   // built graph's expected.

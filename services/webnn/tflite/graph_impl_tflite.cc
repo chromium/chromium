@@ -339,8 +339,8 @@ GraphImplTflite::GraphImplTflite(
       output_name_to_index_(std::move(output_name_to_index)) {}
 
 void GraphImplTflite::DispatchImpl(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
+    const base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+    const base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
   ScopedTrace scoped_trace("GraphImplTflite::DispatchImpl");
 
   std::vector<

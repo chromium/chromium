@@ -63,6 +63,7 @@ component("webnn_service") {
     ":webnn_headers",
     ":webnn_switches",
     "//base",
+    "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//mojo/public/cpp/bindings",

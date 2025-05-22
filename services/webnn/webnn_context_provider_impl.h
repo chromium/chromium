@@ -18,6 +18,10 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
 
+namespace gpu {
+class Scheduler;
+}  // namespace gpu
+
 namespace webnn {
 
 class WebNNContextImpl;
@@ -41,7 +45,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
-      LoseAllContextsCallback lose_all_contexts_callback);
+      LoseAllContextsCallback lose_all_contexts_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      gpu::Scheduler* scheduler,
+      int32_t client_id);
 
   // Called to add a another WebNNContextProvider receiver to this
   // existing `WebNNContextProviderImpl` instance.
@@ -95,12 +102,23 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
+  gpu::Scheduler* scheduler() const { return scheduler_; }
+
+  int32_t client_id() const { return client_id_; }
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner() const {
+    return main_thread_task_runner_;
+  }
+
  private:
   WebNNContextProviderImpl(
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
-      LoseAllContextsCallback lose_all_contexts_callback);
+      LoseAllContextsCallback lose_all_contexts_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      gpu::Scheduler* scheduler,
+      int32_t client_id);
 
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
@@ -115,9 +133,20 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_;
 
+  // Lifetime of the scheduler is managed by the GPU service. The GPU service
+  // destroys the WebNNContextProviderImpl and all its contexts when it
+  // is destroyed. So a raw pointer is safe. Must be destroyed after
+  // WebNNContextImpl(s) since the scheduler is accessed for their destruction.
+  const raw_ptr<gpu::Scheduler> scheduler_;
+
   // Contexts created by this provider. When a context disconnects,
   // it will destroy itself by removing itself from this set.
   WebNNContextImplSet impls_;
+
+  // Specifies the thread on which the GPU scheduler should run tasks.
+  const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+
+  const int32_t client_id_;
 };
 
 }  // namespace webnn

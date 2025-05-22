@@ -53,9 +53,8 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
 
  private:
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
-      override {
+      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override {
     RemoveDeviceToDestroyAllContexts(context_);
   }
 

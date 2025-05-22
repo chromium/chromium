@@ -5815,7 +5815,7 @@ void HandleGraphCreationFailure(
 }
 
 bool IsDispatchBindingValid(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors,
+    const base::flat_map<std::string, WebNNTensorImpl*>& named_tensors,
     const base::flat_map<std::string, base::WeakPtr<const WebNNTensorImpl>>&
         prev_named_tensors) {
   return std::ranges::equal(
@@ -6874,7 +6874,7 @@ GraphImplDml::IoBindings::IoBindings(
 GraphImplDml::IoBindings::~IoBindings() = default;
 
 GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs) {
+    const base::flat_map<std::string, WebNNTensorImpl*>& named_inputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheInputBindings");
   // Create the MLTensor input bindings needed for graph execution.
   std::vector<DML_BUFFER_BINDING> graph_input_buffer_bindings(
@@ -6911,7 +6911,7 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheInputBindings(
 }
 
 GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
+    const base::flat_map<std::string, WebNNTensorImpl*>& named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndCacheOutputBindings");
   // TODO(crbug.com/40278771): consider pre-computing the output binding
   // count.
@@ -6953,8 +6953,8 @@ GraphImplDml::IoBindings GraphImplDml::CreateAndCacheOutputBindings(
 }
 
 void GraphImplDml::DispatchImpl(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
+    base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+    base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::DispatchImpl");
 
   // It indicates whether we need to record commands and bind resources again.

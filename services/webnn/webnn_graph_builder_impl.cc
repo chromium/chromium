@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
+#include "base/task/bind_post_task.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"

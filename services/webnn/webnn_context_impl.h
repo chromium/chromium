@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -135,6 +136,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     return context_provider_.get();
   }
 
+  // Exposes a SequencedTaskRunner which can be used to schedule tasks in
+  // sequence with this WebNNContext -- that is, on the same gpu::Scheduler
+  // sequence. Does not support nested loops or delayed tasks.
+  scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner() const {
+    return scheduler_task_runner_;
+  }
+
  protected:
   void OnConnectionError();
 
@@ -161,8 +169,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  mojo::Receiver<mojom::WebNNContext> receiver_;
 
   // Owns this object.
   raw_ptr<WebNNContextProviderImpl> context_provider_;
@@ -194,6 +200,20 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       std::unique_ptr<WebNNGraphImpl>,
       WebNNObjectImpl<blink::WebNNGraphToken>::Comparator<WebNNGraphImpl>>
       graph_impls_;
+
+  const gpu::CommandBufferId command_buffer_id_;
+
+  // WebNN context API operations execute tasks in a sequence.
+  // Within a WebNN context, tasks are orderered, but remain async with respect
+  // to tasks in other WebNN contexts or sequences.
+  const gpu::SequenceId sequence_id_;
+
+  // WebNN IPC operations without a SyncToken are re-posted to the scheduled
+  // task runner to ensure they execute in the same sequence and order as those
+  // with a SyncToken.
+  const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
+
+  mojo::Receiver<mojom::WebNNContext> receiver_;
 };
 
 }  // namespace webnn

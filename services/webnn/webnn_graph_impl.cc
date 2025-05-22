@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/dcheck_is_on.h"
+#include "base/task/bind_post_task.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
@@ -26,7 +27,7 @@ namespace {
 // Return false if the named tensors for dispatch don't match the built
 // graph's expectation.
 bool ValidateWebNNTensors(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors,
+    const base::flat_map<std::string, WebNNTensorImpl*>& named_tensors,
     const base::flat_map<std::string, OperandDescriptor>&
         names_to_descriptors) {
   return std::ranges::equal(
@@ -101,8 +102,10 @@ WebNNGraphImpl::WebNNGraphImpl(
   context_->AssertCalledOnValidSequence();
 #endif
   // Safe to use base::Unretained because `this` owns `receiver_`.
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &WebNNGraphImpl::OnConnectionError, base::Unretained(this)));
+  receiver_.set_disconnect_handler(
+      base::BindPostTask(context_->scheduler_task_runner(),
+                         base::BindOnce(&WebNNGraphImpl::OnConnectionError,
+                                        base::Unretained(this))));
 }
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
@@ -121,8 +124,7 @@ void WebNNGraphImpl::Dispatch(
 
   // Resolve the token of a input MLTensor to the corresponding `WebNNTensor`
   // instance.
-  std::vector<std::pair<std::string_view, WebNNTensorImpl*>>
-      name_to_input_tensors;
+  std::vector<std::pair<std::string, WebNNTensorImpl*>> name_to_input_tensors;
   name_to_input_tensors.reserve(named_inputs.size());
   for (const auto& [name, tensor_handle] : named_inputs) {
     base::optional_ref<WebNNTensorImpl> input_tensor =
@@ -140,7 +142,7 @@ void WebNNGraphImpl::Dispatch(
 
     name_to_input_tensors.emplace_back(name, input_tensor.as_ptr());
   }
-  base::flat_map<std::string_view, WebNNTensorImpl*> name_to_input_tensor_map(
+  base::flat_map<std::string, WebNNTensorImpl*> name_to_input_tensor_map(
       std::move(name_to_input_tensors));
   if (!ValidateWebNNTensors(
           name_to_input_tensor_map,
@@ -151,8 +153,7 @@ void WebNNGraphImpl::Dispatch(
 
   // Resolve the token of a output MLTensor to the corresponding `WebNNTensor`
   // instance.
-  std::vector<std::pair<std::string_view, WebNNTensorImpl*>>
-      name_to_output_tensors;
+  std::vector<std::pair<std::string, WebNNTensorImpl*>> name_to_output_tensors;
   name_to_output_tensors.reserve(named_outputs.size());
   for (const auto& [name, tensor_handle] : named_outputs) {
     base::optional_ref<WebNNTensorImpl> output_tensor =
@@ -171,7 +172,7 @@ void WebNNGraphImpl::Dispatch(
     name_to_output_tensors.emplace_back(name, output_tensor.as_ptr());
   }
 
-  base::flat_map<std::string_view, WebNNTensorImpl*> name_to_output_tensor_map(
+  base::flat_map<std::string, WebNNTensorImpl*> name_to_output_tensor_map(
       std::move(name_to_output_tensors));
   if (!ValidateWebNNTensors(
           name_to_output_tensor_map,
@@ -181,7 +182,11 @@ void WebNNGraphImpl::Dispatch(
   }
 
   // Call DispatchImpl() implemented by an `mojom::WebNNGraph` backend.
-  DispatchImpl(name_to_input_tensor_map, name_to_output_tensor_map);
+  context_->scheduler_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebNNGraphImpl::DispatchImpl, base::Unretained(this),
+                     std::move(name_to_input_tensor_map),
+                     std::move(name_to_output_tensor_map)));
 }
 
 }  // namespace webnn

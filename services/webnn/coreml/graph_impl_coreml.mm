@@ -122,7 +122,7 @@ API_AVAILABLE(macos(12.3))
 base::flat_map<std::string,
                scoped_refptr<QueueableResourceState<BufferContent>>>
 ToNamedBufferStateMap(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_tensors) {
+    const base::flat_map<std::string, WebNNTensorImpl*>& named_tensors) {
   base::flat_map<std::string,
                  scoped_refptr<QueueableResourceState<BufferContent>>>
       buffer_states;
@@ -647,8 +647,8 @@ GraphImplCoreml::GraphImplCoreml(
 GraphImplCoreml::~GraphImplCoreml() = default;
 
 void GraphImplCoreml::DispatchImpl(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
+    base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+    base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("GraphImplCoreml::DispatchImpl");

@@ -61,9 +61,8 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
 
  private:
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
-      override {
+      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override {
     NOTIMPLEMENTED();
   }
 };
@@ -99,7 +98,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     // Asynchronously resolve `callback` so there's an opportunity for
     // subsequent messages to be (illegally) sent from the `WebNNGraphBuilder`
     // remote before it's disconnected.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    scheduler_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,

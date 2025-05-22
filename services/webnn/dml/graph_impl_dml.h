@@ -280,17 +280,16 @@ class GraphImplDml final : public WebNNGraphImpl {
   };
 
   IoBindings CreateAndCacheInputBindings(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs);
+      const base::flat_map<std::string, WebNNTensorImpl*>& named_inputs);
 
   IoBindings CreateAndCacheOutputBindings(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs);
+      const base::flat_map<std::string, WebNNTensorImpl*>& named_outputs);
 
   // Execute the compiled platform graph asynchronously. The inputs were
   // validated in base class so we can use them to compute directly.
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
-      override;
+      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override;
 
   // The persistent resource is allocated after the compilation work is
   // completed for the graph initialization and will be used for the following
