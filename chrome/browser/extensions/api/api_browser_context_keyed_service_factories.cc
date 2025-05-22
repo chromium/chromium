@@ -6,6 +6,7 @@
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
+#include "chrome/browser/extensions/api/history/history_api.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/common/buildflags.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/extensions/api/braille_display_private/braille_display_private_api.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_event_router.h"
 #include "chrome/browser/extensions/api/font_settings/font_settings_api.h"
-#include "chrome/browser/extensions/api/history/history_api.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate_factory.h"
@@ -80,10 +80,11 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   // APIs supported on Win/Mac/Linux plus desktop Android go here.
   extensions::BookmarksAPI::GetFactoryInstance();
   extensions::BookmarksApiWatcher::EnsureFactoryBuilt();
-  extensions::CookiesAPI::GetFactoryInstance();
-  extensions::ExtensionNotificationDisplayHelperFactory::GetInstance();
-  extensions::DeveloperPrivateAPI::GetFactoryInstance();
   extensions::CommandService::GetFactoryInstance();
+  extensions::CookiesAPI::GetFactoryInstance();
+  extensions::DeveloperPrivateAPI::GetFactoryInstance();
+  extensions::ExtensionNotificationDisplayHelperFactory::GetInstance();
+  extensions::HistoryAPI::GetFactoryInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ActivityLogAPI::GetFactoryInstance();
@@ -96,7 +97,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
 #endif
   extensions::EnterpriseReportingPrivateEventRouterFactory::GetInstance();
   extensions::FontSettingsAPI::GetFactoryInstance();
-  extensions::HistoryAPI::GetFactoryInstance();
   extensions::IdentityAPI::GetFactoryInstance();
   extensions::IncognitoConnectability::EnsureFactoryBuilt();
 #if BUILDFLAG(IS_CHROMEOS)

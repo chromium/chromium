@@ -11,8 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -29,6 +27,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -90,12 +90,21 @@ class HistoryApiTest : public ExtensionApiTest,
   }
 };
 
+// Android only supports MV3 and later, therefore don't need to test for
+// persistent background context.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          HistoryApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          HistoryApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
+
+// TODO(crbug.com/419057486): Enable for desktop Android once
+// SetUpBrowserContextKeyedServices can be called for Android browser tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 class SyncEnabledHistoryApiTest : public HistoryApiTest {
  public:
@@ -123,6 +132,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          SyncEnabledHistoryApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/misc_search")) << message_;
@@ -139,8 +150,7 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, Delete) {
 }
 
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, DeleteProhibited) {
-  browser()->profile()->GetPrefs()->
-      SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/delete_prohibited"))
       << message_;
@@ -150,6 +160,10 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/get_visits")) << message_;
 }
+
+// TODO(crbug.com/419057486): Enable for desktop Android once
+// SetUpBrowserContextKeyedServices can be called for Android browser tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -166,7 +180,7 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
   base::CancelableTaskTracker tracker;
   base::RunLoop run_loop;
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(profile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   history_service->ScheduleDBTask(
       FROM_HERE,
@@ -214,6 +228,8 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, SearchAfterAdd) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/search_after_add")) << message_;
@@ -227,9 +243,9 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, Incognito) {
                                                    profile()->GetPrefs());
 
   ASSERT_TRUE(StartEmbeddedTestServer());
-  // Setup.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  Profile* incognito_profile = incognito_browser->profile();
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
   ExtensionTestMessageListener regular_listener("regular ready");
   ExtensionTestMessageListener incognito_listener("incognito ready");
   const Extension* extension =
@@ -260,10 +276,7 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, Incognito) {
   // Perform navigation in incognito mode.
   const GURL b_com =
       embedded_test_server()->GetURL("www.b.com", "/simple.html");
-  content::TestNavigationObserver incognito_observer(
-      incognito_browser->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, b_com));
-  EXPECT_TRUE(incognito_observer.last_navigation_succeeded());
+  PlatformOpenURLOffTheRecord(incognito_profile, b_com);
 
   // Check history in regular mode is not modified by incognito navigation.
   EXPECT_EQ("1",
@@ -275,9 +288,9 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, Incognito) {
                                "countItemsInHistory()"));
 
   // Perform navigation in regular mode.
-  content::TestNavigationObserver regular_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_com));
+  content::TestNavigationObserver regular_observer(GetActiveWebContents());
+  ASSERT_TRUE(NavigateToURL(b_com));
+
   EXPECT_TRUE(regular_observer.last_navigation_succeeded());
 
   // Check history in regular mode is modified by navigation.
