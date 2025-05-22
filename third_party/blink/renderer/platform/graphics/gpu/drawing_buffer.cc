@@ -450,11 +450,9 @@ bool DrawingBuffer::PrepareTransferableResource(
     }
 
     // Populate the output TransferableResource from the SharedImage.
-    viz::TransferableResource::MetadataOverride overrides;
-    overrides.alpha_type = resource_alpha_type;
     *out_resource = viz::TransferableResource::Make(
         shared_image, viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        sync_token, overrides);
+        sync_token);
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->is_low_latency_rendering = shared_image->usage().Has(
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
