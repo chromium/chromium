@@ -400,12 +400,11 @@ void DrawDashedOrDottedBoxSide(GraphicsContext& context,
                                Color color,
                                int thickness,
                                EBorderStyle style,
-                               bool antialias,
                                const AutoDarkMode& auto_dark_mode) {
   DCHECK_GT(thickness, 0);
 
   GraphicsContextStateSaver state_saver(context);
-  context.SetShouldAntialias(antialias);
+  context.SetShouldAntialias(true);
   context.SetStrokeColor(color);
   StyledStrokeData styled_stroke;
   styled_stroke.SetThickness(thickness);
@@ -440,7 +439,6 @@ void DrawLineForBoxSide(GraphicsContext& context,
                         EBorderStyle style,
                         int adjacent_width1,
                         int adjacent_width2,
-                        bool antialias,
                         const AutoDarkMode& auto_dark_mode);
 
 bool DarkenBoxSide(BoxSide side, EBorderStyle style) {
@@ -488,7 +486,6 @@ void DrawDoubleBoxSide(GraphicsContext& context,
                        int thickness,
                        int adjacent_width1,
                        int adjacent_width2,
-                       bool antialias,
                        const AutoDarkMode& auto_dark_mode) {
   int third_of_thickness = (thickness + 1) / 3;
   DCHECK_GT(third_of_thickness, 0);
@@ -496,8 +493,8 @@ void DrawDoubleBoxSide(GraphicsContext& context,
   if (!adjacent_width1 && !adjacent_width2) {
     context.SetFillColor(color);
 
-    bool was_antialiased = context.ShouldAntialias();
-    context.SetShouldAntialias(antialias);
+    const bool was_antialiased = context.ShouldAntialias();
+    context.SetShouldAntialias(true);
 
     switch (side) {
       case BoxSide::kTop:
@@ -533,13 +530,13 @@ void DrawDoubleBoxSide(GraphicsContext& context,
           context, x1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0), y1,
           x2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0),
           y1 + third_of_thickness, side, color, EBorderStyle::kSolid,
-          adjacent1_big_third, adjacent2_big_third, antialias, auto_dark_mode);
+          adjacent1_big_third, adjacent2_big_third, auto_dark_mode);
       DrawLineForBoxSide(context,
                          x1 + std::max((adjacent_width1 * 2 + 1) / 3, 0),
                          y2 - third_of_thickness,
                          x2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), y2,
                          side, color, EBorderStyle::kSolid, adjacent1_big_third,
-                         adjacent2_big_third, antialias, auto_dark_mode);
+                         adjacent2_big_third, auto_dark_mode);
       break;
     case BoxSide::kLeft:
       DrawLineForBoxSide(context, x1,
@@ -547,25 +544,25 @@ void DrawDoubleBoxSide(GraphicsContext& context,
                          x1 + third_of_thickness,
                          y2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), side,
                          color, EBorderStyle::kSolid, adjacent1_big_third,
-                         adjacent2_big_third, antialias, auto_dark_mode);
+                         adjacent2_big_third, auto_dark_mode);
       DrawLineForBoxSide(context, x2 - third_of_thickness,
                          y1 + std::max((adjacent_width1 * 2 + 1) / 3, 0), x2,
                          y2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), side,
                          color, EBorderStyle::kSolid, adjacent1_big_third,
-                         adjacent2_big_third, antialias, auto_dark_mode);
+                         adjacent2_big_third, auto_dark_mode);
       break;
     case BoxSide::kBottom:
       DrawLineForBoxSide(
           context, x1 + std::max((adjacent_width1 * 2 + 1) / 3, 0), y1,
           x2 - std::max((adjacent_width2 * 2 + 1) / 3, 0),
           y1 + third_of_thickness, side, color, EBorderStyle::kSolid,
-          adjacent1_big_third, adjacent2_big_third, antialias, auto_dark_mode);
+          adjacent1_big_third, adjacent2_big_third, auto_dark_mode);
       DrawLineForBoxSide(context,
                          x1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0),
                          y2 - third_of_thickness,
                          x2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), y2,
                          side, color, EBorderStyle::kSolid, adjacent1_big_third,
-                         adjacent2_big_third, antialias, auto_dark_mode);
+                         adjacent2_big_third, auto_dark_mode);
       break;
     case BoxSide::kRight:
       DrawLineForBoxSide(context, x1,
@@ -573,12 +570,12 @@ void DrawDoubleBoxSide(GraphicsContext& context,
                          x1 + third_of_thickness,
                          y2 - std::max((adjacent_width2 * 2 + 1) / 3, 0), side,
                          color, EBorderStyle::kSolid, adjacent1_big_third,
-                         adjacent2_big_third, antialias, auto_dark_mode);
+                         adjacent2_big_third, auto_dark_mode);
       DrawLineForBoxSide(context, x2 - third_of_thickness,
                          y1 + std::max((-adjacent_width1 * 2 + 1) / 3, 0), x2,
                          y2 - std::max((-adjacent_width2 * 2 + 1) / 3, 0), side,
                          color, EBorderStyle::kSolid, adjacent1_big_third,
-                         adjacent2_big_third, antialias, auto_dark_mode);
+                         adjacent2_big_third, auto_dark_mode);
       break;
     default:
       break;
@@ -595,7 +592,6 @@ void DrawRidgeOrGrooveBoxSide(GraphicsContext& context,
                               EBorderStyle style,
                               int adjacent_width1,
                               int adjacent_width2,
-                              bool antialias,
                               const AutoDarkMode& auto_dark_mode) {
   EBorderStyle s1;
   EBorderStyle s2;
@@ -617,44 +613,43 @@ void DrawRidgeOrGrooveBoxSide(GraphicsContext& context,
       DrawLineForBoxSide(context, x1 + std::max(-adjacent_width1, 0) / 2, y1,
                          x2 - std::max(-adjacent_width2, 0) / 2,
                          (y1 + y2 + 1) / 2, side, color, s1, adjacent1_big_half,
-                         adjacent2_big_half, antialias, auto_dark_mode);
+                         adjacent2_big_half, auto_dark_mode);
       DrawLineForBoxSide(
           context, x1 + std::max(adjacent_width1 + 1, 0) / 2, (y1 + y2 + 1) / 2,
           x2 - std::max(adjacent_width2 + 1, 0) / 2, y2, side, color, s2,
-          adjacent_width1 / 2, adjacent_width2 / 2, antialias, auto_dark_mode);
+          adjacent_width1 / 2, adjacent_width2 / 2, auto_dark_mode);
       break;
     case BoxSide::kLeft:
-      DrawLineForBoxSide(context, x1, y1 + std::max(-adjacent_width1, 0) / 2,
-                         (x1 + x2 + 1) / 2,
-                         y2 - std::max(-adjacent_width2, 0) / 2, side, color,
-                         s1, adjacent1_big_half, adjacent2_big_half, antialias,
-                         auto_dark_mode);
+      DrawLineForBoxSide(
+          context, x1, y1 + std::max(-adjacent_width1, 0) / 2,
+          (x1 + x2 + 1) / 2, y2 - std::max(-adjacent_width2, 0) / 2, side,
+          color, s1, adjacent1_big_half, adjacent2_big_half, auto_dark_mode);
       DrawLineForBoxSide(
           context, (x1 + x2 + 1) / 2, y1 + std::max(adjacent_width1 + 1, 0) / 2,
           x2, y2 - std::max(adjacent_width2 + 1, 0) / 2, side, color, s2,
-          adjacent_width1 / 2, adjacent_width2 / 2, antialias, auto_dark_mode);
+          adjacent_width1 / 2, adjacent_width2 / 2, auto_dark_mode);
       break;
     case BoxSide::kBottom:
       DrawLineForBoxSide(context, x1 + std::max(adjacent_width1, 0) / 2, y1,
                          x2 - std::max(adjacent_width2, 0) / 2,
                          (y1 + y2 + 1) / 2, side, color, s2, adjacent1_big_half,
-                         adjacent2_big_half, antialias, auto_dark_mode);
+                         adjacent2_big_half, auto_dark_mode);
       DrawLineForBoxSide(context, x1 + std::max(-adjacent_width1 + 1, 0) / 2,
                          (y1 + y2 + 1) / 2,
                          x2 - std::max(-adjacent_width2 + 1, 0) / 2, y2, side,
                          color, s1, adjacent_width1 / 2, adjacent_width2 / 2,
-                         antialias, auto_dark_mode);
+                         auto_dark_mode);
       break;
     case BoxSide::kRight:
       DrawLineForBoxSide(
           context, x1, y1 + std::max(adjacent_width1, 0) / 2, (x1 + x2 + 1) / 2,
           y2 - std::max(adjacent_width2, 0) / 2, side, color, s2,
-          adjacent1_big_half, adjacent2_big_half, antialias, auto_dark_mode);
+          adjacent1_big_half, adjacent2_big_half, auto_dark_mode);
       DrawLineForBoxSide(context, (x1 + x2 + 1) / 2,
                          y1 + std::max(-adjacent_width1 + 1, 0) / 2, x2,
                          y2 - std::max(-adjacent_width2 + 1, 0) / 2, side,
                          color, s1, adjacent_width1 / 2, adjacent_width2 / 2,
-                         antialias, auto_dark_mode);
+                         auto_dark_mode);
       break;
   }
 }
@@ -662,7 +657,6 @@ void DrawRidgeOrGrooveBoxSide(GraphicsContext& context,
 void FillQuad(GraphicsContext& context,
               const gfx::QuadF& quad,
               const Color& color,
-              bool antialias,
               const AutoDarkMode& auto_dark_mode) {
   SkPath path;
   path.moveTo(gfx::PointFToSkPoint(quad.p1()));
@@ -670,7 +664,7 @@ void FillQuad(GraphicsContext& context,
   path.lineTo(gfx::PointFToSkPoint(quad.p3()));
   path.lineTo(gfx::PointFToSkPoint(quad.p4()));
   cc::PaintFlags flags(context.FillFlags());
-  flags.setAntiAlias(antialias);
+  flags.setAntiAlias(true);
   flags.setColor(color.toSkColor4f());
 
   context.DrawPath(path, flags, auto_dark_mode);
@@ -685,7 +679,6 @@ void DrawSolidBoxSide(GraphicsContext& context,
                       Color color,
                       int adjacent_width1,
                       int adjacent_width2,
-                      bool antialias,
                       const AutoDarkMode& auto_dark_mode) {
   DCHECK_GE(x2, x1);
   DCHECK_GE(y2, y1);
@@ -693,13 +686,15 @@ void DrawSolidBoxSide(GraphicsContext& context,
   if (!adjacent_width1 && !adjacent_width2) {
     // Tweak antialiasing to match the behavior of fillQuad();
     // this matters for rects in transformed contexts.
-    bool was_antialiased = context.ShouldAntialias();
-    if (antialias != was_antialiased)
-      context.SetShouldAntialias(antialias);
+    const bool was_antialiased = context.ShouldAntialias();
+    if (!was_antialiased) {
+      context.SetShouldAntialias(true);
+    }
     context.FillRect(gfx::Rect(x1, y1, x2 - x1, y2 - y1), color,
                      auto_dark_mode);
-    if (antialias != was_antialiased)
+    if (!was_antialiased) {
       context.SetShouldAntialias(was_antialiased);
+    }
     return;
   }
 
@@ -731,7 +726,7 @@ void DrawSolidBoxSide(GraphicsContext& context,
       break;
   }
 
-  FillQuad(context, quad, color, antialias, auto_dark_mode);
+  FillQuad(context, quad, color, auto_dark_mode);
 }
 
 void DrawLineForBoxSide(GraphicsContext& context,
@@ -744,7 +739,6 @@ void DrawLineForBoxSide(GraphicsContext& context,
                         EBorderStyle style,
                         int adjacent_width1,
                         int adjacent_width2,
-                        bool antialias,
                         const AutoDarkMode& auto_dark_mode) {
   int thickness;
   int length;
@@ -772,17 +766,16 @@ void DrawLineForBoxSide(GraphicsContext& context,
     case EBorderStyle::kDotted:
     case EBorderStyle::kDashed:
       DrawDashedOrDottedBoxSide(context, x1, y1, x2, y2, side, color, thickness,
-                                style, antialias, auto_dark_mode);
+                                style, auto_dark_mode);
       break;
     case EBorderStyle::kDouble:
       DrawDoubleBoxSide(context, x1, y1, x2, y2, length, side, color, thickness,
-                        adjacent_width1, adjacent_width2, antialias,
-                        auto_dark_mode);
+                        adjacent_width1, adjacent_width2, auto_dark_mode);
       break;
     case EBorderStyle::kRidge:
     case EBorderStyle::kGroove:
       DrawRidgeOrGrooveBoxSide(context, x1, y1, x2, y2, side, color, style,
-                               adjacent_width1, adjacent_width2, antialias,
+                               adjacent_width1, adjacent_width2,
                                auto_dark_mode);
       break;
     case EBorderStyle::kInset:
@@ -791,7 +784,7 @@ void DrawLineForBoxSide(GraphicsContext& context,
       [[fallthrough]];
     case EBorderStyle::kSolid:
       DrawSolidBoxSide(context, x1, y1, x2, y2, side, color, adjacent_width1,
-                       adjacent_width2, antialias, auto_dark_mode);
+                       adjacent_width2, auto_dark_mode);
       break;
   }
 }
@@ -1587,12 +1580,12 @@ void BoxBorderPainter::PaintOneBorderSide(
       miter1 = miter2 = kNoMiter;
     }
 
-    DrawLineForBoxSide(
-        context_, side_rect.x(), side_rect.y(), side_rect.right(),
-        side_rect.bottom(), side, color, edge_to_render.BorderStyle(),
-        miter1 != kNoMiter ? adjacent_edge1.Width() : 0,
-        miter2 != kNoMiter ? adjacent_edge2.Width() : 0,
-        /*antialias*/ true, PaintAutoDarkMode(style_, element_role_));
+    DrawLineForBoxSide(context_, side_rect.x(), side_rect.y(),
+                       side_rect.right(), side_rect.bottom(), side, color,
+                       edge_to_render.BorderStyle(),
+                       miter1 != kNoMiter ? adjacent_edge1.Width() : 0,
+                       miter2 != kNoMiter ? adjacent_edge2.Width() : 0,
+                       PaintAutoDarkMode(style_, element_role_));
   }
 }
 
@@ -2337,7 +2330,7 @@ void BoxBorderPainter::DrawBoxSide(GraphicsContext& context,
                                    const AutoDarkMode& auto_dark_mode) {
   DrawLineForBoxSide(context, snapped_edge_rect.x(), snapped_edge_rect.y(),
                      snapped_edge_rect.right(), snapped_edge_rect.bottom(),
-                     side, color, style, 0, 0, true, auto_dark_mode);
+                     side, color, style, 0, 0, auto_dark_mode);
 }
 
 }  // namespace blink
