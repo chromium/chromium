@@ -196,14 +196,8 @@ static const char* kInterstitialDetails = "Details";
       performAction:grey_tap()];
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSupervisedUserSignin DISABLED_testSupervisedUserSignin
-#else
-#define MAYBE_testSupervisedUserSignin testSupervisedUserSignin
-#endif
-// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the user is signed in.
-- (void)MAYBE_testSupervisedUserSignin {
+- (void)testSupervisedUserSignin {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -224,20 +218,11 @@ static const char* kInterstitialDetails = "Details";
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
-  DISABLED_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
-#else
-#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
-  testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
-#endif
-// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that only realized existing web states will display the interstitial
 // when a filtering for them is triggered. Also tests that the filtering logic
 // on existing tabs does not force-realize unrealized states. This is a
 // regression test for bug: 1486459.
-- (void)
-    MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
+- (void)testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
   // Signing in the user and allow all sites.
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -297,17 +282,9 @@ static const char* kInterstitialDetails = "Details";
   }
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
-  DISABLED_testSupervisedUserSignedOutOnPolicyChange
-#else
-#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
-  testSupervisedUserSignedOutOnPolicyChange
-#endif
-// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the user is correctly signed out after signin is disabled via
 // policy.
-- (void)MAYBE_testSupervisedUserSignedOutOnPolicyChange {
+- (void)testSupervisedUserSignedOutOnPolicyChange {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
