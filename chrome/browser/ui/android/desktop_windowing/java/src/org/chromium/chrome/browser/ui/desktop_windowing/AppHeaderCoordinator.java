@@ -30,7 +30,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
@@ -251,10 +250,6 @@ public class AppHeaderCoordinator
         }
     }
 
-    private static boolean shouldAllowCustomizationOnNonDefaultDisplay() {
-        return ChromeFeatureList.sTabStripLayoutOptimizationOnExternalDisplay.getValue();
-    }
-
     /**
      * Check if the desktop windowing mode is enabled by checking all the criteria:
      *
@@ -276,7 +271,8 @@ public class AppHeaderCoordinator
 
         Insets captionBarInset = insetsRectProvider.getCachedInset();
         boolean allowHeaderCustomization =
-                shouldAllowCustomizationOnNonDefaultDisplay() || !isOnExternalDisplay;
+                AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
+                        || !isOnExternalDisplay;
 
         if (insetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
             newResult = DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY;

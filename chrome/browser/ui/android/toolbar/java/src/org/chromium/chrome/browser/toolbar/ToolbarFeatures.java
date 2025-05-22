@@ -14,6 +14,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,9 +52,8 @@ public final class ToolbarFeatures {
         }
 
         // Determine if app header customization will be supported on an external display.
-        boolean showCustomHeadersOnExternalDisplay =
-                ChromeFeatureList.sTabStripLayoutOptimizationOnExternalDisplay.getValue();
-        if (!showCustomHeadersOnExternalDisplay && !isDefaultDisplay) {
+        if (!AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
+                && !isDefaultDisplay) {
             return false;
         }
 
@@ -61,7 +61,7 @@ public final class ToolbarFeatures {
         if (sHeaderCustomizationDisallowedForOem == null) {
             Set<String> customHeadersOemDenylist = new HashSet<>();
             String denylistStr =
-                    ChromeFeatureList.sTabStripLayoutOptimizationOemDenylist.getDefaultValue();
+                    ChromeFeatureList.sTabStripLayoutOptimizationOemDenylist.getValue();
             if (!TextUtils.isEmpty(denylistStr)) {
                 Collections.addAll(customHeadersOemDenylist, denylistStr.split(","));
             }
@@ -78,7 +78,7 @@ public final class ToolbarFeatures {
         if (sHeaderCustomizationAllowedForOem == null) {
             Set<String> customHeadersOemAllowlist = new HashSet<>();
             String allowlistStr =
-                    ChromeFeatureList.sTabStripLayoutOptimizationOemAllowlist.getDefaultValue();
+                    ChromeFeatureList.sTabStripLayoutOptimizationOemAllowlist.getValue();
             if (!TextUtils.isEmpty(allowlistStr)) {
                 Collections.addAll(customHeadersOemAllowlist, allowlistStr.split(","));
             }

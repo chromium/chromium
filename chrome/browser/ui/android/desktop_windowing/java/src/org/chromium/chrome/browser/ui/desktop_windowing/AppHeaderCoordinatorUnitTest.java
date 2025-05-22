@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -45,6 +46,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
+import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -125,6 +127,7 @@ public class AppHeaderCoordinatorUnitTest {
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(mSpyActivity.getWindow());
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
+        AppHeaderUtils.resetHeaderCustomizationDisallowedOnExternalDisplayForOemForTesting();
         doAnswer(inv -> mLastSeenRawWindowInsets).when(mInsetObserver).getLastRawWindowInsets();
         setupWithNoCaptionInsets();
         mSavedInstanceStateBundle = new Bundle();
@@ -204,7 +207,7 @@ public class AppHeaderCoordinatorUnitTest {
                         "Android.DesktopWindowHeuristicResult3",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         ShadowDisplayUtil.setOnDefaultDisplay(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ false);
+        updateFeatureParams(/* enableOnExternalDisplay= */ false, /* oemDenylist= */ "");
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
@@ -215,9 +218,40 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    public void notEnabledOnExternalDisplayForDenylistedOem() {
+        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult3",
+                        DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
+        // Assume external display support is enabled but denylisted for "samsung".
+        ShadowDisplayUtil.setOnDefaultDisplay(false);
+        updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        verifyDesktopWindowingDisabled(
+                /* error= */ "Desktop windowing should not be enabled on an external display when"
+                        + " it is denylisted for the OEM.");
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void enabledOnExternalDisplayForNonDenylistedOem() {
+        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "lenovo");
+        // Assume external display support is enabled but denylisted for "samsung".
+        ShadowDisplayUtil.setOnDefaultDisplay(false);
+        updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        verifyDesktopWindowingEnabled();
+    }
+
+    @Test
     public void enabledOnExternalDisplayWhenAllowed() {
         ShadowDisplayUtil.setOnDefaultDisplay(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true);
+        updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "");
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
@@ -742,13 +776,14 @@ public class AppHeaderCoordinatorUnitTest {
         return mAppHeaderCoordinator.onApplyWindowInsets(mSpyRootView, windowInsetsBuilder.build());
     }
 
-    private void updateFeatureParams(boolean enableOnExternalDisplay) {
+    private void updateFeatureParams(boolean enableOnExternalDisplay, String oemDenylist) {
         FeatureOverrides.Builder overrides =
                 FeatureOverrides.newBuilder()
                         .enable(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
                         .param(
                                 "enable_on_external_display",
-                                enableOnExternalDisplay ? "true" : "false");
+                                enableOnExternalDisplay ? "true" : "false")
+                        .param("external_display_oem_denylist", oemDenylist);
         overrides.apply();
     }
 }
