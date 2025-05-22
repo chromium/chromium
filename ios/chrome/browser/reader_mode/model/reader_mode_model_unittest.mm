@@ -80,8 +80,8 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
   __block std::unique_ptr<ContextualPanelItemConfiguration> configuration;
 
   GURL test_url("https://test.org/doc.html");
-  SetReaderModeEligibility(web_state(), test_url,
-                           ReaderModeHeuristicResult::kReaderModeEligible);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
   WaitForReaderModeContentReady();
 

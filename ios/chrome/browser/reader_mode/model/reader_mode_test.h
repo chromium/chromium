@@ -32,9 +32,10 @@ class ReaderModeTest : public PlatformTest {
 
   // Updates the provided `web_state` with the Reader Mode eligibility mapped
   // to the provided `url`.
-  void SetReaderModeEligibility(web::FakeWebState* web_state,
-                                const GURL& url,
-                                ReaderModeHeuristicResult eligibility);
+  void SetReaderModeState(web::FakeWebState* web_state,
+                          const GURL& url,
+                          ReaderModeHeuristicResult eligibility,
+                          std::string distilled_content);
 
   // Waits for Reader Mode content to be loaded and ready to query.
   void WaitForReaderModeContentReady();
@@ -50,7 +51,7 @@ class ReaderModeTest : public PlatformTest {
 
   std::unique_ptr<TestProfileIOS> profile_;
 
-  base::Value distiller_result_;
+  std::vector<std::unique_ptr<base::Value>> distiller_result_values_;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_TEST_H_

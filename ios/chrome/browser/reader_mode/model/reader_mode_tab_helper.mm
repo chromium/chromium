@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -114,13 +113,22 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
                                          DistillerService* distiller_service)
     : web_state_(web_state), distiller_service_(distiller_service) {
   CHECK(web_state_);
-  web_state_->AddObserver(this);
+  web_state_observation_.Observe(web_state_);
 }
 
-ReaderModeTabHelper::~ReaderModeTabHelper() = default;
+ReaderModeTabHelper::~ReaderModeTabHelper() {
+  SetActive(false);
+  for (auto& observer : observers_) {
+    observer.ReaderModeTabHelperDestroyed(this);
+  }
+}
 
-void ReaderModeTabHelper::SetDelegate(ReaderModeTabHelperDelegate* delegate) {
-  delegate_ = delegate;
+void ReaderModeTabHelper::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ReaderModeTabHelper::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool ReaderModeTabHelper::IsActive() const {
@@ -142,16 +150,16 @@ void ReaderModeTabHelper::SetActive(bool active) {
   }
 }
 
-bool ReaderModeTabHelper::IsReaderModeContentAvailable() const {
+bool ReaderModeTabHelper::IsReaderModeWebStateAvailable() const {
   // TODO(crbug.com/417685203): Try to remove this parameter once decoupling is
   // completed e.g. instead check whether there is a ReaderModeContentTabHelper
   // attached and displaying content.
-  return reader_mode_content_available_;
+  return reader_mode_web_state_available_;
 }
 
-UIView* ReaderModeTabHelper::GetReaderModeContentView() {
-  CHECK(IsReaderModeContentAvailable());
-  return reader_mode_web_state_->GetView();
+web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
+  CHECK(IsReaderModeWebStateAvailable());
+  return reader_mode_web_state_.get();
 }
 
 bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
@@ -213,7 +221,7 @@ void ReaderModeTabHelper::DidFinishNavigation(
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_, web_state);
   SetActive(false);
-  web_state_->RemoveObserver(this);
+  web_state_observation_.Reset();
   web_state_ = nullptr;
 }
 
@@ -337,9 +345,9 @@ void ReaderModeTabHelper::PageDistillationCompleted(
                                             length:html.length()];
       ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
           ->LoadContent(page_url, content_data);
-      reader_mode_content_available_ = true;
-      if (delegate_) {
-        delegate_->ReaderModeContentDidBecomeAvailable(this);
+      reader_mode_web_state_available_ = true;
+      for (auto& observer : observers_) {
+        observer.ReaderModeWebStateDidBecomeAvailable(this);
       }
     } else {
       // If the page could not be distilled, deactivate Reader mode in this tab.
@@ -369,10 +377,10 @@ void ReaderModeTabHelper::CreateReaderModeWebState() {
 }
 
 void ReaderModeTabHelper::DestroyReaderModeWebState() {
-  if (delegate_) {
-    delegate_->ReaderModeContentWillBecomeUnavailable(this);
+  for (auto& observer : observers_) {
+    observer.ReaderModeWebStateWillBecomeUnavailable(this);
   }
-  reader_mode_content_available_ = false;
+  reader_mode_web_state_available_ = false;
   reader_mode_web_state_.reset();
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();

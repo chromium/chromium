@@ -21,7 +21,6 @@ source_set("model") {
     "reader_mode_model_factory.mm",
     "reader_mode_tab_helper.h",
     "reader_mode_tab_helper.mm",
-    "reader_mode_tab_helper_delegate.h",
   ]
   deps = [
     ":constants",

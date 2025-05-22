@@ -16,6 +16,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
+#import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
 ReaderModeTest::ReaderModeTest() = default;
 ReaderModeTest::~ReaderModeTest() = default;
@@ -44,10 +45,10 @@ void ReaderModeTest::LoadWebpage(web::FakeWebState* web_state,
   web_state->OnNavigationFinished(&navigation_context);
 }
 
-void ReaderModeTest::SetReaderModeEligibility(
-    web::FakeWebState* web_state,
-    const GURL& url,
-    ReaderModeHeuristicResult result) {
+void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
+                                        const GURL& url,
+                                        ReaderModeHeuristicResult result,
+                                        std::string distilled_content) {
   // Set up the fake web frame to return a custom result after executing
   // the heuristic Javascript callback.
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
@@ -67,7 +68,16 @@ void ReaderModeTest::SetReaderModeEligibility(
   dom_distiller::proto::DomDistillerOptions options;
   std::u16string script =
       base::UTF8ToUTF16(dom_distiller::GetDistillerScriptWithOptions(options));
-  web_frame->AddResultForExecutedJs(&distiller_result_, script);
+  dom_distiller::proto::DomDistillerResult distiller_result;
+  distiller_result.mutable_distilled_content()->set_html(
+      std::move(distilled_content));
+  base::Value distiller_result_value =
+      dom_distiller::proto::json::DomDistillerResult::WriteToValue(
+          std::move(distiller_result));
+  distiller_result_values_.push_back(
+      std::make_unique<base::Value>(std::move(distiller_result_value)));
+  web_frame->AddResultForExecutedJs(distiller_result_values_.back().get(),
+                                    script);
   auto* tab_helper = ReaderModeTabHelper::FromWebState(web_state);
   if (!tab_helper) {
     return;

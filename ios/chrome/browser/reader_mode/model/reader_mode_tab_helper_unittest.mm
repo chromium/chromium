@@ -14,6 +14,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "testing/gmock/include/gmock/gmock.h"
 
 using IOS_ReaderMode_Distiller_Latency =
     ukm::builders::IOS_ReaderMode_Distiller_Latency;
@@ -21,6 +22,26 @@ using IOS_ReaderMode_Distiller_Result =
     ukm::builders::IOS_ReaderMode_Distiller_Result;
 using IOS_ReaderMode_Heuristic_Result =
     ukm::builders::IOS_ReaderMode_Heuristic_Result;
+
+// Mock implementation of ReaderModeTabHelper::Observer using gMock.
+class MockReaderModeTabHelperObserver : public ReaderModeTabHelper::Observer {
+ public:
+  MockReaderModeTabHelperObserver() = default;
+  ~MockReaderModeTabHelperObserver() override = default;
+
+  MOCK_METHOD(void,
+              ReaderModeWebStateDidBecomeAvailable,
+              (ReaderModeTabHelper * tab_helper),
+              (override));
+  MOCK_METHOD(void,
+              ReaderModeWebStateWillBecomeUnavailable,
+              (ReaderModeTabHelper * tab_helper),
+              (override));
+  MOCK_METHOD(void,
+              ReaderModeTabHelperDestroyed,
+              (ReaderModeTabHelper * tab_helper),
+              (override));
+};
 
 class ReaderModeTabHelperTest : public ReaderModeTest {
  public:
@@ -84,8 +105,8 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   ASSERT_EQ(0u, GetHeuristicResultEntries().size());
 
   GURL test_url("https://test.url/");
-  SetReaderModeEligibility(web_state(), test_url,
-                           ReaderModeHeuristicResult::kReaderModeEligible);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
   task_environment()->RunUntilIdle();
 
@@ -109,8 +130,8 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
 // Tests that trigger heuristic is canceled after a web state is destroyed.
 TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsHeuristic) {
   GURL test_url("https://test.url/");
-  SetReaderModeEligibility(web_state(), test_url,
-                           ReaderModeHeuristicResult::kReaderModeEligible);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
   task_environment()->RunUntilIdle();
 
@@ -124,8 +145,8 @@ TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsHeuristic) {
 // Tests that reader mode is not supported on NTP.
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNtp) {
   GURL ntp_url("chrome://newtab");
-  SetReaderModeEligibility(web_state(), ntp_url,
-                           ReaderModeHeuristicResult::kReaderModeEligible);
+  SetReaderModeState(web_state(), ntp_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
 
   LoadWebpage(web_state(), ntp_url);
   WaitForReaderModeContentReady();
@@ -136,13 +157,55 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNtp) {
 // Tests that reader mode is not supported on pages that are not html.
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNonHTML) {
   GURL test_url("https://test.url/");
-  SetReaderModeEligibility(web_state(), test_url,
-                           ReaderModeHeuristicResult::kReaderModeEligible);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
   web_state()->SetContentIsHTML(false);
   WaitForReaderModeContentReady();
 
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+}
+
+// Tests that ReaderModeTabHelper observers are notified when the Reader mode
+// WebState becomes available, unavailable, and when the tab helper is
+// destroyed.
+TEST_F(ReaderModeTabHelperTest, NotifiesObservers) {
+  MockReaderModeTabHelperObserver mock_observer;
+  reader_mode_tab_helper()->AddObserver(&mock_observer);
+
+  // Set a non-empty DOM Distiller result.
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+
+  // Initially, no observer methods should be called.
+  WaitForReaderModeContentReady();
+
+  // When SetActive(true) is called and distillation completes,
+  // ReaderModeWebStateDidBecomeAvailable should be called.
+  EXPECT_CALL(mock_observer,
+              ReaderModeWebStateDidBecomeAvailable(reader_mode_tab_helper()));
+  reader_mode_tab_helper()->SetActive(true);
+  WaitForReaderModeContentReady();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // When SetActive(false) is called,
+  // ReaderModeWebStateWillBecomeUnavailable should be called.
+  EXPECT_CALL(mock_observer, ReaderModeWebStateWillBecomeUnavailable(
+                                 reader_mode_tab_helper()));
+  reader_mode_tab_helper()->SetActive(false);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // When the tab helper is destroyed, ReaderModeTabHelperDestroyed should be
+  // called.
+  EXPECT_CALL(mock_observer,
+              ReaderModeTabHelperDestroyed(reader_mode_tab_helper()))
+      .WillOnce(
+          testing::Invoke([&mock_observer](ReaderModeTabHelper* tab_helper) {
+            tab_helper->RemoveObserver(&mock_observer);
+          }));
+  ReaderModeTabHelper::RemoveFromWebState(web_state_.get());
 }
 
 class ReaderModeTabHelperWithEligibilityTest
@@ -160,7 +223,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
 
   ReaderModeHeuristicResult eligibility = GetEligibility();
   GURL test_url("https://test.url/");
-  SetReaderModeEligibility(web_state(), test_url, eligibility);
+  SetReaderModeState(web_state(), test_url, eligibility, "");
 
   LoadWebpage(web_state(), test_url);
   WaitForReaderModeContentReady();
@@ -183,7 +246,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
 // JavaScript execution.
 TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {
   GURL test_url("https://test.url/");
-  SetReaderModeEligibility(web_state(), test_url, GetParam());
+  SetReaderModeState(web_state(), test_url, GetParam(), "");
 
   LoadWebpage(web_state(), test_url);
   WaitForReaderModeContentReady();

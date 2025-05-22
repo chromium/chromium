@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 
-#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 
 #pragma mark - Public
@@ -45,25 +44,24 @@ void ReaderModeBrowserAgent::WebStateListDidChange(
           : nullptr;
 
   if (old_tab_helper) {
-    // If there was an active WebState, remove ourself as delegate of the Reader
-    // mode tab helper and stop observing the WebState.
-    old_tab_helper->SetDelegate(nullptr);
+    // If there was an active WebState, remove ourself as observer.
+    old_tab_helper->RemoveObserver(this);
   }
   if (new_tab_helper) {
-    // If there is a new active WebState, start observing it and the associated
-    // Reader mode tab helper.
-    new_tab_helper->SetDelegate(this);
+    // If there is a new active WebState, start observing it.
+    new_tab_helper->AddObserver(this);
   }
 
   // Show or hide the Reader mode UI if necessary.
-  const bool old_reader_mode_content_available =
-      old_tab_helper && old_tab_helper->IsReaderModeContentAvailable();
-  const bool new_reader_mode_content_available =
-      new_tab_helper && new_tab_helper->IsReaderModeContentAvailable();
-  if (!old_reader_mode_content_available && new_reader_mode_content_available) {
+  const bool old_reader_mode_web_state_available =
+      old_tab_helper && old_tab_helper->IsReaderModeWebStateAvailable();
+  const bool new_reader_mode_web_state_available =
+      new_tab_helper && new_tab_helper->IsReaderModeWebStateAvailable();
+  if (!old_reader_mode_web_state_available &&
+      new_reader_mode_web_state_available) {
     [reader_mode_handler_ showReaderMode];
-  } else if (old_reader_mode_content_available &&
-             !new_reader_mode_content_available) {
+  } else if (old_reader_mode_web_state_available &&
+             !new_reader_mode_web_state_available) {
     [reader_mode_handler_ hideReaderMode];
   }
 }
@@ -74,18 +72,23 @@ void ReaderModeBrowserAgent::WebStateListDestroyed(
   web_state_list_scoped_observation_.Reset();
 }
 
-#pragma mark - ReaderModeTabHelperDelegate
+#pragma mark - ReaderModeTabHelper::Observer
 
-void ReaderModeBrowserAgent::ReaderModeContentDidBecomeAvailable(
+void ReaderModeBrowserAgent::ReaderModeWebStateDidBecomeAvailable(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
   [reader_mode_handler_ showReaderMode];
 }
 
-void ReaderModeBrowserAgent::ReaderModeContentWillBecomeUnavailable(
+void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.
   [reader_mode_handler_ hideReaderMode];
+}
+
+void ReaderModeBrowserAgent::ReaderModeTabHelperDestroyed(
+    ReaderModeTabHelper* tab_helper) {
+  tab_helper->RemoveObserver(this);
 }

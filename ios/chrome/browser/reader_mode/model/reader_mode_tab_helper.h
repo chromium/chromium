@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_TAB_HELPER_H_
 
 #import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "base/scoped_observation.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
@@ -15,12 +17,29 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol SnackbarCommands;
-class ReaderModeTabHelperDelegate;
 
 // Observes changes to the web state to perform reader mode operations.
 class ReaderModeTabHelper : public web::WebStateObserver,
                             public web::WebStateUserData<ReaderModeTabHelper>,
                             public ReaderModeContentDelegate {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when Reader mode content became available in this tab.
+    virtual void ReaderModeWebStateDidBecomeAvailable(
+        ReaderModeTabHelper* tab_helper) = 0;
+    // Called when Reader mode content will become unavailable in this tab.
+    virtual void ReaderModeWebStateWillBecomeUnavailable(
+        ReaderModeTabHelper* tab_helper) = 0;
+
+    // Called when the ReaderModeTabHelper is destroyed.
+    virtual void ReaderModeTabHelperDestroyed(
+        ReaderModeTabHelper* tab_helper) = 0;
+
+   protected:
+    ~Observer() override = default;
+  };
+
  public:
   ReaderModeTabHelper(web::WebState* web_state,
                       DistillerService* distiller_service);
@@ -29,22 +48,24 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   ~ReaderModeTabHelper() override;
 
-  // Sets `delegate_`.
-  void SetDelegate(ReaderModeTabHelperDelegate* delegate);
+  // Add an observer.
+  void AddObserver(Observer* observer);
+  // Remove an observer.
+  void RemoveObserver(Observer* observer);
 
   // Returns whether Reader mode is active in the current tab. If so, the Reader
   // mode UI should be presented.
   bool IsActive() const;
   // Activates/deactivates Reader mode in the current tab.
   void SetActive(bool active);
-  // Whether Reader mode content is available. When Reader mode becomes active,
-  // the Reader mode content will start being generated through distillation. If
-  // distillation process is successful, then the Reader mode content will
-  // become available.
-  bool IsReaderModeContentAvailable() const;
+  // Whether the Reader mode WebState is available. When Reader mode becomes
+  // active, the Reader mode content will start being generated through
+  // distillation. If distillation process is successful, then the Reader mode
+  // WebState will become available.
+  bool IsReaderModeWebStateAvailable() const;
   // Returns the Reader mode content view. A precondition for calling this
   // method is for `IsReaderModeContentAvailable()` to be true.
-  UIView* GetReaderModeContentView();
+  web::WebState* GetReaderModeWebState();
   // Returns whether the current page supports Reading mode.
   bool CurrentPageSupportsReaderMode() const;
 
@@ -103,8 +124,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Destroys `reader_mode_web_state_` and stops any ongoing distillation.
   void DestroyReaderModeWebState();
 
-  // Whether the Reader mode content is available in this tab.
-  bool reader_mode_content_available_ = false;
+  // Whether the Reader mode WebState is available in this tab.
+  bool reader_mode_web_state_available_ = false;
   // WebState used to render the Reader mode content.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
   id<SnackbarCommands> snackbar_handler_;
@@ -113,11 +134,13 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   GURL reader_mode_eligible_url_;
   raw_ptr<web::WebState> web_state_ = nullptr;
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
   raw_ptr<DistillerService> distiller_service_;
 
   std::unique_ptr<OfflinePageDistillerViewer> distiller_viewer_;
 
-  raw_ptr<ReaderModeTabHelperDelegate> delegate_ = nullptr;
+  base::ObserverList<Observer, true> observers_;
 
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
 };

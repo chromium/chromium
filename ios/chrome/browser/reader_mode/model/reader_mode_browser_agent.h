@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_
 
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper_delegate.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state_observer.h"
@@ -18,11 +18,10 @@ class WebStateList;
 // Observes the WebStateList of the associated browser and ensures the Reader
 // mode UI is presented and dismissed accordingly when there is a new active
 // WebState or when Reader mode content becomes available/unavailable in the
-// currently active WebState. Acts as the delegate of the ReaderModeTabHelper in
-// the current active WebState.
+// currently active WebState.
 class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
                                public WebStateListObserver,
-                               public ReaderModeTabHelperDelegate {
+                               public ReaderModeTabHelper::Observer {
  public:
   ReaderModeBrowserAgent(const ReaderModeBrowserAgent&) = delete;
   ReaderModeBrowserAgent& operator=(const ReaderModeBrowserAgent&) = delete;
@@ -44,11 +43,12 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
                              const WebStateListStatus& status) override;
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
-  // ReaderModeTabHelperDelegate methods.
-  void ReaderModeContentDidBecomeAvailable(
+  // ReaderModeTabHelper::Observer methods.
+  void ReaderModeWebStateDidBecomeAvailable(
       ReaderModeTabHelper* tab_helper) override;
-  void ReaderModeContentWillBecomeUnavailable(
+  void ReaderModeWebStateWillBecomeUnavailable(
       ReaderModeTabHelper* tab_helper) override;
+  void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper) override;
 
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_scoped_observation_{this};
