@@ -1157,8 +1157,7 @@
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="The button label for the sync promo. When clicked, it opens the turn on sync dialog.">
       Turn on
     </message>
-    <!-- TODO(crbug.com/415748973): Finalize the string and make it translateable. -->
-    <message translateable="false" name="IDS_PROFILE_MENU_SYNC_PROMO_ROW_BUTTON_LABEL" desc="">
+    <message name="IDS_PROFILE_MENU_SYNC_PROMO_ROW_BUTTON_LABEL" desc="The button label for the history sync promo. When clicked, it opens the turn on sync dialog.">
       Browse across devices
     </message>
   </if>
