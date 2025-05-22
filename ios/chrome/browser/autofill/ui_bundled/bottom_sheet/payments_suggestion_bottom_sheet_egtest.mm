@@ -119,12 +119,6 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
                  (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
     config.features_enabled.push_back(kStatelessFormSuggestionController);
-  } else if ([self isRunningTest:@selector
-                   (testFillingFromKeyboardOnAutofocus_WithFix)]) {
-    config.features_enabled.push_back(kAutofillFixPaymentSheetSpam);
-  } else if ([self isRunningTest:@selector
-                   (testFillingFromKeyboardOnAutofocus_WithoutFix)]) {
-    config.features_disabled.push_back(kAutofillFixPaymentSheetSpam);
   }
   return config;
 }
@@ -799,7 +793,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Tests that the payment sheet doesn't spam after filling from the KA on an
 // autofocused field This ensures that crbug.com/389077460 doesn't happen.
-- (void)testFillingFromKeyboardOnAutofocus_WithFix {
+- (void)testFillingFromKeyboardOnAutofocus {
   // Clear the credit cards to remove the default local cards that aren't needed
   // for this test case.
   [AutofillAppInterface clearCreditCardStore];
@@ -844,56 +838,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // autofocused field. Use the continue button of the sheet as a proxy.
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       assertWithMatcher:grey_nil()];
-}
-
-// Tests that the payment sheet spams after filling from the KA on an
-// autofocused field, when the fix is disabled. This is a sanity check to make
-// sure that the test setup is right for testing that the fix really works (and
-// it doesn't only work because the tested case can't be reproed correctly).
-- (void)testFillingFromKeyboardOnAutofocus_WithoutFix {
-  if (!@available(iOS 18, *)) {
-    EARL_GREY_TEST_SKIPPED(@"The issue tested here started on ios18");
-  }
-
-  // Clear the credit cards to remove the default local cards that aren't needed
-  // for this test case.
-  [AutofillAppInterface clearCreditCardStore];
-
-  // Add the server credit card. Before loading the page so it can be in the
-  // autofill suggestion upon autofocusing the credit card field.
-  [AutofillAppInterface saveMaskedCreditCard];
-
-  // Load page for testing autofocus.
-  [self loadPaymentsWithAutofocusPage];
-
-  // Create the payment form dynamically with a field programmatically
-  // focused right after creation which will emulate an autofocus from the
-  // perspective of the bottom sheet (because the element will be already
-  // focused when the form is detected by Autofill which is when the sheet
-  // listeners are attached). The keyboard will automatically pop up.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId("create-form-btn")];
-
-  // Wait for the keyboard accessory to appear.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      manual_fill::FormSuggestionViewMatcher()];
-
-  // Tap on the card chip in the KA.
-  id<GREYMatcher> serverCardChip = KeyboardAccessoryCreditCardSuggestionChip();
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:serverCardChip];
-  [[EarlGrey selectElementWithMatcher:serverCardChip] performAction:grey_tap()];
-
-  // Tap on the "Cancel" button on the card unmask dialog to dismiss the dialog.
-  id<GREYMatcher> cancelBtnMatcher =
-      grey_allOf(grey_buttonTitle(l10n_util::GetNSString(IDS_CANCEL)),
-                 grey_sufficientlyVisible(), nil);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cancelBtnMatcher];
-  [[EarlGrey selectElementWithMatcher:cancelBtnMatcher]
-      performAction:grey_tap()];
-
-  // Verify that the sheet popped up after filling from the KA on the
-  // autofocused field.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ContinueButton()];
 }
 
 @end

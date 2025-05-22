@@ -37,10 +37,6 @@ BASE_DECLARE_FEATURE(kAutofillDedupeFormSubmission);
 // TODO(crbug.com/40281788): Remove once launched.
 BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
 
-// Enables fixing the issue where the payment sheet spams after dismissing a
-// modal dialog that was triggered from the KA (e.g. filling a suggestion).
-BASE_DECLARE_FEATURE(kAutofillFixPaymentSheetSpam);
-
 // Fix for XHR form submission detection when autofill across iframes is
 // enabled.
 BASE_DECLARE_FEATURE(kAutofillFixXhrForXframe);

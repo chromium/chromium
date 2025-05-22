@@ -63,7 +63,7 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
        autofill::features::kAutofillAcrossIframesIos,
        autofill::features::kAutofillAcrossIframesIosThrottling,
        autofill::features::kAutofillDisallowSlashDotLabels,
-       kAutofillFixPaymentSheetSpam, kAutofillCorrectUserEditedBitInParsedField,
+       kAutofillCorrectUserEditedBitInParsedField,
        kAutofillAllowDefaultPreventedSubmission, kAutofillDedupeFormSubmission},
       /* disabled_features= */ {});
 
@@ -84,8 +84,6 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
                     u"setAutofillAcrossIframesThrottling(true);",
                     u"__gCrWeb.autofill_form_features."
                     u"setAutofillDisallowSlashDotLabels(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillFixPaymentSheetSpam(true);",
                     u"__gCrWeb.autofill_form_features."
                     u"setAutofillCorrectUserEditedBitInParsedField(true);",
                     u"__gCrWeb.autofill_form_features."

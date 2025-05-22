@@ -70,15 +70,6 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillIsolatedContentWorld(
       base::Value::List().Append(enabled));
 }
 
-void AutofillFormFeaturesJavaScriptFeature::SetAutofillFixPaymentSheetSpam(
-    web::WebFrame* frame,
-    bool enabled) {
-  CHECK(frame);
-  frame->CallJavaScriptFunction(
-      "autofill_form_features.setAutofillFixPaymentSheetSpam",
-      base::Value::List().Append(enabled));
-}
-
 void AutofillFormFeaturesJavaScriptFeature::
     SetAutofillCorrectUserEditedBitInParsedField(web::WebFrame* frame,
                                                  bool enabled) {

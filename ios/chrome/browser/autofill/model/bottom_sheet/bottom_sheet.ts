@@ -144,9 +144,7 @@ function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
     if (element && isObservable(element) &&
         !observedElements_.find(elem => elem === element)) {
       const autofocused = document.activeElement === element;
-      if (allowAutofocus || !autofocused ||
-          !gCrWebLegacy.autofill_form_features
-               .isAutofillFixPaymentSheetSpamEnabled()) {
+      if (allowAutofocus || !autofocused) {
         // Observe element if eligible.
         elementsToObserve.push(element);
       }
