@@ -293,7 +293,7 @@ void DesktopDataControlsDialog::WebContentsDestroyed() {
   // was neither bypassed or accepted so it should close without calling
   // any callback.
   ClearCallbacks();
-  OnDialogButtonClicked(/*bypassed=*/false);
+  CloseDialog(views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
 void DesktopDataControlsDialog::PrimaryPageChanged(content::Page& page) {
@@ -303,7 +303,7 @@ void DesktopDataControlsDialog::PrimaryPageChanged(content::Page& page) {
   // that trigger on the new page, so callbacks must be cleared before closing
   // the dialog.
   ClearCallbacks();
-  OnDialogButtonClicked(/*bypassed=*/false);
+  CloseDialog(views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
 DesktopDataControlsDialog::DesktopDataControlsDialog(
