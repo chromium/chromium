@@ -157,6 +157,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -1234,6 +1235,17 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
       posted_message->source, posted_message->user_activation,
       posted_message->delegated_capability);
 
+  // Propagate the current task state if this is a same-window postMessage,
+  // which is commonly used as a scheduling mechanism.
+  //
+  // TODO(crbug.com/41494072): Consider only propagating in the main world.
+  scheduler::TaskAttributionInfo* task_context = nullptr;
+  if (source == this) {
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate())) {
+      task_context = tracker->RunningTask();
+    }
+  }
+
   // Allowing unbounded amounts of messages to build up for a suspended context
   // is problematic; consider imposing a limit or other restriction if this
   // surfaces often as a problem (see crbug.com/587012).
@@ -1244,7 +1256,8 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
           WTF::BindOnce(&LocalDOMWindow::DispatchPostMessage,
                         WrapPersistent(this), WrapPersistent(event),
                         std::move(posted_message->target_origin),
-                        std::move(location), source->GetAgent()->cluster_id()));
+                        std::move(location), source->GetAgent()->cluster_id(),
+                        WrapPersistent(task_context)));
   event->async_task_context()->Schedule(this, "postMessage");
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   event->SetTraceId(trace_id);
@@ -1261,7 +1274,8 @@ void LocalDOMWindow::DispatchPostMessage(
     MessageEvent* event,
     scoped_refptr<const SecurityOrigin> intended_target_origin,
     std::unique_ptr<SourceLocation> location,
-    const base::UnguessableToken& source_agent_cluster_id) {
+    const base::UnguessableToken& source_agent_cluster_id,
+    scheduler::TaskAttributionInfo* parent_task) {
   // Do not report postMessage tasks to the ad tracker. This allows non-ad
   // script to perform operations in response to events created by ad frames.
   probe::AsyncTask async_task(this, event->async_task_context(),
@@ -1280,6 +1294,17 @@ void LocalDOMWindow::DispatchPostMessage(
       },
       perfetto::Flow::Global(event->GetTraceId()));
 
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
+      task_attribution_scope;
+  if (parent_task) {
+    if (ScriptState* script_state = ToScriptStateForMainWorld(GetFrame())) {
+      auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
+      CHECK(tracker);
+      task_attribution_scope = tracker->CreateTaskScope(
+          script_state, parent_task,
+          scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
+    }
+  }
   DispatchMessageEventWithOriginCheck(intended_target_origin.get(), event,
                                       std::move(location),
                                       source_agent_cluster_id);
