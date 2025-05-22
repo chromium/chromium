@@ -26,8 +26,8 @@ public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
         } else {
             title = String.format("%s pop-ups blocked", count);
         }
-        titleElement = declareView(titleViewSpec(title));
-        alwaysShowButtonElement = declareView(primaryButtonViewSpec("Always show"));
+        titleElement = declareTitleView(title);
+        alwaysShowButtonElement = declarePrimaryButtonView("Always show");
     }
 
     public WebPageStation clickAlwaysAllow() {
