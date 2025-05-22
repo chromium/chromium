@@ -2016,7 +2016,6 @@
         {
             "platforms": [
                 "android",
-                "ios",
                 "mac",
                 "windows"
             ],
