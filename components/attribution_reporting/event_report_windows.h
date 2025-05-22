@@ -17,7 +17,6 @@
 
 namespace base {
 class DictValue;
-class Value;
 }  // namespace base
 
 namespace attribution_reporting {
@@ -47,11 +46,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
   FromJSON(const base::DictValue& registration,
            base::TimeDelta expiry,
            mojom::SourceType);
-
-  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  ParseWindows(const base::DictValue&,
-               base::TimeDelta expiry,
-               const EventReportWindows& default_if_absent);
 
   // Creates a single report window at `kMaxSourceExpiry`.
   EventReportWindows();
@@ -93,9 +87,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
                      base::flat_set<base::TimeDelta> end_times);
 
   EventReportWindows(base::TimeDelta report_window, mojom::SourceType);
-
-  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  ParseWindowsJSON(const base::Value&, base::TimeDelta expiry);
 
   base::TimeDelta start_time_;
   base::flat_set<base::TimeDelta> end_times_;
