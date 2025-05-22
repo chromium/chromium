@@ -2749,6 +2749,9 @@ targets.bundle(
         ),
         "sync_integration_tests_no_field_trial": targets.mixin(
             ci_only = True,
+            swarming = targets.swarming(
+                shards = 3,
+            ),
         ),
     },
 )
@@ -2780,6 +2783,9 @@ targets.bundle(
         ),
         "sync_integration_tests_no_field_trial": targets.mixin(
             ci_only = True,
+            swarming = targets.swarming(
+                shards = 3,
+            ),
         ),
     },
 )
