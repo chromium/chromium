@@ -171,8 +171,9 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   // For the main thread (tracker exists), create the task scope with the signal
   // to set up propagation. On workers, set the current context here since there
   // is no tracker.
-  if (auto* tracker =
-          scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
+  if (tracker) {
     task_attribution_scope = tracker->CreateTaskScope(
         script_state, parent_task_,
         scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,
@@ -202,6 +203,11 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   }
   execution_state_ = pending_result.IsEmpty() ? ExecutionState::kFinished
                                               : ExecutionState::kRunningAsync;
+  // If this is a worker, clear the context to prevent it from leaking to the
+  // next task (`task_attribution_scope` handles this on the main thread).
+  if (!tracker) {
+    ScriptWrappableTaskState::SetCurrent(script_state, nullptr);
+  }
 }
 
 void DOMTask::OnAbort() {
