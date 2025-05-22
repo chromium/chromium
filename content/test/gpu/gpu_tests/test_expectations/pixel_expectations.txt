@@ -394,7 +394,10 @@ crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLCo
 # Meet effects tests currently take a while to actually start, which can cause
 # the initial heartbeat message to be delayed significantly.
 crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ win ] Pixel_MeetEffects* [ Slow ]
+crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Slow ]
+crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Slow ]
+crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Slow ]
+crbug.com/286989320 [ win intel-0x4680 ] Pixel_MeetEffects* [ Slow ]
 
 ###################
 # Failures/Flakes #
@@ -505,6 +508,9 @@ crbug.com/413062240 [ win10 intel-0x4680 passthrough ] Pixel_WebGPUDestroyed_Ons
 
 # GTX 1660 Win10 -> Win11 upgrade
 crbug.com/402429382 [ win11 nvidia-0x2184 ] Pixel_ReflectedDiv [ Failure ]
+
+# Flaky D3D11 device creation crash
+crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
