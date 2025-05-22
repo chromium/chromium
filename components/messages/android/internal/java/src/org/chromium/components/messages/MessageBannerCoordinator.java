@@ -6,7 +6,6 @@ package org.chromium.components.messages;
 
 import android.animation.Animator;
 import android.content.res.Resources;
-import android.provider.Settings;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -16,6 +15,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageStateHandler.Position;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -185,12 +185,7 @@ class MessageBannerCoordinator {
         // Skip animation if animation has been globally disabled.
         // Otherwise, child animator's listener's onEnd will be called immediately after onStart,
         // even before parent animatorSet's listener's onStart.
-        var isAnimationDisabled =
-                Settings.Global.getFloat(
-                                mView.getContext().getContentResolver(),
-                                Settings.Global.ANIMATOR_DURATION_SCALE,
-                                1f)
-                        == 0;
+        var isAnimationDisabled = AccessibilityState.prefersReducedMotion();
         return mMediator.hide(
                 fromIndex,
                 toIndex,

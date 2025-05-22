@@ -27,6 +27,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,7 +98,7 @@ public final class CompositorAnimatorTest {
     public void testUnityScale() {
         // Make sure the testing environment doesn't have ANIMATOR_DURATION_SCALE set to a value
         // other than 1.
-        assertEquals(CompositorAnimator.sDurationScale, 1, 0);
+        assertEquals(AccessibilityState.getAnimatorDurationScale(), 1, 0);
     }
 
     @Test

@@ -4,22 +4,18 @@
 
 package org.chromium.chrome.browser.layouts.animation;
 
-import static org.chromium.base.ContextUtils.getApplicationContext;
-
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
-import android.animation.ValueAnimator;
-import android.provider.Settings;
 import android.util.FloatProperty;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -48,12 +44,6 @@ public class CompositorAnimator extends Animator {
         int CANCELED = 2;
         int ENDED = 3;
     }
-
-    /**
-     * The scale honoring Settings.Global.ANIMATOR_DURATION_SCALE. Use static to reduce updating.
-     * See {@link ValueAnimator}.
-     */
-    @VisibleForTesting public static float sDurationScale = 1;
 
     /** The {@link CompositorAnimationHandler} running the animation. */
     private final WeakReference<CompositorAnimationHandler> mHandler;
@@ -342,20 +332,10 @@ public class CompositorAnimator extends Animator {
 
         // By default, animate for 0 to 1.
         setValues(0, 1);
-
-        // Try to update from the system setting, but not too frequently.
-        sDurationScale =
-                Settings.Global.getFloat(
-                        getApplicationContext().getContentResolver(),
-                        Settings.Global.ANIMATOR_DURATION_SCALE,
-                        sDurationScale);
-        if (sDurationScale != 1) {
-            Log.i(TAG, "Settings.Global.ANIMATOR_DURATION_SCALE = %f", sDurationScale);
-        }
     }
 
     private long getScaledDuration() {
-        return (long) (mDurationMs * sDurationScale);
+        return (long) (mDurationMs * AccessibilityState.getAnimatorDurationScale());
     }
 
     /**
@@ -369,7 +349,10 @@ public class CompositorAnimator extends Animator {
         // Clamp to the animator's duration, taking into account the start delay.
         long finalTimeMs =
                 Math.min(
-                        (long) (mTimeSinceStartMs - mStartDelayMs * sDurationScale),
+                        (long)
+                                (mTimeSinceStartMs
+                                        - mStartDelayMs
+                                                * AccessibilityState.getAnimatorDurationScale()),
                         getScaledDuration());
 
         // Wait until the start delay has passed.

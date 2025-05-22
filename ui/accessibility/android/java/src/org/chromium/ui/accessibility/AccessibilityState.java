@@ -256,6 +256,7 @@ public class AccessibilityState {
     private static boolean sDisplayInversionEnabled;
     private static boolean sHighContrastEnabled;
     private static int sFontWeightAdjustment;
+    private static float sAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
     private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
@@ -493,18 +494,16 @@ public class AccessibilityState {
         }
     }
 
+    /** Returns the current ANIMATOR_DURATION_SCALE from the users OS accessibility settings. */
+    public static float getAnimatorDurationScale() {
+        if (!sExtraStateInitialized) updateExtraState();
+        return sAnimatorDurationScale;
+    }
+
     /** Returns whether the user settings specify preferred reduced motion. */
     @CalledByNative
     public static boolean prefersReducedMotion() {
-        // We default to assuming that animations are enabled, to avoid impacting the experience for
-        // users that don't have ANIMATOR_DURATION_SCALE defined.
-        final float defaultScale = 1f;
-        float durationScale =
-                Settings.Global.getFloat(
-                        ContextUtils.getApplicationContext().getContentResolver(),
-                        Settings.Global.ANIMATOR_DURATION_SCALE,
-                        defaultScale);
-        return durationScale == 0.0;
+        return getAnimatorDurationScale() == 0.0;
     }
 
     private static AccessibilityManager fetchAccessibilityManager() {
@@ -530,6 +529,12 @@ public class AccessibilityState {
                         0);
         sDisplayInversionEnabled = displayInversionEnabledSetting == 1;
 
+        sAnimatorDurationScale =
+                Settings.Global.getFloat(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        Settings.Global.ANIMATOR_DURATION_SCALE,
+                        1f);
+
         int highTextContrastEnabled =
                 Settings.Secure.getInt(
                         context.getContentResolver(),
@@ -537,9 +542,10 @@ public class AccessibilityState {
                         "high_text_contrast_enabled",
                         0);
         float contrastLevel = 0f;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             UiModeManager uiModeManager =
-                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+                    (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
             // This value can be between -1 and 1, but in practice the UI
             // exposes 0 (default), 0.5 (medium), or 1 (high).
             contrastLevel = uiModeManager.getContrast();
@@ -916,7 +922,7 @@ public class AccessibilityState {
         sAnimationDurationScaleObserver =
                 new ServicesObserver(
                         ThreadUtils.getUiThreadHandler(),
-                        () -> AccessibilityStateJni.get().onAnimatorDurationScaleChanged());
+                        AccessibilityState::processExtraStateChange);
         sAccessibilityServicesObserver =
                 new ServicesObserver(
                         ThreadUtils.getUiThreadHandler(),
@@ -1056,6 +1062,7 @@ public class AccessibilityState {
         sExtraStateInitialized = false;
         sDisplayInversionEnabled = false;
         sHighContrastEnabled = false;
+        sAnimatorDurationScale = 1f;
         sAccessibilityManager = null;
     }
 

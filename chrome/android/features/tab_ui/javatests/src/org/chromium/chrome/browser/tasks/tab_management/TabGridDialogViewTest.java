@@ -15,8 +15,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
-
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -53,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.Visibi
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeoutException;
@@ -507,7 +506,7 @@ public class TabGridDialogViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.hideDialog();
-                    if (areAnimatorsEnabled()) {
+                    if (!AccessibilityState.prefersReducedMotion()) {
                         // At the very beginning of hiding animation, alpha of background frame and
                         // animation card should both be set to 0f.
                         assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);

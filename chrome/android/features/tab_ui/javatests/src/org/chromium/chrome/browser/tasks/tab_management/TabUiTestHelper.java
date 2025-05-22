@@ -33,7 +33,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +57,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -520,24 +518,9 @@ public class TabUiTestHelper {
     }
 
     /**
-     * @return whether animators are enabled on device by checking whether the animation duration
-     * scale is set to 0.0.
-     */
-    public static boolean areAnimatorsEnabled() {
-        // We default to assuming that animations are enabled in case ANIMATOR_DURATION_SCALE is not
-        // defined.
-        final float defaultScale = 1f;
-        float durationScale =
-                Settings.Global.getFloat(
-                        ContextUtils.getApplicationContext().getContentResolver(),
-                        Settings.Global.ANIMATOR_DURATION_SCALE,
-                        defaultScale);
-        return !(durationScale == 0.0);
-    }
-
-    /**
      * Make Chrome have {@code numTabs} of regular Tabs and {@code numIncognitoTabs} of incognito
      * tabs with {@code url} loaded.
+     *
      * @param rule The {@link ChromeTabbedActivityTestRule}.
      * @param numTabs The number of regular tabs.
      * @param numIncognitoTabs The number of incognito tabs.
