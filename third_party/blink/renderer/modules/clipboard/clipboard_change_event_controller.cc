@@ -4,10 +4,14 @@
 
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event_controller.h"
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_set.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_change_event.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -67,6 +71,23 @@ SystemClipboard* ClipboardChangeEventController::GetSystemClipboard() const {
   return local_frame->GetSystemClipboard();
 }
 
+// Helper function to filter and only allow standard MIME types
+Vector<String> FilterForStandardMimeTypes(const Vector<String>& types) {
+  // Static list of allowed standard MIME types
+  // https://w3c.github.io/clipboard-apis/#mandatory-data-types-x
+  constexpr auto kAllowedMimeTypesSet =
+      base::MakeFixedFlatSet<std::string_view>(
+          {ui::kMimeTypePlainText, ui::kMimeTypeHtml, ui::kMimeTypePng});
+
+  Vector<String> filtered_types;
+  for (const auto& type : types) {
+    if (kAllowedMimeTypesSet.contains(type.Utf8())) {
+      filtered_types.push_back(type);
+    }
+  }
+  return filtered_types;
+}
+
 void ClipboardChangeEventController::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
   PlatformEventController::Trace(visitor);
@@ -85,8 +106,13 @@ void ClipboardChangeEventController::OnClipboardChanged() {
   if (window.document()->hasFocus()) {
     fire_clipboardchange_on_focus_ = false;
     if (event_target_) {
+      Vector<String> available_types =
+          GetSystemClipboard()->ReadAvailableTypes();
+      Vector<String> standard_types =
+          FilterForStandardMimeTypes(available_types);
+
       event_target_->DispatchEvent(
-          *Event::Create(event_type_names::kClipboardchange));
+          *ClipboardChangeEvent::Create(standard_types));
     }
   } else {
     // Schedule a clipboardchange event when the page regains focus

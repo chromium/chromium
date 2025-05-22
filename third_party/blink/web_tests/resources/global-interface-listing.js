@@ -127,6 +127,7 @@ function globalInterfaceListing(
     'BluetoothRemoteGATTServer',
     'BluetoothRemoteGATTService',
     'BluetoothUUID',
+    'ClipboardChangeEvent', // crbug.com/417636703
   ]);
 
   // List of all platform-specific properties on interfaces that appear on all
