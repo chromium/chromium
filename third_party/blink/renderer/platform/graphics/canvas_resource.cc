@@ -295,14 +295,16 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
   // Hence, GLES2_READ usage is necessary regardless of whether raster is over
   // GLES.
-  shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                              gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  shared_image_usage_flags =
+      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
   if (use_oop_rasterization_) {
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    shared_image_usage_flags =
+        shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
     // The GLES2_WRITE flag is needed due to raster being over GL.
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    shared_image_usage_flags =
+        shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
@@ -310,13 +312,9 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
     // image usage flag here since mailbox will be used for CPU writes by the
     // client. But doing that stops us from using CompoundImagebacking as many
-    // backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY. On macOS and
-    // iOS though we can use the flag since the IOSurface backing supports it.
+    // backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
     // TODO(crbug.com/1478238): Add that usage flag back here once the issue is
     // resolved.
-#if BUILDFLAG(IS_APPLE)
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
-#endif
 
     client_shared_image = shared_image_interface->CreateSharedImage(
         {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
