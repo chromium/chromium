@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_percentage_interpolation_type.h"
 
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
 #include "third_party/blink/renderer/core/animation/number_property_functions.h"
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -90,11 +91,15 @@ InterpolationValue CSSPercentageInterpolationType::MaybeConvertValue(
   if (!primitive_value || !primitive_value->IsPercentage()) {
     return nullptr;
   }
-  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
-  // if necessary.
   const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
   if (primitive_value->IsElementDependent()) {
     conversion_checkers.push_back(TreeCountingChecker::Create(length_resolver));
+  }
+  CSSPrimitiveValue::LengthTypeFlags types;
+  primitive_value->AccumulateLengthUnitTypes(types);
+  if (InterpolationType::ConversionChecker* length_units_checker =
+          LengthUnitsChecker::MaybeCreate(types, state)) {
+    conversion_checkers.push_back(length_units_checker);
   }
   return CreatePercentageValue(
       primitive_value->ComputePercentage(length_resolver));
