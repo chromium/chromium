@@ -1088,7 +1088,7 @@ impl<T: AsULE> FromIterator<T> for ZeroVec<'_, T> {
 ///
 /// * `$aligned` - The type of an element in its canonical, aligned form, e.g., `char`.
 /// * `$convert` - A const function that converts an `$aligned` into its unaligned equivalent, e.g.,
-///                 `const fn from_aligned(a: CanonicalType) -> CanonicalType::ULE`.
+///   const fn from_aligned(a: CanonicalType) -> CanonicalType::ULE`.
 /// * `$x` - The elements that the `ZeroSlice` will hold.
 ///
 /// # Examples
@@ -1120,16 +1120,12 @@ impl<T: AsULE> FromIterator<T> for ZeroVec<'_, T> {
 /// ```
 #[macro_export]
 macro_rules! zeroslice {
-    () => (
+    () => {
         $crate::ZeroSlice::new_empty()
-    );
-    ($aligned:ty; $convert:expr; [$($x:expr),+ $(,)?]) => (
-        $crate::ZeroSlice::<$aligned>::from_ule_slice(
-            {const X: &[<$aligned as $crate::ule::AsULE>::ULE] = &[
-                $($convert($x)),*
-            ]; X}
-        )
-    );
+    };
+    ($aligned:ty; $convert:expr; [$($x:expr),+ $(,)?]) => {
+        $crate::ZeroSlice::<$aligned>::from_ule_slice(const { &[$($convert($x)),*] })
+    };
 }
 
 /// Creates a borrowed `ZeroVec`. Convenience wrapper for `zeroslice!(...).as_zerovec()`. The value

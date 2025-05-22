@@ -39,6 +39,12 @@ use core::mem;
 /// implementation will add up the sizes of each field on the [`VarULE`] type and then add in the byte length of the
 /// dynamically-sized part.
 ///
+/// # Reverse-encoding VarULE
+///
+/// This trait maps a struct to its bytes representation ("serialization"), and
+/// [`ZeroFrom`](zerofrom::ZeroFrom) performs the opposite operation, taking those bytes and
+/// creating a struct from them ("deserialization").
+///
 /// # Safety
 ///
 /// The safety invariants of [`Self::encode_var_ule_as_slices()`] are:

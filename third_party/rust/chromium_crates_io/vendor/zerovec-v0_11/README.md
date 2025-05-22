@@ -19,7 +19,7 @@ This crate has four main types:
 - [`ZeroMap2d<'a, K0, K1, V>`] to map from the pair `(K0, K1)` to `V`
 
 The first two are intended as close-to-drop-in replacements for `Vec<T>` in Serde structs. The third and fourth are
-intended as a replacement for `HashMap` or [`LiteMap`](docs.rs/litemap). When used with Serde derives, **be sure to apply
+intended as a replacement for `HashMap` or [`LiteMap`](https://docs.rs/litemap). When used with Serde derives, **be sure to apply
 `#[serde(borrow)]` to these types**, same as one would for [`Cow<'a, T>`].
 
 [`ZeroVec<'a, T>`], [`VarZeroVec<'a, T>`], [`ZeroMap<'a, K, V>`], and [`ZeroMap2d<'a, K0, K1, V>`] all behave like
@@ -35,12 +35,12 @@ works under the hood.
 ## Cargo features
 
 This crate has several optional Cargo features:
- -  `serde`: Allows serializing and deserializing `zerovec`'s abstractions via [`serde`](https://docs.rs/serde)
- -   `yoke`: Enables implementations of `Yokeable` from the [`yoke`](https://docs.rs/yoke/) crate, which is also useful
-             in situations involving a lot of zero-copy deserialization.
+ - `serde`: Allows serializing and deserializing `zerovec`'s abstractions via [`serde`](https://docs.rs/serde)
+ - `yoke`: Enables implementations of `Yokeable` from the [`yoke`](https://docs.rs/yoke/) crate, which is also useful
+   in situations involving a lot of zero-copy deserialization.
  - `derive`: Makes it easier to use custom types in these collections by providing the `#[make_ule]` and
-    `#[make_varule]` proc macros, which generate appropriate [`ULE`](https://docs.rs/zerovec/latest/zerovec/ule/trait.ULE.html) and
-    [`VarULE`](https://docs.rs/zerovec/latest/zerovec/ule/trait.VarULE.html)-conformant types for a given "normal" type.
+   `#[make_varule]` proc macros, which generate appropriate [`ULE`](https://docs.rs/zerovec/latest/zerovec/ule/trait.ULE.html) and
+   [`VarULE`](https://docs.rs/zerovec/latest/zerovec/ule/trait.VarULE.html)-conformant types for a given "normal" type.
  - `std`: Enabled `std::Error` implementations for error types. This crate is by default `no_std` with a dependency on `alloc`.
 
 [`ZeroVec<'a, T>`]: ZeroVec

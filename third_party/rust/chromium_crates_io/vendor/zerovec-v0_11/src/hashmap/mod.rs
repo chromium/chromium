@@ -218,7 +218,7 @@ where
 mod tests {
     use super::*;
     use crate::ule::AsULE;
-    use rand::{distributions::Standard, Rng, SeedableRng};
+    use rand::{distr::StandardUniform, Rng, SeedableRng};
     use rand_pcg::Lcg64Xsh32;
 
     #[test]
@@ -226,7 +226,7 @@ mod tests {
         const N: usize = 65530;
         let seed = u64::from_le_bytes(*b"testseed");
         let rng = Lcg64Xsh32::seed_from_u64(seed);
-        let kv: Vec<(u64, u64)> = rng.sample_iter(&Standard).take(N).collect();
+        let kv: Vec<(u64, u64)> = rng.sample_iter(&StandardUniform).take(N).collect();
         let hashmap: ZeroHashMap<u64, u64> =
             ZeroHashMap::from_iter(kv.iter().map(|e| (&e.0, &e.1)));
         for (k, v) in kv {

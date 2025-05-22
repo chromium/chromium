@@ -20,9 +20,9 @@ use zerovec::VarZeroVec;
 fn random_alphanums(lengths: RangeInclusive<usize>, count: usize, seed: u64) -> (Vec<String>, u64) {
     // Lcg64Xsh32 is a small, fast PRNG for reproducible benchmarks.
     let mut rng1 = Lcg64Xsh32::seed_from_u64(seed);
-    let mut rng2 = Lcg64Xsh32::seed_from_u64(rand::Rng::gen(&mut rng1));
+    let mut rng2 = Lcg64Xsh32::seed_from_u64(rand::Rng::random(&mut rng1));
     let alpha_dist = Alphanumeric;
-    let len_dist = Uniform::from(lengths);
+    let len_dist = Uniform::try_from(lengths).expect("range out of bounds");
     let string_vec = len_dist
         .sample_iter(&mut rng1)
         .take(count)
@@ -34,7 +34,7 @@ fn random_alphanums(lengths: RangeInclusive<usize>, count: usize, seed: u64) -> 
                 .collect::<String>()
         })
         .collect();
-    (string_vec, rand::Rng::gen(&mut rng1))
+    (string_vec, rand::Rng::random(&mut rng1))
 }
 
 fn overview_bench(c: &mut Criterion) {
