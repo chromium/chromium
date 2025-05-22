@@ -35,10 +35,11 @@ class TilingOrder {
 
 }  // namespace
 
-TileDisplayLayerImpl::TileResource::TileResource(
-    const viz::TransferableResource& resource,
-    bool is_checkered)
-    : resource(resource),
+TileDisplayLayerImpl::TileResource::TileResource(viz::ResourceId resource_id,
+                                                 gfx::Size resource_size,
+                                                 bool is_checkered)
+    : resource_id(resource_id),
+      resource_size(resource_size),
       is_checkered(is_checkered) {}
 
 TileDisplayLayerImpl::TileResource::TileResource(const TileResource&) = default;
@@ -56,7 +57,7 @@ TileDisplayLayerImpl::Tile::Tile(Tile&&) = default;
 
 TileDisplayLayerImpl::Tile::~Tile() {
   if (auto* resource = std::get_if<TileResource>(&contents_)) {
-    layer_->DiscardResource(resource->resource.id);
+    layer_->DiscardResource(resource->resource_id);
   }
 }
 
@@ -123,10 +124,6 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
           std::exchange(tiles_[key], std::make_unique<Tile>(*layer_, contents));
     }
   } else {
-    // If there is a valid TileResource, import it in order to track its usage.
-    if (auto* resource = std::get_if<TileResource>(&contents)) {
-      layer_->ImportResource(resource->resource);
-    }
     old_tile =
         std::exchange(tiles_[key], std::make_unique<Tile>(*layer_, contents));
   }
@@ -241,7 +238,6 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
     }
   }
 
-  std::vector<viz::TransferableResource> used_resources;
   const auto ideal_scale = GetIdealContentsScale();
   const float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
 
@@ -272,11 +268,10 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
         auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
         quad->SetNew(shared_quad_state, offset_geometry_rect,
                      offset_visible_geometry_rect, needs_blending,
-                     resource->resource.id, texture_rect,
+                     resource->resource_id, texture_rect,
                      iter.CurrentTiling()->tile_size(),
                      /*nearest_neighbor=*/false,
                      /*enable_edge_aa=*/false);
-        used_resources.push_back(resource->resource);
         has_draw_quad = true;
       } else if (auto color = iter->solid_color()) {
         has_draw_quad = true;
@@ -324,16 +319,13 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   auto iter = TilingSetCoverageIterator<Tiling>(
       tilings_, content_rect, max_contents_scale, ideal_scale_key);
   CHECK(iter->resource());
-  *resource_id = iter->resource()->resource.id;
-  *resource_size = iter->resource()->resource.size;
+  *resource_id = iter->resource()->resource_id;
+  *resource_size = iter->resource()->resource_size;
   gfx::SizeF requested_tile_size =
       gfx::SizeF(iter.CurrentTiling()->tile_size());
   *resource_uv_size =
       gfx::SizeF(requested_tile_size.width() / resource_size->width(),
                  requested_tile_size.height() / resource_size->height());
-
-  std::vector<viz::TransferableResource> used_resources;
-  used_resources.push_back(iter->resource()->resource);
 }
 
 gfx::Rect TileDisplayLayerImpl::GetDamageRect() const {
@@ -352,24 +344,6 @@ void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
 void TileDisplayLayerImpl::DiscardResource(viz::ResourceId resource) {
   layer_tree_impl()->host_impl()->resource_provider()->RemoveImportedResource(
       std::move(resource));
-}
-
-void TileDisplayLayerImpl::ImportResource(viz::TransferableResource resource) {
-  // Note that using LayerTreeHostImpl* is safe since LayerTreeHostImpl owns
-  // ClientResourceProvider and hence oulives it.
-  auto release_callback = base::BindOnce(
-      [](LayerTreeHostImpl* host_impl, viz::ResourceId id,
-         const gpu::SyncToken& sync_token, bool is_lost) {
-        host_impl->ReturnResource({id, sync_token,
-                                   /*release_fence=*/gfx::GpuFenceHandle(),
-                                   /*count=*/1, is_lost});
-      },
-      layer_tree_impl()->host_impl(), resource.id);
-
-  layer_tree_impl()->host_impl()->resource_provider()->ImportResource(
-      resource, /*impl_release_callback=*/std::move(release_callback),
-      /*main_thread_release_callback=*/base::NullCallback(),
-      /*evicted_callback=*/base::NullCallback());
 }
 
 }  // namespace cc

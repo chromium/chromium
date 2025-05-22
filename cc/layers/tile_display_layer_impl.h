@@ -41,13 +41,15 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   };
 
   struct CC_EXPORT TileResource {
-    TileResource(const viz::TransferableResource& resource,
+    TileResource(viz::ResourceId resource_id,
+                 gfx::Size resource_size,
                  bool is_checkered);
     TileResource(const TileResource&);
     TileResource& operator=(const TileResource&);
     ~TileResource();
 
-    viz::TransferableResource resource;
+    viz::ResourceId resource_id;
+    gfx::Size resource_size;
     bool is_checkered;
   };
 
@@ -160,7 +162,6 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   void RecordDamage(const gfx::Rect& damage_rect);
 
-  void ImportResource(viz::TransferableResource resource);
   void DiscardResource(viz::ResourceId resource);
 
  private:

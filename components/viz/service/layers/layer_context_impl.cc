@@ -759,24 +759,41 @@ base::expected<void, std::string> UpdateViewportPropertyIds(
 }
 
 base::expected<cc::TileDisplayLayerImpl::TileResource, std::string>
-DeserializeTileResource(mojom::TileResource& wire) {
+DeserializeTileResource(cc::LayerTreeHostImpl* host_impl,
+                        mojom::TileResource& wire) {
   if (wire.resource.id == kInvalidResourceId) {
     return base::unexpected("Invalid tile resource");
   }
 
-  return cc::TileDisplayLayerImpl::TileResource(wire.resource,
+  ReleaseCallback release_callback = base::BindOnce(
+      [](cc::LayerTreeHostImpl* host_impl, ResourceId id,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        host_impl->ReturnResource({id, sync_token,
+                                   /*release_fence=*/gfx::GpuFenceHandle(),
+                                   /*count=*/1, is_lost});
+      },
+      host_impl, wire.resource.id);
+
+  auto resource_id = host_impl->resource_provider()->ImportResource(
+      wire.resource,
+      /*impl_release_callback=*/std::move(release_callback),
+      /*main_thread_release_callback=*/base::NullCallback(),
+      /*evicted_callback=*/base::NullCallback());
+
+  return cc::TileDisplayLayerImpl::TileResource(resource_id, wire.resource.size,
                                                 wire.is_checkered);
 }
 
 base::expected<cc::TileDisplayLayerImpl::TileContents, std::string>
-DeserializeTileContents(mojom::TileContents& wire) {
+DeserializeTileContents(cc::LayerTreeHostImpl* host_impl,
+                        mojom::TileContents& wire) {
   switch (wire.which()) {
     case mojom::TileContents::Tag::kMissingReason:
       return cc::TileDisplayLayerImpl::TileContents(
           cc::TileDisplayLayerImpl::NoContents(wire.get_missing_reason()));
 
     case mojom::TileContents::Tag::kResource:
-      return DeserializeTileResource(*wire.get_resource());
+      return DeserializeTileResource(host_impl, *wire.get_resource());
 
     case mojom::TileContents::Tag::kSolidColor:
       return cc::TileDisplayLayerImpl::TileContents(wire.get_solid_color());
@@ -784,6 +801,7 @@ DeserializeTileContents(mojom::TileContents& wire) {
 }
 
 base::expected<void, std::string> DeserializeTiling(
+    cc::LayerTreeHostImpl* host_impl,
     cc::TileDisplayLayerImpl& layer,
     mojom::Tiling& wire,
     bool update_damage) {
@@ -796,7 +814,7 @@ base::expected<void, std::string> DeserializeTiling(
   tiling.SetTilingRect(wire.tiling_rect);
   for (auto& wire_tile : wire.tiles) {
     ASSIGN_OR_RETURN(auto contents,
-                     DeserializeTileContents(*wire_tile->contents));
+                     DeserializeTileContents(host_impl, *wire_tile->contents));
     tiling.SetTileContents(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
@@ -1456,9 +1474,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
         return base::unexpected("Invalid tile update");
       }
-      RETURN_IF_ERROR(
-          DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
-                            *tiling, /*update_damage=*/false));
+      RETURN_IF_ERROR(DeserializeTiling(
+          host_impl_.get(), static_cast<cc::TileDisplayLayerImpl&>(*layer),
+          *tiling, /*update_damage=*/false));
     }
   }
 
@@ -1603,7 +1621,8 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
     }
 
     auto result = DeserializeTiling(
-        static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling, update_damage);
+        host_impl_.get(), static_cast<cc::TileDisplayLayerImpl&>(*layer),
+        *tiling, update_damage);
     if (!result.has_value()) {
       receiver_.ReportBadMessage(result.error());
       return;

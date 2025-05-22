@@ -478,8 +478,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
           ? task_runner_provider_->ImplThreadTaskRunner()
           : task_runner_provider_->MainThreadTaskRunner(),
       base::BindRepeating(&LayerTreeHostImpl::MaybeFlushPendingWork,
-                          weak_factory_.GetWeakPtr()),
-      /*use_imported_resource_id=*/settings.trees_in_viz_in_viz_process);
+                          weak_factory_.GetWeakPtr()));
   DCHECK(mutator_host_);
   mutator_host_->SetMutatorHostClient(this);
   mutator_events_ = mutator_host_->CreateEvents();
