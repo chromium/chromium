@@ -115,11 +115,13 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
         }
 
         if is_removed(p.id()) {
-            println!("Generating placeholder for removed crate {}", &crate_dirname);
-            generate_placeholder_crate(p, &crate_path)?;
+            let msg = format!("Generating placeholder for removed crate {}", &crate_dirname);
+            println!("{msg}");
+            generate_placeholder_crate(p, &crate_path).context(msg)?;
         } else {
-            println!("Downloading {}", &crate_dirname);
-            download_crate(p.name(), p.version(), paths)?;
+            let msg = format!("Downloading {}", &crate_dirname);
+            println!("{msg}");
+            download_crate(p.name(), p.version(), paths).context(msg)?;
             let skip_patches = match &args.no_patches {
                 Some(v) => v.is_empty() || v.iter().any(|x| *x == p.name()),
                 None => false,
@@ -277,9 +279,14 @@ fn download_crate(
     version: &semver::Version,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
-    let mut response = reqwest::blocking::get(format!(
-        "https://crates.io/api/v1/crates/{name}/{version}/download",
-    ))?;
+    let mut response = {
+        // https://crates.io/data-access#api asks to provide a user agent as a courtesy:
+        static USER_AGENT: &str = "gnrt by rust-dev@chromium.org";
+        let client = reqwest::blocking::Client::builder().user_agent(USER_AGENT).build()?;
+
+        let download_url = format!("https://crates.io/api/v1/crates/{name}/{version}/download");
+        client.get(download_url).send()?
+    };
     if response.status() != 200 {
         return Err(format_err!("Failed to download crate {}: {}", name, response.status()));
     }
@@ -305,24 +312,34 @@ fn download_crate(
     // doesn't need to work across mount points / across filesystems.
     let vendor_dir = paths.third_party_cargo_root.join("vendor");
     let tempdir = tempfile::TempDir::with_prefix_in("tmp-gnrt-vendor", &vendor_dir)?;
-    archive.unpack(tempdir.path())?;
+    archive
+        .unpack(tempdir.path())
+        .with_context(|| format!("unpacking http response for crate {name}"))?;
 
     // Remove old vendored dir (most likely an old version of the crate).
     let crate_dir = vendor_dir.join(get_vendor_dir_for_package(name, version));
-    std::fs::remove_dir_all(&crate_dir).or_else(|err| {
-        if err.kind() == std::io::ErrorKind::NotFound {
-            // Ignore errors if the directory already didn't exist.
-            Ok(())
-        } else {
-            Err(err)
-        }
-    })?;
+    std::fs::remove_dir_all(&crate_dir)
+        .or_else(|err| {
+            if err.kind() == std::io::ErrorKind::NotFound {
+                // Ignore errors if the directory already didn't exist.
+                Ok(())
+            } else {
+                Err(err)
+            }
+        })
+        .with_context(|| format!("Removing old vendored sources at {}", crate_dir.display()))?;
 
     // Expecting that the archive will contain a directory with a predictable
     // path based on crate name and version.  Move this directory to the final
     // destination (to `crate_dir`).
     let archived_dir = tempdir.path().join(format!("{name}-{version}"));
-    std::fs::rename(archived_dir, &crate_dir)?;
+    std::fs::rename(&archived_dir, &crate_dir).with_context(|| {
+        format!(
+            "Moving unpacked crate contents from {} to {}",
+            archived_dir.display(),
+            crate_dir.display(),
+        )
+    })?;
 
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
         .with_context(|| format!("writing .cargo-checksum.json for crate {name}"))?;
