@@ -3312,6 +3312,9 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     return ComputeColorValue(css_to_length_conversion_data,
                              *unresolved_color_value, document, color_scheme);
   }
+  if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
+    return *custom_ident->Resolve(css_to_length_conversion_data);
+  }
   return value;
 }
 

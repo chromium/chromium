@@ -65,6 +65,18 @@ AtomicString CSSCustomIdentValue::ComputeIdent(
   return AtomicString(builder.ReleaseString());
 }
 
+const CSSCustomIdentValue* CSSCustomIdentValue::Resolve(
+    const CSSLengthResolver& length_resolver) const {
+  if (!ident_function_) {
+    return this;
+  }
+  auto* custom_ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(ComputeIdent(length_resolver));
+  custom_ident->tree_scope_ = tree_scope_;
+  custom_ident->needs_tree_scope_population_ = needs_tree_scope_population_;
+  return custom_ident;
+}
+
 String CSSCustomIdentValue::CustomCSSText() const {
   if (IsKnownPropertyID()) {
     return CSSUnresolvedProperty::Get(property_id_)

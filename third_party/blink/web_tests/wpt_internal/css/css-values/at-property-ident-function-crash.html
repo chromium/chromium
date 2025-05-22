@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>No crash when parsing ident() in @property</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#ident">
+<link rel="help" href="hhttps://github.com/w3c/csswg-drafts/issues/12219">
+<!-- Note that this test is not worth upstreaming. When Issue 12219 is resolved,
+     it should be replaced by a behavioral test in external/wpt. -->
+<style>
+  @property ident("--p") {}
+  @property ident("--p" sign(1px)) {}
+  @property ident("--p" sign(10%)) {}
+  @property ident("--p" sibling-index()) {}
+  @property ident("--p" calc(42 * sign(1em - 1px)) {}
+</style>

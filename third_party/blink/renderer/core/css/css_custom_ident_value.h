@@ -31,6 +31,10 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
     return string_;
   }
   AtomicString ComputeIdent(const CSSLengthResolver&) const;
+  // If `this` contains any ident() functions, resolves those functions
+  // a returns a new literal CSSCustomIdentValue with the result.
+  // Otherwise, returns `this`.
+  const CSSCustomIdentValue* Resolve(const CSSLengthResolver&) const;
   bool IsKnownPropertyID() const {
     return property_id_ != CSSPropertyID::kInvalid;
   }
