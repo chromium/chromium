@@ -86,10 +86,6 @@ const base::FeatureParam<int> kIosPasswordFormExtractionRequestsTimeoutMs = {
     &kIosCleanupHangingPasswordFormExtractionRequests,
     /*name=*/"period-ms", /*default_value=*/250};
 
-BASE_FEATURE(kIOSImprovePasswordFieldDetectionForFilling,
-             "IOSImprovePasswordFieldDetectionForFilling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSPasswordBottomSheetV2,
              "IOSPasswordBottomSheetV2",
              base::FEATURE_ENABLED_BY_DEFAULT);

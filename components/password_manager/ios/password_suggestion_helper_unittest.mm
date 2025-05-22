@@ -24,7 +24,6 @@
 #import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
@@ -715,9 +714,6 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnUsernameField) {
 
 // Tests retrieving suggestions on password field in form when available.
 TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
-  feature_list_.InitAndDisableFeature(
-      password_manager::features::kIOSImprovePasswordFieldDetectionForFilling);
-
   FormSuggestionProviderQuery* query =
       BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
@@ -747,9 +743,6 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
 // a password and can be determined from the password manager cache.
 TEST_F(PasswordSuggestionHelperTest,
        RetrieveSuggestions_OnPasswordField_UsingPasswordFormCache) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSImprovePasswordFieldDetectionForFilling);
-
   FormSuggestionProviderQuery* query =
       BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
   FormRendererId form_renderer_id(query.formRendererID);

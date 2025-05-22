@@ -84,10 +84,6 @@ BASE_DECLARE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests);
 extern const base::FeatureParam<int>
     kIosPasswordFormExtractionRequestsTimeoutMs;
 
-// Enables improving detecting the password fields when retrieving password
-// suggestions for filling.
-BASE_DECLARE_FEATURE(kIOSImprovePasswordFieldDetectionForFilling);
-
 // Enables the second version of the bottom sheet to fix a few bugs that we've
 // seen in production since the launch of the V1 of the feature.
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetV2);

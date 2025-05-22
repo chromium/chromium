@@ -12002,21 +12002,6 @@
             ]
         }
     ],
-    "IOSImprovePasswordFieldDetectionForFilling": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSImprovePasswordFieldDetectionForFilling"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSIncognitoSoftLock": [
         {
             "platforms": [
