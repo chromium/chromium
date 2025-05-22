@@ -82,6 +82,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   std::unique_ptr<DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const EntityData& entity_data) const override;
   std::string GetStorageKey(const EntityData& entity_data) const override;
+  bool IsEntityDataValid(const EntityData& entity_data) const override;
   void ApplyDisableSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
   DataTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(

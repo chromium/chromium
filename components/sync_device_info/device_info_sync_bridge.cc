@@ -538,6 +538,12 @@ std::string DeviceInfoSyncBridge::GetStorageKey(
   return entity_data.specifics.device_info().cache_guid();
 }
 
+bool DeviceInfoSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_device_info());
+  return !entity_data.specifics.device_info().cache_guid().empty();
+}
+
 void DeviceInfoSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   // Sync is being disabled, so the local DeviceInfo is no longer valid and
