@@ -390,6 +390,7 @@ void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
     OmniboxTriggeredFeatureService* triggered_feature_service,
+    bool is_lens_active,
     std::optional<AutocompleteMatch> default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
@@ -459,7 +460,9 @@ void AutocompleteResult::SortAndCull(
       }
     } else if constexpr (is_desktop) {
       const size_t contextual_zps_limit =
-          omnibox_feature_configs::ContextualSearch::Get().contextual_zps_limit;
+          is_lens_active ? 0u
+                         : omnibox_feature_configs::ContextualSearch::Get()
+                               .contextual_zps_limit;
       const size_t contextual_action_limit =
           contextual_zps_limit > 0u ? 1u : 0u;
       if (omnibox::IsLensSearchbox(page_classification)) {

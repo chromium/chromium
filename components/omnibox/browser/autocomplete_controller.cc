@@ -269,8 +269,9 @@ AutocompleteMatch::RichAutocompletionType TopMatchRichAutocompletionType(
   // rich autocompleted. It's not sufficient to check the default match since
   // counterfactual variations will not allow rich autocompleted matches to be
   // the default match.
-  if (result.empty())
+  if (result.empty()) {
     return AutocompleteMatch::RichAutocompletionType::kNone;
+  }
 
   auto get_sort_key = [](const AutocompleteMatch& match) {
     return std::make_tuple(
@@ -305,17 +306,19 @@ bool ShouldPreserveLastDefaultMatch(
   // Don't preserve default in keyword mode to avoid e.g. the 'google.com'
   // suggestion being preserved and kicking the user out of keyword mode when
   // they type 'google.com  '.
-  if (input.prefer_keyword())
+  if (input.prefer_keyword()) {
     return false;
+  }
 
   // Preserve for all async updates, but only for longer inputs for sync
   // updates. This mitigates aggressive scoring search suggestions getting
   // 'stuck' as the default when short inputs provide low confidence.
   if (update_type == AutocompleteController::UpdateType::kSyncPassOnly ||
-      update_type == AutocompleteController::UpdateType::kSyncPass)
+      update_type == AutocompleteController::UpdateType::kSyncPass) {
     return input.text().length() >= 4;
-  else
+  } else {
     return true;
+  }
 }
 
 // Helper function to retrieve domains that will be used to find a match between
@@ -643,8 +646,9 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   //   and silently ignore the observer. Audit all call paths of `::Start()` to
   //   remove this check.
   if (!input.omit_asynchronous_matches()) {
-    for (Observer& obs : observers_)
+    for (Observer& obs : observers_) {
       obs.OnStart(this, input);
+    }
   }
 
   // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
@@ -781,8 +785,9 @@ void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
   metrics_.OnStop();
 
   for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get()))
+    if (!ShouldRunProvider(provider.get())) {
       continue;
+    }
     provider->Stop(stop_reason);
   }
 
@@ -809,8 +814,9 @@ void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
 
   // Delete duplicate matches attached to the main match first.
   for (const auto& duplicate_match : match.duplicate_matches) {
-    if (duplicate_match.deletable)
+    if (duplicate_match.deletable) {
       duplicate_match.provider->DeleteMatch(duplicate_match);
+    }
   }
 
   if (match.deletable) {
@@ -842,8 +848,9 @@ void AutocompleteController::OnProviderUpdate(
   // Should be called even if `sync_pass_done_` is false in order to include
   // early exited async providers. If the provider is done, will log how long
   // the provider took.
-  if (provider)
+  if (provider) {
     metrics_.OnProviderUpdate(*provider);
+  }
 
   // Providers should only call this method during the asynchronous pass.
   // There's no reason to call this during the synchronous pass, since we
@@ -851,8 +858,9 @@ void AutocompleteController::OnProviderUpdate(
   // because in the unusual case that a provider calls an asynchronous method,
   // and that method early exits by calling the callback immediately, it's not
   // necessarily a programmer error. We should just no-op.
-  if (last_update_type_ == UpdateType::kNone)
+  if (last_update_type_ == UpdateType::kNone) {
     return;
+  }
 
   // Allow some providers to trigger updates after `stop_timer_` has fired.
   // TODO(crbug.com/364303536) This is a temporary fix for allowing history
@@ -877,12 +885,13 @@ void AutocompleteController::OnProviderUpdate(
 
   auto done_state = GetProviderDoneState();
 
-  if (done_state == ProviderDoneState::kAllDone)
+  if (done_state == ProviderDoneState::kAllDone) {
     UpdateResult(UpdateType::kLastAsyncPass, allow_post_done_updates);
-  else if (done_state == ProviderDoneState::kAllExceptDocDone)
+  } else if (done_state == ProviderDoneState::kAllExceptDocDone) {
     UpdateResult(UpdateType::kLastAsyncPassExceptDoc, allow_post_done_updates);
-  else if (updated_matches)
+  } else if (updated_matches) {
     UpdateResult(UpdateType::kAsyncPass, allow_post_done_updates);
+  }
 
   if (done_state == ProviderDoneState::kAllDone) {
     size_t calculator_count =
@@ -899,8 +908,9 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
                "AutocompleteController::AddProviderAndTriggeringLogs");
   logs->providers_info.clear();
   for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get()))
+    if (!ShouldRunProvider(provider.get())) {
       continue;
+    }
 
     // Add per-provider info, if any.
     provider->AddProviderInfo(&logs->providers_info);
@@ -1024,8 +1034,9 @@ void AutocompleteController::SetMatchDestinationURL(
 
 void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
                                                            size_t end) {
-  if (begin == end)
+  if (begin == end) {
     return;
+  }
   TRACE_EVENT0("omnibox",
                "AutocompleteController::GroupSuggestionsBySearchVsURL");
   AutocompleteResult& result = const_cast<AutocompleteResult&>(this->result());
@@ -1270,8 +1281,9 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     bookmark_provider_ = new BookmarkProvider(provider_client_.get());
     providers_.push_back(bookmark_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_BUILTIN)
+  if (provider_types & AutocompleteProvider::TYPE_BUILTIN) {
     providers_.push_back(new BuiltinProvider(provider_client_.get()));
+  }
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK) {
     history_quick_provider_ = new HistoryQuickProvider(provider_client_.get());
     providers_.push_back(history_quick_provider_.get());
@@ -1280,13 +1292,15 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     keyword_provider_ = new KeywordProvider(provider_client_.get(), this);
     providers_.push_back(keyword_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_SHORTCUTS)
+  if (provider_types & AutocompleteProvider::TYPE_SHORTCUTS) {
     providers_.push_back(new ShortcutsProvider(provider_client_.get()));
+  }
   if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST) {
     zero_suggest_provider_ =
         ZeroSuggestProvider::Create(provider_client_.get(), this);
-    if (zero_suggest_provider_)
+    if (zero_suggest_provider_) {
       providers_.push_back(zero_suggest_provider_.get());
+    }
   }
   if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
     providers_.push_back(
@@ -1415,8 +1429,9 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
     stop_timer_.Stop();
   }
 
-  if (update_type == UpdateType::kStop)
+  if (update_type == UpdateType::kStop) {
     return;
+  }
 
   OldResult old_result(update_type, input_, &internal_result_);
   AggregateNewMatches();
@@ -1426,15 +1441,17 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass ||
       update_type == UpdateType::kLastAsyncPassExceptDoc) {
-    internal_result_.SortAndCull(input_, template_url_service_,
-                                 triggered_feature_service_,
-                                 old_result.default_match_to_preserve);
+    internal_result_.SortAndCull(
+        input_, template_url_service_, triggered_feature_service_,
+        autocomplete_provider_client()->IsLensEnabled(),
+        old_result.default_match_to_preserve);
     internal_result_.TransferOldMatches(input_,
                                         &old_result.matches_to_transfer);
   }
 
   internal_result_.SortAndCull(input_, template_url_service_,
                                triggered_feature_service_,
+                               autocomplete_provider_client()->IsLensEnabled(),
                                old_result.default_match_to_preserve);
 
   if (update_type == UpdateType::kSyncPass) {
@@ -1474,8 +1491,9 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
 
 void AutocompleteController::AggregateNewMatches() {
   for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get()))
+    if (!ShouldRunProvider(provider.get())) {
       continue;
+    }
 
     // Append the new matches and conditionally set a swap bit. This logic
     // was previously within `AppendMatches` but here is the only place
@@ -1515,14 +1533,18 @@ void AutocompleteController::MlRerank(OldResult& old_result) {
     }
   }
 
-  if (internal_result_.empty())
+  if (internal_result_.empty()) {
     return;
-  if (!OmniboxFieldTrial::IsMlUrlScoringEnabled())
+  }
+  if (!OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
     return;
-  if (!provider_client_->GetAutocompleteScoringModelService())
+  }
+  if (!provider_client_->GetAutocompleteScoringModelService()) {
     return;
-  if (disable_ml_)
+  }
+  if (disable_ml_) {
     return;
+  }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (OmniboxFieldTrial::GetMLConfig().piecewise_mapped_search_blending) {
@@ -1554,12 +1576,14 @@ void AutocompleteController::PostProcessMatches() {
   // Notify providers which of their matches were shown. If we end up with more
   // providers to notify, we should add `RegisterDisplayedMatches()` to the
   // `AutocompleteProvider` interface and iterate all providers here.
-  if (search_provider_)
+  if (search_provider_) {
     search_provider_->RegisterDisplayedAnswers(internal_result_);
+  }
   // `featured_search_provider_` isn't interested in "invisible" autocomplete
   // runs, e.g. when text is copied.
-  if (featured_search_provider_ && !input_.omit_asynchronous_matches())
+  if (featured_search_provider_ && !input_.omit_asynchronous_matches()) {
     featured_search_provider_->RegisterDisplayedMatches(internal_result_);
+  }
 
   // Mark the rich autocompletion feature triggered if the top match, or
   // would-be-top-match if rich autocompletion is counterfactual enabled, is
@@ -1609,8 +1633,9 @@ bool AutocompleteController::CheckWhetherDefaultMatchChanged(
         (default_associated_keyword != last_default_associated_keyword) ||
         (internal_result_.default_match()->keyword !=
          last_default_match->keyword)));
-  if (notify_default_match)
+  if (notify_default_match) {
     last_time_default_match_changed_ = base::TimeTicks::Now();
+  }
   return notify_default_match;
 }
 
@@ -1666,8 +1691,9 @@ void AutocompleteController::AttachActions() {
 
 void AutocompleteController::UpdateAssociatedKeywords(
     AutocompleteResult* result) {
-  if (!keyword_provider_)
+  if (!keyword_provider_) {
     return;
+  }
 
   // The keyword matching the user's input.
   std::u16string input_text_keyword = keyword_provider_->GetKeywordForText(
@@ -1820,8 +1846,9 @@ void AutocompleteController::UpdateKeywordDescriptions(
 void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
   using omnibox::metrics::ChromeSearchboxStats;
 
-  if (result->empty())
+  if (result->empty()) {
     return;
+  }
 
   ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
@@ -1938,8 +1965,9 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
     AutocompleteMatch* match = result->match_at(index);
     const TemplateURL* template_url =
         match->GetTemplateURL(template_url_service_, false);
-    if (!template_url || !match->search_terms_args)
+    if (!template_url || !match->search_terms_args) {
       continue;
+    }
 
     match->search_terms_args->searchbox_stats = searchbox_stats;
 
@@ -2036,8 +2064,9 @@ void AutocompleteController::UpdateTailSuggestPrefix(
   const auto common_prefix = result->GetCommonPrefix();
   if (!common_prefix.empty()) {
     for (auto& match : *result) {
-      if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
+      if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
         match.tail_suggest_common_prefix = common_prefix;
+      }
     }
   }
 }
@@ -2060,19 +2089,22 @@ void AutocompleteController::NotifyChanged() {
 
   last_result_for_logging_ = internal_result_.GetMatchDedupComparators();
 
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnResultChanged(this, notify_changed_default_match_);
+  }
   CancelNotifyChangedRequest();
 }
 
 void AutocompleteController::RequestNotifyChanged(bool notify_default_match,
                                                   bool delayed) {
-  if (notify_default_match)
+  if (notify_default_match) {
     notify_changed_default_match_ = true;
+  }
   notify_changed_debouncer_.RequestRun(base::BindOnce(
       &AutocompleteController::NotifyChanged, base::Unretained(this)));
-  if (!delayed)
+  if (!delayed) {
     notify_changed_debouncer_.FlushRequest();
+  }
 }
 
 void AutocompleteController::CancelNotifyChangedRequest() {
@@ -2084,12 +2116,14 @@ AutocompleteController::ProviderDoneState
 AutocompleteController::GetProviderDoneState() {
   bool doc_not_done = false;
   for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get()) || provider->done())
+    if (!ShouldRunProvider(provider.get()) || provider->done()) {
       continue;
-    if (provider->type() != AutocompleteProvider::TYPE_DOCUMENT)
+    }
+    if (provider->type() != AutocompleteProvider::TYPE_DOCUMENT) {
       return ProviderDoneState::kNotDone;
-    else
+    } else {
       doc_not_done = true;
+    }
   }
   return doc_not_done ? ProviderDoneState::kAllExceptDocDone
                       : ProviderDoneState::kAllDone;
@@ -2102,12 +2136,13 @@ void AutocompleteController::StartExpireTimer() {
   // wait for the user to stop typing before they initiate a query.
   const int kExpireTimeMS = 500;
 
-  if (internal_result_.HasCopiedMatches())
+  if (internal_result_.HasCopiedMatches()) {
     expire_timer_.Start(
         FROM_HERE, base::Milliseconds(kExpireTimeMS),
         base::BindOnce(&AutocompleteController::UpdateResult,
                        base::Unretained(this), UpdateType::kExpirePass,
                        /*allow_post_done_updates=*/false));
+  }
 }
 
 void AutocompleteController::StartStopTimer() {
@@ -2205,8 +2240,9 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
       internal_result_.matches_,
       [](const auto& match) { return match.IsMlScoringEligible(); });
 
-  if (eligible_matches_count == 0)
+  if (eligible_matches_count == 0) {
     return;
+  }
 
   // Run the model for the eligible matches. Keep a reference to those matches
   // to later redistribute their relevance scores based on the model output.
@@ -2273,8 +2309,9 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
     relevance_heap.emplace(match_itr->relevance);
     prediction_and_match_itr_heap.emplace(prediction.value(),
                                           match_itr->relevance, match_itr);
-    if (match_itr->shortcut_boosted)
+    if (match_itr->shortcut_boosted) {
       boosted_shortcut_count++;
+    }
   }
 
   // Record the percentage of matches that were assigned non-null scores by
@@ -2303,8 +2340,9 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
     prediction_and_match_itr_heap.pop();
   }
 
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnMlScored(this, internal_result_);
+  }
 }
 
 void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
@@ -2590,8 +2628,9 @@ void AutocompleteController::
     match.relevance = scores_pool[i];
   }
 
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnMlScored(this, internal_result_);
+  }
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 

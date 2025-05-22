@@ -123,6 +123,7 @@ class AutocompleteResult {
   void SortAndCull(const AutocompleteInput& input,
                    TemplateURLService* template_url_service,
                    OmniboxTriggeredFeatureService* triggered_feature_service,
+                   bool is_lens_active,
                    std::optional<AutocompleteMatch> default_match_to_preserve =
                        std::nullopt);
 

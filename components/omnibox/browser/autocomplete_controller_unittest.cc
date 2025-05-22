@@ -2578,6 +2578,9 @@ TEST_F(AutocompleteControllerTest,
   feature_list.InitAndEnableFeature(omnibox_feature_configs::ContextualSearch::
                                         kContextualZeroSuggestLensFulfillment);
 
+  EXPECT_CALL(*provider_client(), IsLensEnabled())
+      .WillRepeatedly(testing::Return(true));
+
   // Create a pedal provider to ensure that the contextual search action takes
   // precedence over the pedal.
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
