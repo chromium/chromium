@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_EXPRESSION_NODE_H_
 
 #include <optional>
+#include <unordered_map>
 
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
@@ -90,6 +91,51 @@ using CalculationResultCategorySet =
     base::EnumSet<CalculationResultCategory,
                   CalculationResultCategory::kCalcNumber,
                   CalculationResultCategory::kCalcOther>;
+
+class CSSMathType final {
+  DISALLOW_NEW();
+
+  using CSSNumericBaseType = std::array<CalculationResultCategory, 6>;
+  static constexpr CSSNumericBaseType kBaseTypes = {
+      kCalcLength,    kCalcAngle,      kCalcTime,
+      kCalcFrequency, kCalcResolution, kCalcPercent};
+
+ public:
+  CSSMathType() = default;
+  // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-create-a-type
+  CORE_EXPORT explicit CSSMathType(CalculationResultCategory category);
+
+  CSSMathType(const CSSMathType&) = default;
+  CSSMathType(CSSMathType&&) = default;
+
+  static CSSMathType InvalidType();
+
+  CORE_EXPORT bool IsValid() const;
+  CORE_EXPORT CalculationResultCategory Type() const;
+
+  friend bool operator==(const CSSMathType& lhs,
+                         const CSSMathType& rhs) = default;
+  // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-add-two-types
+  CORE_EXPORT friend CSSMathType operator+(CSSMathType type1,
+                                           CSSMathType type2);
+
+ private:
+  using TypesMap = WTF::HashMap<CalculationResultCategory, int>;
+  using PercentageHint = std::optional<CalculationResultCategory>;
+
+  explicit CSSMathType(bool);
+  CSSMathType(TypesMap types_map, PercentageHint percentage_hint);
+
+  // https://drafts.css-houdini.org/css-typed-om-1/#apply-the-percent-hint
+  void ApplyHint(CalculationResultCategory hint);
+
+  // To represent "failure" in terms of the spec.
+  const bool is_valid_ = true;
+  // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-create-a-type
+  TypesMap types_map_;
+  // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-percent-hint
+  PercentageHint percentage_hint_;
+};
 
 class CORE_EXPORT CSSMathExpressionNode
     : public GarbageCollected<CSSMathExpressionNode> {

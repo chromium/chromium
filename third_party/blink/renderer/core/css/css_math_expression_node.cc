@@ -222,6 +222,146 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
   }
 }
 
+CSSMathType::CSSMathType(CalculationResultCategory category) {
+  if (category != kCalcNumber) {
+    types_map_.Set(category, 1);
+  }
+}
+
+CSSMathType::CSSMathType(bool is_valid) : is_valid_(is_valid) {}
+
+CSSMathType::CSSMathType(TypesMap types_map, PercentageHint percentage_hint)
+    : types_map_(std::move(types_map)),
+      percentage_hint_(std::move(percentage_hint)) {}
+
+CSSMathType CSSMathType::InvalidType() {
+  return CSSMathType(/*is_valid=*/false);
+}
+
+bool CSSMathType::IsValid() const {
+  return is_valid_;
+}
+
+CalculationResultCategory CSSMathType::Type() const {
+  if (!IsValid()) {
+    return kCalcOther;
+  }
+  if (types_map_.empty()) {
+    return kCalcNumber;
+  }
+  if (types_map_.size() > 1) {
+    return kCalcOther;
+  }
+  auto it = types_map_.begin();
+  if (it->value != 1) {
+    return kCalcOther;
+  }
+  return it->key;
+}
+
+void CSSMathType::ApplyHint(CalculationResultCategory hint) {
+  // To apply the percent hint `hint` to a type without a percent hint, perform
+  // the following steps:
+  if (percentage_hint_.has_value()) {
+    return;
+  }
+  // Set type’s percent hint to hint.
+  percentage_hint_ = hint;
+  // If hint is anything other than "percent".
+  if (hint != kCalcPercent) {
+    auto percent_it = types_map_.find(kCalcPercent);
+    // And type contains "percent".
+    if (percent_it != types_map_.end()) {
+      int percent_value = percent_it->value;
+      types_map_.erase(percent_it);
+      // Add type["percent"] to type[hint].
+      if (auto hint_it = types_map_.find(hint); hint_it != types_map_.end()) {
+        hint_it->value += percent_value;
+      } else {
+        types_map_.Set(hint, percent_value);
+      }
+      // Then set type["percent"] to 0 (doing it above not to search again after
+      // possible Set call).
+    }
+  }
+}
+
+CSSMathType operator+(CSSMathType type1, CSSMathType type2) {
+  DCHECK(type1.IsValid() && type2.IsValid());
+  // If both type1 and type2 have non-null percent hints with different values
+  // The types can’t be added. Return failure.
+  if (type1.percentage_hint_.has_value() &&
+      type2.percentage_hint_.has_value() &&
+      type1.percentage_hint_ != type2.percentage_hint_) {
+    return CSSMathType::InvalidType();
+  }
+  // If type1 has a non-null percent hint hint and type2 doesn’t
+  // Apply the percent hint hint to type2.
+  if (type1.percentage_hint_.has_value() &&
+      !type2.percentage_hint_.has_value()) {
+    type2.ApplyHint(type1.percentage_hint_.value());
+  }
+  // Vice versa if type2 has a non-null percent hint and type1 doesn’t.
+  if (!type1.percentage_hint_.has_value() &&
+      type2.percentage_hint_.has_value()) {
+    type1.ApplyHint(type2.percentage_hint_.value());
+  }
+  // Otherwise continue to the next step.
+  // If all the entries of type1 with non-zero values are contained in type2
+  // with the same value, and vice-versa.
+  if (type1 == type2) {
+    // Copy all of type1’s entries to finalType, and then copy all of type2’s
+    // entries to finalType that finalType doesn’t already contain. Set
+    // finalType’s percent hint to type1’s percent hint. Return finalType.
+    return CSSMathType(std::move(type1.types_map_),
+                       std::move(type1.percentage_hint_));
+  }
+  // If type1 and/or type2 contain "percent" with a non-zero value, and type1
+  // and/or type2 contain a key other than "percent" with a non-zero value.
+  bool type1_contains_percent = type1.types_map_.Contains(kCalcPercent);
+  bool type2_contains_percent = type2.types_map_.Contains(kCalcPercent);
+  bool type1_or_type2_contain_percent =
+      type1_contains_percent || type2_contains_percent;
+  bool type1_contains_key_other_than_percent =
+      (type1_contains_percent && type1.types_map_.size() > 1) ||
+      (!type1_contains_percent && type1.types_map_.size() > 0);
+  bool type2_contains_key_other_than_percent =
+      (type2_contains_percent && type2.types_map_.size() > 1) ||
+      (!type2_contains_percent && type2.types_map_.size() > 0);
+  bool type1_or_type2_contain_key_other_than_percent =
+      type1_contains_key_other_than_percent ||
+      type2_contains_key_other_than_percent;
+  if (type1_or_type2_contain_percent &&
+      type1_or_type2_contain_key_other_than_percent) {
+    // For each base type other than "percent" hint:
+    for (CalculationResultCategory type : CSSMathType::kBaseTypes) {
+      if (type == kCalcPercent) {
+        continue;
+      }
+      // 1. Provisionally apply the percent hint hint to both type1 and type2.
+      CSSMathType temp_type1(type1);
+      CSSMathType temp_type2(type2);
+      temp_type1.ApplyHint(type);
+      temp_type2.ApplyHint(type);
+      // 2. If, afterwards, all the entries of type1 with non-zero values are
+      // contained in type2 with the same value, and vice versa, then copy all
+      // of type1’s entries to finalType, and then copy all of type2’s entries
+      // to finalType that finalType doesn’t already contain. Set finalType’s
+      // percent hint to hint. Return finalType.
+      if (temp_type1 == temp_type2) {
+        return CSSMathType(std::move(temp_type1.types_map_),
+                           std::move(temp_type1.percentage_hint_));
+      }
+      // 3. Otherwise, revert type1 and type2 to their state at the start of
+      // this loop.
+    }
+    // If the loop finishes without returning finalType, then the types can’t
+    // be added. Return failure.
+    return CSSMathType::InvalidType();
+  }
+  return CSSMathType::InvalidType();
+}
+
 namespace {
 
 const PixelsAndPercent CreateClampedSamePixelsAndPercent(float value) {
