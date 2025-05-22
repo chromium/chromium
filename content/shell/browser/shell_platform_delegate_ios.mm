@@ -126,6 +126,54 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
                          alpha:1.0];
 }
 
+#if BUILDFLAG(IS_IOS_TVOS)
+// The following methods handle tvOS's focus engine by implementing the
+// following behavior:
+//
+// 1. The content view is focused and receives user input by default.
+// 2. Pressing the Menu button in the remote control switches focus to
+//    `_headerContentView` so that users can use the toolbar and the location
+//    bar.
+// 3. Pressing the Menu button again after that will switch to the home screen,
+//    and swiping down to focus the content view will reset the behavior
+//    described in 1).
+- (void)pressesBegan:(NSSet<UIPress*>*)presses
+           withEvent:(UIPressesEvent*)event {
+  for (UIPress* press in presses) {
+    if (press.type == UIPressTypeMenu) {
+      if (_shell->web_contents()->GetContentNativeView().Get().focused) {
+        _headerContentView.userInteractionEnabled = YES;
+        [self setNeedsFocusUpdate];
+        return;
+      }
+    }
+  }
+  [super pressesBegan:presses withEvent:event];
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext*)context
+       withAnimationCoordinator:(UIFocusAnimationCoordinator*)coordinator {
+  if (_shell) {
+    const UIView* native_web_contents_view =
+        _shell->web_contents()->GetContentNativeView().Get();
+    if (context.nextFocusedView == native_web_contents_view) {
+      _headerContentView.userInteractionEnabled = NO;
+      _shell->web_contents()->Focus();
+    }
+  }
+}
+
+- (NSArray<id<UIFocusEnvironment>>*)preferredFocusEnvironments {
+  // `userInteractionEnabled` is false when we create `_headerContentView` so
+  // that we focus on `_contentView` by default instead of the Back button in
+  // the toolbar.
+  // We set it to true when explicitly pressing the Back button on the remote
+  // control in order to focus the toolbar.
+  return _headerContentView.userInteractionEnabled ? @[ _headerContentView ]
+                                                   : @[ _contentView ];
+}
+#endif
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -167,6 +215,12 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
   // system's minimum margins).
   _headerBackgroundView.layoutMarginsRelativeArrangement = YES;
   _headerBackgroundView.preservesSuperviewLayoutMargins = YES;
+
+#if BUILDFLAG(IS_IOS_TVOS)
+  // On tvOS, make it impossible to focus `_headerContentView` by simply
+  // swiping up on the remote control since this behavior is not intuitive.
+  _headerContentView.userInteractionEnabled = NO;
+#endif
 
   _headerContentView.alignment = UIStackViewAlignmentCenter;
   _headerContentView.axis = UILayoutConstraintAxisHorizontal;
