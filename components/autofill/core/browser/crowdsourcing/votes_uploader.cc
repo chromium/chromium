@@ -258,25 +258,13 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             options.encoder = std::move(randomized_encoder);
             options.form_associations = std::move(form_associations);
             options.observed_submission = observed_submission;
-
+            options.available_field_types = DetermineAvailableFieldTypes(
+                profiles, credit_cards, last_unlocked_credit_card_cvc,
+                app_locale);
             for (auto& [field_id, format_strings] :
                  DeterminePossibleFormatStringsForUpload(form->fields())) {
               options.fields[field_id].format_strings =
                   std::move(format_strings);
-            }
-
-            for (const AutofillProfile& profile : profiles) {
-              profile.GetNonEmptyTypes(app_locale,
-                                       &options.available_field_types);
-            }
-            for (const CreditCard& card : credit_cards) {
-              card.GetNonEmptyTypes(app_locale, &options.available_field_types);
-            }
-            // As CVC is not stored, treat it separately.
-            if (!last_unlocked_credit_card_cvc.empty() ||
-                options.available_field_types.contains(CREDIT_CARD_NUMBER)) {
-              options.available_field_types.insert(
-                  CREDIT_CARD_VERIFICATION_CODE);
             }
 
             std::vector<AutofillUploadContents> upload_contents =

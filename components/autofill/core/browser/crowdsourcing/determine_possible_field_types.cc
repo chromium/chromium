@@ -291,6 +291,26 @@ void DeterminePossibleFieldTypesForUpload(
   DisambiguatePossibleFieldTypes(form);
 }
 
+FieldTypeSet DetermineAvailableFieldTypes(
+    base::span<const AutofillProfile> profiles,
+    base::span<const CreditCard> credit_cards,
+    std::u16string_view last_unlocked_credit_card_cvc,
+    const std::string& app_locale) {
+  FieldTypeSet types;
+  for (const AutofillProfile& profile : profiles) {
+    profile.GetNonEmptyTypes(app_locale, &types);
+  }
+  for (const CreditCard& card : credit_cards) {
+    card.GetNonEmptyTypes(app_locale, &types);
+  }
+  // As CVC is not stored, treat it separately.
+  if (!last_unlocked_credit_card_cvc.empty() ||
+      types.contains(CREDIT_CARD_NUMBER)) {
+    types.insert(CREDIT_CARD_VERIFICATION_CODE);
+  }
+  return types;
+}
+
 std::map<FieldGlobalId, base::flat_set<std::u16string>>
 DeterminePossibleFormatStringsForUpload(
     const base::span<const std::unique_ptr<AutofillField>> fields) {

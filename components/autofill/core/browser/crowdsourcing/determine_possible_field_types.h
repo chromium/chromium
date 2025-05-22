@@ -33,7 +33,7 @@ class LoyaltyCard;
     const std::string& app_locale);
 
 // Uses the existing personal data in `profiles`, `credit_cards` and
-// `loyalty_cardss` to determine possible field types for the `form`.  This is
+// `loyalty_cards` to determine possible field types for the `form`.  This is
 // potentially expensive -- on the order of 50ms even for a small set of
 // `stored_data`. Hence, it should not run on the UI thread -- to avoid
 // locking up the UI -- nor on the IO thread -- to avoid blocking IPC calls.
@@ -45,6 +45,14 @@ void DeterminePossibleFieldTypesForUpload(
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form);
+
+// Returns the set of `FieldType`s for which the given profiles etc. contain
+// non-empty values.
+FieldTypeSet DetermineAvailableFieldTypes(
+    base::span<const AutofillProfile> profiles,
+    base::span<const CreditCard> credit_cards,
+    std::u16string_view last_unlocked_credit_card_cvc,
+    const std::string& app_locale);
 
 // Matches the current field values against regular expressions.
 // There are two types of matches:
