@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.2.0...chromium-bidi-v5.3.0) (2025-05-22)
+
+
+### Features
+
+* `proxy` configuration per user context ([#3430](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3430)) ([95623ac](https://github.com/GoogleChromeLabs/chromium-bidi/commit/95623ac9548ad9a72924c193d3220b8d10895222))
+* Support GATT characteristic event ([#3404](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3404)) ([d0eeb2d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d0eeb2d67bd8ee07bde9e151d74b9184c3c2f4aa))
+
 ## [5.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.1.0...chromium-bidi-v5.2.0) (2025-05-15)
 
 
