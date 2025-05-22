@@ -71,34 +71,36 @@ ChromeRootCertConstraints& ChromeRootCertConstraints::operator=(
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints)
-    : ChromeRootStoreData::Anchor::Anchor(
-          certificate,
-          constraints,
-          /*eutl=*/false,
-          /*enforce_anchor_expiry=*/false,
-          /*enforce_anchor_constraints=*/false) {}
+    : ChromeRootStoreData::Anchor::Anchor(certificate,
+                                          constraints,
+                                          /*eutl=*/false,
+                                          /*enforce_anchor_expiry=*/false,
+                                          /*enforce_anchor_constraints=*/false,
+                                          /*trust_anchor_id=*/{}) {}
 
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints,
     bool eutl)
-    : ChromeRootStoreData::Anchor::Anchor(
-          certificate,
-          constraints,
-          eutl,
-          /*enforce_anchor_expiry=*/false,
-          /*enforce_anchor_constraints=*/false) {}
+    : ChromeRootStoreData::Anchor::Anchor(certificate,
+                                          constraints,
+                                          eutl,
+                                          /*enforce_anchor_expiry=*/false,
+                                          /*enforce_anchor_constraints=*/false,
+                                          /*trust_anchor_id=*/{}) {}
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints,
     bool eutl,
     bool enforce_anchor_expiry,
-    bool enforce_anchor_constraints)
+    bool enforce_anchor_constraints,
+    std::vector<uint8_t> trust_anchor_id)
     : certificate(std::move(certificate)),
       constraints(std::move(constraints)),
       eutl(eutl),
       enforce_anchor_expiry(enforce_anchor_expiry),
-      enforce_anchor_constraints(enforce_anchor_constraints) {}
+      enforce_anchor_constraints(enforce_anchor_constraints),
+      trust_anchor_id(std::move(trust_anchor_id)) {}
 ChromeRootStoreData::Anchor::~Anchor() = default;
 
 ChromeRootStoreData::Anchor::Anchor(const Anchor& other) = default;
@@ -168,9 +170,14 @@ std::optional<ChromeRootStoreData::Anchor> CreateChromeRootStoreDataAnchor(
         min_version, max_version_exclusive,
         base::ToVector(constraint.permitted_dns_names()));
   }
+
+  std::vector<uint8_t> trust_anchor_id(
+      base::ToVector(base::as_byte_span(anchor.trust_anchor_id())));
+
   return ChromeRootStoreData::Anchor(
       std::move(parsed), std::move(constraints), anchor.eutl(),
-      anchor.enforce_anchor_expiry(), anchor.enforce_anchor_constraints());
+      anchor.enforce_anchor_expiry(), anchor.enforce_anchor_constraints(),
+      std::move(trust_anchor_id));
 }
 
 }  // namespace
@@ -262,9 +269,11 @@ ChromeRootStoreData::ChromeRootStoreData(
     for (const auto& constraint : cert_info.constraints) {
       cert_constraints.emplace_back(constraint);
     }
-    trust_anchors_.emplace_back(std::move(parsed), std::move(cert_constraints),
-                                /*eutl=*/false, cert_info.enforce_anchor_expiry,
-                                cert_info.enforce_anchor_constraints);
+    trust_anchors_.emplace_back(
+        std::move(parsed), std::move(cert_constraints),
+        /*eutl=*/false, cert_info.enforce_anchor_expiry,
+        cert_info.enforce_anchor_constraints,
+        base::ToVector(base::as_byte_span(cert_info.trust_anchor_id)));
   }
 
   for (const auto& cert_bytes : eutl_certs) {
@@ -301,6 +310,10 @@ TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data,
     if (!anchor.constraints.empty()) {
       constraints.emplace_back(anchor.certificate->der_cert().AsStringView(),
                                anchor.constraints);
+    }
+
+    if (!anchor.trust_anchor_id.empty()) {
+      trust_anchor_ids_.insert(anchor.trust_anchor_id);
     }
 
     // If the anchor is configured to enforce expiry and/or X.509 constraints,
