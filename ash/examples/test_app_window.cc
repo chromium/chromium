@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/size.h"
@@ -121,6 +122,17 @@ class TestView : public views::View {
           views::Checkbox* cb = static_cast<views::Checkbox*>(event.target());
           cb->GetWidget()->widget_delegate()->SetCanMaximize(cb->GetChecked());
         }));
+    add_checkbox(this, u"Always On Top", u"always on top",
+                 /*initial_state=*/false,
+                 base::BindRepeating([](const ui::Event& event) {
+                   views::Checkbox* cb =
+                       static_cast<views::Checkbox*>(event.target());
+                   auto* window = cb->GetWidget()->GetNativeWindow();
+                   window->SetProperty(aura::client::kZOrderingKey,
+                                       cb->GetChecked()
+                                           ? ui::ZOrderLevel::kFloatingWindow
+                                           : ui::ZOrderLevel::kNormal);
+                 }));
 
     AddChildView(std::make_unique<views::LabelButton>(
         base::BindRepeating(&TestView::UpdateMinimumSize,
