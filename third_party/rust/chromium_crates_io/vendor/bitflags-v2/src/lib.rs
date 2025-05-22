@@ -17,8 +17,17 @@ Add `bitflags` to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "2.9.0"
+version = "2.9.1"
 ```
+
+## Crate features
+
+The `bitflags` library defines a few Cargo features that you can opt-in to:
+
+- `std`: Implement the `Error` trait on error types used by `bitflags`.
+- `serde`: Support deriving `serde` traits on generated flags types.
+- `arbitrary`: Support deriving `arbitrary` traits on generated flags types.
+- `bytemuck`: Support deriving `bytemuck` traits on generated flags types.
 
 ## Generating flags types
 

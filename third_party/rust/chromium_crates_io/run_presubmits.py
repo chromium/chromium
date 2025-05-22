@@ -108,6 +108,28 @@ def CheckNonapplicablePatches(crate_ids, gnrt_config):
     return ""
 
 
+def CheckNonapplicablePatches(crate_ids, gnrt_config):
+    """Checks that each directory under `chromium_crates_io/patches/`
+       corresponds to an actual depedency of `chromium_crates_io/Cargo.toml`.
+
+       Returns an error message if a problem is detected.
+       Returns an empty string if there are no problems.
+    """
+    real_crate_names = _GetRealCrateNames(crate_ids)
+
+    patched_crate_names = set(
+        filter(lambda filename: filename != "README.md",
+               os.listdir(PATCHES_DIR)))
+
+    nonapplicable_patches = patched_crate_names - real_crate_names
+    if nonapplicable_patches:
+        return f"Some files/directories under `{PATCHES_DIR}` are not " + \
+                "needed, because they don't apply to actual crates: " + \
+               f'{", ".join(sorted(nonapplicable_patches))}'
+
+    return ""
+
+
 def CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config):
     """Checks that `gnrt_config.toml` has `allow_unsafe = ...` for each crate.
 

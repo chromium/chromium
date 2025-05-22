@@ -64,7 +64,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "bitflags"
   cargo_pkg_description =
       "A macro to generate structures which behave like bitflags."
-  cargo_pkg_version = "2.9.0"
+  cargo_pkg_version = "2.9.1"
 
   allow_unsafe = false
 

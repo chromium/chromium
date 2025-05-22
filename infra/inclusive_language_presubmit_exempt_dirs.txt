@@ -312,13 +312,6 @@ third_party/axe-core 2 1
 third_party/blink/perf_tests/bindings/resources/data 1 1
 third_party/blink/perf_tests/css/resources 4 2
 third_party/blink/perf_tests/layout 60 2
-third_party/blink/perf_tests/MotionMark 1 1
-third_party/blink/perf_tests/MotionMark/resources/runner 8 1
-third_party/blink/perf_tests/MotionMark/tests/dom 4 3
-third_party/blink/perf_tests/MotionMark/tests/master/resources 1 1
-third_party/blink/perf_tests/MotionMark/tests/simple 1 1
-third_party/blink/perf_tests/MotionMark/tests/svg 2 1
-third_party/blink/perf_tests/MotionMark/tests/text 2 2
 third_party/blink/perf_tests/parser/resources 84 2
 third_party/blink/perf_tests/shadow_dom 1 1
 third_party/blink/perf_tests/speedometer21 1 1

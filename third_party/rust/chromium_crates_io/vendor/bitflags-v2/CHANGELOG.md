@@ -1,3 +1,11 @@
+# 2.9.1
+
+## What's Changed
+* Document Cargo features by @KodrAus in https://github.com/bitflags/bitflags/pull/444
+
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.0...2.9.1
+
 # 2.9.0
 
 ## What's Changed
