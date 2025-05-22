@@ -617,7 +617,6 @@ source_set("unit_tests") {
     "wake_lock/wake_lock_test.cc",
     "wake_lock/wake_lock_test_utils.cc",
     "wake_lock/wake_lock_test_utils.h",
-    "webaudio/audio_basic_processor_handler_test.cc",
     "webaudio/audio_context_autoplay_test.cc",
     "webaudio/audio_context_test.cc",
     "webaudio/audio_node_input_test.cc",
