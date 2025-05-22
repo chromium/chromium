@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_HANDLER_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
+#include "chrome/browser/privacy_sandbox/notice/desktop_view_manager_interface.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

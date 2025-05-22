@@ -37,7 +37,10 @@ source_set("core") {
 }
 
 source_set("interfaces") {
-  public = [ "notice_service_interface.h" ]
+  public = [
+    "desktop_view_manager_interface.h",
+    "notice_service_interface.h",
+  ]
   deps = [
     ":notice_mojom",
     "//components/keyed_service/core",

@@ -36,8 +36,8 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/app:generated_resources",
-      "//chrome/browser/privacy_sandbox/notice:desktop_view_manager",
       "//chrome/browser/privacy_sandbox/notice:factory",
+      "//chrome/browser/privacy_sandbox/notice:interfaces",
       "//chrome/browser/privacy_sandbox/notice:notice_mojom",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/privacy_sandbox:resources",
