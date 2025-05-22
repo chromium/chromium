@@ -72,7 +72,6 @@ class Status final {
 
   friend std::ostream& operator<<(std::ostream& os, const Status& x);
   friend bool operator==(const Status& lhs, const Status& rhs);
-  friend bool operator!=(const Status& lhs, const Status& rhs);
 
  private:
   StatusCode code_;
