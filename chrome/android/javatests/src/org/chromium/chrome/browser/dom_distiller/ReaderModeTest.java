@@ -82,7 +82,10 @@ import java.util.concurrent.atomic.AtomicReference;
 /** End-to-end tests for Reader Mode (Simplified view). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(DeviceFormFactor.PHONE)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "--reader-mode-heuristics=alwaystrue"
+})
 @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
 public class ReaderModeTest implements CustomMainActivityStart {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -108,19 +111,22 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
         mURL = mTestServer.getURL(TEST_PAGE);
-        mDownloadTestRule.startMainActivityWithURL(mURL);
+        mDownloadTestRule.startMainActivityOnBlankPage();
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1402815")
-    public void testReaderModePromptShown() {
+    public void testReaderModePromptShownForIncognitoTabs() {
+        // Note: For BrApp messages are only used on incognito tabs. Regular tabs use the MTB.
+        mDownloadTestRule.newIncognitoTabFromMenu();
+        mDownloadTestRule.loadUrl(mURL);
         waitForReaderModeMessage();
     }
 
     @Test
     @MediumTest
     public void testReaderModeInCct() throws TimeoutException {
+        mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
@@ -143,6 +149,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     public void testReaderModeInCct_Downloaded() throws TimeoutException {
+        mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
@@ -167,6 +174,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     public void testReaderModeInCct_Incognito() throws TimeoutException {
+        mDownloadTestRule.loadUrl(mURL);
         openReaderModeInIncognitoCct();
     }
 
@@ -175,6 +183,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @DisabledTest(message = "https://crbug.com/1338273")
     public void testCloseAllIncognitoNotification_ClosesCct()
             throws PendingIntent.CanceledException, TimeoutException {
+        mDownloadTestRule.loadUrl(mURL);
         CustomTabActivity customTabActivity = openReaderModeInIncognitoCct();
 
         // Click on "Close all Incognito tabs" notification.
@@ -255,6 +264,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     public void testPreferenceInCct() throws TimeoutException {
+        mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
