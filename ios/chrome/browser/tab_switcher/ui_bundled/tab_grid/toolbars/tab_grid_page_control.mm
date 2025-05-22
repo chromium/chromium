@@ -754,6 +754,8 @@ TabGridPage ThirdTabGridPage() {
               underName:kTabGridPageControlIncognitoGuide];
   self.regularHoverView = [self configureHoverView];
   self.thirdPanelHoverView = [self configureHoverView];
+  [center referenceView:self.thirdPanelHoverView
+              underName:kTabGridPageControlThirdPanelGuide];
 
   [self.sliderView
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];

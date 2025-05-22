@@ -17,6 +17,8 @@
 // will be executed after the step dismisses.
 - (void)showGuidedTourIncognitoStepWithDismissalCompletion:
     (ProceduralBlock)completion;
+- (void)showGuidedTourTabGroupStepWithDismissalCompletion:
+    (ProceduralBlock)completion;
 
 @end
 

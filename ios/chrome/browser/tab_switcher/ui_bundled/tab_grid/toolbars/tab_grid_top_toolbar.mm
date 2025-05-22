@@ -214,7 +214,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)highlightPageControlItem:(TabGridPage)page {
-  [self.pageControl highlightPageControlItem:TabGridPageIncognitoTabs];
+  [self.pageControl highlightPageControlItem:page];
 }
 
 - (void)resetLastPageControlHighlight {

@@ -121,6 +121,18 @@
   _guidedTourCompletionBlock = completion;
 }
 
+- (void)showGuidedTourTabGroupStepWithDismissalCompletion:
+    (ProceduralBlock)completion {
+  [self.topToolbar highlightPageControlItem:TabGridPageTabGroups];
+  _guidedTourCoordinator =
+      [[GuidedTourCoordinator alloc] initWithStep:GuidedTourStepTabGridTabGroup
+                               baseViewController:self.baseViewController
+                                          browser:self.browser
+                                         delegate:self];
+  [_guidedTourCoordinator start];
+  _guidedTourCompletionBlock = completion;
+}
+
 #pragma mark - GuidedTourCoordinatorDelegate
 
 - (void)nextTappedForStep:(GuidedTourStep)step {

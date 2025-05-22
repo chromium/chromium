@@ -87,6 +87,9 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else if (_step == GuidedTourStepTabGridLongPress) {
     return [LayoutGuideCenterForBrowser(self.browser)
         referencedViewUnderName:kSelectedRegularCellGuide];
+  } else if (_step == GuidedTourStepTabGridTabGroup) {
+    return [LayoutGuideCenterForBrowser(nil)
+        referencedViewUnderName:kTabGridPageControlThirdPanelGuide];
   }
   NOTREACHED() << "A layout guide view needs to be fetched for each step";
 }
@@ -125,6 +128,9 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else if (_step == GuidedTourStepTabGridLongPress) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TITLE);
+  } else if (_step == GuidedTourStepTabGridTabGroup) {
+    return l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_TAB_GROUP_IPH_TITLE);
   }
   return @"";
 }
@@ -139,6 +145,9 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else if (_step == GuidedTourStepTabGridLongPress) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_LONG_PRESS_IPH_TEXT);
+  } else if (_step == GuidedTourStepTabGridTabGroup) {
+    return l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_GUIDED_TOUR_TAB_GRID_TAB_GROUP_IPH_TEXT);
   }
   return @"";
 }
@@ -163,6 +172,8 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   } else if (_step == GuidedTourStepTabGridIncognito ||
              _step == GuidedTourStepTabGridLongPress) {
     return BubbleAlignmentTopOrLeading;
+  } else if (_step == GuidedTourStepTabGridTabGroup) {
+    return BubbleAlignmentBottomOrTrailing;
   }
   NOTREACHED()
       << "Need to define the bubble alignment for each guided tour step";

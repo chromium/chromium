@@ -241,6 +241,20 @@
 }
 
 - (void)showTabGroupStep {
+  _currentGuidedTourStep = GuidedTourStepTabGridTabGroup;
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  __weak FirstRunProfileAgent* weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf guidedTourCompleted];
+  };
+  id<TabGridToolbarCommands> handler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), TabGridToolbarCommands);
+  [handler showGuidedTourTabGroupStepWithDismissalCompletion:completion];
+}
+
+- (void)guidedTourCompleted {
   // TODO(crbug.com/413461470): Implement
 }
 
