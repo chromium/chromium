@@ -79,6 +79,7 @@ source_set("unit_tests") {
   sources = [ "accelerator_metadata_unittest.cc" ]
 
   deps = [
+    "//ash:test_support",
     "//ash/webui/shortcut_customization_ui/backend",
     "//base",
     "//build:branding_buildflags",
