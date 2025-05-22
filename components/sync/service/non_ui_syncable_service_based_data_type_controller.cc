@@ -59,6 +59,9 @@ class FakeSyncableServiceBasedBridge : public DataTypeSyncBridge {
   std::string GetStorageKey(const EntityData& /*entity_data*/) const override {
     NOTREACHED();
   }
+  bool IsEntityDataValid(const EntityData& /*entity_data*/) const override {
+    NOTREACHED();
+  }
 };
 
 // Helper object that allows constructing and destructing the
