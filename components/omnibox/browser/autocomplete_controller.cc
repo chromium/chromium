@@ -1438,20 +1438,22 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
 
   MlRerank(old_result);
 
+  // If the entrypoints aren't visible, then Lens is active and contextual
+  // suggestions shouldn't be shown.
+  const bool is_lens_active =
+      !autocomplete_provider_client()->AreLensEntrypointsVisible();
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass ||
       update_type == UpdateType::kLastAsyncPassExceptDoc) {
-    internal_result_.SortAndCull(
-        input_, template_url_service_, triggered_feature_service_,
-        autocomplete_provider_client()->IsLensEnabled(),
-        old_result.default_match_to_preserve);
+    internal_result_.SortAndCull(input_, template_url_service_,
+                                 triggered_feature_service_, is_lens_active,
+                                 old_result.default_match_to_preserve);
     internal_result_.TransferOldMatches(input_,
                                         &old_result.matches_to_transfer);
   }
 
   internal_result_.SortAndCull(input_, template_url_service_,
-                               triggered_feature_service_,
-                               autocomplete_provider_client()->IsLensEnabled(),
+                               triggered_feature_service_, is_lens_active,
                                old_result.default_match_to_preserve);
 
   if (update_type == UpdateType::kSyncPass) {

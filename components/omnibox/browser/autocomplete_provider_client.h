@@ -228,6 +228,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // Returns true if the current profile is eligible for Lens.
   virtual bool IsLensEnabled() const;
 
+  // Returns true if the Lens entrypoints can be shown to the user. That is if
+  // Lens is not already active.
+  virtual bool AreLensEntrypointsVisible() const;
+
   // Returns whether the app is currently in the background state (Mobile only).
   virtual bool in_background_state() const;
 

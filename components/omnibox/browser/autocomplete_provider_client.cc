@@ -49,6 +49,10 @@ bool AutocompleteProviderClient::IsLensEnabled() const {
   return false;
 }
 
+bool AutocompleteProviderClient::AreLensEntrypointsVisible() const {
+  return false;
+}
+
 bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }

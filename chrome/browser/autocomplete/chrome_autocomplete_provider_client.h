@@ -123,6 +123,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsHistoryEmbeddingsEnabled() const override;
   bool IsHistoryEmbeddingsSettingVisible() const override;
   bool IsLensEnabled() const override;
+  bool AreLensEntrypointsVisible() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
