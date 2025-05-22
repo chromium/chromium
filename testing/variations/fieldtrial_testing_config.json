@@ -19994,6 +19994,24 @@
             ]
         }
     ],
+    "RendererProcessLimitOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "count": "42"
+                    },
+                    "enable_features": [
+                        "RendererProcessLimitOnAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "RendererSideContentDecoding": [
         {
             "platforms": [

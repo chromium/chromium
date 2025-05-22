@@ -1388,8 +1388,15 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
   // On Android we don't maintain a limit of renderer process hosts - we are
   // happy with keeping a lot of these, as long as the number of live renderer
   // processes remains reasonable, and on Android the OS takes care of that.
-  return std::numeric_limits<size_t>::max();
+  // This has shown to have adversarial effects, so we fall back to desktop
+  // behavior for desktop-like form factors.
+  if (base::FeatureList::IsEnabled(features::kRendererProcessLimitOnAndroid)) {
+    return features::kRendererProcessLimitOnAndroidCount.Get();
+  } else {
+    return std::numeric_limits<size_t>::max();
+  }
 #else
+
   // On other platforms, calculate the maximum number of renderer process hosts
   // according to the amount of installed memory as reported by the OS, along
   // with some hard-coded limits. The calculation assumes that the renderers
