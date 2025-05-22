@@ -1,7 +1,0 @@
-Verify that generate-id() returns the same value for a given node in the current document in the current transform.
-
-Value 1 IDs: matched!
-
-Value 2 IDs: matched!
-
-Value 3 IDs: matched!
