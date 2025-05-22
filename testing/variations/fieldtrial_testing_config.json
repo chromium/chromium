@@ -23613,6 +23613,7 @@
                         "tab_search_toolbar_button": "true"
                     },
                     "enable_features": [
+                        "IPH_TabSearchToolbarButton",
                         "TabstripComboButton"
                     ]
                 }
