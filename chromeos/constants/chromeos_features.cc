@@ -362,7 +362,7 @@ BASE_FEATURE(kSystemFeaturesDisableListHidden,
 // Enables pinning the NotebookLM preinstalled app to the shelf.
 BASE_FEATURE(kNotebookLmAppShelfPin,
              "NotebookLmAppShelfPin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Resets the act of pinning the NotebookLM preinstalled app to the shelf, used
 // for manual testing.
