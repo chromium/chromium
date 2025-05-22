@@ -114,14 +114,10 @@ builtin_modules("_Builtin_unwind") {
 configs_to_add = [
   ":config",
   "//build/config/compiler:no_chromium_code",
-  "//build/config/compiler:exceptions",
-  "//build/config/compiler:rtti",
 ]
 
 configs_to_remove = [
   "//build/config/compiler:chromium_code",
-  "//build/config/compiler:no_exceptions",
-  "//build/config/compiler:no_rtti",
   "//build/config/coverage:default_coverage",
 ]
 
@@ -414,8 +410,17 @@ target(libcxx_target_type, "libc++") {
     }
   }
 
-  configs -= configs_to_remove
-  configs += configs_to_add
+  # Enable exceptions and rtti for libc++, but disable them in modules targets
+  # so that modules can be used for other chromium targets which don't enable
+  # exception and rtti.
+  configs -= configs_to_remove + [
+               "//build/config/compiler:no_exceptions",
+               "//build/config/compiler:no_rtti",
+             ]
+  configs += configs_to_add + [
+               "//build/config/compiler:exceptions",
+               "//build/config/compiler:rtti",
+             ]
 
   deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
 
