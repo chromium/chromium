@@ -67,11 +67,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
     }
   }
 
-  // Show access requests in toolbar.
-  info.show_access_requests_in_toolbar =
-      SitePermissionsHelper(profile).ShowAccessRequestsInToolbar(
-          extension.id());
-
   // Pinned to toolbar.
   // TODO(crbug.com/40280426): Currently this information is only shown for
   // enabled extensions as only enabled extensions can have actions. However,

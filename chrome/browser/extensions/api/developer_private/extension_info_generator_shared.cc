@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
@@ -824,8 +825,11 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
         extension, is_enabled);
   }
 
-  // TODO(crbug.com/419419534): Add back show_access_requests_in_toolbar and
-  // pinned_to_toolbar.
+  // Show access requests in toolbar.
+  info.show_access_requests_in_toolbar =
+      SitePermissionsHelper(profile).ShowAccessRequestsInToolbar(
+          extension.id());
+  // TODO(crbug.com/419419534): Add back pinned_to_toolbar.
 
   // TODO(crbug.com/419419534): Add back MV2 deprecation if needed, so that
   // extension_info_generator_desktop can be removed.
