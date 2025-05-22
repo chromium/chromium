@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 
 @protocol AuthenticationFlowDelegate;
-@class AuthenticationFlowPerformer;
 class Browser;
 @class UIViewController;
 @protocol SystemIdentity;

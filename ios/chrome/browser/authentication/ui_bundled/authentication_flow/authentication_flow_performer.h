@@ -7,52 +7,24 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/functional/callback_forward.h"
-#import "base/ios/block_types.h"
-#import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/app/change_profile_continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 
 @protocol AuthenticationFlowDelegate;
-class Browser;
-enum class ChangeProfileReason;
-@protocol ChangeProfileCommands;
 class ProfileIOS;
-@class SceneState;
+namespace signin_metrics {
+enum class AccessPoint;
+}
 enum class SignedInUserState;
 @protocol SystemIdentity;
-
 namespace syncer {
 class SyncService;
-}  // namespace syncer
+}
 
-// Completes the post-signin actions. In most cases the action is showing a
-// snackbar confirming sign-in with `identity` and an undo button to sign out
-// the user.
-void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
-                               id<SystemIdentity> identity,
-                               Browser* browser,
-                               signin_metrics::AccessPoint access_point);
-
-// Callback called the profile switching succeeded (`success` is true) or failed
-// (`success` is false).
-// If `success is true:
-// `browser` is the browser of the new profile.
-using OnProfileSwitchCompletion =
-    base::OnceCallback<void(bool success, Browser* new_profile_browser)>;
-
-// Performs the sign-in steps and user interactions as part of the sign-in flow.
-@interface AuthenticationFlowPerformer : NSObject
-
-// Initializes a new AuthenticationFlowPerformer. `delegate` will be notified
-// when each step completes.
-- (instancetype)initWithDelegate:
-                    (id<AuthenticationFlowPerformerDelegate>)delegate
-            changeProfileHandler:(id<ChangeProfileCommands>)changeProfileHandler
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+// Performs the sign-in steps and user interactions as part of the sign-in in
+// same profile flow.
+@interface AuthenticationFlowPerformer : AuthenticationFlowPerformerBase
 
 // Cancels any outstanding work and dismisses an alert view (if shown).
 - (void)interrupt;
@@ -91,11 +63,6 @@ using OnProfileSwitchCompletion =
 - (void)fetchProfileSeparationPolicies:(ProfileIOS*)profile
                            forIdentity:(id<SystemIdentity>)identity;
 
-// Signs `identity` with `currentProfile`.
-- (void)signInIdentity:(id<SystemIdentity>)identity
-         atAccessPoint:(signin_metrics::AccessPoint)accessPoint
-        currentProfile:(ProfileIOS*)currentProfile;
-
 // Switches to the profile that `identity` is assigned, for `sceneIdentifier`.
 // The delegate’s command must be called before the change of profile.
 // ChangeProfileContinuationProvider is a base::RepeatingCallback, which is not
@@ -108,24 +75,8 @@ using OnProfileSwitchCompletion =
                   postSignInActions:(PostSignInActionSet)postSignInActions
                         accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
-// Switches to the profile with `profileName`, for `sceneIdentifier`.
-- (void)switchToProfileWithName:(const std::string&)profileName
-                     sceneState:(SceneState*)sceneState
-                         reason:(ChangeProfileReason)reason
-      changeProfileContinuation:(ChangeProfileContinuation)continuation
-              postSignInActions:(PostSignInActionSet)postSignInActions
-                   withIdentity:(id<SystemIdentity>)identity
-                    accessPoint:(signin_metrics::AccessPoint)accessPoint;
-
 // Converts the personal profile to a managed one and attaches `identity` to it.
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity;
-
-// Signs out of `profile` and sends `didSignOutForAccountSwitch` to the delegate
-// when complete.
-- (void)signOutForAccountSwitchWithProfile:(ProfileIOS*)profile;
-
-// Immediately signs out `profile` without waiting for dependent services.
-- (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile;
 
 // Shows a confirmation dialog for signing in to an account managed by
 // `hostedDomain`. The confirmation dialog's content will be different depending
@@ -138,26 +89,6 @@ using OnProfileSwitchCompletion =
                     mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
          browsingDataMigrationDisabledByPolicy:
              (BOOL)browsingDataMigrationDisabledByPolicy;
-
-// Shows `error` to the user and calls `callback` on dismiss.
-- (void)showAuthenticationError:(NSError*)error
-                 withCompletion:(ProceduralBlock)callback
-                 viewController:(UIViewController*)viewController
-                        browser:(Browser*)browser;
-
-- (void)registerUserPolicy:(ProfileIOS*)profile
-               forIdentity:(id<SystemIdentity>)identity;
-
-- (void)fetchUserPolicy:(ProfileIOS*)profile
-            withDmToken:(NSString*)dmToken
-               clientID:(NSString*)clientID
-     userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
-               identity:(id<SystemIdentity>)identity;
-
-- (void)fetchAccountCapabilities:(ProfileIOS*)profile;
-
-@property(nonatomic, weak, readonly) id<AuthenticationFlowPerformerDelegate>
-    delegate;
 
 @end
 

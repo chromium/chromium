@@ -13,9 +13,10 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -49,8 +50,9 @@ enum class AuthenticationFlowInProfileState {
 
 }  // namespace
 
-@interface AuthenticationFlowInProfile () <AuthenticationFlowPerformerDelegate,
-                                           BrowserObserving>
+@interface AuthenticationFlowInProfile () <
+    AuthenticationFlowInProfilePerformerDelegate,
+    BrowserObserving>
 @end
 
 @implementation AuthenticationFlowInProfile {
@@ -65,7 +67,7 @@ enum class AuthenticationFlowInProfileState {
   id<SystemIdentity> _identityToSignIn;
   // `YES` if `_identityToSignIn` is a managed identity.
   BOOL _isManagedIdentity;
-  AuthenticationFlowPerformer* _performer;
+  AuthenticationFlowInProfilePerformer* _performer;
   raw_ptr<Browser> _browser;
   std::unique_ptr<BrowserObserverBridge> _browserObserver;
   signin_metrics::AccessPoint _accessPoint;
@@ -119,9 +121,9 @@ enum class AuthenticationFlowInProfileState {
   id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
       _browser->GetSceneState().profileState.appState.appCommandDispatcher,
       ChangeProfileCommands);
-  _performer = [[AuthenticationFlowPerformer alloc]
-          initWithDelegate:self
-      changeProfileHandler:changeProfileHandler];
+  _performer = [[AuthenticationFlowInProfilePerformer alloc]
+      initWithInProfileDelegate:self
+           changeProfileHandler:changeProfileHandler];
   // Make sure -[AuthenticationFlow startSignInWithCompletion:] doesn't call
   // the completion block synchronously.
   // Related to http://crbug.com/1246480.
@@ -442,45 +444,6 @@ enum class AuthenticationFlowInProfileState {
   [self continueFlow];
 }
 
-- (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
-    (syncer::DataTypeSet)unsyncedDataTypes {
-  // Unsynced data is checked by AuthenticationFlow before calling
-  // `AuthenticationFlowInProfile`.
-  // So unsynced data is checked when leaving a profile (for profile switching),
-  // or before sign-out (for account switching).
-  // TODO(crbug.com/403183877): Split `AuthenticationFlowPerformer` into 2
-  // classes to avoid having all those NOTREACHED methods.
-  NOTREACHED();
-}
-
-- (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue {
-  // Unsynced data confirmation dialog should not be shown. See the explaination
-  // in `-[AuthenticationFlowInProfile
-  // didFetchUnsyncedDataWithUnsyncedDataTypes:]`.
-  NOTREACHED();
-}
-
-- (void)didFetchManagedStatus:(NSString*)hostedDomain {
-  NOTREACHED();
-}
-
-- (void)didFailFetchManagedStatus:(NSError*)error {
-  NOTREACHED();
-}
-
-- (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
-    (BOOL)browsingDataSeparate {
-  NOTREACHED();
-}
-
-- (void)didCancelManagedConfirmation {
-  NOTREACHED();
-}
-
-- (void)didFailToSwitchToProfile {
-  NOTREACHED();
-}
-
 - (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
                                      completion:(base::OnceClosure)completion {
   CHECK(newProfileBrowser);
@@ -509,16 +472,6 @@ enum class AuthenticationFlowInProfileState {
            base::NotFatalUntil::M138);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
   [self continueFlow];
-}
-
-- (void)didMakePersonalProfileManaged {
-  NOTREACHED();
-}
-
-- (void)didFetchProfileSeparationPolicies:
-    (policy::ProfileSeparationDataMigrationSettings)
-        profileSeparationDataMigrationSettings {
-  NOTREACHED();
 }
 
 - (void)didFetchAccountCapabilities {

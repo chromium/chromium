@@ -827,10 +827,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 #pragma mark AuthenticationFlowPerformerDelegate
 
-- (void)didSignOutForAccountSwitch {
-  NOTREACHED();
-}
-
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
     (syncer::DataTypeSet)unsyncedDataTypes {
   _unsyncedDataTypes = unsyncedDataTypes;
@@ -935,23 +931,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
-                                   clientID:(NSString*)clientID
-                         userAffiliationIDs:
-                             (NSArray<NSString*>*)userAffiliationIDs {
-  NOTREACHED();
-}
-
-- (void)didFetchUserPolicyWithSuccess:(BOOL)success {
-  NOTREACHED();
-}
-
 - (void)didMakePersonalProfileManaged {
   [self continueFlow];
-}
-
-- (void)didFetchAccountCapabilities {
-  NOTREACHED();
 }
 
 #pragma mark - Private methods

@@ -29,6 +29,8 @@
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_delegate.h"
@@ -118,6 +120,7 @@ class AuthenticationFlowTest : public PlatformTest,
   void TearDown() override {
     PlatformTest::TearDown();
     EXPECT_OCMOCK_VERIFY((id)view_controller_mock_);
+    EXPECT_OCMOCK_VERIFY((id)in_profile_performer_mock_);
     EXPECT_OCMOCK_VERIFY((id)performer_mock_);
   }
 
@@ -168,6 +171,8 @@ class AuthenticationFlowTest : public PlatformTest,
                            presentingViewController:view_controller_mock_
                                          anchorView:nil
                                          anchorRect:CGRectNull];
+    in_profile_performer_mock_ =
+        OCMStrictClassMock([AuthenticationFlowInProfilePerformer class]);
     performer_mock_ = OCMStrictClassMock([AuthenticationFlowPerformer class]);
 
     // Once AuthenticationFlow is started, it'll create its performer. Replace
@@ -182,15 +187,17 @@ class AuthenticationFlowTest : public PlatformTest,
       // creates its own performer. For simplicity, reuse the same mock object
       // here. Also capture a reference to the AuthenticationFlowInProfile, so
       // the mock can call back into it.
-      OCMExpect([(id)performer_mock_ alloc]).andReturn(performer_mock_);
-      OCMExpect([performer_mock_ initWithDelegate:[OCMArg any]
-                             changeProfileHandler:[OCMArg any]])
+      OCMExpect([(id)in_profile_performer_mock_ alloc])
+          .andReturn(in_profile_performer_mock_);
+      OCMExpect([in_profile_performer_mock_
+                    initWithInProfileDelegate:[OCMArg any]
+                         changeProfileHandler:[OCMArg any]])
           .andDo(^(NSInvocation* invocation) {
             __unsafe_unretained id argument;
             [invocation getArgument:&argument atIndex:2];
             authentication_flow_in_profile_ = argument;
           })
-          .andReturn(performer_mock_);
+          .andReturn(in_profile_performer_mock_);
     }
 
     signin_ui::SigninCompletionCallback sign_in_completion =
@@ -370,26 +377,28 @@ class AuthenticationFlowTest : public PlatformTest,
                                        clientID:kFakeClientID
                              userAffiliationIDs:@[ kFakeUserAffiliationID ]];
       };
-      OCMExpect([performer_mock_ registerUserPolicy:final_profile
-                                        forIdentity:identity])
+      OCMExpect([in_profile_performer_mock_ registerUserPolicy:final_profile
+                                                   forIdentity:identity])
           .andDo(registerUserPolicyCallback);
       auto fetchUserPolicyCallback = ^(NSInvocation*) {
         [authentication_flow_in_profile_ didFetchUserPolicyWithSuccess:YES];
       };
-      OCMExpect([performer_mock_ fetchUserPolicy:final_profile
-                                     withDmToken:kFakeDMToken
-                                        clientID:kFakeClientID
-                              userAffiliationIDs:@[ kFakeUserAffiliationID ]
-                                        identity:identity])
+      OCMExpect([in_profile_performer_mock_
+                       fetchUserPolicy:final_profile
+                           withDmToken:kFakeDMToken
+                              clientID:kFakeClientID
+                    userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                              identity:identity])
           .andDo(fetchUserPolicyCallback);
     }
 
     // If switching (to a managed profile), there's no explicit call to sign in,
     // since AuthenticationService does it internally.
     if (!should_switch_profile) {
-      OCMExpect([performer_mock_ signInIdentity:identity
-                                  atAccessPoint:access_point
-                                 currentProfile:personal_profile_.get()]);
+      OCMExpect([in_profile_performer_mock_
+          signInIdentity:identity
+           atAccessPoint:access_point
+          currentProfile:personal_profile_.get()]);
     }
 
     [authentication_flow_ startSignIn];
@@ -430,8 +439,9 @@ class AuthenticationFlowTest : public PlatformTest,
   id<SystemIdentity> managed_identity2_ = nil;
   AuthenticationFlow* authentication_flow_ = nil;
   TestAuthenticationFlowDelegate* test_authentication_flow_delegate_ = nil;
-  AuthenticationFlowInProfile<AuthenticationFlowPerformerDelegate>*
+  AuthenticationFlowInProfile<AuthenticationFlowInProfilePerformerDelegate>*
       authentication_flow_in_profile_ = nil;
+  AuthenticationFlowInProfilePerformer* in_profile_performer_mock_ = nil;
   AuthenticationFlowPerformer* performer_mock_ = nil;
   UIViewController* view_controller_mock_;
   // Used to verify histogram logging.

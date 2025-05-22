@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer.h"
 
 #import <objc/runtime.h>
 
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -30,7 +31,7 @@
 
 namespace {
 
-class AuthenticationFlowPerformerTest : public PlatformTest {
+class AuthenticationFlowInProfilePerformerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -61,31 +62,37 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     fake_system_identity_manager->AddIdentity(fake_identity_);
 
-    authentication_flow_performer_delegate_mock_ =
-        OCMStrictProtocolMock(@protocol(AuthenticationFlowPerformerDelegate));
-    authentication_flow_performer_ = [[AuthenticationFlowPerformer alloc]
-            initWithDelegate:authentication_flow_performer_delegate_mock_
-        changeProfileHandler:nil];
+    authentication_flow_in_profile_performer_delegate_mock_ =
+        OCMStrictProtocolMock(
+            @protocol(AuthenticationFlowInProfilePerformerDelegate));
+    authentication_flow_in_profile_performer_ =
+        [[AuthenticationFlowInProfilePerformer alloc]
+            initWithInProfileDelegate:
+                authentication_flow_in_profile_performer_delegate_mock_
+                 changeProfileHandler:nil];
   }
 
   void TearDown() override {
     PlatformTest::TearDown();
-    EXPECT_OCMOCK_VERIFY(authentication_flow_performer_delegate_mock_);
+    EXPECT_OCMOCK_VERIFY(
+        authentication_flow_in_profile_performer_delegate_mock_);
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
-  AuthenticationFlowPerformer* authentication_flow_performer_ = nil;
-  id<AuthenticationFlowPerformerDelegate>
-      authentication_flow_performer_delegate_mock_ = nil;
+  AuthenticationFlowInProfilePerformer*
+      authentication_flow_in_profile_performer_ = nil;
+  id<AuthenticationFlowInProfilePerformerDelegate>
+      authentication_flow_in_profile_performer_delegate_mock_ = nil;
   FakeSystemIdentity* fake_identity_ = nil;
   ProtocolFake* fake_command_endpoint_ = nil;
 };
 
-// Tests `-[AuthenticationFlowPerformer signOutForAccountSwitchWithProfile:]`.
-TEST_F(AuthenticationFlowPerformerTest, SignoutForSwitch) {
+// Tests `-[AuthenticationFlowInProfilePerformer
+// signOutForAccountSwitchWithProfile:]`.
+TEST_F(AuthenticationFlowInProfilePerformerTest, SignoutForSwitch) {
   base::HistogramTester histogram_tester;
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
@@ -93,12 +100,12 @@ TEST_F(AuthenticationFlowPerformerTest, SignoutForSwitch) {
                                  signin_metrics::AccessPoint::kStartPage);
   __block std::unique_ptr<base::RunLoop> run_loop_ =
       std::make_unique<base::RunLoop>();
-  OCMExpect(
-      [authentication_flow_performer_delegate_mock_ didSignOutForAccountSwitch])
+  OCMExpect([authentication_flow_in_profile_performer_delegate_mock_
+                didSignOutForAccountSwitch])
       .andDo(^(NSInvocation*) {
         run_loop_->Quit();
       });
-  [authentication_flow_performer_
+  [authentication_flow_in_profile_performer_
       signOutForAccountSwitchWithProfile:profile_.get()];
   run_loop_->Run();
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(

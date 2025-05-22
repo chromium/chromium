@@ -11,26 +11,25 @@
 #import "base/ios/block_types.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/sync/base/data_type.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base_delegate.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
 class Browser;
+@protocol SystemIdentity;
 @class UIViewController;
 
-// Handles completion of AuthenticationFlowPerformer steps.
-@protocol AuthenticationFlowPerformerDelegate <NSObject>
+// Handles completion of AuthenticationFlowPerformerBase steps.
+@protocol AuthenticationFlowPerformerDelegate <
+    AuthenticationFlowPerformerBaseDelegate>
 
-// Indicates that a profile was signed out, after calling
-// `signOutForAccountSwitchWithProfile`.
-- (void)didSignOutForAccountSwitch;
-
-// Called after `-[AuthenticationFlowPerformer
+// Called after `-[AuthenticationFlowPerformerBase
 // fetchUnsyncedDataWithSyncService:]`, to return the list of data types
 // unsynced in the current profile.
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
     (syncer::DataTypeSet)unsyncedDataTypes;
 
 // Called once the user accepts or refuses to leave the primary account.
-// See `-[AuthenticationFlowPerformer
+// See `-[AuthenticationFlowPerformerBase
 // showLeavingPrimaryAccountConfirmationWithBaseViewController:browser:
 // anchorView:anchorRect:]`.
 - (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue;
@@ -63,27 +62,8 @@ class Browser;
 // Indicates that switching to a different profile failed.
 - (void)didFailToSwitchToProfile;
 
-// Indicates that switching to a different profile was completed.
-// The continuation must be executed with `completion`.
-- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
-                                     completion:(base::OnceClosure)completion;
-
-// Indicates the account of the user was registered for user policy. `dmToken`
-// is empty when registration failed.
-- (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
-                                   clientID:(NSString*)clientID
-                         userAffiliationIDs:
-                             (NSArray<NSString*>*)userAffiliationIDs;
-
-// Indicates that user policies were fetched. `success` is true when the fetch
-// was successful.
-- (void)didFetchUserPolicyWithSuccess:(BOOL)success;
-
 // Indicates that the personal profile was converted to a managed one.
 - (void)didMakePersonalProfileManaged;
-
-// Indicates that account capabilities have been fetched.
-- (void)didFetchAccountCapabilities;
 
 @end
 

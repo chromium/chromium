@@ -10,7 +10,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/app/change_profile_continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile_performer_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -64,7 +66,8 @@ class AuthenticationFlowInProfileTest
     managed_identity_ = [FakeSystemIdentity fakeManagedIdentity];
     fake_system_identity_manager->AddIdentity(managed_identity_);
 
-    performer_mock_ = OCMStrictClassMock([AuthenticationFlowPerformer class]);
+    performer_mock_ =
+        OCMStrictClassMock([AuthenticationFlowInProfilePerformer class]);
     OCMExpect([(id)performer_mock_ alloc]).andReturn(performer_mock_);
 
     // Force explicit instantiation of the AuthenticationService, to ensure
@@ -107,16 +110,16 @@ class AuthenticationFlowInProfileTest
                  accessPoint:access_point
         precedingHistorySync:preceding_history_sync
            postSignInActions:post_sign_in_actions];
-    id<AuthenticationFlowPerformerDelegate> performer_delegate =
-        GetAuthenticationFlowPerformerDelegate();
-    OCMExpect([performer_mock_ initWithDelegate:performer_delegate
-                           changeProfileHandler:[OCMArg any]])
+    id<AuthenticationFlowInProfilePerformerDelegate> performer_delegate =
+        GetAuthenticationFlowInProfilePerformerDelegate();
+    OCMExpect([performer_mock_ initWithInProfileDelegate:performer_delegate
+                                    changeProfileHandler:[OCMArg any]])
         .andReturn(performer_mock_);
   }
 
-  id<AuthenticationFlowPerformerDelegate>
-  GetAuthenticationFlowPerformerDelegate() {
-    return static_cast<id<AuthenticationFlowPerformerDelegate>>(
+  id<AuthenticationFlowInProfilePerformerDelegate>
+  GetAuthenticationFlowInProfilePerformerDelegate() {
+    return static_cast<id<AuthenticationFlowInProfilePerformerDelegate>>(
         authentication_flow_in_profile_);
   }
 
@@ -131,7 +134,7 @@ class AuthenticationFlowInProfileTest
   id<SystemIdentity> identity1_ = nil;
   id<SystemIdentity> identity2_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
-  AuthenticationFlowPerformer* performer_mock_ = nil;
+  AuthenticationFlowInProfilePerformer* performer_mock_ = nil;
 };
 
 // Tests the regular sign-in case.
@@ -166,7 +169,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWhileBeingSignedIn) {
   base::test::TestFuture<SigninCoordinatorResult> future;
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
-  // Note: No call to `-[AuthenticationFlowPerformer
+  // Note: No call to `-[AuthenticationFlowInProfilePerformer
   // signInIdentity:atAccessPoint:currentProfile:]` since the profile is already
   // signed in with the right identity.
   EXPECT_TRUE(future.Wait());
@@ -208,7 +211,8 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
   OCMExpect([performer_mock_ signInIdentity:identity1_
                               atAccessPoint:access_point
                              currentProfile:profile_.get()]);
-  [GetAuthenticationFlowPerformerDelegate() didSignOutForAccountSwitch];
+  [GetAuthenticationFlowInProfilePerformerDelegate()
+      didSignOutForAccountSwitch];
   EXPECT_TRUE(future.Wait());
 }
 
@@ -262,12 +266,13 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
                           userAffiliationIDs:@[ kFakeUserAffiliationID ]
                                     identity:managed_identity_]);
   // Simulate the user policy register request.
-  [GetAuthenticationFlowPerformerDelegate()
+  [GetAuthenticationFlowInProfilePerformerDelegate()
       didRegisterForUserPolicyWithDMToken:kFakeDMToken
                                  clientID:kFakeClientID
                        userAffiliationIDs:@[ kFakeUserAffiliationID ]];
   // Simulate the user policy fetch request.
-  [GetAuthenticationFlowPerformerDelegate() didFetchUserPolicyWithSuccess:YES];
+  [GetAuthenticationFlowInProfilePerformerDelegate()
+      didFetchUserPolicyWithSuccess:YES];
   EXPECT_TRUE(future.Wait());
 }
 
@@ -298,7 +303,7 @@ TEST_P(AuthenticationFlowInProfileTest,
       });
   run_loop->Run();
   // Simulate the user policy register request finishing.
-  [GetAuthenticationFlowPerformerDelegate()
+  [GetAuthenticationFlowInProfilePerformerDelegate()
       didRegisterForUserPolicyWithDMToken:kFakeDMToken
                                  clientID:kFakeClientID
                        userAffiliationIDs:@[ kFakeUserAffiliationID ]];
@@ -345,13 +350,14 @@ TEST_P(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
       });
 
   // Simulate the user policy register request finishing.
-  [GetAuthenticationFlowPerformerDelegate()
+  [GetAuthenticationFlowInProfilePerformerDelegate()
       didRegisterForUserPolicyWithDMToken:kFakeDMToken
                                  clientID:kFakeClientID
                        userAffiliationIDs:@[ kFakeUserAffiliationID ]];
 
   // Simulate the user policy fetch request finishing.
-  [GetAuthenticationFlowPerformerDelegate() didFetchUserPolicyWithSuccess:NO];
+  [GetAuthenticationFlowInProfilePerformerDelegate()
+      didFetchUserPolicyWithSuccess:NO];
 
   // Since the browser was destroyed, no other steps should happen (e.g. no
   // post-signin actions).
@@ -389,7 +395,8 @@ TEST_P(AuthenticationFlowInProfileTest,
   run_loop->Run();
 
   // Simulate the capabilities fetch request finishing.
-  [GetAuthenticationFlowPerformerDelegate() didFetchAccountCapabilities];
+  [GetAuthenticationFlowInProfilePerformerDelegate()
+      didFetchAccountCapabilities];
 
   // Since the browser was destroyed, no other steps should happen (e.g. no
   // post-signin actions).

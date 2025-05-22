@@ -64,7 +64,7 @@ source_set("test_support") {
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
-    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:authentication_flow_performer",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:internal",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:test_support",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
