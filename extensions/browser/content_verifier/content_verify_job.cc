@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/span.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -62,7 +63,85 @@ bool IsIgnorableReadError(MojoResult read_result) {
   return read_result == MOJO_RESULT_ABORTED;
 }
 
+base::debug::CrashKeyString* GetContentHashExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentVerifyJobExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentHashExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_id", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentVerifyJobExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_id", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+// Returns the last path component of the extension root filepath, which should
+// be the extension version.
+std::string GetExtensionVersionFromExtensionRoot(
+    const base::FilePath& extension_root) {
+  return extension_root.BaseName().MaybeAsASCII();
+}
+
 }  // namespace
+
+namespace debug {
+
+// Helper for adding a crash keys when extension roots don't match during
+// content verification.
+//
+// It is only created at the start of the verification process when the process
+// is provided content verification hashes *and* the extension roots for the
+// content verification hash and the verification job don't match.
+//
+// All keys are logged every time this class is instantiated.
+class ScopedContentVerifyJobCrashKey {
+ public:
+  explicit ScopedContentVerifyJobCrashKey(
+      const base::FilePath& content_hash_extension_root,
+      const base::FilePath& verify_job_extension_root,
+      const ExtensionId& content_hash_extension_id,
+      const ExtensionId& verify_job_extension_id)
+      : content_hash_ext_version_crash_key_(
+            GetContentHashExtensionVersionCrashKey(),
+            GetExtensionVersionFromExtensionRoot(content_hash_extension_root)),
+        verify_job_ext_version_crash_key_(
+            GetContentVerifyJobExtensionVersionCrashKey(),
+            GetExtensionVersionFromExtensionRoot(verify_job_extension_root)),
+        content_hash_ext_id_crash_key_(GetContentHashExtensionIdCrashKey(),
+                                       content_hash_extension_id),
+        verify_job_ext_id_crash_key_(GetContentVerifyJobExtensionIdCrashKey(),
+                                     verify_job_extension_id)
+
+  {}
+  ~ScopedContentVerifyJobCrashKey() = default;
+
+ private:
+  // These record the extension's version from the extension root of ContentHash
+  // and ContentVerify Job. E.g. from:
+  //   "/path/to/chromium/<profile_name>/Extensions/<ext_id>/<ext_version>/""
+  //
+  // We record <ext_version>.
+  base::debug::ScopedCrashKeyString content_hash_ext_version_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_version_crash_key_;
+
+  // The ExtensionId for ContentHash and ContentVerify Job.
+  base::debug::ScopedCrashKeyString content_hash_ext_id_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_id_crash_key_;
+};
+
+}  // namespace debug
 
 ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
                                    const base::FilePath& extension_root,
@@ -107,6 +186,15 @@ void ContentVerifyJob::DidCreateContentHashOnIO(
 void ContentVerifyJob::StartWithContentHash(
     scoped_refptr<const ContentHash> content_hash) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  // If the hash and the verify jobs' roots don't match then the hash comparison
+  // done later will match against the wrong files.
+  if (content_hash->extension_root() != extension_root_) {
+    debug::ScopedContentVerifyJobCrashKey crash_keys(
+        content_hash->extension_root(), extension_root_,
+        content_hash->extension_id(), extension_id_);
+    base::debug::DumpWithoutCrashing();
+  }
+
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer)
     test_observer->JobStarted(extension_id_, relative_path_);
