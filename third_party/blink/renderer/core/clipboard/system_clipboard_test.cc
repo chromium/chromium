@@ -612,4 +612,44 @@ TEST_F(SystemClipboardTest, ClipboardChangeNotification_MultipleRegistrations) {
   }
 }
 
+TEST_F(SystemClipboardTest, ScopedSnapshotReadWriteBehavior) {
+  // Clipboard starts empty.
+  EXPECT_EQ(system_clipboard().ReadPlainText(), "");
+
+  // Inside a snapshot scope, the first read from the system clipboard
+  // remembers the result, even if the underlying clipboard host changes.
+  {
+    // Create a snapshot to cache clipboard reads.
+    ScopedSystemClipboardSnapshot snapshot(system_clipboard());
+
+    // Write "first" to the clipboard and read it.
+    // This value should be cached in the snapshot.
+    clipboard_host()->WriteText("first");
+    EXPECT_EQ(system_clipboard().ReadPlainText(), "first");
+
+    // Write "second" to the clipboard.
+    // The snapshot should still return the cached value ("first").
+    clipboard_host()->WriteText("second");
+    EXPECT_EQ(system_clipboard().ReadPlainText(), "first");
+
+    // Write "third" to the clipboard using the system clipboard directly.
+    // This bypasses the snapshot and updates the clipboard state.
+    system_clipboard().WritePlainText("third");
+    // Ensure all pending tasks (e.g., clipboard writes) are processed before
+    // the next read. This is necessary because clipboard operations involve
+    // asynchronous tasks.
+    RunUntilIdle();
+    EXPECT_EQ(system_clipboard().ReadPlainText(), "third");
+
+    // Modify the clipboard host to write "mocked".
+    // The snapshot should still return the cached value ("third").
+    clipboard_host()->WriteText("mocked");
+    EXPECT_EQ(system_clipboard().ReadPlainText(), "third");
+  }
+
+  // Now that the snapshot is out of scope, reads from the system clipboard
+  // reflect the state of the clipboard host.
+  EXPECT_EQ(system_clipboard().ReadPlainText(), "mocked");
+}
+
 }  // namespace blink

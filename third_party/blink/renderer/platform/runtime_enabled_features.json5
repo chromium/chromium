@@ -949,6 +949,14 @@
       status: "stable",
     },
     {
+      // Enables the ability to reset the clipboard snapshot when clipboard write
+      // operations are performed. This feature ensures that stale clipboard data
+      // is cleared and a fresh snapshot is created when necessary.
+      // See crbug.com/388081043
+      name: "ClipboardSnapshotResetOnWrite",
+      status: "stable",
+    },
+    {
       name: "ClipPathNestedRasterOptimization",
       status: "stable",
     },
