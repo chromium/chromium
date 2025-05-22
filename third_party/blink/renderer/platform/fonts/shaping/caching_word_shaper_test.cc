@@ -369,7 +369,7 @@ TEST_F(CachingWordShaperTest, GlyphBoundsWithSpaces) {
   float periods_width = shaper.Width(periods, &periods_glyph_bounds);
 
   TextRun periods_and_spaces(
-      reinterpret_cast<const LChar*>(". . . . . . . . . ."));
+      base::byte_span_from_cstring(". . . . . . . . . ."));
   gfx::RectF periods_and_spaces_glyph_bounds;
   float periods_and_spaces_width =
       shaper.Width(periods_and_spaces, &periods_and_spaces_glyph_bounds);
