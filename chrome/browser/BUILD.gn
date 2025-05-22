@@ -4160,8 +4160,6 @@ static_library("browser") {
       "serial/web_serial_chooser_desktop.cc",
       "sessions/restore_on_startup_policy_handler.cc",
       "sessions/restore_on_startup_policy_handler.h",
-      "share/share_metrics.cc",
-      "share/share_metrics.h",
       "sharing/click_to_call/click_to_call_context_menu_observer.cc",
       "sharing/click_to_call/click_to_call_context_menu_observer.h",
       "sharing/click_to_call/click_to_call_metrics.cc",
