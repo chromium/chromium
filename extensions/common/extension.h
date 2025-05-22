@@ -29,8 +29,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS) ||
-              BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class HashedExtensionId;

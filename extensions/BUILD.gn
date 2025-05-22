@@ -111,6 +111,8 @@ static_library("test_support") {
     "browser/test_image_loader.h",
     "browser/test_management_policy.cc",
     "browser/test_management_policy.h",
+    "browser/test_runtime_api_delegate.cc",
+    "browser/test_runtime_api_delegate.h",
     "common/extension_builder.cc",
     "common/extension_builder.h",
     "common/manifest_test.cc",
@@ -196,16 +198,6 @@ static_library("test_support") {
     ]
 
     deps += [ "//components/guest_view/browser:test_support" ]
-  }
-
-  # TODO(https://crbug.com/356905053): The following files don't compile cleanly
-  # with desktop-android. Either make them compile, or determine they should
-  # not be included and place them under a more appropriate if-block.
-  if (enable_extensions) {
-    sources += [
-      "browser/test_runtime_api_delegate.cc",
-      "browser/test_runtime_api_delegate.h",
-    ]
   }
 
   # Generally, //extensions should not depend on //chromeos. However, a number

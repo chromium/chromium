@@ -19,8 +19,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS) ||
-              BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
