@@ -5000,35 +5000,38 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.ModalWarningDialogLifetime" units="ms"
-    expires_after="2025-04-19">
+    expires_after="2026-05-19">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the interval between when the password protection modal warning
     dialog is constructed and when the dialog is destructed. The dialog can be
     destructed when the user takes action or the web content is destroyed.
+    Warning: The histogram was expired from 2025-04-20 to 2025-05-22.
   </summary>
 </histogram>
 
 <histogram name="PasswordProtection.NoHostedDomainFoundMatched" enum="Boolean"
-    expires_after="2025-04-19">
+    expires_after="2026-05-19">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Tracks whether the kNoHostedDomainFound check is useful when the gmail and
-    googlemail domains are being checked explicitly.
+    googlemail domains are being checked explicitly. Warning: The histogram was
+    expired from 2025-04-20 to 2025-05-22.
   </summary>
 </histogram>
 
 <histogram name="PasswordProtection.PageInfoAction"
-    enum="PasswordProtectionWarningAction" expires_after="2025-05-12">
+    enum="PasswordProtectionWarningAction" expires_after="2026-05-12">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how a user interacts with page info bubble that displays the
     password protection warning. Logged when such page info bubble is shown and
     when the user chooses to change their password, ignore warning, or mark site
-    as legitimate via buttons on the page info bubble.
+    as legitimate via buttons on the page info bubble. Warning: The histogram
+    was expired from 2025-05-13 to 2025-05-22.
   </summary>
 </histogram>
 
