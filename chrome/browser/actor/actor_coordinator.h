@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_ACTOR_COORDINATOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +15,7 @@
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Profile;
@@ -60,17 +62,18 @@ class ActorCoordinator {
   static void RegisterWithProfile(Profile* profile);
 
   // Starts a new task.
-  // Currently, requires a navigate action to start, and always creates a new
-  // tab.
-  // If starting the task succeeds, provides the newly-created tab in the
-  // callback, otherwise null.
-  // Starting the task may fail for any of:
+  // Currently, requires a navigate action to start.
+  // If starting the task succeeds, provides the tab in the callback, otherwise
+  // null. Starting the task may fail for any of:
   //   - The `action` is not navigate.
   //   - There is already a task started, or attempting to create a new tab to
   //   start a task.
-  //   - Unable to create a new tab.
+  //   - If a tab handle is provided, the tab must exist and be valid. The task
+  //   will fail if the tab cannot be found or is invalid.
+  //   - If no tab handle is provided, a new tab will be created.
   void StartTask(const optimization_guide::proto::BrowserAction& action,
-                 StartTaskCallback callback);
+                 StartTaskCallback callback,
+                 std::optional<tabs::TabHandle> tab_handle);
 
   // Stops the currently running task, if one is active. Callbacks for
   // in-progress actions are invoked.
@@ -99,7 +102,8 @@ class ActorCoordinator {
   // Starts a new task, after validating there isn't already a task being
   // initialized or in progress.
   void TryStartNewTask(const optimization_guide::proto::BrowserAction& action,
-                       StartTaskCallback callback);
+                       StartTaskCallback callback,
+                       std::optional<tabs::TabHandle> tab_handle);
 
   // Invokes the StartTask callback when initializing a new task failed (e.g.
   // error creating a new tab). Must be called to reset from the "initializing"

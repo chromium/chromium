@@ -65,6 +65,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -892,7 +893,9 @@ void AiDataKeyedService::StartTask(
       dummy_navigate_action,
       base::BindOnce(&AiDataKeyedService::OnTaskCreated,
                      weak_factory_.GetWeakPtr(), std::move(callback), task_id_,
-                     tab_id_));
+                     tab_id_),
+      task.has_tab_id() ? std::make_optional(tabs::TabHandle(task.tab_id()))
+                        : std::nullopt);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

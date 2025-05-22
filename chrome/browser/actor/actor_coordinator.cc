@@ -142,7 +142,8 @@ void ActorCoordinator::RegisterWithProfile(Profile* profile) {
 }
 
 void ActorCoordinator::StartTask(const BrowserAction& action,
-                                 StartTaskCallback callback) {
+                                 StartTaskCallback callback,
+                                 std::optional<tabs::TabHandle> tab_handle) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -150,8 +151,9 @@ void ActorCoordinator::StartTask(const BrowserAction& action,
   // Posts to a sequence to avoid potential races with multiple attempts to
   // start a task.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ActorCoordinator::TryStartNewTask,
-                                GetWeakPtr(), action, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&ActorCoordinator::TryStartNewTask, GetWeakPtr(), action,
+                     std::move(callback), std::move(tab_handle)));
 }
 
 void ActorCoordinator::StopTask() {
@@ -227,8 +229,10 @@ void ActorCoordinator::Act(const BrowserAction& action,
           web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 }
 
-void ActorCoordinator::TryStartNewTask(const BrowserAction& action,
-                                       StartTaskCallback callback) {
+void ActorCoordinator::TryStartNewTask(
+    const BrowserAction& action,
+    StartTaskCallback callback,
+    std::optional<tabs::TabHandle> tab_handle) {
   // Check for a failed attempt to initialize a new task, where there is a new
   // tab observer but it's navigation handle is no longer valid. The expectation
   // is that new tab observer will be notified regardless if the navigation
@@ -256,7 +260,23 @@ void ActorCoordinator::TryStartNewTask(const BrowserAction& action,
 
   initializing_new_task_ = true;
 
-  // Force the task to be performed in a new tab.
+  // If a tab handle was provided, try to get the tab interface
+  if (tab_handle) {
+    if (auto* tab_interface = tab_handle->Get()) {
+      // Create a new task with the existing tab
+      task_state_ = std::make_unique<Task>(*tab_interface);
+      initializing_new_task_ = false;
+      PostTaskForStartCallback(std::move(callback), task_state_->tab);
+      return;
+    }
+    // If we couldn't get the tab interface, error out
+    VLOG(1) << "Could not get tab interface for handle";
+    PostTaskForStartInitializationFailed(std::move(callback));
+    return;
+  }
+
+  // If no tab handle was provided, create a new tab
+  VLOG(1) << "No tab handle provided, creating new tab";
   CreateNewTab(std::move(callback));
 }
 

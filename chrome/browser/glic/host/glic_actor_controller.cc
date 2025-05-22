@@ -95,7 +95,8 @@ void GlicActorController::Act(
     GetActorCoordinator()->StartTask(
         action,
         base::BindOnce(&GlicActorController::OnTaskStarted, GetWeakPtr(),
-                       action, options, std::move(callback)));
+                       action, options, std::move(callback)),
+        /*tab_id=*/std::nullopt);
     return;
   }
 
