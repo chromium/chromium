@@ -107,4 +107,14 @@ TEST_F(ContextualSearchProviderTest, LensAdActionConditions) {
     EXPECT_TRUE(provider_->done());
     EXPECT_FALSE(has_actions());
   }
+  {
+    // When backspacing to empty input, action should not be shown.
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL("https://example.com"));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    EXPECT_FALSE(has_actions());
+  }
 }
