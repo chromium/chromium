@@ -102,9 +102,13 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnQuotaOverflow();
 
+  using ResolverOrStream =
+      std::variant<ScriptPromiseResolverBase*, ReadableStream*>;
   // Helper to make AILanguageModelProxy::Prompt compatible with
   // ConvertPromptInputsToMojo callback.
   void ExecutePrompt(
+      ScriptState* script_state,
+      ResolverOrStream resolver_or_stream,
       on_device_model::mojom::blink::ResponseConstraintPtr constraint,
       mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
           pending_responder,

@@ -106,6 +106,23 @@ std::optional<SkBitmap> GetBitmapFromImageElement(
   return std::move(sk_bitmap);
 }
 
+// Returns true if CanvasImageSource is in a state appropriate for bitmap
+// conversion. Otherwise, throws an exception and returns false.
+bool IsCanvasImageSourceValid(const CanvasImageSource& canvas_image_source,
+                              ExceptionState& exception_state) {
+  if (canvas_image_source.IsNeutered()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The image source is detached.");
+    return false;
+  }
+
+  if (canvas_image_source.WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError("Source would taint origin.", "");
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 std::optional<SkBitmap> GetBitmapFromV8ImageBitmapSource(
@@ -144,14 +161,7 @@ std::optional<SkBitmap> GetBitmapFromV8ImageBitmapSource(
   }
   DCHECK(canvas_image_source);
 
-  if (canvas_image_source->IsNeutered()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The image source is detached.");
-    return std::nullopt;
-  }
-
-  if (canvas_image_source->WouldTaintOrigin()) {
-    exception_state.ThrowSecurityError("Source would taint origin.", "");
+  if (!IsCanvasImageSourceValid(*canvas_image_source, exception_state)) {
     return std::nullopt;
   }
 
@@ -160,11 +170,22 @@ std::optional<SkBitmap> GetBitmapFromV8ImageBitmapSource(
         script_state, image_source->GetAsHTMLImageElement(), exception_state);
   }
 
+  return GetBitmapFromCanvasImageSource(*canvas_image_source,
+                                        exception_state);
+}
+
+std::optional<SkBitmap> GetBitmapFromCanvasImageSource(
+    CanvasImageSource& canvas_image_source,
+    ExceptionState& exception_state) {
+  if (!IsCanvasImageSourceValid(canvas_image_source, exception_state)) {
+    return std::nullopt;
+  }
+
   const gfx::SizeF size =
-      canvas_image_source->ElementSize(gfx::SizeF(), kRespectImageOrientation);
+      canvas_image_source.ElementSize(gfx::SizeF(), kRespectImageOrientation);
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  scoped_refptr<Image> image = canvas_image_source->GetSourceImageForCanvas(
+  scoped_refptr<Image> image = canvas_image_source.GetSourceImageForCanvas(
       FlushReason::kCopyToSkBitmap, &source_image_status, size);
   if (!image || source_image_status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
