@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -1884,6 +1885,11 @@ protocol::Response InspectorDOMAgent::getElementByRelation(
                              InterestTarget) {
     if (auto* invoker = DynamicTo<Element>(node)) {
       element = invoker->InterestTargetElement();
+    }
+  } else if (relation ==
+             protocol::DOM::GetElementByRelation::RelationEnum::CommandFor) {
+    if (auto* invoker = DynamicTo<HTMLButtonElement>(node)) {
+      element = invoker->commandForElement();
     }
   }
 

@@ -3513,6 +3513,9 @@ domain DOM
         PopoverTarget
         # Get the interest target for a given element.
         InterestTarget
+        # Get the commandfor target for a given element. In this case, this given
+        # element can only be an HTMLButtonElement.
+        CommandFor
     returns
       # NodeId of the element matching the queried relation.
       NodeId nodeId
