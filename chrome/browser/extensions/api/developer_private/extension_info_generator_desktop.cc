@@ -48,11 +48,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
     api::developer_private::ExtensionInfo info) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-  if (extension_system_->extension_service()->allowlist()->ShouldDisplayWarning(
-          extension.id())) {
-    info.show_safe_browsing_allowlist_warning = true;
-  }
-
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
 

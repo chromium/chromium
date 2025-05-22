@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
@@ -571,7 +572,10 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
     info.blocklist_text = l10n_util::GetStringUTF8(blocklist_text);
   }
 
-  // TODO(crbug.com/419419534): Add back show_safe_browsing_allowlist_warning.
+  if (extension_system_->extension_service()->allowlist()->ShouldDisplayWarning(
+          extension.id())) {
+    info.show_safe_browsing_allowlist_warning = true;
+  }
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
 
