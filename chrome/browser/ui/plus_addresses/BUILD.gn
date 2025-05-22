@@ -113,11 +113,6 @@ source_set("impl") {
       "//components/plus_addresses/resources/strings",
       "//components/plus_addresses/settings",
       "//ui/android",
-
-      # TODO(crbug.com/418007764): remove once c/b/ui/android/tab_model gets
-      # modularized. For now this does not cause circular dependencies because,
-      # unlike in non-android builds, c/b/ui:ui does not depend directly on this.
-      "//chrome/browser/ui",
     ]
   }
 }

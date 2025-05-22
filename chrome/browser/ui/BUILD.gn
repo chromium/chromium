@@ -897,6 +897,8 @@ static_library("ui") {
       "//chrome/browser/ui/android/toolbar:jni_headers",
       "//chrome/browser/ui/fast_checkout",
       "//chrome/browser/ui/fast_checkout:impl",
+      "//chrome/browser/ui/plus_addresses",
+      "//chrome/browser/ui/plus_addresses:impl",
       "//components/android_autofill/browser:android",
       "//components/autofill/android:payments_autofill_cc",
       "//components/autofill/android:payments_jni_headers",

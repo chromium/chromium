@@ -56,7 +56,6 @@ source_set("unit_test") {
     "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/ui/plus_addresses",
-    "//chrome/browser/ui/plus_addresses:impl",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser",
