@@ -123,6 +123,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   const std::vector<sync_pb::WebauthnCredentialSpecifics>& creds() const;
 
   AccountState account_state_for_testing() const;
+  // Returns true if the account is ready to use.
+  bool is_account_ready() const;
 
  private:
   // GPMEnclaveTransaction::Delegate:

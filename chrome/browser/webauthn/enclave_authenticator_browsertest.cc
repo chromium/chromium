@@ -571,8 +571,6 @@ static constexpr char kSignalRestoreTestPasskey[] = R"((() => {
           e => window.domAutomationController.send('error ' + e));
 })())";
 
-#if BUILDFLAG(IS_MAC)
-
 static constexpr char kGetAssertionViaButtonClickImmediateUvPreferred[] = R"(
   document.body.innerHTML = '<button id="testButton"">Get Assertion</button>';
   function triggerGetAssertion() {
@@ -589,8 +587,6 @@ static constexpr char kGetAssertionViaButtonClickImmediateUvPreferred[] = R"(
   const button = document.getElementById('testButton');
   button.addEventListener('click', triggerGetAssertion);
 )";
-
-#endif  // BUILDFLAG(IS_MAC)
 
 bool IsReady(GPMEnclaveController::AccountState state) {
   switch (state) {
@@ -4496,13 +4492,13 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
   EXPECT_THAT(script_result, testing::HasSubstr("InvalidStateError"));
 }
 
-#if BUILDFLAG(IS_MAC)
-
 class EnclaveAuthenticatorImmediateMediationBrowserTest
     : public EnclaveAuthenticatorBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{
       device::kWebAuthnImmediateGet};
 };
+
+#if BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(
     EnclaveAuthenticatorImmediateMediationBrowserTest,
@@ -4510,6 +4506,7 @@ IN_PROC_BROWSER_TEST_F(
   if (!MacBiometricApisAvailable()) {
     GTEST_SKIP() << "Need macOS biometric support for this test.";
   }
+  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
@@ -4570,9 +4567,40 @@ IN_PROC_BROWSER_TEST_F(
   // At this point, step should be kGPMTouchID
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Immediate.EnclaveReady",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 #endif  // BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorImmediateMediationBrowserTest,
+                       ImmediateRequest_EnclaveNotReady_NoPasskeys) {
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  // GPM setup with one passkey
+  AddTestPasskeyToModel();
+
+  // 2. Setup page for immediate request and click button.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              kGetAssertionViaButtonClickImmediateUvPreferred));
+  content::ExecuteScriptAsync(web_contents,
+                              "document.getElementById('testButton').click();");
+
+  // 3. Wait for the request to complete.
+  // It's expected to fail as no credentials should be found.
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Immediate.EnclaveReady",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+}
 
 }  // namespace
 

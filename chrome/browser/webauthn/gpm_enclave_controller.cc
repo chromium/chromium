@@ -461,6 +461,10 @@ GPMEnclaveController::account_state_for_testing() const {
   return account_state_;
 }
 
+bool GPMEnclaveController::is_account_ready() const {
+  return account_state_ == AccountState::kReady;
+}
+
 void GPMEnclaveController::OnEnclaveLoaded() {
   // For create() requests, we want to probe the security domain service to
   // ensure that we never create a credential encrypted to an old security

@@ -352,6 +352,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.GetAssertion.Immediate.EnclaveReady"
+    enum="Boolean" expires_after="2025-11-26">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether the enclave was ready to handle an immediate get assertion
+    request. Recorded when an immediate get assertion request is triggered and
+    the user has passkeys from the enclave authenticator.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.GetAssertion.Result"
     enum="WebAuthenticationCredentialRequestResult" expires_after="2025-10-26">
   <owner>nsatragno@chromium.org</owner>
